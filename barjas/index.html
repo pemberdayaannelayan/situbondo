@@ -330,10 +330,7 @@
         .error-message { color: #dc3545; font-size: 0.8rem; margin-top: 5px; display: none; font-weight: 500; }
         .watermark { position: absolute; bottom: 10px; right: 15px; opacity: 0.8; font-size: 0.8rem; color: rgba(255,255,255,0.7); font-weight: 300; letter-spacing: 1px;}
         
-        /* ==========================================================================
-           REFACTORED FLOATING BUTTONS & SMART MENU (PROFESSIONAL PULSE EFFECT)
-           ========================================================================== */
-        
+        /* Floating Buttons & Smart Menu */
         @keyframes signal-pulse {
             0% { box-shadow: 0 0 0 0 rgba(238, 155, 0, 0.7), 0 0 0 0 rgba(10, 147, 150, 0.7); }
             70% { box-shadow: 0 0 0 15px rgba(238, 155, 0, 0), 0 0 0 30px rgba(10, 147, 150, 0); }
@@ -530,6 +527,15 @@
         .preview-table { width: 100%; border-collapse: collapse; }
         .preview-table th, .preview-table td { padding: 8px; border: 1px solid #ddd; }
         .preview-table th { background-color: #f0f0f0; }
+        
+        /* New Info Style */
+        .info-pill {
+            background: rgba(0, 95, 115, 0.05);
+            border: 1px dashed var(--primary-color);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -556,8 +562,14 @@
                                 </button>
                             </div>
                             <div class="form-text text-danger mt-2 fw-bold text-center" id="attemptsCount" style="display:none;"></div>
-                            <div class="alert alert-info mt-3 py-2 px-3 small border-0 shadow-sm" style="background-color: #e3f2fd; color: #005f73;">
-                                <i class="fas fa-lightbulb me-2"></i> App System <strong>BIDANG PEMBERDAYAAN NELAYAN</strong>
+                            
+                            <div class="info-pill mt-4">
+                                <div class="small text-uppercase fw-bold text-primary mb-1" style="font-size: 0.7rem; letter-spacing: 1px;">
+                                    <i class="fas fa-shield-alt me-1"></i> System Information
+                                </div>
+                                <div class="fw-bold text-dark" style="font-size: 0.9rem;">
+                                    BIDANG PEMBERDAYAAN NELAYAN
+                                </div>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-login text-white w-100 py-3 fw-bold shadow-sm" id="loginButton">
@@ -1030,13 +1042,12 @@
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="card h-100">
-                                        <div class="card-header bg-primary text-white"><i class="fas fa-download me-2"></i> Backup Data</div>
+                                        <div class="card-header bg-primary text-white"><i class="fas fa-download me-2"></i> Backup Data (Reload.js)</div>
                                         <div class="card-body text-center">
                                             <i class="fas fa-shield-alt fa-4x text-primary mb-3"></i>
                                             <h5>Amankan Data Anda</h5>
-                                            <p class="text-muted small">Mengunduh seluruh database dalam format terenkripsi.</p>
-                                            <input type="text" class="form-control mb-3" id="backupFileName" value="backup-nelayan-situbondo">
-                                            <button class="btn btn-primary w-100" id="backupDataBtn">Download Backup</button>
+                                            <p class="text-muted small">Mengunduh file <strong>reload.js</strong> terenkripsi otomatis untuk keperluan reload repo.</p>
+                                            <button class="btn btn-primary w-100" id="backupDataBtn">Download reload.js</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1047,7 +1058,7 @@
                                             <i class="fas fa-history fa-4x text-success mb-3"></i>
                                             <h5>Pulihkan Data</h5>
                                             <p class="text-muted small">Mengembalikan data dari file backup sebelumnya.</p>
-                                            <input type="file" class="form-control mb-3" id="restoreFileInput" accept=".json">
+                                            <input type="file" class="form-control mb-3" id="restoreFileInput" accept=".json,.js">
                                             <button class="btn btn-success w-100" id="restoreDataBtn" disabled>Proses Restore</button>
                                         </div>
                                     </div>
@@ -1088,6 +1099,7 @@
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                 </div>
+                                                <small class="text-muted">Default: <strong>BidangPN1945</strong></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Baris per Halaman</label>
@@ -1291,7 +1303,7 @@
         // --- GLOBAL VARIABLES & CONSTANTS ---
         let appData = [];
         let appSettings = {
-            securityCode: 'BidangPN1945',
+            securityCode: 'BidangPN1945', // KONSISTENSI: Default Hardcoded
             itemsPerPage: 25,
             notifications: true,
             appName: 'SISTEM BANTUAN NELAYAN',
@@ -1854,9 +1866,19 @@
         function loadSettings() {
             const savedSettings = localStorage.getItem('barjasSettings');
             if (savedSettings) {
-                const loaded = JSON.parse(savedSettings);
-                Object.assign(appSettings, loaded);
-                if (typeof appSettings.privacyMode === 'undefined') appSettings.privacyMode = true; 
+                try {
+                    const loaded = JSON.parse(savedSettings);
+                    Object.assign(appSettings, loaded);
+                    // SECURITY FIX: Jika kode keamanan kosong atau tidak valid, paksa kembali ke default
+                    if (!appSettings.securityCode || appSettings.securityCode.trim() === '') {
+                        appSettings.securityCode = 'BidangPN1945';
+                        console.warn("Kode keamanan direset ke default karena kosong.");
+                    }
+                } catch(e) {
+                     appSettings.securityCode = 'BidangPN1945'; // Force default on error
+                }
+            } else {
+                 appSettings.securityCode = 'BidangPN1945'; // Init default
             }
         }
 
@@ -1876,7 +1898,11 @@
         function handleSaveSettings(e) {
             e.preventDefault();
             const newSecurityCode = document.getElementById('settingSecurityCode').value;
-            if (newSecurityCode) appSettings.securityCode = newSecurityCode;
+            if (newSecurityCode && newSecurityCode.trim() !== "") {
+                appSettings.securityCode = newSecurityCode;
+            } else {
+                // Jangan ubah jika kosong, biarkan yang lama
+            }
             
             appSettings.itemsPerPage = parseInt(document.getElementById('itemsPerPage').value);
             appSettings.notifications = document.getElementById('notifications').checked;
@@ -1891,6 +1917,9 @@
             
             document.querySelector('.app-title').innerHTML = appSettings.appName.replace(/\n/g, '<br>');
             document.querySelector('.app-subtitle').textContent = appSettings.appSubtitle;
+            
+            // Clear password field for security
+            document.getElementById('settingSecurityCode').value = '';
         }
         
         // --- DATA TABLE ---
@@ -2280,7 +2309,7 @@
             document.body.removeChild(link);
         }
 
-        // --- BACKUP & RELOAD ---
+        // --- BACKUP (RELOAD.JS) & RESTORE ---
         function autoBackupData() {
             if (appData.length === 0) return;
             appSettings.lastBackupDate = new Date().toLocaleDateString('id-ID');
@@ -2289,14 +2318,37 @@
 
         function backupData() {
             if (appData.length === 0) return showNotification('Tidak ada data untuk dibackup.', 'warning');
-            const filename = document.getElementById('backupFileName').value || 'backup-nelayan';
+            
+            // 1. Siapkan data JSON
             const dataToBackup = { appData, appSettings, generatedCodes };
-            const dataStr = btoa(unescape(encodeURIComponent(JSON.stringify(dataToBackup))));
-            downloadFile(dataStr, 'application/json', `${filename}-${new Date().toISOString().slice(0,10)}.json`);
+            
+            // 2. Enkripsi ke Base64 (sama seperti sebelumnya)
+            const encryptedString = btoa(unescape(encodeURIComponent(JSON.stringify(dataToBackup))));
+            
+            // 3. Buat konten file JS
+            const timestamp = new Date().toLocaleString('id-ID');
+            const appName = appSettings.appName;
+            
+            const fileContent = `/* PETUNJUK PENGGUNAAN RELOAD REPO:
+    1. Ini adalah file backup otomatis dari Aplikasi.
+    2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
+    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
+    
+    APP NAME : ${appName}
+    TANGGAL  : ${timestamp}
+*/
+
+window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
+`;
+
+            // 4. Download sebagai reload.js
+            downloadFile(fileContent, 'text/javascript', 'reload.js');
+            
+            // Update timestamp
             appSettings.lastBackupDate = new Date().toLocaleDateString('id-ID');
             saveSettings();
             applySettingsToUI();
-            showNotification('Backup data terenkripsi berhasil diunduh.', 'success');
+            showNotification('Backup file (reload.js) berhasil diunduh.', 'success');
         }
         
         function handleReloadFromRepo() {
@@ -2328,31 +2380,23 @@
                             throw new Error("Gagal mendekripsi data.");
                         }
                         
-                        // LOGIKA MERGE DATA (PERBAIKAN UTAMA)
+                        // LOGIKA MERGE DATA
                         if(restored && restored.appData && Array.isArray(restored.appData)) {
                             
-                            // 1. Ambil ID yang sudah ada di data lokal
                             const existingIds = new Set(appData.map(item => item.id));
                             let addedCount = 0;
 
-                            // 2. Loop data baru dari reload.js
                             restored.appData.forEach(newItem => {
-                                // Jika ID belum ada, tambahkan ke appData
                                 if (!existingIds.has(newItem.id)) {
                                     appData.push(newItem);
-                                    existingIds.add(newItem.id); // Update set lokal sementara
+                                    existingIds.add(newItem.id); 
                                     addedCount++;
                                 }
-                                // Jika ID sudah ada, biarkan data lama (sesuai instruksi: tidak menindih/menghapus)
                             });
 
-                            // 3. Gabungkan Generated Codes jika ada
                             if(restored.generatedCodes) {
-                                generatedCodes = { ...restored.generatedCodes, ...generatedCodes }; // Prioritas lokal jika konflik, atau gabung
+                                generatedCodes = { ...restored.generatedCodes, ...generatedCodes }; 
                             }
-
-                            // 4. Update Settings jika diperlukan (Opsional, tapi biasanya setting lokal lebih penting)
-                            // if(restored.appSettings) Object.assign(appSettings, restored.appSettings);
 
                             saveData();
                             saveSettings();
@@ -2400,17 +2444,36 @@
             const reader = new FileReader();
             reader.onload = e => {
                 try {
-                    let restored;
                     const content = e.target.result;
-                    try {
-                        restored = JSON.parse(decodeURIComponent(escape(atob(content))));
-                    } catch (err) {
-                        restored = JSON.parse(content);
+                    let restored;
+                    
+                    // Cek apakah file reload.js (mengandung window.BARJAS...) atau JSON biasa
+                    if (content.includes('window.BARJAS_BACKUP_ENCRYPTED')) {
+                        // Extract string dalam tanda petik
+                        const match = content.match(/window\.BARJAS_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/);
+                        if (match && match[1]) {
+                            restored = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
+                        } else {
+                            throw new Error("Format reload.js tidak valid.");
+                        }
+                    } else {
+                        // Coba parse sebagai JSON biasa (legacy backup)
+                        try {
+                            restored = JSON.parse(decodeURIComponent(escape(atob(content))));
+                        } catch (err) {
+                            restored = JSON.parse(content);
+                        }
                     }
 
-                    if (restored.appData && restored.appSettings) {
+                    if (restored && restored.appData && restored.appSettings) {
                         appData = restored.appData;
                         Object.assign(appSettings, restored.appSettings);
+                        
+                        // PASTIKAN KODE KEAMANAN TETAP DEFAULT JIKA KOSONG SETELAH RESTORE
+                         if (!appSettings.securityCode || appSettings.securityCode.trim() === '') {
+                             appSettings.securityCode = 'BidangPN1945';
+                         }
+
                         generatedCodes = restored.generatedCodes || {};
                         saveData();
                         saveSettings();
@@ -2421,10 +2484,11 @@
                         renderDataTable();
                         showNotification('Data berhasil direstore.', 'success');
                     } else {
-                        throw new Error("Format file tidak valid.");
+                        throw new Error("Struktur data tidak valid.");
                     }
                 } catch (error) {
-                    showNotification('Gagal merestore data.', 'error');
+                    console.error(error);
+                    showNotification('Gagal merestore data. File mungkin rusak.', 'error');
                 }
             };
             reader.readAsText(file);
@@ -2437,7 +2501,11 @@
         function resetData() {
             appData = [];
             generatedCodes = {};
+            // Reset Settings tapi pertahankan default password
+            appSettings.securityCode = 'BidangPN1945';
             saveData();
+            saveSettings();
+            
             const resetModal = bootstrap.Modal.getInstance(document.getElementById('confirmResetModal'));
             if(resetModal) resetModal.hide();
             document.getElementById('resetConfirmationInput').value = '';
