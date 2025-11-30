@@ -3,8 +3,11 @@
     2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
     3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
     
-    APP NAME : APLIKASI BARJAS BIDANG PEMBERDAYAAN NELAYAN
-    TANGGAL  : 29/11/2025, 19.55.14
+    APP NAME : APLIKASI SIMATA DINAS PERIKANAN SITUBONDO
+    TANGGAL  : 1/12/2025, 00.30.58
 */
 
-window.BARJAS_BACKUP_ENCRYPTED = "satu_data";
+
+window.SIMATA_BACKUP_ENCRYPTED = "data_masih_kosong";
+
+
