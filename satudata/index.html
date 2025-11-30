@@ -7,34 +7,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <style>
         :root {
-            /* Palette: FRESH ONE DATA THEME (Hijau Muda - Biru Muda - Orange) */
+            /* Palette: DEEP OCEAN PROFESSIONAL THEME */
+            --primary-color: #0c2461; /* Dark Blue */
+            --primary-gradient: linear-gradient(135deg, #0c2461 0%, #1e3799 100%); /* Deep Blue Gradient */
             
-            /* Primary: Fresh Teal/Green to Light Blue */
-            --primary-color: #00b894; /* Mint Green / Hijau Muda Segar */
-            --primary-gradient: linear-gradient(135deg, #00b894 0%, #00cec9 50%, #74b9ff 100%); /* Hijau -> Cyan -> Biru Muda */
+            --secondary-color: #4a69bd; /* Lighter Blue */
+            --accent-color: #f6b93b; /* Gold/Yellow for accents */
             
-            /* Secondary & Accents */
-            --secondary-color: #0984e3; /* Bright Blue */
-            --accent-color: #fd79a8; 
+            --sidebar-active: #eaf0f9; 
+            --bg-body: #f1f2f6;
+            --shadow-soft: 0 10px 30px rgba(12, 36, 97, 0.15);
             
-            /* Status Colors */
-            --orange-custom: #e17055; /* Burnt Orange for Accent/Musiman */
-            --yellow-custom: #ffeaa7;
-            --danger-color: #d63031;
-            --success-color: #00b894;
-            
-            /* UI Elements */
-            --sidebar-active: #e3fdf5; /* Very Light Mint */
-            --bg-body: #f1f2f6; /* Clean Grey-ish White */
-            --glass-effect: rgba(255, 255, 255, 0.95);
-            --shadow-soft: 0 10px 30px rgba(0, 184, 148, 0.15); /* Greenish Shadow */
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
         }
         
         body {
@@ -46,10 +41,12 @@
         }
         
         /* Custom Badge Colors */
-        .badge-profesi-tetap { background-color: var(--success-color) !important; color: white; }
-        .badge-profesi-musiman { background-color: var(--orange-custom) !important; color: white; }
+        .badge-profesi-tetap { background-color: #0c2461 !important; color: white; }
+        .badge-profesi-musiman { background-color: #e58e26 !important; color: white; }
+        .badge-kusuka-ada { background-color: #27ae60 !important; color: white; }
+        .badge-kusuka-tidak { background-color: #7f8c8d !important; color: white; }
 
-        /* --- LOGIN (Updated Colors) --- */
+        /* --- LOGIN --- */
         .login-overlay {
             background: var(--primary-gradient);
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -58,37 +55,36 @@
             overflow: hidden;
         }
         .circles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; margin: 0; padding: 0; z-index: 0; }
-        .circles li { position: absolute; display: block; list-style: none; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.3); animation: animate 25s linear infinite; bottom: -150px; border-radius: 50%; }
+        .circles li { position: absolute; display: block; list-style: none; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.2); animation: animate 25s linear infinite; bottom: -150px; border-radius: 50%; }
         .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
         .circles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
-        .circles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
         @keyframes animate { 0%{ transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; } 100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; } }
         
         .login-card {
             background: white; width: 100%; max-width: 480px; border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1); overflow: hidden; z-index: 10; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); overflow: hidden; z-index: 10; position: relative;
             animation: slideUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
         .login-header-new { background: white; padding: 40px 30px 20px 30px; text-align: center; color: var(--primary-color); border-bottom: 1px solid #f0f0f0; }
-        .login-icon-box { width: 90px; height: 90px; background: #e3fdf5; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--primary-color); box-shadow: 0 10px 20px rgba(0, 184, 148, 0.2); }
+        .login-icon-box { width: 90px; height: 90px; background: #eaf0f9; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--primary-color); box-shadow: 0 10px 20px rgba(12, 36, 97, 0.1); }
 
-        /* --- NEW HEADER DESIGN (FRESH CARIBBEAN) --- */
+        /* --- NEW HEADER DESIGN (PROFESSIONAL OCEAN) --- */
         .app-header { 
-            /* Gradasi Hijau Muda ke Biru Muda Overlay di atas gambar laut */
-            background: linear-gradient(120deg, rgba(0, 184, 148, 0.85), rgba(9, 132, 227, 0.7)), url('https://images.unsplash.com/photo-1582967788606-a171f1080ca8?q=80&w=2070&auto=format&fit=crop');
+            /* Gradient Biru Laut Dalam */
+            background: linear-gradient(120deg, #0a3d62, #3c6382), url('https://images.unsplash.com/photo-1503756234508-e32369269deb?q=80&w=2000&auto=format&fit=crop');
+            background-blend-mode: multiply;
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
             color: white; 
-            padding: 50px 20px; 
+            padding: 40px 20px; 
             text-align: center; 
             position: relative; 
-            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.2); 
-            border-bottom: 5px solid var(--orange-custom); /* Aksen Orange di bawah header */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
+            border-bottom: 5px solid var(--accent-color); /* Gold Accent */
             overflow: hidden; 
         }
         
-        /* Logo Icon Style */
+        /* Logo Icon Style - Updated to Ship */
         .app-logo-icon { 
             font-size: 3rem; 
             color: var(--primary-color); 
@@ -99,9 +95,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px; 
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); 
-            border: 4px solid rgba(255,255,255,0.5);
+            margin-bottom: 15px; 
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); 
+            border: 4px solid rgba(255,255,255,0.8);
             transform: rotate(0deg);
             transition: transform 0.3s;
         }
@@ -109,27 +105,28 @@
 
         .app-title { 
             font-family: 'Montserrat', sans-serif; 
-            font-size: 2.5rem; 
+            font-size: 2.2rem; 
             font-weight: 800; 
             margin: 0; 
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: #fff;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
             text-transform: uppercase;
         }
 
         .app-subtitle { 
-            font-size: 1.1rem; 
+            font-size: 1rem; 
             color: #fff; 
-            margin-top: 5px; 
+            margin-top: 10px; 
             font-weight: 600; 
             letter-spacing: 2px; 
             text-transform: uppercase;
-            background: rgba(225, 112, 85, 0.9); /* Orange Background for Subtitle */
+            background: rgba(246, 185, 59, 0.9); /* Gold Background */
+            color: #0c2461; /* Dark Text */
             display: inline-block;
-            padding: 5px 20px;
+            padding: 5px 25px;
             border-radius: 50px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
         /* Layout Container */
@@ -138,134 +135,63 @@
         /* Navigation */
         .nav-pills .nav-link { border-radius: 50px; margin: 5px 15px; padding: 12px 25px; font-weight: 600; color: #636e72; transition: all 0.3s ease; font-size: 0.9rem; }
         .nav-pills .nav-link:hover { background-color: #dfe6e9; color: var(--primary-color); transform: translateX(5px); }
-        .nav-pills .nav-link.active { background: var(--primary-gradient); color: white; box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3); border-left: none; }
+        .nav-pills .nav-link.active { background: var(--primary-gradient); color: white; box-shadow: 0 5px 15px rgba(12, 36, 97, 0.3); border-left: none; }
         .nav-pills .nav-link.active i { color: white; }
 
         /* Chart & Section */
         .chart-container-fixed { position: relative; height: 300px; width: 100%; }
-        .section-title { font-family: 'Montserrat', sans-serif; margin: 10px 0 30px 0; font-weight: 700; color: #2d3436; font-size: 1.5rem; display: flex; align-items: center; }
-        .section-title::before { content: ''; display: inline-block; width: 8px; height: 30px; background: var(--orange-custom); margin-right: 15px; border-radius: 10px; }
+        .section-title { font-family: 'Montserrat', sans-serif; margin: 10px 0 30px 0; font-weight: 700; color: #0c2461; font-size: 1.5rem; display: flex; align-items: center; }
+        .section-title::before { content: ''; display: inline-block; width: 8px; height: 30px; background: var(--accent-color); margin-right: 15px; border-radius: 10px; }
 
-        /* --- TABLE DESIGN --- */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-            border-radius: 12px;
-            border: 1px solid #f1f2f6;
-        }
-
-        .data-table { 
-            width: 100%; 
-            border-collapse: separate; 
-            border-spacing: 0; 
-            white-space: nowrap; 
-        }
-        
-        .data-table thead th { 
-            background: #dfe6e9 !important; 
-            color: #2d3436; 
-            font-weight: 800; 
-            font-size: 0.8rem; 
-            text-transform: uppercase; 
-            border-bottom: 3px solid var(--primary-color); 
-            padding: 18px 15px; 
-            vertical-align: middle;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .data-table td { 
-            vertical-align: middle; 
-            padding: 15px 15px; 
-            border-bottom: 1px solid #f1f2f6; 
-            font-size: 0.95rem;
-            transition: background 0.2s;
-        }
-        
-        .data-table tbody tr:hover td { 
-            background-color: #e3fdf5; /* Light Mint Hover */
-            cursor: pointer;
-        }
-        
-        .data-table tr.table-danger td { background-color: #ff7675 !important; color: white; }
-        .data-table tr.table-danger td .text-muted { color: #f1f1f1 !important; }
-
-        /* Specific Column Styling */
+        /* Table */
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid #f1f2f6; }
+        .data-table thead th { background: #dfe6e9 !important; color: #2d3436; font-weight: 800; border-bottom: 3px solid var(--primary-color); padding: 18px 15px; vertical-align: middle; }
+        .data-table tbody tr:hover td { background-color: #eaf0f9; cursor: pointer; }
         .col-action { min-width: 160px; text-align: center; background: #fff; }
-        .sticky-col-right {
-            position: sticky;
-            right: 0;
-            background: white;
-            box-shadow: -5px 0 10px rgba(0,0,0,0.03);
-            z-index: 5;
-        }
-        .clickable-name:hover {
-            color: var(--primary-color);
-            text-decoration: underline;
-        }
+        .sticky-col-right { position: sticky; right: 0; background: white; box-shadow: -5px 0 10px rgba(0,0,0,0.03); z-index: 5; }
 
-        /* Detail Modal Styles */
-        .modal-header-custom {
-            background: var(--primary-gradient);
-            color: white;
-            border-bottom: none;
-        }
+        /* Modal */
+        .modal-header-custom { background: var(--primary-gradient); color: white; border-bottom: none; }
         .detail-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #b2bec3; margin-bottom: 2px; }
         .detail-value { font-size: 1.1rem; font-weight: 600; color: #2d3436; margin-bottom: 15px; border-bottom: 1px solid #dfe6e9; padding-bottom: 5px; }
-        .fish-tag { background: #e3fdf5; color: var(--primary-color); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; margin-right: 5px; display: inline-block; margin-bottom: 5px; font-weight: 600; border: 1px solid var(--primary-color); }
 
-        /* Floating Button - Orange Accent */
+        /* Fab */
         .fab-container { position: fixed; bottom: 30px; right: 30px; z-index: 999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center; }
-        .fab-main { width: 65px; height: 65px; border-radius: 50%; background: var(--orange-custom); color: white; border: none; box-shadow: 0 10px 25px rgba(225, 112, 85, 0.4); font-size: 1.5rem; cursor: pointer; transition: transform 0.3s; }
-        .fab-main:hover { transform: scale(1.1) rotate(90deg); background: #d35400; }
+        .fab-main { width: 65px; height: 65px; border-radius: 50%; background: var(--accent-color); color: #0c2461; border: none; box-shadow: 0 10px 25px rgba(246, 185, 59, 0.4); font-size: 1.5rem; cursor: pointer; transition: transform 0.3s; }
+        .fab-main:hover { transform: scale(1.1) rotate(90deg); background: #e58e26; color: white; }
         .fab-item { width: 50px; height: 50px; border-radius: 50%; background: white; color: var(--primary-color); border: 2px solid var(--primary-color); display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
         .fab-container.open .fab-item { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .fab-item:hover { background: var(--primary-color); color: white; }
 
-        /* Sticky Warning */
+        /* Warning & Footer */
         .sticky-warning { position: fixed; top: 20px; right: 20px; z-index: 1080; background: white; border-left: 5px solid var(--danger-color); box-shadow: 0 10px 40px rgba(0,0,0,0.15); padding: 20px; border-radius: 8px; width: 320px; display: none; animation: slideInLeft 0.5s; }
+        .main-footer { background: #fff; border-top: 1px solid #dfe6e9; padding: 30px 0; margin-top: auto; text-align: center; }
+        
+        /* Hidden Div for QR Code Generation */
+        #qr-code-generator {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
         @keyframes slideInLeft { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .animate-fadeIn { animation: slideUp 0.6s ease-out; }
 
-        /* Checkbox Box Styling */
-        .fish-option-box {
-            display: block; padding: 10px 14px; margin-bottom: 8px; border: 2px solid #dfe6e9; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white;
-        }
-        .fish-option-box:hover { background-color: #e3fdf5; border-color: var(--primary-color); }
-        .fish-option-box input:checked + span { font-weight: bold; color: var(--primary-color); }
-
-        /* Footer */
-        .main-footer {
-            background: #fff;
-            border-top: 1px solid #dfe6e9;
-            padding: 30px 0;
-            margin-top: auto;
-            text-align: center;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.02);
-        }
-        .footer-brand { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--primary-color); display: block; margin-bottom: 10px; font-size: 1.1rem; }
-        .footer-text { color: #636e72; font-size: 0.9rem; margin-bottom: 8px; }
-        .footer-links a { color: #555; text-decoration: none; font-weight: 500; font-size: 0.85rem; margin: 0 10px; transition: color 0.3s; }
-        .footer-links a:hover { color: var(--orange-custom); }
-
-        /* Buttons Overrides */
-        .btn-primary { background: var(--primary-gradient); border: none; }
-        .btn-primary:hover { background: linear-gradient(135deg, #00cec9 0%, #74b9ff 100%); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3); }
-        .btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); }
-        .btn-outline-primary:hover { background-color: var(--primary-color); color: white; }
-        
         /* Responsive */
         @media (max-width: 991.98px) {
             .col-md-3.col-lg-2 { display: none; }
             .mobile-show { display: block !important; position: fixed; left: 0; top: 0; height: 100vh; z-index: 1050; width: 280px; overflow-y: auto; background: white; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
-            .mobile-menu-btn { display: block; position: fixed; top: 15px; left: 15px; z-index: 1060; background: var(--orange-custom); color: white; padding: 10px 14px; border-radius: 6px; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+            .mobile-menu-btn { display: block; position: fixed; top: 15px; left: 15px; z-index: 1060; background: var(--accent-color); color: #0c2461; padding: 10px 14px; border-radius: 6px; border: none; }
         }
     </style>
 </head>
 <body>
+
+    <div id="qr-code-generator">
+        <div id="qr-left"></div>
+        <div id="qr-right"></div>
+    </div>
 
     <div class="login-overlay" id="loginModal">
         <ul class="circles">
@@ -274,7 +200,7 @@
         <div class="login-card">
             <div class="login-header-new">
                 <div class="login-icon-box">
-                    <i class="fas fa-leaf fa-3x"></i> </div>
+                    <i class="fas fa-ship fa-3x"></i> </div>
                 <h4 class="fw-bold mb-1" style="font-family: 'Montserrat'; letter-spacing: 0.5px;">SISTEM SATU DATA</h4>
                 <p class="mb-0 text-muted small">KABUPATEN SITUBONDO</p>
             </div>
@@ -287,7 +213,7 @@
                             <input type="password" class="form-control bg-light border-0 fs-6" id="securityCode" value="BidangPN1945" readonly style="font-family: monospace;">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton">
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton" style="background: var(--primary-gradient);">
                         BUKA DASHBOARD
                         <span class="spinner-border spinner-border-sm d-none ms-2" id="loginSpinner"></span>
                     </button>
@@ -317,18 +243,18 @@
         <div class="app-container animate-fadeIn">
             <div class="app-header">
                 <div class="app-logo-icon">
-                    <i class="fas fa-fish"></i>
+                    <i class="fas fa-ship"></i>
                 </div>
                 <h1 class="app-title">SISTEM PEMETAAN DATA NELAYAN</h1>
                 <p class="app-subtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</p>
                 <div class="position-absolute top-0 end-0 p-3">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v4.9 (Green)</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.0 (Blue Ocean)</span>
                 </div>
             </div>
             
             <div class="row g-0 flex-grow-1">
                 <div class="col-md-3 col-lg-2 bg-white border-end py-4" id="sidebarMenu">
-                    <div class="px-4 mb-3 text-muted small fw-bold text-uppercase" style="color: var(--orange-custom) !important;">Menu Utama</div>
+                    <div class="px-4 mb-3 text-muted small fw-bold text-uppercase" style="color: var(--secondary-color) !important;">Menu Utama</div>
                     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
                         <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button"><i class="fas fa-tachometer-alt me-3"></i> Dashboard</button>
                         <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button"><i class="fas fa-edit me-3"></i> Input Data</button>
@@ -353,7 +279,7 @@
                                 <h3 class="section-title">Ringkasan Eksekutif</h3>
                                 <div class="row g-4">
                                     <div class="col-lg-3 col-md-6">
-                                        <div class="card border-0 shadow-sm h-100 bg-primary text-white" style="background: var(--primary-gradient);">
+                                        <div class="card border-0 shadow-sm h-100 text-white" style="background: var(--primary-gradient);">
                                             <div class="card-body">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                                     <span class="small fw-bold text-uppercase opacity-75">Total Nelayan</span>
@@ -459,33 +385,42 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4">
+                                                    <label for="kusuka" class="form-label fw-bold text-success"><i class="fas fa-id-card me-1"></i>Kepemilikan Kartu KUSUKA?</label>
+                                                    <select class="form-select border-success" id="kusuka" required>
+                                                        <option value="Tidak">Tidak Ada</option>
+                                                        <option value="Ada">Ada</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
                                                     <label for="tahunLahir" class="form-label">Tahun Kelahiran</label>
                                                     <input type="number" class="form-control" id="tahunLahir" placeholder="YYYY" required>
                                                 </div>
-                                                <div class="col-md-4">
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
                                                     <label for="usia" class="form-label">Usia (Otomatis)</label>
                                                     <input type="text" class="form-control bg-light" id="usia" readonly>
                                                 </div>
-                                            </div>
-                                            
-                                            <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <label for="kecamatan" class="form-label fw-bold text-primary">Kecamatan</label>
                                                     <select class="form-select border-primary" id="kecamatan" required>
                                                         <option value="">Pilih Kecamatan</option>
                                                     </select>
                                                 </div>
+                                            </div>
+                                            
+                                            <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <label for="desa" class="form-label fw-bold text-primary">Desa / Kelurahan</label>
                                                     <select class="form-select border-primary" id="desa" required disabled>
                                                         <option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>
                                                     </select>
                                                 </div>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="alamat" class="form-label">Alamat Lengkap</label>
-                                                <textarea class="form-control" id="alamat" rows="2" placeholder="Dusun, RT/RW"></textarea>
+                                                <div class="col-md-6">
+                                                     <label for="alamat" class="form-label">Alamat Lengkap</label>
+                                                     <textarea class="form-control" id="alamat" rows="1" placeholder="Dusun, RT/RW"></textarea>
+                                                </div>
                                             </div>
 
                                             <div id="ownerFields" style="display:none;" class="bg-light p-4 rounded-3 mb-3 border">
@@ -700,11 +635,19 @@
                                                     <option value="Tidak">Tidak Ada</option>
                                                 </select>
                                             </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small fw-bold text-success">Kartu KUSUKA</label>
+                                                <select class="form-select form-select-sm border-success" id="filterKusuka">
+                                                    <option value="">Semua</option>
+                                                    <option value="Ada">Ada KUSUKA</option>
+                                                    <option value="Tidak">Tidak Ada</option>
+                                                </select>
+                                            </div>
                                             <div class="col-md-3 d-flex align-items-end">
                                                 <button class="btn btn-primary w-100 btn-sm" id="applyFilterBtn"><i class="fas fa-search me-2"></i> Terapkan Filter</button>
                                             </div>
-                                            <div class="col-md-3 d-flex align-items-end">
-                                                <button class="btn btn-danger w-100 btn-sm shadow-sm" id="btnCekGanda"><i class="fas fa-exclamation-triangle me-2"></i> Cek Data Ganda</button>
+                                            <div class="col-md-12">
+                                                 <button class="btn btn-danger btn-sm shadow-sm float-end" id="btnCekGanda"><i class="fas fa-exclamation-triangle me-2"></i> Cek Data Ganda</button>
                                             </div>
                                         </div>
                                     </div>
@@ -719,7 +662,7 @@
                                                         <th class="col-id">NIK</th>
                                                         <th class="col-id">Nama & Identitas</th>
                                                         <th class="col-prof">Status</th>
-                                                        <th class="col-asset">Jenis Kapal</th>
+                                                        <th class="col-asset">KUSUKA</th>
                                                         <th class="col-income">Pendapatan</th>
                                                         <th class="col-action">Aksi</th>
                                                     </tr>
@@ -892,6 +835,8 @@
                                         <div class="detail-value"><span id="d_profesi" class="badge bg-primary"></span></div>
                                         <div class="detail-label">Status</div>
                                         <div class="detail-value" id="d_status">-</div>
+                                        <div class="detail-label">KARTU KUSUKA</div>
+                                        <div class="detail-value" id="d_kusuka">-</div>
                                         <div class="detail-label">Est. Pendapatan</div>
                                         <div class="detail-value" id="d_pendapatan">-</div>
                                         <div class="detail-label">Jenis Tangkapan</div>
@@ -996,7 +941,7 @@
         };
         let currentPage = 1;
         let duplicateCheckInterval = null;
-        let currentDetailId = null; // Store ID for Detail Modal
+        let currentDetailId = null; 
         const SECURITY_CODE = "97531";
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         
@@ -1177,6 +1122,7 @@
                     btnWa.classList.remove('active', 'btn-secondary');
                     btnWa.classList.add('btn-outline-secondary');
                     btnWa.textContent = "Tidak Ada";
+                    document.getElementById('kusuka').value = "Tidak";
                 }, 100);
             });
             
@@ -1321,6 +1267,7 @@
                 whatsapp: whatsapp,
                 profesi: document.getElementById('profesi').value,
                 status: document.getElementById('statusNelayan').value,
+                kusuka: document.getElementById('kusuka').value,
                 tahunLahir: document.getElementById('tahunLahir').value,
                 usia: document.getElementById('usia').value,
                 kecamatan: document.getElementById('kecamatan').value,
@@ -1360,6 +1307,7 @@
             document.getElementById('desa').disabled = true;
             document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('jenisIkanLainnya').style.display = 'none';
+            document.getElementById('kusuka').value = "Tidak";
 
             updateDashboard(); renderDataTable();
             document.getElementById('v-pills-data-tab').click();
@@ -1393,6 +1341,12 @@
                 if(d.profesi === 'Nelayan Tetap') badgeClass = 'badge-profesi-tetap';
                 else if(d.profesi === 'Nelayan Musiman') badgeClass = 'badge-profesi-musiman';
 
+                // KUSUKA Badge
+                const kusukaVal = d.kusuka || "Tidak";
+                const kusukaBadge = kusukaVal === "Ada" ? 
+                    `<span class="badge badge-kusuka-ada ms-1"><i class="fas fa-id-card"></i> KUSUKA</span>` : 
+                    ``;
+
                 const displayNik = maskData(d.nik);
                 const displayWaRaw = maskData(d.whatsapp);
                 
@@ -1418,7 +1372,7 @@
                     <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
                     <td class="text-center">${start + i + 1}</td>
                     <td onclick="viewDetail('${d.id}')" class="clickable-name">
-                        <div class="fw-bold text-dark">${d.nama}</div>
+                        <div class="fw-bold text-dark">${d.nama} ${kusukaBadge}</div>
                         <div class="small font-monospace text-muted">${displayNik}</div>
                         ${isDuplicate ? '<span class="badge bg-danger">Duplikat NIK</span>' : ''}
                         <div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
@@ -1449,7 +1403,7 @@
             currentDetailId = id;
 
             document.getElementById('d_nama').innerText = d.nama;
-            document.getElementById('d_nik').innerText = d.nik; // View Detail shows FULL DATA usually, or masked? Let's show masked if privacy ON
+            document.getElementById('d_nik').innerText = d.nik; 
             document.getElementById('d_usia').innerText = `${d.usia} Tahun (${d.tahunLahir})`;
             document.getElementById('d_wa').innerText = d.whatsapp;
             document.getElementById('d_alamat').innerText = `${d.alamat}, ${d.desa}, ${d.kecamatan}`;
@@ -1458,6 +1412,11 @@
             profBadge.innerText = d.profesi;
             profBadge.className = `badge ${d.profesi === 'Nelayan Tetap' ? 'badge-profesi-tetap' : 'badge-profesi-musiman'}`;
             
+            const kusukaVal = d.kusuka || "Tidak";
+            const kBadge = document.getElementById('d_kusuka');
+            kBadge.innerText = kusukaVal === "Ada" ? "MEMILIKI KARTU KUSUKA" : "TIDAK MEMILIKI KUSUKA";
+            kBadge.className = kusukaVal === "Ada" ? "detail-value text-success fw-bold" : "detail-value text-secondary";
+
             document.getElementById('d_status').innerText = d.status;
             document.getElementById('d_pendapatan').innerText = `Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}`;
             document.getElementById('d_usaha').innerText = d.usahaSampingan || '-';
@@ -1488,79 +1447,139 @@
             detailModal.show();
         }
 
+        // --- NEW PDF GENERATION WITH QR CODES ---
         function downloadSinglePdf(id) {
             const d = appData.find(item => item.id == id);
             if(!d) return;
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // PDF Header
-            doc.setFillColor(0, 184, 148); // Green Header
-            doc.rect(0, 0, 210, 30, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('DETAIL DATA NELAYAN', 105, 18, { align: 'center' });
-            
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(10);
-            
-            let y = 45;
-            const line = (label, value) => {
-                doc.setFont('helvetica', 'normal');
-                doc.text(label, 20, y);
+            // Generate QR Codes via DOM Hidden Elements
+            document.getElementById('qr-left').innerHTML = "";
+            document.getElementById('qr-right').innerHTML = "";
+
+            // 1. QR Kiri (Validasi Digital)
+            const textLeft = `Nama: ${d.nama}\nNIK: ${d.nik}\nStatus: Terdaftar & Tervalidasi\nVerifikasi: www.dinasperikanansitubondo.com/satudata`;
+            new QRCode(document.getElementById("qr-left"), { text: textLeft, width: 100, height: 100 });
+
+            // 2. QR Kanan (Pejabat)
+            const textRight = `SUGENG PURWO PRIYANTO, S.E, M.M\nPembina\nNip. 19761103 200903 1 002\nKepala Bidang Pemberdayaan Nelayan`;
+            new QRCode(document.getElementById("qr-right"), { text: textRight, width: 100, height: 100 });
+
+            // Wait a moment for QR canvas to render
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // --- PDF Header ---
+                doc.setFillColor(12, 36, 97); // Dark Blue Header
+                doc.rect(0, 0, 210, 35, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(16);
                 doc.setFont('helvetica', 'bold');
-                doc.text(': ' + value, 80, y);
-                y += 10;
-            };
+                doc.text('DATA NELAYAN KABUPATEN SITUBONDO', 105, 22, { align: 'center' });
+                
+                // --- Content ---
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+                
+                let y = 50;
+                const line = (label, value) => {
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(label, 20, y);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(': ' + value, 80, y);
+                    y += 10;
+                };
 
-            doc.setFontSize(12); doc.text('IDENTITAS PRIBADI', 20, y); y += 10;
-            doc.setDrawColor(200); doc.line(20, y-5, 190, y-5);
-            doc.setFontSize(10);
-            
-            line('Nama Lengkap', d.nama);
-            line('NIK', d.nik);
-            line('Tempat / Tgl Lahir', d.tahunLahir);
-            line('Alamat', `${d.alamat}, ${d.desa}, ${d.kecamatan}`);
-            line('No. Handphone', d.whatsapp);
-            y += 5;
+                doc.setFontSize(12); doc.text('IDENTITAS PRIBADI', 20, y); y += 10;
+                doc.setDrawColor(200); doc.line(20, y-5, 190, y-5);
+                doc.setFontSize(10);
+                
+                line('Nama Lengkap', d.nama);
+                line('NIK', d.nik);
+                line('Tempat / Tgl Lahir', d.tahunLahir);
+                line('Alamat', `${d.alamat}, ${d.desa}, ${d.kecamatan}`);
+                line('No. Handphone', d.whatsapp);
+                y += 5;
 
-            doc.setFontSize(12); doc.text('PROFESI & EKONOMI', 20, y); y += 10;
-            doc.line(20, y-5, 190, y-5);
-            doc.setFontSize(10);
-            
-            line('Status Profesi', d.profesi);
-            line('Posisi Kerja', d.status);
-            line('Estimasi Pendapatan', `Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}`);
-            line('Jenis Tangkapan', d.jenisIkan);
-            line('Usaha Sampingan', d.usahaSampingan || '-');
-            y += 5;
-
-            if(d.status === 'Pemilik Kapal') {
-                doc.setFontSize(12); doc.text('DATA ASET KAPAL', 20, y); y += 10;
+                doc.setFontSize(12); doc.text('PROFESI & EKONOMI', 20, y); y += 10;
                 doc.line(20, y-5, 190, y-5);
                 doc.setFontSize(10);
-                line('Nama Kapal', d.namaKapal);
-                line('Jenis Kapal', d.jenisKapal);
-                line('Ukuran (GT)', d.ukuranKapal);
-                line('Mesin (PK)', d.mesinKapal);
-                line('Alat Tangkap', d.alatTangkap);
-                line('Dokumen PAS', d.punyaDokumen === 'Ya' ? d.nomorPas : 'Tidak Ada');
+                
+                line('Status Profesi', d.profesi);
+                line('Posisi Kerja', d.status);
+                line('Kartu KUSUKA', d.kusuka || "Tidak");
+                line('Estimasi Pendapatan', `Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}`);
+                line('Jenis Tangkapan', d.jenisIkan);
+                line('Usaha Sampingan', d.usahaSampingan || '-');
                 y += 5;
-            }
 
-            doc.setFontSize(8);
-            doc.setTextColor(100);
-            doc.text(`*Dokumen ini digenerate otomatis oleh sistem pada ${new Date().toLocaleString('id-ID')}`, 20, 280);
-            doc.text(`*Validasi Code: ${d.kodeValidasi || '-'}`, 20, 285);
+                if(d.status === 'Pemilik Kapal') {
+                    doc.setFontSize(12); doc.text('DATA ASET KAPAL', 20, y); y += 10;
+                    doc.line(20, y-5, 190, y-5);
+                    doc.setFontSize(10);
+                    line('Nama Kapal', d.namaKapal);
+                    line('Jenis Kapal', d.jenisKapal);
+                    line('Ukuran (GT)', d.ukuranKapal);
+                    line('Mesin (PK)', d.mesinKapal);
+                    line('Alat Tangkap', d.alatTangkap);
+                    line('Dokumen PAS', d.punyaDokumen === 'Ya' ? d.nomorPas : 'Tidak Ada');
+                    y += 5;
+                }
 
-            const dateStr = new Date().toISOString().split('T')[0];
-            const safeName = d.nama.replace(/[^a-zA-Z0-9]/g, '_');
-            const filename = `${safeName}_${d.nik}_${dateStr}.pdf`;
-            
-            doc.save(filename);
-            showNotification('Download PDF Berhasil', 'success');
+                // --- FOOTER SECTION with QR CODES ---
+                const footerY = 230;
+                
+                // Left Side: Validasi Elektronik
+                const qrLeftCanvas = document.querySelector('#qr-left canvas');
+                if(qrLeftCanvas) {
+                    const imgLeft = qrLeftCanvas.toDataURL("image/png");
+                    doc.addImage(imgLeft, 'PNG', 20, footerY, 35, 35);
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'italic');
+                    doc.text('Dokumen ini telah terdaftar dan', 20, footerY + 40);
+                    doc.text('tervalidasi secara digital di:', 20, footerY + 44);
+                    doc.setTextColor(0, 0, 255);
+                    doc.text('www.dinasperikanansitubondo.com/satudata', 20, footerY + 48);
+                }
+
+                // Right Side: Tanda Tangan Pejabat
+                const qrRightCanvas = document.querySelector('#qr-right canvas');
+                doc.setTextColor(0, 0, 0);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                doc.text('Diketahui Oleh :', 140, footerY - 5);
+                
+                if(qrRightCanvas) {
+                    const imgRight = qrRightCanvas.toDataURL("image/png");
+                    doc.addImage(imgRight, 'PNG', 140, footerY, 35, 35);
+                }
+                
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'bold');
+                doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', 140, footerY + 42);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Pembina', 140, footerY + 46);
+                doc.text('Nip. 19761103 200903 1 002', 140, footerY + 50);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Kepala Bidang Pemberdayaan Nelayan', 140, footerY + 56);
+
+                // Meta Info Bottom
+                doc.setFontSize(7);
+                doc.setTextColor(150);
+                doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Kode Validasi: ${d.kodeValidasi || '-'}`, 105, 290, {align:'center'});
+
+                // Save
+                const dateStr = new Date().toISOString().split('T')[0];
+                const safeName = d.nama.replace(/[^a-zA-Z0-9]/g, '_');
+                const filename = `${safeName}_${d.nik}_${dateStr}.pdf`;
+                doc.save(filename);
+                showNotification('Download PDF Resmi Berhasil', 'success');
+
+                // Cleanup QR Divs
+                document.getElementById('qr-left').innerHTML = "";
+                document.getElementById('qr-right').innerHTML = "";
+                
+            }, 300); // 300ms delay to ensure QR is rendered
         }
 
         function updatePagination(total) {
@@ -1599,6 +1618,9 @@
             
             ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alamat', 'usahaSampingan', 'pendapatan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
              .forEach(key => document.getElementById(key).value = d[key] || '');
+
+            // KUSUKA
+            document.getElementById('kusuka').value = d.kusuka || "Tidak";
 
             const waInput = document.getElementById('whatsapp');
             const btnWa = document.getElementById('btnNoWA');
@@ -1674,7 +1696,8 @@
                 status: document.getElementById('filterStatus').value,
                 jenisKapal: document.getElementById('filterJenisKapal').value,
                 dokumen: document.getElementById('filterDokumen').value,
-                usaha: document.getElementById('filterUsaha').value
+                usaha: document.getElementById('filterUsaha').value,
+                kusuka: document.getElementById('filterKusuka').value // New Filter
             };
 
             const filtered = appData.filter(d => {
@@ -1684,7 +1707,9 @@
                 const matchJenis = !filters.jenisKapal || (d.status === 'Pemilik Kapal' && d.jenisKapal === filters.jenisKapal);
                 const matchDokumen = !filters.dokumen || (d.status === 'Pemilik Kapal' && d.punyaDokumen === filters.dokumen);
                 const matchUsaha = !filters.usaha || (filters.usaha === 'Ada' ? (d.usahaSampingan && d.usahaSampingan.length > 2) : (!d.usahaSampingan || d.usahaSampingan.length < 2));
-                return matchDesa && matchProfesi && matchStatus && matchJenis && matchDokumen && matchUsaha;
+                const matchKusuka = !filters.kusuka || (d.kusuka === filters.kusuka);
+                
+                return matchDesa && matchProfesi && matchStatus && matchJenis && matchDokumen && matchUsaha && matchKusuka;
             });
 
             const tbody = document.getElementById('filterTableBody');
@@ -1696,12 +1721,15 @@
 
             filtered.forEach((d, i) => {
                 const displayNik = maskData(d.nik);
+                // Badge KUSUKA
+                const kusukaBadge = (d.kusuka === "Ada") ? '<span class="badge badge-kusuka-ada">Ada</span>' : '<span class="badge badge-kusuka-tidak">Tidak</span>';
+                
                 tbody.innerHTML += `<tr>
                     <td>${i+1}</td>
                     <td class="font-monospace small">${displayNik}</td>
                     <td><strong>${d.nama}</strong><div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div></td>
                     <td><span class="badge ${d.profesi === 'Nelayan Tetap' ? 'badge-profesi-tetap' : 'badge-profesi-musiman'}">${d.profesi}</span><div class="small mt-1">${d.status}</div></td>
-                    <td>${d.status === 'Pemilik Kapal' ? d.jenisKapal : '-'}</td>
+                    <td>${kusukaBadge}</td>
                     <td>Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td>
                     <td>
                         <div class="btn-group">
@@ -1730,12 +1758,13 @@
             filtered.sort((a,b) => a.nik.localeCompare(b.nik));
             filtered.forEach((d, i) => {
                 const displayNik = maskData(d.nik);
+                const kusukaBadge = (d.kusuka === "Ada") ? '<span class="badge badge-kusuka-ada">Ada</span>' : '<span class="badge badge-kusuka-tidak">Tidak</span>';
                 tbody.innerHTML += `<tr class="table-danger">
                     <td>${i+1}</td>
                     <td class="fw-bold text-danger">${displayNik}</td>
                     <td><strong>${d.nama}</strong><br><small>${d.desa}</small></td>
                     <td>${d.status}</td>
-                    <td>${d.status === 'Pemilik Kapal' ? d.jenisKapal : '-'}</td>
+                    <td>${kusukaBadge}</td>
                     <td>Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td>
                     <td>
                         <div class="btn-group">
@@ -1787,7 +1816,7 @@
             appData.forEach(d => pData[d.profesi] = (pData[d.profesi] || 0) + 1);
             window.profesiChart.data = {
                 labels: Object.keys(pData),
-                datasets: [{ data: Object.values(pData), backgroundColor: ['#00b894', '#0984e3', '#fdcb6e'] }] // Updated Chart Colors
+                datasets: [{ data: Object.values(pData), backgroundColor: ['#0c2461', '#4a69bd', '#f6b93b'] }] 
             };
             window.profesiChart.update();
 
@@ -1795,7 +1824,7 @@
             appData.filter(d => d.status === 'Pemilik Kapal').forEach(d => kData[d.jenisKapal] = (kData[d.jenisKapal] || 0) + 1);
             window.kapalChart.data = {
                 labels: Object.keys(kData),
-                datasets: [{ label: 'Unit', data: Object.values(kData), backgroundColor: '#0984e3' }]
+                datasets: [{ label: 'Unit', data: Object.values(kData), backgroundColor: '#4a69bd' }]
             };
             window.kapalChart.update();
         }
@@ -1825,7 +1854,7 @@
         }
 
         function sendDataToWhatsapp() {
-            const message = `Yth. Administrator Dinas Perikanan Kabupaten Situbondo,\n\nBerikut kami lampirkan data pembaruan Sistem Satu Data Nelayan dari:\n*${appSettings.appSubtitle}*\n\nTanggal Laporan: ${new Date().toLocaleDateString('id-ID')}\nTotal Data: ${appData.length} Records\n\nFile lampiran (reload.js) telah kami sertakan pada pesan ini untuk proses sinkronisasi database.\n\nTerima Kasih.`;
+            const message = `Yth. Administrator Dinas Perikanan Kabupaten Situbondo,\n\nBerikut kami lampirkan data pembaruan Sistem Satu Data Nelayan dari:\n*${appSettings.appSubtitle}*\n\nTanggal Laporan: ${new Date().toLocaleDateString('id-ID')}\nTotal Data: ${appData.length} Records\n\nFile lampiran (reload.js) telah kami sertakan pada pesan ini untuk proses sinkronisasi data.\n\nTerima Kasih.`;
             const url = `https://wa.me/6287865614222?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
         }
@@ -1837,14 +1866,14 @@
             doc.setFontSize(10); doc.text(appSettings.appSubtitle, 40, 55);
             doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 40, 70);
             
-            const rows = appData.map((d, i) => [i+1, d.nama, maskData(d.nik), d.profesi, d.status, d.desa, parseInt(d.pendapatan).toLocaleString('id-ID')]);
+            const rows = appData.map((d, i) => [i+1, d.nama, maskData(d.nik), d.profesi, d.status, d.kusuka || "Tidak", d.desa, parseInt(d.pendapatan).toLocaleString('id-ID')]);
             
             doc.autoTable({
-                head: [['No', 'Nama', 'NIK', 'Profesi', 'Status', 'Desa', 'Pendapatan']],
+                head: [['No', 'Nama', 'NIK', 'Profesi', 'Status', 'KUSUKA', 'Desa', 'Pendapatan']],
                 body: rows,
                 startY: 90,
                 theme: 'grid',
-                headStyles: { fillColor: [0, 184, 148] } // Green Header for Table
+                headStyles: { fillColor: [12, 36, 97] } // Dark Blue Header
             });
             doc.save(`Laporan_Nelayan.pdf`);
         }
