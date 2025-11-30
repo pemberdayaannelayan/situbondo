@@ -13,308 +13,197 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         :root {
-            /* Palette: Dinas Perikanan Situbondo Inspired (Professional Blue & Gold) */
-            --primary-color: #003366; /* Deep Royal Blue */
-            --secondary-color: #00AEEF; /* Clean Cyan/Blue */
-            --accent-color: #F39C12; /* Gold/Orange */
+            /* Palette: Professional Maritime Government Theme */
+            --primary-color: #0F2027; /* Dark Deep Blue */
+            --secondary-color: #203A43; /* Teal Tone */
+            --accent-color: #F39C12; /* Golden Warning */
             --danger-color: #C0392B;
+            --success-color: #27ae60;
             
-            --dark-blue: #002244;
-            --light-bg: #F4F7F6;
-            
-            --gradient-primary: linear-gradient(135deg, #002244 0%, #003366 100%);
-            --gradient-header: linear-gradient(120deg, #002244 0%, #003366 50%, #00509E 100%);
-            --gradient-accent: linear-gradient(135deg, #F39C12, #D35400);
-            
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 6px 12px rgba(0,0,0,0.1);
-            --shadow-lg: 0 15px 25px rgba(0,0,0,0.15);
+            --header-gradient: linear-gradient(to right, #0F2027, #203A43, #2C5364);
+            --sidebar-active: #2C5364;
             
             --glass-effect: rgba(255, 255, 255, 0.98);
+            --shadow-soft: 0 4px 20px rgba(0,0,0,0.05);
         }
         
         body {
-            background: #EAEEF2;
-            background-image: radial-gradient(#dce4eb 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: #f0f2f5;
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
-            padding: 20px 0;
-            overflow-x: hidden;
             color: #333;
+            overflow-x: hidden;
+        }
+        
+        /* --- REDESIGNED LOGIN --- */
+        .login-overlay {
+            background: var(--header-gradient);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .login-card {
+            background: white;
+            width: 100%; max-width: 450px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .login-header-new {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%230F2027' fill-opacity='0.1' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"), var(--header-gradient);
+            background-size: cover;
+            background-position: center bottom;
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        /* --- REDESIGNED HEADER --- */
+        .app-header {
+            background: var(--header-gradient);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-bottom: 4px solid var(--accent-color);
+        }
+        
+        .app-logo-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            background: rgba(255,255,255,0.1);
+            width: 80px; height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .app-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        .app-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
         
         /* Layout Container */
         .app-container {
             max-width: 1600px;
-            margin: 0 auto;
-            background: var(--glass-effect);
-            box-shadow: var(--shadow-lg);
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             border-radius: 12px;
             overflow: hidden;
-            position: relative;
-            z-index: 10;
-            border: 1px solid rgba(0, 51, 102, 0.1);
-        }
-        
-        /* Header */
-        .app-header {
-            background: var(--gradient-header);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 5px solid var(--accent-color); 
-        }
-        
-        .app-header::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-        }
-        
-        .app-logo {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            color: var(--accent-color);
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-        }
-        
-        .app-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin: 0;
-            position: relative;
-            z-index: 1;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        
-        .app-subtitle {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
-            font-weight: 500;
-            margin-top: 8px;
-            color: #E0E0E0; 
-            letter-spacing: 1px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Navigation */
-        .col-md-3.col-lg-2.bg-light {
-            background-color: #F8F9FA !important;
-            border-right: 1px solid #DEE2E6;
+            border: 1px solid #e1e4e8;
         }
 
+        /* Navigation */
         .nav-pills .nav-link {
-            border-radius: 6px;
+            border-radius: 0 25px 25px 0;
             margin-bottom: 5px;
-            padding: 12px 18px;
+            padding: 12px 20px;
             font-weight: 600;
             color: #555;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
-            border-left: 3px solid transparent;
+            border-left: 4px solid transparent;
         }
         
         .nav-pills .nav-link:hover {
-            background-color: #E8F0FE;
-            color: var(--primary-color);
-            transform: translateX(3px);
+            background-color: #f8f9fa;
+            color: var(--secondary-color);
+            padding-left: 25px;
         }
         
         .nav-pills .nav-link.active {
-            background: var(--primary-color);
-            border-left: 3px solid var(--accent-color);
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            border-left: 4px solid var(--accent-color);
             color: white;
-            box-shadow: 0 4px 6px rgba(0, 51, 102, 0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        
-        /* Components */
+
+        /* Chart Fix */
+        .chart-container-fixed {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Table & Utilities */
         .section-title {
             font-family: 'Montserrat', sans-serif;
             border-left: 5px solid var(--accent-color);
             padding-left: 15px;
             margin: 20px 0 25px 0;
             font-weight: 700;
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            background: linear-gradient(to right, rgba(0, 51, 102, 0.05), transparent);
-            padding-top: 8px;
-            padding-bottom: 8px;
-            border-radius: 0 4px 4px 0;
+            color: var(--secondary-color);
+            font-size: 1.4rem;
         }
+
+        .data-table th { background: var(--secondary-color) !important; color: white; font-weight: 500; font-size: 0.85rem; }
+        .data-table tr.table-danger td { background-color: #ffebee !important; } /* Highlight Duplicate */
+
+        /* Floating Button */
+        .fab-container { position: fixed; bottom: 30px; right: 30px; z-index: 999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center; }
+        .fab-main { width: 60px; height: 60px; border-radius: 50%; background: var(--accent-color); color: white; border: none; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4); font-size: 1.5rem; cursor: pointer; transition: transform 0.3s; }
+        .fab-main:hover { transform: scale(1.1) rotate(90deg); }
         
-        .btn { border-radius: 6px; font-weight: 600; padding: 10px 20px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px; }
-        .btn-primary { background: var(--primary-color); border-color: var(--primary-color); }
-        .btn-primary:hover { background: var(--dark-blue); border-color: var(--dark-blue); }
-        
-        .form-label { font-weight: 600; color: #444; font-size: 0.85rem; margin-bottom: 6px; }
-        .form-control, .form-select { border-radius: 6px; padding: 10px 15px; border: 1px solid #ced4da; font-size: 0.95rem; }
-        .form-control:focus, .form-select:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.15); }
-        
-        /* Tables */
-        .data-table { border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid #eee; }
-        .data-table th { background: var(--primary-color) !important; color: white; padding: 14px 10px; border: none; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
-        .data-table td { padding: 12px 10px; font-size: 0.9rem; vertical-align: middle; border-bottom: 1px solid #eee; }
-        .data-table tr:hover { background-color: #f8f9fa; }
-        
-        /* Stats & Cards */
-        .card { border-radius: 10px; border: none; box-shadow: var(--shadow-sm); background: white; margin-bottom: 20px; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .card-header { background: #f8f9fa; color: var(--primary-color); font-weight: 700; border-bottom: 1px solid #eee; padding: 15px 20px; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; }
-        .stats-box { background: white; border-radius: 10px; box-shadow: var(--shadow-sm); border-left: 4px solid var(--accent-color); padding: 20px; position: relative; overflow: hidden; }
-        .stats-number { color: var(--primary-color); font-family: 'Montserrat', sans-serif; }
+        .fab-item { width: 50px; height: 50px; border-radius: 50%; background: white; color: var(--secondary-color); border: 2px solid var(--secondary-color); display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 3px 10px rgba(0,0,0,0.1); opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; }
+        .fab-container.open .fab-item { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .fab-item:hover { background: var(--secondary-color); color: white; }
 
-        /* Login */
-        .login-header { background: var(--gradient-header); border-bottom: 4px solid var(--accent-color); padding: 30px; }
-        .btn-login { background: var(--gradient-accent); border: none; color: white; transition: 0.3s; }
-        .btn-login:hover { filter: brightness(1.1); }
-        
-        /* Custom UI Elements */
-        .watermark { position: absolute; bottom: 10px; right: 15px; opacity: 0.6; font-size: 0.75rem; color: rgba(255,255,255,0.8); }
-        .whatsapp-input-container { position: relative; }
-        .whatsapp-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #6c757d; font-weight: 500; font-size: 0.9rem; }
-        .whatsapp-input { padding-left: 45px !important; }
-        
-        /* FLOATING SPEED DIAL MENU */
-        .fab-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            gap: 15px;
-        }
+        /* Animation */
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-fadeIn { animation: slideUp 0.5s ease-out; }
 
-        .fab-main {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: transform 0.3s ease, background 0.3s;
-        }
-
-        .fab-main:hover { transform: scale(1.1); background: var(--dark-blue); }
-        .fab-main.active { transform: rotate(45deg); background: var(--danger-color); }
-
-        .fab-item {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: white;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            cursor: pointer;
-            text-decoration: none;
-            opacity: 0;
-            transform: translateY(20px) scale(0.8);
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            position: relative;
-        }
-
-        .fab-container.open .fab-item {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-
-        /* Tooltip for FAB */
-        .fab-item::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            right: 60px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-        }
-        
-        .fab-item:hover { background: var(--primary-color); color: white; }
-        .fab-item:hover::after { opacity: 1; }
-
-        /* PULSE ANIMATION FOR INPUT BUTTON */
-        .fab-pulse {
-            background: var(--accent-color) !important;
-            color: white !important;
-            border: none !important;
-            animation: pulse-signal 2s infinite;
-        }
-
-        @keyframes pulse-signal {
-            0% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(243, 156, 18, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); }
-        }
-
-        /* Conditional Section */
-        #ownerFields { background-color: #FFF8E1; border: 1px dashed var(--accent-color); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-
+        /* Responsive */
         @media (max-width: 991.98px) {
             .col-md-3.col-lg-2 { display: none; }
             .mobile-show { display: block !important; position: fixed; left: 0; top: 0; height: 100vh; z-index: 1050; width: 280px; overflow-y: auto; background: white; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
-            .mobile-menu-btn { display: block; position: fixed; top: 15px; left: 15px; z-index: 1060; background: var(--primary-color); color: white; padding: 10px 14px; border-radius: 6px; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+            .mobile-menu-btn { display: block; position: fixed; top: 15px; left: 15px; z-index: 1060; background: var(--secondary-color); color: white; padding: 10px 14px; border-radius: 6px; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         }
     </style>
 </head>
 <body>
-    <div class="modal fade login-modal" id="loginModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: none;">
-                <div class="login-header text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-anchor fa-3x text-warning" style="filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));"></i>
-                    </div>
-                    <h3 class="text-white fw-bold mb-1" style="font-family: 'Montserrat';">SISTEM SATU DATA</h3>
-                    <p class="text-white-50 mb-0 small">KABUPATEN SITUBONDO</p>
-                </div>
-                <div class="login-body p-4 bg-white">
-                    <form id="loginForm">
-                        <div class="mb-4">
-                            <label class="form-label text-muted">
-                                <i class="fas fa-shield-alt me-2 text-primary"></i> Kode Akses (Auto-Locked)
-                            </label>
-                            <div class="input-group">
-                                <input type="password" class="form-control bg-light border-0" id="securityCode" value="BidangPN1945" readonly style="padding: 12px; font-family: monospace;">
-                                <span class="input-group-text bg-light border-0"><i class="fas fa-lock text-muted"></i></span>
-                            </div>
+    
+    <div class="login-overlay" id="loginModal">
+        <div class="login-card">
+            <div class="login-header-new">
+                <i class="fas fa-anchor fa-3x mb-3 text-warning"></i>
+                <h4 class="fw-bold mb-1" style="font-family: 'Montserrat'; letter-spacing: 1px;">SISTEM SATU DATA</h4>
+                <p class="mb-0 small text-white-50">KABUPATEN SITUBONDO - DESA KILENSARI</p>
+            </div>
+            <div class="p-4 p-md-5">
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Kode Keamanan Sistem</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-shield-alt text-secondary"></i></span>
+                            <input type="password" class="form-control bg-light border-start-0 fs-6" id="securityCode" value="BidangPN1945" readonly style="font-family: monospace;">
                         </div>
-                        <button type="submit" class="btn btn-login w-100 py-3 fw-bold shadow-sm" id="loginButton">
-                            MASUK APLIKASI
-                            <span class="spinner-border spinner-border-sm d-none ms-2" id="loginSpinner"></span>
-                        </button>
-                    </form>
-                    <div class="text-center mt-4 small text-muted border-top pt-3">
-                        &copy; 2025 Dinas Perikanan Situbondo
+                        <div class="form-text text-end"><small class="text-success"><i class="fas fa-lock me-1"></i>Terkunci Otomatis</small></div>
                     </div>
+                    <button type="submit" class="btn btn-dark w-100 py-3 fw-bold shadow-sm" style="background: var(--secondary-color);" id="loginButton">
+                        MASUK DASHBOARD
+                        <span class="spinner-border spinner-border-sm d-none ms-2" id="loginSpinner"></span>
+                    </button>
+                </form>
+                <div class="text-center mt-4 pt-3 border-top">
+                    <small class="text-muted">&copy; 2025 Dinas Perikanan Kabupaten Situbondo</small>
                 </div>
             </div>
         </div>
@@ -325,14 +214,14 @@
         
         <div class="app-container animate-fadeIn">
             <div class="app-header">
-                <div class="app-logo"><i class="fas fa-ship"></i></div>
+                <div class="app-logo-icon"><i class="fas fa-ship"></i></div>
                 <h1 class="app-title">SISTEM PEMETAAN DATA NELAYAN</h1>
-                <p class="app-subtitle">PEMERINTAH KABUPATEN SITUBONDO DESA KILENSARI</p>
-                <div class="watermark">Professional Edition v3.0</div>
+                <p class="app-subtitle">PEMERINTAH KABUPATEN SITUBONDO - DESA KILENSARI</p>
+                <div class="position-absolute bottom-0 end-0 p-2 text-white-50 small pe-4">Professional Edition v4.0 (Enhanced)</div>
             </div>
             
             <div class="row g-0">
-                <div class="col-md-3 col-lg-2 p-4 bg-light" id="sidebarMenu">
+                <div class="col-md-3 col-lg-2 p-3 bg-light border-end" id="sidebarMenu">
                     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
                         <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button"><i class="fas fa-tachometer-alt me-3"></i> Dashboard</button>
                         <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button"><i class="fas fa-edit me-3"></i> Input Data</button>
@@ -349,61 +238,77 @@
                     </div>
                 </div>
                 
-                <div class="col-md-9 col-lg-10 p-5" style="background-color: #fdfdfd;">
+                <div class="col-md-9 col-lg-10 p-4 p-lg-5" style="background-color: #fff;">
                     <div class="tab-content" id="v-pills-tabContent">
                         
                         <div class="tab-pane fade show active" id="v-pills-dashboard">
                             <h3 class="section-title">Ringkasan Eksekutif</h3>
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 mb-4">
-                                    <div class="stats-box">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <div class="text-muted fw-bold small text-uppercase">Total Nelayan</div>
-                                            <i class="fas fa-users fa-2x text-primary opacity-25"></i>
+                            <div class="row g-4">
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid var(--primary-color) !important;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted small fw-bold text-uppercase">Total Nelayan</span>
+                                                <i class="fas fa-users text-secondary opacity-25 fa-2x"></i>
+                                            </div>
+                                            <h2 class="fw-bold text-dark mb-0" id="totalPenerima">0</h2>
                                         </div>
-                                        <div class="h2 fw-bold mb-0 text-dark" id="totalPenerima">0</div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-md-6 mb-4">
-                                    <div class="stats-box" style="border-left-color: var(--secondary-color);">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <div class="text-muted fw-bold small text-uppercase">Est. Pendapatan</div>
-                                            <i class="fas fa-chart-line fa-2x text-info opacity-25"></i>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid var(--accent-color) !important;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted small fw-bold text-uppercase">Est. Pendapatan</span>
+                                                <i class="fas fa-chart-line text-warning opacity-25 fa-2x"></i>
+                                            </div>
+                                            <h3 class="fw-bold text-dark mb-0" id="totalBantuan">Rp 0</h3>
                                         </div>
-                                        <div class="h3 fw-bold mb-0 text-info" id="totalBantuan">Rp 0</div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-md-6 mb-4">
-                                    <div class="stats-box" style="border-left-color: #ffc107;">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <div class="text-muted fw-bold small text-uppercase">Pemilik Kapal</div>
-                                            <i class="fas fa-ship fa-2x text-warning opacity-25"></i>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid var(--success-color) !important;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted small fw-bold text-uppercase">Pemilik Kapal</span>
+                                                <i class="fas fa-ship text-success opacity-25 fa-2x"></i>
+                                            </div>
+                                            <h2 class="fw-bold text-dark mb-0" id="totalPemilik">0</h2>
                                         </div>
-                                        <div class="h2 fw-bold mb-0 text-warning" id="totalPemilik">0</div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-md-6 mb-4">
-                                    <div class="stats-box" style="border-left-color: #28a745;">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <div class="text-muted fw-bold small text-uppercase">Rata-rata Usia</div>
-                                            <i class="fas fa-user-clock fa-2x text-success opacity-25"></i>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #6c757d !important;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted small fw-bold text-uppercase">Rata-rata Usia</span>
+                                                <i class="fas fa-user-clock text-secondary opacity-25 fa-2x"></i>
+                                            </div>
+                                            <h2 class="fw-bold text-dark mb-0" id="rataUsia">0</h2>
                                         </div>
-                                        <div class="h2 fw-bold mb-0 text-success" id="rataUsia">0</div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="row mt-3">
+                            <div class="row mt-4">
                                 <div class="col-md-6">
-                                    <div class="card h-100">
-                                        <div class="card-header"><i class="fas fa-chart-pie me-2"></i> Proporsi Profesi</div>
-                                        <div class="card-body"><canvas id="profesiChart" height="250"></canvas></div>
+                                    <div class="card h-100 shadow-sm border-0">
+                                        <div class="card-header bg-white fw-bold"><i class="fas fa-chart-pie me-2"></i> Proporsi Profesi</div>
+                                        <div class="card-body">
+                                            <div class="chart-container-fixed">
+                                                <canvas id="profesiChart"></canvas>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="card h-100">
-                                        <div class="card-header"><i class="fas fa-chart-bar me-2"></i> Statistik Kepemilikan</div>
-                                        <div class="card-body"><canvas id="kapalChart" height="250"></canvas></div>
+                                    <div class="card h-100 shadow-sm border-0">
+                                        <div class="card-header bg-white fw-bold"><i class="fas fa-chart-bar me-2"></i> Statistik Kepemilikan Kapal</div>
+                                        <div class="card-body">
+                                            <div class="chart-container-fixed">
+                                                <canvas id="kapalChart"></canvas>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -411,27 +316,29 @@
                         
                         <div class="tab-pane fade" id="v-pills-input">
                             <h3 class="section-title">Formulir Pendataan</h3>
-                            <div class="card">
-                                <div class="card-header bg-white"><i class="fas fa-file-alt me-2"></i> Entri Data Nelayan</div>
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white py-3"><i class="fas fa-file-alt me-2 text-primary"></i> Entri Data Baru</div>
                                 <div class="card-body p-4">
                                     <form id="inputForm" novalidate>
+                                        <div class="alert alert-info small mb-4"><i class="fas fa-info-circle me-2"></i>NIK digunakan sebagai validasi utama. Sistem akan menolak jika NIK sudah terdaftar sebelumnya.</div>
+                                        
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label for="nama" class="form-label">Nama Lengkap</label>
-                                                <input type="text" class="form-control" id="nama" required>
+                                                <input type="text" class="form-control" id="nama" required placeholder="Sesuai KTP">
                                             </div>
                                             <div class="col-md-6">
-                                                <label for="nik" class="form-label">NIK (16 Digit)</label>
-                                                <input type="text" class="form-control" id="nik" required maxlength="16">
+                                                <label for="nik" class="form-label">NIK (Nomor Induk Kependudukan)</label>
+                                                <input type="text" class="form-control" id="nik" required maxlength="16" placeholder="16 Digit Angka">
                                             </div>
                                         </div>
                                         
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label for="whatsapp" class="form-label">Nomor WhatsApp</label>
-                                                <div class="whatsapp-input-container">
-                                                    <span class="whatsapp-prefix">+62</span>
-                                                    <input type="tel" class="form-control whatsapp-input" id="whatsapp" required placeholder="8123xxxx">
+                                                <div class="input-group">
+                                                    <span class="input-group-text">+62</span>
+                                                    <input type="tel" class="form-control" id="whatsapp" required placeholder="8123xxxx">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -473,12 +380,12 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="alamat" class="form-label">Alamat Lengkap (Dusun/RT/RW)</label>
-                                            <textarea class="form-control" id="alamat" rows="2"></textarea>
+                                            <label for="alamat" class="form-label">Alamat Lengkap</label>
+                                            <textarea class="form-control" id="alamat" rows="2" placeholder="Dusun, RT/RW"></textarea>
                                         </div>
 
-                                        <div id="ownerFields" style="display:none;">
-                                            <h6 class="text-primary border-bottom pb-2 mb-3 fw-bold"><i class="fas fa-ship me-2"></i>Detail Aset Kapal</h6>
+                                        <div id="ownerFields" style="display:none;" class="bg-light p-4 rounded mb-3 border">
+                                            <h6 class="text-primary fw-bold border-bottom pb-2 mb-3"><i class="fas fa-ship me-2"></i>Detail Aset Kapal</h6>
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label">Nama Kapal</label>
@@ -516,7 +423,7 @@
                                                 </select>
                                             </div>
                                             <div class="p-3 bg-white border rounded">
-                                                <label class="form-label d-block fw-bold">Status Kepemilikan Dokumen (BPKP / PAS)</label>
+                                                <label class="form-label d-block fw-bold">Kepemilikan Dokumen (BPKP / PAS)</label>
                                                 <div class="form-check form-check-inline">
                                                     <input class="form-check-input" type="radio" name="dokumenOption" id="dokumenYa" value="Ya">
                                                     <label class="form-check-label" for="dokumenYa">Ada</label>
@@ -528,9 +435,6 @@
                                                 <div id="nomorPasContainer" class="mt-2" style="display:none;">
                                                     <input type="text" class="form-control form-control-sm" id="nomorPas" placeholder="Masukkan Nomor PAS KAPAL">
                                                 </div>
-                                                <div id="dokumenAlert" class="alert alert-warning small mt-2 py-2 mb-0" style="display:block;">
-                                                    <i class="fas fa-exclamation-triangle me-1"></i> Harap data kepemilikan segera dilengkapi.
-                                                </div>
                                             </div>
                                         </div>
                                         
@@ -540,7 +444,7 @@
                                                 <input type="text" class="form-control" id="jenisIkan" required placeholder="Contoh: Tongkol, Layang">
                                             </div>
                                             <div class="col-md-6">
-                                                <label for="usahaSampingan" class="form-label">Usaha Sampingan (Jika ada)</label>
+                                                <label for="usahaSampingan" class="form-label">Usaha Sampingan</label>
                                                 <input type="text" class="form-control" id="usahaSampingan" placeholder="Contoh: Ternak, Warung">
                                             </div>
                                         </div>
@@ -562,7 +466,7 @@
                                         
                                         <div class="row mb-3">
                                             <div class="col-md-6">
-                                                <label for="driveLink" class="form-label">Link Dokumen (G-Drive)</label>
+                                                <label for="driveLink" class="form-label">Link Dokumen (Google Drive)</label>
                                                 <input type="url" class="form-control" id="driveLink">
                                             </div>
                                             <div class="col-md-6">
@@ -581,7 +485,7 @@
                                         
                                         <div class="d-flex justify-content-end border-top pt-3">
                                             <button type="reset" class="btn btn-light me-2 text-muted">Reset Form</button>
-                                            <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-2"></i>SIMPAN DATA</button>
+                                            <button type="submit" class="btn btn-primary px-4 fw-bold" style="background-color: var(--secondary-color);"><i class="fas fa-save me-2"></i>SIMPAN DATA</button>
                                         </div>
                                     </form>
                                 </div>
@@ -590,21 +494,34 @@
                         
                         <div class="tab-pane fade" id="v-pills-data">
                             <h3 class="section-title">Database Nelayan</h3>
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center bg-white">
-                                    <span><i class="fas fa-list me-2"></i> Data Terdaftar</span>
-                                    <div class="input-group" style="max-width: 300px;">
-                                        <input type="text" class="form-control form-control-sm" id="searchData" placeholder="Cari Nama/NIK...">
-                                        <button class="btn btn-sm btn-outline-secondary" id="clearSearchBtn"><i class="fas fa-times"></i></button>
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white py-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <h6 class="mb-0 fw-bold"><i class="fas fa-list me-2"></i>Data Terdaftar</h6>
+                                        </div>
+                                        <div class="col-md-8 d-flex justify-content-end gap-2">
+                                            <div class="input-group" style="max-width: 400px;">
+                                                <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                                                <input type="text" class="form-control" id="searchData" placeholder="Cari cerdas (Nama, NIK, Kapal, Alamat, dll)...">
+                                            </div>
+                                            <button class="btn btn-danger btn-sm d-none" id="bulkDeleteBtn"><i class="fas fa-trash me-1"></i> Hapus Terpilih</button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
-                                        <table class="table table-hover data-table mb-0" id="dataTable">
+                                        <table class="table table-hover data-table mb-0 align-middle" id="dataTable">
                                             <thead>
                                                 <tr>
-                                                    <th>No</th><th>Nama Lengkap</th><th>Kontak</th><th>Profesi</th><th>Status</th>
-                                                    <th>Aset Kapal</th><th>Pendapatan</th><th>Action</th>
+                                                    <th width="40" class="text-center"><input type="checkbox" id="selectAllCheckbox"></th>
+                                                    <th>No</th>
+                                                    <th>Identitas Nelayan</th>
+                                                    <th>Kontak</th>
+                                                    <th>Profesi & Status</th>
+                                                    <th>Aset Kapal</th>
+                                                    <th>Pendapatan</th>
+                                                    <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="dataTableBody">
@@ -616,6 +533,9 @@
                                         <div class="text-muted small" id="tableInfo">Menampilkan 0 data</div>
                                         <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
                                     </div>
+                                    <div class="p-2 small text-muted fst-italic text-end border-top">
+                                        <i class="fas fa-info-circle text-danger me-1"></i> Baris berwarna <span class="badge bg-danger">Merah</span> menandakan duplikasi NIK. Harap periksa kembali.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -626,11 +546,11 @@
                                 <div class="card-body bg-light rounded">
                                     <div class="row g-3">
                                         <div class="col-md-3">
-                                            <label class="form-label small">Desa</label>
+                                            <label class="form-label small fw-bold">Desa</label>
                                             <select class="form-select form-select-sm" id="filterDesa"></select>
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label small">Profesi</label>
+                                            <label class="form-label small fw-bold">Profesi</label>
                                             <select class="form-select form-select-sm" id="filterProfesi">
                                                 <option value="">Semua</option>
                                                 <option value="Nelayan Tetap">Nelayan Tetap</option>
@@ -638,7 +558,7 @@
                                             </select>
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label small">Status Kepemilikan</label>
+                                            <label class="form-label small fw-bold">Status Kepemilikan</label>
                                             <select class="form-select form-select-sm" id="filterStatus">
                                                 <option value="">Semua</option>
                                                 <option value="Anak Buah Kapal">Anak Buah Kapal</option>
@@ -646,7 +566,7 @@
                                             </select>
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label small">Jenis Kapal</label>
+                                            <label class="form-label small fw-bold">Jenis Kapal</label>
                                             <select class="form-select form-select-sm" id="filterJenisKapal">
                                                 <option value="">Semua</option>
                                                 <option value="Perahu Jukung">Perahu Jukung</option>
@@ -655,7 +575,7 @@
                                             </select>
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label small">Dokumen Kapal</label>
+                                            <label class="form-label small fw-bold">Dokumen Kapal</label>
                                             <select class="form-select form-select-sm" id="filterDokumen">
                                                 <option value="">Semua</option>
                                                 <option value="Ya">Punya Dokumen</option>
@@ -663,7 +583,7 @@
                                             </select>
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="form-label small">Usaha Sampingan</label>
+                                            <label class="form-label small fw-bold">Usaha Sampingan</label>
                                             <select class="form-select form-select-sm" id="filterUsaha">
                                                 <option value="">Semua</option>
                                                 <option value="Ada">Ada Usaha Sampingan</option>
@@ -671,12 +591,12 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6 d-flex align-items-end">
-                                            <button class="btn btn-primary w-100 btn-sm" id="applyFilterBtn"><i class="fas fa-search me-2"></i> Terapkan Filter</button>
+                                            <button class="btn btn-primary w-100 btn-sm" style="background-color: var(--secondary-color);" id="applyFilterBtn"><i class="fas fa-search me-2"></i> Terapkan Filter</button>
                                         </div>
                                     </div>
                                 </div>
                              </div>
-                             <div class="card">
+                             <div class="card border-0 shadow-sm">
                                  <div class="card-body p-0">
                                      <div class="table-responsive">
                                         <table class="table table-hover data-table mb-0">
@@ -690,54 +610,58 @@
 
                         <div class="tab-pane fade" id="v-pills-print">
                             <h3 class="section-title">Cetak Laporan</h3>
-                            <div class="card p-5 text-center shadow-sm">
+                            <div class="card p-5 text-center shadow-sm border-0">
                                 <div class="mb-3"><i class="fas fa-file-pdf fa-4x text-danger opacity-50"></i></div>
                                 <h5>Cetak Laporan Data Terfilter</h5>
-                                <p class="text-muted">Fitur ini akan mencetak data sesuai hasil filter terakhir.</p>
-                                <button class="btn btn-danger px-5 mt-3" id="printPdfBtn"><i class="fas fa-download me-2"></i> Download PDF</button>
+                                <p class="text-muted">Fitur ini akan mencetak data sesuai hasil filter terakhir dalam format PDF Resmi.</p>
+                                <button class="btn btn-danger px-5 mt-3 shadow" id="printPdfBtn"><i class="fas fa-download me-2"></i> Download PDF</button>
                             </div>
                         </div>
 
                         <div class="tab-pane fade" id="v-pills-export">
-                            <h3 class="section-title">Ekspor & Kirim Data</h3>
+                            <h3 class="section-title">Ekspor & Pelaporan Data</h3>
                             <div class="row g-4">
                                 <div class="col-md-12">
-                                    <div class="card p-4 border-success" style="background: #f0fff4; border: 1px dashed #198754;">
-                                        <div class="d-flex align-items-center">
+                                    <div class="card p-4 border-success bg-white shadow-sm" style="border-left: 5px solid #25D366;">
+                                        <div class="d-flex align-items-start">
                                             <div class="me-4 text-success"><i class="fab fa-whatsapp fa-3x"></i></div>
                                             <div>
-                                                <h5 class="fw-bold text-success mb-1">Lapor Cepat via WhatsApp</h5>
-                                                <p class="mb-2 small text-muted">Kirim notifikasi rekap data ke Dinas Perikanan (087865614222) secara otomatis.</p>
-                                                <button class="btn btn-success" id="sendWaBtn"><i class="fas fa-paper-plane me-2"></i> Kirim Laporan Hari Ini</button>
+                                                <h5 class="fw-bold text-dark mb-2">Lapor Cepat via WhatsApp Center</h5>
+                                                <p class="mb-2 text-muted" style="line-height: 1.6;">
+                                                    Silakan unduh data dalam format <strong>Excel</strong> atau <strong>JSON</strong> terlebih dahulu melalui tombol di bawah. 
+                                                    Selanjutnya, klik tombol <strong>"Kirim Laporan"</strong> untuk terhubung ke WhatsApp Administrator Dinas Perikanan Kabupaten Situbondo. 
+                                                    <br><span class="text-danger small">*Harap lampirkan file yang telah diunduh pada chat WhatsApp tersebut sebagai bukti sinkronisasi data.</span>
+                                                </p>
+                                                <button class="btn btn-success mt-2 px-4" id="sendWaBtn"><i class="fas fa-paper-plane me-2"></i> Kirim Laporan ke Pusat</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4"><button class="btn btn-outline-success w-100 py-4 h-100" id="exportExcelBtn"><i class="fas fa-file-excel fa-2x mb-2 d-block"></i>Download Excel</button></div>
-                                <div class="col-md-4"><button class="btn btn-outline-info w-100 py-4 h-100" id="exportCsvBtn"><i class="fas fa-file-csv fa-2x mb-2 d-block"></i>Download CSV</button></div>
-                                <div class="col-md-4"><button class="btn btn-outline-warning w-100 py-4 h-100" id="exportJsonBtn"><i class="fas fa-file-code fa-2x mb-2 d-block"></i>Download JSON</button></div>
+                                <div class="col-md-4"><button class="btn btn-outline-success w-100 py-4 h-100 shadow-sm" id="exportExcelBtn"><i class="fas fa-file-excel fa-2x mb-2 d-block"></i>Download Excel</button></div>
+                                <div class="col-md-4"><button class="btn btn-outline-info w-100 py-4 h-100 shadow-sm" id="exportCsvBtn"><i class="fas fa-file-csv fa-2x mb-2 d-block"></i>Download CSV</button></div>
+                                <div class="col-md-4"><button class="btn btn-outline-warning w-100 py-4 h-100 shadow-sm" id="exportJsonBtn"><i class="fas fa-file-code fa-2x mb-2 d-block"></i>Download JSON</button></div>
                             </div>
                         </div>
 
                         <div class="tab-pane fade" id="v-pills-backup">
                             <h3 class="section-title">Backup & Restore</h3>
-                            <div class="alert alert-info small"><i class="fas fa-info-circle me-2"></i> File backup akan menyertakan metadata instansi dan tanggal secara otomatis.</div>
+                            <div class="alert alert-warning small"><i class="fas fa-exclamation-triangle me-2"></i> <strong>Sistem Smart Restore:</strong> Data yang direstore akan <strong>DIGABUNGKAN</strong> dengan data yang ada (Merge), tidak menghapus data lama. Duplikasi NIK akan ditandai Merah.</div>
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="card p-4 h-100 text-center border-primary shadow-sm">
                                         <div class="mb-3"><i class="fas fa-cloud-download-alt fa-3x text-primary"></i></div>
-                                        <h5>Download</h5>
-                                        <p class="small text-muted mb-4">Simpan database lokal ke file komputer Anda.</p>
-                                        <button class="btn btn-primary w-100" id="backupDataBtn">Download Data</button>
+                                        <h5>Download Backup</h5>
+                                        <p class="small text-muted mb-4">Simpan seluruh database lokal ke file aman.</p>
+                                        <button class="btn btn-primary w-100" id="backupDataBtn">Download Data (.js)</button>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="card p-4 h-100 text-center border-warning shadow-sm">
                                         <div class="mb-3"><i class="fas fa-cloud-upload-alt fa-3x text-warning"></i></div>
-                                        <h5>Restore</h5>
-                                        <p class="small text-muted mb-0">Kembalikan data dari file backup.</p>
+                                        <h5>Restore Data</h5>
+                                        <p class="small text-muted mb-0">Gabungkan data dari file backup.</p>
                                         <input type="file" class="form-control my-3" id="restoreFileInput" accept=".js,.json">
-                                        <button class="btn btn-warning w-100 text-white" id="restoreDataBtn" disabled>Restore Data</button>
+                                        <button class="btn btn-warning w-100 text-white" id="restoreDataBtn" disabled>Proses Restore & Merge</button>
                                     </div>
                                 </div>
                             </div>
@@ -745,7 +669,7 @@
 
                         <div class="tab-pane fade" id="v-pills-settings">
                             <h3 class="section-title">Pengaturan Sistem</h3>
-                            <div class="card p-4">
+                            <div class="card p-4 border-0 shadow-sm">
                                 <form id="settingsForm">
                                     <div class="row mb-3">
                                         <div class="col-md-6">
@@ -757,7 +681,7 @@
                                             <input type="text" class="form-control" id="appSubtitle" value="PEMERINTAH DESA KILENSARI KECAMATAN PANARUKAN">
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+                                    <button type="submit" class="btn btn-primary bg-dark border-0">Simpan Pengaturan</button>
                                 </form>
                             </div>
                         </div>
@@ -768,13 +692,13 @@
         </div>
         
         <div class="fab-container" id="fabMenu">
-            <button class="fab-main" id="fabMainBtn"><i class="fas fa-bars"></i></button>
-            <a href="#" class="fab-item fab-pulse" id="fabInput" data-tooltip="Input Data Baru"><i class="fas fa-pencil-alt"></i></a>
-            <a href="#" class="fab-item" id="fabFilter" data-tooltip="Filter Data"><i class="fas fa-filter"></i></a>
-            <a href="#" class="fab-item" id="fabExport" data-tooltip="Ekspor Data"><i class="fas fa-file-export"></i></a>
-            <a href="#" class="fab-item" id="fabBackup" data-tooltip="Backup & Restore"><i class="fas fa-cloud-download-alt"></i></a>
-            <a href="#" class="fab-item" id="fabSettings" data-tooltip="Pengaturan"><i class="fas fa-cog"></i></a>
-            <a href="#" class="fab-item" id="fabReload" data-tooltip="Reload Data"><i class="fas fa-sync"></i></a>
+            <button class="fab-main" id="fabMainBtn"><i class="fas fa-plus"></i></button>
+            <a href="#" class="fab-item" id="fabInput" title="Input Data"><i class="fas fa-pencil-alt"></i></a>
+            <a href="#" class="fab-item" id="fabFilter" title="Filter"><i class="fas fa-filter"></i></a>
+            <a href="#" class="fab-item" id="fabExport" title="Ekspor"><i class="fas fa-file-export"></i></a>
+            <a href="#" class="fab-item" id="fabBackup" title="Backup"><i class="fas fa-cloud-download-alt"></i></a>
+            <a href="#" class="fab-item" id="fabSettings" title="Pengaturan"><i class="fas fa-cog"></i></a>
+            <a href="#" class="fab-item" id="fabReload" title="Reload Repo"><i class="fas fa-sync"></i></a>
         </div>
         
         <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
@@ -823,14 +747,15 @@
             setupEventListeners();
             
             // Show Login
-            new bootstrap.Modal(document.getElementById('loginModal')).show();
+            setTimeout(() => {
+                document.getElementById('loginModal').style.display = 'flex';
+            }, 100);
         });
 
         function initializeApp() {
             loadData();
             loadSettings();
             
-            // Populate Dropdowns
             fillDropdown('kecamatan', SITUBONDO_DATA.kecamatanList, 'Pilih Kecamatan');
             fillDropdown('desa', SITUBONDO_DATA.desaList, 'Pilih Desa');
             fillDropdown('filterDesa', SITUBONDO_DATA.desaList, 'Semua Desa');
@@ -859,14 +784,14 @@
                 e.preventDefault();
                 const btn = document.getElementById('loginButton');
                 btn.disabled = true;
-                document.getElementById('loginSpinner').classList.remove('d-none');
+                btn.innerHTML = 'VERIFIKASI... <span class="spinner-border spinner-border-sm ms-2"></span>';
                 
                 setTimeout(() => {
-                    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                    document.getElementById('loginModal').style.display = 'none';
                     document.getElementById('appContent').style.display = 'block';
                     updateDashboard();
                     renderDataTable();
-                }, 800);
+                }, 1000);
             });
 
             // Form Handling
@@ -875,6 +800,7 @@
                 setTimeout(() => {
                     document.getElementById('ownerFields').style.display = 'none';
                     document.getElementById('usia').value = '';
+                    document.getElementById('inputForm').removeAttribute('data-edit-id');
                 }, 100);
             });
             
@@ -891,7 +817,6 @@
                 radio.addEventListener('change', function() {
                     const isYes = this.value === 'Ya';
                     document.getElementById('nomorPasContainer').style.display = isYes ? 'block' : 'none';
-                    document.getElementById('dokumenAlert').style.display = isYes ? 'none' : 'block';
                 });
             });
 
@@ -917,12 +842,17 @@
 
             // Search & Filters
             document.getElementById('searchData').addEventListener('input', renderDataTable);
-            document.getElementById('clearSearchBtn').addEventListener('click', () => {
-                document.getElementById('searchData').value = '';
-                renderDataTable();
-            });
             document.getElementById('applyFilterBtn').addEventListener('click', renderFilterTable);
             
+            // Checkbox Select All
+            document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.row-checkbox');
+                checkboxes.forEach(cb => cb.checked = this.checked);
+                toggleBulkDeleteBtn();
+            });
+            
+            document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
+
             // Actions
             document.getElementById('printPdfBtn').addEventListener('click', printData);
             document.getElementById('exportExcelBtn').addEventListener('click', () => exportData('xlsx'));
@@ -958,9 +888,16 @@
             
             fabMain.addEventListener('click', () => {
                 container.classList.toggle('open');
-                fabMain.querySelector('i').classList.toggle('fa-bars');
-                fabMain.querySelector('i').classList.toggle('fa-times');
-                fabMain.classList.toggle('active');
+                const icon = fabMain.querySelector('i');
+                if(container.classList.contains('open')){
+                    icon.classList.remove('fa-plus');
+                    icon.classList.add('fa-times');
+                    fabMain.style.transform = "rotate(90deg)";
+                } else {
+                    icon.classList.add('fa-plus');
+                    icon.classList.remove('fa-times');
+                    fabMain.style.transform = "rotate(0deg)";
+                }
             });
 
             // Shortcut Actions
@@ -977,8 +914,6 @@
                     e.preventDefault();
                     document.getElementById(tabId).click();
                     container.classList.remove('open');
-                    fabMain.classList.remove('active');
-                    fabMain.querySelector('i').className = 'fas fa-bars';
                 });
             }
 
@@ -997,10 +932,18 @@
             if(nik.length !== 16) return showNotification('NIK harus 16 digit', 'error');
             if(!whatsapp.match(/^\d+$/)) return showNotification('WhatsApp hanya angka', 'error');
 
+            const editId = document.getElementById('inputForm').getAttribute('data-edit-id');
+            
+            // STRICT DUPLICATE CHECK FOR MANUAL INPUT
+            const duplicateCheck = appData.find(d => d.nik === nik);
+            if (duplicateCheck && (!editId || duplicateCheck.id != editId)) {
+                return showNotification('GAGAL: NIK sudah terdaftar dalam sistem!', 'error');
+            }
+
             const isOwner = document.getElementById('statusNelayan').value === 'Pemilik Kapal';
             
             const formData = {
-                id: document.getElementById('inputForm').getAttribute('data-edit-id') || Date.now(),
+                id: editId || Date.now(),
                 nama: document.getElementById('nama').value,
                 nik: nik,
                 whatsapp: whatsapp,
@@ -1030,7 +973,6 @@
                 keterangan: document.getElementById('keterangan').value
             };
 
-            const editId = document.getElementById('inputForm').getAttribute('data-edit-id');
             if (editId) {
                 const index = appData.findIndex(item => item.id == editId);
                 appData[index] = formData;
@@ -1049,15 +991,19 @@
             document.getElementById('v-pills-data-tab').click();
         }
 
+        // --- SMART SEARCH & DUPLICATE HIGHLIGHT RENDERER ---
         function renderDataTable() {
             const tableBody = document.getElementById('dataTableBody');
             const search = document.getElementById('searchData').value.toLowerCase();
             
+            // SMART SEARCH ALGORITHM: Stringify entire object to search all fields
             let filtered = appData.filter(d => 
-                d.nama.toLowerCase().includes(search) || 
-                d.nik.includes(search) || 
-                d.desa.toLowerCase().includes(search)
+                JSON.stringify(d).toLowerCase().includes(search)
             );
+
+            // DETECT DUPLICATES FOR HIGHLIGHTING
+            const nikCounts = {};
+            appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
 
             const totalItems = filtered.length;
             const start = (currentPage - 1) * appSettings.itemsPerPage;
@@ -1066,18 +1012,27 @@
             tableBody.innerHTML = '';
             if(pageData.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Data tidak ditemukan</td></tr>`;
+                toggleBulkDeleteBtn(); // hide btn
                 return;
             }
 
             pageData.forEach((d, i) => {
-                const kapalInfo = d.status === 'Pemilik Kapal' ? `<div class="small fw-bold">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : '-';
+                const kapalInfo = d.status === 'Pemilik Kapal' ? `<div class="small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : '-';
                 
-                const row = `<tr>
+                // Highlight Logic
+                const isDuplicate = nikCounts[d.nik] > 1;
+                const rowClass = isDuplicate ? 'table-danger' : '';
+
+                const row = `<tr class="${rowClass}">
+                    <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
                     <td>${start + i + 1}</td>
-                    <td><div class="fw-bold text-dark">${d.nama}</div><small class="text-muted">${d.nik}</small></td>
-                    <td><a href="https://wa.me/62${d.whatsapp}" target="_blank" class="text-decoration-none btn-link"><i class="fab fa-whatsapp text-success"></i> ${d.whatsapp}</a></td>
-                    <td><span class="badge bg-light text-dark border">${d.profesi}</span></td>
-                    <td>${d.status}</td>
+                    <td>
+                        <div class="fw-bold text-dark">${d.nama}</div>
+                        <div class="small font-monospace text-muted">${d.nik}</div>
+                        ${isDuplicate ? '<span class="badge bg-danger">Duplikat NIK</span>' : ''}
+                    </td>
+                    <td><a href="https://wa.me/62${d.whatsapp}" target="_blank" class="text-decoration-none btn-link small"><i class="fab fa-whatsapp text-success"></i> ${d.whatsapp}</a></td>
+                    <td><span class="badge bg-light text-dark border">${d.profesi}</span><br><small>${d.status}</small></td>
                     <td>${kapalInfo}</td>
                     <td>Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td>
                     <td>
@@ -1092,6 +1047,7 @@
 
             document.getElementById('tableInfo').textContent = `Menampilkan ${pageData.length} dari ${totalItems} data`;
             updatePagination(totalItems);
+            toggleBulkDeleteBtn();
         }
 
         function updatePagination(total) {
@@ -1100,6 +1056,32 @@
             ul.innerHTML = '';
             for(let i=1; i<=pages; i++) {
                 ul.innerHTML += `<li class="page-item ${i===currentPage?'active':''}"><a class="page-link" href="#" onclick="currentPage=${i};renderDataTable()">${i}</a></li>`;
+            }
+        }
+
+        // --- BULK DELETE LOGIC ---
+        function toggleBulkDeleteBtn() {
+            const checked = document.querySelectorAll('.row-checkbox:checked').length > 0;
+            const btn = document.getElementById('bulkDeleteBtn');
+            if(checked) btn.classList.remove('d-none'); else btn.classList.add('d-none');
+        }
+
+        function bulkDeleteData() {
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+            if(checkedBoxes.length === 0) return;
+
+            const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN (Default: 97531):`);
+            
+            if(userCode === "97531") {
+                const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
+                appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
+                saveData();
+                renderDataTable();
+                updateDashboard();
+                showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
+                document.getElementById('selectAllCheckbox').checked = false;
+            } else if (userCode !== null) {
+                alert("Kode keamanan SALAH!");
             }
         }
 
@@ -1132,9 +1114,7 @@
         }
 
         function deleteData(id) {
-            // SECURITY CODE CHECK
             const userCode = prompt("Masukkan KODE KEAMANAN untuk menghapus data (Default: 97531):");
-            
             if(userCode === "97531") {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
@@ -1144,7 +1124,7 @@
                     showNotification('Data berhasil dihapus', 'success');
                 }
             } else if (userCode !== null) {
-                alert("Kode keamanan SALAH! Akses ditolak.");
+                alert("Kode keamanan SALAH!");
             }
         }
 
@@ -1165,7 +1145,6 @@
                 const matchJenis = !filters.jenisKapal || (d.status === 'Pemilik Kapal' && d.jenisKapal === filters.jenisKapal);
                 const matchDokumen = !filters.dokumen || (d.status === 'Pemilik Kapal' && d.punyaDokumen === filters.dokumen);
                 const matchUsaha = !filters.usaha || (filters.usaha === 'Ada' ? (d.usahaSampingan && d.usahaSampingan.length > 2) : (!d.usahaSampingan || d.usahaSampingan.length < 2));
-                
                 return matchDesa && matchProfesi && matchStatus && matchJenis && matchDokumen && matchUsaha;
             });
 
@@ -1179,7 +1158,6 @@
 
             filtered.forEach((d, i) => {
                 const docStatus = d.status === 'Pemilik Kapal' ? (d.punyaDokumen === 'Ya' ? '<span class="text-success"><i class="fas fa-check-circle"></i> Lengkap</span>' : '<span class="text-danger"><i class="fas fa-times-circle"></i> Tidak Ada</span>') : '-';
-                
                 tbody.innerHTML += `<tr>
                     <td>${i+1}</td>
                     <td><strong>${d.nama}</strong><br><small>${d.desa}</small></td>
@@ -1195,15 +1173,24 @@
 
         // --- DASHBOARD & CHARTS ---
         function initializeCharts() {
+            // FIXED: maintainAspectRatio false inside a controlled container
             window.profesiChart = new Chart(document.getElementById('profesiChart'), {
                 type: 'doughnut',
                 data: { labels: [], datasets: [] },
-                options: { maintainAspectRatio: false }
+                options: { 
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
             });
             window.kapalChart = new Chart(document.getElementById('kapalChart'), {
                 type: 'bar',
                 data: { labels: [], datasets: [] },
-                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                options: { 
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
             });
             updateDashboard();
         }
@@ -1221,7 +1208,7 @@
             appData.forEach(d => pData[d.profesi] = (pData[d.profesi] || 0) + 1);
             window.profesiChart.data = {
                 labels: Object.keys(pData),
-                datasets: [{ data: Object.values(pData), backgroundColor: ['#003366', '#F39C12', '#00AEEF'] }]
+                datasets: [{ data: Object.values(pData), backgroundColor: ['#0F2027', '#F39C12', '#203A43'] }]
             };
             window.profesiChart.update();
 
@@ -1229,12 +1216,12 @@
             appData.filter(d => d.status === 'Pemilik Kapal').forEach(d => kData[d.jenisKapal] = (kData[d.jenisKapal] || 0) + 1);
             window.kapalChart.data = {
                 labels: Object.keys(kData),
-                datasets: [{ label: 'Unit', data: Object.values(kData), backgroundColor: '#00AEEF' }]
+                datasets: [{ label: 'Unit', data: Object.values(kData), backgroundColor: '#203A43' }]
             };
             window.kapalChart.update();
         }
 
-        // --- EXPORT & BACKUP ---
+        // --- EXPORT, IMPORT & MERGE LOGIC ---
         function saveData() { localStorage.setItem('nelayanData', JSON.stringify(appData)); }
         function loadData() { 
             const d = localStorage.getItem('nelayanData');
@@ -1247,7 +1234,7 @@
 
         function exportData(type) {
             if(appData.length === 0) return showNotification('Tidak ada data', 'error');
-            const data = appData.map(d => ({ ...d, NIK: `'${d.nik}`, WhatsApp: `'${d.whatsapp}` })); // Protect format
+            const data = appData.map(d => ({ ...d, NIK: `'${d.nik}`, WhatsApp: `'${d.whatsapp}` })); 
 
             if(type === 'xlsx') {
                 const wb = XLSX.utils.book_new();
@@ -1259,13 +1246,14 @@
             } else {
                 downloadFile(JSON.stringify(appData, null, 2), 'application/json', 'Data_Nelayan.json');
             }
-            showNotification(`Ekspor ${type.toUpperCase()} berhasil`, 'success');
+            showNotification(`Ekspor ${type.toUpperCase()} berhasil. Siap dikirim ke WhatsApp.`, 'success');
         }
 
         function sendDataToWhatsapp() {
-            const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            const message = `Laporan Data Nelayan\n*${appSettings.appSubtitle}*\n\nTanggal Laporan: ${today}\nTotal Data Terkini: ${appData.length} Orang.\n\nMohon dicek. Terima kasih.`;
+            // PROFESSIONAL MESSAGE FORMAT
+            const message = `Yth. Administrator Dinas Perikanan Kabupaten Situbondo,\n\nBerikut kami lampirkan data pembaruan Sistem Satu Data Nelayan dari:\n*${appSettings.appSubtitle}*\n\nTanggal Laporan: ${new Date().toLocaleDateString('id-ID')}\nTotal Data: ${appData.length} Records\n\nFile lampiran (.xlsx/.json) telah kami sertakan pada pesan ini untuk proses sinkronisasi database.\n\nTerima Kasih.`;
             
+            // Note: Does not display number in URL, just opens the chat
             const url = `https://wa.me/6287865614222?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
         }
@@ -1285,8 +1273,6 @@
             doc.setFontSize(10); doc.text(appSettings.appSubtitle, 40, 55);
             doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 40, 70);
             
-            // Mengambil data dari filter yang aktif jika ada, atau semua data jika tidak
-            // Saat ini mengambil semua data untuk simplifikasi, bisa disesuaikan mengambil filtered
             const rows = appData.map((d, i) => [i+1, d.nama, d.profesi, d.status, d.desa, parseInt(d.pendapatan).toLocaleString('id-ID')]);
             
             doc.autoTable({
@@ -1294,28 +1280,42 @@
                 body: rows,
                 startY: 90,
                 theme: 'grid',
-                headStyles: { fillColor: [0, 51, 102] }
+                headStyles: { fillColor: [32, 58, 67] }
             });
             doc.save(`Laporan_Nelayan.pdf`);
         }
 
         function backupData() {
              const dateStr = new Date().toLocaleString('id-ID');
-             // HEADER INFORMASI (Komentar JS agar tidak error saat reload tapi terbaca manusia)
              const headerInfo = `// BACKUP DATA SISTEM NELAYAN\n// INSTANSI: ${appSettings.appSubtitle}\n// TANGGAL: ${dateStr}\n// ==============================\n`;
-             
              const content = `${headerInfo}window.NELAYAN_BACKUP = "${btoa(JSON.stringify(appData))}";`;
-             
              const blob = new Blob([content], {type: 'text/javascript'});
              const a = document.createElement('a');
              a.href = URL.createObjectURL(blob);
-             a.download = 'download.js'; // Nama file sesuai permintaan
+             a.download = 'download.js';
              a.click();
-             showNotification('File Download berhasil dibuat', 'success');
+             showNotification('File Backup aman telah dibuat', 'success');
+        }
+
+        // MERGE DATA LOGIC FOR RELOAD & RESTORE
+        function mergeAndRestore(newDataArray) {
+            if(!newDataArray || !Array.isArray(newDataArray)) return false;
+            
+            // SMART MERGE: APPEND DATA, DO NOT OVERWRITE
+            // IDs might conflict, so we regenerate IDs for imported data but keep NIKs for validation
+            const incoming = newDataArray.map(d => ({...d, id: Date.now() + Math.random().toString(36).substr(2, 5)}));
+            
+            appData = [...appData, ...incoming]; // Combine arrays
+            
+            saveData();
+            renderDataTable();
+            updateDashboard();
+            return true;
         }
 
         function handleReloadRepo() {
-            if(!confirm("Reload dari file 'download.js' di folder lokal?")) return;
+            if(!confirm("Anda akan MENGGABUNGKAN data dari file 'download.js' lokal ke database saat ini.\nLanjutkan?")) return;
+            
             const script = document.createElement('script');
             script.src = './download.js?v=' + Date.now();
             
@@ -1323,20 +1323,14 @@
                 if(window.NELAYAN_BACKUP) {
                     try {
                         const newData = JSON.parse(atob(window.NELAYAN_BACKUP));
-                        newData.forEach(n => {
-                            const idx = appData.findIndex(old => old.id == n.id);
-                            if(idx > -1) appData[idx] = n; else appData.push(n);
-                        });
-                        saveData();
-                        renderDataTable();
-                        updateDashboard();
-                        showNotification('Reload Data Berhasil!', 'success');
+                        mergeAndRestore(newData);
+                        showNotification('Data berhasil digabungkan (Merge)! Periksa baris Merah untuk duplikasi.', 'success');
                     } catch(e) { showNotification('Gagal memproses data backup', 'error'); }
                 } else {
-                    showNotification('Variabel backup tidak ditemukan di file', 'error');
+                    showNotification('Variabel backup tidak ditemukan', 'error');
                 }
             };
-            script.onerror = () => showNotification('File download.js tidak ditemukan', 'error');
+            script.onerror = () => showNotification('File download.js tidak ditemukan di folder root', 'error');
             document.body.appendChild(script);
         }
 
@@ -1350,20 +1344,17 @@
                 const str = e.target.result;
                 
                 try {
-                    // Try Pure JSON
-                    restored = JSON.parse(str);
+                    restored = JSON.parse(str); // Try pure JSON first
                 } catch {
-                    // Try parsing JS variable
-                    const match = str.match(/window\.NELAYAN_BACKUP = "([^"]+)";/);
+                    const match = str.match(/window\.NELAYAN_BACKUP = "([^"]+)";/); // Try JS format
                     if(match) restored = JSON.parse(atob(match[1]));
                 }
 
-                if(restored && restored.length && confirm(`Timpa data lama dengan ${restored.length} data baru?`)) {
-                    appData = restored;
-                    saveData();
-                    renderDataTable();
-                    updateDashboard();
-                    showNotification('Restore Berhasil!', 'success');
+                if(restored && restored.length) {
+                    if(confirm(`Ditemukan ${restored.length} data. Gabungkan ke database saat ini?`)) {
+                        mergeAndRestore(restored);
+                        showNotification('Restore Berhasil! Data telah digabungkan.', 'success');
+                    }
                 } else {
                     showNotification('Format file tidak valid', 'error');
                 }
@@ -1374,17 +1365,14 @@
         function showNotification(msg, type = 'info') {
             const toastEl = document.querySelector('.notification-toast');
             const header = toastEl.querySelector('.toast-header');
-            
             const styles = {
                 success: { cls: 'bg-success text-white', title: 'Sukses' },
                 error: { cls: 'bg-danger text-white', title: 'Error' },
                 info: { cls: 'bg-primary text-white', title: 'Info' }
             };
-            
             header.className = `toast-header ${styles[type].cls}`;
             document.getElementById('toastTitle').textContent = styles[type].title;
             document.getElementById('toastMessage').textContent = msg;
-            
             new bootstrap.Toast(toastEl).show();
         }
     </script>
