@@ -1010,7 +1010,7 @@
         let currentPage = 1;
         let duplicateCheckInterval = null;
         let currentDetailId = null; 
-        const SECURITY_CODE = "97531";
+        const SECURITY_CODE = "BidangPN1945"; // Perbaikan: Sesuaikan dengan kode di form login
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
         
@@ -1116,9 +1116,18 @@
 
         // --- EVENT LISTENERS ---
         function setupEventListeners() {
+            // PERBAIKAN UTAMA: Perbaiki event listener untuk form login
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const btn = document.getElementById('loginButton');
+                const inputCode = document.getElementById('securityCode').value;
+                
+                // Validasi kode keamanan
+                if (inputCode !== SECURITY_CODE) {
+                    showNotification('Kode keamanan salah!', 'error');
+                    return;
+                }
+                
                 btn.disabled = true;
                 btn.innerHTML = 'VERIFIKASI... <span class="spinner-border spinner-border-sm ms-2"></span>';
                 
@@ -1128,6 +1137,10 @@
                     updateDashboard();
                     renderDataTable();
                     welcomeModal.show();
+                    
+                    // Reset tombol login
+                    btn.disabled = false;
+                    btn.innerHTML = 'BUKA DASHBOARD';
                 }, 1000);
             });
 
