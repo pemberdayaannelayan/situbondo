@@ -1010,19 +1010,25 @@
         let currentPage = 1;
         let duplicateCheckInterval = null;
         let currentDetailId = null; 
-        const SECURITY_CODE = "BidangPN1945"; // Perbaikan: Sesuaikan dengan kode di form login
+        const SECURITY_CODE = "BidangPN1945"; 
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
         
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            setupEventListeners();
-            initFishOptions();
-            
-            setTimeout(() => {
-                document.getElementById('loginModal').style.display = 'flex';
-            }, 100);
+            try {
+                initializeApp();
+                setupEventListeners();
+                initFishOptions();
+                
+                // Show Login Modal
+                setTimeout(() => {
+                    document.getElementById('loginModal').style.display = 'flex';
+                }, 100);
+            } catch (error) {
+                console.error("Initialization Error:", error);
+                alert("Terjadi kesalahan sistem saat memuat. Silakan refresh.");
+            }
         });
 
         function initializeApp() {
@@ -1042,7 +1048,8 @@
             document.getElementById('tanggalValidasi').value = new Date().toISOString().split('T')[0];
             updateAppIdentity();
             updatePrivacyUI();
-            initializeCharts();
+            
+            // NOTE: initializeCharts dipindahkan ke setelah login berhasil agar render canvas tidak 0 height
             startDuplicateChecker();
         }
 
@@ -1109,17 +1116,18 @@
 
         function getFishIconClass(fishName) {
             const lower = fishName.toLowerCase();
-            if (lower.includes('cumi')) return 'fa-ghost'; // Visual representation for Squid/Cumi
-            if (lower.includes('kepiting')) return 'fa-spider'; // Visual representation for Crab
+            if (lower.includes('cumi')) return 'fa-ghost'; 
+            if (lower.includes('kepiting')) return 'fa-spider'; 
             return 'fa-fish';
         }
 
         // --- EVENT LISTENERS ---
         function setupEventListeners() {
-            // PERBAIKAN UTAMA: Perbaiki event listener untuk form login
+            // LOGIN HANDLER FIX
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const btn = document.getElementById('loginButton');
+                const spinner = document.getElementById('loginSpinner');
                 const inputCode = document.getElementById('securityCode').value;
                 
                 // Validasi kode keamanan
@@ -1129,19 +1137,25 @@
                 }
                 
                 btn.disabled = true;
-                btn.innerHTML = 'VERIFIKASI... <span class="spinner-border spinner-border-sm ms-2"></span>';
+                spinner.classList.remove('d-none');
+                btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
                 
                 setTimeout(() => {
                     document.getElementById('loginModal').style.display = 'none';
                     document.getElementById('appContent').style.display = 'block';
+                    
+                    // Initialize components that require visibility
+                    initializeCharts();
                     updateDashboard();
                     renderDataTable();
+                    
                     welcomeModal.show();
                     
-                    // Reset tombol login
+                    // Reset tombol login (untuk logout nanti)
                     btn.disabled = false;
+                    spinner.classList.add('d-none');
                     btn.innerHTML = 'BUKA DASHBOARD';
-                }, 1000);
+                }, 1200);
             });
 
             document.getElementById('btnWelcomeReload').addEventListener('click', function() {
@@ -1176,7 +1190,7 @@
                     if (code === SECURITY_CODE) {
                         appSettings.privacyMode = false;
                         saveSettings(); updatePrivacyUI(); renderDataTable();
-                        showNotification('Sensor Data dinonaktifkan.', 'error');
+                        showNotification('Sensor Data dinonaktifkan.', 'warning');
                     } else { alert("Kode Keamanan Salah!"); }
                 } else {
                     appSettings.privacyMode = true;
@@ -1921,18 +1935,30 @@
         }
 
         function initializeCharts() {
-            window.profesiChart = new Chart(document.getElementById('profesiChart'), {
-                type: 'doughnut', data: { labels: [], datasets: [] },
+            const profesiCtx = document.getElementById('profesiChart').getContext('2d');
+            const kapalCtx = document.getElementById('kapalChart').getContext('2d');
+
+            if (window.profesiChart instanceof Chart) window.profesiChart.destroy();
+            if (window.kapalChart instanceof Chart) window.kapalChart.destroy();
+
+            window.profesiChart = new Chart(profesiCtx, {
+                type: 'doughnut', 
+                data: { labels: [], datasets: [] },
                 options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
             });
-            window.kapalChart = new Chart(document.getElementById('kapalChart'), {
-                type: 'bar', data: { labels: [], datasets: [] },
+
+            window.kapalChart = new Chart(kapalCtx, {
+                type: 'bar', 
+                data: { labels: [], datasets: [] },
                 options: { maintainAspectRatio: false, responsive: true, scales: { y: { beginAtZero: true } } }
             });
+            
             updateDashboard();
         }
 
         function updateDashboard() {
+            if (!window.profesiChart || !window.kapalChart) return; // Prevent update if chart not init
+
             document.getElementById('totalPenerima').textContent = appData.length;
             const income = appData.reduce((acc, curr) => acc + (parseInt(curr.pendapatan)||0), 0);
             document.getElementById('totalBantuan').textContent = `Rp ${income.toLocaleString('id-ID')}`;
@@ -1982,7 +2008,7 @@
             window.open(url, '_blank');
         }
 
-        // --- FIXED PRINT RECAP DATA (Aligned QR) ---
+        // --- FIXED PRINT RECAP DATA (Syntax Fixed) ---
         function printData() {
             // Aggregate Data
             const desaStats = {};
@@ -2011,7 +2037,10 @@
             
             // Generate QR Codes for Report (Hi-Res)
             const reportUrl = "https://www.dinasperikanansitubondo.com/satudata";
-            document.getElementById("qr-left"), { 
+            
+            // FIX: Syntax Error in original code fixed here
+            document.getElementById("qr-left").innerHTML = "";
+            new QRCode(document.getElementById("qr-left"), { 
                 text: reportUrl, 
                 width: 256, 
                 height: 256,
@@ -2163,9 +2192,7 @@
                     newData.forEach(newItem => {
                         const existingIndex = appData.findIndex(d => d.nik === newItem.nik);
                         if(existingIndex > -1) {
-                            // Update existing (optional: merge strategy)
-                            // appData[existingIndex] = newItem; 
-                            // For now, we skip or alert. Let's skip duplicates to prevent overwrite issues unless explicitly forced
+                            // Skip duplicates
                         } else {
                             appData.push(newItem);
                             addedCount++;
@@ -2194,11 +2221,9 @@
             const icon = btn.querySelector('i');
             icon.classList.add('fa-spin');
             
-            // Simulate Fetching Data from Central Repo
             setTimeout(() => {
                 icon.classList.remove('fa-spin');
                 showNotification('Sinkronisasi Data Selesai. Sistem telah diperbarui.', 'success');
-                // In a real app, this would fetch json from server
                 window.location.reload(); 
             }, 1500);
         }
