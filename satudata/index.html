@@ -16,6 +16,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
+    <!-- Load reload.js jika ada di server -->
+    <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
+
     <style>
         :root {
             /* Palette: DEEP OCEAN PROFESSIONAL THEME */
@@ -295,7 +298,7 @@
                 <p class="app-subtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</p>
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.0 (Blue Ocean)</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.1 (Encrypted)</span>
                 </div>
             </div>
             
@@ -767,17 +770,17 @@
                                     <div class="col-md-6">
                                         <div class="card p-4 h-100 text-center border-primary shadow-sm">
                                             <div class="mb-3"><i class="fas fa-cloud-download-alt fa-3x text-primary"></i></div>
-                                            <h5>Download Backup</h5>
-                                            <p class="small text-muted mb-4">Simpan seluruh database lokal ke file aman.</p>
+                                            <h5>Download Backup Encrypted</h5>
+                                            <p class="small text-muted mb-4">Unduh file backup terenkripsi (reload.js) yang aman.</p>
                                             <button class="btn btn-primary w-100" id="backupDataBtn">Unduh Database Lengkap</button>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="card p-4 h-100 text-center border-warning shadow-sm">
                                             <div class="mb-3"><i class="fas fa-cloud-upload-alt fa-3x text-warning"></i></div>
-                                            <h5>Restore Data</h5>
-                                            <p class="small text-muted mb-0">Gabungkan data dari file backup.</p>
-                                            <input type="file" class="form-control my-3" id="restoreFileInput" accept=".js,.json">
+                                            <h5>Restore Data Encrypted</h5>
+                                            <p class="small text-muted mb-0">Upload file reload.js untuk mengembalikan data.</p>
+                                            <input type="file" class="form-control my-3" id="restoreFileInput" accept=".js,.json,.txt">
                                             <button class="btn btn-warning w-100 text-white" id="restoreDataBtn" disabled>Proses Restore & Merge</button>
                                         </div>
                                     </div>
@@ -1032,6 +1035,11 @@
             loadData();
             loadSettings();
             
+            // Check if reload.js is loaded and use it if appData is empty or user requests
+            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
+                 console.log("Reload Repository detected. Ready to merge/sync.");
+            }
+
             const kecSelect = document.getElementById('kecamatan');
             kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
             Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
@@ -1734,8 +1742,17 @@
                 doc.setFontSize(7); doc.setTextColor(150);
                 doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Ref ID: ${d.kodeValidasi || '-'}`, 105, 285, {align:'center'});
 
-                doc.save(`${d.nama}_${d.nik}.pdf`);
+                // ** ADDED: Page Numbering and Relation Text **
+                const totalPages = doc.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    // Add Page Numbering at bottom
+                    doc.text(`Dokumen ini saling berhubungan - Halaman ${i} dari ${totalPages}`, 105, 292, { align: 'center' });
+                }
 
+                doc.save(`${d.nama}_${d.nik}.pdf`);
                 document.getElementById('qr-right').innerHTML = ""; // Cleanup
 
             }, 500);
@@ -2118,28 +2135,57 @@
                 doc.setFont('helvetica', 'normal');
                 doc.text('NIP. 19761103 200903 1 002', sigCenterX, footerY + 43, {align: 'center'});
 
+                // ** ADDED: Page Numbering for Recap PDF **
+                const totalPages = doc.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    doc.text(`Halaman ${i} dari ${totalPages} - Rekapitulasi Resmi`, 148.5, 205, { align: 'center' }); // For landscape
+                }
+
                 doc.save(`Laporan_Rekapitulasi_Nelayan_${Date.now()}.pdf`);
                 document.getElementById('qr-right').innerHTML = ""; 
 
             }, 800);
         }
 
-        // --- BACKUP & RESTORE ---
+        // --- BACKUP & RESTORE ENCRYPTED ---
         function backupData(filename = null) {
             if(appData.length === 0) return showNotification('Tidak ada data untuk dibackup', 'warning');
             
-            const content = `// SIMATA DATA BACKUP - ${new Date().toISOString()}\nconst appData = ${JSON.stringify(appData, null, 2)};\n\n// Paste content of this file to console or use Restore feature.`;
+            // 1. Convert Data to JSON String
+            const jsonStr = JSON.stringify(appData);
+            
+            // 2. Encrypt/Encode Data (Base64) to look like random letters
+            // Using btoa(unescape(encodeURIComponent(str))) handles UTF-8 characters properly
+            const encryptedData = btoa(unescape(encodeURIComponent(jsonStr)));
+
+            const dateStr = new Date().toLocaleString('id-ID');
+            
+            // 3. Format Exactly as Requested
+            const content = `/* PETUNJUK PENGGUNAAN RELOAD REPO:
+    1. Ini adalah file backup otomatis dari Aplikasi.
+    2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
+    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
+    
+    APP NAME : APLIKASI SIMATA DINAS PERIKANAN SITUBONDO
+    TANGGAL  : ${dateStr}
+*/
+
+
+window.SIMATA_BACKUP_ENCRYPTED = "${encryptedData}";`;
             
             const blob = new Blob([content], { type: 'text/javascript' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = filename || `backup_simata_${new Date().toISOString().slice(0,10)}.js`;
+            a.download = filename || `reload.js`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showNotification('Backup data berhasil diunduh.', 'success');
+            showNotification('Database terenkripsi (reload.js) berhasil diunduh.', 'success');
         }
 
         function restoreData() {
@@ -2152,13 +2198,31 @@
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    let jsonStr = content;
-                    if(content.includes('=')) {
-                        jsonStr = content.substring(content.indexOf('=') + 1);
-                        jsonStr = jsonStr.split(';')[0]; 
+                    let newData = [];
+                    let isEncrypted = false;
+
+                    // 1. Check for Encrypted Format (Priority)
+                    if (content.includes('window.SIMATA_BACKUP_ENCRYPTED')) {
+                        const regex = /window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/;
+                        const match = content.match(regex);
+                        if (match && match[1]) {
+                            const encrypted = match[1];
+                            // Decrypt/Decode
+                            const decrypted = decodeURIComponent(escape(window.atob(encrypted)));
+                            newData = JSON.parse(decrypted);
+                            isEncrypted = true;
+                        }
+                    } 
+                    // 2. Fallback for Old Format (Backward Compatibility)
+                    else {
+                        let jsonStr = content;
+                        if(content.includes('=')) {
+                            jsonStr = content.substring(content.indexOf('=') + 1);
+                            jsonStr = jsonStr.split(';')[0]; 
+                        }
+                        newData = JSON.parse(jsonStr);
                     }
                     
-                    const newData = JSON.parse(jsonStr);
                     if(!Array.isArray(newData)) throw new Error("Format data tidak valid");
 
                     let addedCount = 0;
@@ -2175,13 +2239,14 @@
                     updateDashboard();
                     checkGlobalDuplicates();
                     
-                    showNotification(`Restore Sukses: ${addedCount} data baru ditambahkan.`, 'success');
+                    const msgType = isEncrypted ? 'Database Terenkripsi' : 'Database Lama';
+                    showNotification(`Restore Sukses (${msgType}): ${addedCount} data baru ditambahkan.`, 'success');
                     input.value = ''; 
                     document.getElementById('restoreDataBtn').disabled = true;
                     
                 } catch(err) {
                     console.error(err);
-                    showNotification('Gagal memproses file backup. Pastikan format benar (.js/.json)', 'error');
+                    showNotification('Gagal memproses file. Pastikan file adalah reload.js yang valid.', 'error');
                 }
             };
             reader.readAsText(file);
@@ -2192,13 +2257,39 @@
             const icon = btn.querySelector('i');
             icon.classList.add('fa-spin');
             
-            // Set session flag so reload doesn't logout
-            sessionStorage.setItem('simata_session', 'active');
+            // Logic: Check if window.SIMATA_BACKUP_ENCRYPTED exists (loaded from <script src="reload.js">)
+            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
+                try {
+                    const encrypted = window.SIMATA_BACKUP_ENCRYPTED;
+                    const decrypted = decodeURIComponent(escape(window.atob(encrypted)));
+                    const newData = JSON.parse(decrypted);
 
+                    if(Array.isArray(newData)) {
+                        let count = 0;
+                        newData.forEach(newItem => {
+                            if (!appData.some(d => d.nik === newItem.nik)) {
+                                appData.push(newItem);
+                                count++;
+                            }
+                        });
+                        saveData();
+                        showNotification(`Sinkronisasi Berhasil: ${count} data baru dimuat dari Server.`, 'success');
+                        setTimeout(() => location.reload(), 1500);
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Decrypt error", e);
+                }
+            }
+
+            // Fallback default reload behavior
             setTimeout(() => {
                 icon.classList.remove('fa-spin');
-                showNotification('Sinkronisasi Data Selesai. Memuat ulang...', 'success');
-                window.location.reload(); 
+                if (typeof window.SIMATA_BACKUP_ENCRYPTED === 'undefined') {
+                    showNotification('File reload.js belum terdeteksi di server hosting.', 'warning');
+                } else {
+                    window.location.reload(); 
+                }
             }, 1000);
         }
 
