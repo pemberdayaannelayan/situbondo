@@ -20,6 +20,7 @@
             --accent-color: #f4a100; /* Amber Sun */
             --danger-color: #e81500;
             --success-color: #00cf85;
+            --orange-custom: #fd7e14; /* Custom Orange for Nelayan Musiman */
             
             --sidebar-active: #e3f2fd;
             --bg-body: #f2f6fc;
@@ -35,6 +36,16 @@
             overflow-x: hidden;
         }
         
+        /* Custom Badge Colors */
+        .badge-profesi-tetap {
+            background-color: var(--success-color) !important;
+            color: white;
+        }
+        .badge-profesi-musiman {
+            background-color: var(--orange-custom) !important;
+            color: white;
+        }
+
         /* --- REDESIGNED LOGIN (BRIGHT & ANIMATED) --- */
         .login-overlay {
             background: var(--primary-gradient);
@@ -192,7 +203,12 @@
             margin-right: 15px; border-radius: 4px;
         }
 
-        /* Tables */
+        /* Tables & Data Design Improvement */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
         .data-table thead th { 
             background: #f8f9fa !important; 
             color: #444; 
@@ -201,9 +217,22 @@
             text-transform: uppercase;
             border-bottom: 2px solid #e9ecef;
             padding: 15px;
+            vertical-align: middle;
+        }
+        .data-table td {
+            vertical-align: middle;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
         }
         .data-table tr.table-danger td { background-color: #fff2f0 !important; }
         .data-table tr:hover td { background-color: #f8faff; }
+        
+        /* Column Width Utilities for Better Layout */
+        .col-width-xs { width: 5%; }
+        .col-width-sm { width: 10%; }
+        .col-width-md { width: 15%; }
+        .col-width-lg { width: 25%; }
+        .col-width-xl { width: 30%; }
 
         /* Floating Button */
         .fab-container { position: fixed; bottom: 30px; right: 30px; z-index: 999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center; }
@@ -627,17 +656,17 @@
                                     </div>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
-                                            <table class="table table-hover data-table mb-0 align-middle" id="dataTable">
+                                            <table class="table table-hover data-table mb-0" id="dataTable">
                                                 <thead>
                                                     <tr>
-                                                        <th width="40" class="text-center"><input type="checkbox" id="selectAllCheckbox"></th>
-                                                        <th>No</th>
-                                                        <th>Identitas Nelayan</th>
-                                                        <th>Kontak</th>
-                                                        <th>Profesi & Status</th>
-                                                        <th>Aset Kapal</th>
-                                                        <th>Pendapatan</th>
-                                                        <th>Aksi</th>
+                                                        <th class="col-width-xs text-center"><input type="checkbox" id="selectAllCheckbox"></th>
+                                                        <th class="col-width-xs">No</th>
+                                                        <th class="col-width-xl">Identitas Nelayan</th>
+                                                        <th class="col-width-md">Kontak</th>
+                                                        <th class="col-width-md">Profesi & Status</th>
+                                                        <th class="col-width-md">Aset Kapal</th>
+                                                        <th class="col-width-md">Pendapatan</th>
+                                                        <th class="col-width-sm">Aksi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="dataTableBody">
@@ -719,7 +748,17 @@
                                      <div class="card-body p-0">
                                          <div class="table-responsive">
                                             <table class="table table-hover data-table mb-0">
-                                                <thead><tr><th>No</th><th>NIK</th><th>Nama</th><th>Status</th><th>Jenis Kapal</th><th>Pendapatan</th><th>Ket</th></tr></thead>
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col-width-xs">No</th>
+                                                        <th class="col-width-md">NIK</th>
+                                                        <th class="col-width-lg">Nama & Identitas</th>
+                                                        <th class="col-width-md">Status</th>
+                                                        <th class="col-width-md">Jenis Kapal</th>
+                                                        <th class="col-width-md">Pendapatan</th>
+                                                        <th class="col-width-sm">Aksi</th>
+                                                    </tr>
+                                                </thead>
                                                 <tbody id="filterTableBody"><tr><td colspan="7" class="text-center py-4">Silakan terapkan filter untuk melihat hasil</td></tr></tbody>
                                             </table>
                                          </div>
@@ -1189,6 +1228,11 @@
                 const isDuplicate = nikCounts[d.nik] > 1;
                 const rowClass = isDuplicate ? 'table-danger' : '';
 
+                // Badge Logic - Updated for Green/Orange
+                let badgeClass = 'bg-secondary';
+                if(d.profesi === 'Nelayan Tetap') badgeClass = 'badge-profesi-tetap';
+                else if(d.profesi === 'Nelayan Musiman') badgeClass = 'badge-profesi-musiman';
+
                 const row = `<tr class="${rowClass}">
                     <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
                     <td>${start + i + 1}</td>
@@ -1199,7 +1243,7 @@
                         <div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
                     </td>
                     <td><a href="https://wa.me/62${d.whatsapp}" target="_blank" class="text-decoration-none btn-link small"><i class="fab fa-whatsapp text-success"></i> ${d.whatsapp}</a></td>
-                    <td><span class="badge bg-light text-dark border">${d.profesi}</span><br><small>${d.status}</small></td>
+                    <td><span class="badge ${badgeClass} border">${d.profesi}</span><br><small>${d.status}</small></td>
                     <td>${kapalInfo}</td>
                     <td>Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td>
                     <td>
@@ -1237,7 +1281,8 @@
             const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
             if(checkedBoxes.length === 0) return;
 
-            const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN (Default: 97531):`);
+            // REMOVED DEFAULT HINT IN PROMPT
+            const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN:`);
             
             if(userCode === "97531") {
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
@@ -1288,7 +1333,8 @@
         }
 
         function deleteData(id) {
-            const userCode = prompt("Masukkan KODE KEAMANAN untuk menghapus data (Default: 97531):");
+            // REMOVED DEFAULT HINT IN PROMPT
+            const userCode = prompt("Masukkan KODE KEAMANAN untuk menghapus data:");
             if(userCode === "97531") {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
@@ -1332,14 +1378,26 @@
             }
 
             filtered.forEach((d, i) => {
+                // ADDED EDIT & DELETE ACTIONS IN FILTER TABLE
                 tbody.innerHTML += `<tr>
                     <td>${i+1}</td>
-                    <td>${d.nik}</td>
-                    <td><strong>${d.nama}</strong><br><small>${d.desa}</small></td>
-                    <td>${d.status}</td>
+                    <td class="font-monospace small">${d.nik}</td>
+                    <td>
+                        <strong>${d.nama}</strong>
+                        <div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
+                    </td>
+                    <td>
+                        <span class="badge ${d.profesi === 'Nelayan Tetap' ? 'badge-profesi-tetap' : 'badge-profesi-musiman'}">${d.profesi}</span>
+                        <div class="small mt-1">${d.status}</div>
+                    </td>
                     <td>${d.status === 'Pemilik Kapal' ? d.jenisKapal : '-'}</td>
                     <td>Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td>
-                    <td>-</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-warning" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
                 </tr>`;
             });
             showNotification(`Filter berhasil: ${filtered.length} data ditemukan`, 'success');
@@ -1372,7 +1430,12 @@
                     <td>${d.status}</td>
                     <td>${d.status === 'Pemilik Kapal' ? d.jenisKapal : '-'}</td>
                     <td>Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td>
-                    <td><span class="badge bg-danger">Duplikat</span></td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-warning" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
                 </tr>`;
             });
             showNotification(`PERINGATAN: Ditemukan ${filtered.length} baris data ganda!`, 'error');
