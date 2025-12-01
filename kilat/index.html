@@ -2,112 +2,114 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KILAT - Kamera Interaktif Lacak Aktifitas Terkini (Final)</title>
-    <!-- Library untuk QR Code -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KILAT PRO - Kamera Interaktif Lacak Aktifitas Terkini</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        /* Desain Disempurnakan & Resolusi Tinggi */
         :root {
-            --primary-color: #007bff; /* Biru Profesional */
-            --secondary-color: #0056b3; 
-            --accent-color: #28a745; /* Hijau untuk Sukses */
-            --danger-color: #dc3545; /* Merah untuk Error */
-            --text-color: #333;
-            --bg-color: #f4f6f9; /* Abu-abu Sangat Terang */
+            /* Palette Profesional Modern */
+            --primary-color: #0d6efd; 
+            --primary-dark: #0a58ca;
+            --accent-color: #ffc107;
+            --text-color: #212529;
+            --bg-color: #f0f2f5;
             --card-bg: #ffffff;
-            --font-size-base: 1rem;
+            --danger-color: #dc3545;
+            --success-color: #198754;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            font-family: 'Roboto', 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-main);
             background-color: var(--bg-color);
             margin: 0;
-            padding: 20px 0;
+            padding: 20px 10px;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Ubah ke flex-start agar konten terlihat di atas */
+            align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
         .container {
-            width: 95%; /* Lebih lebar di mobile */
-            max-width: 550px; /* Lebar maksimum disesuaikan */
+            width: 100%;
+            max-width: 550px; /* Sedikit diperlebar untuk resolusi tinggi */
             background: var(--card-bg);
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-radius: 15px;
+            border-radius: 16px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Header */
         .header {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
             padding: 25px 20px;
             text-align: center;
-            border-bottom: 5px solid var(--secondary-color);
+            position: relative;
         }
         .header h1 {
             margin: 0;
             font-size: 1.8rem;
-            font-weight: 900; /* Lebih bold */
+            font-weight: 800;
+            letter-spacing: 1px;
         }
         .header p {
-            margin: 5px 0 0;
-            font-size: 0.95rem;
+            margin: 8px 0 0;
+            font-size: 0.9rem;
             opacity: 0.9;
+            font-weight: 300;
         }
 
         /* Sections */
         .section {
-            padding: 20px;
+            padding: 25px;
             display: none;
+            animation: fadeIn 0.4s ease-in-out;
         }
         .section.active {
             display: block;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Form Styles */
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .form-group label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: 700; /* Lebih bold */
+            margin-bottom: 8px;
+            font-weight: 600;
             font-size: 0.95rem;
             color: var(--text-color);
         }
         .form-group input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ced4da;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
             border-radius: 8px;
             box-sizing: border-box;
             font-size: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: all 0.3s;
+            background: #f8f9fa;
         }
         .form-group input:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
         }
         input {
             text-transform: uppercase;
         }
-        
-        .id-display {
-            background-color: #ffeaa7; /* Warna cerah untuk ID */
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            color: #d35400;
-        }
 
-
+        /* Buttons */
         .btn {
             width: 100%;
             padding: 14px;
@@ -115,15 +117,18 @@
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.3s, transform 0.1s, box-shadow 0.3s;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .btn:hover {
-            background: var(--secondary-color);
-            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+            background: var(--primary-dark);
+            transform: translateY(-1px);
         }
         .btn:active {
             transform: scale(0.98);
@@ -131,13 +136,33 @@
         .btn-secondary {
             background: #6c757d;
             margin-top: 10px;
-            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.3);
         }
         .btn-secondary:hover {
             background: #5a6268;
         }
+        .btn-icon {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            width: auto;
+            flex: 1;
+        }
 
-        /* Camera Styles */
+        /* Toolbar Kamera */
+        .camera-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: space-between;
+        }
+        
+        select.ctrl-select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            flex: 1;
+        }
+
+        /* Camera View */
         #camera-container {
             position: relative;
             width: 100%;
@@ -146,55 +171,58 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border-radius: 10px;
-            min-height: 250px;
-            /* Memastikan video memenuhi container dan memotong jika perlu */
-            aspect-ratio: 4/3; 
+            border-radius: 12px;
+            transition: aspect-ratio 0.3s ease;
+            /* Default Aspect Ratio */
+            aspect-ratio: 3/4; 
         }
+        
         video {
             width: 100%;
-            height: auto;
-            /* object-fit: cover; agar video memenuhi area container */
-            display: block;
+            height: 100%;
+            object-fit: cover; /* Memastikan video memenuhi container */
         }
-        canvas {
-             /* Pastikan canvas tidak ditampilkan saat video aktif */
-            display:none; 
-        }
-        #photo-result {
-            display: none;
+        
+        img#photo-result {
             width: 100%;
             height: auto;
-            border: 3px solid var(--primary-color);
-            border-radius: 10px;
+            display: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* Status */
+        /* Hidden Canvas & QR Container */
+        #canvas { display: none; }
+        #qr-generator { display: none; }
+
+        /* Status Box */
         .status-box {
-            background-color: #f0f3f6;
-            border: 1px solid #dee2e6;
+            background-color: #e9ecef;
             padding: 12px;
             margin-top: 15px;
             border-radius: 8px;
             font-size: 0.85rem;
             color: #495057;
             text-align: center;
-            font-weight: 600;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
         .status-box.success {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
         }
         .status-box.error {
             background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
+            color: #842029;
+            border: 1px solid #f5c2c7;
         }
-        .status-box.warning {
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-            color: #856404;
+        .gps-accuracy {
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
         }
     </style>
 </head>
@@ -202,7 +230,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>KILAT</h1>
+        <h1>KILAT PRO</h1>
         <p>Kamera Interaktif Lacak Aktifitas Terkini</p>
     </div>
 
@@ -223,143 +251,79 @@
             <label>Nama Bidang (Opsional)</label>
             <input type="text" id="inputBidang" placeholder="CONTOH: BIDANG BUDIDAYA" oninput="forceCaps(this)">
         </div>
-        <button class="btn" onclick="goToCamera()">Masuk & Buka Kamera</button>
+        <button class="btn" onclick="goToCamera()">
+            <span>Masuk & Buka Kamera</span>
+        </button>
     </div>
 
     <div id="page-camera" class="section">
-        <!-- Tampilan Kode ID Unik -->
-        <div class="id-display">
-            ID Aktifitas: <span id="unique-id">XXXXX</span>
+        
+        <div class="camera-toolbar" id="cam-tools">
+            <button class="btn btn-icon btn-secondary" style="margin:0; background:#495057;" onclick="switchCamera()">
+                🔄 Putar Kamera
+            </button>
+            <select id="ratio-select" class="ctrl-select" onchange="changeRatio()">
+                <option value="1/1">Rasio 1:1 (Kotak)</option>
+                <option value="3/4" selected>Rasio 3:4 (Standar)</option>
+                <option value="9/16">Rasio 9:16 (Full)</option>
+            </select>
         </div>
 
         <div id="camera-container">
-            <!-- Video feed akan memiliki ukuran yang lebih baik karena constraint di JS -->
             <video id="video" autoplay playsinline></video>
-            <canvas id="canvas" style="display:none;"></canvas>
             <img id="photo-result" alt="Hasil Foto">
         </div>
         
-        <!-- Status gabungan untuk Lokasi, Timer, dan Akurasi -->
-        <div id="location-status" class="status-box warning">Mempersiapkan sistem: Lokasi & Waktu...</div>
+        <canvas id="canvas"></canvas>
+        <div id="qr-generator"></div>
+
+        <div id="location-status" class="status-box">
+            <span>Mencari Lokasi GPS dan Alamat...</span>
+        </div>
 
         <div id="camera-controls" style="margin-top: 20px;">
-            <button class="btn" id="take-photo-btn" onclick="takePicture()" disabled>Ambil Foto Watermark</button>
+            <button class="btn" onclick="takePicture()">📸 Ambil Foto Watermark</button>
             <button class="btn btn-secondary" onclick="resetApp()">Kembali ke Form</button>
         </div>
 
         <div id="result-controls" style="margin-top: 20px; display:none;">
-            <a id="download-link" class="btn" style="display:block; text-align:center; text-decoration:none;">Download Foto (.jpg)</a>
+            <a id="download-link" class="btn" style="display:flex; text-align:center; text-decoration:none;">⬇️ Download Foto HD</a>
             <button class="btn btn-secondary" onclick="retakePhoto()">Foto Ulang</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- KONSTANTA & VARIABEL GLOBAL ---
+    // --- KONFIGURASI & VARIABEL ---
     let stream = null;
-    let uniqueId = '';
-    let serverTimeDelta = 0; // Perbedaan waktu (milidetik) antara server dan sistem lokal
-    let isTimerValid = false;
-    let locationWatchId = null; // ID untuk geolocation watch
-    let locationValid = false;
+    let currentFacingMode = "environment"; // Default kamera belakang
+    let uniqueID = ""; // Kode Unik 5 Karakter
     let userLocation = { 
         lat: null, 
         long: null, 
         address: "Mencari Alamat...",
-        accuracy: 99999, // Akurasi dalam meter
-        maxAccuracy: 50 // Batas maksimal akurasi yang diizinkan (Anti Fake GPS)
+        accuracy: 0
     };
-    const BASE_URL_QR = "www.dinasperikanan.com/kilat";
-    const NOMINATIM_API = "https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1";
-    const NTP_API = "https://worldtimeapi.org/api/ip"; // Contoh API untuk waktu server
 
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
     
-    // --- UTILITY FUNCTIONS ---
+    // API OpenStreetMap (Gratis)
+    const NOMINATIM_API = "https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1";
 
-    // Fungsi Generate ID 5 Karakter
-    function generateUniqueId() {
-        const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let result = '';
+    // --- FUNGSI UTILITAS ---
+    
+    function generateUniqueID() {
+        // Generate 5 karakter alphanumeric acak
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let result = "";
         for (let i = 0; i < 5; i++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        return result;
+        uniqueID = result;
+        console.log("Session Unique ID:", uniqueID);
     }
 
-    // Fungsi untuk mendapatkan waktu server
-    async function fetchServerTime() {
-        try {
-            const response = await fetch(NTP_API);
-            const data = await response.json();
-            const serverTimestamp = new Date(data.utc_datetime).getTime();
-            serverTimeDelta = Date.now() - serverTimestamp; // Delta = Lokal - Server
-            isTimerValid = Math.abs(serverTimeDelta) < 60000; // Toleransi 1 menit (60000 ms)
-            
-            // Jika delta terlalu besar, beri peringatan
-            if (!isTimerValid) {
-                console.warn(`Waktu Sistem tidak valid. Delta: ${Math.abs(serverTimeDelta) / 1000} detik.`);
-            }
-            return isTimerValid;
-
-        } catch (error) {
-            console.error("Gagal mengambil waktu server:", error);
-            isTimerValid = false; // Jika gagal, anggap tidak valid untuk mencegah fake timer
-            return false;
-        }
-    }
-
-    // Fungsi untuk mengupdate status tombol dan box
-    function updateStatusUI() {
-        const status = document.getElementById('location-status');
-        const button = document.getElementById('take-photo-btn');
-        let statusText = [];
-        let isReady = true;
-
-        // Cek Waktu
-        if (isTimerValid) {
-            statusText.push(`Waktu: Valid (Delta: ${Math.round(serverTimeDelta / 1000)}s)`);
-        } else {
-            statusText.push(`Waktu: Tidak Valid (Perlu sinkronisasi)`);
-            isReady = false;
-        }
-
-        // Cek Lokasi & Akurasi (Anti Fake GPS)
-        if (userLocation.lat && userLocation.accuracy <= userLocation.maxAccuracy) {
-            statusText.push(`GPS: Terkunci, Akurasi Bagus (${userLocation.accuracy.toFixed(1)}m)`);
-            locationValid = true;
-            status.classList.remove('warning', 'error');
-            status.classList.add('success');
-            // Menampilkan alamat setelah valid
-            if (userLocation.address && userLocation.address !== "Mencari Alamat...") {
-                statusText.push(`Alamat: ${userLocation.address.substring(0, 40)}...`);
-            }
-        } else if (userLocation.lat && userLocation.accuracy > userLocation.maxAccuracy) {
-            statusText.push(`GPS: Akurasi Lemah (${userLocation.accuracy.toFixed(1)}m > ${userLocation.maxAccuracy}m)`);
-            status.classList.remove('success', 'error');
-            status.classList.add('warning');
-            isReady = false;
-            locationValid = false;
-        } else if (userLocation.lat) {
-            // Sudah dapat koordinat, tapi belum dapat akurasi (jarang terjadi)
-            statusText.push(`GPS: Terkunci (${userLocation.lat}, ${userLocation.long}), Menunggu Akurasi...`);
-            isReady = false;
-        } else {
-            statusText.push("GPS: Mencari Lokasi...");
-            status.classList.remove('success', 'error');
-            status.classList.add('warning');
-            isReady = false;
-        }
-
-        // Update UI
-        status.innerHTML = statusText.join('<br>');
-        button.disabled = !(isReady && locationValid);
-        button.textContent = button.disabled ? 'Tunggu Validasi GPS & Waktu...' : 'Ambil Foto Watermark';
-    }
-
-
-    // --- FORM VALIDATION LOGIC (TIDAK DIUBAH STRUKTURNYA) ---
     function validateName(input) {
         input.value = input.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
     }
@@ -368,143 +332,139 @@
         input.value = input.value.toUpperCase();
     }
 
-    // --- NAVIGATION LOGIC (TIDAK DIUBAH STRUKTURNYA) ---
+    // --- NAVIGASI & INIT ---
 
-    async function goToCamera() {
+    function goToCamera() {
         const user = document.getElementById('inputUser').value;
         const keg = document.getElementById('inputKegiatan').value;
 
         if (!user || !keg) {
-             // Mengganti alert() dengan pesan di UI
-            const container = document.querySelector('.container');
-            const alertBox = document.createElement('div');
-            alertBox.className = 'status-box error';
-            alertBox.textContent = "Nama User dan Nama Kegiatan wajib diisi!";
-            container.insertBefore(alertBox, document.getElementById('page-login').nextSibling);
-            setTimeout(() => container.removeChild(alertBox), 3000);
+            alert("Nama User dan Nama Kegiatan wajib diisi!");
             return;
         }
 
-        // Switch View
+        generateUniqueID(); // Buat ID unik saat masuk
+
+        // Switch Tampilan
         document.getElementById('page-login').classList.remove('active');
         document.getElementById('page-camera').classList.add('active');
-        
-        // Generate ID
-        uniqueId = generateUniqueId();
-        document.getElementById('unique-id').textContent = uniqueId;
 
-        // Init Hardware & Validation
-        updateStatusUI();
-        await fetchServerTime(); // Anti Fake Timer
-        initCamera(); // Inisiasi Kamera Resolusi Tinggi
-        initLocation(); // Inisiasi Geolocation & Anti Fake GPS
+        // Init Hardware
+        initCamera();
+        initLocation();
     }
 
     function resetApp() {
-        // Hentikan semua track media
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
-        }
-        // Hentikan watch location
-        if (locationWatchId) {
-            navigator.geolocation.clearWatch(locationWatchId);
-            locationWatchId = null;
-        }
-
-        // Switch View & Reset Data
+        stopCamera();
         document.getElementById('page-camera').classList.remove('active');
         document.getElementById('page-login').classList.add('active');
-        retakePhoto();
+        retakePhoto(); // Reset UI state
         
-        // Reset status
+        // Reset status lokasi
         const status = document.getElementById('location-status');
-        status.innerHTML = "Mempersiapkan sistem: Lokasi & Waktu...";
-        status.className = "status-box warning";
-        document.getElementById('take-photo-btn').disabled = true;
-
-        userLocation = { lat: null, long: null, address: "Mencari Alamat...", accuracy: 99999, maxAccuracy: 50 };
-        isTimerValid = false;
-        serverTimeDelta = 0;
-        uniqueId = '';
+        status.innerHTML = "<span>Mencari Lokasi GPS dan Alamat...</span>";
+        status.className = "status-box";
+        userLocation = { lat: null, long: null, address: "Mencari Alamat...", accuracy: 0 };
     }
 
-    // --- CAMERA & LOCATION LOGIC (DISAHKAN) ---
+    // --- LOGIKA KAMERA LANJUTAN ---
 
     async function initCamera() {
+        const video = document.getElementById('video');
+        
+        // Hentikan stream lama jika ada
+        stopCamera();
+
+        // Konfigurasi Constraints untuk Resolusi Tinggi
+        const constraints = {
+            audio: false,
+            video: {
+                facingMode: currentFacingMode,
+                width: { ideal: 4096 }, // Meminta 4K jika tersedia
+                height: { ideal: 2160 } 
+            }
+        };
+
         try {
-            const video = document.getElementById('video');
-            // Permintaan resolusi tinggi (ideal: 1920x1080)
-            const constraints = { 
-                video: { 
-                    facingMode: "environment", 
-                    width: { ideal: 1920 }, 
-                    height: { ideal: 1080 } 
-                }, 
-                audio: false 
-            };
-            
             stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
-
-            // Wait for video to load metadata to get actual resolution
-            video.onloadedmetadata = () => {
-                video.play();
-                console.log(`Resolusi Kamera Aktif: ${video.videoWidth}x${video.videoHeight}`);
-            };
-
         } catch (err) {
-            const status = document.getElementById('location-status');
-            status.innerHTML = `ERROR: Gagal akses kamera. Pastikan menggunakan HTTPS dan izin diberikan.`;
-            status.classList.remove('warning', 'success');
-            status.classList.add('error');
-            console.error("Gagal akses kamera:", err);
+            alert("Gagal akses kamera. Pastikan izin diberikan dan menggunakan HTTPS.");
+            console.error(err);
         }
     }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    }
+
+    function switchCamera() {
+        currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
+        initCamera();
+    }
+
+    function changeRatio() {
+        const ratio = document.getElementById('ratio-select').value;
+        const container = document.getElementById('camera-container');
+        container.style.aspectRatio = ratio;
+    }
+
+    // --- LOGIKA LOKASI & ANTI FAKE GPS (BASIC) ---
 
     function initLocation() {
         const status = document.getElementById('location-status');
+        
         if (!navigator.geolocation) {
-            status.textContent = "ERROR: Geolocation tidak didukung browser ini.";
+            status.innerHTML = "Geolocation tidak didukung browser ini.";
             status.classList.add('error');
             return;
         }
-        
-        // Menggunakan watchPosition untuk pembaruan lokasi real-time
-        locationWatchId = navigator.geolocation.watchPosition(
+
+        // Opsi Geolocation ketat untuk meminimalisir Fake GPS
+        const geoOptions = {
+            enableHighAccuracy: true, // Memaksa menggunakan GPS hardware
+            timeout: 10000,
+            maximumAge: 0 // Jangan gunakan cache
+        };
+
+        navigator.geolocation.getCurrentPosition(
             (position) => {
-                // Anti Fake GPS: Cek akurasi
-                userLocation.accuracy = position.coords.accuracy;
+                const acc = position.coords.accuracy;
                 userLocation.lat = position.coords.latitude.toFixed(6);
                 userLocation.long = position.coords.longitude.toFixed(6);
-                
-                updateStatusUI(); // Update UI dengan status akurasi baru
+                userLocation.accuracy = acc;
 
-                // Hanya cari alamat jika akurasi sudah OK dan alamat belum ditemukan
-                if (locationValid && userLocation.address === "Mencari Alamat...") {
-                    getReverseGeocoding(userLocation.lat, userLocation.long);
+                // Logika Deteksi Fake GPS Sederhana berdasarkan Akurasi
+                let accuracyMsg = `(Akurasi: ${Math.round(acc)}m)`;
+                let warningMsg = "";
+
+                // Biasanya Fake GPS memiliki akurasi yang 'terlalu sempurna' atau sangat buruk tanpa variasi
+                // Namun, kita hanya bisa memperingatkan jika akurasi > 50m (kurang presisi)
+                if (acc > 100) {
+                    status.classList.add('error');
+                    warningMsg = "<br><strong style='color:red'>PERINGATAN: Sinyal GPS Lemah. Pastikan Anda berada di luar ruangan.</strong>";
+                } else {
+                    status.classList.add('success');
                 }
+                
+                status.innerHTML = `<span>Titik GPS Terkunci. ${accuracyMsg}</span>${warningMsg}<span class="gps-accuracy">Mencari detail alamat...</span>`;
+                
+                // Cari Alamat Lengkap
+                getReverseGeocoding(userLocation.lat, userLocation.long, status, accuracyMsg);
             },
             (error) => {
+                status.innerHTML = `Gagal mendapatkan lokasi: ${error.message}. Pastikan GPS aktif.`;
+                status.classList.add('error');
                 userLocation.lat = "-";
                 userLocation.long = "-";
-                userLocation.accuracy = 99999;
-                
-                const errorMap = {
-                    1: "Izin lokasi ditolak.",
-                    2: "GPS tidak tersedia.",
-                    3: "Timeout."
-                };
-                status.innerHTML = `ERROR GPS: ${errorMap[error.code] || 'Kesalahan tidak diketahui'}.`;
-                status.classList.remove('warning', 'success');
-                status.classList.add('error');
-                document.getElementById('take-photo-btn').disabled = true;
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } 
+            geoOptions
         );
     }
     
-    async function getReverseGeocoding(lat, lon) {
+    async function getReverseGeocoding(lat, lon, statusElement, accMsg) {
         try {
             const url = `${NOMINATIM_API}&lat=${lat}&lon=${lon}`;
             const response = await fetch(url);
@@ -512,243 +472,211 @@
             
             if (data.display_name) {
                 userLocation.address = data.display_name;
+                statusElement.innerHTML = `<span>Lokasi Terkunci ${accMsg}</span><span class="gps-accuracy" style="font-size:0.8rem; margin-top:5px;">${userLocation.address}</span>`;
             } else {
-                userLocation.address = `Alamat tidak ditemukan (GPS: ${lat}, ${lon})`;
+                userLocation.address = `Alamat tidak terdeteksi (Koordinat: ${lat}, ${lon})`;
+                statusElement.innerHTML = `<span>Lokasi GPS: ${lat}, ${lon}</span>`;
             }
-            updateStatusUI(); // Update UI dengan alamat baru
         } catch (error) {
-            console.error("Reverse Geocoding Error:", error);
-            userLocation.address = `Kesalahan API Alamat (GPS: ${lat}, ${lon})`;
-            updateStatusUI(); // Update UI dengan alamat error
+            console.error("Geocoding Error:", error);
+            userLocation.address = `Offline / Error API (GPS: ${lat}, ${lon})`;
+            statusElement.innerHTML = `<span>Lokasi GPS: ${lat}, ${lon} (Gagal ambil alamat)</span>`;
         }
     }
 
-    // --- WATERMARK & CAPTURE LOGIC (DISAHKAN) ---
-    
-    // Fungsi untuk membuat QR Code Data URL
-    function createQRCodeDataURL(data, size = 128) {
-        const typeNumber = 0; // Otomatis
-        const errorCorrectionLevel = 'M'; // Medium
-        const qr = qrcode(typeNumber, errorCorrectionLevel);
-        qr.addData(data);
-        qr.make();
-        
-        // Ukuran modul diatur agar QR Code tidak pecah
-        const moduleSize = 4; 
-        const margin = 4;
-        const qrSize = (qr.getModuleCount() * moduleSize) + (2 * margin * moduleSize);
-
-        // Buat canvas sementara untuk QR Code
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = qrSize;
-        tempCanvas.height = qrSize;
-        const context = tempCanvas.getContext('2d');
-        context.fillStyle = '#FFFFFF'; // Latar belakang putih
-        context.fillRect(0, 0, qrSize, qrSize);
-        
-        for (let r = 0; r < qr.getModuleCount(); r++) {
-            for (let c = 0; c < qr.getModuleCount(); c++) {
-                if (qr.isDark(r, c)) {
-                    context.fillStyle = '#000000';
-                    context.fillRect((c * moduleSize) + (margin * moduleSize), (r * moduleSize) + (margin * moduleSize), moduleSize, moduleSize);
-                }
-            }
-        }
-        
-        // Convert canvas ke Data URL dengan kualitas tinggi
-        return tempCanvas.toDataURL('image/png');
-    }
+    // --- WATERMARK & PROSES FOTO ---
 
     function takePicture() {
-        if (!isTimerValid || !locationValid) {
-            // Mengganti alert() dengan console log karena alert dilarang
-            console.error('Validasi GPS atau Waktu belum selesai/gagal. Silakan tunggu.');
-            return;
-        }
-
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const resultImg = document.getElementById('photo-result');
         const context = canvas.getContext('2d');
 
-        // Gunakan resolusi video yang sebenarnya (Kualitas Tinggi)
-        canvas.width = video.videoWidth; 
+        // Set ukuran canvas sesuai resolusi asli video (High Res)
+        canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
+
+        // Gambar video ke canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // --- PREPARE DATA ---
+        // --- DATA UNTUK WATERMARK ---
+        const now = new Date();
+        const dateString = `${dayNames[now.getDay()]}, ${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+        const timeString = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} WIB`;
         
-        // Gunakan waktu yang divalidasi (Local time - Delta Server)
-        const validatedTime = new Date(Date.now() - serverTimeDelta); 
-        
-        const dateString = `${dayNames[validatedTime.getDay()]}, ${validatedTime.getDate()} ${monthNames[validatedTime.getMonth()]} ${validatedTime.getFullYear()}`;
-        const timeString = `${String(validatedTime.getHours()).padStart(2,'0')}:${String(validatedTime.getMinutes()).padStart(2,'0')}:${String(validatedTime.getSeconds()).padStart(2,'0')} WIB`;
-        
-        const dinas = document.getElementById('inputDinas').value || "DINAS TIDAK DISEBUTKAN";
-        const bidang = document.getElementById('inputBidang').value;
+        const dinas = document.getElementById('inputDinas').value || "";
+        const bidang = document.getElementById('inputBidang').value || "";
         const kegiatan = document.getElementById('inputKegiatan').value;
         const user = document.getElementById('inputUser').value;
-        const locationText = userLocation.address;
-        const gpsText = `GPS: ${userLocation.lat}, ${userLocation.long} | Acc: ${userLocation.accuracy.toFixed(1)}m`;
-        const qrData = `${BASE_URL_QR}/${uniqueId}`; // Data untuk QR Code
-
-        // --- DRAWING WATERMARK ---
-
-        // Scaling font size berdasarkan lebar gambar (Profesional: 2% - 3%)
-        const fontSizeBase = canvas.width * 0.023; // 2.3% dari lebar
-        const leftMargin = canvas.width * 0.03; // 3% margin
-        const lineSpacing = fontSizeBase * 1.5;
         
-        // Tinggi bar disesuaikan untuk 6.5 baris teks + QR Code
-        const qrSize = canvas.width * 0.12;
-        const qrMargin = canvas.width * 0.03;
-        const barHeight = lineSpacing * 6.5 + qrMargin; // Sesuaikan tinggi minimal
-        const startY = canvas.height - barHeight;
+        // --- GENERATE QR CODE ---
+        // Kita generate QR ke dalam div tersembunyi dulu, lalu ambil gambarnya
+        const qrContainer = document.getElementById('qr-generator');
+        qrContainer.innerHTML = ""; // Bersihkan QR lama
         
-        // 1. Draw Watermark Background (Gradasi Hitam)
-        const gradient = context.createLinearGradient(0, startY, 0, canvas.height);
-        gradient.addColorStop(0, "rgba(0, 0, 0, 0.2)");
-        gradient.addColorStop(0.5, "rgba(0, 0, 0, 0.75)");
+        // URL QR: Website + ID Unik
+        const qrData = `www.dinasperikanan.com/kilat/${uniqueID}`;
+        
+        new QRCode(qrContainer, {
+            text: qrData,
+            width: 256, // Resolusi tinggi untuk QR
+            height: 256,
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Beri jeda sedikit agar QR selesai dirender oleh library
+        setTimeout(() => {
+            const qrImage = qrContainer.querySelector('img');
+            if (qrImage) {
+                drawWatermark(context, canvas, qrImage, {
+                    dateString, timeString, dinas, bidang, kegiatan, user
+                });
+            } else {
+                // Fallback jika QR gagal
+                drawWatermark(context, canvas, null, {
+                    dateString, timeString, dinas, bidang, kegiatan, user
+                });
+            }
+
+            // Tampilkan Hasil
+            const dataURL = canvas.toDataURL('image/jpeg', 0.95); // Quality 95%
+            resultImg.src = dataURL;
+            resultImg.style.display = 'block';
+            video.style.display = 'none';
+
+            // Switch tombol
+            document.getElementById('camera-controls').style.display = 'none';
+            document.getElementById('cam-tools').style.display = 'none'; // Sembunyikan toolbar
+            document.getElementById('result-controls').style.display = 'block';
+
+            // Setup Link Download
+            const link = document.getElementById('download-link');
+            link.href = dataURL;
+            link.download = `KILAT_${uniqueID}_${kegiatan.replace(/\s/g, '_')}.jpg`;
+        }, 100);
+    }
+
+    function drawWatermark(ctx, canvas, qrImgElement, data) {
+        const w = canvas.width;
+        const h = canvas.height;
+        
+        // Scaling font relative to width (Responsive)
+        // Base font size sekitar 2.2% dari lebar gambar agar jelas di HP & PC
+        const baseSize = w * 0.022; 
+        const margin = w * 0.03;
+        
+        // --- 1. BACKGROUND GRADIENT (Bawah) ---
+        // Hitung tinggi area teks. Kira-kira butuh 25-30% area bawah
+        const barHeight = baseSize * 11; 
+        const startY = h - barHeight;
+
+        const gradient = ctx.createLinearGradient(0, startY, 0, h);
+        gradient.addColorStop(0, "rgba(0, 0, 0, 0.0)");
+        gradient.addColorStop(0.2, "rgba(0, 0, 0, 0.6)");
+        gradient.addColorStop(0.8, "rgba(0, 0, 0, 0.9)");
         gradient.addColorStop(1, "rgba(0, 0, 0, 0.95)");
         
-        context.fillStyle = gradient;
-        context.fillRect(0, startY, canvas.width, barHeight);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, startY, w, barHeight);
 
-        // 2. Setup Text Styling
-        context.fillStyle = "white";
-        context.textBaseline = "bottom";
-        context.shadowColor = "black";
-        context.shadowBlur = 0; 
-        context.shadowOffsetX = 1;
-        context.shadowOffsetY = 1;
+        // --- 2. CONFIG TEXT ---
+        ctx.fillStyle = "white";
+        ctx.textBaseline = "bottom";
+        // Efek bayangan agar teks 'pop' dan jelas
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
 
-        let currentY = canvas.height - (qrMargin * 0.7); // Start dari dekat bawah
+        let curY = h - margin;
 
-        // --- BLOCK 1: QR CODE (Bottom Right) ---
-        const qrX = canvas.width - qrMargin - qrSize;
-        const qrY = canvas.height - qrMargin - qrSize;
-        
-        const qrImage = new Image();
-        qrImage.onload = () => {
-            // Gambar QR Code (Kualitas Tinggi)
-            context.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+        // --- 3. GAMBAR QR CODE (Kanan Bawah) ---
+        if (qrImgElement) {
+            const qrSize = w * 0.18; // Ukuran QR 18% dari lebar foto
+            const qrX = w - margin - qrSize;
+            const qrY = h - margin - qrSize;
+
+            // Background putih kotak untuk QR agar kontras
+            ctx.fillStyle = "white";
+            ctx.fillRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
             
-            // Teks URL di bawah QR
-            context.textAlign = "right";
-            context.fillStyle = "#ffffff";
-            context.font = `bold ${fontSizeBase * 0.8}px Arial`;
-            context.fillText(BASE_URL_QR, qrX + qrSize, qrY - (lineSpacing * 0.2));
+            // Gambar QR
+            ctx.drawImage(qrImgElement, qrX, qrY, qrSize, qrSize);
 
-            // Teks ID di atas QR
-            context.fillStyle = "#ffeb3b"; // Kuning untuk ID
-            context.font = `bold ${fontSizeBase * 1.2}px Arial`;
-            context.fillText(`ID: ${uniqueId}`, qrX + qrSize, qrY - (lineSpacing * 1.2));
+            // Teks ID Unik di bawah QR
+            ctx.textAlign = "center";
+            ctx.font = `bold ${baseSize * 0.7}px Arial`;
+            ctx.fillStyle = "black";
+            ctx.shadowColor = "transparent"; // Matikan shadow untuk teks kecil di area putih
+            ctx.fillText(`ID: ${uniqueID}`, qrX + (qrSize/2), qrY + qrSize + (baseSize * 0.2));
             
-            // Setelah semua digambar, buat Data URL dan tampilkan
-            finalizeCapture();
-        };
-        
-        // Perbaikan: Hanya panggil .src sekali, dan pastikan proses drawing teks lain tidak terblokir
-        qrImage.src = createQRCodeDataURL(qrData, 128); 
-        
-        // Catatan: Karena QR code loading adalah async, teks di bawah ini akan di-draw sebelum QR code.
-        // Kita hanya perlu memastikan bahwa finalizeCapture dipanggil di dalam qrImage.onload.
-
-        // --- BLOCK 2: LOKASI & WAKTU (Bottom Left) ---
-        // Penulisan teks di sini.
-        
-        // Tentukan posisi awal Y untuk teks kiri
-        currentY = canvas.height - qrMargin; 
-        context.textAlign = "left";
-        
-        // Line 1: GPS Koordinat & Akurasi (Bold, Jelas)
-        context.font = `bold ${fontSizeBase * 0.9}px monospace`;
-        context.fillText(gpsText, leftMargin, currentY);
-        currentY -= lineSpacing;
-
-        // Line 2: Alamat Lengkap (Bold, Jelas)
-        context.font = `bold ${fontSizeBase * 0.9}px Arial`;
-        const displayAddress = locationText.length > 70 ? locationText.substring(0, 70) + '...' : locationText;
-        context.fillText(`ALAMAT: ${displayAddress}`, leftMargin, currentY);
-        currentY -= lineSpacing * 1.2; 
-
-        // Line 3: Tanggal & Waktu (Bold, Jelas)
-        context.font = `bold ${fontSizeBase * 1.1}px Arial`;
-        context.fillText(`${dateString} | ${timeString}`, leftMargin, currentY);
-        currentY -= lineSpacing * 1.5; 
-
-        // --- BLOCK 3: INFORMASI KEGIATAN (Middle Left) ---
-        
-        // Line 4: Kegiatan (Highlight)
-        context.font = `bold ${fontSizeBase * 1.3}px Arial`;
-        context.fillStyle = "#4fc3f7"; // Biru cerah highlight
-        context.fillText(kegiatan, leftMargin, currentY);
-        currentY -= lineSpacing * 1.1;
-
-        // Line 5: Bidang (If exists)
-        if(bidang) {
-            context.fillStyle = "white";
-            context.font = `bold ${fontSizeBase * 1.1}px Arial`;
-            context.fillText(bidang, leftMargin, currentY);
-            currentY -= lineSpacing * 1.1;
+            // Reset style untuk teks utama
+            ctx.shadowColor = "black";
+            ctx.fillStyle = "white";
         }
 
-        // Line 6: Dinas (Paling Besar)
-        context.fillStyle = "white";
-        context.font = `bold ${fontSizeBase * 1.5}px Arial`;
-        context.fillText(dinas, leftMargin, currentY);
-        currentY -= lineSpacing * 1.5;
+        // --- 4. TEXT BLOCK (Kiri Bawah) ---
+        ctx.textAlign = "left";
+        const leftX = margin;
+        
+        // Baris 1: Koordinat GPS (Paling Bawah)
+        ctx.font = `bold ${baseSize * 0.8}px monospace`; // Monospace untuk angka jelas
+        ctx.fillText(`GPS: ${userLocation.lat}, ${userLocation.long} (Acc: ${Math.round(userLocation.accuracy)}m)`, leftX, curY);
+        curY -= (baseSize * 1.4);
 
-        // Line 7: Petugas (Top of the watermark area)
-        context.font = `bold ${fontSizeBase * 1.0}px Arial`;
-        context.fillStyle = "#cccccc"; 
-        context.fillText(`PETUGAS: ${user}`, leftMargin, currentY);
+        // Baris 2: Alamat (Bisa panjang, handle wrapping sederhana atau potong)
+        ctx.font = `bold ${baseSize * 0.85}px Arial`;
+        let addr = userLocation.address;
+        // Jika alamat terlalu panjang (> 60 char), potong
+        if (addr.length > 75) addr = addr.substring(0, 75) + "...";
+        ctx.fillText(addr, leftX, curY);
+        curY -= (baseSize * 1.4);
+
+        // Baris 3: Waktu
+        ctx.font = `bold ${baseSize}px Arial`;
+        ctx.fillStyle = "#ffc107"; // Kuning untuk waktu
+        ctx.fillText(`${data.dateString} | ${data.timeString}`, leftX, curY);
+        ctx.fillStyle = "white"; // Reset putih
+        curY -= (baseSize * 1.8);
+
+        // Baris 4: Divider Line
+        // (Opsional, skip untuk kebersihan)
+
+        // Baris 5: Nama Kegiatan (Highlight)
+        ctx.font = `800 ${baseSize * 1.3}px 'Segoe UI', Arial`; // Extra Bold
+        ctx.fillStyle = "#0dcaf0"; // Cyan terang
+        ctx.fillText(data.kegiatan, leftX, curY);
+        ctx.fillStyle = "white";
+        curY -= (baseSize * 1.5);
+
+        // Baris 6 & 7: Dinas & Bidang (Jika ada)
+        if (data.dinas) {
+            ctx.font = `bold ${baseSize * 1.1}px Arial`;
+            // Gabung Dinas dan Bidang jika muat, atau pisah
+            let dinasStr = data.dinas;
+            if (data.bidang) dinasStr += " - " + data.bidang;
+            ctx.fillText(dinasStr, leftX, curY);
+            curY -= (baseSize * 1.8);
+        }
+
+        // Baris 8: User / Petugas (Paling Atas block teks)
+        ctx.font = `bold ${baseSize * 0.9}px Arial`;
+        ctx.fillStyle = "#cccccc";
+        ctx.fillText(`OLEH: ${data.user}`, leftX, curY);
     }
-    
-    function finalizeCapture() {
-        const canvas = document.getElementById('canvas');
-        const video = document.getElementById('video');
-        const resultImg = document.getElementById('photo-result');
-
-        // Kualitas JPEG 1.0 (Resolusi Tinggi)
-        const dataURL = canvas.toDataURL('image/jpeg', 1.0); 
-
-        // 3. Switch to Result View
-        resultImg.src = dataURL;
-        video.style.display = 'none';
-        resultImg.style.display = 'block';
-
-        // Toggle Buttons
-        document.getElementById('camera-controls').style.display = 'none';
-        document.getElementById('result-controls').style.display = 'block';
-
-        // Setup Download Link
-        const link = document.getElementById('download-link');
-        link.href = dataURL;
-        // Gunakan ID unik di nama file
-        const keg = document.getElementById('inputKegiatan').value.replace(/\s/g, '_');
-        link.download = `KILAT_${keg}_ID${uniqueId}_${Date.now()}.jpg`;
-    }
-
 
     function retakePhoto() {
         document.getElementById('video').style.display = 'block';
         document.getElementById('photo-result').style.display = 'none';
         document.getElementById('camera-controls').style.display = 'block';
+        document.getElementById('cam-tools').style.display = 'flex'; // Munculkan toolbar lagi
         document.getElementById('result-controls').style.display = 'none';
         
-        // Regenerate ID
-        uniqueId = generateUniqueId();
-        document.getElementById('unique-id').textContent = uniqueId;
-        
-        // Re-validate Time and Location
-        fetchServerTime();
-        updateStatusUI();
+        // Restart stream jika terhenti (opsional, biasanya stream tetap jalan di bg)
+        if (stream && !stream.active) {
+            initCamera();
+        }
     }
-    
-    // Inisiasi Log Level untuk Geolocation dan Fetch Time
-    console.log("Aplikasi KILAT v2.0 - Siap!");
-
 </script>
 
 </body>
