@@ -8,112 +8,140 @@
         :root {
             --primary: #007bff;
             --primary-dark: #0056b3;
-            --bg: #f4f6f9;
+            --bg: #f0f2f5;
             --card: #ffffff;
             --text: #333333;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --radius: 16px;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             margin: 0;
-            padding: 20px 10px;
+            padding: 15px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* Lebih baik start untuk mobile scrolling */
             min-height: 100vh;
             color: var(--text);
+            box-sizing: border-box;
         }
 
         .container {
             width: 100%;
             max-width: 500px;
             background: var(--card);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            margin-bottom: 20px;
         }
 
         /* Header */
         .header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 20px;
+            padding: 24px 20px;
             text-align: center;
+            position: relative;
         }
-        .header h1 { margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
-        .header p { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.9; }
+        .header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: 1.5px; }
+        .header p { margin: 8px 0 0; font-size: 0.85rem; opacity: 0.95; font-weight: 300; }
 
         /* Section Visibility */
-        .section { display: none; padding: 20px; }
-        .section.active { display: block; animation: fadeEffect 0.4s; }
-        @keyframes fadeEffect { from {opacity: 0;} to {opacity: 1;} }
+        .section { display: none; padding: 20px; animation: slideIn 0.3s ease-out; }
+        .section.active { display: block; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         /* Forms */
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #555; }
         .form-group input {
-            width: 100%; padding: 12px; border: 2px solid #ddd;
-            border-radius: 8px; font-size: 1rem; box-sizing: border-box;
-            transition: border-color 0.3s;
+            width: 100%; padding: 14px; border: 1px solid #ced4da;
+            border-radius: 10px; font-size: 1rem; box-sizing: border-box;
+            background: #f8f9fa; transition: all 0.2s;
         }
-        .form-group input:focus { border-color: var(--primary); outline: none; }
+        .form-group input:focus { 
+            border-color: var(--primary); 
+            background: #fff;
+            outline: none; 
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
         input { text-transform: uppercase; }
 
         /* Buttons */
         .btn {
-            width: 100%; padding: 14px; border: none; border-radius: 8px;
+            width: 100%; padding: 16px; border: none; border-radius: 12px;
             background: var(--primary); color: white; font-size: 1rem;
             font-weight: 700; cursor: pointer; display: flex;
-            justify-content: center; align-items: center; gap: 8px;
-            text-decoration: none; margin-bottom: 10px;
+            justify-content: center; align-items: center; gap: 10px;
+            text-decoration: none; margin-bottom: 12px;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,123,255,0.3);
         }
         .btn:active { transform: scale(0.98); }
-        .btn-secondary { background: #6c757d; }
+        .btn-secondary { background: #6c757d; box-shadow: 0 2px 5px rgba(108,117,125,0.3); }
+        .btn:hover { filter: brightness(1.05); }
         
         /* Camera Toolbar */
-        .toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
-        .tool-btn {
-            flex: 1; padding: 8px; background: #e9ecef; border: none;
-            border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+        .toolbar { 
+            display: flex; gap: 10px; margin-bottom: 15px; 
+            background: #f1f3f5; padding: 5px; border-radius: 10px;
         }
+        .tool-btn {
+            flex: 1; padding: 10px; background: white; border: 1px solid #dee2e6;
+            border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+            color: #495057; transition: all 0.2s;
+        }
+        .tool-btn:active { background: #e9ecef; }
 
         /* Camera Viewport */
         #camera-frame {
             position: relative;
             background: #000;
             width: 100%;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
-            /* Default Aspect Ratio 3:4 */
-            aspect-ratio: 3/4; 
+            aspect-ratio: 3/4; /* Default */
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
         video {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Kunci agar preview tidak gepeng */
+            object-fit: cover;
             display: block;
+        }
+
+        /* Class khusus untuk mirror kamera depan (hanya preview) */
+        video.mirrored {
+            transform: scaleX(-1);
         }
 
         img#result-preview {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: contain; /* Agar hasil foto utuh terlihat */
             display: none;
-            border-radius: 10px;
+            border-radius: 12px;
         }
 
         /* Location Status */
         .status-pill {
-            margin-top: 15px; padding: 10px; border-radius: 8px;
-            background: #e7f1ff; color: #0056b3; font-size: 0.8rem;
+            margin-top: 15px; padding: 12px; border-radius: 10px;
+            background: #e7f1ff; color: #0056b3; font-size: 0.85rem;
             text-align: center; border: 1px solid #b6d4fe;
-            font-weight: 500;
+            font-weight: 600; line-height: 1.4;
         }
         .status-pill.error { background: #f8d7da; color: #842029; border-color: #f5c2c7; }
     </style>
@@ -122,7 +150,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>KILAT</h1>
+        <h1>KILAT PRO</h1>
         <p>Kamera Interaktif Lacak Aktifitas Terkini</p>
     </div>
 
@@ -133,7 +161,7 @@
         </div>
         <div class="form-group">
             <label>Nama Kegiatan <span style="color:red">*</span></label>
-            <input type="text" id="inKegiatan" placeholder="CONTOH: PATROLI" oninput="cleanInput(this)">
+            <input type="text" id="inKegiatan" placeholder="CONTOH: PATROLI RUTIN" oninput="cleanInput(this)">
         </div>
         <div class="form-group">
             <label>Nama Dinas (Opsional)</label>
@@ -150,9 +178,11 @@
         <div class="toolbar">
             <button class="tool-btn" onclick="toggleCamera()">🔄 Balik Kamera</button>
             <select id="selRatio" class="tool-btn" onchange="updateRatio()">
-                <option value="0.75">Rasio 3:4</option>
-                <option value="1">Rasio 1:1</option>
-                <option value="0.5625">Rasio 9:16</option>
+                <option value="0.75">Rasio 3:4 (Potret)</option>
+                <option value="1">Rasio 1:1 (Kotak)</option>
+                <option value="0.5625">Rasio 9:16 (Story)</option>
+                <option value="1.333">Rasio 4:3 (Lanskap)</option>
+                <option value="1.777">Rasio 16:9 (Lebar)</option>
             </select>
         </div>
 
@@ -161,16 +191,16 @@
             <img id="result-preview" alt="Hasil">
         </div>
 
-        <div id="loc-status" class="status-pill">📡 Mencari GPS...</div>
+        <div id="loc-status" class="status-pill">📡 Mencari Koordinat GPS...</div>
 
-        <div id="cam-actions" style="margin-top: 15px;">
-            <button class="btn" onclick="processCapture()">Jepret Foto</button>
-            <button class="btn btn-secondary" onclick="resetForm()">Kembali</button>
+        <div id="cam-actions" style="margin-top: 20px;">
+            <button class="btn" onclick="processCapture()">🔘 Jepret Foto</button>
+            <button class="btn btn-secondary" onclick="resetForm()">⬅️ Kembali ke Menu</button>
         </div>
 
-        <div id="res-actions" style="display:none; margin-top: 15px;">
-            <a id="lnkDownload" class="btn" href="#">⬇️ Simpan Foto</a>
-            <button class="btn btn-secondary" onclick="retryPhoto()">Foto Ulang</button>
+        <div id="res-actions" style="display:none; margin-top: 20px;">
+            <a id="lnkDownload" class="btn" href="#">⬇️ Simpan ke Galeri</a>
+            <button class="btn btn-secondary" onclick="retryPhoto()">🔄 Foto Ulang</button>
         </div>
         
         <canvas id="canvas" style="display:none;"></canvas>
@@ -180,17 +210,17 @@
 <script>
     // --- STATE VARIABLES ---
     let stream = null;
-    let camSide = "environment"; // Belakang
+    let camSide = "environment"; // Default kamera belakang
     let targetRatio = 0.75; // Default 3:4
-    let geoData = { lat: "-", lon: "-", addr: "Mencari alamat...", acc: 0 };
+    let geoData = { lat: "-", lon: "-", addr: "Sedang mengambil lokasi...", acc: 0 };
     
     // --- HELPERS ---
-    const cleanInput = (el) => { el.value = el.value.replace(/[^a-zA-Z0-9\s]/g, '').toUpperCase(); };
+    const cleanInput = (el) => { el.value = el.value.replace(/[^a-zA-Z0-9\s\-\.]/g, '').toUpperCase(); };
 
     // --- NAVIGATION ---
     function startApp() {
         if (!document.getElementById('inUser').value || !document.getElementById('inKegiatan').value) {
-            alert("Nama dan Kegiatan wajib diisi!"); return;
+            alert("Harap isi Nama Petugas dan Nama Kegiatan!"); return;
         }
         document.getElementById('view-form').classList.remove('active');
         document.getElementById('view-camera').classList.add('active');
@@ -206,24 +236,42 @@
         retryPhoto();
     }
 
-    // --- CAMERA ENGINE ---
+    // --- CAMERA ENGINE (PERBAIKAN SUNGSANG & ORIENTASI) ---
     async function initCamera() {
         const video = document.getElementById('video');
         if (stream) stream.getTracks().forEach(t => t.stop());
         
+        // Cek apakah user sedang pegang HP berdiri (Portrait) atau tidur (Landscape)
+        const isPortrait = window.innerHeight > window.innerWidth;
+        
+        // Tentukan resolusi ideal agar tidak gepeng/sungsang
+        // Jika portrait, minta tinggi > lebar. Jika landscape, minta lebar > tinggi.
+        const idealWidth = isPortrait ? 2160 : 4096;
+        const idealHeight = isPortrait ? 4096 : 2160;
+
+        const constraints = {
+            audio: false,
+            video: {
+                facingMode: camSide,
+                width: { ideal: idealWidth },
+                height: { ideal: idealHeight }
+            }
+        };
+        
         try {
-            // Minta resolusi 4K atau Full HD
-            stream = await navigator.mediaDevices.getUserMedia({
-                audio: false,
-                video: {
-                    facingMode: camSide,
-                    width: { ideal: 4096 }, 
-                    height: { ideal: 2160 }
-                }
-            });
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
+            
+            // Tambahkan class mirror jika kamera depan agar natural (seperti cermin)
+            if (camSide === 'user') {
+                video.classList.add('mirrored');
+            } else {
+                video.classList.remove('mirrored');
+            }
+
         } catch (e) {
-            alert("Gagal akses kamera. Periksa izin browser.");
+            console.error(e);
+            alert("Gagal akses kamera. Pastikan izin diberikan atau coba browser lain (Chrome/Safari).");
         }
     }
 
@@ -234,14 +282,15 @@
 
     function updateRatio() {
         targetRatio = parseFloat(document.getElementById('selRatio').value);
-        // Ubah tampilan CSS container agar preview terlihat benar
-        document.getElementById('camera-frame').style.aspectRatio = `${targetRatio}`;
+        // Update CSS container agar preview video terpotong sesuai rasio yang dipilih
+        const frame = document.getElementById('camera-frame');
+        frame.style.aspectRatio = `${targetRatio}`;
     }
 
     // --- GPS ENGINE ---
     function initGPS() {
         const el = document.getElementById('loc-status');
-        if (!navigator.geolocation) { el.innerText = "GPS Error"; return; }
+        if (!navigator.geolocation) { el.innerText = "GPS Error: Browser tidak support"; return; }
 
         navigator.geolocation.watchPosition(
             async (pos) => {
@@ -249,90 +298,105 @@
                 geoData.lon = pos.coords.longitude.toFixed(6);
                 geoData.acc = Math.round(pos.coords.accuracy);
                 
-                let signal = geoData.acc > 50 ? "(Sinyal Lemah)" : "(Akurat)";
-                el.innerText = `GPS: ${geoData.lat}, ${geoData.lon} ${signal}`;
+                let signal = geoData.acc > 50 ? "(Akurasi Rendah)" : "(Akurasi Tinggi)";
+                el.innerText = `📍 ${geoData.lat}, ${geoData.lon}\n${signal}`;
                 el.className = "status-pill";
 
-                // Reverse Geocode (Hanya sekali jika alamat masih kosong atau user pindah jauh)
-                if (geoData.addr === "Mencari alamat...") {
+                // Reverse Geocode (Hanya update jika alamat masih default atau user pindah jauh)
+                if (geoData.addr.includes("mengambil") || geoData.addr.includes("Mencari")) {
                     try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${geoData.lat}&lon=${geoData.lon}`);
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${geoData.lat}&lon=${geoData.lon}&zoom=18&addressdetails=1`);
                         const json = await res.json();
-                        if (json.display_name) geoData.addr = json.display_name;
-                    } catch (e) { geoData.addr = "Lokasi tidak terdeteksi"; }
+                        // Format alamat agar lebih singkat tapi jelas (Desa, Kecamatan, Kota)
+                        let addrParts = [];
+                        if(json.address.road) addrParts.push(json.address.road);
+                        if(json.address.village) addrParts.push(json.address.village);
+                        if(json.address.city_district) addrParts.push(json.address.city_district);
+                        if(json.address.city || json.address.regency) addrParts.push(json.address.city || json.address.regency);
+                        
+                        geoData.addr = addrParts.join(", ") || json.display_name;
+                    } catch (e) { geoData.addr = "Alamat tidak ditemukan (Offline)"; }
                 }
             },
             (err) => {
-                el.innerText = "Gagal mengambil Lokasi. Aktifkan GPS.";
+                el.innerText = "⚠️ Gagal mengambil Lokasi. Pastikan GPS Aktif!";
                 el.className = "status-pill error";
             },
-            { enableHighAccuracy: true, maximumAge: 0 }
+            { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
         );
     }
 
-    // --- CORE: IMAGE PROCESSING (ANTI BLUR) ---
+    // --- CORE: IMAGE PROCESSING & WATERMARK ---
     function processCapture() {
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d', { alpha: false }); // Optimasi rendering
+        const ctx = canvas.getContext('2d', { alpha: false });
 
-        // 1. Dapatkan Resolusi Asli Video (Misal: 4000x3000)
+        // 1. Dapatkan dimensi asli video stream
         const vw = video.videoWidth;
         const vh = video.videoHeight;
         
-        // 2. Hitung Crop Area berdasarkan Rasio yang dipilih
-        // Kita ingin hasil akhir sesuai rasio, tapi kualitas resolusi penuh
+        // 2. Hitung Crop Area (Center Crop) agar sesuai Target Rasio
         let sw, sh, sx, sy;
         const vidRatio = vw / vh;
 
         if (vidRatio > targetRatio) {
-            // Video terlalu lebar, potong sisi kiri-kanan
+            // Video lebih lebar dari target -> Potong kiri & kanan
             sh = vh;
             sw = vh * targetRatio;
             sx = (vw - sw) / 2;
             sy = 0;
         } else {
-            // Video terlalu tinggi, potong sisi atas-bawah
+            // Video lebih tinggi dari target -> Potong atas & bawah
             sw = vw;
             sh = vw / targetRatio;
             sx = 0;
             sy = (vh - sh) / 2;
         }
 
-        // 3. Set Ukuran Canvas = Ukuran Potongan (Resolusi Tinggi)
+        // 3. Set Ukuran Canvas = Hasil Crop (Resolusi Penuh)
         canvas.width = sw;
         canvas.height = sh;
 
         // 4. Gambar Video ke Canvas
+        // PENTING: Jika kamera depan, kita biasanya ingin hasil TULISAN terbaca, 
+        // jadi kita TIDAK me-mirror canvasnya, hanya preview videonya yang dimirror.
+        // Jika user ingin hasil foto mirror (seperti selfie biasa), logic drawImage harus diubah scaleX(-1).
+        // Default aplikasi pelaporan: JANGAN mirror hasil, agar latar belakang/tulisan baju terbaca.
+        
         ctx.drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh);
 
-        // 5. Tambahkan Watermark (Dynamic Scaling)
+        // 5. Tambahkan Watermark yang sudah diperbaiki
         addWatermark(ctx, sw, sh);
 
-        // 6. Tampilkan Hasil
-        const finalImage = canvas.toDataURL("image/jpeg", 1.0); // Quality 100%
+        // 6. Tampilkan Preview
+        const finalImage = canvas.toDataURL("image/jpeg", 0.95); // High Quality JPG
         const imgEl = document.getElementById('result-preview');
         imgEl.src = finalImage;
+        
+        // Trik agar preview tidak gepeng mengikuti CSS ratio
         imgEl.style.display = 'block';
         video.style.display = 'none';
 
-        // 7. Siapkan Download
+        // 7. Siapkan Link Download
         prepareDownload(finalImage);
 
         // UI Toggle
         document.getElementById('cam-actions').style.display = 'none';
         document.getElementById('res-actions').style.display = 'block';
         document.querySelector('.toolbar').style.display = 'none';
+        document.getElementById('loc-status').style.display = 'none';
     }
 
     function addWatermark(ctx, w, h) {
-        // --- KONFIGURASI FONT DINAMIS ---
-        // Kunci agar tidak ngeblur: Ukuran font adalah persentase dari lebar canvas
-        const baseSize = w * 0.032; // 3.2% dari lebar foto
-        const margin = w * 0.03;
-        const lineHeight = baseSize * 1.4;
+        // --- KONFIGURASI TAMPILAN (SANGAT RAPI) ---
+        // Ukuran font berbasis lebar canvas agar responsif (3% dari lebar)
+        // Batasi ukuran font minimum agar tetap terbaca jika resolusi rendah
+        const fontSizeBase = Math.max(w * 0.03, 16); 
+        const margin = w * 0.04; // Margin kiri/kanan/bawah
+        const lineHeight = fontSizeBase * 1.35;
         
-        // Data Input
+        // Data Input User
         const user = document.getElementById('inUser').value;
         const keg = document.getElementById('inKegiatan').value;
         const dinas = document.getElementById('inDinas').value;
@@ -340,99 +404,120 @@
         
         // Data Waktu
         const now = new Date();
-        const strDate = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        const strDate = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
         const strTime = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':') + ' WIB';
 
-        // 1. Gradient Background (Bawah)
-        const barHeight = baseSize * 10;
-        const grad = ctx.createLinearGradient(0, h - barHeight, 0, h);
+        // 1. Background Gradient (Dark Overlay di Bawah)
+        // Dibuat lebih tinggi sedikit agar muat semua teks
+        const contentHeight = (fontSizeBase * 10); 
+        const grad = ctx.createLinearGradient(0, h - contentHeight - margin, 0, h);
         grad.addColorStop(0, "rgba(0,0,0,0)");
-        grad.addColorStop(0.4, "rgba(0,0,0,0.6)");
-        grad.addColorStop(1, "rgba(0,0,0,0.9)");
+        grad.addColorStop(0.3, "rgba(0,0,0,0.5)");
+        grad.addColorStop(0.7, "rgba(0,0,0,0.8)");
+        grad.addColorStop(1, "rgba(0,0,0,0.95)");
         ctx.fillStyle = grad;
-        ctx.fillRect(0, h - barHeight, w, barHeight);
+        ctx.fillRect(0, h - contentHeight - margin - 50, w, contentHeight + margin + 50);
 
-        // 2. Setting Text Global (Shadow agar tajam)
-        ctx.shadowColor = "black";
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.fillStyle = "white";
+        // 2. Setting Text Default
+        ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 3;
+        ctx.textAlign = "left";
         ctx.textBaseline = "bottom";
 
-        // Cursor Y (Mulai dari bawah)
-        let y = h - margin;
-        let x = margin;
+        // --- MENGGAMBAR TEXT DARI BAWAH KE ATAS ---
+        let currentY = h - margin; // Titik mulai paling bawah
+        let currentX = margin;
 
-        // --- RENDER TEXT ---
+        // A. URL (PALING BAWAH - SESUAI REQUEST)
+        // Kita letakkan di tengah bawah atau kiri bawah, font kecil italic
+        ctx.font = `italic ${fontSizeBase * 0.6}px Arial`;
+        ctx.fillStyle = "#DDDDDD";
+        ctx.textAlign = "right"; // Rata kanan bawah
+        ctx.fillText("www.dinasperikanan.com/kilat", w - margin, h - (margin/2));
         
-        // URL (Kanan Bawah)
-        ctx.textAlign = "right";
-        ctx.font = `italic ${baseSize * 0.6}px Arial`;
-        ctx.fillText("www.dinasperikanan.com/kilat", w - margin, y);
+        // Reset posisi Y untuk konten utama (di atas URL sedikit)
+        currentY -= (fontSizeBase * 0.8);
 
-        // Info Utama (Kiri Bawah)
+        // Kembali ke rata kiri
         ctx.textAlign = "left";
 
-        // Baris 1: Koordinat
-        ctx.font = `bold ${baseSize * 0.75}px monospace`;
-        ctx.fillText(`LOC: ${geoData.lat}, ${geoData.lon}`, x, y);
-        y -= lineHeight;
+        // B. INFO LOKASI (Koordinat & Alamat)
+        // Koordinat
+        ctx.font = `bold ${fontSizeBase * 0.7}px monospace`;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(`LOC: ${geoData.lat}, ${geoData.lon}`, currentX, currentY);
+        currentY -= lineHeight;
 
-        // Baris 2: Alamat (Wrap text sederhana / potong)
-        ctx.font = `${baseSize * 0.7}px Arial`;
-        let addr = geoData.addr.length > 65 ? geoData.addr.substring(0, 65) + "..." : geoData.addr;
-        ctx.fillText(addr, x, y);
-        y -= (lineHeight * 1.2);
+        // Alamat (Multi-line jika panjang, atau potong)
+        ctx.font = `${fontSizeBase * 0.7}px Arial`;
+        ctx.fillStyle = "#EEEEEE";
+        let addr = geoData.addr;
+        if (addr.length > 70) addr = addr.substring(0, 70) + "...";
+        ctx.fillText(addr, currentX, currentY);
+        currentY -= (lineHeight * 1.2);
 
-        // Baris 3: Waktu (Kuning)
-        ctx.font = `bold ${baseSize}px Arial`;
-        ctx.fillStyle = "#FFD700"; 
-        ctx.fillText(`${strDate} | ${strTime}`, x, y);
-        ctx.fillStyle = "white"; // Reset putih
-        y -= (lineHeight * 1.5);
+        // Divider Line Kecil (Opsional, visual enhancement)
+        ctx.fillStyle = "#FFD700";
+        ctx.fillRect(currentX, currentY, w * 0.15, 3); 
+        currentY -= (lineHeight * 0.5);
 
-        // Baris 4: Kegiatan (Cyan - Besar)
-        ctx.font = `900 ${baseSize * 1.3}px sans-serif`;
-        ctx.fillStyle = "#00FFFF";
-        ctx.fillText(keg, x, y);
-        ctx.fillStyle = "white";
-        y -= (lineHeight * 1.2);
+        // C. WAKTU (Kuning Mencolok)
+        ctx.font = `bold ${fontSizeBase * 0.9}px sans-serif`;
+        ctx.fillStyle = "#FFD700"; // Emas
+        ctx.fillText(`${strDate} | ${strTime}`, currentX, currentY);
+        currentY -= (lineHeight * 1.2);
 
-        // Baris 5: Dinas & Bidang
-        ctx.font = `bold ${baseSize * 0.9}px Arial`;
-        let unit = dinas;
-        if (bidang) unit += " - " + bidang;
-        if (unit) {
-            ctx.fillText(unit, x, y);
-            y -= (lineHeight * 1.5);
+        // D. PETUGAS & INSTANSI
+        ctx.font = `bold ${fontSizeBase * 0.8}px Arial`;
+        ctx.fillStyle = "#FFFFFF";
+        
+        // Gabung Dinas & Bidang
+        let instansi = dinas;
+        if(dinas && bidang) instansi += ` - ${bidang}`;
+        else if(bidang) instansi = bidang;
+        
+        if (instansi) {
+            ctx.fillText(instansi, currentX, currentY);
+            currentY -= lineHeight;
         }
+        
+        // Nama Petugas
+        ctx.fillStyle = "#CCCCCC";
+        ctx.fillText(`OLEH: ${user}`, currentX, currentY);
+        currentY -= (lineHeight * 1.5);
 
-        // Baris 6: User (Paling Atas)
-        ctx.font = `bold ${baseSize * 0.8}px Arial`;
-        ctx.fillStyle = "#DDDDDD";
-        ctx.fillText(`OLEH: ${user}`, x, y);
+        // E. JUDUL KEGIATAN (Paling Atas dalam Blok Watermark - Cyan Besar)
+        ctx.font = `900 ${fontSizeBase * 1.4}px "Arial Black", sans-serif`;
+        ctx.fillStyle = "#00FFFF"; // Cyan
+        // Text wrapping sederhana untuk judul panjang
+        if (ctx.measureText(keg).width > (w - (margin*2))) {
+             // Jika sangat panjang, kecilkan font sedikit
+             ctx.font = `900 ${fontSizeBase * 1.1}px "Arial Black", sans-serif`;
+        }
+        ctx.fillText(keg, currentX, currentY);
     }
 
     // --- DOWNLOAD LOGIC ---
     function prepareDownload(url) {
         const a = document.getElementById('lnkDownload');
-        const keg = document.getElementById('inKegiatan').value.replace(/\s+/g, '_');
+        const keg = document.getElementById('inKegiatan').value.replace(/[^a-zA-Z0-9]/g, '_');
         
-        // Counter Logic
-        const today = new Date().toISOString().split('T')[0];
-        let lastDate = localStorage.getItem('kilat_date');
-        let count = parseInt(localStorage.getItem('kilat_count') || "0");
+        // Penamaan File Unik
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const hh = String(today.getHours()).padStart(2, '0');
+        const min = String(today.getMinutes()).padStart(2, '0');
         
-        if (lastDate !== today) { count = 0; localStorage.setItem('kilat_date', today); }
-        count++;
-        localStorage.setItem('kilat_count', count);
-        
-        const noUrut = String(count).padStart(3, '0');
-        const dateStr = today.replace(/-/g, '');
+        const fileName = `KILAT_${keg}_${yyyy}${mm}${dd}_${hh}${min}.jpg`;
         
         a.href = url;
-        a.download = `${keg}_${dateStr}_${noUrut}.jpg`;
+        a.download = fileName;
     }
 
     function retryPhoto() {
@@ -441,6 +526,12 @@
         document.getElementById('cam-actions').style.display = 'block';
         document.getElementById('res-actions').style.display = 'none';
         document.querySelector('.toolbar').style.display = 'flex';
+        document.getElementById('loc-status').style.display = 'block';
+        
+        // Pastikan video jalan lagi
+        if(stream) {
+            document.getElementById('video').play().catch(e => console.log("Play error", e));
+        }
     }
 </script>
 
