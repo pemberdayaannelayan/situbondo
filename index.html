@@ -36,7 +36,6 @@
             font-family: var(--font-body);
             color: var(--text-sub);
             background-color: var(--light-bg);
-            /* Perbaikan Layout agar footer tidak menumpuk */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -138,7 +137,7 @@
         /* --- Progress Bar Custom --- */
         .progress-container {
             width: 100%;
-            max-width: 450px; /* Sedikit diperlebar */
+            max-width: 450px; 
             margin: 0 auto 40px auto;
             text-align: left;
         }
@@ -153,7 +152,7 @@
         }
 
         .progress {
-            height: 14px; /* Sedikit lebih tebal */
+            height: 14px; 
             background-color: #e2e8f0;
             border-radius: 20px;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
@@ -161,19 +160,15 @@
             position: relative;
         }
 
-        /* BARU: Efek Animasi Cahaya/Glow */
         .progress-bar {
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             border-radius: 20px;
-            
-            /* Animasi utama untuk mencapai 49% */
             animation: progressAnimation 2s ease-out forwards; 
             width: 0%; 
             position: relative;
             overflow: hidden;
         }
 
-        /* BARU: Efek Cahaya Bergerak (Shine/Stripes) */
         .progress-bar::after {
             content: '';
             position: absolute;
@@ -192,9 +187,26 @@
                 transparent
             );
             background-size: 40px 40px;
-            /* Animasi Berulang Tanpa Henti */
             animation: progressStripes 1s linear infinite; 
         }
+
+        /* --- Live Text Animation Styling --- */
+        .live-status-wrapper {
+            height: 1.5em; /* Mempertahankan tinggi agar tidak terjadi lompatan layout */
+            line-height: 1.5em;
+        }
+        .live-status-text {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            font-style: italic;
+            display: inline-block;
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            /* Hapus border-right untuk cursor, JS akan mengontrolnya */
+        }
+        
+        /* Keyframes untuk Typing dan Blinking Cursor akan dibuat di JS */
 
         .btn-wa {
             background: linear-gradient(135deg, #25D366, #128C7E);
@@ -234,24 +246,30 @@
             opacity: 0.8;
         }
 
-        /* Animations */
+        /* Animations CSS */
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-15px); }
             100% { transform: translateY(0px); }
         }
 
-        /* Animasi Awal Progress */
         @keyframes progressAnimation {
             0% { width: 0%; }
-            100% { width: 49%; } /* Target 49% */
+            100% { width: 49%; } 
         }
         
-        /* BARU: Animasi Cahaya Berulang */
         @keyframes progressStripes {
             from { background-position: 40px 0; }
             to { background-position: 0 0; }
         }
+        
+        /* Keyframes untuk Typing (Akan diinjeksikan secara dinamis) */
+        /* Keyframes untuk Blinking Cursor (Akan diinjeksikan secara dinamis) */
+        @keyframes blink-cursor {
+            from, to { border-color: transparent }
+            50% { border-color: var(--text-sub) }
+        }
+
 
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
@@ -302,7 +320,11 @@
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="49" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
-                <small class="d-block text-muted mt-2 fst-italic" style="font-size: 0.8rem;">Sedang mengoptimalkan basis data dan modul baru...</small>
+                
+                <div class="mt-2 text-start live-status-wrapper">
+                    <span id="status-text-target" class="live-status-text"></span>
+                </div>
+                
             </div>
             <div class="d-flex flex-column align-items-center gap-3 mt-4">
                 <span class="fw-bold text-primary">Butuh layanan mendesak?</span>
@@ -322,11 +344,66 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
     <script>
         AOS.init({
             duration: 1000,
             once: true
         });
+
+        const statusTextTarget = document.getElementById('status-text-target');
+        const statusMessages = [
+            "[UI/UX] Penyesuaian antarmuka pengguna responsif...",
+            "[Database] Optimalisasi query dan struktur data...",
+            "[System] Memperbarui modul keamanan versi 2.1...",
+            "[Frontend] Validasi script & library baru...",
+            "[Integrasi] Testing koneksi API Layanan Publik..."
+        ];
+
+        let messageIndex = 0;
+        const typingSpeed = 50; // Kecepatan ketik (milidetik per karakter)
+        const delayBetweenMessages = 2500; // Jeda sebelum mengetik pesan berikutnya
+
+        function typeWriter(text, i, callback) {
+            if (i < text.length) {
+                // Menambahkan karakter satu per satu
+                statusTextTarget.innerHTML = text.substring(0, i + 1);
+                
+                // Menambahkan cursor yang berkedip
+                statusTextTarget.style.borderRight = '2px solid var(--text-sub)';
+                statusTextTarget.style.animation = 'blink-cursor 0.75s step-end infinite';
+
+                setTimeout(() => {
+                    typeWriter(text, i + 1, callback);
+                }, typingSpeed);
+            } else {
+                // Selesai mengetik, hentikan kursor selama jeda
+                statusTextTarget.style.borderRight = 'none';
+                statusTextTarget.style.animation = 'none';
+
+                // Panggil callback setelah jeda
+                setTimeout(callback, delayBetweenMessages); 
+            }
+        }
+
+        function startTypingLoop() {
+            // Hapus teks lama sebelum mengetik yang baru
+            statusTextTarget.innerHTML = '';
+            
+            const currentMessage = statusMessages[messageIndex];
+            
+            // Panggil fungsi mengetik
+            typeWriter(currentMessage, 0, () => {
+                // Setelah selesai mengetik, pindah ke pesan berikutnya
+                messageIndex = (messageIndex + 1) % statusMessages.length;
+                
+                // Ulangi proses
+                startTypingLoop();
+            });
+        }
+
+        // Mulai animasi loop status
+        startTypingLoop();
     </script>
 </body>
 </html>
