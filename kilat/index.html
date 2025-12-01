@@ -6,13 +6,17 @@
     <title>KILAT - Kamera Interaktif Lacak Aktifitas Terkini</title>
     <style>
         :root {
-            --primary-color: #0288d1;
-            --secondary-color: #01579b;
-            --bg-color: #f0f4f8;
+            /* Palette Profesional */
+            --primary-color: #007bff; /* Biru Profesional */
+            --secondary-color: #0056b3; 
+            --text-color: #333;
+            --bg-color: #f8f9fa; /* Abu-abu Sangat Terang */
+            --card-bg: #ffffff;
+            --font-size-base: 1rem;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
             padding: 0;
@@ -24,36 +28,37 @@
 
         .container {
             width: 100%;
-            max-width: 480px;
-            background: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-radius: 10px;
+            max-width: 500px;
+            background: var(--card-bg);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 12px;
             overflow: hidden;
-            position: relative;
+            transition: all 0.3s ease;
         }
 
         /* Header */
         .header {
             background: var(--primary-color);
             color: white;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
         }
         .header h1 {
             margin: 0;
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
         .header p {
             margin: 5px 0 0;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             opacity: 0.9;
         }
 
         /* Sections */
         .section {
-            padding: 20px;
-            display: none; /* Hidden by default */
+            padding: 25px;
+            display: none;
         }
         .section.active {
             display: block;
@@ -61,24 +66,28 @@
 
         /* Form Styles */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 600;
             font-size: 0.9rem;
-            color: #333;
+            color: var(--text-color);
         }
         .form-group input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
             box-sizing: border-box;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
         }
-        /* Force visuals to uppercase, JS will force actual value */
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
         input {
             text-transform: uppercase;
         }
@@ -89,17 +98,24 @@
             background: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.1s;
         }
         .btn:hover {
             background: var(--secondary-color);
         }
+        .btn:active {
+            transform: scale(0.99);
+        }
         .btn-secondary {
-            background: #757575;
+            background: #6c757d;
             margin-top: 10px;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
         }
 
         /* Camera Styles */
@@ -107,12 +123,12 @@
             position: relative;
             width: 100%;
             background: #000;
-            height: auto;
-            min-height: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border-radius: 8px;
+            min-height: 250px;
         }
         video, canvas, img {
             width: 100%;
@@ -122,14 +138,29 @@
         #photo-result {
             display: none;
             border: 2px solid var(--primary-color);
+            border-radius: 8px;
         }
 
-        /* Loading indicator */
-        .loading {
+        /* Status */
+        .status-box {
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #495057;
             text-align: center;
-            color: #666;
-            margin-top: 10px;
-            font-size: 0.9rem;
+        }
+        .status-box.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .status-box.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
         }
     </style>
 </head>
@@ -137,17 +168,17 @@
 
 <div class="container">
     <div class="header">
-        <h1>APLIKASI KILAT</h1>
+        <h1>KILAT</h1>
         <p>Kamera Interaktif Lacak Aktifitas Terkini</p>
     </div>
 
     <div id="page-login" class="section active">
         <div class="form-group">
-            <label>Nama User (Wajib, Huruf Saja)</label>
+            <label>Nama User <span style="color:red">*</span></label>
             <input type="text" id="inputUser" placeholder="CONTOH: BUDI SANTOSO" oninput="validateName(this)" required>
         </div>
         <div class="form-group">
-            <label>Nama Kegiatan (Wajib)</label>
+            <label>Nama Kegiatan <span style="color:red">*</span></label>
             <input type="text" id="inputKegiatan" placeholder="CONTOH: MONITORING KOLAM" oninput="forceCaps(this)" required>
         </div>
         <div class="form-group">
@@ -168,15 +199,15 @@
             <img id="photo-result" alt="Hasil Foto">
         </div>
         
-        <div id="location-status" class="loading">Mencari Lokasi GPS...</div>
+        <div id="location-status" class="status-box">Mencari Lokasi GPS dan Alamat...</div>
 
-        <div id="camera-controls" style="margin-top: 15px;">
-            <button class="btn" onclick="takePicture()">Ambil Foto</button>
-            <button class="btn btn-secondary" onclick="resetApp()">Kembali / Reset</button>
+        <div id="camera-controls" style="margin-top: 20px;">
+            <button class="btn" onclick="takePicture()">Ambil Foto Watermark</button>
+            <button class="btn btn-secondary" onclick="resetApp()">Kembali ke Form</button>
         </div>
 
-        <div id="result-controls" style="margin-top: 15px; display:none;">
-            <a id="download-link" class="btn" style="display:block; text-align:center; text-decoration:none;">Download Foto</a>
+        <div id="result-controls" style="margin-top: 20px; display:none;">
+            <a id="download-link" class="btn" style="display:block; text-align:center; text-decoration:none;">Download Foto (.jpg)</a>
             <button class="btn btn-secondary" onclick="retakePhoto()">Foto Ulang</button>
         </div>
     </div>
@@ -185,19 +216,21 @@
 <script>
     // --- VARIABLES ---
     let stream = null;
-    let userLocation = { lat: null, long: null };
+    let userLocation = { 
+        lat: null, 
+        long: null, 
+        address: "Mencari Alamat..." 
+    };
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    const NOMINATIM_API = "https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1";
 
     // --- FORM VALIDATION LOGIC ---
     
-    // Validasi Nama User: Kapital & Hanya Huruf
     function validateName(input) {
-        // Hapus angka dan simbol, hanya sisakan huruf dan spasi
         input.value = input.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
     }
 
-    // Force Kapital untuk input lain
     function forceCaps(input) {
         input.value = input.value.toUpperCase();
     }
@@ -223,14 +256,17 @@
     }
 
     function resetApp() {
-        // Stop Camera
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
         }
-        // Reset View
         document.getElementById('page-camera').classList.remove('active');
         document.getElementById('page-login').classList.add('active');
-        retakePhoto(); // Reset UI elements inside camera page
+        retakePhoto();
+        // Reset location status
+        const status = document.getElementById('location-status');
+        status.textContent = "Mencari Lokasi GPS dan Alamat...";
+        status.className = "status-box";
+        userLocation = { lat: null, long: null, address: "Mencari Alamat..." };
     }
 
     // --- CAMERA & LOCATION LOGIC ---
@@ -238,14 +274,13 @@
     async function initCamera() {
         try {
             const video = document.getElementById('video');
-            // Prefer rear camera (environment)
             stream = await navigator.mediaDevices.getUserMedia({ 
                 video: { facingMode: "environment" }, 
                 audio: false 
             });
             video.srcObject = stream;
         } catch (err) {
-            alert("Gagal akses kamera: " + err.message);
+            alert("Gagal akses kamera: Pastikan Anda menggunakan HTTPS.");
             console.error(err);
         }
     }
@@ -254,6 +289,7 @@
         const status = document.getElementById('location-status');
         if (!navigator.geolocation) {
             status.textContent = "Geolocation tidak didukung browser ini.";
+            status.classList.add('error');
             return;
         }
 
@@ -261,16 +297,41 @@
             (position) => {
                 userLocation.lat = position.coords.latitude.toFixed(6);
                 userLocation.long = position.coords.longitude.toFixed(6);
-                status.textContent = `Lokasi Terkunci: ${userLocation.lat}, ${userLocation.long}`;
-                status.style.color = "green";
+                
+                status.textContent = `Titik GPS Terkunci. Mencari Alamat...`;
+                status.classList.add('success');
+                
+                // Cari Alamat Lengkap
+                getReverseGeocoding(userLocation.lat, userLocation.long, status);
             },
             () => {
                 status.textContent = "Gagal mendapatkan lokasi. Pastikan GPS aktif.";
-                status.style.color = "red";
+                status.classList.add('error');
                 userLocation.lat = "-";
                 userLocation.long = "-";
-            }
+            },
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 } // High accuracy settings
         );
+    }
+    
+    async function getReverseGeocoding(lat, lon, statusElement) {
+        try {
+            const url = `${NOMINATIM_API}&lat=${lat}&lon=${lon}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.display_name) {
+                userLocation.address = data.display_name;
+                statusElement.textContent = `Lokasi: ${userLocation.lat}, ${userLocation.long} | Alamat ditemukan.`;
+            } else {
+                userLocation.address = `Alamat tidak ditemukan (GPS: ${lat}, ${lon})`;
+                statusElement.textContent = `Lokasi: ${userLocation.lat}, ${userLocation.long} | Gagal mendapatkan alamat.`;
+            }
+        } catch (error) {
+            console.error("Reverse Geocoding Error:", error);
+            userLocation.address = `Kesalahan API Alamat (GPS: ${lat}, ${lon})`;
+            statusElement.textContent = `Lokasi: ${userLocation.lat}, ${userLocation.long} | Kesalahan saat mencari alamat.`;
+        }
     }
 
     // --- WATERMARK & CAPTURE LOGIC ---
@@ -281,84 +342,94 @@
         const resultImg = document.getElementById('photo-result');
         const context = canvas.getContext('2d');
 
-        // Set canvas size to match video resolution
+        // Set canvas size
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
-        // 1. Draw Video Frame
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // 2. Prepare Data for Watermark
+        // Prepare Data for Watermark
         const now = new Date();
         const dateString = `${dayNames[now.getDay()]}, ${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
         const timeString = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} WIB`;
         
         const dinas = document.getElementById('inputDinas').value || "DINAS TIDAK DISEBUTKAN";
-        const bidang = document.getElementById('inputBidang').value; // Optional
+        const bidang = document.getElementById('inputBidang').value;
         const kegiatan = document.getElementById('inputKegiatan').value;
         const user = document.getElementById('inputUser').value;
+        const locationText = userLocation.address;
+        const gpsText = `GPS: ${userLocation.lat}, ${userLocation.long}`;
         
-        // 3. Draw Watermark Background (Semi-transparent black bar at bottom)
-        const barHeight = canvas.height * 0.35; // Cover bottom 35%
+        // --- DRAWING WATERMARK ---
+
+        // Scaling font size based on image width (Profesional: 2% - 3%)
+        const fontSizeBase = canvas.width * 0.025; // 2.5% of width
+        const leftMargin = canvas.width * 0.03; // 3% margin
+        const lineSpacing = fontSizeBase * 1.5;
+        let currentY = canvas.height - (leftMargin * 0.7); // Start from near bottom
+        
+        // 1. Draw Watermark Background (Black Bar)
+        const barHeight = lineSpacing * 6.5; // Enough height for 6 lines of text
         const startY = canvas.height - barHeight;
         
+        // Use solid black or very dark gradient for better contrast
         const gradient = context.createLinearGradient(0, startY, 0, canvas.height);
-        gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-        gradient.addColorStop(0.3, "rgba(0, 0, 0, 0.6)");
+        gradient.addColorStop(0, "rgba(0, 0, 0, 0.2)");
+        gradient.addColorStop(0.5, "rgba(0, 0, 0, 0.7)");
         gradient.addColorStop(1, "rgba(0, 0, 0, 0.9)");
         
         context.fillStyle = gradient;
         context.fillRect(0, startY, canvas.width, barHeight);
 
-        // 4. Draw Text
-        // Scaling font size based on image width
-        const fontSizeBase = canvas.width * 0.035; // 3.5% of width
-        context.font = `bold ${fontSizeBase}px Arial`;
+        // 2. Setup Text Styling
         context.fillStyle = "white";
         context.textBaseline = "bottom";
-        
-        // Helper to add text shadow for readability
         context.shadowColor = "black";
-        context.shadowBlur = 4;
-        context.shadowOffsetX = 2;
-        context.shadowOffsetY = 2;
+        context.shadowBlur = 0; // No blur, clean look
+        context.shadowOffsetX = 1;
+        context.shadowOffsetY = 1;
 
-        const leftMargin = 20;
-        let lineSpacing = fontSizeBase * 1.4;
-        let currentY = canvas.height - 20; // Start from bottom
 
-        // -- Footer (URL & App Name) --
+        // -- BLOCK 1: FOOTER (Bottom Right) --
         context.textAlign = "right";
         context.font = `italic ${fontSizeBase * 0.8}px Arial`;
-        context.fillText("www.dinasperikanan.com/kilat", canvas.width - 20, currentY);
+        context.fillText("www.dinasperikanan.com/kilat", canvas.width - leftMargin, currentY);
         currentY -= lineSpacing;
-        context.font = `bold ${fontSizeBase}px Arial`;
-        context.fillStyle = "#4fc3f7"; // Light blue for App Name
-        context.fillText("KILAT APP", canvas.width - 20, currentY);
         
-        // -- Main Info (Left Side) --
+        context.font = `bold ${fontSizeBase * 1.1}px Arial`;
+        context.fillStyle = "#4fc3f7"; // Light blue for App Name
+        context.fillText("KILAT APP", canvas.width - leftMargin, currentY);
+        currentY = canvas.height - (leftMargin * 0.7); // Reset Y to bottom for left block
+
+        // -- BLOCK 2: LOKASI & WAKTU (Bottom Left) --
         context.textAlign = "left";
         context.fillStyle = "white";
-        // Reset currentY to bottom for left side stack
-        currentY = canvas.height - 20; 
-
-        // Line 1: Coordinates
+        
+        // Line 1: GPS Koordinat
         context.font = `${fontSizeBase * 0.8}px monospace`;
-        context.fillText(`Loc: ${userLocation.lat}, ${userLocation.long}`, leftMargin, currentY);
+        context.fillText(gpsText, leftMargin, currentY);
         currentY -= lineSpacing;
 
-        // Line 2: Date & Time
+        // Line 2: Alamat Lengkap (Bisa panjang, gunakan font lebih kecil)
+        context.font = `${fontSizeBase * 0.8}px Arial`;
+        // Handle long address by trimming if necessary (simple approach)
+        const displayAddress = locationText.length > 70 ? locationText.substring(0, 70) + '...' : locationText;
+        context.fillText(`Alamat: ${displayAddress}`, leftMargin, currentY);
+        currentY -= lineSpacing * 1.2; 
+
+        // Line 3: Tanggal & Waktu
         context.font = `${fontSizeBase}px Arial`;
         context.fillText(`${dateString} | ${timeString}`, leftMargin, currentY);
-        currentY -= lineSpacing * 1.2; // Extra space
+        currentY -= lineSpacing * 1.5; 
 
-        // Line 3: Kegiatan
+        // -- BLOCK 3: INFORMASI KEGIATAN (Middle Left) --
+        
+        // Line 4: Kegiatan
         context.font = `bold ${fontSizeBase * 1.1}px Arial`;
-        context.fillStyle = "#ffeb3b"; // Yellow for highlight
+        context.fillStyle = "#ffeb3b"; // Yellow highlight
         context.fillText(kegiatan, leftMargin, currentY);
         currentY -= lineSpacing;
 
-        // Line 4: Bidang (If exists)
+        // Line 5: Bidang (If exists)
         if(bidang) {
             context.fillStyle = "white";
             context.font = `bold ${fontSizeBase}px Arial`;
@@ -366,21 +437,23 @@
             currentY -= lineSpacing;
         }
 
-        // Line 5: Dinas
+        // Line 6: Dinas
         context.fillStyle = "white";
         context.font = `bold ${fontSizeBase * 1.2}px Arial`;
         context.fillText(dinas, leftMargin, currentY);
-
-        // Line 6: User (Top of the stack)
         currentY -= lineSpacing * 1.5;
-        context.font = `${fontSizeBase * 0.8}px Arial`;
-        context.fillText(`Petugas: ${user}`, leftMargin, currentY);
 
-        // 5. Switch to Result View
-        const dataURL = canvas.toDataURL('image/jpeg');
+        // Line 7: Petugas (Top of the watermark area)
+        context.font = `${fontSizeBase * 0.9}px Arial`;
+        context.fillStyle = "#cccccc"; // Greyish white
+        context.fillText(`PETUGAS: ${user}`, leftMargin, currentY);
+
+
+        // 3. Switch to Result View
+        const dataURL = canvas.toDataURL('image/jpeg', 0.9); // Quality 0.9
         resultImg.src = dataURL;
-        resultImg.style.display = 'block';
         video.style.display = 'none';
+        resultImg.style.display = 'block';
 
         // Toggle Buttons
         document.getElementById('camera-controls').style.display = 'none';
@@ -389,7 +462,7 @@
         // Setup Download Link
         const link = document.getElementById('download-link');
         link.href = dataURL;
-        link.download = `KILAT_${Date.now()}.jpg`;
+        link.download = `KILAT_${kegiatan.replace(/\s/g, '_')}_${now.getTime()}.jpg`;
     }
 
     function retakePhoto() {
