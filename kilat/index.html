@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KILAT - Kamera Interaktif Lacak Aktifitas Terkini</title>
+    <style>
+        :root {
+            --primary-color: #0288d1;
+            --secondary-color: #01579b;
+            --bg-color: #f0f4f8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .header p {
+            margin: 5px 0 0;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        /* Sections */
+        .section {
+            padding: 20px;
+            display: none; /* Hidden by default */
+        }
+        .section.active {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        /* Force visuals to uppercase, JS will force actual value */
+        input {
+            text-transform: uppercase;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: var(--secondary-color);
+        }
+        .btn-secondary {
+            background: #757575;
+            margin-top: 10px;
+        }
+
+        /* Camera Styles */
+        #camera-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            height: auto;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        video, canvas, img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        #photo-result {
+            display: none;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Loading indicator */
+        .loading {
+            text-align: center;
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>APLIKASI KILAT</h1>
+        <p>Kamera Interaktif Lacak Aktifitas Terkini</p>
+    </div>
+
+    <div id="page-login" class="section active">
+        <div class="form-group">
+            <label>Nama User (Wajib, Huruf Saja)</label>
+            <input type="text" id="inputUser" placeholder="CONTOH: BUDI SANTOSO" oninput="validateName(this)" required>
+        </div>
+        <div class="form-group">
+            <label>Nama Kegiatan (Wajib)</label>
+            <input type="text" id="inputKegiatan" placeholder="CONTOH: MONITORING KOLAM" oninput="forceCaps(this)" required>
+        </div>
+        <div class="form-group">
+            <label>Nama Dinas (Opsional)</label>
+            <input type="text" id="inputDinas" placeholder="CONTOH: DINAS PERIKANAN" oninput="forceCaps(this)">
+        </div>
+        <div class="form-group">
+            <label>Nama Bidang (Opsional)</label>
+            <input type="text" id="inputBidang" placeholder="CONTOH: BIDANG BUDIDAYA" oninput="forceCaps(this)">
+        </div>
+        <button class="btn" onclick="goToCamera()">Masuk & Buka Kamera</button>
+    </div>
+
+    <div id="page-camera" class="section">
+        <div id="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <img id="photo-result" alt="Hasil Foto">
+        </div>
+        
+        <div id="location-status" class="loading">Mencari Lokasi GPS...</div>
+
+        <div id="camera-controls" style="margin-top: 15px;">
+            <button class="btn" onclick="takePicture()">Ambil Foto</button>
+            <button class="btn btn-secondary" onclick="resetApp()">Kembali / Reset</button>
+        </div>
+
+        <div id="result-controls" style="margin-top: 15px; display:none;">
+            <a id="download-link" class="btn" style="display:block; text-align:center; text-decoration:none;">Download Foto</a>
+            <button class="btn btn-secondary" onclick="retakePhoto()">Foto Ulang</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- VARIABLES ---
+    let stream = null;
+    let userLocation = { lat: null, long: null };
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+
+    // --- FORM VALIDATION LOGIC ---
+    
+    // Validasi Nama User: Kapital & Hanya Huruf
+    function validateName(input) {
+        // Hapus angka dan simbol, hanya sisakan huruf dan spasi
+        input.value = input.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
+    }
+
+    // Force Kapital untuk input lain
+    function forceCaps(input) {
+        input.value = input.value.toUpperCase();
+    }
+
+    // --- NAVIGATION LOGIC ---
+
+    function goToCamera() {
+        const user = document.getElementById('inputUser').value;
+        const keg = document.getElementById('inputKegiatan').value;
+
+        if (!user || !keg) {
+            alert("Nama User dan Nama Kegiatan wajib diisi!");
+            return;
+        }
+
+        // Switch View
+        document.getElementById('page-login').classList.remove('active');
+        document.getElementById('page-camera').classList.add('active');
+
+        // Init Hardware
+        initCamera();
+        initLocation();
+    }
+
+    function resetApp() {
+        // Stop Camera
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        // Reset View
+        document.getElementById('page-camera').classList.remove('active');
+        document.getElementById('page-login').classList.add('active');
+        retakePhoto(); // Reset UI elements inside camera page
+    }
+
+    // --- CAMERA & LOCATION LOGIC ---
+
+    async function initCamera() {
+        try {
+            const video = document.getElementById('video');
+            // Prefer rear camera (environment)
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "environment" }, 
+                audio: false 
+            });
+            video.srcObject = stream;
+        } catch (err) {
+            alert("Gagal akses kamera: " + err.message);
+            console.error(err);
+        }
+    }
+
+    function initLocation() {
+        const status = document.getElementById('location-status');
+        if (!navigator.geolocation) {
+            status.textContent = "Geolocation tidak didukung browser ini.";
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                userLocation.lat = position.coords.latitude.toFixed(6);
+                userLocation.long = position.coords.longitude.toFixed(6);
+                status.textContent = `Lokasi Terkunci: ${userLocation.lat}, ${userLocation.long}`;
+                status.style.color = "green";
+            },
+            () => {
+                status.textContent = "Gagal mendapatkan lokasi. Pastikan GPS aktif.";
+                status.style.color = "red";
+                userLocation.lat = "-";
+                userLocation.long = "-";
+            }
+        );
+    }
+
+    // --- WATERMARK & CAPTURE LOGIC ---
+
+    function takePicture() {
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const resultImg = document.getElementById('photo-result');
+        const context = canvas.getContext('2d');
+
+        // Set canvas size to match video resolution
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // 1. Draw Video Frame
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // 2. Prepare Data for Watermark
+        const now = new Date();
+        const dateString = `${dayNames[now.getDay()]}, ${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+        const timeString = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} WIB`;
+        
+        const dinas = document.getElementById('inputDinas').value || "DINAS TIDAK DISEBUTKAN";
+        const bidang = document.getElementById('inputBidang').value; // Optional
+        const kegiatan = document.getElementById('inputKegiatan').value;
+        const user = document.getElementById('inputUser').value;
+        
+        // 3. Draw Watermark Background (Semi-transparent black bar at bottom)
+        const barHeight = canvas.height * 0.35; // Cover bottom 35%
+        const startY = canvas.height - barHeight;
+        
+        const gradient = context.createLinearGradient(0, startY, 0, canvas.height);
+        gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+        gradient.addColorStop(0.3, "rgba(0, 0, 0, 0.6)");
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0.9)");
+        
+        context.fillStyle = gradient;
+        context.fillRect(0, startY, canvas.width, barHeight);
+
+        // 4. Draw Text
+        // Scaling font size based on image width
+        const fontSizeBase = canvas.width * 0.035; // 3.5% of width
+        context.font = `bold ${fontSizeBase}px Arial`;
+        context.fillStyle = "white";
+        context.textBaseline = "bottom";
+        
+        // Helper to add text shadow for readability
+        context.shadowColor = "black";
+        context.shadowBlur = 4;
+        context.shadowOffsetX = 2;
+        context.shadowOffsetY = 2;
+
+        const leftMargin = 20;
+        let lineSpacing = fontSizeBase * 1.4;
+        let currentY = canvas.height - 20; // Start from bottom
+
+        // -- Footer (URL & App Name) --
+        context.textAlign = "right";
+        context.font = `italic ${fontSizeBase * 0.8}px Arial`;
+        context.fillText("www.dinasperikanan.com/kilat", canvas.width - 20, currentY);
+        currentY -= lineSpacing;
+        context.font = `bold ${fontSizeBase}px Arial`;
+        context.fillStyle = "#4fc3f7"; // Light blue for App Name
+        context.fillText("KILAT APP", canvas.width - 20, currentY);
+        
+        // -- Main Info (Left Side) --
+        context.textAlign = "left";
+        context.fillStyle = "white";
+        // Reset currentY to bottom for left side stack
+        currentY = canvas.height - 20; 
+
+        // Line 1: Coordinates
+        context.font = `${fontSizeBase * 0.8}px monospace`;
+        context.fillText(`Loc: ${userLocation.lat}, ${userLocation.long}`, leftMargin, currentY);
+        currentY -= lineSpacing;
+
+        // Line 2: Date & Time
+        context.font = `${fontSizeBase}px Arial`;
+        context.fillText(`${dateString} | ${timeString}`, leftMargin, currentY);
+        currentY -= lineSpacing * 1.2; // Extra space
+
+        // Line 3: Kegiatan
+        context.font = `bold ${fontSizeBase * 1.1}px Arial`;
+        context.fillStyle = "#ffeb3b"; // Yellow for highlight
+        context.fillText(kegiatan, leftMargin, currentY);
+        currentY -= lineSpacing;
+
+        // Line 4: Bidang (If exists)
+        if(bidang) {
+            context.fillStyle = "white";
+            context.font = `bold ${fontSizeBase}px Arial`;
+            context.fillText(bidang, leftMargin, currentY);
+            currentY -= lineSpacing;
+        }
+
+        // Line 5: Dinas
+        context.fillStyle = "white";
+        context.font = `bold ${fontSizeBase * 1.2}px Arial`;
+        context.fillText(dinas, leftMargin, currentY);
+
+        // Line 6: User (Top of the stack)
+        currentY -= lineSpacing * 1.5;
+        context.font = `${fontSizeBase * 0.8}px Arial`;
+        context.fillText(`Petugas: ${user}`, leftMargin, currentY);
+
+        // 5. Switch to Result View
+        const dataURL = canvas.toDataURL('image/jpeg');
+        resultImg.src = dataURL;
+        resultImg.style.display = 'block';
+        video.style.display = 'none';
+
+        // Toggle Buttons
+        document.getElementById('camera-controls').style.display = 'none';
+        document.getElementById('result-controls').style.display = 'block';
+
+        // Setup Download Link
+        const link = document.getElementById('download-link');
+        link.href = dataURL;
+        link.download = `KILAT_${Date.now()}.jpg`;
+    }
+
+    function retakePhoto() {
+        document.getElementById('video').style.display = 'block';
+        document.getElementById('photo-result').style.display = 'none';
+        document.getElementById('camera-controls').style.display = 'block';
+        document.getElementById('result-controls').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
