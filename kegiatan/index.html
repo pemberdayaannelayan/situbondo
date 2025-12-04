@@ -38,6 +38,8 @@
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
+            --multimedia: #8B5CF6;
+            --multimedia-dark: #7C3AED;
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
             --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
             --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
@@ -615,6 +617,10 @@
             background: linear-gradient(135deg, var(--accent), var(--accent-dark));
         }
 
+        .kegiatan-badge.multimedia {
+            background: linear-gradient(135deg, var(--multimedia), var(--multimedia-dark));
+        }
+
         .kegiatan-content {
             padding: 25px;
             display: flex;
@@ -858,9 +864,24 @@
         /* Carousel Styles for Multi-Image */
         .carousel-item img {
             width: 100%;
-            height: 300px;
+            height: 400px;
             object-fit: cover;
             border-radius: var(--radius-md);
+        }
+
+        .carousel-indicators {
+            bottom: -40px;
+        }
+
+        .carousel-indicators button {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #94a3b8;
+        }
+
+        .carousel-indicators button.active {
+            background-color: var(--primary);
         }
 
         /* Generator Modal Styles */
@@ -914,6 +935,28 @@
             color: var(--text-sub);
             cursor: pointer;
             z-index: 5;
+        }
+
+        /* Video Container Styles */
+        .video-iframe-container {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .video-iframe-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Media Counter */
+        .media-counter {
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
         }
 
         /* ===== FOOTER IMPROVED ===== */
@@ -1102,6 +1145,10 @@
             .hero-stats {
                 gap: 25px;
             }
+
+            .carousel-item img {
+                height: 300px;
+            }
         }
 
         @media (max-width: 767.98px) {
@@ -1146,6 +1193,15 @@
                 width: 50px;
                 height: 50px;
                 font-size: 1.3rem;
+            }
+
+            .carousel-item img {
+                height: 250px;
+            }
+
+            .modal-lg {
+                max-width: 95%;
+                margin: 0.5rem auto;
             }
         }
 
@@ -1202,6 +1258,18 @@
             .stat-item {
                 padding: 10px 0;
             }
+
+            .carousel-item img {
+                height: 200px;
+            }
+
+            .modal-body .row {
+                flex-direction: column;
+            }
+            
+            .modal-body .col-lg-6 {
+                width: 100%;
+            }
         }
 
         /* ===== UTILITY CLASSES ===== */
@@ -1246,6 +1314,17 @@
 
         .opacity-90 {
             opacity: 0.9;
+        }
+
+        /* Shake Animation for Password Error */
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translateX(-1px); }
+            20%, 80% { transform: translateX(2px); }
+            30%, 50%, 70% { transform: translateX(-3px); }
+            40%, 60% { transform: translateX(3px); }
         }
     </style>
 </head>
@@ -1397,8 +1476,11 @@
                             <span class="badge bg-primary me-2">
                                 <i class="fas fa-camera me-1"></i> Foto
                             </span>
-                            <span class="badge bg-danger">
+                            <span class="badge bg-danger me-2">
                                 <i class="fab fa-youtube me-1"></i> Video
+                            </span>
+                            <span class="badge bg-purple">
+                                <i class="fas fa-photo-video me-1"></i> Multimedia
                             </span>
                         </div>
                     </div>
@@ -1501,10 +1583,9 @@
                 <div class="modal-body">
                     <div class="row g-4">
                         <div class="col-lg-6">
-                            <div id="modalMediaContainer">
-                                <img id="modalImage" class="kegiatan-modal-img" src="" alt="" style="display:none;">
-                                
-                                <div id="modalCarousel" class="carousel slide" data-bs-ride="carousel" style="display:none;">
+                            <!-- Carousel untuk Multiple Images -->
+                            <div id="carouselContainer" style="display: none;">
+                                <div id="modalCarousel" class="carousel slide" data-bs-ride="carousel">
                                     <div class="carousel-inner" id="modalCarouselInner"></div>
                                     <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel" data-bs-slide="prev">
                                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -1517,13 +1598,14 @@
                                 </div>
                             </div>
                             
-                            <div id="videoContainer" class="ratio ratio-16x9 mt-3" style="display: none;">
-                                <iframe id="modalVideo" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            </div>
-                            <div id="modalYoutubeLink" class="mt-3" style="display: none;">
-                                <a href="#" target="_blank" class="btn btn-danger w-100">
-                                    <i class="fab fa-youtube me-2"></i> Tonton di YouTube
-                                </a>
+                            <!-- Container untuk Multiple Videos -->
+                            <div id="modalVideoContainer" style="display: none;">
+                                <h6 class="fw-bold mt-4 mb-3 text-danger">
+                                    <i class="fab fa-youtube me-2"></i> Video Dokumentasi
+                                </h6>
+                                <div class="row" id="modalVideoList">
+                                    <!-- Video akan ditampilkan di sini -->
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -1539,13 +1621,22 @@
                             </div>
                             
                             <div class="mb-4">
-                                <span class="badge bg-primary me-2" id="modalType"></span>
-                                <span class="badge bg-secondary me-2" id="modalCategory"></span>
+                                <span class="badge bg-primary me-2" id="modalCategory"></span>
+                                <span class="badge bg-success me-2">
+                                    <i class="fas fa-users me-1"></i>
+                                    <span id="modalParticipants"></span> Peserta
+                                </span>
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-clock me-1"></i>
+                                    <span id="modalDuration"></span>
+                                </span>
                             </div>
                             
                             <div id="modalTags" class="kegiatan-tags mb-4"></div>
                             
-                            <h6 class="fw-bold mb-3 text-primary">Deskripsi Kegiatan</h6>
+                            <h6 class="fw-bold mb-3 text-primary">
+                                <i class="fas fa-align-left me-2"></i> Deskripsi Kegiatan
+                            </h6>
                             <p id="modalDescription" class="mb-4"></p>
                             
                             <div class="alert alert-primary" role="alert">
@@ -1561,7 +1652,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i> Tutup
                     </button>
-                    <a href="#" id="modalDetailLink" class="btn btn-primary">
+                    <a href="#" id="modalDetailLink" class="btn btn-primary" target="_blank">
                         <i class="fas fa-external-link-alt me-2"></i> Lihat Halaman Detail
                     </a>
                 </div>
@@ -1605,46 +1696,58 @@
                                             <option value="lainnya">Lainnya</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">Tipe Konten</label>
-                                        <select class="form-select" id="genType">
-                                            <option value="foto">Foto Dokumentasi</option>
-                                            <option value="youtube">Video Youtube</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label class="form-label fw-bold">Lokasi</label>
                                         <input type="text" class="form-control" id="genLocation" placeholder="Contoh: Balai Desa..." required>
                                     </div>
+                                    
+                                    <!-- Bagian Multiple Images -->
                                     <div class="col-md-12">
-                                        <label class="form-label fw-bold">URL Gambar</label>
-                                        <textarea class="form-control" id="genImages" rows="3" placeholder="Masukkan URL gambar. Pisahkan dengan baris baru (Enter) jika lebih dari satu."></textarea>
-                                        <small class="text-muted">Gambar pertama akan menjadi thumbnail.</small>
+                                        <label class="form-label fw-bold">
+                                            <i class="fas fa-images me-1"></i> URL Gambar (Multiple)
+                                        </label>
+                                        <textarea class="form-control" id="genImages" rows="3" 
+                                                  placeholder="Masukkan URL gambar. Pisahkan dengan baris baru (Enter) jika lebih dari satu.&#10;Contoh:&#10;https://images.unsplash.com/photo-xxxx&#10;https://images.unsplash.com/photo-yyyy"></textarea>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i> Gambar pertama akan menjadi thumbnail
+                                        </div>
                                     </div>
+                                    
+                                    <!-- Bagian Multiple Videos -->
                                     <div class="col-md-12">
-                                        <label class="form-label fw-bold">URL Youtube (Opsional)</label>
-                                        <input type="text" class="form-control" id="genYoutube" placeholder="https://www.youtube.com/watch?v=...">
+                                        <label class="form-label fw-bold">
+                                            <i class="fab fa-youtube me-1"></i> URL Video YouTube (Multiple)
+                                        </label>
+                                        <textarea class="form-control" id="genVideos" rows="3" 
+                                                  placeholder="Masukkan URL video YouTube. Pisahkan dengan baris baru.&#10;Format yang didukung:&#10;https://youtu.be/VIDEO_ID&#10;https://www.youtube.com/watch?v=VIDEO_ID&#10;https://www.youtube.com/embed/VIDEO_ID"></textarea>
+                                        <div class="form-text">
+                                            <i class="fas fa-lightbulb me-1"></i> Sistem akan otomatis mendeteksi jika Anda memasukkan gambar dan video (Multimedia)
+                                        </div>
                                     </div>
+                                    
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold">Deskripsi</label>
                                         <textarea class="form-control" id="genDesc" rows="3" placeholder="Deskripsi lengkap kegiatan..." required></textarea>
                                     </div>
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold">Tags (Pisahkan dengan koma)</label>
-                                        <input type="text" class="form-control" id="genTags" placeholder="nelayan, bantuan, situbondo">
+                                        <input type="text" class="form-control" id="genTags" placeholder="nelayan, bantuan, situbondo, perikanan">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Jumlah Peserta (Opsional)</label>
-                                        <input type="number" class="form-control" id="genParticipants" placeholder="Kosongkan jika umum">
+                                        <input type="number" class="form-control" id="genParticipants" min="0" placeholder="Kosongkan jika umum">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Durasi (Opsional)</label>
-                                        <input type="text" class="form-control" id="genDuration" placeholder="Contoh: 2 Hari">
+                                        <input type="text" class="form-control" id="genDuration" placeholder="Contoh: 2 Hari, 1 Minggu">
                                     </div>
                                 </div>
                                 <div class="mt-4 d-grid gap-2">
                                     <button type="button" class="btn btn-primary" onclick="generatePreview()">
                                         <i class="fas fa-eye me-2"></i> Generate & Preview
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearGeneratorForm()">
+                                        <i class="fas fa-redo me-2"></i> Reset Form
                                     </button>
                                 </div>
                             </form>
@@ -1659,8 +1762,16 @@
                             </div>
 
                             <h6 class="fw-bold mb-2">Kode Script (Siap Paste)</h6>
-                            <p class="small text-muted mb-2">Salin kode di bawah ini dan paste ke dalam array <code>kegiatanData</code> di file <code>script.js</code>.</p>
-                            <pre class="code-output" id="codeOutput">// Kode akan muncul di sini...</pre>
+                            <p class="small text-muted mb-2">
+                                <i class="fas fa-clipboard-check me-1"></i> 
+                                Salin kode di bawah ini dan paste ke dalam array <code>kegiatanData</code> di file <code>script.js</code>.
+                            </p>
+                            <div class="code-output-wrapper mb-3">
+                                <pre class="code-output" id="codeOutput">// Kode akan muncul di sini...</pre>
+                                <button class="btn btn-sm btn-outline-secondary mt-2" onclick="document.getElementById('codeOutput').textContent='// Kode akan muncul di sini...';">
+                                    <i class="fas fa-trash me-1"></i> Clear Code
+                                </button>
+                            </div>
                             <button class="btn btn-success w-100" onclick="copyToClipboard()">
                                 <i class="fas fa-copy me-2"></i> Salin Kode ke Clipboard
                             </button>
@@ -1731,11 +1842,11 @@
                         </div>
                         <div class="contact-item">
                             <div class="contact-icon">
-                                <i class="fas fa-phone-alt"></i>
+                                <i class="fab fa-whatsapp"></i>
                             </div>
                             <div>
-                                <span class="d-block text-white fw-bold">Telepon</span>
-                                <small>(0338) 671123</small>
+                                <span class="d-block text-white fw-bold">WhatsApp Admin</span>
+                                <small>0878 6561 4222</small>
                             </div>
                         </div>
                         <div class="contact-item">
@@ -1744,7 +1855,7 @@
                             </div>
                             <div>
                                 <span class="d-block text-white fw-bold">Email</span>
-                                <small>perikanan@situbondokab.go.id</small>
+                                <small>info@dinasperikanansitubondo.com</small>
                             </div>
                         </div>
                     </div>
