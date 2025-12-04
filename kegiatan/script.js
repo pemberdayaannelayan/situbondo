@@ -195,14 +195,16 @@ AOS.init({
 let currentPage = 1;
 const itemsPerPage = 6;
 let currentFilteredData = [...kegiatanData];
+let isAuthenticated = false;
+const ADMIN_PASSWORD = "19450817";
 
 // Inisialisasi saat DOM siap
 document.addEventListener('DOMContentLoaded', function() {
     // Set tahun di footer
     document.getElementById('currentYear').textContent = new Date().getFullYear();
     
-    // Set total kegiatan di hero
-    document.getElementById('totalKegiatan').textContent = kegiatanData.length;
+    // Hitung dan set statistik
+    calculateAndSetStatistics();
     
     // Tampilkan semua kegiatan saat pertama kali dimuat
     displayKegiatan(kegiatanData, currentPage);
@@ -216,9 +218,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Setup scroll to top button
     setupScrollToTop();
     
-    // Setup tahun filter
+    // Setup tahun filter (dinamis)
     setupYearFilter();
+    
+    // Setup password protection untuk generator
+    setupPasswordProtection();
 });
+
+// Fungsi untuk menghitung dan menampilkan statistik
+function calculateAndSetStatistics() {
+    // Total kegiatan
+    document.getElementById('totalKegiatan').textContent = kegiatanData.length;
+    
+    // Total tahun aktif (unik)
+    const tahunUnik = [...new Set(kegiatanData.map(k => new Date(k.date).getFullYear()))];
+    document.getElementById('totalTahun').textContent = tahunUnik.length;
+    
+    // Total lokasi (unik)
+    const lokasiUnik = [...new Set(kegiatanData.map(k => k.location))];
+    document.getElementById('totalLokasi').textContent = lokasiUnik.length;
+    
+    // Total tags (semua tag unik)
+    const semuaTags = kegiatanData.flatMap(k => k.tags);
+    const tagUnik = [...new Set(semuaTags)];
+    document.getElementById('totalTags').textContent = tagUnik.length;
+}
 
 // Fungsi untuk menampilkan kegiatan
 function displayKegiatan(data, page = 1) {
@@ -355,7 +379,7 @@ function displayKegiatan(data, page = 1) {
             </li>
             `;
             
-            // Page numbers logic (tetap sama)
+            // Page numbers logic
             const maxVisiblePages = 5;
             let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
@@ -552,26 +576,141 @@ function setupScrollToTop() {
     });
 }
 
-// Setup year filter options
+// Setup year filter options (dinamis 90 tahun ke depan)
 function setupYearFilter() {
     const tahunSelect = document.getElementById('filterTahun');
-    const tahunUnik = [...new Set(kegiatanData.map(k => new Date(k.date).getFullYear()))];
-    tahunUnik.sort((a, b) => b - a);
+    const tahunSekarang = new Date().getFullYear();
+    const tahunMulai = 2024; // Tahun awal data
+    const tahunAkhir = tahunSekarang + 90; // 90 tahun ke depan
     
     // Clear existing options except first
     while (tahunSelect.options.length > 1) {
         tahunSelect.remove(1);
     }
 
-    tahunUnik.forEach(tahun => {
+    // Tambahkan opsi tahun dari 2024 hingga 90 tahun ke depan
+    for (let tahun = tahunAkhir; tahun >= tahunMulai; tahun--) {
         const option = document.createElement('option');
         option.value = tahun;
         option.textContent = tahun;
         tahunSelect.appendChild(option);
+    }
+}
+
+// Setup password protection untuk generator
+function setupPasswordProtection() {
+    const btnGenerator = document.getElementById('btnGenerator');
+    const btnVerifyPassword = document.getElementById('btnVerifyPassword');
+    const adminPasswordInput = document.getElementById('adminPassword');
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordError = document.getElementById('passwordError');
+    
+    // Event listener untuk tombol generator
+    btnGenerator.addEventListener('click', function() {
+        if (isAuthenticated) {
+            // Langsung buka modal generator jika sudah login
+            const generatorModal = new bootstrap.Modal(document.getElementById('generatorModal'));
+            generatorModal.show();
+        } else {
+            // Tampilkan modal password
+            const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+            passwordModal.show();
+        }
+    });
+    
+    // Toggle show/hide password
+    togglePasswordBtn.addEventListener('click', function() {
+        const type = adminPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        adminPasswordInput.setAttribute('type', type);
+        togglePasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+    
+    // Verifikasi password
+    btnVerifyPassword.addEventListener('click', function() {
+        const password = adminPasswordInput.value.trim();
+        
+        if (password === ADMIN_PASSWORD) {
+            // Password benar
+            isAuthenticated = true;
+            passwordError.classList.add('d-none');
+            
+            // Tutup modal password
+            const passwordModal = bootstrap.Modal.getInstance(document.getElementById('passwordModal'));
+            passwordModal.hide();
+            
+            // Reset input
+            adminPasswordInput.value = '';
+            
+            // Tampilkan modal generator
+            setTimeout(() => {
+                const generatorModal = new bootstrap.Modal(document.getElementById('generatorModal'));
+                generatorModal.show();
+            }, 300);
+            
+            // Tampilkan notifikasi sukses
+            showToast('Akses diberikan!', 'Anda sekarang dapat mengakses generator script.', 'success');
+        } else {
+            // Password salah
+            passwordError.classList.remove('d-none');
+            document.getElementById('errorMessage').textContent = 'Kode keamanan salah. Coba lagi.';
+            adminPasswordInput.value = '';
+            adminPasswordInput.focus();
+            
+            // Shake animation untuk efek visual
+            adminPasswordInput.classList.add('shake');
+            setTimeout(() => {
+                adminPasswordInput.classList.remove('shake');
+            }, 500);
+        }
+    });
+    
+    // Enter key untuk submit password
+    adminPasswordInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            btnVerifyPassword.click();
+        }
+    });
+    
+    // Reset password modal ketika ditutup
+    document.getElementById('passwordModal').addEventListener('hidden.bs.modal', function() {
+        adminPasswordInput.value = '';
+        passwordError.classList.add('d-none');
+        adminPasswordInput.setAttribute('type', 'password');
+        togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
     });
 }
 
-// Fungsi untuk menampilkan detail kegiatan di modal (IMPROVED with Multi-Image)
+// Fungsi untuk menampilkan toast notification
+function showToast(title, message, type = 'info') {
+    // Buat elemen toast
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+    <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0 position-fixed" style="bottom: 20px; right: 20px; z-index: 1090;" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <strong>${title}</strong><br>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    `;
+    
+    // Tambahkan ke body
+    document.body.insertAdjacentHTML('beforeend', toastHtml);
+    
+    // Inisialisasi dan tampilkan toast
+    const toastEl = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+    
+    // Hapus elemen setelah toast hilang
+    toastEl.addEventListener('hidden.bs.toast', function() {
+        toastEl.remove();
+    });
+}
+
+// Fungsi untuk menampilkan detail kegiatan di modal
 function showKegiatanDetail(id) {
     const kegiatan = kegiatanData.find(k => k.id === id);
     if (!kegiatan) return;
@@ -649,6 +788,16 @@ function showKegiatanDetail(id) {
 
 // Fungsi untuk Generate dan Preview
 function generatePreview() {
+    // Cek apakah sudah terautentikasi
+    if (!isAuthenticated) {
+        showToast('Akses Ditolak', 'Silakan login terlebih dahulu untuk mengakses generator.', 'warning');
+        
+        // Tampilkan modal password
+        const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        passwordModal.show();
+        return;
+    }
+    
     // Ambil data dari form
     const title = document.getElementById('genTitle').value;
     const date = document.getElementById('genDate').value;
@@ -664,7 +813,7 @@ function generatePreview() {
 
     // Validasi sederhana
     if(!title || !date || !desc) {
-        alert("Mohon lengkapi Judul, Tanggal, dan Deskripsi.");
+        showToast('Data Tidak Lengkap', 'Mohon lengkapi Judul, Tanggal, dan Deskripsi.', 'warning');
         return;
     }
 
@@ -702,6 +851,9 @@ function generatePreview() {
     const cleanCode = `    ${jsonString},`; // Add comma at the end
     
     document.getElementById('codeOutput').textContent = cleanCode;
+    
+    // Tampilkan notifikasi sukses
+    showToast('Preview Generated', 'Kode script berhasil dibuat. Salin ke clipboard untuk digunakan.', 'success');
 }
 
 // Fungsi Render Preview Card di dalam Modal Generator
@@ -756,14 +908,15 @@ function renderPreviewCard(data) {
 function copyToClipboard() {
     const codeText = document.getElementById('codeOutput').textContent;
     if(codeText.includes("// Kode akan muncul")) {
-        alert("Silakan generate preview terlebih dahulu.");
+        showToast('Tidak Ada Kode', 'Silakan generate preview terlebih dahulu.', 'warning');
         return;
     }
 
     navigator.clipboard.writeText(codeText).then(() => {
-        alert("Kode berhasil disalin! Silakan paste ke dalam file script.js di dalam array kegiatanData.");
+        showToast('Kode Disalin!', 'Script berhasil disalin ke clipboard. Paste ke dalam file script.js.', 'success');
     }).catch(err => {
         console.error('Gagal menyalin: ', err);
+        showToast('Gagal Menyalin', 'Terjadi kesalahan saat menyalin kode.', 'danger');
     });
 }
 
@@ -787,6 +940,21 @@ function loadFilterFromHash() {
         }
     }
 }
+
+// Tambahkan CSS untuk animasi shake
+const style = document.createElement('style');
+style.textContent = `
+    .shake {
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes shake {
+        10%, 90% { transform: translateX(-1px); }
+        20%, 80% { transform: translateX(2px); }
+        30%, 50%, 70% { transform: translateX(-3px); }
+        40%, 60% { transform: translateX(3px); }
+    }
+`;
+document.head.appendChild(style);
 
 // Panggil fungsi untuk memuat filter dari hash saat halaman dimuat
 setTimeout(loadFilterFromHash, 500);
