@@ -15,7 +15,7 @@ const kegiatanData = [
         location: "Balai Pelatihan Perikanan",
         tags: ["pelatihan", "pengolahan ikan", "nelayan perempuan", "pemberdayaan", "UMKM", "inovatif"],
         youtubeUrls: [],
-        url: "#",
+        url: "https://www.dinasperikanansitubondo.com/kegiatan/detail/pelatihan-pengolahan-ikan",
         participants: 50,
         duration: "2 hari"
     },
@@ -36,7 +36,7 @@ const kegiatanData = [
             "https://www.youtube.com/embed/dQw4w9WgXcQ",
             "https://www.youtube.com/embed/9bZkp7q19f0"
         ],
-        url: "#",
+        url: "https://www.dinasperikanansitubondo.com/kegiatan/detail/penyerahan-bantuan-mesin-kapal",
         participants: 75,
         duration: "1 hari"
     },
@@ -228,7 +228,7 @@ function displayKegiatan(data, page = 1) {
                         </div>
                         
                         <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
-                            <a href="${kegiatan.url}" class="btn-kegiatan">
+                            <a href="${kegiatan.url}" class="btn-kegiatan" target="_blank">
                                 <i class="fas ${mediaType === 'youtube' ? 'fa-play-circle' : mediaType === 'multimedia' ? 'fa-photo-video' : 'fa-eye'} me-2"></i>
                                 ${mediaType === 'youtube' ? 'Tonton Video' : mediaType === 'multimedia' ? 'Lihat Media' : 'Lihat Detail'}
                             </a>
@@ -601,6 +601,19 @@ function showKegiatanDetail(id) {
     document.getElementById('modalDescription').textContent = kegiatan.description;
     document.getElementById('modalDetailLink').href = kegiatan.url;
     
+    // Update participants and duration jika ada
+    if (kegiatan.participants && kegiatan.participants > 0) {
+        document.getElementById('modalParticipants').textContent = kegiatan.participants;
+    } else {
+        document.getElementById('modalParticipants').parentElement.style.display = 'none';
+    }
+    
+    if (kegiatan.duration) {
+        document.getElementById('modalDuration').textContent = kegiatan.duration;
+    } else {
+        document.getElementById('modalDuration').parentElement.style.display = 'none';
+    }
+    
     // Update tags
     const tagsContainer = document.getElementById('modalTags');
     tagsContainer.innerHTML = kegiatan.tags.map(tag => 
@@ -627,7 +640,8 @@ function showKegiatanDetail(id) {
             const activeClass = index === 0 ? 'active' : '';
             carouselInner.innerHTML += `
                 <div class="carousel-item ${activeClass}">
-                    <img src="${img}" class="d-block w-100 modal-img" alt="Dokumentasi ${index + 1}">
+                    <img src="${img}" class="d-block w-100 modal-img" alt="Dokumentasi ${index + 1}" 
+                         onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
                 </div>
             `;
         });
@@ -648,13 +662,7 @@ function showKegiatanDetail(id) {
         videoContainer.style.display = 'block';
         
         kegiatan.youtubeUrls.forEach((url, index) => {
-            const videoId = url.includes('youtube.com/embed/') 
-                ? url.split('/embed/')[1] 
-                : url.includes('youtu.be/') 
-                    ? url.split('youtu.be/')[1]
-                    : url.includes('v=') 
-                        ? url.split('v=')[1].split('&')[0]
-                        : '';
+            const videoId = extractYouTubeId(url);
             
             if (videoId) {
                 const embedUrl = `https://www.youtube.com/embed/${videoId}`;
@@ -666,7 +674,8 @@ function showKegiatanDetail(id) {
                             <iframe src="${embedUrl}" 
                                     title="Video ${index + 1} - ${kegiatan.title}"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen>
+                                    allowfullscreen
+                                    loading="lazy">
                             </iframe>
                         </div>
                         <div class="text-center mt-2">
@@ -683,6 +692,33 @@ function showKegiatanDetail(id) {
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('kegiatanModal'));
     modal.show();
+}
+
+// Helper function untuk extract YouTube ID
+function extractYouTubeId(url) {
+    if (!url) return null;
+    
+    // Handle embed URL
+    if (url.includes('youtube.com/embed/')) {
+        return url.split('/embed/')[1].split('?')[0];
+    }
+    
+    // Handle youtu.be URL
+    if (url.includes('youtu.be/')) {
+        return url.split('youtu.be/')[1].split('?')[0];
+    }
+    
+    // Handle watch URL
+    if (url.includes('youtube.com/watch?v=')) {
+        return url.split('v=')[1].split('&')[0];
+    }
+    
+    // Handle youtu.be with parameters
+    if (url.includes('youtu.be/') && url.includes('?')) {
+        return url.split('youtu.be/')[1].split('?')[0];
+    }
+    
+    return null;
 }
 
 // ==========================================
@@ -705,14 +741,13 @@ function generatePreview() {
     const location = document.getElementById('genLocation').value;
     const imagesRaw = document.getElementById('genImages').value;
     const videosRaw = document.getElementById('genVideos').value;
+    const detailUrl = document.getElementById('genDetailUrl').value;
     const desc = document.getElementById('genDesc').value;
     const tagsRaw = document.getElementById('genTags').value;
-    const participants = document.getElementById('genParticipants').value;
-    const duration = document.getElementById('genDuration').value;
 
     // Validasi
-    if(!title || !date || !desc) {
-        showToast('Data Tidak Lengkap', 'Mohon lengkapi Judul, Tanggal, dan Deskripsi.', 'warning');
+    if(!title || !date || !desc || !detailUrl) {
+        showToast('Data Tidak Lengkap', 'Mohon lengkapi Judul, Tanggal, Deskripsi, dan URL Detail.', 'warning');
         return;
     }
 
@@ -722,23 +757,18 @@ function generatePreview() {
         .filter(url => url !== '' && (url.startsWith('http') || url.startsWith('https')))
         .map(url => url.includes('?') ? url.split('?')[0] : url);
 
-    // Process Videos
+    // Process Videos dengan extract YouTube ID
     const videosList = videosRaw.split('\n')
         .map(url => url.trim())
-        .filter(url => url !== '' && url.includes('youtube'))
+        .filter(url => url !== '' && (url.includes('youtube') || url.includes('youtu.be')))
         .map(url => {
-            // Convert berbagai format YouTube URL ke embed
-            if (url.includes('youtu.be/')) {
-                const videoId = url.split('youtu.be/')[1].split('?')[0];
+            const videoId = extractYouTubeId(url);
+            if (videoId) {
                 return `https://www.youtube.com/embed/${videoId}`;
-            } else if (url.includes('watch?v=')) {
-                const videoId = url.split('v=')[1].split('&')[0];
-                return `https://www.youtube.com/embed/${videoId}`;
-            } else if (url.includes('embed/')) {
-                return url;
             }
             return url;
-        });
+        })
+        .filter(url => url !== null && url.includes('youtube.com/embed/'));
 
     // Tentukan type berdasarkan konten
     let type = 'foto';
@@ -754,15 +784,15 @@ function generatePreview() {
         title: title,
         date: date,
         description: desc,
-        images: imagesList.length > 0 ? imagesList : null,
+        images: imagesList.length > 0 ? imagesList : [],
         type: type,
         category: category,
         location: location,
         tags: tagsRaw.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
-        youtubeUrls: videosList.length > 0 ? videosList : null,
-        url: "#",
-        participants: participants ? parseInt(participants) : 0,
-        duration: duration || ""
+        youtubeUrls: videosList.length > 0 ? videosList : [],
+        url: detailUrl,
+        participants: 0,
+        duration: ""
     };
 
     // Render Preview Card
@@ -777,7 +807,7 @@ function generatePreview() {
     // Tampilkan statistik media
     const imageCount = imagesList.length;
     const videoCount = videosList.length;
-    showToast('Preview Berhasil!', `${imageCount} gambar dan ${videoCount} video telah diproses.`, 'success');
+    showToast('Preview Berhasil!', `${imageCount} gambar dan ${videoCount} video telah diproses. URL Detail: ${detailUrl}`, 'success');
 }
 
 // Fungsi Render Preview Card di dalam Modal Generator
@@ -838,14 +868,15 @@ function renderPreviewCard(data) {
                     ${data.tags.map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
                 </div>
                 <div class="mt-3">
-                    <button class="btn btn-sm btn-outline-primary w-100" disabled>
+                    <a href="${data.url}" class="btn btn-sm btn-outline-primary w-100" target="_blank">
                         <i class="fas ${badgeType === 'youtube' ? 'fa-play-circle' : badgeType === 'multimedia' ? 'fa-photo-video' : 'fa-eye'} me-2"></i>
-                        ${badgeType === 'youtube' ? 'Tonton Video' : badgeType === 'multimedia' ? 'Lihat Media' : 'Lihat Detail'} (Preview)
-                    </button>
+                        ${badgeType === 'youtube' ? 'Tonton Video' : badgeType === 'multimedia' ? 'Lihat Media' : 'Lihat Detail'}
+                    </a>
                 </div>
                 <div class="mt-2 text-center text-muted small">
                     <i class="fas fa-images me-1"></i> ${imageCount} gambar | 
-                    <i class="fab fa-youtube me-1"></i> ${videoCount} video
+                    <i class="fab fa-youtube me-1"></i> ${videoCount} video |
+                    <i class="fas fa-link me-1"></i> URL Detail: <a href="${data.url}" target="_blank">Link</a>
                 </div>
             </div>
         </div>
@@ -898,10 +929,9 @@ function clearGeneratorForm() {
     document.getElementById('genLocation').value = '';
     document.getElementById('genImages').value = '';
     document.getElementById('genVideos').value = '';
+    document.getElementById('genDetailUrl').value = '';
     document.getElementById('genDesc').value = '';
     document.getElementById('genTags').value = '';
-    document.getElementById('genParticipants').value = '';
-    document.getElementById('genDuration').value = '';
     
     document.getElementById('previewCardContainer').innerHTML = `
         <div class="text-center text-muted py-5 border rounded bg-white">
@@ -964,3 +994,4 @@ window.showKegiatanDetail = showKegiatanDetail;
 window.generatePreview = generatePreview;
 window.copyToClipboard = copyToClipboard;
 window.clearGeneratorForm = clearGeneratorForm;
+window.extractYouTubeId = extractYouTubeId;
