@@ -10,10 +10,8 @@
     <meta name="keywords" content="kegiatan nelayan, dokumentasi perikanan, situbondo, dinas perikanan, pemberdayaan nelayan">
     <link rel="canonical" href="https://www.dinasperikanansitubondo.com/kegiatan/">
 
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-mata-nelayan.png">
 
-    <!-- CSS Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -428,6 +426,27 @@
             transform: translateY(-2px);
         }
 
+        .btn-generator {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: var(--radius-full);
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+
+        .btn-generator:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
         /* ===== KEGIATAN SECTION IMPROVED ===== */
         .kegiatan-section {
             padding: 80px 0;
@@ -477,6 +496,8 @@
             height: 100%;
             margin-bottom: 30px;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .kegiatan-card:hover {
@@ -489,6 +510,7 @@
             position: relative;
             overflow: hidden;
             height: 260px;
+            flex-shrink: 0;
         }
 
         .kegiatan-img {
@@ -766,6 +788,39 @@
         .modal-footer {
             border-top: 1px solid var(--border-color);
             padding: 20px 30px;
+        }
+
+        /* Carousel Styles for Multi-Image */
+        .carousel-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+        }
+
+        /* Generator Modal Styles */
+        .generator-form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .preview-box {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-top: 20px;
+        }
+
+        .code-output {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: var(--radius-md);
+            font-family: monospace;
+            font-size: 0.85rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
         }
 
         /* ===== FOOTER IMPROVED ===== */
@@ -1080,12 +1135,10 @@
 </head>
 <body>
 
-    <!-- Scroll to Top Button -->
     <button class="scroll-to-top" id="scrollToTopBtn">
         <i class="fas fa-chevron-up"></i>
     </button>
 
-    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-3" href="https://www.dinasperikanansitubondo.com">
@@ -1125,7 +1178,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="hero-section-kegiatan">
         <div class="container hero-content-kegiatan">
             <div class="row justify-content-center">
@@ -1160,13 +1212,17 @@
         </div>
     </section>
 
-    <!-- Filter Section -->
     <section class="filter-section">
         <div class="container">
             <div class="filter-card" data-aos="fade-up" data-aos-duration="800">
-                <h4 class="text-center mb-4 text-primary">
-                    <i class="fas fa-filter me-2"></i> Filter & Pencarian Kegiatan
-                </h4>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-primary mb-0">
+                        <i class="fas fa-filter me-2"></i> Filter & Pencarian Kegiatan
+                    </h4>
+                    <button class="btn btn-generator" data-bs-toggle="modal" data-bs-target="#generatorModal">
+                        <i class="fas fa-code me-2"></i> Buat Script Konten
+                    </button>
+                </div>
                 <div class="row g-4 align-items-end">
                     <div class="col-lg-3 col-md-6">
                         <label class="filter-label">
@@ -1239,7 +1295,6 @@
         </div>
     </section>
 
-    <!-- Kegiatan Section -->
     <section class="kegiatan-section">
         <div class="container">
             <div class="section-header" data-aos="fade-up" data-aos-duration="800">
@@ -1251,17 +1306,14 @@
                 </p>
             </div>
 
-            <!-- Loading State -->
             <div id="loading">
                 <div class="spinner"></div>
                 <h5 class="text-primary fw-bold mt-4">Memuat Kegiatan...</h5>
                 <p class="text-muted">Sedang mengambil data dokumentasi kegiatan</p>
             </div>
 
-            <!-- Kegiatan Container -->
             <div id="kegiatanContainer" class="row g-4"></div>
 
-            <!-- Empty State -->
             <div id="emptyState" class="empty-state">
                 <div class="empty-state-icon">
                     <i class="fas fa-images"></i>
@@ -1273,12 +1325,10 @@
                 </button>
             </div>
 
-            <!-- Pagination -->
             <div class="pagination-container" id="paginationContainer"></div>
         </div>
     </section>
 
-    <!-- Kegiatan Modal -->
     <div class="modal fade" id="kegiatanModal" tabindex="-1" aria-labelledby="kegiatanModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -1289,9 +1339,23 @@
                 <div class="modal-body">
                     <div class="row g-4">
                         <div class="col-lg-6">
-                            <div id="modalImageContainer">
-                                <img id="modalImage" class="kegiatan-modal-img" src="" alt="">
+                            <div id="modalMediaContainer">
+                                <img id="modalImage" class="kegiatan-modal-img" src="" alt="" style="display:none;">
+                                
+                                <div id="modalCarousel" class="carousel slide" data-bs-ride="carousel" style="display:none;">
+                                    <div class="carousel-inner" id="modalCarouselInner">
+                                        </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                </div>
                             </div>
+                            
                             <div id="videoContainer" class="ratio ratio-16x9 mt-3" style="display: none;">
                                 <iframe id="modalVideo" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             </div>
@@ -1344,7 +1408,105 @@
         </div>
     </div>
 
-    <!-- Footer -->
+    <div class="modal fade" id="generatorModal" tabindex="-1" aria-labelledby="generatorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="generatorModalLabel"><i class="fas fa-code me-2"></i> Generator Script Konten Kegiatan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-6 border-end">
+                            <form id="contentForm">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold">Judul Kegiatan</label>
+                                        <input type="text" class="form-control" id="genTitle" placeholder="Contoh: Pelatihan Pengolahan Ikan..." required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Tanggal</label>
+                                        <input type="date" class="form-control" id="genDate" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Kategori</label>
+                                        <select class="form-select" id="genCategory">
+                                            <option value="pelatihan">Pelatihan</option>
+                                            <option value="bantuan">Bantuan</option>
+                                            <option value="konservasi">Konservasi</option>
+                                            <option value="sosialisasi">Sosialisasi</option>
+                                            <option value="budidaya">Budidaya</option>
+                                            <option value="kunjungan">Kunjungan</option>
+                                            <option value="festival">Festival</option>
+                                            <option value="lainnya">Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Tipe Konten</label>
+                                        <select class="form-select" id="genType">
+                                            <option value="foto">Foto Dokumentasi</option>
+                                            <option value="youtube">Video Youtube</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Lokasi</label>
+                                        <input type="text" class="form-control" id="genLocation" placeholder="Contoh: Balai Desa..." required>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold">URL Gambar</label>
+                                        <textarea class="form-control" id="genImages" rows="3" placeholder="Masukkan URL gambar. Pisahkan dengan baris baru (Enter) jika lebih dari satu."></textarea>
+                                        <small class="text-muted">Gambar pertama akan menjadi thumbnail.</small>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold">URL Youtube (Opsional)</label>
+                                        <input type="text" class="form-control" id="genYoutube" placeholder="https://www.youtube.com/watch?v=...">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold">Deskripsi</label>
+                                        <textarea class="form-control" id="genDesc" rows="3" placeholder="Deskripsi lengkap kegiatan..." required></textarea>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold">Tags (Pisahkan dengan koma)</label>
+                                        <input type="text" class="form-control" id="genTags" placeholder="nelayan, bantuan, situbondo">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Jumlah Peserta (Opsional)</label>
+                                        <input type="number" class="form-control" id="genParticipants" placeholder="Kosongkan jika umum">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Durasi (Opsional)</label>
+                                        <input type="text" class="form-control" id="genDuration" placeholder="Contoh: 2 Hari">
+                                    </div>
+                                </div>
+                                <div class="mt-4 d-grid gap-2">
+                                    <button type="button" class="btn btn-primary" onclick="generatePreview()">
+                                        <i class="fas fa-eye me-2"></i> Generate & Preview
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-lg-6 bg-light p-4 rounded">
+                            <h6 class="fw-bold mb-3">Preview Tampilan Card</h6>
+                            <div id="previewCardContainer" class="mb-4">
+                                <div class="text-center text-muted py-5 border rounded bg-white">
+                                    <i class="fas fa-image fa-3x mb-3 text-secondary"></i>
+                                    <p>Klik tombol Generate untuk melihat preview</p>
+                                </div>
+                            </div>
+
+                            <h6 class="fw-bold mb-2">Kode Script (Siap Paste)</h6>
+                            <p class="small text-muted mb-2">Salin kode di bawah ini dan paste ke dalam array <code>kegiatanData</code> di file <code>script.js</code>.</p>
+                            <pre class="code-output" id="codeOutput">// Kode akan muncul di sini...</pre>
+                            <button class="btn btn-success w-100" onclick="copyToClipboard()">
+                                <i class="fas fa-copy me-2"></i> Salin Kode ke Clipboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <div class="footer-wave">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
@@ -1439,12 +1601,10 @@
         </div>
     </footer>
 
-    <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.0/lightgallery.umd.min.js"></script>
     
-    <!-- Main JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
