@@ -239,6 +239,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            cursor: pointer;
         }
 
         .service-card::after {
@@ -311,6 +312,7 @@
             overflow: hidden;
             border-radius: 5px;
             transition: transform 0.3s ease;
+            cursor: pointer;
         }
 
         .gallery-thumbnail-item img {
@@ -340,7 +342,7 @@
             transition: opacity 0.3s ease;
         }
 
-        .service-card:hover .gallery-overlay {
+        .gallery-thumbnail-item:hover .gallery-overlay {
             opacity: 1;
         }
 
@@ -352,6 +354,102 @@
             gap: 8px;
             margin-top: auto; 
             padding-top: 20px;
+        }
+
+        /* --- Lightbox Modal Styles --- */
+        .lightbox-modal .modal-dialog {
+            max-width: 95%;
+            max-height: 95vh;
+            margin: 10px auto;
+        }
+
+        .lightbox-modal .modal-content {
+            background: rgba(0, 0, 0, 0.9);
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .lightbox-modal .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+        }
+
+        .lightbox-modal .modal-title {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .lightbox-modal .btn-close {
+            background-color: white;
+            opacity: 1;
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        .lightbox-modal .modal-body {
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            max-height: 70vh;
+            overflow: hidden;
+        }
+
+        .lightbox-modal .lightbox-image {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+
+        .lightbox-modal .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lightbox-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lightbox-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .lightbox-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .lightbox-zoom-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lightbox-counter {
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
         }
 
         /* --- Form Section --- */
@@ -546,6 +644,10 @@
             .gallery-thumbnail-container {
                 height: 150px;
             }
+            .lightbox-modal .modal-dialog {
+                max-width: 98%;
+                margin: 5px auto;
+            }
         }
 
         @media (max-width: 768px) {
@@ -553,6 +655,14 @@
                 grid-template-columns: repeat(3, 1fr);
                 grid-template-rows: repeat(3, 1fr);
                 height: 200px;
+            }
+            .lightbox-modal .modal-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            .lightbox-nav, .lightbox-zoom-controls {
+                justify-content: center;
             }
         }
 
@@ -588,6 +698,9 @@
                 height: 160px;
                 grid-template-columns: repeat(3, 1fr);
                 grid-template-rows: repeat(3, 1fr);
+            }
+            .lightbox-modal .modal-body {
+                max-height: 60vh;
             }
         }
 
@@ -722,50 +835,83 @@
                 </div>
 
                 <div class="col-xl-4 col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="220">
-                    <!-- GALERI FOTO THUMBNAIL BARU -->
-                    <a href="https://www.dinasperikanansitubondo.com/kegiatan/" target="_blank" class="service-card">
+                    <!-- GALERI FOTO THUMBNAIL BARU DENGAN LIGHTBOX -->
+                    <div class="service-card" onclick="window.open('https://www.dinasperikanansitubondo.com/kegiatan/', '_blank')">
                         <div class="icon-box">
                             <i class="fas fa-images"></i>
                         </div>
                         <h4 class="fw-bold mb-3">Galeri Kegiatan</h4>
                         <p class="text-muted">Lihat dokumentasi kegiatan lapangan, pelatihan, dan program pemberdayaan nelayan Situbondo.</p>
                         
-                        <!-- Grid Thumbnail Galeri -->
+                        <!-- Grid Thumbnail Galeri dengan Lightbox -->
                         <div class="gallery-thumbnail-container">
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 1 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(0)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto1.jpeg" alt="Kegiatan 1" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 2 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(1)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto2.jpeg" alt="Kegiatan 2" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 3 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(2)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto3.jpeg" alt="Kegiatan 3" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 4 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(3)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto4.jpeg" alt="Kegiatan 4" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 5 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(4)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto5.jpeg" alt="Kegiatan 5" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 6 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(5)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto6.jpeg" alt="Kegiatan 6" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 7 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(6)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto7.jpeg" alt="Kegiatan 7" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 8 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(7)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto8.jpeg" alt="Kegiatan 8" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                            <div class="gallery-thumbnail-item">
+                            <!-- Foto 9 -->
+                            <div class="gallery-thumbnail-item" onclick="event.stopPropagation(); openLightbox(8)">
                                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto9.jpeg" alt="Kegiatan 9" loading="lazy">
-                            </div>
-                            <div class="gallery-overlay">
-                                <i class="fas fa-eye"></i>
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
                         </div>
                         
                         <span class="card-link-text">Lihat Galeri Lengkap <i class="fas fa-arrow-right"></i></span>
-                    </a>
+                    </div>
                 </div>
 
                 <div class="col-xl-4 col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
@@ -938,6 +1084,45 @@
         </div>
     </footer>
 
+    <!-- Lightbox Modal -->
+    <div class="modal fade lightbox-modal" id="lightboxModal" tabindex="-1" aria-labelledby="lightboxModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lightboxModalLabel">Galeri Kegiatan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="lightboxImage" src="" alt="Kegiatan" class="lightbox-image">
+                </div>
+                <div class="modal-footer">
+                    <div class="lightbox-nav">
+                        <button type="button" class="lightbox-nav-btn" id="prevBtn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="lightbox-nav-btn" id="nextBtn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="lightbox-counter">
+                        <span id="currentIndex">1</span> / <span id="totalImages">9</span>
+                    </div>
+                    <div class="lightbox-zoom-controls">
+                        <button type="button" class="lightbox-nav-btn" id="zoomInBtn">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button type="button" class="lightbox-nav-btn" id="zoomOutBtn">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button type="button" class="lightbox-nav-btn" id="resetZoomBtn">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
@@ -990,6 +1175,148 @@
             } else {
                 nav.style.boxShadow = "0 4px 20px rgba(0,0,0,0.05)";
                 nav.style.background = "rgba(255, 255, 255, 0.95)";
+            }
+        });
+
+        // Lightbox Functionality
+        const photoUrls = [
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto1.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto2.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto3.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto4.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto5.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto6.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto7.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto8.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto9.jpeg'
+        ];
+
+        let currentIndex = 0;
+        let zoomLevel = 1;
+        const maxZoom = 3;
+        const minZoom = 1;
+        const zoomStep = 0.2;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightbox();
+            const lightboxModal = new bootstrap.Modal(document.getElementById('lightboxModal'));
+            lightboxModal.show();
+        }
+
+        function updateLightbox() {
+            const lightboxImage = document.getElementById('lightboxImage');
+            const currentIndexElement = document.getElementById('currentIndex');
+            const totalImagesElement = document.getElementById('totalImages');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Reset zoom when changing image
+            zoomLevel = 1;
+            lightboxImage.style.transform = `scale(${zoomLevel})`;
+            
+            // Update image
+            lightboxImage.src = photoUrls[currentIndex];
+            lightboxImage.alt = `Kegiatan ${currentIndex + 1}`;
+            
+            // Update counter
+            currentIndexElement.textContent = currentIndex + 1;
+            totalImagesElement.textContent = photoUrls.length;
+            
+            // Update button states
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === photoUrls.length - 1;
+            
+            // Update modal title
+            document.getElementById('lightboxModalLabel').textContent = `Galeri Kegiatan - Foto ${currentIndex + 1}`;
+        }
+
+        function navigateLightbox(direction) {
+            if (direction === 'prev' && currentIndex > 0) {
+                currentIndex--;
+            } else if (direction === 'next' && currentIndex < photoUrls.length - 1) {
+                currentIndex++;
+            }
+            updateLightbox();
+        }
+
+        function zoomImage(action) {
+            const lightboxImage = document.getElementById('lightboxImage');
+            
+            if (action === 'in' && zoomLevel < maxZoom) {
+                zoomLevel += zoomStep;
+            } else if (action === 'out' && zoomLevel > minZoom) {
+                zoomLevel -= zoomStep;
+            } else if (action === 'reset') {
+                zoomLevel = 1;
+            }
+            
+            // Limit zoom level
+            zoomLevel = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
+            lightboxImage.style.transform = `scale(${zoomLevel})`;
+            lightboxImage.style.transition = 'transform 0.3s ease';
+        }
+
+        // Initialize lightbox event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation buttons
+            document.getElementById('prevBtn').addEventListener('click', () => navigateLightbox('prev'));
+            document.getElementById('nextBtn').addEventListener('click', () => navigateLightbox('next'));
+            
+            // Zoom buttons
+            document.getElementById('zoomInBtn').addEventListener('click', () => zoomImage('in'));
+            document.getElementById('zoomOutBtn').addEventListener('click', () => zoomImage('out'));
+            document.getElementById('resetZoomBtn').addEventListener('click', () => zoomImage('reset'));
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                const lightboxModal = document.getElementById('lightboxModal');
+                if (lightboxModal.classList.contains('show')) {
+                    if (e.key === 'ArrowLeft') {
+                        navigateLightbox('prev');
+                    } else if (e.key === 'ArrowRight') {
+                        navigateLightbox('next');
+                    } else if (e.key === 'Escape') {
+                        const modal = bootstrap.Modal.getInstance(lightboxModal);
+                        if (modal) modal.hide();
+                    } else if (e.key === '+' || e.key === '=') {
+                        zoomImage('in');
+                        e.preventDefault();
+                    } else if (e.key === '-' || e.key === '_') {
+                        zoomImage('out');
+                        e.preventDefault();
+                    } else if (e.key === '0') {
+                        zoomImage('reset');
+                    }
+                }
+            });
+            
+            // Swipe gestures for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.getElementById('lightboxImage').addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.getElementById('lightboxImage').addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // Swipe left - next image
+                        navigateLightbox('next');
+                    } else {
+                        // Swipe right - previous image
+                        navigateLightbox('prev');
+                    }
+                }
             }
         });
     </script>
