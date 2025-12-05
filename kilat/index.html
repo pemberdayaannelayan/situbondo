@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KILAT - Kamera Interaktif</title>
+    <title>KILAT - Kamera Interaktif Anti Manipulasi</title>
     <style>
         :root {
-            --primary: #0284c7; /* Sky Blue yang lebih profesional */
+            --primary: #0284c7;
             --primary-dark: #0369a1;
             --secondary: #64748b;
             --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
             --bg: #f1f5f9;
             --card: #ffffff;
             --text: #0f172a;
@@ -127,6 +129,7 @@
         .btn:active { transform: scale(0.97); }
         .btn-secondary { background: white; color: var(--text); border: 2px solid #e2e8f0; box-shadow: none; }
         .btn-success { background: var(--success); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25); }
+        .btn-warning { background: var(--warning); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25); }
 
         /* Camera UI */
         .camera-container {
@@ -162,6 +165,7 @@
         }
         .status-dot { width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid white; }
         .status-dot.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .status-dot.warning { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
 
         /* Gallery Grid */
         .gallery-grid {
@@ -196,6 +200,36 @@
             font-size: 2.5rem; cursor: pointer; opacity: 0.8;
         }
         .modal-actions { margin-top: 20px; display: flex; gap: 12px; width: 100%; max-width: 400px; }
+
+        /* Warning Badge */
+        .warning-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 10px;
+        }
+
+        /* Verification Info */
+        .verification-info {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            color: #92400e;
+        }
+        .verification-info.verified {
+            background: #d1fae5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
     </style>
 </head>
 <body>
@@ -203,7 +237,7 @@
 <div class="container">
     <div class="header">
         <h1>KILAT</h1>
-        <p>(Kamera Interaktif Lacak Aktifitas Terkini)</p>
+        <p>(Kamera Interaktif Lacak Aktifitas Terkini) - ANTI MANIPULASI</p>
     </div>
 
     <div class="nav-tabs">
@@ -213,6 +247,11 @@
     </div>
 
     <div id="view-form" class="section active">
+        <div class="verification-info" id="timeVerification">
+            ⏱️ Waktu Sistem: <span id="deviceTime">Memuat...</span>
+            <span id="timeWarning" class="warning-badge" style="display:none">WAKTU TIDAK TERPERCAYA</span>
+        </div>
+
         <div class="form-group">
             <label>Nama Petugas</label>
             <input type="text" id="inUser" placeholder="Nama Petugas" autocapitalize="words" oninput="saveDraft()">
@@ -234,6 +273,11 @@
     </div>
 
     <div id="view-camera" class="section">
+        <div class="verification-info" id="gpsVerification">
+            📍 Status GPS: <span id="gpsStatus">Memeriksa...</span>
+            <span id="gpsWarning" class="warning-badge" style="display:none">LOKASI TIDAK TERPERCAYA</span>
+        </div>
+
         <div class="toolbar">
             <button class="tool-pill" onclick="toggleCam()">🔄 Balik Kamera</button>
             <select id="selRatio" class="tool-pill" onchange="updateRatio()" style="border:none; outline:none; background:transparent">
@@ -252,8 +296,8 @@
         <div class="status-bar">
             <div id="gps-dot" class="status-dot"></div>
             <div style="display:flex; flex-direction:column;">
-                 <span id="gps-coords" style="font-weight:700">Mencari GPS...</span>
-                 <span id="gps-addr" style="font-size:0.75rem; opacity:0.8">Mohon tunggu...</span>
+                 <span id="gps-coords" style="font-weight:700">Memverifikasi GPS...</span>
+                 <span id="gps-addr" style="font-size:0.75rem; opacity:0.8">Memeriksa integritas lokasi...</span>
             </div>
         </div>
 
@@ -264,6 +308,7 @@
 
         <div id="res-controls" style="display:none">
             <button class="btn btn-success" onclick="saveToGallery()">💾 Simpan ke Galeri App</button>
+            <button class="btn btn-warning" id="forceSaveBtn" onclick="forceSaveWithWarning()" style="display:none">⚠️ Simpan dengan Peringatan</button>
             <button class="btn btn-secondary" onclick="retake()">🔄 Foto Ulang</button>
         </div>
         
@@ -276,7 +321,7 @@
             <button class="tool-pill" onclick="loadGallery()">🔄 Refresh</button>
         </div>
         <div id="gallery-grid" class="gallery-grid">
-            </div>
+        </div>
         <div id="empty-msg" class="empty-state">Belum ada foto tersimpan.</div>
     </div>
 </div>
@@ -292,7 +337,7 @@
 
 <script>
     // --- DATABASE (IndexedDB) untuk Offline Storage ---
-    const DB_NAME = 'KilatDB_V4';
+    const DB_NAME = 'KilatDB_V5';
     const DB_VERSION = 1;
     let db;
 
@@ -303,6 +348,7 @@
             if (!db.objectStoreNames.contains('photos')) {
                 const store = db.createObjectStore('photos', { keyPath: 'id', autoIncrement: true });
                 store.createIndex('date', 'date', { unique: false });
+                store.createIndex('verified', 'verified', { unique: false });
             }
         };
         request.onsuccess = (e) => { db = e.target.result; loadGallery(); };
@@ -313,16 +359,427 @@
     let stream = null;
     let facingMode = 'environment';
     let currentRatio = 0.75;
-    let gpsData = { lat: '-', lon: '-', addr: 'Mode Offline / Lokasi Tidak Terdeteksi', acc: 0 };
-    let currentPhotoBlob = null; 
+    let gpsData = { 
+        lat: '-', 
+        lon: '-', 
+        addr: 'Mode Offline / Lokasi Tidak Terdeteksi', 
+        acc: 0,
+        altitude: null,
+        altitudeAccuracy: null,
+        heading: null,
+        speed: null,
+        timestamp: 0,
+        verified: false,
+        spoofDetected: false,
+        accuracyScore: 0
+    };
+    let currentPhotoBlob = null;
+    let serverTime = null;
+    let timeOffset = 0;
+    let isTimeVerified = false;
+    let lastPositions = [];
 
     // --- INIT ---
-    window.onload = () => {
+    window.onload = async () => {
         initDB();
         loadDraft(); 
+        initTimeVerification();
         initGPS();
         updateRatio();
+        
+        // Update time every minute
+        setInterval(updateTimeDisplay, 60000);
+        setInterval(verifyTimeIntegrity, 30000);
+        setInterval(fetchServerTime, 60000); // Update server time every minute
     };
+
+    // --- TIME VERIFICATION SYSTEM ---
+    async function initTimeVerification() {
+        await fetchServerTime();
+        updateTimeDisplay();
+        verifyTimeIntegrity();
+    }
+
+    async function fetchServerTime() {
+        try {
+            // Try multiple time APIs for redundancy
+            const timeAPIs = [
+                'https://worldtimeapi.org/api/ip',
+                'https://timeapi.io/api/Time/current/zone?timeZone=UTC',
+                'https://time.akamai.com/'
+            ];
+
+            for (const api of timeAPIs) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    
+                    const response = await fetch(api, { 
+                        signal: controller.signal,
+                        headers: { 'Cache-Control': 'no-cache' }
+                    });
+                    clearTimeout(timeoutId);
+                    
+                    if (response.ok) {
+                        if (api.includes('worldtimeapi')) {
+                            const data = await response.json();
+                            serverTime = new Date(data.unixtime * 1000);
+                        } else if (api.includes('timeapi')) {
+                            const data = await response.json();
+                            serverTime = new Date(data.currentLocalTime);
+                        } else {
+                            // Akamai time - get from Date header
+                            const dateHeader = response.headers.get('Date');
+                            if (dateHeader) serverTime = new Date(dateHeader);
+                        }
+                        
+                        if (serverTime) {
+                            timeOffset = serverTime - Date.now();
+                            isTimeVerified = true;
+                            document.getElementById('timeWarning').style.display = 'none';
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.log(`API ${api} failed, trying next...`);
+                }
+            }
+            
+            // If all APIs fail
+            isTimeVerified = false;
+            serverTime = null;
+            document.getElementById('timeWarning').style.display = 'inline-flex';
+            
+        } catch (error) {
+            console.error('Time fetch error:', error);
+            isTimeVerified = false;
+            serverTime = null;
+        }
+    }
+
+    function updateTimeDisplay() {
+        const deviceTime = new Date();
+        const serverTimeDisplay = serverTime ? 
+            new Date(serverTime.getTime() + (Date.now() - serverTime.getTime())) : null;
+        
+        let timeHTML = `Perangkat: ${deviceTime.toLocaleString('id-ID')}`;
+        
+        if (serverTimeDisplay) {
+            timeHTML += `<br>Server: ${serverTimeDisplay.toLocaleString('id-ID')}`;
+            
+            const diff = Math.abs(serverTimeDisplay - deviceTime);
+            if (diff > 60000) { // More than 1 minute difference
+                timeHTML += `<br><strong style="color:#dc2626">Selisih: ${Math.round(diff/1000)} detik</strong>`;
+            }
+        }
+        
+        document.getElementById('deviceTime').innerHTML = timeHTML;
+    }
+
+    function verifyTimeIntegrity() {
+        const deviceTime = new Date();
+        
+        // Check for suspicious time settings
+        const year = deviceTime.getFullYear();
+        const isFuture = deviceTime > new Date(serverTime.getTime() + 86400000); // More than 1 day in future
+        const isPast = deviceTime < new Date(serverTime.getTime() - 86400000); // More than 1 day in past
+        
+        let warning = '';
+        
+        if (year < 2020 || year > 2030) warning = 'Tahun tidak wajar';
+        else if (isFuture) warning = 'Waktu diatur ke masa depan';
+        else if (isPast) warning = 'Waktu diatur ke masa lalu';
+        
+        if (warning) {
+            document.getElementById('timeWarning').textContent = warning;
+            document.getElementById('timeWarning').style.display = 'inline-flex';
+            document.getElementById('timeVerification').classList.remove('verified');
+        } else if (isTimeVerified) {
+            document.getElementById('timeWarning').style.display = 'none';
+            document.getElementById('timeVerification').classList.add('verified');
+        }
+    }
+
+    function getVerifiedTime() {
+        if (isTimeVerified && serverTime) {
+            // Return server time adjusted for elapsed time
+            return new Date(serverTime.getTime() + (Date.now() - serverTime.getTime()));
+        } else {
+            // Return device time with warning flag
+            return { 
+                time: new Date(), 
+                verified: false,
+                warning: 'Waktu dari perangkat (mungkin dimanipulasi)'
+            };
+        }
+    }
+
+    // --- GPS ANTI-SPOOFING SYSTEM ---
+    function initGPS() {
+        const dot = document.getElementById('gps-dot');
+        const txtCoords = document.getElementById('gps-coords');
+        const txtAddr = document.getElementById('gps-addr');
+        
+        if (!("geolocation" in navigator)) {
+            dot.classList.remove('active');
+            txtCoords.innerText = "GPS tidak didukung";
+            gpsData.spoofDetected = true;
+            updateGPSVerification();
+            return;
+        }
+
+        let watchId = null;
+        
+        // First get high accuracy position
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                processPosition(pos, true);
+                // Then start watching
+                watchId = navigator.geolocation.watchPosition(
+                    processPosition,
+                    handleGPSError,
+                    { 
+                        enableHighAccuracy: true, 
+                        maximumAge: 0,
+                        timeout: 10000 
+                    }
+                );
+            },
+            handleGPSError,
+            { 
+                enableHighAccuracy: true, 
+                maximumAge: 0,
+                timeout: 15000 
+            }
+        );
+
+        // Store watchId for cleanup
+        window.addEventListener('beforeunload', () => {
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+        });
+    }
+
+    async function processPosition(pos, isInitial = false) {
+        const dot = document.getElementById('gps-dot');
+        const txtCoords = document.getElementById('gps-coords');
+        const txtAddr = document.getElementById('gps-addr');
+        
+        dot.classList.add('active');
+        
+        // Store position history for analysis
+        const positionData = {
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+            acc: pos.coords.accuracy,
+            alt: pos.coords.altitude,
+            altAcc: pos.coords.altitudeAccuracy,
+            heading: pos.coords.heading,
+            speed: pos.coords.speed,
+            timestamp: pos.timestamp,
+            deviceTime: Date.now()
+        };
+        
+        lastPositions.push(positionData);
+        if (lastPositions.length > 10) lastPositions.shift();
+        
+        // Detect GPS spoofing
+        const spoofDetected = detectGPSSpoofing(positionData);
+        
+        // Calculate accuracy score (0-100)
+        let accuracyScore = 0;
+        if (pos.coords.accuracy < 10) accuracyScore += 40;
+        else if (pos.coords.accuracy < 50) accuracyScore += 30;
+        else if (pos.coords.accuracy < 100) accuracyScore += 20;
+        else accuracyScore += 10;
+        
+        if (pos.coords.altitudeAccuracy && pos.coords.altitudeAccuracy < 10) accuracyScore += 20;
+        if (pos.coords.speed !== null) accuracyScore += 10;
+        if (!spoofDetected) accuracyScore += 30;
+        
+        // Update GPS data
+        gpsData = {
+            lat: pos.coords.latitude.toFixed(6),
+            lon: pos.coords.longitude.toFixed(6),
+            addr: gpsData.addr, // Keep previous address until updated
+            acc: Math.round(pos.coords.accuracy),
+            altitude: pos.coords.altitude,
+            altitudeAccuracy: pos.coords.altitudeAccuracy,
+            heading: pos.coords.heading,
+            speed: pos.coords.speed,
+            timestamp: pos.timestamp,
+            verified: accuracyScore > 60 && !spoofDetected,
+            spoofDetected: spoofDetected,
+            accuracyScore: accuracyScore
+        };
+        
+        // Update display
+        let coordText = `${gpsData.lat}, ${gpsData.lon}`;
+        if (gpsData.acc) coordText += ` (±${gpsData.acc}m)`;
+        
+        if (spoofDetected) {
+            dot.classList.add('warning');
+            coordText += " ⚠️";
+        } else {
+            dot.classList.remove('warning');
+        }
+        
+        txtCoords.innerText = coordText;
+        
+        // Reverse geocoding (throttled)
+        if (isInitial || Math.random() > 0.7) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const res = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${gpsData.lat}&lon=${gpsData.lon}&zoom=16`,
+                    { signal: controller.signal }
+                );
+                clearTimeout(timeoutId);
+                
+                const json = await res.json();
+                let address = '';
+                
+                if (json.address) {
+                    const a = json.address;
+                    const parts = [];
+                    if (a.road) parts.push(a.road);
+                    if (a.village) parts.push(a.village);
+                    if (a.suburb) parts.push(a.suburb);
+                    if (a.city_district) parts.push(a.city_district);
+                    if (a.city || a.regency) parts.push(a.city || a.regency);
+                    if (a.state) parts.push(a.state);
+                    
+                    address = parts.join(", ");
+                    if (address.length > 80) address = address.substring(0, 77) + "...";
+                }
+                
+                gpsData.addr = address || json.display_name || 'Alamat tidak ditemukan';
+                txtAddr.innerText = gpsData.addr;
+            } catch (e) {
+                console.log("Reverse geocoding failed:", e);
+            }
+        }
+        
+        updateGPSVerification();
+    }
+
+    function detectGPSSpoofing(currentPos) {
+        if (lastPositions.length < 2) return false;
+        
+        const prevPos = lastPositions[lastPositions.length - 2];
+        const timeDiff = (currentPos.timestamp - prevPos.timestamp) / 1000;
+        
+        if (timeDiff <= 0) return false;
+        
+        // Calculate distance using Haversine formula
+        const R = 6371e3;
+        const φ1 = prevPos.lat * Math.PI/180;
+        const φ2 = currentPos.lat * Math.PI/180;
+        const Δφ = (currentPos.lat - prevPos.lat) * Math.PI/180;
+        const Δλ = (currentPos.lon - prevPos.lon) * Math.PI/180;
+        
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c;
+        
+        // Calculate speed
+        const speed = distance / timeDiff;
+        
+        // Detection rules
+        if (speed > 300) return true; // > 1080 km/h (impossible for ground vehicle)
+        if (currentPos.acc > 1000) return true; // Very low accuracy
+        if (currentPos.altitude && Math.abs(currentPos.altitude) > 9000) return true; // Extreme altitude
+        
+        // Check for sudden jumps
+        if (lastPositions.length >= 3) {
+            const speeds = [];
+            for (let i = 1; i < lastPositions.length; i++) {
+                const dist = calculateDistance(lastPositions[i-1], lastPositions[i]);
+                const time = (lastPositions[i].timestamp - lastPositions[i-1].timestamp) / 1000;
+                if (time > 0) speeds.push(dist / time);
+            }
+            
+            // Check for inconsistent speeds
+            const avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
+            const variance = speeds.reduce((a, b) => a + Math.pow(b - avgSpeed, 2), 0) / speeds.length;
+            
+            if (variance > 10000) return true; // Highly inconsistent movement
+        }
+        
+        return false;
+    }
+
+    function calculateDistance(pos1, pos2) {
+        const R = 6371e3;
+        const φ1 = pos1.lat * Math.PI/180;
+        const φ2 = pos2.lat * Math.PI/180;
+        const Δφ = (pos2.lat - pos1.lat) * Math.PI/180;
+        const Δλ = (pos2.lon - pos1.lon) * Math.PI/180;
+        
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function handleGPSError(error) {
+        const dot = document.getElementById('gps-dot');
+        const txtCoords = document.getElementById('gps-coords');
+        
+        dot.classList.remove('active');
+        
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                txtCoords.innerText = "Akses GPS ditolak";
+                break;
+            case error.POSITION_UNAVAILABLE:
+                txtCoords.innerText = "GPS tidak tersedia";
+                break;
+            case error.TIMEOUT:
+                txtCoords.innerText = "Timeout GPS";
+                break;
+            default:
+                txtCoords.innerText = "Error GPS";
+        }
+        
+        gpsData.spoofDetected = true;
+        updateGPSVerification();
+    }
+
+    function updateGPSVerification() {
+        const gpsStatus = document.getElementById('gpsStatus');
+        const gpsWarning = document.getElementById('gpsWarning');
+        const verificationBox = document.getElementById('gpsVerification');
+        
+        if (gpsData.spoofDetected) {
+            gpsStatus.innerHTML = `<span style="color:#dc2626">⚠️ LOKASI TIDAK TERPERCAYA</span>`;
+            gpsWarning.textContent = "GPS Mungkin Dimanipulasi";
+            gpsWarning.style.display = 'inline-flex';
+            verificationBox.classList.remove('verified');
+            document.getElementById('gps-dot').classList.add('warning');
+        } else if (gpsData.accuracyScore > 70) {
+            gpsStatus.innerHTML = `<span style="color:#059669">✓ LOKASI TERVERIFIKASI</span>`;
+            gpsWarning.style.display = 'none';
+            verificationBox.classList.add('verified');
+            document.getElementById('gps-dot').classList.remove('warning');
+        } else if (gpsData.accuracyScore > 40) {
+            gpsStatus.innerHTML = `<span style="color:#d97706">⚠️ LOKASI KURANG AKURAT</span>`;
+            gpsWarning.textContent = "Akurasi GPS Rendah";
+            gpsWarning.style.display = 'inline-flex';
+            verificationBox.classList.remove('verified');
+            document.getElementById('gps-dot').classList.add('warning');
+        } else {
+            gpsStatus.innerHTML = `<span style="color:#dc2626">✗ LOKASI TIDAK AKURAT</span>`;
+            gpsWarning.textContent = "GPS Tidak Akurat";
+            gpsWarning.style.display = 'inline-flex';
+            verificationBox.classList.remove('verified');
+            document.getElementById('gps-dot').classList.add('warning');
+        }
+    }
 
     // --- NAVIGATION ---
     function switchTab(tabId) {
@@ -342,7 +799,10 @@
     function goToCamera() {
         const user = document.getElementById('inUser').value;
         const keg = document.getElementById('inKegiatan').value;
-        if(!user || !keg) { alert("Mohon lengkapi Nama Petugas & Kegiatan!"); return; }
+        if(!user || !keg) { 
+            alert("Mohon lengkapi Nama Petugas & Kegiatan!"); 
+            return; 
+        }
         switchTab('camera');
     }
 
@@ -354,11 +814,11 @@
             dinas: document.getElementById('inDinas').value,
             bid: document.getElementById('inBidang').value
         };
-        localStorage.setItem('kilat_draft_v4', JSON.stringify(data));
+        localStorage.setItem('kilat_draft_v5', JSON.stringify(data));
     }
     
     function loadDraft() {
-        const data = JSON.parse(localStorage.getItem('kilat_draft_v4'));
+        const data = JSON.parse(localStorage.getItem('kilat_draft_v5'));
         if(data) {
             document.getElementById('inUser').value = data.user;
             document.getElementById('inKegiatan').value = data.keg;
@@ -382,7 +842,6 @@
                 audio: false
             });
             video.srcObject = stream;
-            // Mirror efek hanya di preview jika kamera depan
             video.classList.toggle('mirrored', facingMode === 'user');
         } catch (err) {
             alert("Gagal akses kamera. Pastikan izin diberikan.");
@@ -405,54 +864,7 @@
         document.getElementById('cam-container').style.aspectRatio = `${currentRatio}`;
     }
 
-    // --- GPS ENGINE ---
-    function initGPS() {
-        const dot = document.getElementById('gps-dot');
-        const txtCoords = document.getElementById('gps-coords');
-        const txtAddr = document.getElementById('gps-addr');
-        
-        if("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(
-                async (pos) => {
-                    dot.classList.add('active');
-                    gpsData.lat = pos.coords.latitude.toFixed(6);
-                    gpsData.lon = pos.coords.longitude.toFixed(6);
-                    gpsData.acc = Math.round(pos.coords.accuracy);
-                    
-                    txtCoords.innerText = `${gpsData.lat}, ${gpsData.lon}`;
-
-                    // Reverse Geocoding (Throttle)
-                    if(gpsData.addr.includes('Offline') || Math.random() > 0.9) {
-                        try {
-                            const controller = new AbortController();
-                            const id = setTimeout(() => controller.abort(), 4000);
-                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${gpsData.lat}&lon=${gpsData.lon}&zoom=18`, { signal: controller.signal });
-                            clearTimeout(id);
-                            const json = await res.json();
-                            
-                            // Ambil nama tempat spesifik
-                            let a = json.address;
-                            let locName = [];
-                            if (a.village) locName.push(a.village);
-                            if (a.suburb) locName.push(a.suburb);
-                            if (a.city_district) locName.push(a.city_district);
-                            if (a.city || a.regency) locName.push(a.city || a.regency);
-
-                            gpsData.addr = locName.join(", ") || json.display_name;
-                        } catch(e) { }
-                    }
-                    txtAddr.innerText = gpsData.addr;
-                },
-                (err) => {
-                    dot.classList.remove('active');
-                    txtCoords.innerText = "GPS Hilang / Mati";
-                },
-                { enableHighAccuracy: true, maximumAge: 10000 }
-            );
-        }
-    }
-
-    // --- CORE: SMART WATERMARK (REVISI 4.0) ---
+    // --- CORE: SMART WATERMARK (VERSION 5.0 - ANTI MANIPULASI) ---
     function takePicture() {
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -475,10 +887,10 @@
         canvas.width = sw;
         canvas.height = sh;
 
-        // Draw Image (Normal, no mirror on result)
+        // Draw Image
         ctx.drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh);
 
-        // Draw Watermark
+        // Draw Watermark with verification info
         drawSmartWatermark(ctx, sw, sh);
 
         // Output
@@ -494,61 +906,112 @@
         document.getElementById('cam-controls').style.display = 'none';
         document.getElementById('res-controls').style.display = 'flex';
         document.querySelector('.toolbar').style.display = 'none';
+        
+        // Show warning button if verification failed
+        if (gpsData.spoofDetected || !isTimeVerified || gpsData.accuracyScore < 60) {
+            document.getElementById('forceSaveBtn').style.display = 'block';
+        } else {
+            document.getElementById('forceSaveBtn').style.display = 'none';
+        }
     }
 
     function drawSmartWatermark(ctx, w, h) {
         // --- KONFIGURASI UKURAN ---
         const minSide = Math.min(w, h);
-        const baseSize = minSide * 0.024; // Font size base
+        const baseSize = minSide * 0.024;
         const margin = baseSize * 1.5;
         const lineHeight = baseSize * 1.4;
 
         // --- DATA ---
-        // Menggunakan value apa adanya (user bisa mix besar kecil)
-        // Kita tidak memaksa .toUpperCase() di sini agar fitur edit user jalan
         const user = document.getElementById('inUser').value; 
         const keg = document.getElementById('inKegiatan').value;
         const dinas = document.getElementById('inDinas').value;
         const unit = document.getElementById('inBidang').value;
         
-        const now = new Date();
-        const timeStr = now.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' | ' + 
-                        now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.',':') + ' WIB';
+        // Get verified time
+        const timeInfo = getVerifiedTime();
+        let timeStr, timeVerified;
+        
+        if (typeof timeInfo.time === 'object') {
+            const now = timeInfo.time;
+            timeStr = now.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' | ' + 
+                      now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.',':') + ' WIB';
+            timeVerified = timeInfo.verified !== false;
+        } else {
+            const now = timeInfo;
+            timeStr = now.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' | ' + 
+                      now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.',':') + ' WIB';
+            timeVerified = isTimeVerified;
+        }
+
+        // --- VERIFICATION STATUS ---
+        const isFullyVerified = timeVerified && gpsData.verified && !gpsData.spoofDetected;
+        const verificationText = isFullyVerified ? 
+            "✓ TERVERIFIKASI (WAKTU & LOKASI ASLI)" : 
+            "⚠️ PERINGATAN: DATA MUNGKIN DIMANIPULASI";
 
         // --- TEXT WRAPPING CALCULATION ---
         ctx.font = `800 ${baseSize * 1.3}px sans-serif`; 
         const maxTextWidth = w - (margin * 2);
-        const kegLines = getLines(ctx, keg, maxTextWidth); // Memecah judul panjang
+        const kegLines = getLines(ctx, keg, maxTextWidth);
 
-        // Hitung total baris yang terpakai
-        // Header(Wrapping) + Time + Loc + User + Dinas + Unit + URL padding
-        let blockCount = kegLines.length + 4; // Basic lines
-        if (dinas) blockCount++; // Tambah baris jika ada Dinas
-        if (unit) blockCount++; // Tambah baris jika ada Unit
+        // Hitung total baris
+        let blockCount = kegLines.length + 6; // Basic lines + verification
+        if (dinas) blockCount++;
+        if (unit) blockCount++;
 
         const totalBlockHeight = (blockCount * lineHeight * 1.2) + (margin * 2);
 
         // --- BACKGROUND ---
+        const bgColor = isFullyVerified ? 
+            "rgba(0, 100, 0, 0.95)" : 
+            "rgba(120, 53, 15, 0.95)";
+        
         const grad = ctx.createLinearGradient(0, h - totalBlockHeight, 0, h);
         grad.addColorStop(0, "rgba(0,0,0,0)");
-        grad.addColorStop(0.3, "rgba(0,0,0,0.6)");
-        grad.addColorStop(1, "rgba(0,0,0,0.95)");
+        grad.addColorStop(0.3, `rgba(0,0,0,0.6)`);
+        grad.addColorStop(1, bgColor);
         ctx.fillStyle = grad;
         ctx.fillRect(0, h - totalBlockHeight, w, totalBlockHeight);
 
         // --- DRAWING TEXT (Bottom Up) ---
         ctx.textBaseline = 'bottom';
         ctx.textAlign = 'left';
-        let curY = h - margin; // Posisi Y mulai paling bawah
+        let curY = h - margin;
 
-        // 1. URL (Paling Bawah - Rata Tengah atau Kiri)
-        // Sesuai request: www.dinasperikanansitubondo.com/kilat
+        // 1. URL
         ctx.font = `italic ${baseSize * 0.7}px sans-serif`;
         ctx.fillStyle = "rgba(255,255,255,0.6)";
         ctx.fillText("www.dinasperikanansitubondo.com/kilat", margin, curY);
         curY -= (lineHeight * 1.2);
 
-        // 2. Bidang / Unit (Jika ada, baris sendiri)
+        // 2. Verification Status (COLOR CODED)
+        ctx.font = `700 ${baseSize * 0.9}px sans-serif`;
+        ctx.fillStyle = isFullyVerified ? "#86efac" : "#fca5a5";
+        ctx.fillText(verificationText, margin, curY);
+        curY -= (lineHeight * 1.3);
+
+        // 3. GPS Verification Details
+        ctx.font = `600 ${baseSize * 0.8}px monospace`;
+        ctx.fillStyle = gpsData.spoofDetected ? "#fca5a5" : 
+                       gpsData.verified ? "#86efac" : "#fde68a";
+        
+        let gpsStatusText = `GPS: ${gpsData.lat}, ${gpsData.lon}`;
+        if (gpsData.acc) gpsStatusText += ` (±${gpsData.acc}m)`;
+        if (gpsData.spoofDetected) gpsStatusText += " [SPOOF DETECTED]";
+        else if (!gpsData.verified) gpsStatusText += " [LOW ACCURACY]";
+        
+        ctx.fillText(gpsStatusText, margin, curY);
+        curY -= lineHeight;
+
+        // 4. Time Verification Details
+        ctx.font = `600 ${baseSize * 0.8}px monospace`;
+        ctx.fillStyle = timeVerified ? "#86efac" : "#fca5a5";
+        const timeSource = timeVerified ? "[TIME: SERVER VERIFIED]" : "[TIME: DEVICE - UNVERIFIED]";
+        ctx.fillText(timeSource, margin, curY);
+        curY -= (lineHeight * 1.3);
+
+        // 5. Bidang / Unit
         if(unit) {
             ctx.font = `600 ${baseSize}px sans-serif`;
             ctx.fillStyle = "#e2e8f0";
@@ -556,7 +1019,7 @@
             curY -= lineHeight;
         }
 
-        // 3. Dinas / Instansi (Jika ada, baris sendiri - TIDAK DISAMBUNG)
+        // 6. Dinas / Instansi
         if(dinas) {
             ctx.font = `700 ${baseSize}px sans-serif`;
             ctx.fillStyle = "#f1f5f9";
@@ -564,37 +1027,32 @@
             curY -= lineHeight;
         }
 
-        // 4. User
+        // 7. User
         ctx.font = `500 ${baseSize * 0.9}px sans-serif`;
         ctx.fillStyle = "#cbd5e1";
         ctx.fillText(`OLEH: ${user}`, margin, curY);
         curY -= (lineHeight * 1.3);
 
-        // 5. Lokasi (Koordinat & Alamat)
-        ctx.font = `500 ${baseSize * 0.85}px monospace`;
-        ctx.fillStyle = "#fff";
-        ctx.fillText(`LOC: ${gpsData.lat}, ${gpsData.lon}`, margin, curY);
-        curY -= lineHeight;
-        
+        // 8. Lokasi Alamat
         let addr = gpsData.addr;
         if(addr.length > 75) addr = addr.substring(0, 75) + "...";
         ctx.font = `400 ${baseSize * 0.85}px sans-serif`;
+        ctx.fillStyle = "#fff";
         ctx.fillText(addr, margin, curY);
         curY -= (lineHeight * 1.3);
 
-        // 6. Waktu (Kuning)
+        // 9. Waktu
         ctx.font = `bold ${baseSize * 1.1}px sans-serif`;
-        ctx.fillStyle = "#facc15"; // Yellow
+        ctx.fillStyle = timeVerified ? "#facc15" : "#fca5a5";
         ctx.fillText(timeStr, margin, curY);
         curY -= (lineHeight * 1.3);
 
-        // 7. KEGIATAN (Judul Utama - Paling Atas)
+        // 10. KEGIATAN (Judul Utama)
         ctx.font = `800 ${baseSize * 1.4}px sans-serif`;
-        ctx.fillStyle = "#38bdf8"; // Light Blue
+        ctx.fillStyle = isFullyVerified ? "#38bdf8" : "#fbbf24";
         ctx.shadowColor = "rgba(0,0,0,0.8)";
         ctx.shadowBlur = 4;
         
-        // Loop baris judul (dari bawah ke atas)
         for (let i = kegLines.length - 1; i >= 0; i--) {
             ctx.fillText(kegLines[i], margin, curY);
             curY -= (lineHeight * 1.3);
@@ -623,14 +1081,56 @@
     // --- GALLERY SYSTEM ---
     function saveToGallery() {
         if(!currentPhotoBlob) return;
+        
+        if (gpsData.spoofDetected || !isTimeVerified) {
+            if (!confirm("⚠️ PERINGATAN: Data waktu atau lokasi tidak terverifikasi. Foto ini mungkin dimanipulasi. Tetap simpan?")) {
+                return;
+            }
+        }
+        
         const keg = document.getElementById('inKegiatan').value;
-        const record = { blob: currentPhotoBlob, kegiatan: keg, date: new Date().toISOString() };
+        const verified = isTimeVerified && gpsData.verified && !gpsData.spoofDetected;
+        
+        const record = { 
+            blob: currentPhotoBlob, 
+            kegiatan: keg, 
+            date: new Date().toISOString(),
+            verified: verified,
+            gpsData: gpsData,
+            timeVerified: isTimeVerified
+        };
 
         const transaction = db.transaction(['photos'], 'readwrite');
         transaction.objectStore('photos').add(record);
 
         transaction.oncomplete = () => {
-            alert("✅ Foto tersimpan!");
+            alert(verified ? "✅ Foto tersimpan (TERVERIFIKASI)!" : "⚠️ Foto tersimpan (DENGAN PERINGATAN)!");
+            switchTab('gallery');
+            retake();
+        };
+    }
+
+    function forceSaveWithWarning() {
+        if(!currentPhotoBlob) return;
+        
+        const keg = document.getElementById('inKegiatan').value;
+        const verified = false; // Force false karena ada warning
+        
+        const record = { 
+            blob: currentPhotoBlob, 
+            kegiatan: keg, 
+            date: new Date().toISOString(),
+            verified: verified,
+            gpsData: gpsData,
+            timeVerified: isTimeVerified,
+            warning: "Disimpan dengan peringatan verifikasi"
+        };
+
+        const transaction = db.transaction(['photos'], 'readwrite');
+        transaction.objectStore('photos').add(record);
+
+        transaction.oncomplete = () => {
+            alert("⚠️ Foto tersimpan dengan status TIDAK TERVERIFIKASI!");
             switchTab('gallery');
             retake();
         };
@@ -655,12 +1155,19 @@
                 const url = URL.createObjectURL(item.blob);
                 const div = document.createElement('div');
                 div.className = 'gallery-item';
-                div.onclick = () => openModal(url, item.kegiatan, item.id);
+                div.onclick = () => openModal(url, item.kegiatan, item.id, item.verified);
                 
                 const d = new Date(item.date);
-                const dateStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+                const dateStr = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
                 
-                div.innerHTML = `<img src="${url}" loading="lazy"><div class="gallery-date">${item.kegiatan}<br><small>${dateStr}</small></div>`;
+                let statusBadge = '';
+                if (item.verified) {
+                    statusBadge = '<div style="position:absolute; top:8px; right:8px; background:#059669; color:white; padding:4px 8px; border-radius:10px; font-size:0.7rem; font-weight:bold;">✓</div>';
+                } else {
+                    statusBadge = '<div style="position:absolute; top:8px; right:8px; background:#dc2626; color:white; padding:4px 8px; border-radius:10px; font-size:0.7rem; font-weight:bold;">⚠️</div>';
+                }
+                
+                div.innerHTML = `<img src="${url}" loading="lazy">${statusBadge}<div class="gallery-date">${item.kegiatan}<br><small>${dateStr}</small></div>`;
                 grid.appendChild(div);
             });
         };
@@ -671,22 +1178,24 @@
         document.getElementById('video').style.display = 'block';
         document.getElementById('cam-controls').style.display = 'flex';
         document.getElementById('res-controls').style.display = 'none';
+        document.getElementById('forceSaveBtn').style.display = 'none';
         document.querySelector('.toolbar').style.display = 'flex';
     }
 
     // --- MODAL & DELETE ---
     let currentModalId = null;
 
-    function openModal(url, title, id) {
+    function openModal(url, title, id, verified) {
         const modal = document.getElementById('imgModal');
         const img = document.getElementById('modalImg');
         const btn = document.getElementById('modalDown');
         
         img.src = url;
         btn.href = url;
-        // Nama file saat didownload
+        
         const safeTitle = title.replace(/[^a-zA-Z0-9]/g, '_') || 'FOTO';
-        btn.download = `KILAT_${safeTitle}.jpg`;
+        const prefix = verified ? 'TERVERIFIKASI_' : 'PERINGATAN_';
+        btn.download = `KILAT_${prefix}${safeTitle}.jpg`;
         currentModalId = id;
         
         modal.classList.add('open');
