@@ -909,7 +909,7 @@
                     <span class="badge-category">
                         <i class="fas fa-graduation-cap"></i> PELATIHAN TEKNIS NELAYAN
                     </span>
-                    <h1 data-aos="fade-up">Pelatihan Teknologi Penangkapan Ikan dan Perawatan Jaring Ikan untuk Nelayan Situbondo</h1>
+                    <h1 data-aos="fade-up">Pelatihan Teknologi Penangkapan Ikan: Perawatan Jaring Ikan untuk Nelayan Situbondo</h1>
                     <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
                         Sebanyak dua puluh lima nelayan dari desa pesisir Kecamatan Besuki, Kabupaten Situbondo, mengikuti kegiatan Pelatihan Teknologi Penangkapan Ikan dengan fokus pada perawatan jaring ikan.
                     </p>
@@ -1592,10 +1592,10 @@
                 year: 'numeric'
             });
             
-            // Create PDF content with formal format - SEMUA PERBAIKAN DILAKUKAN DI SINI
+            // Create PDF content with formal format
             const pdfContent = `
             <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #333;">
-                <!-- Kop Surat - LOGO DIPERBAIKI: Proporsi normal, tidak gepeng -->
+                <!-- Kop Surat -->
                 <div style="margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 20px;">
                     <table style="width: 100%;">
                         <tr>
@@ -1616,7 +1616,7 @@
                     </table>
                 </div>
                 
-                <!-- Judul Laporan - DIPERBAIKI: Format sesuai permintaan -->
+                <!-- Judul Laporan -->
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h3 style="margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #333;">LAPORAN KEGIATAN</h3>
                     <h1 style="font-size: 16px; font-weight: bold; text-decoration: underline; color: #1e3a8a; line-height: 1.4;">
@@ -1625,7 +1625,7 @@
                     </h1>
                 </div>
                 
-                <!-- Isi Laporan - SEMUA JARAK BARIS DIPERBAIKI -->
+                <!-- Isi Laporan -->
                 <div style="margin-bottom: 30px;">
                     <h4 style="font-size: 13px; font-weight: bold; margin-bottom: 15px; color: #1e3a8a;">
                         I. LATAR BELAKANG
@@ -1688,7 +1688,7 @@
                     </ol>
                     
                     <h4 style="font-size: 13px; font-weight: bold; margin-bottom: 15px; color: #1e3a8a;">
-                        VI. HASIL KEGIATAN - JARAK BARIS DIPERBAIKI
+                        VI. HASIL KEGIATAN
                     </h4>
                     <p style="text-align: justify; margin-bottom: 20px; font-size: 12px; line-height: 1.7;">
                         Kegiatan pelatihan berlangsung dengan lancar dan diikuti dengan antusias oleh seluruh peserta. Para nelayan memperoleh pengetahuan dan keterampilan baru dalam merawat jaring ikan yang dapat memperpanjang usia pakai dan meningkatkan efisiensi penangkapan. Selain itu, peserta juga mendapatkan bantuan langsung berupa jaring gillnet baru untuk diterapkan dalam kegiatan penangkapan ikan.
@@ -1761,10 +1761,10 @@
                 const margin = 20;
                 let yPos = margin;
                 
-                // Load images
+                // Load logo image
                 const logoUrl = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
                 
-                // Add logo dengan proporsi yang benar - LOGO DIPERBAIKI: Tidak gepeng
+                // Load logo image
                 const logoImg = new Image();
                 logoImg.crossOrigin = 'Anonymous';
                 
@@ -1774,15 +1774,15 @@
                     logoImg.src = logoUrl;
                 });
                 
-                // Logo di kiri dengan proporsi asli (tidak gepeng)
-                // Gunakan aspect ratio asli dari gambar
-                const logoAspectRatio = logoImg.width / logoImg.height;
+                // Add header with logo
+                const logoWidth = 15;
                 const logoHeight = 15;
-                const logoWidth = logoHeight * logoAspectRatio;
+                const logoX = margin;
+                const logoY = yPos;
                 
-                doc.addImage(logoImg, 'PNG', margin, yPos, logoWidth, logoHeight);
+                doc.addImage(logoImg, 'PNG', logoX, logoY, logoWidth, logoHeight);
                 
-                // Teks kepala surat di tengah
+                // Add header text
                 doc.setFontSize(11);
                 doc.setFont("helvetica", "bold");
                 doc.text("PEMERINTAH KABUPATEN SITUBONDO", 105, yPos + 5, { align: 'center' });
@@ -1802,7 +1802,7 @@
                 doc.line(margin, yPos, 210 - margin, yPos);
                 yPos += 15;
                 
-                // Report title - DIPERBAIKI: Format sesuai permintaan
+                // Report title
                 doc.setFontSize(12);
                 doc.setFont("helvetica", "bold");
                 doc.text("LAPORAN KEGIATAN", 105, yPos, { align: 'center' });
@@ -1815,155 +1815,152 @@
                     year: 'numeric'
                 });
                 
-                // Main title - DIPERBAIKI: Format sesuai permintaan
+                // Main title
                 doc.setFontSize(14);
                 doc.text("PELATIHAN TEKNOLOGI PENANGKAPAN IKAN", 105, yPos, { align: 'center' });
                 yPos += 7;
                 doc.text("PERAWATAN JARING IKAN UNTUK NELAYAN SITUBONDO", 105, yPos, { align: 'center' });
                 yPos += 15;
                 
-                // Function to add text with auto page break dan jarak yang konsisten - DIPERBAIKI: Jarak lebih normal
-                function addText(text, isBold = false, fontSize = 11, lineHeight = 6, marginBottom = 6) {
-                    doc.setFontSize(fontSize);
-                    doc.setFont("helvetica", isBold ? "bold" : "normal");
-                    const lines = doc.splitTextToSize(text, 170);
-                    
-                    if (yPos + (lines.length * lineHeight) > 280) {
+                // Helper function untuk menambahkan teks dengan line height yang konsisten
+                function addTextSection(title, content, isList = false, isNumberedList = false) {
+                    // Check for page break
+                    if (yPos > 270) {
                         doc.addPage();
                         yPos = margin;
                     }
                     
-                    doc.text(lines, margin, yPos);
-                    yPos += (lines.length * lineHeight) + marginBottom;
-                }
-                
-                // Function to add list items dengan jarak yang konsisten - DIPERBAIKI: Jarak lebih normal
-                function addListItem(text, fontSize = 11, lineHeight = 6, marginBottom = 5) {
-                    doc.setFontSize(fontSize);
+                    // Add title
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(title, margin, yPos);
+                    yPos += 8;
+                    
+                    // Add content
+                    doc.setFontSize(11);
                     doc.setFont("helvetica", "normal");
-                    const lines = doc.splitTextToSize("• " + text, 165);
                     
-                    if (yPos + (lines.length * lineHeight) > 280) {
-                        doc.addPage();
-                        yPos = margin;
+                    if (isList) {
+                        const lines = doc.splitTextToSize(content, 170);
+                        lines.forEach((line, index) => {
+                            if (yPos > 270) {
+                                doc.addPage();
+                                yPos = margin;
+                            }
+                            if (isNumberedList) {
+                                doc.text(`${index + 1}. ${line}`, margin + 5, yPos);
+                            } else {
+                                doc.text(`• ${line}`, margin + 5, yPos);
+                            }
+                            yPos += 6;
+                        });
+                    } else {
+                        const lines = doc.splitTextToSize(content, 170);
+                        lines.forEach(line => {
+                            if (yPos > 270) {
+                                doc.addPage();
+                                yPos = margin;
+                            }
+                            doc.text(line, margin, yPos);
+                            yPos += 6;
+                        });
                     }
                     
-                    doc.text(lines, margin + 5, yPos);
-                    yPos += (lines.length * lineHeight) + marginBottom;
+                    yPos += 8; // Spacing between sections
                 }
                 
-                // Function to add numbered list items dengan jarak yang konsisten - DIPERBAIKI: Jarak lebih normal
-                function addNumberedListItem(index, text, fontSize = 11, lineHeight = 6, marginBottom = 5) {
-                    doc.setFontSize(fontSize);
-                    doc.setFont("helvetica", "normal");
-                    const lines = doc.splitTextToSize(index + ". " + text, 160);
-                    
-                    if (yPos + (lines.length * lineHeight) > 280) {
-                        doc.addPage();
-                        yPos = margin;
-                    }
-                    
-                    doc.text(lines, margin + 10, yPos);
-                    yPos += (lines.length * lineHeight) + marginBottom;
-                }
-                
-                // Add content sections dengan jarak yang seragam - SEMUA DIPERBAIKI
+                // Add sections
                 const sections = [
-                    { 
-                        title: "I. LATAR BELAKANG", 
-                        content: "Dalam upaya meningkatkan kapasitas dan keterampilan nelayan tradisional di Kabupaten Situbondo, Dinas Peternakan dan Perikanan Kabupaten Situbondo bekerjasama dengan UPT. PTKP3 Probolinggo menyelenggarakan kegiatan Pelatihan Teknologi Penangkapan Ikan dengan fokus utama pada perawatan jaring ikan. Kegiatan ini dilaksanakan pada tanggal 10 November 2025 di Kecamatan Besuki, Kabupaten Situbondo." 
+                    {
+                        title: "I. LATAR BELAKANG",
+                        content: "Dalam upaya meningkatkan kapasitas dan keterampilan nelayan tradisional di Kabupaten Situbondo, Dinas Peternakan dan Perikanan Kabupaten Situbondo bekerjasama dengan UPT. PTKP3 Probolinggo menyelenggarakan kegiatan Pelatihan Teknologi Penangkapan Ikan dengan fokus utama pada perawatan jaring ikan. Kegiatan ini dilaksanakan pada tanggal 10 November 2025 di Kecamatan Besuki, Kabupaten Situbondo.",
+                        isList: false
                     },
-                    { 
-                        title: "II. TUJUAN KEGIATAN", 
-                        items: [
+                    {
+                        title: "II. TUJUAN KEGIATAN",
+                        content: [
                             "Meningkatkan pengetahuan dan keterampilan nelayan dalam merawat dan memperbaiki jaring ikan",
                             "Memperkenalkan teknologi penangkapan ikan yang ramah lingkungan",
                             "Meningkatkan keselamatan dan kesehatan kerja nelayan",
                             "Meningkatkan produktivitas dan hasil tangkapan nelayan",
                             "Memperkuat sinergi antara pemerintah, lembaga teknis, dan masyarakat nelayan"
-                        ]
+                        ].join('\n'),
+                        isList: true,
+                        isNumberedList: false
                     },
-                    { 
-                        title: "III. PELAKSANAAN KEGIATAN", 
-                        items: [
+                    {
+                        title: "III. PELAKSANAAN KEGIATAN",
+                        content: [
                             "Hari/Tanggal: Senin, 10 November 2025",
                             "Waktu: 08.00 - 15.00 WIB",
                             "Tempat: Kecamatan Besuki, Kabupaten Situbondo",
                             "Jumlah Peserta: 25 Nelayan Tradisional"
-                        ]
+                        ].join('\n'),
+                        isList: true,
+                        isNumberedList: false
                     },
-                    { 
-                        title: "IV. MATERI PELATIHAN", 
-                        items: [
+                    {
+                        title: "IV. MATERI PELATIHAN",
+                        content: [
                             "Perawatan Jaring Ikan (teknik perawatan, penyimpanan, dan perbaikan)",
                             "Penangkapan Ikan Ramah Lingkungan",
                             "Keselamatan dan Kesehatan Kerja Nelayan",
                             "Teknologi Jaring Modern dan Material"
-                        ]
+                        ].join('\n'),
+                        isList: true,
+                        isNumberedList: false
                     },
-                    { 
-                        title: "V. HASIL KEGIATAN", 
-                        content: "Kegiatan pelatihan berlangsung dengan lancar dan diikuti dengan antusias oleh seluruh peserta. Para nelayan memperoleh pengetahuan dan keterampilan baru dalam merawat jaring ikan yang dapat memperpanjang usia pakai dan meningkatkan efisiensi penangkapan. Selain itu, peserta juga mendapatkan bantuan langsung berupa jaring gillnet baru untuk diterapkan dalam kegiatan penangkapan ikan." 
+                    {
+                        title: "V. HASIL KEGIATAN",
+                        content: "Kegiatan pelatihan berlangsung dengan lancar dan diikuti dengan antusias oleh seluruh peserta. Para nelayan memperoleh pengetahuan dan keterampilan baru dalam merawat jaring ikan yang dapat memperpanjang usia pakai dan meningkatkan efisiensi penangkapan. Selain itu, peserta juga mendapatkan bantuan langsung berupa jaring gillnet baru untuk diterapkan dalam kegiatan penangkapan ikan.",
+                        isList: false
                     }
                 ];
                 
-                // Add sections dengan jarak yang konsisten - SEMUA DIPERBAIKI
+                // Add all sections
                 sections.forEach(section => {
-                    // Add section title
-                    addText(section.title, true, 12, 6, 10);
-                    
-                    if (section.content) {
-                        addText(section.content, false, 11, 6, 12);
-                    } else if (section.items) {
-                        section.items.forEach((item, index) => {
-                            addListItem(item, 11, 6, 6);
-                        });
-                        yPos += 4; // Tambah jarak setelah list
-                    }
-                    
-                    yPos += 6; // Jarak antar section
+                    addTextSection(section.title, section.content, section.isList, section.isNumberedList);
                 });
                 
-                // Tanda tangan dengan "Pelapor" tepat di bawah tanggal
-                yPos += 10;
+                // Add signature section
+                if (yPos > 200) {
+                    doc.addPage();
+                    yPos = margin;
+                }
+                
                 doc.setFontSize(11);
-                doc.text("Situbondo, " + formattedDate, margin, yPos);
-                yPos += 5; // Jarak kecil antara tanggal dan "Pelapor"
+                doc.text(`Situbondo, ${formattedDate}`, margin, yPos);
+                yPos += 20;
                 doc.setFont("helvetica", "bold");
                 doc.text("Pelapor,", margin, yPos);
-                yPos += 30; // Ruang untuk tanda tangan
+                yPos += 30;
                 
-                // Footer dengan teks dan QR code di kanan
-                // Garis pemisah
+                // Add footer
                 doc.setLineWidth(0.1);
                 doc.line(margin, yPos, 210 - margin, yPos);
                 yPos += 10;
                 
-                // Teks footer kiri
+                // Footer text
                 doc.setFontSize(8);
                 doc.setFont("helvetica", "normal");
-                const footerText1 = "Laporan ini dibuat secara otomatis oleh sistem Dinas Perikanan Situbondo";
-                const footerText2 = "© " + currentDate.getFullYear() + " Dinas Peternakan dan Perikanan Kabupaten Situbondo";
-                doc.text(footerText1, margin, yPos);
-                doc.text(footerText2, margin, yPos + 4);
+                doc.text("Laporan ini dibuat secara otomatis oleh sistem Dinas Perikanan Situbondo", margin, yPos);
+                doc.text(`© ${currentDate.getFullYear()} Dinas Peternakan dan Perikanan Kabupaten Situbondo`, margin, yPos + 4);
                 
-                // QR code di kanan dengan proporsi yang benar
+                // QR Code
+                const qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html&color=1e3a8a&bgcolor=ffffff';
+                const qrImg = new Image();
+                
+                await new Promise((resolve, reject) => {
+                    qrImg.onload = resolve;
+                    qrImg.onerror = reject;
+                    qrImg.src = qrCodeUrl;
+                });
+                
                 const qrSize = 15;
                 const qrX = 210 - margin - qrSize;
                 const qrY = yPos - 5;
                 
-                // URL QR code dengan warna biru (warna logo)
-                const qrCodeUrlBlue = 'https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html&color=1e3a8a&bgcolor=ffffff';
-                
-                // Load QR code image
-                const qrImgBlue = new Image();
-                await new Promise((resolve, reject) => {
-                    qrImgBlue.onload = resolve;
-                    qrImgBlue.onerror = reject;
-                    qrImgBlue.src = qrCodeUrlBlue;
-                });
-                
-                doc.addImage(qrImgBlue, 'PNG', qrX, qrY, qrSize, qrSize);
+                doc.addImage(qrImg, 'PNG', qrX, qrY, qrSize, qrSize);
                 doc.setFontSize(6);
                 doc.text("Scan untuk mengakses", qrX + qrSize/2, qrY + qrSize + 3, { align: 'center' });
                 doc.text("sumber laporan", qrX + qrSize/2, qrY + qrSize + 6, { align: 'center' });
