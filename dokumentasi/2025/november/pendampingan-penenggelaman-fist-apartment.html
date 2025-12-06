@@ -10,7 +10,7 @@
     <meta property="og:title" content="Penenggelaman Modul Rumah Ikan - Program Konservasi Perairan Situbondo">
     <meta property="og:description" content="Program konservasi sumber daya kelautan melalui penenggelaman modul rumah ikan (artificial reef) untuk pelestarian ekosistem laut Situbondo.">
     <meta property="og:image" content="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto7.jpeg">
-    <meta property="og:url" content="https://www.dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html">
+    <meta property="og:url" content="https://dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html">
     <meta property="og:type" content="website">
     
     <!-- Twitter Card -->
@@ -29,6 +29,10 @@
     
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- jsPDF untuk generate PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         :root {
@@ -504,6 +508,7 @@
             align-items: center;
             gap: 10px;
             text-decoration: none;
+            cursor: pointer;
         }
 
         .btn-download:hover {
@@ -672,20 +677,23 @@
             background-color: #25D366;
         }
         
-        .share-facebook i {
-            background-color: #1877F2;
-        }
-        
-        .share-twitter i {
-            background-color: #1DA1F2;
-        }
-        
-        .share-telegram i {
-            background-color: #0088cc;
-        }
-        
         .share-copy i {
             background-color: var(--conservation-teal);
+        }
+
+        /* ===== PDF GENERATION MODAL ===== */
+        #pdfProgressModal .modal-content {
+            border-radius: 16px;
+            border: none;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--eco-green), var(--conservation-teal));
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -1322,15 +1330,13 @@
                 <div class="col-lg-8 mx-auto text-center">
                     <h2 class="mb-4">Akses Informasi dan Bagikan Kegiatan</h2>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
-                        <a href="https://www.dinasperikanansitubondo.com/dokumentasi/2025/november/laporan-penenggelaman-modul-rumah-ikan.pdf" 
-                           class="btn-download" 
-                           id="downloadBtn">
+                        <button class="btn-download" id="generatePdfBtn">
                             <i class="fas fa-download me-2"></i>Download Laporan Kegiatan (PDF)
-                        </a>
-                        <a href="#" class="btn-share" data-bs-toggle="modal" data-bs-target="#shareModal">
+                        </button>
+                        <button class="btn-share" data-bs-toggle="modal" data-bs-target="#shareModal">
                             <i class="fas fa-share-alt me-2"></i>Bagikan Program Konservasi
-                        </a>
-                        <a href="https://www.dinasperikanansitubondo.com/dokumentasi" class="btn-share">
+                        </button>
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share">
                             <i class="fas fa-images me-2"></i>Kegiatan Lainnya
                         </a>
                     </div>
@@ -1338,6 +1344,34 @@
             </div>
         </div>
     </section>
+
+    <!-- PDF Generation Progress Modal -->
+    <div class="modal fade" id="pdfProgressModal" tabindex="-1" aria-labelledby="pdfProgressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pdfProgressModalLabel">Membuat Laporan PDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-file-pdf fa-3x text-conservation-teal mb-3"></i>
+                        <p>Sedang membuat laporan kegiatan dalam format PDF...</p>
+                    </div>
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" 
+                             style="width: 0%" 
+                             id="pdfProgressBar">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <small class="text-muted" id="pdfProgressText">Menyiapkan dokumen...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Share Modal -->
     <div class="modal fade share-modal" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
@@ -1348,37 +1382,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted mb-4">Bagikan informasi program konservasi ini melalui media sosial:</p>
+                    <p class="text-muted mb-4">Bagikan informasi program konservasi ini melalui:</p>
                     
                     <a href="#" class="share-option share-whatsapp" id="shareWhatsApp">
                         <i class="fab fa-whatsapp"></i>
                         <div>
-                            <h6 class="mb-1">WhatsApp</h6>
-                            <small class="text-muted">Bagikan ke kontak atau grup WhatsApp</small>
-                        </div>
-                    </a>
-                    
-                    <a href="#" class="share-option share-facebook" id="shareFacebook">
-                        <i class="fab fa-facebook-f"></i>
-                        <div>
-                            <h6 class="mb-1">Facebook</h6>
-                            <small class="text-muted">Bagikan ke timeline Facebook</small>
-                        </div>
-                    </a>
-                    
-                    <a href="#" class="share-option share-twitter" id="shareTwitter">
-                        <i class="fab fa-twitter"></i>
-                        <div>
-                            <h6 class="mb-1">Twitter</h6>
-                            <small class="text-muted">Tweet tentang program ini</small>
-                        </div>
-                    </a>
-                    
-                    <a href="#" class="share-option share-telegram" id="shareTelegram">
-                        <i class="fab fa-telegram"></i>
-                        <div>
-                            <h6 class="mb-1">Telegram</h6>
-                            <small class="text-muted">Bagikan ke channel atau grup Telegram</small>
+                            <h6 class="mb-1">Bagikan ke WhatsApp</h6>
+                            <small class="text-muted">Kirim tautan ke kontak atau grup WhatsApp</small>
                         </div>
                     </a>
                     
@@ -1386,7 +1396,7 @@
                         <i class="fas fa-link"></i>
                         <div>
                             <h6 class="mb-1">Salin Tautan</h6>
-                            <small class="text-muted">Salin tautan halaman ini</small>
+                            <small class="text-muted">Salin tautan halaman ini ke clipboard</small>
                         </div>
                     </div>
                     
@@ -1592,25 +1602,16 @@
         });
 
         // Share functionality
-        const currentUrl = encodeURIComponent(window.location.href);
+        const currentUrl = window.location.href;
         const title = encodeURIComponent(document.title);
         const description = encodeURIComponent("Program konservasi sumber daya kelautan melalui penenggelaman modul rumah ikan (artificial reef) untuk pelestarian ekosistem laut Situbondo.");
         
         // WhatsApp share
-        document.getElementById('shareWhatsApp').href = `https://wa.me/?text=${title}%20${currentUrl}`;
-        
-        // Facebook share
-        document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`;
-        
-        // Twitter share
-        document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?url=${currentUrl}&text=${title}`;
-        
-        // Telegram share
-        document.getElementById('shareTelegram').href = `https://t.me/share/url?url=${currentUrl}&text=${title}`;
+        document.getElementById('shareWhatsApp').href = `https://wa.me/?text=${title}%0A%0A${description}%0A%0ABaca selengkapnya: ${currentUrl}`;
         
         // Copy link functionality
         document.getElementById('copyLink').addEventListener('click', function() {
-            navigator.clipboard.writeText(window.location.href).then(function() {
+            navigator.clipboard.writeText(currentUrl).then(function() {
                 const copyAlert = document.getElementById('copyAlert');
                 copyAlert.classList.remove('d-none');
                 
@@ -1618,22 +1619,6 @@
                     copyAlert.classList.add('d-none');
                 }, 3000);
             });
-        });
-
-        // Download button functionality
-        document.getElementById('downloadBtn').addEventListener('click', function(e) {
-            // Jika file PDF tidak ditemukan, beri notifikasi
-            fetch(this.href)
-                .then(response => {
-                    if (!response.ok) {
-                        e.preventDefault();
-                        alert('File laporan PDF sedang dalam proses penyusunan. Silakan hubungi admin untuk informasi lebih lanjut.');
-                    }
-                })
-                .catch(() => {
-                    e.preventDefault();
-                    alert('File laporan PDF sedang dalam proses penyusunan. Silakan hubungi admin untuk informasi lebih lanjut.');
-                });
         });
 
         // Footer fix - ensure it's not cut off
@@ -1655,6 +1640,304 @@
         // Check on load and resize
         window.addEventListener('load', checkFooterPosition);
         window.addEventListener('resize', checkFooterPosition);
+
+        // PDF Generation Functionality
+        document.getElementById('generatePdfBtn').addEventListener('click', function() {
+            // Show progress modal
+            const progressModal = new bootstrap.Modal(document.getElementById('pdfProgressModal'));
+            progressModal.show();
+            
+            // Reset progress
+            const progressBar = document.getElementById('pdfProgressBar');
+            const progressText = document.getElementById('pdfProgressText');
+            progressBar.style.width = '0%';
+            progressText.textContent = 'Menyiapkan dokumen...';
+            
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress === 10) progressText.textContent = 'Mengumpulkan data...';
+                if (progress === 30) progressText.textContent = 'Menyusun laporan...';
+                if (progress === 60) progressText.textContent = 'Memformat dokumen...';
+                if (progress === 80) progressText.textContent = 'Menyiapkan untuk download...';
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    generatePDF();
+                    setTimeout(() => {
+                        progressModal.hide();
+                    }, 1000);
+                }
+            }, 100);
+        });
+
+        // Function to generate PDF report
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            
+            // Set document metadata
+            doc.setProperties({
+                title: 'Laporan Penenggelaman Modul Rumah Ikan - Dinas Perikanan Situbondo',
+                subject: 'Laporan Kegiatan Konservasi Perairan',
+                author: 'Dinas Perikanan Kabupaten Situbondo',
+                keywords: 'konservasi, rumah ikan, artificial reef, perikanan, situbondo',
+                creator: 'Dinas Perikanan Situbondo'
+            });
+            
+            // Add header with logo
+            doc.addImage('https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png', 'PNG', 15, 10, 20, 20);
+            
+            // Title
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', 40, 20);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur', 40, 25);
+            doc.text('Telp: 0878 6561 4222 | Email: info@dinasperikanansitubondo.com', 40, 30);
+            
+            // Line separator
+            doc.setLineWidth(0.5);
+            doc.line(15, 35, 195, 35);
+            
+            // Main title
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('LAPORAN KEGIATAN PENENGGELAMAN MODUL RUMAH IKAN', 105, 45, null, null, 'center');
+            
+            // Subtitle
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Program Konservasi Perairan Kabupaten Situbondo', 105, 52, null, null, 'center');
+            doc.text('November 2025', 105, 58, null, null, 'center');
+            
+            // Line separator
+            doc.line(15, 62, 195, 62);
+            
+            let yPos = 70;
+            
+            // Executive Summary
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('RINGKASAN EKSEKUTIF', 15, yPos);
+            yPos += 8;
+            
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            const summaryText = 'Program penenggelaman modul rumah ikan (artificial reef) merupakan upaya strategis Dinas Perikanan Kabupaten Situbondo dalam rangka pelestarian ekosistem laut dan peningkatan produktivitas perairan. Kegiatan ini dilaksanakan pada tanggal 20 dan 26 November 2025 di dua lokasi strategis: Desa Kalianget dan Desa Pasir Putih. Sebanyak 15 unit modul rumah ikan berhasil ditenggelamkan untuk menciptakan habitat baru bagi biota laut.';
+            doc.text(summaryText, 15, yPos, { maxWidth: 180 });
+            yPos += 25;
+            
+            // Data Kegiatan
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('DATA KEGIATAN', 15, yPos);
+            yPos += 8;
+            
+            // Table data
+            const tableData = [
+                ['Parameter', 'Detail'],
+                ['Nama Kegiatan', 'Penenggelaman Modul Rumah Ikan (Artificial Reef)'],
+                ['Tema Kegiatan', 'Program Konservasi Perairan Kabupaten Situbondo'],
+                ['Tanggal Pelaksanaan', '20 & 26 November 2025'],
+                ['Lokasi Kegiatan', '1. Desa Kalianget, Kec. Banyuglugur\n2. Desa Pasir Putih, Kec. Bungatan'],
+                ['Jumlah Modul', '15 unit rumah ikan'],
+                ['Kedalaman Penempatan', '± 50 meter dari permukaan laut'],
+                ['Penyelenggara', 'Dinas Kelautan dan Perikanan Provinsi Jawa Timur\nDinas Peternakan dan Perikanan Kabupaten Situbondo\nFORKOPIMDA Kecamatan']
+            ];
+            
+            doc.autoTable({
+                startY: yPos,
+                head: [tableData[0]],
+                body: tableData.slice(1),
+                theme: 'grid',
+                headStyles: { fillColor: [13, 148, 136], textColor: 255, fontStyle: 'bold' },
+                styles: { fontSize: 10, cellPadding: 3 },
+                margin: { left: 15, right: 15 }
+            });
+            
+            yPos = doc.lastAutoTable.finalY + 10;
+            
+            // Peserta Kegiatan
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('PESERTA DAN MITRA KEGIATAN', 15, yPos);
+            yPos += 8;
+            
+            const participants = [
+                '1. Dinas Kelautan dan Perikanan Provinsi Jawa Timur',
+                '2. Dinas Peternakan dan Perikanan Kabupaten Situbondo',
+                '3. FORKOPIMKA (Forum Koordinasi Pimpinan Kecamatan)',
+                '4. Kelompok Nelayan (Pokmaswas)',
+                '5. Pemerintah Desa setempat',
+                '6. Tim Teknis Penenggelaman',
+                '7. TNI AL/Polairud (Pengawalan)'
+            ];
+            
+            participants.forEach(participant => {
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.text(participant, 20, yPos);
+                yPos += 7;
+            });
+            
+            yPos += 5;
+            
+            // Tujuan dan Manfaat
+            doc.addPage();
+            yPos = 20;
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('TUJUAN DAN MANFAAT PROGRAM', 15, yPos);
+            yPos += 8;
+            
+            const benefits = [
+                {
+                    title: '1. Pelestarian Ekosistem Laut',
+                    desc: 'Menciptakan habitat baru bagi biota laut untuk berkembang biak dan mencari makan, mendukung regenerasi populasi ikan.'
+                },
+                {
+                    title: '2. Peningkatan Produktivitas Perairan',
+                    desc: 'Meningkatkan hasil tangkapan nelayan tradisional melalui penciptaan daerah penangkapan ikan yang baru dan produktif.'
+                },
+                {
+                    title: '3. Pengurangan Tekanan Penangkapan',
+                    desc: 'Mengurangi beban penangkapan di wilayah tradisional dengan menyediakan alternatif lokasi penangkapan yang baru.'
+                },
+                {
+                    title: '4. Pemberdayaan Masyarakat Nelayan',
+                    desc: 'Melibatkan masyarakat nelayan dalam program konservasi, meningkatkan kesadaran akan pentingnya keberlanjutan sumber daya laut.'
+                }
+            ];
+            
+            benefits.forEach(benefit => {
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text(benefit.title, 15, yPos);
+                yPos += 6;
+                
+                doc.setFont('helvetica', 'normal');
+                doc.text(benefit.desc, 20, yPos, { maxWidth: 175 });
+                yPos += 15;
+            });
+            
+            // Tahapan Kegiatan
+            yPos += 5;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('TAHAPAN KEGIATAN', 15, yPos);
+            yPos += 8;
+            
+            const stages = [
+                '1. Persiapan dan pengangkutan modul rumah ikan',
+                '2. Koordinasi teknis dengan pihak terkait',
+                '3. Pemasangan alat bantu navigasi',
+                '4. Penenggelaman modul rumah ikan',
+                '5. Dokumentasi dan pencatatan data',
+                '6. Evaluasi dan tindak lanjut'
+            ];
+            
+            stages.forEach(stage => {
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.text(stage, 20, yPos);
+                yPos += 7;
+            });
+            
+            // Hasil dan Capaian
+            yPos += 10;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('HASIL DAN CAPAIAN', 15, yPos);
+            yPos += 8;
+            
+            const achievements = [
+                '✓ Berhasil ditenggelamkan 15 unit modul rumah ikan',
+                '✓ Penempatan pada kedalaman optimal ± 50 meter',
+                '✓ Kegiatan berjalan aman dan lancar sesuai rencana',
+                '✓ Partisipasi aktif dari 7 lembaga/organisasi',
+                '✓ Monitoring berkala akan dilakukan untuk evaluasi'
+            ];
+            
+            achievements.forEach(achievement => {
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.text(achievement, 20, yPos);
+                yPos += 7;
+            });
+            
+            // Sumber Informasi
+            doc.addPage();
+            yPos = 20;
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('SUMBER INFORMASI', 15, yPos);
+            yPos += 8;
+            
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Laporan ini disusun berdasarkan data dari:', 15, yPos);
+            yPos += 8;
+            
+            const sources = [
+                '• Dokumentasi kegiatan penenggelaman modul rumah ikan',
+                '• Data teknis dari Dinas Kelautan dan Perikanan Provinsi Jawa Timur',
+                '• Laporan lapangan dari tim pelaksana',
+                '• Koordinasi dengan masyarakat nelayan setempat',
+                `• Sumber online: ${currentUrl}`
+            ];
+            
+            sources.forEach(source => {
+                doc.text(source, 20, yPos);
+                yPos += 7;
+            });
+            
+            // Penutup
+            yPos += 10;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('PENUTUP', 15, yPos);
+            yPos += 8;
+            
+            const closingText = 'Program penenggelaman modul rumah ikan merupakan investasi jangka panjang untuk kelestarian ekosistem laut Kabupaten Situbondo. Dengan sinergi multipihak dan partisipasi aktif masyarakat, diharapkan program ini dapat memberikan manfaat berkelanjutan bagi peningkatan produktivitas perairan dan kesejahteraan masyarakat nelayan. Monitoring berkala akan dilakukan untuk mengevaluasi perkembangan ekosistem di sekitar modul rumah ikan yang telah ditenggelamkan.';
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text(closingText, 15, yPos, { maxWidth: 180 });
+            yPos += 25;
+            
+            // Tanda tangan
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Situbondo, 30 November 2025', 105, yPos, null, null, 'center');
+            yPos += 20;
+            doc.text('Kepala Dinas Perikanan', 105, yPos, null, null, 'center');
+            yPos += 30;
+            doc.text('___________________________', 105, yPos, null, null, 'center');
+            yPos += 10;
+            doc.setFont('helvetica', 'bold');
+            doc.text('[Nama dan NIP]', 105, yPos, null, null, 'center');
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for(let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Halaman ${i} dari ${pageCount}`, 105, 287, null, null, 'center');
+                doc.text('Dokumen ini dibuat secara otomatis dari sistem Dinas Perikanan Situbondo', 105, 292, null, null, 'center');
+                doc.text(`Sumber: ${currentUrl}`, 105, 297, null, null, 'center');
+            }
+            
+            // Save the PDF
+            const fileName = `Laporan_Penenggelaman_Rumah_Ikan_Situbondo_${new Date().toISOString().slice(0,10)}.pdf`;
+            doc.save(fileName);
+        }
     </script>
 </body>
 </html>
