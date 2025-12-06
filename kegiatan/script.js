@@ -1,58 +1,58 @@
 // Data kegiatan dengan properti 'url' untuk halaman detail
 const kegiatanData = [
-        {
-    "id": 1764988551018,
-    "title": "Pelatihan Teknologi Penangkapan Ikan: Perawatan Jaring Ikan untuk Nelayan Situbondo",
-    "date": "2025-11-10",
-    "description": "Pelatihan ini merupakan bentuk komitmen pemerintah daerah dalam meningkatkan kapasitas nelayan tradisional melalui transfer teknologi dan pengetahuan. Dengan pendekatan praktis dan interaktif, kegiatan berhasil memberikan keterampilan nyata yang langsung dapat diterapkan nelayan dalam operasional penangkapan ikan sehari-hari, sekaligus mendukung keberlanjutan sumber daya perikanan di wilayah Situbondo.",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/gambar4.jpeg"
-    ],
-    "type": "multimedia",
-    "category": "pelatihan",
-    "location": "Cafe Besuki Tempo Doloe",
-    "tags": [
-        "Nelayan Situbondo",
-        "Situbondo Naik Kelas",
-        "Bantuan Jaring",
-        "Dinas Peternakan dan Perikanan",
-        "Bidang Pemberdayaan Nelayan",
-        "Cafe Besuki Tempo Doloe"
-    ],
-    "youtubeUrls": [
-        "https://www.youtube.com/embed/6TbwAzsGcpM"
-    ],
-    "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html",
-    "participants": 0,
-    "duration": ""
-},
-        {
-    "id": 1764993106377,
-    "title": "Pendampingan Penenggelaman Fish Apartment",
-    "date": "2025-11-26",
-    "description": "Program pendampingan penenggelaman fish apartment merupakan inisiatif konservasi perairan yang mengedepankan pendekatan partisipatif masyarakat. Kegiatan ini menekankan transfer pengetahuan teknis kepada nelayan lokal dalam pemasangan artificial reef, dengan tujuan menciptakan habitat baru bagi biota laut dan mengurangi tekanan penangkapan di area tradisional.",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto7.jpeg"
-    ],
-    "type": "foto",
-    "category": "konservasi",
-    "location": "Desa Pasir Putih dan Desa Kalianget",
-    "tags": [
-        "Fist Apartment",
-        "Rumah Ikan Buatan",
-        "Artificial Reef",
-        "Konservasi Perairan",
-        "Ekosistem Laut",
-        "Penenggelaman Modul Ikan",
-        "Rehabilitasi Sumber daya Ikan",
-        "Terumbu Buatan"
-    ],
-    "youtubeUrls": [],
-    "url": "www.dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html",
-    "participants": 0,
-    "duration": ""
-},
-    // Data lainnya tetap sama dengan format baru...
+    {
+        "id": 1764988551018,
+        "title": "Pelatihan Teknologi Penangkapan Ikan: Perawatan Jaring Ikan untuk Nelayan Situbondo",
+        "date": "2025-11-10",
+        "description": "Pelatihan ini merupakan bentuk komitmen pemerintah daerah dalam meningkatkan kapasitas nelayan tradisional melalui transfer teknologi dan pengetahuan. Dengan pendekatan praktis dan interaktif, kegiatan berhasil memberikan keterampilan nyata yang langsung dapat diterapkan nelayan dalam operasional penangkapan ikan sehari-hari, sekaligus mendukung keberlanjutan sumber daya perikanan di wilayah Situbondo.",
+        "images": [
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/gambar4.jpeg"
+        ],
+        "type": "multimedia",
+        "category": "pelatihan",
+        "location": "Cafe Besuki Tempo Doloe",
+        "tags": [
+            "Nelayan Situbondo",
+            "Situbondo Naik Kelas",
+            "Bantuan Jaring",
+            "Dinas Peternakan dan Perikanan",
+            "Bidang Pemberdayaan Nelayan",
+            "Cafe Besuki Tempo Doloe"
+        ],
+        "youtubeUrls": [
+            "https://www.youtube.com/embed/6TbwAzsGcpM"
+        ],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1764993106377,
+        "title": "Pendampingan Penenggelaman Fish Apartment",
+        "date": "2025-11-26",
+        "description": "Program pendampingan penenggelaman fish apartment merupakan inisiatif konservasi perairan yang mengedepankan pendekatan partisipatif masyarakat. Kegiatan ini menekankan transfer pengetahuan teknis kepada nelayan lokal dalam pemasangan artificial reef, dengan tujuan menciptakan habitat baru bagi biota laut dan mengurangi tekanan penangkapan di area tradisional.",
+        "images": [
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto7.jpeg"
+        ],
+        "type": "foto",
+        "category": "konservasi",
+        "location": "Desa Pasir Putih dan Desa Kalianget",
+        "tags": [
+            "Fist Apartment",
+            "Rumah Ikan Buatan",
+            "Artificial Reef",
+            "Konservasi Perairan",
+            "Ekosistem Laut",
+            "Penenggelaman Modul Ikan",
+            "Rehabilitasi Sumber daya Ikan",
+            "Terumbu Buatan"
+        ],
+        "youtubeUrls": [],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html",
+        "participants": 0,
+        "duration": ""
+    },
+    // Tambahkan data kegiatan lainnya di sini...
 ];
 
 // Inisialisasi AOS Animation
@@ -96,7 +96,33 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup password protection untuk generator
     setupPasswordProtection();
+    
+    // Setup modal event listeners
+    setupModalEvents();
 });
+
+// Setup modal event listeners
+function setupModalEvents() {
+    const modalElement = document.getElementById('kegiatanModal');
+    
+    modalElement.addEventListener('shown.bs.modal', function() {
+        // Reset carousel setiap kali modal ditampilkan
+        const carousel = modalElement.querySelector('#modalCarousel');
+        if (carousel) {
+            const bsCarousel = new bootstrap.Carousel(carousel);
+            bsCarousel.to(0);
+        }
+    });
+    
+    modalElement.addEventListener('hidden.bs.modal', function() {
+        // Reset modal content
+        const carouselInner = document.getElementById('modalCarouselInner');
+        if (carouselInner) carouselInner.innerHTML = '';
+        
+        const videoList = document.getElementById('modalVideoList');
+        if (videoList) videoList.innerHTML = '';
+    });
+}
 
 // Fungsi untuk menghitung dan menampilkan statistik
 function calculateAndSetStatistics() {
@@ -117,7 +143,7 @@ function calculateAndSetStatistics() {
     document.getElementById('totalTags').textContent = tagUnik.length;
 }
 
-// Fungsi untuk menampilkan kegiatan
+// Fungsi untuk menampilkan kegiatan (DIPERBAIKI)
 function displayKegiatan(data, page = 1) {
     const container = document.getElementById('kegiatanContainer');
     const loading = document.getElementById('loading');
@@ -184,27 +210,25 @@ function displayKegiatan(data, page = 1) {
                     </span>`;
             }
             
-            // Tentukan jenis media badge
+            // Tentukan jenis media (TIDAK DITAMPILKAN SEBAGAI BADGE LAGI)
             let mediaType = kegiatan.type;
-            let badgeIcon = 'fa-camera';
-            let badgeText = 'Foto';
+            let buttonIcon = 'fa-eye';
+            let buttonText = 'Lihat Detail';
             
             if (kegiatan.type === 'youtube' || (kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0)) {
                 mediaType = 'youtube';
-                badgeIcon = 'fa-play-circle';
-                badgeText = 'Video';
+                buttonIcon = 'fa-play-circle';
+                buttonText = 'Tonton Video';
             } else if (kegiatan.type === 'multimedia' || (kegiatan.images && kegiatan.images.length > 0 && kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0)) {
                 mediaType = 'multimedia';
-                badgeIcon = 'fa-photo-video';
-                badgeText = 'Multimedia';
+                buttonIcon = 'fa-photo-video';
+                buttonText = 'Lihat Media';
             }
             
-            // Hitung jumlah media
-            const imageCount = kegiatan.images ? kegiatan.images.length : 0;
-            const videoCount = kegiatan.youtubeUrls ? kegiatan.youtubeUrls.length : 0;
-            const totalMedia = imageCount + videoCount;
+            // Validasi URL untuk mencegah error
+            const detailUrl = validateUrl(kegiatan.url);
             
-            // Generate Card
+            // Generate Card (TANPA BADGE)
             html += `
             <div class="col-lg-4 col-md-6" 
                  data-aos="fade-up" 
@@ -219,12 +243,7 @@ function displayKegiatan(data, page = 1) {
                              alt="${kegiatan.title}"
                              loading="lazy"
                              onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
-                        <div class="kegiatan-badge ${mediaType}">
-                            <i class="fas ${badgeIcon} me-1"></i>
-                            ${badgeText}
-                            ${totalMedia > 1 ? `<span class="ms-1 badge bg-white text-dark">${totalMedia}</span>` : ''}
-                        </div>
-                        <div class="kegiatan-overlay"></div>
+                        <!-- BADGE DIHAPUS dari sini -->
                     </div>
                     <div class="kegiatan-content">
                         <div class="kegiatan-date">
@@ -240,11 +259,11 @@ function displayKegiatan(data, page = 1) {
                         </div>
                         
                         <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
-                            <a href="${kegiatan.url}" class="btn-kegiatan" target="_blank">
-                                <i class="fas ${mediaType === 'youtube' ? 'fa-play-circle' : mediaType === 'multimedia' ? 'fa-photo-video' : 'fa-eye'} me-2"></i>
-                                ${mediaType === 'youtube' ? 'Tonton Video' : mediaType === 'multimedia' ? 'Lihat Media' : 'Lihat Detail'}
+                            <a href="${detailUrl}" class="btn-kegiatan" target="_blank" onclick="event.stopPropagation();">
+                                <i class="fas ${buttonIcon} me-2"></i>
+                                ${buttonText}
                             </a>
-                            <button class="btn btn-outline-primary btn-sm" onclick="showKegiatanDetail(${kegiatan.id})">
+                            <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})">
                                 <i class="fas fa-info-circle"></i>
                             </button>
                         </div>
@@ -255,6 +274,22 @@ function displayKegiatan(data, page = 1) {
         });
         
         container.innerHTML = html;
+        
+        // Tambahkan event listener untuk klik card (untuk membuka modal)
+        document.querySelectorAll('.kegiatan-card').forEach((card, index) => {
+            card.addEventListener('click', function(e) {
+                // Cegah jika yang diklik adalah link atau button
+                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || 
+                    e.target.closest('a') || e.target.closest('button')) {
+                    return;
+                }
+                
+                const kegiatan = paginatedData[index];
+                if (kegiatan) {
+                    showKegiatanDetail(kegiatan.id);
+                }
+            });
+        });
         
         // Generate pagination jika diperlukan
         if (totalPages > 1) {
@@ -270,6 +305,29 @@ function displayKegiatan(data, page = 1) {
         currentPage = page;
         
     }, 500);
+}
+
+// Fungsi validasi URL (DIPERBAIKI)
+function validateUrl(url) {
+    if (!url) return '#';
+    
+    // Jika URL sudah lengkap
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+    
+    // Jika dimulai dengan www.
+    if (url.startsWith('www.')) {
+        return 'https://' + url;
+    }
+    
+    // Jika URL relatif
+    if (url.startsWith('/')) {
+        return 'https://dinasperikanansitubondo.com' + url;
+    }
+    
+    // Default
+    return 'https://dinasperikanansitubondo.com/' + url;
 }
 
 // Fungsi untuk generate pagination
@@ -592,10 +650,13 @@ function showToast(title, message, type = 'info') {
     });
 }
 
-// Fungsi untuk menampilkan detail kegiatan di modal
+// Fungsi untuk menampilkan detail kegiatan di modal (DIPERBAIKI)
 function showKegiatanDetail(id) {
     const kegiatan = kegiatanData.find(k => k.id === id);
-    if (!kegiatan) return;
+    if (!kegiatan) {
+        showToast('Kegiatan tidak ditemukan', 'Data kegiatan tidak tersedia', 'warning');
+        return;
+    }
     
     const date = new Date(kegiatan.date);
     const formattedDate = date.toLocaleDateString('id-ID', {
@@ -611,17 +672,26 @@ function showKegiatanDetail(id) {
     document.getElementById('modalCategory').textContent = kegiatan.category.charAt(0).toUpperCase() + kegiatan.category.slice(1);
     document.getElementById('modalLocation').textContent = kegiatan.location;
     document.getElementById('modalDescription').textContent = kegiatan.description;
-    document.getElementById('modalDetailLink').href = kegiatan.url;
+    
+    // Validasi dan set URL
+    const validUrl = validateUrl(kegiatan.url);
+    const modalDetailLink = document.getElementById('modalDetailLink');
+    modalDetailLink.href = validUrl;
+    
+    // Pastikan link terbuka di tab baru
+    modalDetailLink.target = '_blank';
     
     // Update participants and duration jika ada
     if (kegiatan.participants && kegiatan.participants > 0) {
         document.getElementById('modalParticipants').textContent = kegiatan.participants;
+        document.getElementById('modalParticipants').parentElement.style.display = 'inline-block';
     } else {
         document.getElementById('modalParticipants').parentElement.style.display = 'none';
     }
     
     if (kegiatan.duration) {
         document.getElementById('modalDuration').textContent = kegiatan.duration;
+        document.getElementById('modalDuration').parentElement.style.display = 'inline-block';
     } else {
         document.getElementById('modalDuration').parentElement.style.display = 'none';
     }
@@ -734,7 +804,7 @@ function extractYouTubeId(url) {
 }
 
 // ==========================================
-// GENERATOR SCRIPT FEATURES - DISEMPERNAKAN
+// GENERATOR SCRIPT FEATURES - DIPERBAIKI
 // ==========================================
 
 // Fungsi untuk Generate dan Preview
@@ -822,7 +892,7 @@ function generatePreview() {
     showToast('Preview Berhasil!', `${imageCount} gambar dan ${videoCount} video telah diproses. URL Detail: ${detailUrl}`, 'success');
 }
 
-// Fungsi Render Preview Card di dalam Modal Generator
+// Fungsi Render Preview Card di dalam Modal Generator (TANPA BADGE)
 function renderPreviewCard(data) {
     const container = document.getElementById('previewCardContainer');
     
@@ -840,34 +910,28 @@ function renderPreviewCard(data) {
         participantHtml = `<span class="ms-2"><i class="fas fa-globe me-1"></i>Umum</span>`;
     }
 
-    // Tentukan badge
-    let badgeType = data.type;
-    let badgeIcon = 'fa-camera';
-    let badgeText = 'Foto';
+    // Tentukan button icon dan text
+    let buttonIcon = 'fa-eye';
+    let buttonText = 'Lihat Detail';
     
-    if (badgeType === 'youtube') {
-        badgeIcon = 'fa-play-circle';
-        badgeText = 'Video';
-    } else if (badgeType === 'multimedia') {
-        badgeIcon = 'fa-photo-video';
-        badgeText = 'Multimedia';
+    if (data.type === 'youtube') {
+        buttonIcon = 'fa-play-circle';
+        buttonText = 'Tonton Video';
+    } else if (data.type === 'multimedia') {
+        buttonIcon = 'fa-photo-video';
+        buttonText = 'Lihat Media';
     }
     
     const imageCount = data.images ? data.images.length : 0;
     const videoCount = data.youtubeUrls ? data.youtubeUrls.length : 0;
-    const totalMedia = imageCount + videoCount;
 
     const html = `
         <div class="kegiatan-card" style="max-width: 400px; margin: 0 auto;">
             <div class="kegiatan-img-container">
-                <img src="${data.images && data.images[0] ? data.images[0] : 'https://via.placeholder.com/600x400?text=No+Image'}" 
+                <img src="${data.images && data.images[0] ? data.images[0] : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'}" 
                      class="kegiatan-img" alt="${data.title}" 
                      onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
-                <div class="kegiatan-badge ${badgeType}">
-                    <i class="fas ${badgeIcon} me-1"></i>
-                    ${badgeText}
-                    ${totalMedia > 1 ? `<span class="ms-1 badge bg-white text-dark">${totalMedia}</span>` : ''}
-                </div>
+                <!-- BADGE DIHAPUS -->
             </div>
             <div class="kegiatan-content">
                 <div class="kegiatan-date">
@@ -880,15 +944,15 @@ function renderPreviewCard(data) {
                     ${data.tags.map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
                 </div>
                 <div class="mt-3">
-                    <a href="${data.url}" class="btn btn-sm btn-outline-primary w-100" target="_blank">
-                        <i class="fas ${badgeType === 'youtube' ? 'fa-play-circle' : badgeType === 'multimedia' ? 'fa-photo-video' : 'fa-eye'} me-2"></i>
-                        ${badgeType === 'youtube' ? 'Tonton Video' : badgeType === 'multimedia' ? 'Lihat Media' : 'Lihat Detail'}
+                    <a href="${validateUrl(data.url)}" class="btn btn-sm btn-outline-primary w-100" target="_blank">
+                        <i class="fas ${buttonIcon} me-2"></i>
+                        ${buttonText}
                     </a>
                 </div>
                 <div class="mt-2 text-center text-muted small">
                     <i class="fas fa-images me-1"></i> ${imageCount} gambar | 
                     <i class="fab fa-youtube me-1"></i> ${videoCount} video |
-                    <i class="fas fa-link me-1"></i> URL Detail: <a href="${data.url}" target="_blank">Link</a>
+                    <i class="fas fa-link me-1"></i> URL Detail: <a href="${validateUrl(data.url)}" target="_blank">Link</a>
                 </div>
             </div>
         </div>
@@ -955,43 +1019,6 @@ function clearGeneratorForm() {
     document.getElementById('codeOutput').textContent = '// Kode akan muncul di sini...';
 }
 
-// Tambahkan CSS untuk animasi shake
-const style = document.createElement('style');
-style.textContent = `
-    .shake {
-        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-    }
-    @keyframes shake {
-        10%, 90% { transform: translateX(-1px); }
-        20%, 80% { transform: translateX(2px); }
-        30%, 50%, 70% { transform: translateX(-3px); }
-        40%, 60% { transform: translateX(3px); }
-    }
-    
-    .kegiatan-badge.multimedia {
-        background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-    }
-    
-    .video-iframe-container {
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        box-shadow: var(--shadow-md);
-    }
-    
-    .modal-img {
-        height: 400px;
-        object-fit: cover;
-        border-radius: var(--radius-md);
-    }
-    
-    @media (max-width: 768px) {
-        .modal-img {
-            height: 250px;
-        }
-    }
-`;
-document.head.appendChild(style);
-
 // Panggil fungsi untuk memuat filter dari hash saat halaman dimuat
 setTimeout(loadFilterFromHash, 500);
 
@@ -1007,3 +1034,4 @@ window.generatePreview = generatePreview;
 window.copyToClipboard = copyToClipboard;
 window.clearGeneratorForm = clearGeneratorForm;
 window.extractYouTubeId = extractYouTubeId;
+window.validateUrl = validateUrl;
