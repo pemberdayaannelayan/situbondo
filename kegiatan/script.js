@@ -1,24 +1,31 @@
 // Data kegiatan dengan properti 'url' untuk halaman detail
 const kegiatanData = [
-    {
-        id: 1,
-        title: "Pelatihan Pengolahan Ikan bagi Nelayan Perempuan",
-        date: "2025-03-15",
-        description: "Pelatihan pengolahan ikan untuk meningkatkan nilai tambah hasil tangkapan nelayan. Kegiatan diikuti oleh 50 peserta dari berbagai desa pesisir Situbondo. Peserta diajarkan teknik pengolahan ikan menjadi berbagai produk bernilai tinggi seperti nugget, bakso, dan abon ikan.",
-        images: [
-            "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=2070&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1981&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
-        ],
-        type: "foto",
-        category: "pelatihan",
-        location: "Balai Pelatihan Perikanan",
-        tags: ["pelatihan", "pengolahan ikan", "nelayan perempuan", "pemberdayaan", "UMKM", "inovatif"],
-        youtubeUrls: [],
-        url: "https://www.dinasperikanansitubondo.com/kegiatan/detail/pelatihan-pengolahan-ikan",
-        participants: 50,
-        duration: "2 hari"
-    },
+        {
+    "id": 1764988551018,
+    "title": "Pelatihan Teknologi Penangkapan Ikan: Perawatan Jaring Ikan untuk Nelayan Situbondo",
+    "date": "2025-11-10",
+    "description": "Pelatihan ini merupakan bentuk komitmen pemerintah daerah dalam meningkatkan kapasitas nelayan tradisional melalui transfer teknologi dan pengetahuan. Dengan pendekatan praktis dan interaktif, kegiatan berhasil memberikan keterampilan nyata yang langsung dapat diterapkan nelayan dalam operasional penangkapan ikan sehari-hari, sekaligus mendukung keberlanjutan sumber daya perikanan di wilayah Situbondo.",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/gambar4.jpeg"
+    ],
+    "type": "multimedia",
+    "category": "pelatihan",
+    "location": "Cafe Besuki Tempo Doloe",
+    "tags": [
+        "Nelayan Situbondo",
+        "Situbondo Naik Kelas",
+        "Bantuan Jaring",
+        "Dinas Peternakan dan Perikanan",
+        "Bidang Pemberdayaan Nelayan",
+        "Cafe Besuki Tempo Doloe"
+    ],
+    "youtubeUrls": [
+        "https://www.youtube.com/embed/6TbwAzsGcpM"
+    ],
+    "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html",
+    "participants": 0,
+    "duration": ""
+},
     {
         id: 2,
         title: "Penyerahan Bantuan Mesin Kapal Nelayan",
