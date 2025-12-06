@@ -26,27 +26,32 @@ const kegiatanData = [
     "participants": 0,
     "duration": ""
 },
-    {
-        id: 2,
-        title: "Penyerahan Bantuan Mesin Kapal Nelayan",
-        date: "2025-02-28",
-        description: "Penyerahan bantuan 25 unit mesin kapal kepada nelayan tradisional di Pantai Pasir Putih. Bantuan ini untuk meningkatkan produktivitas tangkapan ikan dan mengurangi beban kerja nelayan. Setiap mesin memiliki kapasitas 15 PK dengan teknologi ramah lingkungan.",
-        images: [
-            "https://images.unsplash.com/photo-1516937941344-00b4e0337589?q=80&w=2070&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop"
-        ],
-        type: "multimedia",
-        category: "bantuan",
-        location: "Pantai Pasir Putih",
-        tags: ["bantuan", "mesin kapal", "nelayan tradisional", "produktivitas", "teknologi", "modernisasi"],
-        youtubeUrls: [
-            "https://www.youtube.com/embed/dQw4w9WgXcQ",
-            "https://www.youtube.com/embed/9bZkp7q19f0"
-        ],
-        url: "https://www.dinasperikanansitubondo.com/kegiatan/detail/penyerahan-bantuan-mesin-kapal",
-        participants: 75,
-        duration: "1 hari"
-    },
+        {
+    "id": 1764993106377,
+    "title": "Pendampingan Penenggelaman Fish Apartment",
+    "date": "2025-11-26",
+    "description": "Program pendampingan penenggelaman fish apartment merupakan inisiatif konservasi perairan yang mengedepankan pendekatan partisipatif masyarakat. Kegiatan ini menekankan transfer pengetahuan teknis kepada nelayan lokal dalam pemasangan artificial reef, dengan tujuan menciptakan habitat baru bagi biota laut dan mengurangi tekanan penangkapan di area tradisional.",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto7.jpeg"
+    ],
+    "type": "foto",
+    "category": "konservasi",
+    "location": "Desa Pasir Putih dan Desa Kalianget",
+    "tags": [
+        "Fist Apartment",
+        "Rumah Ikan Buatan",
+        "Artificial Reef",
+        "Konservasi Perairan",
+        "Ekosistem Laut",
+        "Penenggelaman Modul Ikan",
+        "Rehabilitasi Sumber daya Ikan",
+        "Terumbu Buatan"
+    ],
+    "youtubeUrls": [],
+    "url": "www.dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html",
+    "participants": 0,
+    "duration": ""
+},
     // Data lainnya tetap sama dengan format baru...
 ];
 
