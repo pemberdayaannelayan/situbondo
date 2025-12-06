@@ -2,7 +2,7 @@
 const kegiatanData = [
     {
         "id": 1764988551018,
-        "title": "Pelatihan Teknologi Penangkapan Ikan: Perawatan Jaring Ikan untuk Nelayan Situbondo",
+        "title": "Pelatihan Teknologi Penangkapan Ikan dan Perawatan Jaring Ikan untuk Nelayan Situbondo",
         "date": "2025-11-10",
         "description": "Pelatihan ini merupakan bentuk komitmen pemerintah daerah dalam meningkatkan kapasitas nelayan tradisional melalui transfer teknologi dan pengetahuan. Dengan pendekatan praktis dan interaktif, kegiatan berhasil memberikan keterampilan nyata yang langsung dapat diterapkan nelayan dalam operasional penangkapan ikan sehari-hari, sekaligus mendukung keberlanjutan sumber daya perikanan di wilayah Situbondo.",
         "images": [
