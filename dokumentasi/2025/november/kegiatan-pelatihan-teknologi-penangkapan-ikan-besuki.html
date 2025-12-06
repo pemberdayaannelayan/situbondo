@@ -231,17 +231,6 @@
             padding: 80px 0;
             background: var(--light-blue);
             position: relative;
-            overflow: hidden;
-        }
-
-        .speakers-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100px;
-            background: white;
         }
 
         .speaker-card {
@@ -457,6 +446,7 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            text-decoration: none;
         }
 
         .btn-download:hover {
@@ -476,6 +466,8 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
         }
 
         .btn-share:hover {
@@ -491,7 +483,7 @@
             color: white;
             padding: 80px 0 30px;
             position: relative;
-            overflow: hidden;
+            width: 100%;
         }
 
         .footer::before {
@@ -502,6 +494,7 @@
             right: 0;
             height: 100px;
             background: linear-gradient(to bottom, white, var(--light-blue));
+            z-index: 0;
         }
 
         .footer h5 {
@@ -510,6 +503,7 @@
             font-size: 1.2rem;
             position: relative;
             display: inline-block;
+            z-index: 1;
         }
 
         .footer h5::after {
@@ -521,6 +515,7 @@
             height: 3px;
             background: var(--accent-blue);
             border-radius: 3px;
+            z-index: 1;
         }
 
         .footer-links a {
@@ -532,6 +527,8 @@
             gap: 10px;
             transition: all 0.3s ease;
             padding: 5px 0;
+            position: relative;
+            z-index: 1;
         }
 
         .footer-links a:hover {
@@ -550,12 +547,79 @@
             color: white;
             margin-right: 10px;
             transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            z-index: 1;
         }
 
         .social-icons a:hover {
             background: var(--secondary-blue);
             transform: translateY(-3px);
         }
+
+        .footer-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== SHARE MODAL ===== */
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .share-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .share-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px;
+            border-radius: 12px;
+            background: var(--light-gray);
+            border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 100px;
+        }
+
+        .share-btn:hover {
+            background: var(--light-blue);
+            transform: translateY(-3px);
+        }
+
+        .share-btn i {
+            font-size: 24px;
+        }
+
+        .share-btn.whatsapp i { color: #25D366; }
+        .share-btn.facebook i { color: #1877F2; }
+        .share-btn.twitter i { color: #1DA1F2; }
+        .share-btn.telegram i { color: #0088cc; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
@@ -574,6 +638,10 @@
             .speaker-image {
                 width: 160px;
                 height: 160px;
+            }
+            
+            .footer {
+                padding: 60px 0 30px;
             }
         }
 
@@ -599,6 +667,14 @@
             .gallery-item {
                 height: 220px;
             }
+            
+            .footer {
+                padding: 50px 0 20px;
+            }
+            
+            .footer::before {
+                height: 80px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -623,10 +699,51 @@
             .speaker-name {
                 font-size: 1.2rem;
             }
+            
+            .action-buttons .btn-download,
+            .action-buttons .btn-share {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <h3 class="section-title">Bagikan Kegiatan Ini</h3>
+            <p>Pilih platform untuk membagikan informasi pelatihan:</p>
+            <div class="share-buttons">
+                <button class="share-btn whatsapp" onclick="shareToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
+                </button>
+                <button class="share-btn facebook" onclick="shareToFacebook()">
+                    <i class="fab fa-facebook-f"></i>
+                    <span>Facebook</span>
+                </button>
+                <button class="share-btn twitter" onclick="shareToTwitter()">
+                    <i class="fab fa-twitter"></i>
+                    <span>Twitter</span>
+                </button>
+                <button class="share-btn telegram" onclick="shareToTelegram()">
+                    <i class="fab fa-telegram"></i>
+                    <span>Telegram</span>
+                </button>
+            </div>
+            <div class="mt-4">
+                <p>Atau salin link di bawah ini:</p>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="shareLink" value="https://www.dinasperikanansitubondo.com/pelatihan-teknologi-penangkapan-ikan-besuki" readonly>
+                    <button class="btn btn-primary" onclick="copyLink()">Salin</button>
+                </div>
+            </div>
+            <button class="btn btn-secondary mt-3" onclick="closeShareModal()">Tutup</button>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
@@ -1002,8 +1119,7 @@
                 <!-- Foto 4 -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="gallery-item">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/gambar1.jpeg
-" 
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/gambar1.jpeg" 
                              alt="Diskusi interaktif dengan peserta nelayan"
                              onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
                         <div class="gallery-overlay">
@@ -1080,16 +1196,16 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="mb-4">Akses Materi dan Bagikan Kegiatan</h2>
+                    <h2 class="mb-4">Akses Laporan dan Bagikan Kegiatan</h2>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
-                        <a href="#" class="btn-download">
-                            <i class="fas fa-download me-2"></i>Download Materi Pelatihan (PDF)
+                        <a href="https://www.dinasperikanansitubondo.com/dokumentasi/2025/november/laporan-pelatihan-teknologi-penangkapan-ikan.pdf" class="btn-download" target="_blank">
+                            <i class="fas fa-download me-2"></i>Download Laporan Kegiatan (PDF)
                         </a>
-                        <a href="#" class="btn-share">
+                        <a href="#" class="btn-share" onclick="openShareModal()">
                             <i class="fas fa-share-alt me-2"></i>Bagikan Kegiatan Ini
                         </a>
                         <a href="https://www.dinasperikanansitubondo.com/dokumentasi" class="btn-share">
-                            <i class="fas fa-images me-2"></i>Lihat Dokumentasi Lain
+                            <i class="fas fa-images me-2"></i>Kegiatan Lainnya
                         </a>
                     </div>
                 </div>
@@ -1099,7 +1215,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
+        <div class="container footer-content">
             <div class="row g-5">
                 <div class="col-lg-4">
                     <div class="d-flex align-items-center mb-4">
@@ -1287,6 +1403,75 @@
                 top: 0,
                 behavior: 'smooth'
             });
+        });
+
+        // Share functionality
+        function openShareModal() {
+            document.getElementById('shareModal').style.display = 'flex';
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        function shareToWhatsApp() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('Pelatihan Teknologi Penangkapan Ikan: Perawatan Jaring Ikan untuk Nelayan Situbondo - Dinas Perikanan Situbondo');
+            window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+        }
+
+        function shareToFacebook() {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function shareToTwitter() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('Pelatihan Teknologi Penangkapan Ikan: Perawatan Jaring Ikan untuk Nelayan Situbondo');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function shareToTelegram() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('Pelatihan Teknologi Penangkapan Ikan: Perawatan Jaring Ikan untuk Nelayan Situbondo');
+            window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+        }
+
+        function copyLink() {
+            const linkInput = document.getElementById('shareLink');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                alert('Link berhasil disalin!');
+            });
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('shareModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeShareModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeShareModal();
+            }
+        });
+
+        // Fix for footer positioning
+        window.addEventListener('load', function() {
+            const footer = document.querySelector('.footer');
+            const bodyHeight = document.body.scrollHeight;
+            const windowHeight = window.innerHeight;
+            
+            if (bodyHeight < windowHeight) {
+                footer.style.position = 'absolute';
+                footer.style.bottom = '0';
+                footer.style.left = '0';
+                footer.style.right = '0';
+            }
         });
     </script>
 </body>
