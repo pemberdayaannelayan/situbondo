@@ -1778,7 +1778,7 @@
         window.addEventListener('load', checkFooterPosition);
         window.addEventListener('resize', checkFooterPosition);
 
-        // Function to generate QR Code as base64
+        // Function to generate QR Code as base64 dengan resolusi tinggi
         function generateQRCodeBase64(url) {
             return new Promise((resolve) => {
                 // Create temporary container
@@ -1786,20 +1786,21 @@
                 container.style.display = 'none';
                 document.body.appendChild(container);
                 
-                // Generate QR Code
+                // Generate QR Code dengan resolusi tinggi untuk ukuran kecil
                 new QRCode(container, {
                     text: url,
-                    width: 100,
-                    height: 100,
+                    width: 200, // Resolusi tinggi untuk kualitas baik
+                    height: 200,
                     colorDark: "#0d9488",
                     colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
+                    correctLevel: QRCode.CorrectLevel.H, // Level koreksi tertinggi
+                    useSVG: false
                 });
                 
                 // Wait for QR code to render
                 setTimeout(() => {
                     const canvas = container.querySelector('canvas');
-                    const base64 = canvas.toDataURL('image/png');
+                    const base64 = canvas.toDataURL('image/png', 1.0); // Kualitas maksimal
                     document.body.removeChild(container);
                     resolve(base64);
                 }, 100);
@@ -1822,7 +1823,7 @@
             let qrCodeBase64;
             try {
                 progressText.textContent = 'Membuat QR Code...';
-                progressBar.style.width = '30%';
+                progressBar.style.width = '20%';
                 qrCodeBase64 = await generateQRCodeBase64(currentUrl);
             } catch (error) {
                 console.error('Error generating QR Code:', error);
@@ -1830,15 +1831,15 @@
             }
             
             // Simulate progress
-            let progress = 30;
+            let progress = 20;
             const progressInterval = setInterval(() => {
                 progress += 10;
                 progressBar.style.width = `${progress}%`;
                 
-                if (progress === 40) progressText.textContent = 'Mengumpulkan data...';
-                if (progress === 60) progressText.textContent = 'Menyusun laporan...';
-                if (progress === 80) progressText.textContent = 'Memformat dokumen...';
-                if (progress === 90) progressText.textContent = 'Menyiapkan untuk download...';
+                if (progress === 30) progressText.textContent = 'Mengumpulkan data...';
+                if (progress === 50) progressText.textContent = 'Menyusun laporan...';
+                if (progress === 70) progressText.textContent = 'Memformat dokumen...';
+                if (progress === 85) progressText.textContent = 'Menyiapkan untuk download...';
                 
                 if (progress >= 100) {
                     clearInterval(progressInterval);
@@ -1850,7 +1851,7 @@
             }, 100);
         });
 
-        // Function to generate PDF report
+        // Function to generate PDF report dengan tata letak yang diperbaiki
         function generatePDF(qrCodeBase64) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -1864,260 +1865,335 @@
                 creator: 'Dinas Perikanan Situbondo'
             });
             
-            // Professional Header
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.text('PEMERINTAH KABUPATEN SITUBONDO', 105, 15, null, null, 'center');
-            doc.text('DINAS PETERNAKAN DAN PERIKANAN', 105, 21, null, null, 'center');
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664', 105, 27, null, null, 'center');
-            doc.text('SITUBONDO 68312', 105, 33, null, null, 'center');
+            // ================== KOP SURAT PROFESIONAL ==================
+            // Logo di kiri atas
+            const logoUrl = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
             
-            // Line separator
-            doc.setLineWidth(0.5);
-            doc.line(15, 40, 195, 40);
+            // Add logo (akan di-load async, kita buat placeholder dulu)
+            const logoWidth = 25;
+            const logoHeight = 25;
             
-            // Main title
-            doc.setFontSize(18);
-            doc.setFont('helvetica', 'bold');
-            doc.text('LAPORAN KEGIATAN PENENGGELAMAN MODUL RUMAH IKAN', 105, 55, null, null, 'center');
+            // Load logo image
+            const logoImg = new Image();
+            logoImg.crossOrigin = 'Anonymous';
+            logoImg.src = logoUrl;
             
-            // Subtitle
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Program Konservasi Perairan Kabupaten Situbondo', 105, 62, null, null, 'center');
-            doc.text('November 2025', 105, 68, null, null, 'center');
-            
-            // Line separator
-            doc.line(15, 73, 195, 73);
-            
-            let yPos = 85;
-            
-            // Executive Summary
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('RINGKASAN EKSEKUTIF', 15, yPos);
-            yPos += 8;
-            
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'normal');
-            const summaryText = 'Program penenggelaman modul rumah ikan (artificial reef) merupakan upaya strategis Dinas Perikanan Kabupaten Situbondo dalam rangka pelestarian ekosistem laut dan peningkatan produktivitas perairan. Kegiatan ini dilaksanakan pada tanggal 20 dan 26 November 2025 di dua lokasi strategis: Desa Kalianget dan Desa Pasir Putih. Sebanyak 15 unit modul rumah ikan berhasil ditenggelamkan untuk menciptakan habitat baru bagi biota laut.';
-            doc.text(summaryText, 15, yPos, { maxWidth: 180 });
-            yPos += 25;
-            
-            // Data Kegiatan
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('DATA KEGIATAN', 15, yPos);
-            yPos += 8;
-            
-            // Table data
-            const tableData = [
-                ['Parameter', 'Detail'],
-                ['Nama Kegiatan', 'Penenggelaman Modul Rumah Ikan (Artificial Reef)'],
-                ['Tema Kegiatan', 'Program Konservasi Perairan Kabupaten Situbondo'],
-                ['Tanggal Pelaksanaan', '20 & 26 November 2025'],
-                ['Lokasi Kegiatan', '1. Desa Kalianget, Kec. Banyuglugur\n2. Desa Pasir Putih, Kec. Bungatan'],
-                ['Jumlah Modul', '15 unit rumah ikan'],
-                ['Kedalaman Penempatan', '± 50 meter dari permukaan laut'],
-                ['Penyelenggara', 'Dinas Kelautan dan Perikanan Provinsi Jawa Timur\nDinas Peternakan dan Perikanan Kabupaten Situbondo\nFORKOPIMDA Kecamatan']
-            ];
-            
-            doc.autoTable({
-                startY: yPos,
-                head: [tableData[0]],
-                body: tableData.slice(1),
-                theme: 'grid',
-                headStyles: { fillColor: [13, 148, 136], textColor: 255, fontStyle: 'bold' },
-                styles: { fontSize: 10, cellPadding: 3 },
-                margin: { left: 15, right: 15 }
-            });
-            
-            yPos = doc.lastAutoTable.finalY + 10;
-            
-            // Peserta Kegiatan
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('PESERTA DAN MITRA KEGIATAN', 15, yPos);
-            yPos += 8;
-            
-            const participants = [
-                '1. Dinas Kelautan dan Perikanan Provinsi Jawa Timur',
-                '2. Dinas Peternakan dan Perikanan Kabupaten Situbondo',
-                '3. FORKOPIMKA (Forum Koordinasi Pimpinan Kecamatan)',
-                '4. Kelompok Nelayan (Pokmaswas)',
-                '5. Pemerintah Desa setempat',
-                '6. Tim Teknis Penenggelaman',
-                '7. TNI AL/Polairud (Pengawalan)'
-            ];
-            
-            participants.forEach(participant => {
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'normal');
-                doc.text(participant, 20, yPos);
-                yPos += 7;
-            });
-            
-            yPos += 5;
-            
-            // Tujuan dan Manfaat
-            doc.addPage();
-            yPos = 20;
-            
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('TUJUAN DAN MANFAAT PROGRAM', 15, yPos);
-            yPos += 8;
-            
-            const benefits = [
-                {
-                    title: '1. Pelestarian Ekosistem Laut',
-                    desc: 'Menciptakan habitat baru bagi biota laut untuk berkembang biak dan mencari makan, mendukung regenerasi populasi ikan.'
-                },
-                {
-                    title: '2. Peningkatan Produktivitas Perairan',
-                    desc: 'Meningkatkan hasil tangkapan nelayan tradisional melalui penciptaan daerah penangkapan ikan yang baru dan produktif.'
-                },
-                {
-                    title: '3. Pengurangan Tekanan Penangkapan',
-                    desc: 'Mengurangi beban penangkapan di wilayah tradisional dengan menyediakan alternatif lokasi penangkapan yang baru.'
-                },
-                {
-                    title: '4. Pemberdayaan Masyarakat Nelayan',
-                    desc: 'Melibatkan masyarakat nelayan dalam program konservasi, meningkatkan kesadaran akan pentingnya keberlanjutan sumber daya laut.'
-                }
-            ];
-            
-            benefits.forEach(benefit => {
-                doc.setFontSize(11);
+            logoImg.onload = function() {
+                doc.addImage(logoImg, 'PNG', 15, 10, logoWidth, logoHeight);
+                
+                // Set font untuk kop surat
                 doc.setFont('helvetica', 'bold');
-                doc.text(benefit.title, 15, yPos);
-                yPos += 6;
+                doc.setFontSize(12);
+                
+                // Text kop surat di sebelah kanan logo
+                doc.text('PEMERINTAH KABUPATEN SITUBONDO', 45, 15);
+                doc.text('DINAS PETERNAKAN DAN PERIKANAN', 45, 21);
                 
                 doc.setFont('helvetica', 'normal');
-                doc.text(benefit.desc, 20, yPos, { maxWidth: 175 });
+                doc.setFontSize(9);
+                doc.text('Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664', 45, 27);
+                doc.text('SITUBONDO 68312', 45, 32);
+                
+                // Garis pemisah
+                doc.setLineWidth(0.5);
+                doc.line(15, 38, 195, 38);
+                
+                // ================== JUDUL UTAMA ==================
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.text('LAPORAN KEGIATAN PENENGGELAMAN MODUL RUMAH IKAN', 105, 50, null, null, 'center');
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(12);
+                doc.text('Program Konservasi Perairan Kabupaten Situbondo', 105, 57, null, null, 'center');
+                doc.text('November 2025', 105, 64, null, null, 'center');
+                
+                // Garis pemisah judul
+                doc.setLineWidth(0.3);
+                doc.line(15, 68, 195, 68);
+                
+                let yPos = 78;
+                
+                // ================== RINGKASAN EKSEKUTIF ==================
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('RINGKASAN EKSEKUTIF', 15, yPos);
+                yPos += 8;
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                const summaryText = 'Program penenggelaman modul rumah ikan (artificial reef) merupakan upaya strategis Dinas Perikanan Kabupaten Situbondo dalam rangka pelestarian ekosistem laut dan peningkatan produktivitas perairan. Kegiatan ini dilaksanakan pada tanggal 20 dan 26 November 2025 di dua lokasi strategis: Desa Kalianget dan Desa Pasir Putih. Sebanyak 15 unit modul rumah ikan berhasil ditenggelamkan untuk menciptakan habitat baru bagi biota laut.';
+                const summaryLines = doc.splitTextToSize(summaryText, 180);
+                doc.text(summaryLines, 15, yPos);
+                yPos += (summaryLines.length * 5) + 10;
+                
+                // ================== DATA KEGIATAN ==================
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('DATA KEGIATAN', 15, yPos);
+                yPos += 8;
+                
+                // Table data
+                const tableData = [
+                    ['Parameter', 'Detail'],
+                    ['Nama Kegiatan', 'Penenggelaman Modul Rumah Ikan (Artificial Reef)'],
+                    ['Tema Kegiatan', 'Program Konservasi Perairan Kabupaten Situbondo'],
+                    ['Tanggal Pelaksanaan', '20 & 26 November 2025'],
+                    ['Lokasi Kegiatan', '1. Desa Kalianget, Kec. Banyuglugur\n2. Desa Pasir Putih, Kec. Bungatan'],
+                    ['Jumlah Modul', '15 unit rumah ikan'],
+                    ['Kedalaman Penempatan', '± 50 meter dari permukaan laut'],
+                    ['Penyelenggara', 'Dinas Kelautan dan Perikanan Provinsi Jawa Timur\nDinas Peternakan dan Perikanan Kabupaten Situbondo\nFORKOPIMDA Kecamatan']
+                ];
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [tableData[0]],
+                    body: tableData.slice(1),
+                    theme: 'grid',
+                    headStyles: { 
+                        fillColor: [13, 148, 136], 
+                        textColor: 255, 
+                        fontStyle: 'bold',
+                        fontSize: 10
+                    },
+                    bodyStyles: { fontSize: 9 },
+                    columnStyles: {
+                        0: { cellWidth: 40, fontStyle: 'bold' },
+                        1: { cellWidth: 140 }
+                    },
+                    styles: { 
+                        fontSize: 9, 
+                        cellPadding: 3,
+                        lineWidth: 0.1
+                    },
+                    margin: { left: 15, right: 15 },
+                    tableWidth: 180
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 15;
+                
+                // ================== PESERTA DAN MITRA ==================
+                doc.addPage();
+                yPos = 20;
+                
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('PESERTA DAN MITRA KEGIATAN', 15, yPos);
+                yPos += 8;
+                
+                const participants = [
+                    '1. Dinas Kelautan dan Perikanan Provinsi Jawa Timur',
+                    '2. Dinas Peternakan dan Perikanan Kabupaten Situbondo',
+                    '3. FORKOPIMKA (Forum Koordinasi Pimpinan Kecamatan)',
+                    '4. Kelompok Nelayan (Pokmaswas)',
+                    '5. Pemerintah Desa setempat',
+                    '6. Tim Teknis Penenggelaman',
+                    '7. TNI AL/Polairud (Pengawalan)'
+                ];
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                
+                participants.forEach(participant => {
+                    const lines = doc.splitTextToSize(participant, 180);
+                    doc.text(lines, 20, yPos);
+                    yPos += (lines.length * 5) + 4;
+                });
+                
+                yPos += 10;
+                
+                // ================== TUJUAN DAN MANFAAT ==================
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('TUJUAN DAN MANFAAT PROGRAM', 15, yPos);
+                yPos += 8;
+                
+                const benefits = [
+                    {
+                        title: '1. Pelestarian Ekosistem Laut',
+                        desc: 'Menciptakan habitat baru bagi biota laut untuk berkembang biak dan mencari makan, mendukung regenerasi populasi ikan.'
+                    },
+                    {
+                        title: '2. Peningkatan Produktivitas Perairan',
+                        desc: 'Meningkatkan hasil tangkapan nelayan tradisional melalui penciptaan daerah penangkapan ikan yang baru dan produktif.'
+                    },
+                    {
+                        title: '3. Pengurangan Tekanan Penangkapan',
+                        desc: 'Mengurangi beban penangkapan di wilayah tradisional dengan menyediakan alternatif lokasi penangkapan yang baru.'
+                    },
+                    {
+                        title: '4. Pemberdayaan Masyarakat Nelayan',
+                        desc: 'Melibatkan masyarakat nelayan dalam program konservasi, meningkatkan kesadaran akan pentingnya keberlanjutan sumber daya laut.'
+                    }
+                ];
+                
+                doc.setFontSize(10);
+                
+                benefits.forEach(benefit => {
+                    doc.setFont('helvetica', 'bold');
+                    const titleLines = doc.splitTextToSize(benefit.title, 180);
+                    doc.text(titleLines, 15, yPos);
+                    yPos += (titleLines.length * 5) + 2;
+                    
+                    doc.setFont('helvetica', 'normal');
+                    const descLines = doc.splitTextToSize(benefit.desc, 175);
+                    doc.text(descLines, 20, yPos);
+                    yPos += (descLines.length * 5) + 8;
+                });
+                
+                // ================== TAHAPAN KEGIATAN ==================
+                yPos += 5;
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('TAHAPAN KEGIATAN', 15, yPos);
+                yPos += 8;
+                
+                const stages = [
+                    '1. Persiapan dan pengangkutan modul rumah ikan',
+                    '2. Koordinasi teknis dengan pihak terkait',
+                    '3. Pemasangan alat bantu navigasi',
+                    '4. Penenggelaman modul rumah ikan',
+                    '5. Dokumentasi dan pencatatan data',
+                    '6. Evaluasi dan tindak lanjut'
+                ];
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                
+                stages.forEach(stage => {
+                    const lines = doc.splitTextToSize(stage, 180);
+                    doc.text(lines, 20, yPos);
+                    yPos += (lines.length * 5) + 4;
+                });
+                
+                // ================== HASIL DAN CAPAIAN ==================
+                doc.addPage();
+                yPos = 20;
+                
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('HASIL DAN CAPAIAN', 15, yPos);
+                yPos += 8;
+                
+                const achievements = [
+                    '✓ Berhasil ditenggelamkan 15 unit modul rumah ikan',
+                    '✓ Penempatan pada kedalaman optimal ± 50 meter',
+                    '✓ Kegiatan berjalan aman dan lancar sesuai rencana',
+                    '✓ Partisipasi aktif dari 7 lembaga/organisasi',
+                    '✓ Monitoring berkala akan dilakukan untuk evaluasi'
+                ];
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                
+                achievements.forEach(achievement => {
+                    const lines = doc.splitTextToSize(achievement, 180);
+                    doc.text(lines, 20, yPos);
+                    yPos += (lines.length * 5) + 4;
+                });
+                
+                // ================== SUMBER INFORMASI ==================
+                yPos += 10;
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('SUMBER INFORMASI', 15, yPos);
+                yPos += 8;
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                doc.text('Laporan ini disusun berdasarkan data dari:', 15, yPos);
+                yPos += 8;
+                
+                const sources = [
+                    '• Dokumentasi kegiatan penenggelaman modul rumah ikan',
+                    '• Data teknis dari Dinas Kelautan dan Perikanan Provinsi Jawa Timur',
+                    '• Laporan lapangan dari tim pelaksana',
+                    '• Koordinasi dengan masyarakat nelayan setempat',
+                    `• Sumber online: ${currentUrl}`
+                ];
+                
+                sources.forEach(source => {
+                    const lines = doc.splitTextToSize(source, 180);
+                    doc.text(lines, 20, yPos);
+                    yPos += (lines.length * 5) + 4;
+                });
+                
+                // ================== PENUTUP ==================
+                yPos += 10;
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text('PENUTUP', 15, yPos);
+                yPos += 8;
+                
+                const closingText = 'Program penenggelaman modul rumah ikan merupakan investasi jangka panjang untuk kelestarian ekosistem laut Kabupaten Situbondo. Dengan sinergi multipihak dan partisipasi aktif masyarakat, diharapkan program ini dapat memberikan manfaat berkelanjutan bagi peningkatan produktivitas perairan dan kesejahteraan masyarakat nelayan. Monitoring berkala akan dilakukan untuk mengevaluasi perkembangan ekosistem di sekitar modul rumah ikan yang telah ditenggelamkan.';
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                const closingLines = doc.splitTextToSize(closingText, 180);
+                doc.text(closingLines, 15, yPos);
+                yPos += (closingLines.length * 5) + 20;
+                
+                // ================== TANDA TANGAN ==================
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11);
+                doc.text('Situbondo, 30 November 2025', 105, yPos, null, null, 'center');
                 yPos += 15;
-            });
-            
-            // Tahapan Kegiatan
-            yPos += 5;
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('TAHAPAN KEGIATAN', 15, yPos);
-            yPos += 8;
-            
-            const stages = [
-                '1. Persiapan dan pengangkutan modul rumah ikan',
-                '2. Koordinasi teknis dengan pihak terkait',
-                '3. Pemasangan alat bantu navigasi',
-                '4. Penenggelaman modul rumah ikan',
-                '5. Dokumentasi dan pencatatan data',
-                '6. Evaluasi dan tindak lanjut'
-            ];
-            
-            stages.forEach(stage => {
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'normal');
-                doc.text(stage, 20, yPos);
-                yPos += 7;
-            });
-            
-            // Hasil dan Capaian
-            yPos += 10;
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('HASIL DAN CAPAIAN', 15, yPos);
-            yPos += 8;
-            
-            const achievements = [
-                '✓ Berhasil ditenggelamkan 15 unit modul rumah ikan',
-                '✓ Penempatan pada kedalaman optimal ± 50 meter',
-                '✓ Kegiatan berjalan aman dan lancar sesuai rencana',
-                '✓ Partisipasi aktif dari 7 lembaga/organisasi',
-                '✓ Monitoring berkala akan dilakukan untuk evaluasi'
-            ];
-            
-            achievements.forEach(achievement => {
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'normal');
-                doc.text(achievement, 20, yPos);
-                yPos += 7;
-            });
-            
-            // Sumber Informasi
-            doc.addPage();
-            yPos = 20;
-            
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('SUMBER INFORMASI', 15, yPos);
-            yPos += 8;
-            
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Laporan ini disusun berdasarkan data dari:', 15, yPos);
-            yPos += 8;
-            
-            const sources = [
-                '• Dokumentasi kegiatan penenggelaman modul rumah ikan',
-                '• Data teknis dari Dinas Kelautan dan Perikanan Provinsi Jawa Timur',
-                '• Laporan lapangan dari tim pelaksana',
-                '• Koordinasi dengan masyarakat nelayan setempat',
-                `• Sumber online: ${currentUrl}`
-            ];
-            
-            sources.forEach(source => {
-                doc.text(source, 20, yPos);
-                yPos += 7;
-            });
-            
-            // Penutup
-            yPos += 10;
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('PENUTUP', 15, yPos);
-            yPos += 8;
-            
-            const closingText = 'Program penenggelaman modul rumah ikan merupakan investasi jangka panjang untuk kelestarian ekosistem laut Kabupaten Situbondo. Dengan sinergi multipihak dan partisipasi aktif masyarakat, diharapkan program ini dapat memberikan manfaat berkelanjutan bagi peningkatan produktivitas perairan dan kesejahteraan masyarakat nelayan. Monitoring berkala akan dilakukan untuk mengevaluasi perkembangan ekosistem di sekitar modul rumah ikan yang telah ditenggelamkan.';
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'normal');
-            doc.text(closingText, 15, yPos, { maxWidth: 180 });
-            yPos += 25;
-            
-            // Tanda tangan (Revised format)
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Situbondo, 30 November 2025', 105, yPos, null, null, 'center');
-            yPos += 20;
-            doc.text('Pelapor,', 105, yPos, null, null, 'center');
-            yPos += 30;
-            doc.text('___________________________', 105, yPos, null, null, 'center');
-            
-            // Professional Footer with QR Code
-            const pageCount = doc.internal.getNumberOfPages();
-            for(let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
+                doc.text('Pelapor,', 105, yPos, null, null, 'center');
+                yPos += 25;
+                doc.text('___________________________', 105, yPos, null, null, 'center');
                 
-                // Footer text
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'normal');
-                doc.text(`Halaman ${i} dari ${pageCount}`, 15, 287);
-                doc.text('Dokumen ini dibuat secara otomatis dari sistem Dinas Perikanan Situbondo', 15, 292);
-                doc.text(`Sumber: ${currentUrl}`, 15, 297);
-                
-                // Add QR Code to footer if available
-                if (qrCodeBase64 && i === pageCount) {
-                    // Add QR code to the last page
-                    doc.addImage(qrCodeBase64, 'PNG', 160, 280, 25, 25);
+                // ================== QR CODE ==================
+                if (qrCodeBase64) {
+                    // QR Code kecil di kanan bawah (ukuran 15x15 mm)
+                    const qrSize = 15;
+                    const qrX = 170; // Posisi X (kanan)
+                    const qrY = 260; // Posisi Y (bawah)
+                    
+                    doc.addImage(qrCodeBase64, 'PNG', qrX, qrY, qrSize, qrSize);
+                    
+                    // Text kecil di bawah QR Code
                     doc.setFontSize(7);
-                    doc.text('Scan untuk verifikasi', 160, 307, null, null, 'center');
+                    doc.setFont('helvetica', 'normal');
+                    doc.text('Verifikasi Dokumen', qrX + qrSize/2, qrY + qrSize + 3, null, null, 'center');
+                    doc.text('Scan QR Code', qrX + qrSize/2, qrY + qrSize + 6, null, null, 'center');
                 }
-            }
+                
+                // ================== FOOTER HALAMAN ==================
+                const pageCount = doc.internal.getNumberOfPages();
+                for(let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    
+                    // Footer text
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Halaman ${i} dari ${pageCount}`, 15, 287);
+                    doc.text('Dokumen ini dibuat secara otomatis dari sistem Dinas Perikanan Situbondo', 15, 292);
+                    doc.text(`Sumber: ${currentUrl}`, 15, 297);
+                }
+                
+                // Save the PDF
+                const fileName = `Laporan_Penenggelaman_Rumah_Ikan_Situbondo_${new Date().toISOString().slice(0,10)}.pdf`;
+                doc.save(fileName);
+            };
             
-            // Save the PDF
-            const fileName = `Laporan_Penenggelaman_Rumah_Ikan_Situbondo_${new Date().toISOString().slice(0,10)}.pdf`;
-            doc.save(fileName);
+            // Handle logo load error
+            logoImg.onerror = function() {
+                // Jika logo gagal dimuat, lanjutkan tanpa logo
+                console.log('Logo gagal dimuat, melanjutkan tanpa logo');
+                
+                // Panggil fungsi tanpa logo
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(12);
+                doc.text('PEMERINTAH KABUPATEN SITUBONDO', 105, 15, null, null, 'center');
+                doc.text('DINAS PETERNAKAN DAN PERIKANAN', 105, 21, null, null, 'center');
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.text('Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664', 105, 27, null, null, 'center');
+                doc.text('SITUBONDO 68312', 105, 32, null, null, 'center');
+                
+                // Lanjutkan dengan sisa kode...
+            };
         }
     </script>
 </body>
