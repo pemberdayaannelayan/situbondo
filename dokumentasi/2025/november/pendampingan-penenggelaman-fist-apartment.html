@@ -33,6 +33,8 @@
     <!-- jsPDF untuk generate PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- QRCode.js untuk generate QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         :root {
@@ -48,6 +50,8 @@
             --light-gray: #f9fafb;
             --white: #ffffff;
             --warning-orange: #f59e0b;
+            --professional-red: #dc2626;
+            --professional-dark: #1e293b;
         }
 
         * {
@@ -66,17 +70,18 @@
 
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Poppins', sans-serif;
-            color: var(--text-dark);
+            color: var(--professional-dark);
             font-weight: 600;
         }
 
         /* ===== NAVBAR ===== */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
             padding: 1rem 0;
             transition: all 0.3s ease;
+            border-bottom: 3px solid var(--conservation-teal);
         }
 
         .navbar-brand {
@@ -111,6 +116,7 @@
             margin: 0 0.25rem;
             border-radius: 8px;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .nav-link:hover {
@@ -121,6 +127,22 @@
         .nav-link.active {
             color: var(--secondary-blue) !important;
             background-color: var(--light-blue);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--secondary-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 70%;
         }
 
         /* ===== HERO SECTION ===== */
@@ -148,13 +170,14 @@
             color: white;
             font-size: 2.5rem;
             margin-bottom: 1.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            line-height: 1.3;
         }
 
         .badge-category {
             background: rgba(255, 255, 255, 0.25);
             color: white;
-            padding: 8px 24px;
+            padding: 10px 28px;
             border-radius: 50px;
             font-size: 0.9rem;
             margin-bottom: 1.5rem;
@@ -162,6 +185,8 @@
             align-items: center;
             gap: 8px;
             border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            font-weight: 600;
         }
 
         /* ===== INFO CARDS ===== */
@@ -179,6 +204,7 @@
         .info-card:hover {
             transform: translateY(-5px);
             background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
         .info-icon {
@@ -192,6 +218,108 @@
             margin: 0 auto 1rem;
             color: white;
             font-size: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* ===== BUTTON IMPROVEMENTS ===== */
+        .btn-download {
+            background: linear-gradient(135deg, var(--eco-green), var(--conservation-teal));
+            color: white;
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-download::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-download:hover::before {
+            left: 100%;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(13, 148, 136, 0.3);
+            color: white;
+        }
+
+        .btn-download:active {
+            transform: translateY(-2px);
+        }
+
+        .btn-share {
+            background: white;
+            color: var(--conservation-teal);
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 2px solid var(--conservation-teal);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-share::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--conservation-teal);
+            transition: width 0.3s ease;
+            z-index: 1;
+        }
+
+        .btn-share:hover::before {
+            width: 100%;
+        }
+
+        .btn-share:hover {
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(13, 148, 136, 0.2);
+            border-color: var(--conservation-teal);
+        }
+
+        .btn-share span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-share i {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-share:active {
+            transform: translateY(-2px);
         }
 
         /* ===== CONTENT SECTIONS ===== */
@@ -200,6 +328,7 @@
             padding-bottom: 15px;
             margin-bottom: 30px;
             color: var(--conservation-teal);
+            font-size: 1.8rem;
         }
 
         .section-title::after {
@@ -242,6 +371,7 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 15px;
+            font-size: 1.2rem;
         }
 
         /* ===== LOCATION CARDS ===== */
@@ -303,10 +433,11 @@
             left: 15px;
             background: var(--conservation-teal);
             color: white;
-            padding: 5px 15px;
+            padding: 6px 18px;
             border-radius: 50px;
             font-size: 0.85rem;
             font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
         /* ===== GALLERY SECTION ===== */
@@ -448,6 +579,7 @@
             justify-content: center;
             font-weight: 600;
             font-size: 0.9rem;
+            box-shadow: 0 3px 10px rgba(13, 148, 136, 0.3);
         }
 
         .timeline-content {
@@ -475,6 +607,7 @@
         .participant-item:hover {
             background: #f0fdfa;
             transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
         .participant-icon {
@@ -488,55 +621,13 @@
             justify-content: center;
             margin: 0 auto 15px;
             font-size: 1.5rem;
+            box-shadow: 0 3px 10px rgba(13, 148, 136, 0.3);
         }
 
         /* ===== ACTION BUTTONS ===== */
         .action-buttons {
             padding: 60px 0;
             background: white;
-        }
-
-        .btn-download {
-            background: linear-gradient(135deg, var(--eco-green), var(--conservation-teal));
-            color: white;
-            padding: 14px 32px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-download:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(13, 148, 136, 0.3);
-            color: white;
-        }
-
-        .btn-share {
-            background: white;
-            color: var(--conservation-teal);
-            padding: 14px 32px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: 2px solid var(--conservation-teal);
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-share:hover {
-            background: var(--conservation-teal);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(13, 148, 136, 0.2);
         }
 
         /* ===== FOOTER FIX ===== */
@@ -612,6 +703,7 @@
         .social-icons a:hover {
             background: var(--eco-green);
             transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* ===== UTILITY CLASSES ===== */
@@ -660,6 +752,7 @@
         .share-option:hover {
             background-color: #f0fdfa;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         .share-option i {
@@ -696,6 +789,38 @@
             border-radius: 5px;
         }
 
+        /* ===== SCROLL TO TOP BUTTON ===== */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--eco-green), var(--conservation-teal));
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(13, 148, 136, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .scroll-top-btn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(13, 148, 136, 0.4);
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .hero-section h1 {
@@ -716,6 +841,10 @@
             
             body {
                 padding-top: 66px;
+            }
+            
+            .btn-download, .btn-share {
+                padding: 14px 28px;
             }
         }
 
@@ -743,6 +872,11 @@
             .footer {
                 padding: 60px 0 20px;
             }
+            
+            .btn-download, .btn-share {
+                padding: 12px 24px;
+                font-size: 0.95rem;
+            }
         }
 
         @media (max-width: 576px) {
@@ -752,7 +886,7 @@
             
             .badge-category {
                 font-size: 0.8rem;
-                padding: 6px 18px;
+                padding: 8px 20px;
             }
             
             .section-title {
@@ -770,6 +904,16 @@
             .btn-download, .btn-share {
                 padding: 12px 20px;
                 font-size: 0.9rem;
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+            
+            .scroll-top-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
             }
         }
     </style>
@@ -1345,6 +1489,11 @@
         </div>
     </section>
 
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" id="scrollTopBtn">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
     <!-- PDF Generation Progress Modal -->
     <div class="modal fade" id="pdfProgressModal" tabindex="-1" aria-labelledby="pdfProgressModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -1571,26 +1720,14 @@
             });
         });
 
-        // Add scroll to top button
-        const scrollTopBtn = document.createElement('button');
-        scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
-        scrollTopBtn.className = 'btn btn-primary position-fixed bottom-3 end-3 rounded-circle shadow-lg';
-        scrollTopBtn.style.width = '50px';
-        scrollTopBtn.style.height = '50px';
-        scrollTopBtn.style.zIndex = '1000';
-        scrollTopBtn.style.display = 'none';
-        scrollTopBtn.style.background = 'linear-gradient(135deg, var(--eco-green), var(--conservation-teal))';
-        scrollTopBtn.style.border = 'none';
-        
-        document.body.appendChild(scrollTopBtn);
+        // Scroll to top button functionality
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
         
         window.addEventListener('scroll', function() {
             if (window.scrollY > 300) {
-                scrollTopBtn.style.display = 'flex';
-                scrollTopBtn.style.alignItems = 'center';
-                scrollTopBtn.style.justifyContent = 'center';
+                scrollTopBtn.classList.add('show');
             } else {
-                scrollTopBtn.style.display = 'none';
+                scrollTopBtn.classList.remove('show');
             }
         });
         
@@ -1641,8 +1778,36 @@
         window.addEventListener('load', checkFooterPosition);
         window.addEventListener('resize', checkFooterPosition);
 
+        // Function to generate QR Code as base64
+        function generateQRCodeBase64(url) {
+            return new Promise((resolve) => {
+                // Create temporary container
+                const container = document.createElement('div');
+                container.style.display = 'none';
+                document.body.appendChild(container);
+                
+                // Generate QR Code
+                new QRCode(container, {
+                    text: url,
+                    width: 100,
+                    height: 100,
+                    colorDark: "#0d9488",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // Wait for QR code to render
+                setTimeout(() => {
+                    const canvas = container.querySelector('canvas');
+                    const base64 = canvas.toDataURL('image/png');
+                    document.body.removeChild(container);
+                    resolve(base64);
+                }, 100);
+            });
+        }
+
         // PDF Generation Functionality
-        document.getElementById('generatePdfBtn').addEventListener('click', function() {
+        document.getElementById('generatePdfBtn').addEventListener('click', async function() {
             // Show progress modal
             const progressModal = new bootstrap.Modal(document.getElementById('pdfProgressModal'));
             progressModal.show();
@@ -1653,20 +1818,31 @@
             progressBar.style.width = '0%';
             progressText.textContent = 'Menyiapkan dokumen...';
             
+            // Generate QR Code
+            let qrCodeBase64;
+            try {
+                progressText.textContent = 'Membuat QR Code...';
+                progressBar.style.width = '30%';
+                qrCodeBase64 = await generateQRCodeBase64(currentUrl);
+            } catch (error) {
+                console.error('Error generating QR Code:', error);
+                qrCodeBase64 = null;
+            }
+            
             // Simulate progress
-            let progress = 0;
+            let progress = 30;
             const progressInterval = setInterval(() => {
                 progress += 10;
                 progressBar.style.width = `${progress}%`;
                 
-                if (progress === 10) progressText.textContent = 'Mengumpulkan data...';
-                if (progress === 30) progressText.textContent = 'Menyusun laporan...';
-                if (progress === 60) progressText.textContent = 'Memformat dokumen...';
-                if (progress === 80) progressText.textContent = 'Menyiapkan untuk download...';
+                if (progress === 40) progressText.textContent = 'Mengumpulkan data...';
+                if (progress === 60) progressText.textContent = 'Menyusun laporan...';
+                if (progress === 80) progressText.textContent = 'Memformat dokumen...';
+                if (progress === 90) progressText.textContent = 'Menyiapkan untuk download...';
                 
                 if (progress >= 100) {
                     clearInterval(progressInterval);
-                    generatePDF();
+                    generatePDF(qrCodeBase64);
                     setTimeout(() => {
                         progressModal.hide();
                     }, 1000);
@@ -1675,7 +1851,7 @@
         });
 
         // Function to generate PDF report
-        function generatePDF() {
+        function generatePDF(qrCodeBase64) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
             
@@ -1688,37 +1864,35 @@
                 creator: 'Dinas Perikanan Situbondo'
             });
             
-            // Add header with logo
-            doc.addImage('https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png', 'PNG', 15, 10, 20, 20);
-            
-            // Title
-            doc.setFontSize(16);
+            // Professional Header
+            doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
-            doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', 40, 20);
+            doc.text('PEMERINTAH KABUPATEN SITUBONDO', 105, 15, null, null, 'center');
+            doc.text('DINAS PETERNAKAN DAN PERIKANAN', 105, 21, null, null, 'center');
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
-            doc.text('Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur', 40, 25);
-            doc.text('Telp: 0878 6561 4222 | Email: info@dinasperikanansitubondo.com', 40, 30);
+            doc.text('Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664', 105, 27, null, null, 'center');
+            doc.text('SITUBONDO 68312', 105, 33, null, null, 'center');
             
             // Line separator
             doc.setLineWidth(0.5);
-            doc.line(15, 35, 195, 35);
+            doc.line(15, 40, 195, 40);
             
             // Main title
             doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
-            doc.text('LAPORAN KEGIATAN PENENGGELAMAN MODUL RUMAH IKAN', 105, 45, null, null, 'center');
+            doc.text('LAPORAN KEGIATAN PENENGGELAMAN MODUL RUMAH IKAN', 105, 55, null, null, 'center');
             
             // Subtitle
             doc.setFontSize(12);
             doc.setFont('helvetica', 'normal');
-            doc.text('Program Konservasi Perairan Kabupaten Situbondo', 105, 52, null, null, 'center');
-            doc.text('November 2025', 105, 58, null, null, 'center');
+            doc.text('Program Konservasi Perairan Kabupaten Situbondo', 105, 62, null, null, 'center');
+            doc.text('November 2025', 105, 68, null, null, 'center');
             
             // Line separator
-            doc.line(15, 62, 195, 62);
+            doc.line(15, 73, 195, 73);
             
-            let yPos = 70;
+            let yPos = 85;
             
             // Executive Summary
             doc.setFontSize(14);
@@ -1911,27 +2085,34 @@
             doc.text(closingText, 15, yPos, { maxWidth: 180 });
             yPos += 25;
             
-            // Tanda tangan
+            // Tanda tangan (Revised format)
             doc.setFontSize(11);
             doc.setFont('helvetica', 'bold');
             doc.text('Situbondo, 30 November 2025', 105, yPos, null, null, 'center');
             yPos += 20;
-            doc.text('Kepala Dinas Perikanan', 105, yPos, null, null, 'center');
+            doc.text('Pelapor,', 105, yPos, null, null, 'center');
             yPos += 30;
             doc.text('___________________________', 105, yPos, null, null, 'center');
-            yPos += 10;
-            doc.setFont('helvetica', 'bold');
-            doc.text('[Nama dan NIP]', 105, yPos, null, null, 'center');
             
-            // Footer
+            // Professional Footer with QR Code
             const pageCount = doc.internal.getNumberOfPages();
             for(let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
+                
+                // Footer text
                 doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
-                doc.text(`Halaman ${i} dari ${pageCount}`, 105, 287, null, null, 'center');
-                doc.text('Dokumen ini dibuat secara otomatis dari sistem Dinas Perikanan Situbondo', 105, 292, null, null, 'center');
-                doc.text(`Sumber: ${currentUrl}`, 105, 297, null, null, 'center');
+                doc.text(`Halaman ${i} dari ${pageCount}`, 15, 287);
+                doc.text('Dokumen ini dibuat secara otomatis dari sistem Dinas Perikanan Situbondo', 15, 292);
+                doc.text(`Sumber: ${currentUrl}`, 15, 297);
+                
+                // Add QR Code to footer if available
+                if (qrCodeBase64 && i === pageCount) {
+                    // Add QR code to the last page
+                    doc.addImage(qrCodeBase64, 'PNG', 160, 280, 25, 25);
+                    doc.setFontSize(7);
+                    doc.text('Scan untuk verifikasi', 160, 307, null, null, 'center');
+                }
             }
             
             // Save the PDF
