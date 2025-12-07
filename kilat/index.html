@@ -1065,4 +1065,1040 @@
         </div>
         <div class="nav-item" onclick="switchTab('camera')">
             <span>📸</span>
-            <
+            <span>Kamera</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('detection')">
+            <span>🛡️</span>
+            <span>Deteksi</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('audit')">
+            <span>📊</span>
+            <span>Audit</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('gallery')">
+            <span>🖼️</span>
+            <span>Galeri</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Form Tab -->
+        <div id="view-form" class="section active">
+            <div class="verification-info" id="timeVerification">
+                <span>⏱️</span>
+                <div>
+                    <strong>Status Waktu:</strong> <span id="deviceTime">Memuat...</span>
+                    <span id="timeWarning" class="warning-badge" style="display:none">WAKTU TIDAK TERPERCAYA</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><span>👤</span>Nama Petugas</label>
+                <input type="text" id="inUser" placeholder="Masukkan nama petugas" autocapitalize="words" oninput="saveDraft()">
+            </div>
+            <div class="form-group">
+                <label><span>📋</span>Nama Kegiatan</label>
+                <input type="text" id="inKegiatan" placeholder="Contoh: Monitoring Lapangan" autocapitalize="words" oninput="saveDraft()">
+            </div>
+            <div class="form-group">
+                <label><span>🏢</span>Instansi / Dinas</label>
+                <input type="text" id="inDinas" placeholder="Dinas Perikanan Situbondo" autocapitalize="words" oninput="saveDraft()">
+            </div>
+            <div class="form-group">
+                <label><span>🔧</span>Bidang / Unit (Opsional)</label>
+                <input type="text" id="inBidang" placeholder="Bidang Pemberdayaan Nelayan" autocapitalize="words" oninput="saveDraft()">
+            </div>
+            <div style="flex:1"></div>
+            <button class="btn" onclick="goToCamera()">
+                <span>📸</span>
+                Lanjut ke Kamera
+            </button>
+        </div>
+
+        <!-- Camera Tab - Responsif untuk Landscape/Portrait -->
+        <div id="view-camera" class="section">
+            <div class="verification-info" id="gpsVerification">
+                <span>📍</span>
+                <div>
+                    <strong>Status GPS:</strong> <span id="gpsStatus">Memeriksa...</span>
+                    <span id="gpsWarning" class="warning-badge" style="display:none">LOKASI TIDAK TERPERCAYA</span>
+                </div>
+            </div>
+
+            <div class="camera-wrapper">
+                <div class="camera-container" id="cam-container">
+                    <video id="video" autoplay playsinline muted></video>
+                    <img id="result-preview" style="display:none">
+                    <div class="camera-overlay"></div>
+                    <div class="camera-indicator" id="cameraIndicator">
+                        <span id="cameraIcon">📷</span>
+                        <span id="cameraType">Kamera Belakang</span>
+                    </div>
+                </div>
+
+                <div class="camera-controls">
+                    <div class="toolbar">
+                        <button class="tool-pill" onclick="toggleCamera()" id="toggleCamBtn">
+                            <span>🔄</span>
+                            <span class="hide-in-portrait">Ganti Kamera</span>
+                            <span class="hide-in-landscape">Kamera</span>
+                        </button>
+                        
+                        <button class="tool-pill" onclick="toggleFlash()" id="flashBtn">
+                            <span>⚡</span>
+                            <span class="hide-in-portrait">Flash</span>
+                        </button>
+                        
+                        <button class="tool-pill" onclick="runQuickDiagnostic()">
+                            <span>🔍</span>
+                            <span class="hide-in-portrait">Cek Integritas</span>
+                        </button>
+                    </div>
+
+                    <div class="ratio-selector">
+                        <button class="ratio-btn" data-ratio="1" onclick="setCameraRatio(1)">
+                            <span class="ratio-icon">⬜</span>
+                            <span>1:1</span>
+                        </button>
+                        <button class="ratio-btn" data-ratio="0.75" onclick="setCameraRatio(0.75)">
+                            <span class="ratio-icon hide-in-landscape">📱</span>
+                            <span class="ratio-icon hide-in-portrait">📐</span>
+                            <span>3:4</span>
+                        </button>
+                        <button class="ratio-btn" data-ratio="1.33" onclick="setCameraRatio(1.33)">
+                            <span class="ratio-icon hide-in-landscape">🖼️</span>
+                            <span class="ratio-icon hide-in-portrait">📐</span>
+                            <span>4:3</span>
+                        </button>
+                        <button class="ratio-btn" data-ratio="1.77" onclick="setCameraRatio(1.77)">
+                            <span class="ratio-icon hide-in-landscape">🎬</span>
+                            <span class="ratio-icon hide-in-portrait">📐</span>
+                            <span>16:9</span>
+                        </button>
+                        <button class="ratio-btn" data-ratio="0.5625" onclick="setCameraRatio(0.5625)">
+                            <span class="ratio-icon hide-in-landscape">📱</span>
+                            <span class="ratio-icon hide-in-portrait">📐</span>
+                            <span>9:16</span>
+                        </button>
+                    </div>
+
+                    <div class="status-bar">
+                        <div id="gps-dot" class="status-dot"></div>
+                        <div style="display:flex; flex-direction:column; flex:1;">
+                            <span id="gps-coords" style="font-weight:700">Memverifikasi GPS...</span>
+                            <span id="gps-addr" style="font-size:0.75rem; opacity:0.8">Memeriksa integritas lokasi...</span>
+                        </div>
+                        <div id="camera-status" style="font-size:0.75rem; color:#64748b;">
+                            <span id="ratio-display">3:4</span>
+                        </div>
+                    </div>
+
+                    <div id="cam-controls">
+                        <button class="btn btn-success" onclick="takePicture()" id="captureBtn">
+                            <span>🔘</span>
+                            <span class="hide-in-portrait">JEPRET FOTO</span>
+                            <span class="hide-in-landscape">FOTO</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchTab('form')">
+                            <span>⬅️</span>
+                            <span class="hide-in-portrait">Edit Data</span>
+                            <span class="hide-in-landscape">Kembali</span>
+                        </button>
+                    </div>
+
+                    <div id="res-controls" style="display:none">
+                        <button class="btn btn-success" onclick="saveToGallery()">
+                            <span>💾</span>
+                            <span class="hide-in-portrait">Simpan ke Galeri</span>
+                            <span class="hide-in-landscape">Simpan</span>
+                        </button>
+                        <button class="btn btn-warning" id="forceSaveBtn" onclick="forceSaveWithWarning()" style="display:none">
+                            <span>⚠️</span>
+                            <span class="hide-in-portrait">Simpan dengan Peringatan</span>
+                            <span class="hide-in-landscape">Simpan (Peringatan)</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="retake()">
+                            <span>🔄</span>
+                            <span class="hide-in-portrait">Foto Ulang</span>
+                            <span class="hide-in-landscape">Ulang</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <canvas id="canvas" style="display:none"></canvas>
+        </div>
+
+        <!-- Detection Tab -->
+        <div id="view-detection" class="section">
+            <h3 style="margin-top:0; color:#334155; font-size:clamp(1rem, 4vw, 1.2rem);">
+                <span>🛡️</span> Sistem Deteksi Manipulasi
+            </h3>
+            
+            <div class="verification-info" id="overallVerification">
+                <span>🛡️</span>
+                <div>
+                    <strong>Status Sistem:</strong> <span id="overallStatus">Memeriksa...</span>
+                </div>
+            </div>
+            
+            <h4 style="margin:15px 0 10px 0; color:#475569; font-size:clamp(0.9rem, 3vw, 1rem); display:flex; align-items:center; gap:6px;">
+                <span>⏱️</span> Deteksi Manipulasi Waktu
+            </h4>
+            <div class="time-dashboard" id="timeDashboard">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <h4 style="margin:15px 0 10px 0; color:#475569; font-size:clamp(0.9rem, 3vw, 1rem); display:flex; align-items:center; gap:6px;">
+                <span>📍</span> Deteksi Manipulasi GPS
+            </h4>
+            <div class="detection-grid" id="detectionGrid">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div style="margin-top:20px;">
+                <button class="btn btn-danger" onclick="runFullForensicAnalysis()">
+                    <span>🔬</span>
+                    <span class="hide-in-portrait">Analisis Forensik Lengkap</span>
+                    <span class="hide-in-landscape">Analisis Lengkap</span>
+                </button>
+                <button class="btn" onclick="switchTab('camera')">
+                    <span>⬅️</span>
+                    <span class="hide-in-portrait">Kembali ke Kamera</span>
+                    <span class="hide-in-landscape">Kamera</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Audit Log Tab -->
+        <div id="view-audit" class="section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #e2e8f0;">
+                <h3 style="margin:0; font-size:clamp(1rem, 4vw, 1.2rem); color:#334155; display:flex; align-items:center; gap:6px;">
+                    <span>📊</span> Log Audit Sistem
+                </h3>
+                <button class="tool-pill" onclick="clearAuditLog()">
+                    <span>🗑️</span>
+                    <span class="hide-in-portrait">Hapus Log</span>
+                </button>
+            </div>
+            
+            <div id="auditLog" style="flex:1; overflow-y:auto; padding-right:5px;">
+                <!-- Log entries will be added here -->
+            </div>
+        </div>
+
+        <!-- Gallery Tab -->
+        <div id="view-gallery" class="section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #e2e8f0;">
+                <h3 style="margin:0; font-size:clamp(1rem, 4vw, 1.2rem); color:#334155; display:flex; align-items:center; gap:6px;">
+                    <span>🖼️</span> Arsip Foto
+                </h3>
+                <button class="tool-pill" onclick="loadGallery()">
+                    <span>🔄</span>
+                    <span class="hide-in-portrait">Refresh</span>
+                </button>
+            </div>
+            <div id="gallery-grid" class="gallery-grid"></div>
+            <div id="empty-msg" class="empty-state">Belum ada foto tersimpan.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Modal -->
+<div id="alertModal" class="alert-modal" style="display:none;">
+    <div class="alert-content">
+        <div class="alert-title" id="alertTitle">⚠️ Peringatan</div>
+        <div class="alert-message" id="alertMessage"></div>
+        <div class="alert-actions">
+            <button class="btn btn-danger" onclick="closeAlert()" id="alertConfirm">Mengerti</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== VARIABEL GLOBAL ====================
+let currentStream = null;
+let currentFacingMode = 'environment';
+let currentRatio = 0.75; // Default 3:4
+let flashOn = false;
+let cameraActive = false;
+let currentOrientation = 'portrait';
+let isLandscapeMode = false;
+
+// ==================== DETEKSI ORIENTASI ====================
+function detectOrientation() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    
+    if (width > height) {
+        currentOrientation = 'landscape';
+        isLandscapeMode = true;
+        document.body.classList.add('landscape');
+        document.body.classList.remove('portrait');
+    } else {
+        currentOrientation = 'portrait';
+        isLandscapeMode = false;
+        document.body.classList.add('portrait');
+        document.body.classList.remove('landscape');
+    }
+    
+    // Update UI berdasarkan orientasi
+    updateUIForOrientation();
+    
+    return currentOrientation;
+}
+
+function updateUIForOrientation() {
+    // Update camera container untuk orientasi
+    const cameraContainer = document.getElementById('cam-container');
+    if (cameraContainer) {
+        if (isLandscapeMode) {
+            cameraContainer.style.maxHeight = '50vh';
+            cameraContainer.style.minHeight = '250px';
+        } else {
+            cameraContainer.style.maxHeight = '60vh';
+            cameraContainer.style.minHeight = '300px';
+        }
+    }
+    
+    // Update text untuk tombol berdasarkan orientasi
+    updateButtonTextForOrientation();
+}
+
+function updateButtonTextForOrientation() {
+    // Update teks tombol berdasarkan orientasi
+    const captureBtn = document.getElementById('captureBtn');
+    if (captureBtn) {
+        const span = captureBtn.querySelector('span:last-child');
+        if (span) {
+            span.textContent = isLandscapeMode ? 'FOTO' : 'JEPRET FOTO';
+        }
+    }
+    
+    // Update ratio display
+    updateRatioDisplay();
+}
+
+// ==================== KAMERA ENHANCED ====================
+async function initCamera() {
+    try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error('Kamera tidak didukung di browser ini');
+        }
+
+        // Stop existing stream
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+
+        // Sesuaikan constraint berdasarkan orientasi
+        const constraints = getCameraConstraints();
+        
+        console.log('Camera constraints:', constraints);
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        currentStream = stream;
+        const video = document.getElementById('video');
+        
+        video.srcObject = stream;
+        
+        // Tunggu sampai video siap
+        await new Promise((resolve) => {
+            video.onloadedmetadata = () => {
+                video.play();
+                resolve();
+            };
+        });
+        
+        cameraActive = true;
+        
+        // Update UI
+        updateCameraUI();
+        
+        logAuditEvent('CAMERA', 'info', `Kamera ${currentFacingMode === 'user' ? 'depan' : 'belakang'} diaktifkan (${currentOrientation})`);
+        
+    } catch (error) {
+        console.error('Error mengakses kamera:', error);
+        showAlert('🚨 Kamera Error', 
+            `Tidak dapat mengakses kamera:\n${error.message}\n\nPastikan kamera tersedia dan izin diberikan.`);
+        cameraActive = false;
+    }
+}
+
+function getCameraConstraints() {
+    // Dapatkan rasio yang sesuai dengan orientasi
+    let targetRatio = currentRatio;
+    
+    // Jika landscape, sesuaikan rasio untuk orientasi landscape
+    if (isLandscapeMode && targetRatio < 1) {
+        // Untuk rasio portrait di mode landscape, gunakan kebalikannya
+        targetRatio = 1 / targetRatio;
+    }
+    
+    const constraints = {
+        video: {
+            facingMode: currentFacingMode,
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            aspectRatio: { ideal: targetRatio }
+        },
+        audio: false
+    };
+    
+    return constraints;
+}
+
+function updateCameraUI() {
+    const cameraType = currentFacingMode === 'user' ? 'Kamera Depan' : 'Kamera Belakang';
+    document.getElementById('cameraType').textContent = cameraType;
+    document.getElementById('cameraIcon').textContent = currentFacingMode === 'user' ? '📱' : '📷';
+    
+    const toggleText = currentFacingMode === 'user' ? 'Kamera Belakang' : 'Kamera Depan';
+    const toggleBtn = document.getElementById('toggleCamBtn');
+    if (toggleBtn) {
+        const spans = toggleBtn.querySelectorAll('span');
+        if (spans.length > 1) {
+            spans[1].textContent = isLandscapeMode ? 'Ganti' : toggleText;
+        }
+    }
+    
+    // Update resolution display
+    if (currentStream) {
+        const track = currentStream.getVideoTracks()[0];
+        const settings = track.getSettings();
+        document.getElementById('camera-status').innerHTML = 
+            `<span>${settings.width || 0}×${settings.height || 0}</span>`;
+    }
+    
+    // Update ratio display
+    updateRatioDisplay();
+    
+    // Show camera controls
+    document.getElementById('cam-controls').style.display = 'flex';
+    document.getElementById('res-controls').style.display = 'none';
+}
+
+function toggleCamera() {
+    currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    initCamera();
+}
+
+function setCameraRatio(ratio) {
+    currentRatio = ratio;
+    
+    // Update active button
+    document.querySelectorAll('.ratio-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.ratio == ratio) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Update ratio display
+    updateRatioDisplay();
+    
+    // Reinitialize camera with new ratio
+    if (cameraActive) {
+        initCamera();
+    }
+}
+
+function updateRatioDisplay() {
+    let displayText = '';
+    switch(currentRatio) {
+        case 1: displayText = '1:1'; break;
+        case 0.75: displayText = isLandscapeMode ? '4:3' : '3:4'; break;
+        case 1.33: displayText = isLandscapeMode ? '3:4' : '4:3'; break;
+        case 1.77: displayText = '16:9'; break;
+        case 0.5625: displayText = '9:16'; break;
+    }
+    
+    document.getElementById('ratio-display').textContent = displayText;
+}
+
+function toggleFlash() {
+    if (!currentStream) return;
+    
+    const track = currentStream.getVideoTracks()[0];
+    const capabilities = track.getCapabilities();
+    
+    if (capabilities.torch) {
+        flashOn = !flashOn;
+        track.applyConstraints({
+            advanced: [{ torch: flashOn }]
+        });
+        
+        const flashBtn = document.getElementById('flashBtn');
+        flashBtn.innerHTML = `<span>${flashOn ? '💡' : '⚡'}</span>${isLandscapeMode ? '' : ' Flash'}`;
+        flashBtn.querySelector('span:first-child').textContent = flashOn ? '💡' : '⚡';
+        
+        logAuditEvent('CAMERA', 'info', `Flash ${flashOn ? 'diaktifkan' : 'dimatikan'}`);
+    } else {
+        showAlert('⚡ Flash', 'Flash tidak tersedia di perangkat ini');
+    }
+}
+
+function takePicture() {
+    if (!cameraActive) {
+        showAlert('📸 Kamera', 'Kamera belum aktif. Tunggu sebentar...');
+        return;
+    }
+    
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const resultPreview = document.getElementById('result-preview');
+    
+    // Set canvas dimensions to match video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Untuk kamera depan, mirror gambar
+    if (currentFacingMode === 'user') {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+    }
+    
+    // Draw video frame to canvas
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Reset transform untuk watermark
+    if (currentFacingMode === 'user') {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
+    
+    // Add timestamp and verification info watermark
+    addWatermark(ctx);
+    
+    // Convert to data URL
+    const imageData = canvas.toDataURL('image/jpeg', 0.92);
+    
+    // Show preview
+    resultPreview.src = imageData;
+    resultPreview.style.display = 'block';
+    video.style.display = 'none';
+    
+    // Switch controls
+    document.getElementById('cam-controls').style.display = 'none';
+    document.getElementById('res-controls').style.display = 'flex';
+    
+    // Check if forced save needed
+    const timeScore = timeDetection?.metrics?.manipulationScore || 0;
+    const gpsScore = gpsDetection?.metrics?.spoofScore || 0;
+    
+    if (timeScore > 40 || gpsScore > 40) {
+        document.getElementById('forceSaveBtn').style.display = 'block';
+        showAlert('⚠️ Peringatan Integritas', 
+            `Sistem mendeteksi indikasi manipulasi:\n\n` +
+            `• Skor manipulasi waktu: ${timeScore}%\n` +
+            `• Skor spoofing GPS: ${gpsScore}%\n\n` +
+            `Foto akan disimpan dengan tanda peringatan.`);
+    }
+    
+    logAuditEvent('CAMERA', 'info', 'Foto berhasil diambil');
+}
+
+function addWatermark(ctx) {
+    const canvas = ctx.canvas;
+    const now = new Date();
+    const timestamp = now.toLocaleString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    
+    const timeScore = timeDetection?.metrics?.manipulationScore || 0;
+    const gpsScore = gpsDetection?.metrics?.spoofScore || 0;
+    
+    const verificationStatus = timeScore < 40 ? 'TERVERIFIKASI' : 
+                              timeScore < 70 ? 'DICURIGAI' : 'MANIPULASI';
+    
+    const gpsStatus = gpsScore < 40 ? 'VALID' : 
+                     gpsScore < 70 ? 'DICURIGAI' : 'PALSU';
+    
+    // Draw semi-transparent background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    const watermarkHeight = 70;
+    ctx.fillRect(10, canvas.height - watermarkHeight - 10, 400, watermarkHeight);
+    
+    // Draw text
+    ctx.font = 'bold 14px Arial';
+    ctx.fillStyle = verificationStatus === 'TERVERIFIKASI' ? '#10b981' : 
+                   verificationStatus === 'DICURIGAI' ? '#f59e0b' : '#ef4444';
+    ctx.fillText(`KILAT - ${verificationStatus}`, 20, canvas.height - watermarkHeight + 20);
+    
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`Waktu: ${timestamp}`, 20, canvas.height - watermarkHeight + 40);
+    ctx.fillText(`GPS: ${gpsStatus}`, 20, canvas.height - watermarkHeight + 60);
+}
+
+function retake() {
+    const video = document.getElementById('video');
+    const resultPreview = document.getElementById('result-preview');
+    
+    resultPreview.style.display = 'none';
+    video.style.display = 'block';
+    
+    document.getElementById('cam-controls').style.display = 'flex';
+    document.getElementById('res-controls').style.display = 'none';
+    document.getElementById('forceSaveBtn').style.display = 'none';
+}
+
+// ==================== RESPONSIVE FUNCTIONS ====================
+function handleResize() {
+    detectOrientation();
+    
+    // Update camera jika aktif
+    if (cameraActive) {
+        setTimeout(() => {
+            initCamera();
+        }, 300);
+    }
+}
+
+// ==================== DATABASE & STORAGE ====================
+const DB_NAME = 'KilatDB_Forensic';
+const DB_VERSION = 2;
+let db;
+
+function initDB() {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    
+    request.onupgradeneeded = (e) => {
+        db = e.target.result;
+        
+        if (!db.objectStoreNames.contains('photos')) {
+            const store = db.createObjectStore('photos', { keyPath: 'id', autoIncrement: true });
+            store.createIndex('date', 'date');
+            store.createIndex('verified', 'verified');
+        }
+        
+        if (!db.objectStoreNames.contains('audit_log')) {
+            const store = db.createObjectStore('audit_log', { keyPath: 'timestamp' });
+            store.createIndex('type', 'type');
+            store.createIndex('severity', 'severity');
+        }
+    };
+    
+    request.onsuccess = (e) => { 
+        db = e.target.result; 
+        loadAuditLog();
+        loadGallery();
+    };
+    
+    request.onerror = (e) => {
+        console.error("Database Error:", e);
+    };
+}
+
+// ==================== GALLERY FUNCTIONS ====================
+async function saveToGallery() {
+    const canvas = document.getElementById('canvas');
+    const imageData = canvas.toDataURL('image/jpeg');
+    
+    // Collect metadata
+    const metadata = {
+        timestamp: new Date().toISOString(),
+        orientation: currentOrientation,
+        cameraFacing: currentFacingMode,
+        ratio: currentRatio,
+        flash: flashOn,
+        timeManipulationScore: timeDetection?.metrics?.manipulationScore || 0,
+        gpsSpoofScore: gpsDetection?.metrics?.spoofScore || 0,
+        formData: {
+            user: document.getElementById('inUser').value,
+            kegiatan: document.getElementById('inKegiatan').value,
+            dinas: document.getElementById('inDinas').value,
+            bidang: document.getElementById('inBidang').value
+        }
+    };
+    
+    // Save to IndexedDB
+    if (db) {
+        const transaction = db.transaction(['photos'], 'readwrite');
+        const store = transaction.objectStore('photos');
+        
+        const photo = {
+            id: Date.now(),
+            data: imageData,
+            metadata: metadata,
+            date: new Date().toISOString(),
+            verified: metadata.timeManipulationScore < 40 && metadata.gpsSpoofScore < 40
+        };
+        
+        store.add(photo);
+        
+        transaction.oncomplete = () => {
+            showAlert('✅ Berhasil', 'Foto berhasil disimpan ke galeri');
+            logAuditEvent('GALLERY', 'info', 'Foto disimpan ke galeri');
+            retake();
+            loadGallery();
+        };
+        
+        transaction.onerror = (e) => {
+            console.error('Error menyimpan foto:', e);
+            showAlert('❌ Error', 'Gagal menyimpan foto ke database');
+        };
+    }
+}
+
+function loadGallery() {
+    if (!db) return;
+    
+    const transaction = db.transaction(['photos'], 'readonly');
+    const store = transaction.objectStore('photos');
+    const request = store.getAll();
+    
+    request.onsuccess = () => {
+        const photos = request.result.reverse(); // Newest first
+        const grid = document.getElementById('gallery-grid');
+        const emptyMsg = document.getElementById('empty-msg');
+        
+        grid.innerHTML = '';
+        
+        if (photos.length === 0) {
+            emptyMsg.style.display = 'block';
+            return;
+        }
+        
+        emptyMsg.style.display = 'none';
+        
+        photos.forEach(photo => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.onclick = () => viewPhoto(photo);
+            
+            const date = new Date(photo.date);
+            const dateStr = date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const statusColor = photo.verified ? '#10b981' : 
+                              photo.metadata.timeManipulationScore > 70 ? '#ef4444' : '#f59e0b';
+            const statusIcon = photo.verified ? '✅' : 
+                             photo.metadata.timeManipulationScore > 70 ? '⚠️' : '❓';
+            
+            item.innerHTML = `
+                <img src="${photo.data}" alt="Foto ${dateStr}" loading="lazy">
+                <div class="gallery-date">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>${dateStr}</span>
+                        <span style="color:${statusColor}; font-weight:bold;">${statusIcon}</span>
+                    </div>
+                    <div style="font-size:0.7rem; margin-top:2px; opacity:0.9;">
+                        ${photo.metadata.formData.user || 'Tanpa nama'}
+                    </div>
+                </div>
+            `;
+            
+            grid.appendChild(item);
+        });
+    };
+}
+
+function viewPhoto(photo) {
+    const message = `
+        📅 Tanggal: ${new Date(photo.date).toLocaleString('id-ID')}
+        👤 Petugas: ${photo.metadata.formData.user || 'Tidak ada'}
+        📋 Kegiatan: ${photo.metadata.formData.kegiatan || 'Tidak ada'}
+        
+        📷 Info Kamera:
+        • Orientasi: ${photo.metadata.orientation === 'landscape' ? 'Landscape' : 'Portrait'}
+        • Tipe: ${photo.metadata.cameraFacing === 'user' ? 'Depan' : 'Belakang'}
+        • Rasio: ${photo.metadata.ratio}
+        • Flash: ${photo.metadata.flash ? 'On' : 'Off'}
+        
+        🔍 Verifikasi:
+        • Waktu: ${photo.metadata.timeManipulationScore}% ${photo.metadata.timeManipulationScore < 40 ? '✅' : '⚠️'}
+        • GPS: ${photo.metadata.gpsSpoofScore}% ${photo.metadata.gpsSpoofScore < 40 ? '✅' : '⚠️'}
+        • Status: ${photo.verified ? 'TERVERIFIKASI' : 'DICURIGAI'}
+    `;
+    
+    showAlert('🖼️ Detail Foto', message);
+}
+
+function forceSaveWithWarning() {
+    saveToGallery();
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+function logAuditEvent(type, severity, message) {
+    const timestamp = new Date().toISOString();
+    const logEntry = {
+        timestamp: timestamp,
+        type: type,
+        severity: severity,
+        message: message
+    };
+    
+    if (db) {
+        const transaction = db.transaction(['audit_log'], 'readwrite');
+        const store = transaction.objectStore('audit_log');
+        store.add(logEntry);
+    }
+    
+    updateAuditLogUI(logEntry);
+}
+
+function updateAuditLogUI(logEntry) {
+    const logContainer = document.getElementById('auditLog');
+    if (!logContainer) return;
+    
+    const severityColors = {
+        info: '#059669',
+        warning: '#d97706',
+        danger: '#dc2626'
+    };
+    
+    const logElement = document.createElement('div');
+    logElement.className = 'log-entry';
+    logElement.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <span class="log-time">${new Date(logEntry.timestamp).toLocaleTimeString()}</span>
+                <div class="log-message">${logEntry.message}</div>
+            </div>
+        </div>
+    `;
+    
+    logContainer.insertBefore(logElement, logContainer.firstChild);
+    
+    if (logContainer.children.length > 50) {
+        logContainer.removeChild(logContainer.lastChild);
+    }
+}
+
+function loadAuditLog() {
+    if (!db) return;
+    
+    const transaction = db.transaction(['audit_log'], 'readonly');
+    const store = transaction.objectStore('audit_log');
+    const request = store.getAll();
+    
+    request.onsuccess = () => {
+        const logs = request.result.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        logs.forEach(log => updateAuditLogUI(log));
+    };
+}
+
+function clearAuditLog() {
+    if (!confirm('Hapus semua log audit?')) return;
+    
+    if (db) {
+        const transaction = db.transaction(['audit_log'], 'readwrite');
+        const store = transaction.objectStore('audit_log');
+        store.clear();
+        
+        document.getElementById('auditLog').innerHTML = '';
+        logAuditEvent('SYSTEM', 'info', 'Log audit dihapus');
+    }
+}
+
+function showAlert(title, message) {
+    document.getElementById('alertTitle').textContent = title;
+    document.getElementById('alertMessage').textContent = message;
+    document.getElementById('alertModal').style.display = 'flex';
+}
+
+function closeAlert() {
+    document.getElementById('alertModal').style.display = 'none';
+}
+
+function runQuickDiagnostic() {
+    const timeScore = timeDetection?.metrics?.manipulationScore || 0;
+    const gpsScore = gpsDetection?.metrics?.spoofScore || 0;
+    
+    const timeStatus = timeScore > 70 ? '❌' :
+                      timeScore > 40 ? '⚠️' : '✅';
+    
+    const gpsStatus = gpsScore > 70 ? '❌' :
+                     gpsScore > 40 ? '⚠️' : '✅';
+    
+    const cameraStatus = cameraActive ? '✅' : '❌';
+    
+    const message = `
+        Hasil Diagnostik Cepat:
+        
+        ⏱️ Status Waktu: ${timeStatus}
+        • Skor Manipulasi: ${timeScore}%
+        
+        📍 Status GPS: ${gpsStatus}
+        • Skor Spoofing: ${gpsScore}%
+        
+        📷 Status Kamera: ${cameraStatus}
+        • Tipe: ${currentFacingMode === 'user' ? 'Depan' : 'Belakang'}
+        • Rasio: ${currentRatio}
+        • Orientasi: ${currentOrientation === 'landscape' ? 'Landscape' : 'Portrait'}
+        
+        ${timeScore > 70 || gpsScore > 70 ? 
+         '🚨 SISTEM TERDETEKSI TERMANIPULASI!' : 
+         timeScore > 40 || gpsScore > 40 ?
+         '⚠️ Ada indikasi manipulasi, disarankan cek ulang' :
+         '✅ Sistem dalam kondisi normal'}
+    `;
+    
+    showAlert('🔍 Diagnostik Cepat', message);
+}
+
+function runFullForensicAnalysis() {
+    const timeScore = timeDetection?.metrics?.manipulationScore || 0;
+    const gpsScore = gpsDetection?.metrics?.spoofScore || 0;
+    
+    const analysis = {
+        timestamp: new Date().toISOString(),
+        deviceInfo: {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            orientation: currentOrientation
+        },
+        timeAnalysis: {
+            manipulationScore: timeScore
+        },
+        gpsAnalysis: {
+            spoofScore: gpsScore
+        },
+        cameraAnalysis: {
+            active: cameraActive,
+            facingMode: currentFacingMode,
+            ratio: currentRatio,
+            flash: flashOn,
+            orientation: currentOrientation
+        }
+    };
+    
+    let overallAssessment = '';
+    if (timeScore > 70 || gpsScore > 70) {
+        overallAssessment = '❌ SISTEM TERMANIPULASI - Tingkat kepercayaan sangat rendah';
+    } else if (timeScore > 40 || gpsScore > 40) {
+        overallAssessment = '⚠️ SISTEM DICURIGAI - Ada indikasi manipulasi';
+    } else {
+        overallAssessment = '✅ SISTEM TERVERIFIKASI - Tingkat kepercayaan tinggi';
+    }
+    
+    const message = `
+        HASIL ANALISIS FORENSIK LENGKAP
+        
+        📋 INFORMASI PERANGKAT:
+        • Platform: ${analysis.deviceInfo.platform}
+        • Resolusi: ${analysis.deviceInfo.screenResolution}
+        • Orientasi: ${analysis.deviceInfo.orientation === 'landscape' ? 'Landscape' : 'Portrait'}
+        
+        ⏱️ ANALISIS WAKTU:
+        • Skor Manipulasi: ${analysis.timeAnalysis.manipulationScore}%
+        
+        📍 ANALISIS GPS:
+        • Skor Spoofing: ${analysis.gpsAnalysis.spoofScore}%
+        
+        📷 ANALISIS KAMERA:
+        • Status: ${analysis.cameraAnalysis.active ? 'Aktif' : 'Nonaktif'}
+        • Tipe: ${analysis.cameraAnalysis.facingMode === 'user' ? 'Depan' : 'Belakang'}
+        • Rasio: ${analysis.cameraAnalysis.ratio}
+        • Flash: ${analysis.cameraAnalysis.flash ? 'On' : 'Off'}
+        • Orientasi: ${analysis.cameraAnalysis.orientation === 'landscape' ? 'Landscape' : 'Portrait'}
+        
+        🎯 KESIMPULAN:
+        ${overallAssessment}
+    `;
+    
+    showAlert('🔬 Hasil Analisis Forensik', message);
+}
+
+// ==================== NAVIGATION & INIT ====================
+function switchTab(tabId) {
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(`view-${tabId}`).classList.add('active');
+    const tabs = ['form', 'camera', 'detection', 'audit', 'gallery'];
+    const index = tabs.indexOf(tabId);
+    document.querySelectorAll('.nav-item')[index].classList.add('active');
+    
+    if (tabId === 'camera') {
+        setTimeout(() => {
+            if (!cameraActive) {
+                initCamera();
+            }
+        }, 300);
+    } else if (tabId === 'gallery') {
+        loadGallery();
+    }
+}
+
+function loadDraft() {
+    const data = JSON.parse(localStorage.getItem('kilat_forensic_draft'));
+    if (data) {
+        document.getElementById('inUser').value = data.user || '';
+        document.getElementById('inKegiatan').value = data.keg || '';
+        document.getElementById('inDinas').value = data.dinas || '';
+        document.getElementById('inBidang').value = data.bid || '';
+    }
+}
+
+function saveDraft() {
+    const data = {
+        user: document.getElementById('inUser').value,
+        keg: document.getElementById('inKegiatan').value,
+        dinas: document.getElementById('inDinas').value,
+        bid: document.getElementById('inBidang').value
+    };
+    localStorage.setItem('kilat_forensic_draft', JSON.stringify(data));
+}
+
+function goToCamera() {
+    const user = document.getElementById('inUser').value;
+    const keg = document.getElementById('inKegiatan').value;
+    
+    if (!user || !keg) {
+        showAlert('⚠️ Data Belum Lengkap', 'Mohon lengkapi Nama Petugas & Kegiatan terlebih dahulu.');
+        return;
+    }
+    
+    switchTab('camera');
+}
+
+// ==================== INITIALIZATION ====================
+window.addEventListener('DOMContentLoaded', () => {
+    console.log('KILAT Forensic System Initializing...');
+    
+    // Initialize
+    initDB();
+    loadDraft();
+    detectOrientation();
+    
+    // Set default ratio button active
+    setTimeout(() => {
+        document.querySelector(`.ratio-btn[data-ratio="${currentRatio}"]`).classList.add('active');
+    }, 100);
+    
+    // Event listeners
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    // Initialize camera when switching to camera tab
+    document.querySelector('.nav-item:nth-child(2)').addEventListener('click', () => {
+        setTimeout(() => {
+            if (!cameraActive) {
+                initCamera();
+            }
+        }, 300);
+    });
+});
+
+// Clean up on page unload
+window.addEventListener('beforeunload', () => {
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+    }
+});
+</script>
+</body>
+</html>
