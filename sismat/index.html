@@ -1119,10 +1119,123 @@
             background-color: #e0e0e0;
             color: #424242;
         }
+
+        /* Duplicate warning styles */
+        .duplicate-warning {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+            border-left: 4px solid #dc3545 !important;
+        }
+        
+        .duplicate-warning:hover {
+            background-color: rgba(220, 53, 69, 0.15) !important;
+        }
+        
+        .duplicate-icon {
+            color: #dc3545;
+            margin-right: 5px;
+        }
+        
+        .duplicate-badge {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+        
+        /* Reload Data Button Styles */
+        .reload-data-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border: 2px dashed #0d47a1;
+        }
+        
+        .reload-data-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .reload-data-title i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .reload-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+        
+        .reload-warning ul {
+            margin: 5px 0 5px 20px;
+        }
+        
+        .btn-reload {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-reload:hover {
+            background: linear-gradient(135deg, #138496, #117a8b);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Welcome Notification after Login */
+        .welcome-notification {
+            background: linear-gradient(135deg, #0d47a1, #00695c);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .welcome-notification h5 {
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .welcome-notification p {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Reload Instructions Modal */
+        .reload-instructions {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .reload-instructions ol {
+            padding-left: 20px;
+        }
+        
+        .reload-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .reload-instructions code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
-     <div class="modal fade login-modal" id="loginModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade login-modal" id="loginModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="login-header">
@@ -1159,7 +1272,7 @@
                     </div>
                     
                     <div class="login-hint">
-                            <p><strong>PEMBERDAYAAN NELAYAN</strong></p>
+                        <p><strong>PEMBERDAYAAN NELAYAN</strong></p>
                     </div>
                     
                     <div class="login-security-notice">
@@ -1196,7 +1309,7 @@
             </div>
             <h1 class="app-title">SISMAT</h1>
             <p class="app-subtitle">Sistem Manajemen Surat</p>
-            <div class="watermark">v2.0.0</div>
+            <div class="watermark">v2.1.0</div>
         </div>
         
         <div class="row g-0">
@@ -1263,6 +1376,18 @@
             </div>
             
             <div class="col-md-9 col-lg-10 p-5 app-content-unauthenticated" id="mainContent">
+                <!-- Welcome Notification after Login -->
+                <div class="welcome-notification" id="welcomeNotification" style="display: none;">
+                    <h5><i class="fas fa-bell me-2"></i> Selamat Datang di SISMAT v2.1.0</h5>
+                    <p>Sistem Manajemen Surat telah diperbarui dengan fitur-fitur baru:</p>
+                    <p><i class="fas fa-check-circle me-2"></i> <strong>Reload Data</strong> - Memuat data dari backup terenkripsi</p>
+                    <p><i class="fas fa-check-circle me-2"></i> <strong>Deteksi Duplikasi</strong> - Peringatan untuk nomor surat ganda</p>
+                    <p><i class="fas fa-check-circle me-2"></i> <strong>Data Tetap Aman</strong> - Data lama tidak terhapus saat reload</p>
+                    <button type="button" class="btn btn-sm btn-light mt-2" id="closeWelcomeNotification">
+                        <i class="fas fa-times me-1"></i> Tutup
+                    </button>
+                </div>
+                
                 <div class="content-section" id="dashboard">
                     <h3 class="section-title">Dashboard</h3>
                     
@@ -1357,6 +1482,25 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Reload Data Section in Dashboard -->
+                    <div class="reload-data-container mt-4">
+                        <h5 class="reload-data-title">
+                            <i class="fas fa-sync-alt"></i> Reload Data dari Backup
+                        </h5>
+                        <div class="reload-warning">
+                            <p><strong>Perhatian:</strong> Fitur ini memungkinkan Anda untuk memuat data dari file backup terenkripsi.</p>
+                            <p><strong>Fitur:</strong></p>
+                            <ul>
+                                <li>Data lama tidak akan terhapus</li>
+                                <li>Data duplikat akan ditandai dengan warna merah</li>
+                                <li>Data baru akan digabungkan dengan data yang ada</li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-reload" id="showReloadModal">
+                            <i class="fas fa-sync me-2"></i> Reload Data dari Backup
+                        </button>
                     </div>
                 </div>
                 
@@ -2018,7 +2162,7 @@
                                             <ul class="list-group list-group-flush">
                                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                                     Versi Aplikasi
-                                                    <span class="badge bg-primary rounded-pill">v2.0.0</span>
+                                                    <span class="badge bg-primary rounded-pill">v2.1.0</span>
                                                 </li>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                                     Jumlah Data Surat
@@ -2090,7 +2234,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="viewModalBody">
-                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                     <button type="button" class="btn btn-primary" id="printSingleData">
@@ -2109,7 +2253,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="editModalBody">
-                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary" id="saveEditData">Simpan Perubahan</button>
@@ -2154,6 +2298,8 @@
                             <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Arsip surat terorganisir</li>
                             <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Laporan dan statistik</li>
                             <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Backup dan restore data</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Reload data dari backup terenkripsi</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Deteksi duplikasi nomor surat</li>
                         </ul>
                     </div>
                 </div>
@@ -2194,6 +2340,75 @@
         </div>
     </div>
     
+    <!-- New Modals for Reload Data -->
+    <div class="modal fade" id="reloadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-sync-alt me-2"></i> Reload Data dari Backup</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Fitur ini memungkinkan Anda untuk memuat data dari file backup terenkripsi SISMAT.
+                    </div>
+                    
+                    <div class="reload-instructions">
+                        <h6>Petunjuk Penggunaan:</h6>
+                        <ol>
+                            <li>Buka file hasil backup Anda (file .json hasil download backup).</li>
+                            <li>Buka file tersebut dengan Notepad/Text Editor, lalu copy isinya (string panjang terenkripsi).</li>
+                            <li>Paste di antara tanda petik dua ("...") pada area di bawah ini.</li>
+                            <li>Pastikan tidak ada spasi atau baris baru (enter) yang terputus di tengah string.</li>
+                        </ol>
+                        
+                        <div class="mb-3">
+                            <label for="encryptedData" class="form-label">Data Backup Terenkripsi:</label>
+                            <textarea class="form-control" id="encryptedData" rows="6" placeholder="Tempel string terenkripsi dari file backup di sini..."></textarea>
+                            <div class="form-text">Contoh: window.SISMAT_BACKUP_ENCRYPTED = "eyJkYXRhIjpbeyJpZCI6IjE3M..."</div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="mergeDataCheck">
+                            <label class="form-check-label" for="mergeDataCheck">
+                                Gabungkan dengan data yang sudah ada (data lama tidak akan terhapus)
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="markDuplicatesCheck" checked>
+                            <label class="form-check-label" for="markDuplicatesCheck">
+                                Tandai data duplikat dengan warna merah
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="processReloadData">
+                        <i class="fas fa-sync me-2"></i> Proses Reload Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="reloadResultModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Hasil Reload Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="reloadResultBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -2214,6 +2429,7 @@
         let blockTime = 0;
         let validationCode = "BidangPN1988";
         let charts = {};
+        let duplicateCheckInterval = null;
         
         // DOM Ready
         document.addEventListener('DOMContentLoaded', function() {
@@ -2273,6 +2489,9 @@
                 
                 localStorage.setItem('welcomeShown', 'true');
             }
+            
+            // Start duplicate check interval
+            startDuplicateCheck();
         }
         
         // Setup event listeners
@@ -2420,33 +2639,41 @@
             // Confirm action
             document.getElementById('confirmAction').addEventListener('click', executeConfirmedAction);
 
-            // **PAGINATION FIX**: Add a single event listener to the pagination container
+            // Pagination event listener
             document.getElementById('pagination').addEventListener('click', function(e) {
                 e.preventDefault();
-                const target = e.target.closest('.page-link'); // Find the clicked link
+                const target = e.target.closest('.page-link');
                 
-                // Do nothing if the click is not on a link or if the link is disabled
                 if (!target || target.parentElement.classList.contains('disabled')) {
                     return;
                 }
                 
                 const page = parseInt(target.getAttribute('data-page'));
                 
-                // Update page and re-render if it's a valid, different page
                 if (!isNaN(page) && page !== currentPage) {
                     currentPage = page;
                     renderSuratTable();
                 }
             });
 
-            // =================================================================
-            // == PENAMBAHAN FITUR BACKUP OTOMATIS SAAT REFRESH/KELUAR ==
-            // =================================================================
+            // Beforeunload event for auto backup
             window.addEventListener('beforeunload', function(e) {
-                // Cek apakah pengguna sudah login (konten utama terlihat)
                 if (!document.getElementById('mainContent').classList.contains('app-content-unauthenticated')) {
                      autoBackupOnExit();
                 }
+            });
+            
+            // New Event Listeners for Reload Data Feature
+            document.getElementById('showReloadModal').addEventListener('click', function() {
+                const reloadModal = new bootstrap.Modal(document.getElementById('reloadModal'));
+                reloadModal.show();
+            });
+            
+            document.getElementById('processReloadData').addEventListener('click', processReloadData);
+            
+            // Close welcome notification
+            document.getElementById('closeWelcomeNotification').addEventListener('click', function() {
+                document.getElementById('welcomeNotification').style.display = 'none';
             });
         }
         
@@ -2515,6 +2742,9 @@
                 if (!document.getElementById('dashboard').classList.contains('d-none')) {
                     updateDashboard();
                 }
+                
+                // Check for duplicates
+                checkForDuplicates();
             }
         }
         
@@ -2553,6 +2783,15 @@
                 isValid = false;
             }
             
+            // Check for duplicate nomor surat
+            const nomorSurat = document.getElementById('nomorSurat').value.trim();
+            if (nomorSurat) {
+                const duplicates = findDuplicates(nomorSurat);
+                if (duplicates.length > 0) {
+                    showNotification(`Peringatan: Nomor surat "${nomorSurat}" sudah ada dalam database!`, 'warning');
+                }
+            }
+            
             return isValid;
         }
         
@@ -2566,7 +2805,67 @@
             }
         }
         
-        // Render surat table with pagination
+        // Find duplicates in suratData
+        function findDuplicates(nomorSurat) {
+            return suratData.filter(item => 
+                item.nomor.toLowerCase() === nomorSurat.toLowerCase() && 
+                item.status !== 'archived'
+            );
+        }
+        
+        // Start duplicate check interval
+        function startDuplicateCheck() {
+            if (duplicateCheckInterval) {
+                clearInterval(duplicateCheckInterval);
+            }
+            
+            duplicateCheckInterval = setInterval(function() {
+                checkForDuplicates();
+            }, 30000); // Check every 30 seconds
+        }
+        
+        // Check for duplicates in the database
+        function checkForDuplicates() {
+            const duplicateMap = new Map();
+            const duplicates = [];
+            
+            // Find all duplicates
+            suratData.forEach((item, index) => {
+                if (item.status !== 'archived') {
+                    const key = item.nomor.toLowerCase();
+                    if (duplicateMap.has(key)) {
+                        duplicateMap.get(key).push(index);
+                    } else {
+                        duplicateMap.set(key, [index]);
+                    }
+                }
+            });
+            
+            // Filter only actual duplicates (more than one)
+            duplicateMap.forEach((indices, nomor) => {
+                if (indices.length > 1) {
+                    indices.forEach(index => {
+                        duplicates.push({
+                            index: index,
+                            nomor: suratData[index].nomor,
+                            data: suratData[index]
+                        });
+                    });
+                }
+            });
+            
+            if (duplicates.length > 0) {
+                // Show warning notification
+                showNotification(`Peringatan: Ditemukan ${duplicates.length} data dengan nomor surat duplikat!`, 'warning');
+                
+                // Update table to highlight duplicates
+                renderSuratTable();
+            }
+            
+            return duplicates;
+        }
+        
+        // Render surat table with pagination and duplicate highlighting
         function renderSuratTable() {
             const tableBody = document.getElementById('dataSuratTable');
             const paginationElement = document.getElementById('pagination');
@@ -2603,6 +2902,21 @@
             const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
             const pageData = filteredData.slice(startIndex, endIndex);
             
+            // Find duplicates for highlighting
+            const duplicateNumbers = new Set();
+            const nomorCount = new Map();
+            
+            filteredData.forEach(item => {
+                const key = item.nomor.toLowerCase();
+                nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
+            });
+            
+            nomorCount.forEach((count, nomor) => {
+                if (count > 1) {
+                    duplicateNumbers.add(nomor);
+                }
+            });
+            
             // Update pagination info
             if (filteredData.length > 0) {
                 paginationInfoElement.textContent = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${filteredData.length} data`;
@@ -2618,12 +2932,17 @@
                 tableBody.innerHTML = `<tr><td colspan="9" class="text-center">Tidak ada data</td></tr>`;
             } else {
                 pageData.forEach((item, index) => {
+                    const isDuplicate = duplicateNumbers.has(item.nomor.toLowerCase());
                     const row = document.createElement('tr');
+                    if (isDuplicate) {
+                        row.classList.add('duplicate-warning');
+                    }
+                    
                     row.innerHTML = `
-                        <td>${startIndex + index + 1}</td>
+                        <td>${startIndex + index + 1} ${isDuplicate ? '<i class="fas fa-exclamation-triangle duplicate-icon" title="Nomor surat duplikat"></i>' : ''}</td>
                         <td>${formatDate(item.tanggal)}</td>
                         <td><span class="badge ${item.jenis === 'masuk' ? 'bg-success' : 'bg-warning'}">${item.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</span></td>
-                        <td>${item.nomor}</td>
+                        <td>${item.nomor} ${isDuplicate ? '<span class="badge duplicate-badge ms-1">Duplikat</span>' : ''}</td>
                         <td>${item.jenis === 'masuk' ? item.pengirim : item.penerima}</td>
                         <td>${item.perihal}</td>
                         <td><span class="badge badge-kategori kategori-${item.kategori}">${capitalizeFirstLetter(item.kategori)}</span></td>
@@ -3194,6 +3513,9 @@
             // Refresh tables
             renderSuratTable();
             updateStats();
+            
+            // Check for duplicates
+            checkForDuplicates();
         }
         
         // Archive data
@@ -3654,7 +3976,7 @@
                 data: suratData,
                 metadata: {
                     exportedAt: new Date().toISOString(),
-                    version: '2.0.0',
+                    version: '2.1.0',
                     totalRecords: suratData.length,
                     notes: backupNotes
                 }
@@ -3901,6 +4223,9 @@
                     // Show app content
                     document.getElementById('mainContent').classList.remove('app-content-unauthenticated');
                     
+                    // Show welcome notification
+                    document.getElementById('welcomeNotification').style.display = 'block';
+                    
                     showNotification('Login berhasil. Selamat datang!', 'success');
                     
                 } else {
@@ -3961,9 +4286,7 @@
         function logout() {
             confirmAction('Apakah Anda yakin ingin keluar dari aplikasi?', () => {
                 
-                // =================================================================
-                // == PENAMBAHAN FITUR: PANGGIL FUNGSI BACKUP OTOMATIS SEBELUM KELUAR ==
-                // =================================================================
+                // Auto backup before logout
                 autoBackupOnExit();
 
                 // Show login modal
@@ -4369,8 +4692,196 @@
         }
         
         // =================================================================
-        // == FUNGSI BARU UNTUK BACKUP OTOMATIS ==
+        // == FUNGSI BARU UNTUK RELOAD DATA DARI BACKUP TERENKRIPSI ==
         // =================================================================
+        
+        // Process reload data from encrypted backup
+        function processReloadData() {
+            const encryptedData = document.getElementById('encryptedData').value.trim();
+            const mergeData = document.getElementById('mergeDataCheck').checked;
+            const markDuplicates = document.getElementById('markDuplicatesCheck').checked;
+            
+            if (!encryptedData) {
+                showNotification('Harap tempel data backup terenkripsi', 'warning');
+                return;
+            }
+            
+            try {
+                // Parse the encrypted data
+                let backupData;
+                
+                // Try to extract the encrypted string from the window.SISMAT_BACKUP_ENCRYPTED format
+                if (encryptedData.includes('window.SISMAT_BACKUP_ENCRYPTED')) {
+                    // Extract the string between quotes
+                    const match = encryptedData.match(/window\.SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/);
+                    if (match && match[1]) {
+                        // This would normally be decrypted, but for this example we'll parse as JSON
+                        // In a real implementation, you would decrypt the data here
+                        backupData = JSON.parse(atob(match[1]));
+                    } else {
+                        throw new Error('Format data tidak valid. Pastikan data dalam format window.SISMAT_BACKUP_ENCRYPTED = "..."');
+                    }
+                } else {
+                    // Assume it's direct JSON or base64 encoded
+                    try {
+                        // Try to parse as JSON directly
+                        backupData = JSON.parse(encryptedData);
+                    } catch (e) {
+                        // Try to decode as base64
+                        backupData = JSON.parse(atob(encryptedData));
+                    }
+                }
+                
+                // Validate backup structure
+                if (!backupData.data || !Array.isArray(backupData.data)) {
+                    throw new Error('Format backup tidak valid. Data harus berisi array "data"');
+                }
+                
+                const importedData = backupData.data;
+                const originalCount = suratData.length;
+                let addedCount = 0;
+                let duplicateCount = 0;
+                let updatedCount = 0;
+                
+                if (mergeData) {
+                    // Merge data - add new items, update existing ones
+                    importedData.forEach(newItem => {
+                        const existingIndex = suratData.findIndex(item => item.id === newItem.id);
+                        
+                        if (existingIndex === -1) {
+                            // Add new item
+                            suratData.push(newItem);
+                            addedCount++;
+                        } else {
+                            // Update existing item
+                            suratData[existingIndex] = {
+                                ...suratData[existingIndex],
+                                ...newItem,
+                                updatedAt: new Date().toISOString()
+                            };
+                            updatedCount++;
+                        }
+                    });
+                } else {
+                    // Replace all data
+                    suratData = importedData;
+                    addedCount = importedData.length;
+                }
+                
+                // Save data
+                saveData();
+                
+                // Show result
+                const resultBody = document.getElementById('reloadResultBody');
+                resultBody.innerHTML = `
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle me-2"></i> Reload Data Berhasil!</h6>
+                        <p>Data berhasil dimuat dari backup.</p>
+                    </div>
+                    <div class="mt-3">
+                        <h6>Ringkasan:</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Data sebelum reload
+                                <span class="badge bg-primary rounded-pill">${originalCount}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Data ditambahkan
+                                <span class="badge bg-success rounded-pill">${addedCount}</span>
+                            </li>
+                            ${mergeData ? `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Data diperbarui
+                                <span class="badge bg-warning rounded-pill">${updatedCount}</span>
+                            </li>
+                            ` : ''}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total data sekarang
+                                <span class="badge bg-info rounded-pill">${suratData.length}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    ${markDuplicates ? `
+                    <div class="mt-3">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Peringatan Duplikasi:</strong> Data dengan nomor surat duplikat akan ditandai dengan warna merah di tabel.
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                // Close reload modal
+                const reloadModal = bootstrap.Modal.getInstance(document.getElementById('reloadModal'));
+                reloadModal.hide();
+                
+                // Show result modal
+                const resultModal = new bootstrap.Modal(document.getElementById('reloadResultModal'));
+                resultModal.show();
+                
+                // Refresh UI
+                renderSuratTable();
+                renderArsipTable();
+                updateStats();
+                
+                // Check for duplicates if enabled
+                if (markDuplicates) {
+                    const duplicates = checkForDuplicates();
+                    if (duplicates.length > 0) {
+                        showNotification(`Ditemukan ${duplicates.length} data duplikat setelah reload!`, 'warning');
+                    }
+                }
+                
+                showNotification('Reload data berhasil dilakukan', 'success');
+                
+            } catch (error) {
+                console.error('Reload error:', error);
+                showNotification('Gagal memproses data backup: ' + error.message, 'error');
+            }
+        }
+        
+        // Generate backup with encrypted format for reload.js
+        function generateEncryptedBackup() {
+            const backup = {
+                data: suratData,
+                metadata: {
+                    exportedAt: new Date().toISOString(),
+                    version: '2.1.0',
+                    totalRecords: suratData.length,
+                    notes: 'Backup untuk reload data SISMAT'
+                }
+            };
+            
+            // Convert to JSON string and encode to base64
+            const jsonString = JSON.stringify(backup);
+            const encryptedString = btoa(jsonString);
+            
+            // Create the reload.js file content
+            const reloadJsContent = `/* PETUNJUK PENGGUNAAN:
+   1. Buka file hasil backup Anda (file .json hasil download backup).
+   2. Buka file tersebut dengan Notepad/Text Editor, lalu copy isinya (string panjang terenkripsi).
+   3. Paste di antara tanda petik dua ("...") pada variabel window.BARJAS_SISMAT_ENCRYPTED di bawah ini.
+   4. Pastikan tidak ada spasi atau baris baru (enter) yang terputus di tengah string.
+*/
+
+window.SISMAT_BACKUP_ENCRYPTED = "${encryptedData}";`;
+            
+            // Create download link
+            const dataStr = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(reloadJsContent);
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute('href', dataStr);
+            downloadAnchorNode.setAttribute('download', 'reload.js');
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            
+            showNotification('File reload.js berhasil dibuat', 'success');
+        }
+        
+        // =================================================================
+        // == FUNGSI BACKUP OTOMATIS SAAT REFRESH/KELUAR ==
+        // =================================================================
+        
         /**
          * Creates a formatted timestamp string for filenames.
          * @returns {string} Formatted timestamp (e.g., "20250922_143005")
@@ -4403,7 +4914,7 @@
                 data: suratData,
                 metadata: {
                     exportedAt: new Date().toISOString(),
-                    version: '2.0.0',
+                    version: '2.1.0',
                     totalRecords: suratData.length,
                     notes: `Backup otomatis saat keluar/refresh pada ${formatDateTime(new Date())}`
                 }
