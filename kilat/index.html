@@ -2,12 +2,13 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>KILAT - Sistem Anti Manipulasi Waktu & GPS</title>
     <style>
         :root {
             --primary: #0284c7;
             --primary-dark: #0369a1;
+            --primary-light: #38bdf8;
             --secondary: #64748b;
             --success: #10b981;
             --warning: #f59e0b;
@@ -15,12 +16,15 @@
             --bg: #f1f5f9;
             --card: #ffffff;
             --text: #0f172a;
+            --border: #e2e8f0;
+            --shadow: rgba(0,0,0,0.08);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -32,347 +36,787 @@
             color: var(--text);
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
             background: var(--card);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 25px rgba(0,0,0,0.08);
+            box-shadow: 0 0 25px var(--shadow);
             position: relative;
+            overflow-x: hidden;
         }
 
-        /* Header */
+        /* Header dengan Logo - Responsif */
         .header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 25px 20px 20px 20px;
+            padding: 15px;
             text-align: center;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
             box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2);
-            margin-bottom: 10px;
+            margin-bottom: 0;
             z-index: 10;
+            position: relative;
+            flex-shrink: 0;
         }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .logo-img {
+            height: 45px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            border-radius: 8px;
+            background: white;
+            padding: 3px;
+        }
+        
+        .header-text {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        
         .header h1 { 
             margin: 0; 
-            font-size: 2.2rem; 
+            font-size: clamp(1.4rem, 4vw, 1.8rem); 
             font-weight: 900; 
-            letter-spacing: 2px;
+            letter-spacing: 0.5px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            line-height: 1.2;
         }
         .header p { 
-            margin: 5px 0 0; 
-            font-size: 0.85rem; 
+            margin: 3px 0 0; 
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem); 
             font-weight: 400; 
             opacity: 0.95; 
             font-style: italic;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        /* Navigation Tabs */
+        /* Navigation Tabs - Responsif */
         .nav-tabs {
             display: flex;
-            padding: 5px 15px;
-            gap: 8px;
+            padding: 8px;
+            gap: 6px;
             background: white;
-            margin-top: 5px;
+            margin-top: 0;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            flex-shrink: 0;
         }
+        
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
         .nav-item {
             flex: 1;
-            padding: 12px;
+            min-width: 70px;
+            padding: 10px 6px;
             text-align: center;
             background: #f8fafc;
             border-radius: 12px;
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
             font-weight: 600;
             color: var(--secondary);
             cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1.5px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            justify-content: center;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
+        
         .nav-item.active {
-            background: #e0f2fe;
-            color: var(--primary);
-            border-color: #bae6fd;
-            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.1);
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 8px rgba(2, 132, 199, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-item:active {
+            transform: scale(0.95);
         }
 
-        /* Sections */
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Sections - Responsif untuk Landscape/Portrait */
         .section { 
             display: none; 
-            padding: 20px; 
-            flex: 1; 
+            padding: 15px;
+            flex: 1;
             animation: fadeIn 0.3s ease; 
             overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            min-height: calc(100vh - 140px);
         }
-        .section.active { display: flex; flex-direction: column; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .section.active { 
+            display: flex; 
+            flex-direction: column;
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(8px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-        /* Form Styling */
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.85rem; color: #334155; }
-        .form-group input {
-            width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0;
-            border-radius: 12px; font-size: 1rem; box-sizing: border-box;
-            transition: all 0.2s; background: #f8fafc; color: #334155;
+        /* Form Styling - Responsif */
+        .form-group { 
+            margin-bottom: 16px; 
         }
+        
+        .form-group label { 
+            display: block; 
+            margin-bottom: 6px; 
+            font-weight: 700; 
+            font-size: clamp(0.8rem, 3vw, 0.9rem); 
+            color: #334155; 
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .form-group input {
+            width: 100%; 
+            padding: clamp(12px, 3vw, 14px) clamp(14px, 3vw, 16px); 
+            border: 2px solid #e2e8f0;
+            border-radius: 12px; 
+            font-size: clamp(0.9rem, 3vw, 1rem); 
+            background: #f8fafc; 
+            color: #334155;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        
         .form-group input:focus { 
             border-color: var(--primary); 
             background: #fff; 
             outline: none; 
-            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1); 
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15); 
         }
-        ::placeholder { color: #94a3b8; opacity: 1; }
+        
+        ::placeholder { 
+            color: #94a3b8; 
+            opacity: 1; 
+        }
 
-        /* Buttons */
+        /* Buttons - Responsif */
         .btn {
-            width: 100%; padding: 16px; border: none; border-radius: 14px;
-            background: var(--primary); color: white; font-size: 1rem;
-            font-weight: 700; cursor: pointer; display: flex;
-            justify-content: center; align-items: center; gap: 8px;
-            transition: transform 0.1s, filter 0.2s;
+            width: 100%; 
+            padding: clamp(14px, 3vw, 16px); 
+            border: none; 
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            color: white; 
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-weight: 700; 
+            cursor: pointer; 
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 12px;
-            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+            box-shadow: 0 6px 12px rgba(2, 132, 199, 0.25);
+            position: relative;
+            overflow: hidden;
         }
-        .btn:active { transform: scale(0.97); }
-        .btn-secondary { background: white; color: var(--text); border: 2px solid #e2e8f0; box-shadow: none; }
-        .btn-success { background: var(--success); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25); }
-        .btn-warning { background: var(--warning); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25); }
-        .btn-danger { background: var(--danger); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25); }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn:active::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(40, 40);
+                opacity: 0;
+            }
+        }
+        
+        .btn:active { 
+            transform: translateY(2px);
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(2, 132, 199, 0.3);
+        }
+        
+        .btn-secondary { 
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0); 
+            color: var(--text); 
+            border: 2px solid var(--border); 
+            box-shadow: 0 4px 8px rgba(148, 163, 184, 0.15); 
+        }
+        
+        .btn-success { 
+            background: linear-gradient(135deg, var(--success), #059669);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.25); 
+        }
+        
+        .btn-warning { 
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            box-shadow: 0 6px 12px rgba(245, 158, 11, 0.25); 
+        }
+        
+        .btn-danger { 
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.25); 
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+        }
 
-        /* Camera UI */
+        /* Camera UI - Responsif untuk Landscape/Portrait */
+        .camera-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            position: relative;
+        }
+        
         .camera-container {
             position: relative;
             background: #000;
             border-radius: 16px;
             overflow: hidden;
             width: 100%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            flex: 1;
+            min-height: 300px;
+            max-height: 60vh;
+        }
+        
+        video, img#result-preview { 
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            background: #000;
+        }
+        
+        video.mirrored { 
+            transform: scaleX(-1); 
+        }
+        
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 2;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 16px;
+        }
+        
+        .camera-indicator {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Camera Controls - Responsif */
+        .camera-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: auto;
+        }
+        
+        .toolbar {
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 12px;
+            overflow-x: auto; 
+            padding: 10px 0 5px 0;
+            -webkit-overflow-scrolling: touch;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tool-pill {
+            padding: 10px 14px; 
+            background: white; 
+            border: 2px solid #cbd5e1;
+            border-radius: 20px; 
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem); 
+            font-weight: 600; 
+            white-space: nowrap;
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            color: #475569;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .tool-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .tool-pill:active {
+            transform: scale(0.95);
+        }
+        
+        .tool-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Ratio Selector - Responsif untuk Landscape/Portrait */
+        .ratio-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 8px;
             margin-bottom: 15px;
         }
-        video, img#result-preview { width: 100%; height: 100%; object-fit: cover; display: block; }
-        video.mirrored { transform: scaleX(-1); }
-
-        .toolbar {
-            display: flex; gap: 10px; margin-bottom: 15px;
-            overflow-x: auto; padding-bottom: 5px;
+        
+        .ratio-btn {
+            padding: 10px 6px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
         }
-        .tool-pill {
-            padding: 8px 16px; background: white; border: 1px solid #cbd5e1;
-            border-radius: 20px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;
-            cursor: pointer; display: flex; align-items: center; gap: 6px; color: #475569;
+        
+        .ratio-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2);
+        }
+        
+        .ratio-btn .ratio-icon {
+            font-size: 1.2rem;
         }
 
-        /* Status & Gallery */
+        /* Status & Gallery - Responsif */
         .status-bar {
-            background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-            padding: 10px 14px; border-radius: 10px; font-size: 0.8rem;
-            margin-top: -60px; position: relative; z-index: 5;
-            margin-bottom: 25px; margin-left: 10px; margin-right: 10px;
-            border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(8px);
+            padding: 12px; 
+            border-radius: 12px; 
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+            margin-bottom: 15px; 
+            border: 1px solid rgba(0,0,0,0.08); 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            flex-wrap: wrap;
         }
-        .status-dot { width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid white; }
-        .status-dot.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-        .status-dot.warning { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+        
+        .status-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+        
+        .status-dot { 
+            width: 10px; 
+            height: 10px; 
+            background: #ef4444; 
+            border-radius: 50%; 
+            border: 2px solid white; 
+            box-shadow: 0 0 0 2px #fee2e2;
+            flex-shrink: 0;
+        }
+        
+        .status-dot.active { 
+            background: #22c55e; 
+            box-shadow: 0 0 0 2px #d1fae5, 0 0 12px rgba(34, 197, 94, 0.5); 
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 2px rgba(34, 197, 94, 0); }
+        }
+        
+        .status-dot.warning { 
+            background: #f59e0b; 
+            box-shadow: 0 0 0 2px #fef3c7, 0 0 8px rgba(245, 158, 11, 0.3); 
+        }
 
-        /* Gallery Grid */
+        /* Gallery Grid - Responsif */
         .gallery-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-            padding-bottom: 40px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            gap: 12px;
+            padding-bottom: 20px;
         }
+        
         .gallery-item {
-            position: relative; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden;
-            border: 1px solid #e2e8f0; background: #f1f5f9; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative; 
+            aspect-ratio: 3/4; 
+            border-radius: 12px; 
+            overflow: hidden;
+            border: 2px solid #e2e8f0; 
+            background: #f1f5f9; 
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .gallery-item:active img { transform: scale(1.05); }
+        
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-color: var(--primary-light);
+        }
+        
+        .gallery-item img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transition: transform 0.3s; 
+        }
+        
+        .gallery-item:active img { 
+            transform: scale(1.05); 
+        }
+        
         .gallery-date {
-            position: absolute; bottom: 0; left: 0; right: 0;
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            color: white; font-weight: 500;
-            font-size: 0.75rem; padding: 12px 8px 8px 8px; text-align: left;
+            color: white; 
+            font-weight: 600;
+            font-size: 0.7rem; 
+            padding: 10px 6px 6px 6px; 
+            text-align: left;
+            backdrop-filter: blur(2px);
         }
-        .empty-state { text-align: center; color: #94a3b8; padding: 40px; font-style: italic; }
+        
+        .empty-state { 
+            text-align: center; 
+            color: #94a3b8; 
+            padding: 40px 20px; 
+            font-style: italic; 
+            grid-column: 1 / -1;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+        }
 
         /* Warning Badge */
         .warning-badge {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: clamp(0.65rem, 2.5vw, 0.75rem);
             font-weight: 700;
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            margin-left: 10px;
+            margin-left: 8px;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
+            animation: shake 0.5s ease-in-out;
+            flex-shrink: 0;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
         }
 
-        /* Verification Info */
+        /* Verification Info - Responsif */
         .verification-info {
             background: #fef3c7;
-            border: 1px solid #fde68a;
-            border-radius: 10px;
+            border: 2px solid #fde68a;
+            border-radius: 12px;
             padding: 12px;
             margin-bottom: 15px;
-            font-size: 0.8rem;
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
             color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            flex-wrap: wrap;
         }
+        
         .verification-info.verified {
-            background: #d1fae5;
-            border-color: #a7f3d0;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: #10b981;
             color: #065f46;
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.15);
         }
+        
         .verification-info.suspected {
-            background: #fef3c7;
-            border-color: #fde68a;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
             color: #92400e;
+            box-shadow: 0 4px 8px rgba(245, 158, 11, 0.15);
         }
+        
         .verification-info.fake {
-            background: #fee2e2;
-            border-color: #fecaca;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-color: #ef4444;
             color: #991b1b;
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.15);
+            animation: pulse 2s infinite;
         }
 
-        /* Time Detection Dashboard */
+        /* Time Detection Dashboard - Responsif */
         .time-dashboard {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 10px;
             margin: 15px 0;
         }
+        
         .time-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             padding: 12px;
             text-align: center;
+            transition: all 0.3s ease;
         }
+        
+        .time-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+        
         .time-card h4 {
-            margin: 0 0 5px 0;
-            font-size: 0.75rem;
+            margin: 0 0 6px 0;
+            font-size: clamp(0.7rem, 2.5vw, 0.75rem);
             color: #64748b;
+            font-weight: 600;
         }
+        
         .time-value {
-            font-size: 0.9rem;
-            font-weight: 700;
-            font-family: monospace;
+            font-size: clamp(0.8rem, 3vw, 0.95rem);
+            font-weight: 800;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Mono', monospace;
         }
-        .time-card.valid .time-value { color: #059669; }
-        .time-card.warning .time-value { color: #d97706; }
-        .time-card.invalid .time-value { color: #dc2626; }
+        
+        .time-card.valid { 
+            border-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+        
+        .time-card.valid .time-value { 
+            color: #059669; 
+        }
+        
+        .time-card.warning { 
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        }
+        
+        .time-card.warning .time-value { 
+            color: #d97706; 
+        }
+        
+        .time-card.invalid { 
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+        }
+        
+        .time-card.invalid .time-value { 
+            color: #dc2626; 
+        }
 
-        /* Detection Grid */
+        /* Detection Grid - Responsif */
         .detection-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
             margin: 15px 0;
         }
+        
         .detection-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
             padding: 10px;
-            font-size: 0.75rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+            transition: all 0.3s ease;
         }
+        
+        .detection-item:hover {
+            transform: translateY(-2px);
+        }
+        
         .detection-item.valid {
-            background: #d1fae5;
-            border-color: #a7f3d0;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: #10b981;
         }
+        
         .detection-item.suspected {
-            background: #fef3c7;
-            border-color: #fde68a;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
         }
+        
         .detection-item.fake {
-            background: #fee2e2;
-            border-color: #fecaca;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-color: #ef4444;
         }
+        
         .detection-label {
-            font-weight: bold;
-            margin-bottom: 4px;
-            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+            color: #334155;
         }
+        
         .detection-value {
-            font-family: monospace;
-            font-size: 0.7rem;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Mono', monospace;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+            font-weight: 600;
         }
 
-        /* Time Graph */
-        .time-graph {
-            height: 60px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            margin: 10px 0;
-            position: relative;
-            overflow: hidden;
-        }
-        .time-graph-line {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 2px;
-            background: #94a3b8;
-        }
-        .time-point {
-            position: absolute;
-            bottom: 0;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            transform: translateX(-50%);
-        }
-        .time-point.valid { background: #10b981; }
-        .time-point.warning { background: #f59e0b; }
-        .time-point.invalid { background: #ef4444; }
-
-        /* Alert Modal */
+        /* Alert Modal - Responsif */
         .alert-modal {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(4px);
         }
+        
         .alert-content {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            max-width: 400px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 20px;
+            padding: clamp(20px, 4vw, 30px);
+            max-width: 500px;
             width: 100%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 90vh;
+            overflow-y: auto;
         }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         .alert-title {
-            font-size: 1.3rem;
+            font-size: clamp(1.2rem, 4vw, 1.4rem);
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: #dc2626;
             display: flex;
             align-items: center;
             gap: 10px;
         }
+        
         .alert-message {
             color: #475569;
             margin-bottom: 20px;
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: clamp(0.85rem, 3vw, 0.95rem);
+            white-space: pre-line;
+            overflow-wrap: break-word;
         }
+        
         .alert-actions {
             display: flex;
             gap: 10px;
@@ -382,27 +826,221 @@
         .spinner {
             width: 24px;
             height: 24px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #0284c7;
+            border: 3px solid rgba(226, 232, 240, 0.3);
+            border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* Tab-specific styles */
+        /* Tab-specific styles - Responsif */
         #view-audit .log-entry {
-            padding: 10px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 0.8rem;
+            padding: 12px;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #f8fafc;
         }
+        
+        #view-audit .log-entry:hover {
+            background: white;
+            transform: translateX(4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
         .log-time {
             color: #64748b;
-            font-family: monospace;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Mono', monospace;
+            font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+            font-weight: 600;
         }
+        
         .log-message {
-            margin-top: 3px;
+            margin-top: 5px;
+            color: #334155;
+            line-height: 1.4;
+        }
+
+        /* Responsive adjustments for Landscape Mode */
+        @media (orientation: landscape) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .header {
+                padding: 10px 15px;
+                border-bottom-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+            }
+            
+            .logo-container {
+                gap: 10px;
+                margin-bottom: 5px;
+            }
+            
+            .logo-img {
+                height: 35px;
+            }
+            
+            .nav-tabs {
+                padding: 6px;
+                gap: 4px;
+            }
+            
+            .nav-item {
+                min-width: 60px;
+                padding: 8px 4px;
+                font-size: 0.7rem;
+            }
+            
+            .section {
+                padding: 12px;
+                min-height: calc(100vh - 110px);
+            }
+            
+            .camera-container {
+                max-height: 50vh;
+                min-height: 250px;
+                margin-bottom: 10px;
+            }
+            
+            .toolbar {
+                margin-bottom: 8px;
+                gap: 6px;
+            }
+            
+            .ratio-selector {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                gap: 6px;
+                margin-bottom: 10px;
+            }
+            
+            .ratio-btn {
+                padding: 8px 4px;
+                font-size: 0.65rem;
+            }
+            
+            .status-bar {
+                padding: 10px;
+                margin-bottom: 10px;
+                font-size: 0.7rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 8px;
+            }
+            
+            .time-dashboard,
+            .detection-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 12px;
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Responsive adjustments for Portrait Mode */
+        @media (orientation: portrait) {
+            .camera-container {
+                max-height: 60vh;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 320px) {
+            .nav-item {
+                min-width: 55px;
+                padding: 6px 3px;
+                font-size: 0.65rem;
+            }
+            
+            .logo-img {
+                height: 35px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .ratio-btn {
+                font-size: 0.6rem;
+                padding: 8px 3px;
+            }
+        }
+
+        /* Large screens */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+                margin: 20px auto;
+                min-height: calc(100vh - 40px);
+                border-radius: 20px;
+                overflow: hidden;
+            }
+            
+            .section {
+                min-height: calc(100vh - 160px);
+            }
+            
+            @media (orientation: landscape) {
+                .section {
+                    min-height: calc(100vh - 140px);
+                }
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Utility classes */
+        .hide-in-landscape {
+            display: block;
+        }
+        
+        .hide-in-portrait {
+            display: block;
+        }
+        
+        @media (orientation: landscape) {
+            .hide-in-landscape {
+                display: none !important;
+            }
+        }
+        
+        @media (orientation: portrait) {
+            .hide-in-portrait {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -410,1260 +1048,21 @@
 
 <div class="container">
     <div class="header">
-        <h1>KILAT</h1>
-        <p>Kamera Interaktif Lacak Aktifitas Terkini - ANTI MANIPULASI TOTAL</p>
+        <div class="logo-container">
+            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/kilat.png" 
+                 alt="KILAT Logo" class="logo-img">
+            <div class="header-text">
+                <h1>KILAT</h1>
+                <p>Kamera Interaktif Lacak Aktivitas Terkini - ANTI MANIPULASI TOTAL</p>
+            </div>
+        </div>
     </div>
 
     <div class="nav-tabs">
-        <div class="nav-item active" onclick="switchTab('form')">📝 Form</div>
-        <div class="nav-item" onclick="switchTab('camera')">📸 Kamera</div>
-        <div class="nav-item" onclick="switchTab('detection')">🛡️ Deteksi</div>
-        <div class="nav-item" onclick="switchTab('audit')">📊 Audit</div>
-        <div class="nav-item" onclick="switchTab('gallery')">🖼️ Galeri</div>
-    </div>
-
-    <!-- Form Tab -->
-    <div id="view-form" class="section active">
-        <div class="verification-info" id="timeVerification">
-            ⏱️ Status Waktu: <span id="deviceTime">Memuat...</span>
-            <span id="timeWarning" class="warning-badge" style="display:none">WAKTU TIDAK TERPERCAYA</span>
+        <div class="nav-item active" onclick="switchTab('form')">
+            <span>📝</span>
+            <span>Form</span>
         </div>
-
-        <div class="form-group">
-            <label>Nama Petugas</label>
-            <input type="text" id="inUser" placeholder="Nama Petugas" autocapitalize="words" oninput="saveDraft()">
-        </div>
-        <div class="form-group">
-            <label>Nama Kegiatan</label>
-            <input type="text" id="inKegiatan" placeholder="Contoh: Monitoring Lapangan" autocapitalize="words" oninput="saveDraft()">
-        </div>
-        <div class="form-group">
-            <label>Instansi / Dinas</label>
-            <input type="text" id="inDinas" placeholder="Dinas Perikanan Situbondo" autocapitalize="words" oninput="saveDraft()">
-        </div>
-        <div class="form-group">
-            <label>Bidang / Unit (Opsional)</label>
-            <input type="text" id="inBidang" placeholder="Bidang Pemberdayaan Nelayan" autocapitalize="words" oninput="saveDraft()">
-        </div>
-        <div style="flex:1"></div>
-        <button class="btn" onclick="goToCamera()">Lanjut ke Kamera 📸</button>
-    </div>
-
-    <!-- Camera Tab -->
-    <div id="view-camera" class="section">
-        <div class="verification-info" id="gpsVerification">
-            📍 Status GPS: <span id="gpsStatus">Memeriksa...</span>
-            <span id="gpsWarning" class="warning-badge" style="display:none">LOKASI TIDAK TERPERCAYA</span>
-        </div>
-
-        <div class="toolbar">
-            <button class="tool-pill" onclick="toggleCam()">🔄 Balik Kamera</button>
-            <select id="selRatio" class="tool-pill" onchange="updateRatio()" style="border:none; outline:none; background:transparent">
-                <option value="0.75">Rasio 3:4 (Potret)</option>
-                <option value="1.33">Rasio 4:3 (Lanskap)</option>
-                <option value="1.77">Rasio 16:9 (Wide)</option>
-            </select>
-            <button class="tool-pill" onclick="runQuickDiagnostic()">🔍 Cek Integritas</button>
-        </div>
-
-        <div id="cam-container" class="camera-container">
-            <video id="video" autoplay playsinline muted></video>
-            <img id="result-preview" style="display:none">
-        </div>
-
-        <div class="status-bar">
-            <div id="gps-dot" class="status-dot"></div>
-            <div style="display:flex; flex-direction:column;">
-                 <span id="gps-coords" style="font-weight:700">Memverifikasi GPS...</span>
-                 <span id="gps-addr" style="font-size:0.75rem; opacity:0.8">Memeriksa integritas lokasi...</span>
-            </div>
-        </div>
-
-        <div id="cam-controls">
-            <button class="btn" onclick="takePicture()">🔘 JEPRET FOTO</button>
-            <button class="btn btn-secondary" onclick="switchTab('form')">⬅️ Edit Data</button>
-        </div>
-
-        <div id="res-controls" style="display:none">
-            <button class="btn btn-success" onclick="saveToGallery()">💾 Simpan ke Galeri</button>
-            <button class="btn btn-warning" id="forceSaveBtn" onclick="forceSaveWithWarning()" style="display:none">⚠️ Simpan dengan Peringatan</button>
-            <button class="btn btn-secondary" onclick="retake()">🔄 Foto Ulang</button>
-        </div>
-        
-        <canvas id="canvas" style="display:none"></canvas>
-    </div>
-
-    <!-- Detection Tab -->
-    <div id="view-detection" class="section">
-        <h3 style="margin-top:0; color:#334155;">Sistem Deteksi Manipulasi</h3>
-        
-        <div class="verification-info" id="overallVerification">
-            🛡️ Status Sistem: <span id="overallStatus">Memeriksa...</span>
-        </div>
-        
-        <h4 style="margin:15px 0 10px 0; color:#475569;">⏱️ Deteksi Manipulasi Waktu</h4>
-        <div class="time-dashboard" id="timeDashboard">
-            <!-- Will be populated by JavaScript -->
-        </div>
-        
-        <h4 style="margin:15px 0 10px 0; color:#475569;">📍 Deteksi Manipulasi GPS</h4>
-        <div class="detection-grid" id="detectionGrid">
-            <!-- Will be populated by JavaScript -->
-        </div>
-        
-        <div style="margin-top:20px;">
-            <button class="btn btn-danger" onclick="runFullForensicAnalysis()">🔬 Analisis Forensik Lengkap</button>
-            <button class="btn" onclick="switchTab('camera')">⬅️ Kembali ke Kamera</button>
-        </div>
-    </div>
-
-    <!-- Audit Log Tab -->
-    <div id="view-audit" class="section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
-            <h3 style="margin:0; font-size:1.1rem; color:#334155;">Log Audit Sistem</h3>
-            <button class="tool-pill" onclick="clearAuditLog()">🗑️ Hapus Log</button>
-        </div>
-        
-        <div id="auditLog" style="max-height:400px; overflow-y:auto;">
-            <!-- Log entries will be added here -->
-        </div>
-    </div>
-
-    <!-- Gallery Tab -->
-    <div id="view-gallery" class="section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
-            <h3 style="margin:0; font-size:1.1rem; color:#334155;">Arsip Foto</h3>
-            <button class="tool-pill" onclick="loadGallery()">🔄 Refresh</button>
-        </div>
-        <div id="gallery-grid" class="gallery-grid"></div>
-        <div id="empty-msg" class="empty-state">Belum ada foto tersimpan.</div>
-    </div>
-</div>
-
-<!-- Alert Modal -->
-<div id="alertModal" class="alert-modal" style="display:none;">
-    <div class="alert-content">
-        <div class="alert-title" id="alertTitle">⚠️ Peringatan</div>
-        <div class="alert-message" id="alertMessage"></div>
-        <div class="alert-actions">
-            <button class="btn btn-danger" onclick="closeAlert()" id="alertConfirm">Mengerti</button>
-        </div>
-    </div>
-</div>
-
-<script>
-// ==================== DATABASE & STORAGE ====================
-const DB_NAME = 'KilatDB_Forensic';
-const DB_VERSION = 2;
-let db;
-
-function initDB() {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    
-    request.onupgradeneeded = (e) => {
-        db = e.target.result;
-        
-        // Photos store
-        if (!db.objectStoreNames.contains('photos')) {
-            const store = db.createObjectStore('photos', { keyPath: 'id', autoIncrement: true });
-            store.createIndex('date', 'date');
-            store.createIndex('verified', 'verified');
-            store.createIndex('hash', 'hash', { unique: true });
-        }
-        
-        // Audit log store
-        if (!db.objectStoreNames.contains('audit_log')) {
-            const store = db.createObjectStore('audit_log', { keyPath: 'timestamp' });
-            store.createIndex('type', 'type');
-            store.createIndex('severity', 'severity');
-        }
-        
-        // Time samples store
-        if (!db.objectStoreNames.contains('time_samples')) {
-            const store = db.createObjectStore('time_samples', { keyPath: 'timestamp' });
-            store.createIndex('source', 'source');
-        }
-        
-        // GPS samples store
-        if (!db.objectStoreNames.contains('gps_samples')) {
-            const store = db.createObjectStore('gps_samples', { keyPath: 'timestamp' });
-            store.createIndex('lat', 'lat');
-            store.createIndex('lon', 'lon');
-        }
-    };
-    
-    request.onsuccess = (e) => { 
-        db = e.target.result; 
-        loadAuditLog();
-        initTimeDetectionSystem();
-    };
-    
-    request.onerror = (e) => console.error("Database Error:", e);
-}
-
-// ==================== ENHANCED TIME DETECTION SYSTEM ====================
-let timeDetection = {
-    // Multiple time sources
-    sources: {
-        device: { time: null, lastUpdated: 0, reliability: 0 },
-        server1: { time: null, lastUpdated: 0, reliability: 0 },
-        server2: { time: null, lastUpdated: 0, reliability: 0 },
-        server3: { time: null, lastUpdated: 0, reliability: 0 }
-    },
-    
-    // Detection metrics
-    metrics: {
-        driftRate: 0,
-        jumpCount: 0,
-        lastJump: 0,
-        consistencyScore: 100,
-        manipulationScore: 0,
-        timeReversals: 0
-    },
-    
-    // History for pattern analysis
-    history: [],
-    lastValidTime: null,
-    startupTime: null,
-    
-    // Configuration
-    config: {
-        maxDriftPerMinute: 100, // ms per minute
-        maxJumpThreshold: 5000, // ms
-        minConsistencyScore: 70,
-        sampleInterval: 30000, // 30 seconds
-        timeServerUrls: [
-            'https://worldtimeapi.org/api/ip',
-            'https://timeapi.io/api/Time/current/zone?timeZone=UTC',
-            'https://time.akamai.com/',
-            'https://www.timeapi.io/api/Time/current/zone?timeZone=Asia/Jakarta',
-            'https://time.google.com/'
-        ]
-    }
-};
-
-async function initTimeDetectionSystem() {
-    timeDetection.startupTime = Date.now();
-    
-    // Start continuous monitoring
-    setInterval(() => {
-        monitorTimeIntegrity();
-        updateTimeDashboard();
-    }, 5000);
-    
-    // Fetch initial time from multiple sources
-    await fetchTimeFromMultipleSources();
-    
-    // Start background time sampling
-    startTimeSampling();
-    
-    // Log startup
-    logAuditEvent('SYSTEM', 'info', 'Sistem deteksi waktu diinisialisasi');
-}
-
-async function fetchTimeFromMultipleSources() {
-    const promises = timeDetection.config.timeServerUrls.map(url => fetchTimeFromSource(url));
-    const results = await Promise.allSettled(promises);
-    
-    let successfulFetches = 0;
-    results.forEach((result, index) => {
-        if (result.status === 'fulfilled' && result.value) {
-            timeDetection.sources[`server${index+1}`] = {
-                time: result.value,
-                lastUpdated: Date.now(),
-                reliability: 80
-            };
-            successfulFetches++;
-            logAuditEvent('TIME_SYNC', 'info', `Sumber waktu ${index+1} tersinkronisasi`);
-        }
-    });
-    
-    // Update device time source
-    timeDetection.sources.device = {
-        time: new Date(),
-        lastUpdated: Date.now(),
-        reliability: successfulFetches > 2 ? 50 : 30
-    };
-    
-    // Calculate consensus time
-    calculateConsensusTime();
-}
-
-async function fetchTimeFromSource(url) {
-    try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 3000);
-        
-        const response = await fetch(url, { 
-            signal: controller.signal,
-            cache: 'no-cache',
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache'
-            }
-        });
-        
-        clearTimeout(timeout);
-        
-        if (!response.ok) throw new Error('Network response not ok');
-        
-        if (url.includes('worldtimeapi')) {
-            const data = await response.json();
-            return new Date(data.unixtime * 1000);
-        } else if (url.includes('timeapi')) {
-            const data = await response.json();
-            return new Date(data.currentLocalTime);
-        } else if (url.includes('akamai')) {
-            const dateHeader = response.headers.get('Date');
-            return new Date(dateHeader);
-        } else if (url.includes('google')) {
-            // Google time API returns timestamp
-            const timestamp = await response.text();
-            return new Date(parseInt(timestamp));
-        }
-        
-        // Default: use Date header
-        const dateHeader = response.headers.get('Date');
-        return dateHeader ? new Date(dateHeader) : null;
-    } catch (error) {
-        console.warn(`Failed to fetch time from ${url}:`, error);
-        return null;
-    }
-}
-
-function calculateConsensusTime() {
-    const validSources = Object.values(timeDetection.sources)
-        .filter(source => source.time && Date.now() - source.lastUpdated < 60000);
-    
-    if (validSources.length < 2) {
-        timeDetection.metrics.consistencyScore = 30;
-        logAuditEvent('TIME_CONSENSUS', 'warning', 'Konsensus waktu tidak dapat dihitung');
-        return;
-    }
-    
-    // Calculate average time
-    const timestamps = validSources.map(s => s.time.getTime());
-    const averageTime = timestamps.reduce((a, b) => a + b, 0) / timestamps.length;
-    
-    // Calculate variance
-    const variance = timestamps.reduce((a, b) => a + Math.pow(b - averageTime, 2), 0) / timestamps.length;
-    const stdDev = Math.sqrt(variance);
-    
-    // Update metrics
-    timeDetection.metrics.consistencyScore = Math.max(0, 100 - (stdDev / 100));
-    
-    // Check for anomalies
-    detectTimeAnomalies(validSources);
-}
-
-function detectTimeAnomalies(sources) {
-    const deviceTime = timeDetection.sources.device.time;
-    const serverTimes = sources.filter(s => s !== timeDetection.sources.device);
-    
-    // Check for large discrepancies
-    serverTimes.forEach((server, index) => {
-        if (server.time) {
-            const diff = Math.abs(server.time - deviceTime);
-            
-            if (diff > timeDetection.config.maxJumpThreshold) {
-                timeDetection.metrics.jumpCount++;
-                timeDetection.metrics.lastJump = Date.now();
-                timeDetection.metrics.manipulationScore += 20;
-                
-                logAuditEvent('TIME_ANOMALY', 'warning', 
-                    `Perbedaan waktu besar: ${Math.round(diff/1000)} detik dengan server ${index+1}`);
-                
-                // Show alert for large discrepancies
-                if (diff > 30000) { // 30 seconds
-                    showAlert('⏱️ ANOMALI WAKTU DETECTED', 
-                        `Waktu perangkat berbeda ${Math.round(diff/1000)} detik dari server. Kemungkinan manipulasi waktu terdeteksi.`);
-                }
-            }
-        }
-    });
-    
-    // Check for time going backwards
-    if (timeDetection.lastValidTime && deviceTime < timeDetection.lastValidTime) {
-        timeDetection.metrics.timeReversals++;
-        timeDetection.metrics.manipulationScore += 40;
-        logAuditEvent('TIME_REVERSAL', 'danger', 'Waktu berjalan mundur terdeteksi!');
-        showAlert('⏱️ WAKTU MUNDUR DETECTED', 'Waktu perangkat berjalan mundur. Ini indikasi kuat manipulasi waktu.');
-    }
-    
-    timeDetection.lastValidTime = deviceTime;
-}
-
-function monitorTimeIntegrity() {
-    const now = Date.now();
-    const deviceTime = new Date();
-    
-    // Store time sample
-    timeDetection.history.push({
-        timestamp: now,
-        deviceTime: deviceTime.getTime(),
-        drift: now - deviceTime.getTime()
-    });
-    
-    // Keep only last 100 samples
-    if (timeDetection.history.length > 100) {
-        timeDetection.history.shift();
-    }
-    
-    // Calculate drift rate
-    if (timeDetection.history.length >= 10) {
-        const first = timeDetection.history[0];
-        const last = timeDetection.history[timeDetection.history.length - 1];
-        const timeDiff = last.timestamp - first.timestamp;
-        const driftDiff = last.drift - first.drift;
-        
-        timeDetection.metrics.driftRate = (driftDiff / timeDiff) * 60000; // ms per minute
-        
-        if (Math.abs(timeDetection.metrics.driftRate) > timeDetection.config.maxDriftPerMinute) {
-            timeDetection.metrics.manipulationScore += 15;
-            logAuditEvent('TIME_DRIFT', 'warning', 
-                `Drift rate tidak wajar: ${timeDetection.metrics.driftRate.toFixed(2)} ms/menit`);
-        }
-    }
-    
-    // Check for suspicious patterns
-    detectSuspiciousPatterns();
-    
-    // Update UI
-    updateTimeVerificationUI();
-}
-
-function detectSuspiciousPatterns() {
-    if (timeDetection.history.length < 20) return;
-    
-    // Check for regular patterns (indicative of fake time apps)
-    const drifts = timeDetection.history.map(h => h.drift);
-    const pattern = analyzeTimePattern(drifts);
-    
-    if (pattern.isRegular) {
-        timeDetection.metrics.manipulationScore += 25;
-        logAuditEvent('TIME_PATTERN', 'warning', 'Pola waktu reguler terdeteksi (mungkin aplikasi fake time)');
-    }
-    
-    // Check for sudden corrections
-    const corrections = detectTimeCorrections();
-    if (corrections > 2) {
-        timeDetection.metrics.manipulationScore += 30;
-        logAuditEvent('TIME_CORRECTION', 'warning', 
-            `${corrections} koreksi waktu tiba-tiba terdeteksi`);
-    }
-}
-
-function analyzeTimePattern(drifts) {
-    // Look for regular patterns in time drift
-    const differences = [];
-    for (let i = 1; i < drifts.length; i++) {
-        differences.push(drifts[i] - drifts[i-1]);
-    }
-    
-    // Check if differences are too regular
-    const mean = differences.reduce((a, b) => a + b, 0) / differences.length;
-    const variance = differences.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / differences.length;
-    
-    return {
-        isRegular: variance < 10, // Very low variance = regular pattern
-        variance: variance,
-        mean: mean
-    };
-}
-
-function detectTimeCorrections() {
-    let corrections = 0;
-    const threshold = 1000; // 1 second
-    
-    for (let i = 2; i < timeDetection.history.length; i++) {
-        const prevDrift = timeDetection.history[i-2].drift;
-        const currentDrift = timeDetection.history[i].drift;
-        
-        if (Math.abs(currentDrift - prevDrift) > threshold && 
-            Math.sign(currentDrift) !== Math.sign(prevDrift)) {
-            corrections++;
-        }
-    }
-    
-    return corrections;
-}
-
-function updateTimeVerificationUI() {
-    const deviceTime = new Date();
-    const statusElement = document.getElementById('timeVerification');
-    const timeElement = document.getElementById('deviceTime');
-    const warningElement = document.getElementById('timeWarning');
-    
-    // Format time display
-    const timeStr = deviceTime.toLocaleString('id-ID', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    });
-    
-    timeElement.innerHTML = timeStr;
-    
-    // Update status based on detection
-    if (timeDetection.metrics.manipulationScore > 70) {
-        statusElement.className = 'verification-info fake';
-        warningElement.textContent = 'MANIPULASI WAKTU DETECTED';
-        warningElement.style.display = 'inline-flex';
-        timeElement.style.color = '#dc2626';
-    } else if (timeDetection.metrics.manipulationScore > 40) {
-        statusElement.className = 'verification-info suspected';
-        warningElement.textContent = 'WAKTU DICURIGAI';
-        warningElement.style.display = 'inline-flex';
-        timeElement.style.color = '#d97706';
-    } else if (timeDetection.metrics.consistencyScore > 70) {
-        statusElement.className = 'verification-info verified';
-        warningElement.style.display = 'none';
-        timeElement.style.color = '#065f46';
-    } else {
-        statusElement.className = 'verification-info';
-        warningElement.textContent = 'WAKTU TIDAK TERVERIFIKASI';
-        warningElement.style.display = 'inline-flex';
-        timeElement.style.color = '#92400e';
-    }
-}
-
-function updateTimeDashboard() {
-    const dashboard = document.getElementById('timeDashboard');
-    if (!dashboard) return;
-    
-    const metrics = [
-        { label: 'Skor Manipulasi', value: timeDetection.metrics.manipulationScore + '%', 
-          status: timeDetection.metrics.manipulationScore > 70 ? 'invalid' : 
-                 timeDetection.metrics.manipulationScore > 40 ? 'warning' : 'valid' },
-        { label: 'Konsistensi', value: Math.round(timeDetection.metrics.consistencyScore) + '%',
-          status: timeDetection.metrics.consistencyScore > 80 ? 'valid' :
-                 timeDetection.metrics.consistencyScore > 60 ? 'warning' : 'invalid' },
-        { label: 'Jump Count', value: timeDetection.metrics.jumpCount,
-          status: timeDetection.metrics.jumpCount > 3 ? 'invalid' :
-                 timeDetection.metrics.jumpCount > 1 ? 'warning' : 'valid' },
-        { label: 'Time Reversals', value: timeDetection.metrics.timeReversals,
-          status: timeDetection.metrics.timeReversals > 0 ? 'invalid' : 'valid' },
-        { label: 'Drift Rate', value: timeDetection.metrics.driftRate.toFixed(2) + ' ms/m',
-          status: Math.abs(timeDetection.metrics.driftRate) > 100 ? 'invalid' :
-                 Math.abs(timeDetection.metrics.driftRate) > 50 ? 'warning' : 'valid' },
-        { label: 'Sumber Aktif', value: Object.values(timeDetection.sources)
-                 .filter(s => s.time && Date.now() - s.lastUpdated < 60000).length + '/4',
-          status: Object.values(timeDetection.sources)
-                 .filter(s => s.time && Date.now() - s.lastUpdated < 60000).length >= 3 ? 'valid' :
-                 Object.values(timeDetection.sources)
-                 .filter(s => s.time && Date.now() - s.lastUpdated < 60000).length >= 2 ? 'warning' : 'invalid' }
-    ];
-    
-    dashboard.innerHTML = metrics.map(metric => `
-        <div class="time-card ${metric.status}">
-            <h4>${metric.label}</h4>
-            <div class="time-value">${metric.value}</div>
-        </div>
-    `).join('');
-}
-
-function startTimeSampling() {
-    // Store time samples periodically
-    setInterval(() => {
-        if (db) {
-            const transaction = db.transaction(['time_samples'], 'readwrite');
-            const store = transaction.objectStore('time_samples');
-            
-            store.add({
-                timestamp: Date.now(),
-                deviceTime: new Date().getTime(),
-                source: 'device',
-                drift: Date.now() - new Date().getTime(),
-                manipulationScore: timeDetection.metrics.manipulationScore
-            });
-        }
-    }, 60000); // Every minute
-}
-
-// ==================== ENHANCED GPS DETECTION ====================
-let gpsDetection = {
-    data: {
-        lat: null,
-        lon: null,
-        accuracy: null,
-        altitude: null,
-        heading: null,
-        speed: null,
-        timestamp: null
-    },
-    metrics: {
-        spoofScore: 0,
-        accuracyScore: 100,
-        consistencyScore: 100,
-        movementScore: 0,
-        signalQuality: 0,
-        jumpCount: 0
-    },
-    history: [],
-    patterns: {
-        movementType: 'stationary',
-        lastPositions: [],
-        accelerationHistory: [],
-        speedHistory: []
-    }
-};
-
-function initGPSDetection() {
-    if (!navigator.geolocation) {
-        logAuditEvent('GPS', 'warning', 'GPS tidak didukung di perangkat ini');
-        return;
-    }
-    
-    // Start GPS monitoring
-    navigator.geolocation.watchPosition(
-        handleGPSPosition,
-        handleGPSError,
-        {
-            enableHighAccuracy: true,
-            maximumAge: 0,
-            timeout: 10000
-        }
-    );
-    
-    logAuditEvent('GPS', 'info', 'Sistem deteksi GPS diinisialisasi');
-}
-
-function handleGPSPosition(position) {
-    // Store in history
-    gpsDetection.history.push({
-        lat: position.coords.latitude,
-        lon: position.coords.longitude,
-        accuracy: position.coords.accuracy,
-        altitude: position.coords.altitude,
-        heading: position.coords.heading,
-        speed: position.coords.speed,
-        timestamp: position.timestamp,
-        deviceTime: Date.now()
-    });
-    
-    // Keep history manageable
-    if (gpsDetection.history.length > 50) {
-        gpsDetection.history.shift();
-    }
-    
-    // Run detection algorithms
-    analyzeGPSPosition(position);
-    
-    // Update UI
-    updateGPSVerificationUI(position);
-}
-
-function analyzeGPSPosition(position) {
-    // Run multiple detection algorithms
-    const detectors = [
-        detectGPSSpoofing,
-        detectMovementAnomalies,
-        detectSignalAnomalies,
-        detectPatternAnomalies,
-        detectHardwareAnomalies
-    ];
-    
-    let totalScore = 0;
-    detectors.forEach(detector => {
-        const result = detector(position, gpsDetection.history);
-        totalScore += result.score;
-        gpsDetection.metrics.spoofScore += result.weight;
-        
-        if (result.anomaly) {
-            logAuditEvent('GPS_ANOMALY', 'warning', result.message);
-        }
-    });
-    
-    gpsDetection.metrics.spoofScore = Math.min(100, totalScore);
-}
-
-function detectGPSSpoofing(position, history) {
-    let score = 0;
-    let anomaly = false;
-    let message = '';
-    
-    // Check for impossible accuracy (0m)
-    if (position.coords.accuracy === 0) {
-        score += 30;
-        anomaly = true;
-        message = 'Akurasi GPS sempurna (0m) - Sangat mencurigakan';
-    }
-    
-    // Check for altitude anomalies
-    if (position.coords.altitude && Math.abs(position.coords.altitude) > 10000) {
-        score += 25;
-        anomaly = true;
-        message = 'Altitude tidak mungkin (>10,000m)';
-    }
-    
-    // Check for speed anomalies
-    if (position.coords.speed > 150) { // 540 km/h
-        score += 35;
-        anomaly = true;
-        message = `Kecepatan tidak mungkin: ${position.coords.speed.toFixed(1)} m/s`;
-    }
-    
-    return { score, weight: 40, anomaly, message };
-}
-
-function detectMovementAnomalies(position, history) {
-    if (history.length < 3) return { score: 0, weight: 20, anomaly: false, message: '' };
-    
-    let score = 0;
-    let anomaly = false;
-    let message = '';
-    
-    // Calculate acceleration
-    const recent = history.slice(-3);
-    const accelerations = [];
-    
-    for (let i = 1; i < recent.length; i++) {
-        const dist = calculateDistance(recent[i-1], recent[i]);
-        const timeDiff = (recent[i].timestamp - recent[i-1].timestamp) / 1000;
-        
-        if (timeDiff > 0) {
-            const speed1 = recent[i-1].speed || 0;
-            const speed2 = recent[i].speed || dist / timeDiff;
-            const acceleration = Math.abs(speed2 - speed1) / timeDiff;
-            accelerations.push(acceleration);
-            
-            if (acceleration > 30) { // 30 m/s² ≈ 0-100km/h in 0.9s
-                score += 20;
-                anomaly = true;
-                message = `Akselerasi tidak mungkin: ${acceleration.toFixed(1)} m/s²`;
-            }
-        }
-    }
-    
-    return { score, weight: 20, anomaly, message };
-}
-
-function detectSignalAnomalies(position, history) {
-    let score = 0;
-    let anomaly = false;
-    let message = '';
-    
-    // Check signal consistency
-    if (history.length >= 5) {
-        const accuracies = history.slice(-5).map(h => h.accuracy);
-        const avgAccuracy = accuracies.reduce((a, b) => a + b, 0) / accuracies.length;
-        const variance = accuracies.reduce((a, b) => a + Math.pow(b - avgAccuracy, 2), 0) / accuracies.length;
-        
-        if (variance < 0.1 && avgAccuracy > 10) {
-            score += 15;
-            anomaly = true;
-            message = 'Sinyal GPS terlalu konsisten (mungkin fake)';
-        }
-    }
-    
-    return { score, weight: 15, anomaly, message };
-}
-
-function detectPatternAnomalies(position, history) {
-    if (history.length < 10) return { score: 0, weight: 15, anomaly: false, message: '' };
-    
-    let score = 0;
-    let anomaly = false;
-    let message = '';
-    
-    // Check for grid-like movement
-    const coordinates = history.slice(-10).map(h => ({ x: h.lon, y: h.lat }));
-    const angles = [];
-    
-    for (let i = 1; i < coordinates.length; i++) {
-        const dx = coordinates[i].x - coordinates[i-1].x;
-        const dy = coordinates[i].y - coordinates[i-1].y;
-        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-        angles.push(angle);
-    }
-    
-    // Check if angles are multiples of 45 degrees (grid pattern)
-    const gridPattern = angles.every(angle => {
-        const remainder = Math.abs(angle % 45);
-        return remainder < 5 || (45 - remainder) < 5;
-    });
-    
-    if (gridPattern) {
-        score += 25;
-        anomaly = true;
-        message = 'Pola pergerakan grid terdeteksi (khas fake GPS)';
-    }
-    
-    return { score, weight: 15, anomaly, message };
-}
-
-function detectHardwareAnomalies(position, history) {
-    let score = 0;
-    let anomaly = false;
-    let message = '';
-    
-    // Check for mock location indicators (Android specific)
-    try {
-        // Try to access Android mock location API
-        if (typeof Android !== 'undefined') {
-            // Android-specific checks
-            score += 10;
-        }
-    } catch (e) {
-        // Not Android or API not available
-    }
-    
-    // Check for development/debugging indicators
-    if (navigator.userAgent.includes('SDK') || 
-        navigator.userAgent.includes('Emulator') ||
-        navigator.userAgent.includes('x86_64')) {
-        score += 20;
-        anomaly = true;
-        message = 'Indikator emulator/development terdeteksi';
-    }
-    
-    return { score, weight: 10, anomaly, message };
-}
-
-function updateGPSVerificationUI(position) {
-    const statusElement = document.getElementById('gpsVerification');
-    const coordsElement = document.getElementById('gps-coords');
-    const addrElement = document.getElementById('gps-addr');
-    const dotElement = document.getElementById('gps-dot');
-    const warningElement = document.getElementById('gpsWarning');
-    
-    // Update coordinates
-    coordsElement.textContent = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)} (±${Math.round(position.coords.accuracy)}m)`;
-    
-    // Update status based on spoof score
-    if (gpsDetection.metrics.spoofScore > 70) {
-        statusElement.className = 'verification-info fake';
-        dotElement.className = 'status-dot';
-        warningElement.textContent = 'GPS PALSU DETECTED';
-        warningElement.style.display = 'inline-flex';
-        coordsElement.style.color = '#dc2626';
-    } else if (gpsDetection.metrics.spoofScore > 40) {
-        statusElement.className = 'verification-info suspected';
-        dotElement.className = 'status-dot warning';
-        warningElement.textContent = 'GPS DICURIGAI';
-        warningElement.style.display = 'inline-flex';
-        coordsElement.style.color = '#d97706';
-    } else if (position.coords.accuracy < 50) {
-        statusElement.className = 'verification-info verified';
-        dotElement.className = 'status-dot active';
-        warningElement.style.display = 'none';
-        coordsElement.style.color = '#065f46';
-    } else {
-        statusElement.className = 'verification-info';
-        dotElement.className = 'status-dot warning';
-        warningElement.textContent = 'AKURASI RENDAH';
-        warningElement.style.display = 'inline-flex';
-        coordsElement.style.color = '#92400e';
-    }
-    
-    // Update detection grid if on detection tab
-    updateDetectionGrid();
-}
-
-function updateDetectionGrid() {
-    const grid = document.getElementById('detectionGrid');
-    if (!grid) return;
-    
-    const metrics = [
-        { label: 'Spoof Score', value: gpsDetection.metrics.spoofScore + '%', 
-          status: gpsDetection.metrics.spoofScore > 70 ? 'fake' : 
-                 gpsDetection.metrics.spoofScore > 40 ? 'suspected' : 'valid' },
-        { label: 'Accuracy', value: gpsDetection.data.accuracy ? 
-                 Math.round(gpsDetection.data.accuracy) + 'm' : 'N/A',
-          status: gpsDetection.data.accuracy < 10 ? 'valid' :
-                 gpsDetection.data.accuracy < 50 ? 'suspected' : 'fake' },
-        { label: 'Speed', value: gpsDetection.data.speed ? 
-                 gpsDetection.data.speed.toFixed(1) + ' m/s' : 'N/A',
-          status: gpsDetection.data.speed > 150 ? 'fake' :
-                 gpsDetection.data.speed > 100 ? 'suspected' : 'valid' },
-        { label: 'Jump Count', value: gpsDetection.metrics.jumpCount,
-          status: gpsDetection.metrics.jumpCount > 3 ? 'fake' :
-                 gpsDetection.metrics.jumpCount > 1 ? 'suspected' : 'valid' },
-        { label: 'Signal Quality', value: gpsDetection.metrics.signalQuality + '%',
-          status: gpsDetection.metrics.signalQuality > 80 ? 'valid' :
-                 gpsDetection.metrics.signalQuality > 50 ? 'suspected' : 'fake' },
-        { label: 'History Size', value: gpsDetection.history.length,
-          status: gpsDetection.history.length >= 10 ? 'valid' :
-                 gpsDetection.history.length >= 5 ? 'suspected' : 'fake' }
-    ];
-    
-    grid.innerHTML = metrics.map(metric => `
-        <div class="detection-item ${metric.status}">
-            <div class="detection-label">${metric.label}</div>
-            <div class="detection-value">${metric.value}</div>
-        </div>
-    `).join('');
-}
-
-function handleGPSError(error) {
-    logAuditEvent('GPS_ERROR', 'warning', `GPS Error: ${error.message}`);
-    
-    const dotElement = document.getElementById('gps-dot');
-    const coordsElement = document.getElementById('gps-coords');
-    
-    dotElement.className = 'status-dot';
-    coordsElement.textContent = 'GPS Error: ' + error.message;
-    coordsElement.style.color = '#dc2626';
-}
-
-// ==================== UTILITY FUNCTIONS ====================
-function calculateDistance(pos1, pos2) {
-    const R = 6371e3; // Earth's radius in meters
-    const φ1 = pos1.lat * Math.PI / 180;
-    const φ2 = pos2.lat * Math.PI / 180;
-    const Δφ = (pos2.lat - pos1.lat) * Math.PI / 180;
-    const Δλ = (pos2.lon - pos1.lon) * Math.PI / 180;
-    
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    
-    return R * c;
-}
-
-function logAuditEvent(type, severity, message) {
-    const timestamp = new Date().toISOString();
-    const logEntry = {
-        timestamp: timestamp,
-        type: type,
-        severity: severity,
-        message: message,
-        deviceTime: new Date().getTime(),
-        systemTime: Date.now(),
-        timeManipulationScore: timeDetection.metrics.manipulationScore,
-        gpsSpoofScore: gpsDetection.metrics.spoofScore
-    };
-    
-    // Store in database
-    if (db) {
-        const transaction = db.transaction(['audit_log'], 'readwrite');
-        const store = transaction.objectStore('audit_log');
-        store.add(logEntry);
-    }
-    
-    // Update UI if on audit tab
-    updateAuditLogUI(logEntry);
-    
-    // Console log for debugging
-    console.log(`[${type}] ${message}`);
-}
-
-function updateAuditLogUI(logEntry) {
-    const logContainer = document.getElementById('auditLog');
-    if (!logContainer) return;
-    
-    const severityColors = {
-        info: '#059669',
-        warning: '#d97706',
-        danger: '#dc2626'
-    };
-    
-    const logElement = document.createElement('div');
-    logElement.className = 'log-entry';
-    logElement.innerHTML = `
-        <div style="display:flex; justify-content:space-between;">
-            <span class="log-time">${new Date(logEntry.timestamp).toLocaleTimeString()}</span>
-            <span style="color:${severityColors[logEntry.severity]}; font-weight:bold;">
-                ${logEntry.type}
-            </span>
-        </div>
-        <div class="log-message">${logEntry.message}</div>
-    `;
-    
-    logContainer.insertBefore(logElement, logContainer.firstChild);
-    
-    // Limit to 50 entries
-    if (logContainer.children.length > 50) {
-        logContainer.removeChild(logContainer.lastChild);
-    }
-}
-
-function loadAuditLog() {
-    if (!db) return;
-    
-    const transaction = db.transaction(['audit_log'], 'readonly');
-    const store = transaction.objectStore('audit_log');
-    const request = store.getAll();
-    
-    request.onsuccess = () => {
-        const logs = request.result.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        logs.forEach(log => updateAuditLogUI(log));
-    };
-}
-
-function clearAuditLog() {
-    if (!confirm('Hapus semua log audit?')) return;
-    
-    if (db) {
-        const transaction = db.transaction(['audit_log'], 'readwrite');
-        const store = transaction.objectStore('audit_log');
-        store.clear();
-        
-        document.getElementById('auditLog').innerHTML = '';
-        logAuditEvent('SYSTEM', 'info', 'Log audit dihapus');
-    }
-}
-
-function showAlert(title, message) {
-    document.getElementById('alertTitle').textContent = title;
-    document.getElementById('alertMessage').textContent = message;
-    document.getElementById('alertModal').style.display = 'flex';
-}
-
-function closeAlert() {
-    document.getElementById('alertModal').style.display = 'none';
-}
-
-function runQuickDiagnostic() {
-    showAlert('🔍 Diagnostik Cepat', 'Menjalankan pemeriksaan integritas sistem...');
-    
-    setTimeout(() => {
-        const timeStatus = timeDetection.metrics.manipulationScore > 70 ? '❌' :
-                          timeDetection.metrics.manipulationScore > 40 ? '⚠️' : '✅';
-        
-        const gpsStatus = gpsDetection.metrics.spoofScore > 70 ? '❌' :
-                         gpsDetection.metrics.spoofScore > 40 ? '⚠️' : '✅';
-        
-        const message = `
-            Hasil Diagnostik Cepat:
-            
-            ⏱️ Status Waktu: ${timeStatus}
-            • Skor Manipulasi: ${timeDetection.metrics.manipulationScore}%
-            • Konsistensi: ${Math.round(timeDetection.metrics.consistencyScore)}%
-            
-            📍 Status GPS: ${gpsStatus}
-            • Skor Spoofing: ${gpsDetection.metrics.spoofScore}%
-            • Akurasi: ${gpsDetection.data.accuracy ? Math.round(gpsDetection.data.accuracy) + 'm' : 'N/A'}
-            
-            ${timeDetection.metrics.manipulationScore > 70 || gpsDetection.metrics.spoofScore > 70 ? 
-             '🚨 SISTEM TERDETEKSI TERMANIPULASI!' : 
-             timeDetection.metrics.manipulationScore > 40 || gpsDetection.metrics.spoofScore > 40 ?
-             '⚠️ Ada indikasi manipulasi, disarankan cek ulang' :
-             '✅ Sistem dalam kondisi normal'}
-        `;
-        
-        document.getElementById('alertMessage').textContent = message;
-    }, 1000);
-}
-
-function runFullForensicAnalysis() {
-    showAlert('🔬 Analisis Forensik', 'Menjalankan analisis forensik lengkap...');
-    
-    setTimeout(() => {
-        // Collect comprehensive data
-        const analysis = {
-            timestamp: new Date().toISOString(),
-            deviceInfo: {
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                language: navigator.language,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                screenResolution: `${window.screen.width}x${window.screen.height}`,
-                deviceMemory: navigator.deviceMemory || 'unknown',
-                hardwareConcurrency: navigator.hardwareConcurrency
-            },
-            timeAnalysis: {
-                manipulationScore: timeDetection.metrics.manipulationScore,
-                consistencyScore: timeDetection.metrics.consistencyScore,
-                jumpCount: timeDetection.metrics.jumpCount,
-                timeReversals: timeDetection.metrics.timeReversals,
-                driftRate: timeDetection.metrics.driftRate,
-                activeSources: Object.values(timeDetection.sources)
-                    .filter(s => s.time && Date.now() - s.lastUpdated < 60000).length,
-                historySize: timeDetection.history.length,
-                startupTime: timeDetection.startupTime,
-                currentUptime: Date.now() - timeDetection.startupTime
-            },
-            gpsAnalysis: {
-                spoofScore: gpsDetection.metrics.spoofScore,
-                accuracyScore: gpsDetection.metrics.accuracyScore,
-                lastAccuracy: gpsDetection.data.accuracy,
-                lastSpeed: gpsDetection.data.speed,
-                historySize: gpsDetection.history.length,
-                patternType: gpsDetection.patterns.movementType
-            },
-            overallAssessment: ''
-        };
-        
-        // Determine overall assessment
-        if (analysis.timeAnalysis.manipulationScore > 70 || analysis.gpsAnalysis.spoofScore > 70) {
-            analysis.overallAssessment = '❌ SISTEM TERMANIPULASI - Tingkat kepercayaan sangat rendah';
-        } else if (analysis.timeAnalysis.manipulationScore > 40 || analysis.gpsAnalysis.spoofScore > 40) {
-            analysis.overallAssessment = '⚠️ SISTEM DICURIGAI - Ada indikasi manipulasi';
-        } else if (analysis.timeAnalysis.consistencyScore > 80 && analysis.gpsAnalysis.accuracyScore > 80) {
-            analysis.overallAssessment = '✅ SISTEM TERVERIFIKASI - Tingkat kepercayaan tinggi';
-        } else {
-            analysis.overallAssessment = '⚠️ SISTEM TIDAK TERVERIFIKASI - Data kurang konsisten';
-        }
-        
-        // Format message
-        const message = `
-            HASIL ANALISIS FORENSIK LENGKAP
-            
-            📋 INFORMASI PERANGKAT:
-            • User Agent: ${analysis.deviceInfo.userAgent.substring(0, 50)}...
-            • Platform: ${analysis.deviceInfo.platform}
-            • Timezone: ${analysis.deviceInfo.timezone}
-            • Resolusi: ${analysis.deviceInfo.screenResolution}
-            
-            ⏱️ ANALISIS WAKTU:
-            • Skor Manipulasi: ${analysis.timeAnalysis.manipulationScore}%
-            • Konsistensi: ${analysis.timeAnalysis.consistencyScore}%
-            • Time Jumps: ${analysis.timeAnalysis.jumpCount}x
-            • Time Reversals: ${analysis.timeAnalysis.timeReversals}x
-            • Drift Rate: ${analysis.timeAnalysis.driftRate.toFixed(2)} ms/m
-            • Uptime: ${Math.round(analysis.timeAnalysis.currentUptime / 60000)} menit
-            
-            📍 ANALISIS GPS:
-            • Skor Spoofing: ${analysis.gpsAnalysis.spoofScore}%
-            • Akurasi: ${analysis.gpsAnalysis.lastAccuracy ? Math.round(analysis.gpsAnalysis.lastAccuracy) + 'm' : 'N/A'}
-            • Kecepatan: ${analysis.gpsAnalysis.lastSpeed ? analysis.gpsAnalysis.lastSpeed.toFixed(1) + ' m/s' : 'N/A'}
-            • Pola Pergerakan: ${analysis.gpsAnalysis.patternType}
-            
-            🎯 KESIMPULAN:
-            ${analysis.overallAssessment}
-            
-            ${analysis.timeAnalysis.manipulationScore > 70 ? '→ Deteksi: Manipulasi waktu terkonfirmasi\n' : ''}
-            ${analysis.gpsAnalysis.spoofScore > 70 ? '→ Deteksi: GPS palsu terkonfirmasi\n' : ''}
-            
-            ⚠️ REKOMENDASI:
-            ${analysis.overallAssessment.includes('TERMANIPULASI') ? 
-             '1. RESTART perangkat\n2. Nonaktifkan aplikasi fake GPS/time\n3. Gunakan perangkat lain jika perlu' :
-             analysis.overallAssessment.includes('DICURIGAI') ?
-             '1. Periksa setelan waktu otomatis\n2. Aktifkan high-accuracy GPS\n3. Tunggu beberapa menit untuk verifikasi ulang' :
-             '1. Sistem dalam kondisi normal\n2. Lanjutkan penggunaan'}
-        `;
-        
-        document.getElementById('alertTitle').textContent = '🔬 Hasil Analisis Forensik';
-        document.getElementById('alertMessage').textContent = message;
-        
-        logAuditEvent('FORENSIC', 'info', 'Analisis forensik lengkap dijalankan');
-    }, 2000);
-}
-
-// ==================== CAMERA & GALLERY FUNCTIONS ====================
-// [Keep all camera and gallery functions from previous version]
-// [Add time verification in watermark]
-
-function getVerifiedTimestamp() {
-    const now = new Date();
-    
-    // Create timestamp with verification info
-    return {
-        timestamp: now,
-        verified: timeDetection.metrics.manipulationScore < 40,
-        manipulationScore: timeDetection.metrics.manipulationScore,
-        serverTime: timeDetection.sources.server1?.time || null,
-        discrepancy: timeDetection.sources.server1?.time ? 
-                   Math.abs(now - timeDetection.sources.server1.time) : null
-    };
-}
-
-// ==================== INITIALIZATION ====================
-window.onload = async () => {
-    console.log('KILAT Forensic System Initializing...');
-    
-    initDB();
-    loadDraft();
-    initTimeDetectionSystem();
-    initGPSDetection();
-    
-    // Initial verification
-    setTimeout(() => {
-        updateTimeVerificationUI();
-        updateOverallStatus();
-    }, 2000);
-    
-    // Periodic status updates
-    setInterval(updateOverallStatus, 10000);
-};
-
-function updateOverallStatus() {
-    const overallElement = document.getElementById('overallStatus');
-    const overallBox = document.getElementById('overallVerification');
-    
-    if (!overallElement) return;
-    
-    const timeScore = timeDetection.metrics.manipulationScore;
-    const gpsScore = gpsDetection.metrics.spoofScore;
-    const overallScore = Math.max(timeScore, gpsScore);
-    
-    if (overallScore > 70) {
-        overallElement.innerHTML = '<span style="color:#dc2626">❌ SISTEM TERMANIPULASI</span>';
-        overallBox.className = 'verification-info fake';
-    } else if (overallScore > 40) {
-        overallElement.innerHTML = '<span style="color:#d97706">⚠️ SISTEM DICURIGAI</span>';
-        overallBox.className = 'verification-info suspected';
-    } else {
-        overallElement.innerHTML = '<span style="color:#059669">✅ SISTEM TERVERIFIKASI</span>';
-        overallBox.className = 'verification-info verified';
-    }
-}
-
-// Navigation function
-function switchTab(tabId) {
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    
-    document.getElementById(`view-${tabId}`).classList.add('active');
-    const tabs = ['form', 'camera', 'detection', 'audit', 'gallery'];
-    const index = tabs.indexOf(tabId);
-    document.querySelectorAll('.nav-item')[index].classList.add('active');
-    
-    if (tabId === 'detection') {
-        updateTimeDashboard();
-        updateDetectionGrid();
-        updateOverallStatus();
-    }
-}
-
-// Load draft function
-function loadDraft() {
-    const data = JSON.parse(localStorage.getItem('kilat_forensic_draft'));
-    if (data) {
-        document.getElementById('inUser').value = data.user || '';
-        document.getElementById('inKegiatan').value = data.keg || '';
-        document.getElementById('inDinas').value = data.dinas || '';
-        document.getElementById('inBidang').value = data.bid || '';
-    }
-}
-
-function saveDraft() {
-    const data = {
-        user: document.getElementById('inUser').value,
-        keg: document.getElementById('inKegiatan').value,
-        dinas: document.getElementById('inDinas').value,
-        bid: document.getElementById('inBidang').value
-    };
-    localStorage.setItem('kilat_forensic_draft', JSON.stringify(data));
-}
-
-function goToCamera() {
-    const user = document.getElementById('inUser').value;
-    const keg = document.getElementById('inKegiatan').value;
-    
-    if (!user || !keg) {
-        showAlert('⚠️ Data Belum Lengkap', 'Mohon lengkapi Nama Petugas & Kegiatan terlebih dahulu.');
-        return;
-    }
-    
-    // Check system integrity before allowing camera
-    if (timeDetection.metrics.manipulationScore > 70 || gpsDetection.metrics.spoofScore > 70) {
-        showAlert('🚨 SISTEM TERMANIPULASI', 
-            'Sistem mendeteksi manipulasi waktu/GPS. Tidak dapat melanjutkan ke kamera.\n\n' +
-            'Silakan perbaiki integritas sistem terlebih dahulu.');
-        switchTab('detection');
-        return;
-    }
-    
-    switchTab('camera');
-}
-
-// [Add other necessary functions for camera, gallery, etc.]
-// These would be similar to previous versions but enhanced with forensic data
-</script>
-</body>
-</html>
+        <div class="nav-item" onclick="switchTab('camera')">
+            <span>📸</span>
+            <
