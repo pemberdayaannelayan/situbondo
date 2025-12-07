@@ -730,6 +730,93 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
+        /* ===== PDF AUTH MODAL ===== */
+        .pdf-auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pdf-auth-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            border: 3px solid var(--accent-blue);
+        }
+
+        .security-code-display {
+            background: var(--light-blue);
+            border: 2px dashed var(--secondary-blue);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            letter-spacing: 3px;
+        }
+
+        .code-hint {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .input-group-password {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            z-index: 10;
+            padding: 5px;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-blue);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .hero-section h1 {
@@ -785,6 +872,10 @@
             .footer {
                 padding: 50px 0 20px;
             }
+
+            .pdf-auth-content {
+                padding: 25px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -817,6 +908,11 @@
                 margin-bottom: 10px;
                 padding: 14px 20px;
             }
+
+            .security-code-display {
+                font-size: 1.1rem;
+                letter-spacing: 2px;
+            }
         }
     </style>
 </head>
@@ -842,6 +938,55 @@
                 </button>
             </div>
             <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding: 10px; border-radius: 10px;">Tutup</button>
+        </div>
+    </div>
+
+    <!-- PDF Authorization Modal -->
+    <div class="pdf-auth-modal" id="pdfAuthModal">
+        <div class="pdf-auth-content">
+            <div class="auth-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <h3 class="section-title text-center">Otorisasi Akses Dokumen</h3>
+            
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan. Masukkan kode keamanan untuk melanjutkan.
+            </div>
+            
+            <div class="security-code-display" id="securityCodeDisplay">
+                <!-- Kode keamanan akan ditampilkan di sini -->
+            </div>
+            
+            <p class="code-hint">Kode keamanan di atas berlaku untuk periode tanggal <span id="currentDateText"></span> dan akan berubah setiap hari.</p>
+            
+            <div class="mb-4">
+                <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan</label>
+                <div class="input-group-password">
+                    <input type="password" 
+                           class="form-control form-control-lg" 
+                           id="securityCodeInput" 
+                           placeholder="Masukkan 8 digit kode keamanan"
+                           maxlength="8">
+                    <button type="button" class="password-toggle" id="passwordToggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-times-circle me-2"></i>
+                    <span>Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <button class="btn btn-secondary" onclick="closePdfAuthModal()" style="padding: 12px 24px; border-radius: 10px;">
+                    <i class="fas fa-times me-2"></i>Batal
+                </button>
+                <button class="btn btn-primary" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 12px 24px; border-radius: 10px;">
+                    <i class="fas fa-check me-2"></i>Verifikasi & Lanjutkan
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1316,7 +1461,7 @@
                 <div class="col-lg-8 mx-auto text-center">
                     <h2 class="mb-4">Akses Laporan dan Bagikan Kegiatan</h2>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
-                        <button class="btn-download" onclick="generatePDFReport()">
+                        <button class="btn-download" onclick="openPdfAuthModal()">
                             <i class="fas fa-download me-2"></i>Download Laporan Kegiatan (PDF)
                         </button>
                         <button class="btn-share" onclick="openShareModal()">
@@ -1561,8 +1706,111 @@
             if (e.key === 'Escape') {
                 closeShareModal();
                 closePdfPreview();
+                closePdfAuthModal();
             }
         });
+
+        // ==================== PDF AUTHORIZATION FUNCTIONS ====================
+        
+        // Generate security code based on current date (DDMMYYYY)
+        function generateSecurityCode() {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            return day + month + year;
+        }
+
+        // Get formatted date for display
+        function getFormattedDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return now.toLocaleDateString('id-ID', options);
+        }
+
+        // Toggle password visibility
+        let isPasswordVisible = false;
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('securityCodeInput');
+            const toggleIcon = document.getElementById('passwordToggle').querySelector('i');
+            
+            isPasswordVisible = !isPasswordVisible;
+            
+            if (isPasswordVisible) {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // Open PDF authorization modal
+        function openPdfAuthModal() {
+            const securityCode = generateSecurityCode();
+            const formattedDate = getFormattedDate();
+            
+            // Display security code
+            document.getElementById('securityCodeDisplay').textContent = securityCode;
+            document.getElementById('currentDateText').textContent = formattedDate;
+            
+            // Reset form
+            document.getElementById('securityCodeInput').value = '';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('securityCodeInput').classList.remove('is-invalid');
+            
+            // Show modal
+            document.getElementById('pdfAuthModal').style.display = 'flex';
+            
+            // Focus on input
+            setTimeout(() => {
+                document.getElementById('securityCodeInput').focus();
+            }, 300);
+        }
+
+        // Close PDF authorization modal
+        function closePdfAuthModal() {
+            document.getElementById('pdfAuthModal').style.display = 'none';
+        }
+
+        // Verify security code
+        function verifySecurityCode() {
+            const userInput = document.getElementById('securityCodeInput').value;
+            const correctCode = generateSecurityCode();
+            const errorMessage = document.getElementById('errorMessage');
+            const inputElement = document.getElementById('securityCodeInput');
+            
+            if (userInput === correctCode) {
+                // Code is correct
+                closePdfAuthModal();
+                generatePDFReport();
+            } else {
+                // Code is incorrect
+                errorMessage.style.display = 'block';
+                inputElement.classList.add('is-invalid');
+                
+                // Shake animation for error
+                inputElement.style.animation = 'none';
+                setTimeout(() => {
+                    inputElement.style.animation = 'shake 0.5s';
+                }, 10);
+                
+                // Clear input and focus
+                inputElement.value = '';
+                inputElement.focus();
+            }
+        }
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
 
         // PDF Generation Functions
         function showLoading() {
@@ -1581,6 +1829,7 @@
             document.getElementById('pdfPreviewModal').style.display = 'none';
         }
 
+        // Generate PDF report after successful authorization
         function generatePDFReport() {
             showLoading();
             
@@ -1592,10 +1841,10 @@
                 year: 'numeric'
             });
             
-            // Create PDF content with formal format - DIPERBAIKI
+            // Create PDF content with formal format
             const pdfContent = `
             <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #333;">
-                <!-- Kop Surat - LOGO DIPERBAIKI -->
+                <!-- Kop Surat -->
                 <div style="margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 20px;">
                     <table style="width: 100%;">
                         <tr>
@@ -1625,7 +1874,7 @@
                     </h1>
                 </div>
                 
-                <!-- Isi Laporan - TEKS DIPERBAIKI TIDAK TERPISAH -->
+                <!-- Isi Laporan -->
                 <div style="margin-bottom: 30px;">
                     <h4 style="font-size: 13px; font-weight: bold; margin-bottom: 15px; color: #1e3a8a;">
                         I. LATAR BELAKANG
@@ -1685,7 +1934,7 @@
                     </p>
                 </div>
                 
-                <!-- Tanda Tangan - DIPERBAIKI LEBIH RAPAT -->
+                <!-- Tanda Tangan -->
                 <div style="display: flex; justify-content: space-between; margin-top: 80px; align-items: flex-start;">
                     <div style="width: 60%;">
                         <div style="margin-bottom: 10px;">
@@ -1698,7 +1947,7 @@
                     </div>
                 </div>
                 
-                <!-- Footer dengan garis dan QR code - DIPERBAIKI -->
+                <!-- Footer dengan garis dan QR code -->
                 <div style="margin-top: 100px; border-top: 1px solid #ddd; padding-top: 15px; position: relative;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="text-align: left; font-size: 10px; color: #666; width: 70%;">
@@ -1751,9 +2000,9 @@
                     year: 'numeric'
                 });
                 
-                // Logo dimensions - DIPERBAIKI agar tidak gepeng
+                // Logo dimensions
                 const logoWidth = 18;
-                const logoHeight = 18; // Proporsional
+                const logoHeight = 18;
                 
                 // Try to load real logo, fallback to placeholder
                 try {
@@ -1808,7 +2057,7 @@
                 doc.text("LAPORAN KEGIATAN", 105, yPos, { align: 'center' });
                 yPos += 10;
                 
-                // Main title - DIPERBAIKI: judul lengkap
+                // Main title
                 doc.setFontSize(14);
                 const title1 = "PELATIHAN TEKNOLOGI PENANGKAPAN IKAN";
                 const title2 = "PERAWATAN JARING IKAN UNTUK NELAYAN SITUBONDO";
@@ -1911,7 +2160,7 @@
                 addText("V. HASIL KEGIATAN", 
                     "Kegiatan pelatihan berlangsung dengan lancar dan diikuti dengan antusias oleh seluruh peserta. Para nelayan memperoleh pengetahuan dan keterampilan baru dalam merawat jaring ikan yang dapat memperpanjang usia pakai dan meningkatkan efisiensi penangkapan. Selain itu, peserta juga mendapatkan bantuan langsung berupa jaring gillnet baru untuk diterapkan dalam kegiatan penangkapan ikan.");
                 
-                // Add signature section - DIPERBAIKI lebih rapat
+                // Add signature section
                 if (yPos > 250) {
                     doc.addPage();
                     yPos = margin;
@@ -1919,7 +2168,7 @@
                 
                 doc.setFontSize(11);
                 doc.text(`Situbondo, ${formattedDate}`, margin, yPos);
-                yPos += 12; // Reduced space between date and "Pelapor" - DIPERBAIKI
+                yPos += 12;
                 doc.setFont("helvetica", "bold");
                 doc.text("Pelapor,", margin, yPos);
                 yPos += 25;
@@ -1935,7 +2184,7 @@
                 doc.text("Laporan ini dibuat secara otomatis oleh sistem Dinas Perikanan Situbondo", margin, yPos);
                 doc.text(`© ${currentDate.getFullYear()} Dinas Peternakan dan Perikanan Kabupaten Situbondo`, margin, yPos + 4);
                 
-                // Add QR Code on the right side, below the line - DIPERBAIKI posisi
+                // Add QR Code on the right side, below the line
                 const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=1e3a8a&bgcolor=ffffff`;
                 try {
                     const qrImg = new Image();
@@ -1949,7 +2198,7 @@
                     
                     const qrSize = 15;
                     const qrX = 210 - margin - qrSize;
-                    const qrY = yPos - 9; // Posisi di bawah garis
+                    const qrY = yPos - 9;
                     
                     if (qrImg.complete && qrImg.naturalHeight !== 0) {
                         doc.addImage(qrImg, 'PNG', qrX, qrY, qrSize, qrSize);
@@ -1997,6 +2246,23 @@
         // Call on load and resize
         window.addEventListener('load', fixFooterPosition);
         window.addEventListener('resize', fixFooterPosition);
+
+        // Initialize password toggle
+        document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
+        
+        // Allow pressing Enter to submit the security code
+        document.getElementById('securityCodeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifySecurityCode();
+            }
+        });
+        
+        // Close PDF auth modal when clicking outside
+        document.getElementById('pdfAuthModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePdfAuthModal();
+            }
+        });
     </script>
 </body>
 </html>
