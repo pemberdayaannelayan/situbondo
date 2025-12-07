@@ -26,7 +26,7 @@
 
     <!-- Library untuk PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.28/dist/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         :root {
@@ -55,11 +55,12 @@
             color: var(--text-main);
         }
 
+        /* Improved Navbar */
         .navbar {
-            padding: 10px 0;
-            background: rgba(255, 255, 255, 0.98);
+            padding: 8px 0;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%) !important;
             backdrop-filter: blur(15px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             z-index: 1000;
         }
@@ -67,81 +68,102 @@
         .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .navbar-brand img.logo-kkp {
-            height: 40px;
-            width: auto;
+            gap: 15px;
+            padding: 5px 0;
         }
 
         .navbar-brand img.logo-kabupaten {
-            height: 55px;
+            height: 50px;
             width: auto;
             object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
         }
 
         .brand-text h5 {
             font-weight: 800;
             margin: 0;
-            line-height: 1;
-            color: var(--primary-dark);
+            color: white;
             letter-spacing: -0.5px;
             font-size: 1.1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+        
         .brand-text span {
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--primary);
-            letter-spacing: 2px;
+            color: rgba(255,255,255,0.9);
+            letter-spacing: 1.5px;
             text-transform: uppercase;
         }
 
         .nav-link {
             font-weight: 600;
-            color: var(--text-main) !important;
+            color: rgba(255,255,255,0.9) !important;
             margin: 0 8px;
             position: relative;
             transition: 0.3s;
             font-size: 0.95rem;
+            padding: 8px 12px !important;
+            border-radius: 8px;
         }
 
         .nav-link:hover {
-            color: var(--primary) !important;
+            color: white !important;
+            background: rgba(255,255,255,0.1);
         }
 
         .nav-link.active {
-            color: var(--primary) !important;
+            color: white !important;
             font-weight: 700;
+            background: rgba(255,255,255,0.15);
         }
 
         .btn-cta {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             color: white;
             padding: 10px 25px;
             border-radius: 50px;
             border: none;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
             transition: 0.3s;
             font-size: 0.95rem;
         }
         
         .btn-cta:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(2, 132, 199, 0.4);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
             color: white;
         }
 
         /* Hero Section */
         .hero-section {
-            min-height: 70vh;
-            background: linear-gradient(135deg, rgba(2, 132, 199, 0.1) 0%, rgba(12, 74, 110, 0.05) 100%);
+            min-height: 85vh;
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(12, 74, 110, 0.1) 100%);
             position: relative;
             display: flex;
             align-items: center;
             padding-top: 120px;
             padding-bottom: 80px;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/pattern.png');
+            opacity: 0.1;
+            pointer-events: none;
         }
 
         .hero-content {
@@ -150,25 +172,67 @@
         }
 
         .hero-badge {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(5px);
-            border: 1px solid var(--primary);
+            border: 2px solid var(--primary);
             color: var(--primary-dark);
-            padding: 8px 20px;
+            padding: 10px 25px;
             border-radius: 30px;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            font-size: 0.9rem;
+            gap: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(2, 132, 199, 0.15);
+            font-size: 0.95rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Header dengan Logo KKP */
+        .header-logo-kkp {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .header-logo-kkp img {
+            height: 70px;
+            width: auto;
+        }
+
+        .header-logo-kkp .text-content {
+            text-align: center;
+        }
+
+        .header-logo-kkp h1 {
+            color: var(--primary-dark);
+            font-weight: 800;
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .header-logo-kkp .subtitle {
+            color: var(--text-sub);
+            font-size: 1.1rem;
+            margin-top: 5px;
         }
 
         /* Peraturan Section */
         .peraturan-section {
             padding: 80px 0;
             background-color: white;
+            position: relative;
         }
 
         .section-header {
@@ -179,17 +243,56 @@
         .section-header h2 {
             font-weight: 800;
             color: var(--primary-dark);
-            font-size: 2.5rem;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
         }
 
+        .section-header .lead {
+            font-size: 1.1rem;
+            color: var(--text-sub);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Stats Counter */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            min-width: 150px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Peraturan Card */
         .peraturan-card {
             background: white;
             border-radius: 15px;
-            padding: 25px;
+            padding: 30px;
             margin-bottom: 25px;
             border: 1px solid rgba(2, 132, 199, 0.1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
             cursor: pointer;
@@ -197,8 +300,8 @@
         }
 
         .peraturan-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(2, 132, 199, 0.15);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(2, 132, 199, 0.15);
             border-color: var(--primary);
         }
 
@@ -207,112 +310,165 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--primary);
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
 
         .peraturan-number {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(2, 132, 199, 0.3);
         }
 
         .peraturan-title {
             color: var(--primary-dark);
             font-weight: 700;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
             line-height: 1.4;
+            min-height: 60px;
         }
 
         .peraturan-desc {
             color: var(--text-sub);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-size: 0.95rem;
-            line-height: 1.6;
+            line-height: 1.7;
+            min-height: 80px;
         }
 
         .peraturan-meta {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
         }
 
         .peraturan-meta span {
             background: var(--light-bg);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.85rem;
             color: var(--text-sub);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .peraturan-meta span:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
         }
 
         .btn-download {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 25px;
+            border-radius: 10px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             transition: all 0.3s ease;
             text-decoration: none;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             width: 100%;
             justify-content: center;
+            margin-top: auto;
         }
 
         .btn-download:hover {
-            background: var(--accent-dark);
+            background: linear-gradient(135deg, var(--accent-dark), #b45309);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
         }
 
-        .btn-download i {
-            font-size: 1rem;
+        .btn-preview {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.95rem;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 10px;
         }
 
+        .btn-preview:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3);
+        }
+
+        /* Filter Section */
         .filter-section {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(2, 132, 199, 0.1);
+        }
+
+        .filter-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
         }
 
         .filter-btn {
             background: var(--light-bg);
-            border: 1px solid #e2e8f0;
+            border: 2px solid transparent;
             color: var(--text-sub);
-            padding: 8px 18px;
-            border-radius: 20px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
+            padding: 10px 22px;
+            border-radius: 25px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
-        .filter-btn:hover, .filter-btn.active {
+        .filter-btn:hover {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(2, 132, 199, 0.2);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(2, 132, 199, 0.3);
         }
 
         .search-box {
@@ -321,143 +477,106 @@
         }
 
         .search-box input {
-            padding: 12px 20px 12px 45px;
+            padding: 15px 25px 15px 55px;
             border-radius: 25px;
             border: 2px solid #e2e8f0;
             width: 100%;
             font-size: 1rem;
             transition: all 0.3s ease;
+            background: white;
         }
 
         .search-box input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
             outline: none;
         }
 
         .search-box i {
             position: absolute;
-            left: 20px;
+            left: 25px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-sub);
-        }
-
-        /* Modal untuk preview PDF */
-        .modal-peraturan {
-            font-family: 'Times New Roman', serif;
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .modal-kop {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #000;
-            padding-bottom: 20px;
-        }
-
-        .modal-kop img {
-            height: 80px;
-        }
-
-        .modal-kop h3 {
-            font-weight: bold;
-            margin: 15px 0;
-            font-size: 1.4rem;
-        }
-
-        .modal-kop h4 {
-            margin: 10px 0;
-            font-size: 1.2rem;
-        }
-
-        .modal-content {
-            font-size: 14px;
-            text-align: justify;
-        }
-
-        .modal-bab {
-            font-weight: bold;
-            text-align: center;
-            margin: 25px 0 15px 0;
             font-size: 1.1rem;
         }
 
-        .modal-pasal {
-            margin-bottom: 20px;
-            page-break-inside: avoid;
-        }
-
-        .modal-pasal-title {
-            font-weight: bold;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        /* PDF Container Tersembunyi */
-        .pdf-container {
-            position: absolute;
-            left: -9999px;
-            top: -9999px;
-            width: 210mm;
-            min-height: 297mm;
-            padding: 20mm;
-            background: white;
+        /* Modal Preview */
+        .modal-peraturan {
             font-family: 'Times New Roman', serif;
-            font-size: 12pt;
-            line-height: 1.6;
-            box-sizing: border-box;
+            line-height: 1.8;
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
         }
 
-        .pdf-kop {
+        .modal-peraturan::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-peraturan::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .modal-peraturan::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .modal-peraturan .kop-surat {
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #000;
+            margin-bottom: 40px;
             padding-bottom: 20px;
-            page-break-inside: avoid;
+            border-bottom: 3px solid #000;
         }
 
-        .pdf-kop img {
+        .modal-peraturan .logo-kkp-modal {
             height: 80px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .pdf-kop h3 {
+        .modal-peraturan h1 {
+            font-size: 1.6rem;
             font-weight: bold;
-            font-size: 14pt;
             margin: 10px 0;
             line-height: 1.3;
         }
 
-        .pdf-kop h4 {
-            font-size: 12pt;
-            margin: 8px 0;
+        .modal-peraturan h2 {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 15px 0;
             line-height: 1.3;
         }
 
-        .pdf-content {
-            text-align: justify;
-            font-size: 11pt;
+        .modal-peraturan h3 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
         }
 
-        .pdf-bab {
+        .modal-peraturan p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .modal-peraturan .bab-title {
             font-weight: bold;
             text-align: center;
             margin: 25px 0 15px 0;
-            font-size: 12pt;
-            page-break-inside: avoid;
+            font-size: 1.3rem;
+            color: #000;
         }
 
-        .pdf-pasal {
-            margin-bottom: 15px;
-            page-break-inside: avoid;
+        .modal-peraturan .pasal-container {
+            margin-bottom: 25px;
         }
 
-        .pdf-pasal-title {
+        .modal-peraturan .pasal-title {
             font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 11pt;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
         }
 
         /* Notification */
@@ -467,33 +586,34 @@
             right: 20px;
             background: var(--primary);
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             z-index: 9999;
             font-family: var(--font-body);
             font-weight: 600;
             animation: slideIn 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 12px;
-            max-width: 400px;
+            gap: 15px;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
         }
 
         .notification i {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .notification.success {
-            background: #10b981;
+            background: linear-gradient(135deg, #10b981, #059669);
         }
 
         .notification.warning {
-            background: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
         }
 
         .notification.error {
-            background: #ef4444;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
         }
 
         /* Loading Overlay */
@@ -503,31 +623,38 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 99999;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
+            backdrop-filter: blur(5px);
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border: 5px solid var(--light-bg);
             border-top: 5px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
+        .loading-overlay p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
         /* Footer */
         footer {
-            background-color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0a3d62 100%);
             color: #cbd5e1;
             padding-top: 0;
             position: relative;
-            margin-top: 50px;
+            margin-top: 80px;
         }
 
         .footer-wave {
@@ -535,39 +662,40 @@
             width: 100%;
             background-color: white;
         }
+        
         .footer-wave svg {
             display: block;
             width: 100%;
-            height: 60px;
+            height: 80px;
             fill: var(--primary-dark);
         }
 
         .footer-content {
-            padding: 60px 0 40px;
+            padding: 80px 0 50px;
         }
 
         footer h5 {
             color: white;
             font-weight: 700;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             position: relative;
             display: inline-block;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         footer h5::after {
             content: '';
             position: absolute;
             left: 0;
-            bottom: -8px;
-            width: 40px;
-            height: 3px;
+            bottom: -10px;
+            width: 50px;
+            height: 4px;
             background-color: var(--accent);
             border-radius: 2px;
         }
 
         .footer-links li {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
         
         .footer-links a {
@@ -576,40 +704,42 @@
             transition: 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
+            gap: 10px;
+            font-size: 1rem;
+            padding: 5px 0;
         }
 
         .footer-links a:hover {
             color: var(--secondary);
-            padding-left: 5px;
+            padding-left: 10px;
         }
 
         .contact-item {
             display: flex;
             align-items: start;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 25px;
         }
         
         .contact-icon {
             background: rgba(255,255,255,0.1);
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--secondary);
             flex-shrink: 0;
+            font-size: 1.2rem;
         }
 
         .copyright {
-            background-color: rgba(0,0,0,0.2);
-            padding: 20px 0;
+            background-color: rgba(0,0,0,0.25);
+            padding: 25px 0;
             text-align: center;
             border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         /* Animations */
@@ -628,69 +758,115 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Utility Classes */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         /* Responsive */
+        @media (max-width: 992px) {
+            .header-logo-kkp {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .header-logo-kkp h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2.2rem;
+            }
+            
+            .stats-container {
+                gap: 20px;
+            }
+            
+            .stat-item {
+                min-width: 120px;
+                padding: 15px;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-section {
                 padding-top: 100px;
-                text-align: center;
-                min-height: 60vh;
-            }
-            
-            .filter-btn {
-                padding: 6px 15px;
-                font-size: 0.85rem;
-                margin-right: 5px;
-                margin-bottom: 5px;
-            }
-            
-            .peraturan-card {
-                padding: 20px;
-            }
-            
-            .peraturan-meta {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .modal-kop img {
-                height: 60px;
-            }
-            
-            .navbar-brand img.logo-kkp {
-                height: 35px;
+                min-height: 70vh;
             }
             
             .navbar-brand img.logo-kabupaten {
-                height: 45px;
+                height: 40px;
             }
             
             .brand-text h5 {
                 font-size: 1rem;
             }
-        }
-
-        @media (max-width: 576px) {
-            .hero-section {
-                padding-top: 100px;
-                padding-bottom: 50px;
-            }
-            
-            .display-4 {
-                font-size: 2.2rem;
-            }
-            
-            .section-header h2 {
-                font-size: 2rem;
-            }
             
             .nav-link {
-                font-size: 0.9rem;
                 margin: 0 5px;
+                padding: 6px 10px !important;
+                font-size: 0.9rem;
             }
             
             .btn-cta {
                 padding: 8px 20px;
                 font-size: 0.9rem;
+            }
+            
+            .filter-btn {
+                padding: 8px 18px;
+                font-size: 0.9rem;
+            }
+            
+            .peraturan-card {
+                padding: 25px;
+            }
+            
+            .modal-peraturan {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-section {
+                padding-top: 90px;
+                padding-bottom: 50px;
+            }
+            
+            .display-4 {
+                font-size: 2.5rem;
+            }
+            
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stat-item {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .header-logo-kkp h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header-logo-kkp img {
+                height: 50px;
             }
         }
     </style>
@@ -699,18 +875,16 @@
 
     <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-3" href="https://www.dinasperikanansitubondo.com">
+            <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com">
                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
                      alt="Logo Pemerintah Kabupaten Situbondo" class="logo-kabupaten">
-                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo%20kkp.png" 
-                     alt="Logo KKP" class="logo-kkp">
-                <div class="brand-text d-flex flex-column">
+                <div class="brand-text">
                     <h5>DINAS PERIKANAN</h5>
-                    <span>KAB. SITUBONDO</span>
+                    <span>KABUPATEN SITUBONDO</span>
                 </div>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center gap-2">
@@ -731,29 +905,57 @@
     <section class="hero-section">
         <div class="container hero-content">
             <div class="row align-items-center">
-                <div class="col-lg-8" data-aos="fade-right">
-                    <div class="hero-badge text-nowrap">
-                        <i class="fas fa-gavel"></i> <span>Database Regulasi Resmi</span>
+                <div class="col-lg-10 mx-auto">
+                    <!-- Header dengan Logo KKP -->
+                    <div class="header-logo-kkp" data-aos="fade-up">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo%20kkp.png" 
+                             alt="Logo Kementerian Kelautan dan Perikanan" class="logo-kkp-header">
+                        <div class="text-content">
+                            <h1>Peraturan Kementerian Kelautan dan Perikanan</h1>
+                            <div class="subtitle">Database Regulasi Resmi - Dinas Perikanan Kabupaten Situbondo</div>
+                        </div>
                     </div>
                     
-                    <h1 class="display-4 fw-bold mb-4" style="color: var(--text-main);">
-                        Peraturan Kementerian Kelautan dan Perikanan
+                    <div class="hero-badge mx-auto text-center" data-aos="fade-up" data-aos-delay="100">
+                        <i class="fas fa-gavel"></i> 
+                        <span>Database Regulasi Resmi - Sumber Terpercaya</span>
+                    </div>
+                    
+                    <h1 class="display-4 fw-bold mb-4 text-center" style="color: var(--text-main);" data-aos="fade-up" data-aos-delay="200">
+                        Akses Lengkap Peraturan KKP
                     </h1>
                     
-                    <p class="lead mb-5" style="color: var(--text-sub); font-weight: 500;">
-                        Akses lengkap semua peraturan, kebijakan, dan undang-undang terkait sektor kelautan dan perikanan yang diterbitkan oleh Kementerian Kelautan dan Perikanan Republik Indonesia. Generate dan download dalam format PDF resmi.
+                    <p class="lead mb-5 text-center" style="color: var(--text-sub); font-weight: 500;" data-aos="fade-up" data-aos-delay="300">
+                        Temukan semua peraturan, kebijakan, dan undang-undang terkait sektor kelautan dan perikanan yang diterbitkan oleh Kementerian Kelautan dan Perikanan Republik Indonesia. Generate dan download dalam format PDF resmi dengan tampilan standar pemerintah.
                     </p>
                     
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="#peraturan-list" class="btn btn-cta px-4 py-3 shadow">Lihat Semua Peraturan</a>
-                        <a href="#download" class="btn btn-outline-primary px-4 py-3 rounded-pill fw-bold" style="border-width: 2px;">Download Koleksi Lengkap</a>
+                    <!-- Stats Counter -->
+                    <div class="stats-container" data-aos="fade-up" data-aos-delay="400">
+                        <div class="stat-item">
+                            <div class="stat-number">9</div>
+                            <div class="stat-label">Peraturan Lengkap</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">6</div>
+                            <div class="stat-label">Kategori</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">2018-2023</div>
+                            <div class="stat-label">Tahun Terbit</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">PDF</div>
+                            <div class="stat-label">Format Resmi</div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-4" data-aos="fade-left">
-                    <div class="text-center">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/peraturan.png" 
-                             alt="Ilustrasi Peraturan KKP" class="img-fluid" style="max-height: 300px; border-radius: 15px;">
-                        <p class="text-muted mt-3"><small>Sumber resmi: Kementerian Kelautan dan Perikanan RI</small></p>
+                    
+                    <div class="d-flex flex-wrap gap-3 justify-content-center" data-aos="fade-up" data-aos-delay="500">
+                        <a href="#peraturan-list" class="btn btn-cta px-5 py-3 shadow-lg">
+                            <i class="fas fa-book-open me-2"></i>Lihat Semua Peraturan
+                        </a>
+                        <a href="#download-all" class="btn btn-outline-primary px-5 py-3 rounded-pill fw-bold" style="border-width: 2px;">
+                            <i class="fas fa-download me-2"></i>Download Koleksi Lengkap
+                        </a>
                     </div>
                 </div>
             </div>
@@ -763,10 +965,10 @@
     <section class="peraturan-section" id="peraturan-list">
         <div class="container">
             <div class="section-header" data-aos="fade-up">
-                <span class="text-primary fw-bold text-uppercase" style="letter-spacing: 2px;">Kumpulan Peraturan</span>
-                <h2 class="display-6 mt-2">Database Peraturan KKP</h2>
-                <div style="width: 80px; height: 4px; background: var(--accent); margin: 15px auto; border-radius: 2px;"></div>
-                <p class="text-muted col-lg-8 mx-auto">Temukan dan generate peraturan terkini yang berlaku di sektor kelautan dan perikanan dalam format PDF resmi.</p>
+                <span class="text-primary fw-bold text-uppercase" style="letter-spacing: 3px; font-size: 1.1rem;">Database Peraturan</span>
+                <h2 class="mt-3">Kumpulan Peraturan KKP Terkini</h2>
+                <div style="width: 100px; height: 5px; background: linear-gradient(90deg, var(--primary), var(--secondary)); margin: 20px auto; border-radius: 2px;"></div>
+                <p class="lead col-lg-8 mx-auto">Jelajahi database lengkap peraturan KKP yang dapat diakses dan diunduh dalam format PDF resmi.</p>
             </div>
 
             <!-- Search and Filter -->
@@ -778,7 +980,10 @@
                 
                 <div class="row">
                     <div class="col-lg-6 mb-4">
-                        <strong class="d-block mb-3"><i class="fas fa-filter me-2"></i>Filter Berdasarkan Tahun:</strong>
+                        <div class="filter-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Filter Berdasarkan Tahun</span>
+                        </div>
                         <div id="filterButtons">
                             <button class="filter-btn active" data-filter="all">Semua Tahun</button>
                             <button class="filter-btn" data-filter="2023">2023</button>
@@ -791,7 +996,10 @@
                     </div>
                     
                     <div class="col-lg-6 mb-4">
-                        <strong class="d-block mb-3"><i class="fas fa-tags me-2"></i>Filter Berdasarkan Kategori:</strong>
+                        <div class="filter-title">
+                            <i class="fas fa-tags"></i>
+                            <span>Filter Berdasarkan Kategori</span>
+                        </div>
                         <div>
                             <button class="filter-btn active" data-category="semua">Semua Kategori</button>
                             <button class="filter-btn" data-category="perikanan">Perikanan Tangkap</button>
@@ -810,20 +1018,23 @@
             </div>
 
             <!-- Download All Section -->
-            <div class="text-center mt-5 pt-5" id="download" data-aos="fade-up">
-                <div class="card border-0 shadow-sm" style="background: var(--light-bg);">
-                    <div class="card-body py-5">
-                        <h3 class="mb-4">Download Koleksi Lengkap</h3>
-                        <p class="text-muted mb-4">Dapatkan semua 9 peraturan KKP dalam format PDF resmi dengan tampilan standar pemerintah.</p>
-                        <button class="btn btn-cta px-5 py-3" onclick="generateAllPDFs()">
-                            <i class="fas fa-download me-2"></i> Generate Semua Peraturan (9 PDF)
+            <div class="text-center mt-5 pt-5" id="download-all" data-aos="fade-up">
+                <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, var(--light-bg) 0%, white 100%); border: 2px solid var(--primary);">
+                    <div class="card-body py-5 px-4">
+                        <div class="mb-4">
+                            <i class="fas fa-box-open fa-3x mb-3" style="color: var(--primary);"></i>
+                            <h3 class="mb-3">Download Koleksi Lengkap</h3>
+                            <p class="text-muted mb-4">Dapatkan semua 9 peraturan KKP dalam format PDF resmi dengan tampilan standar pemerintah.</p>
+                        </div>
+                        <button class="btn btn-cta px-5 py-3 btn-lg" onclick="generateAllPDFs()">
+                            <i class="fas fa-download me-2"></i> Generate & Download Semua Peraturan
                         </button>
                         <div class="mt-4">
                             <small class="text-muted d-block">
                                 <i class="fas fa-info-circle me-2"></i>Masing-masing peraturan akan diunduh sebagai file PDF terpisah
                             </small>
-                            <small class="text-muted d-block mt-1">
-                                <i class="fas fa-clock me-2"></i>Proses membutuhkan waktu sekitar 30-60 detik
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-clock me-2"></i>Proses membutuhkan waktu sekitar 30 detik
                             </small>
                         </div>
                     </div>
@@ -836,15 +1047,19 @@
     <div class="modal fade" id="peraturanModal" tabindex="-1" aria-labelledby="peraturanModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="peraturanModalLabel">Preview Peraturan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="peraturanModalLabel">
+                        <i class="fas fa-file-alt me-2"></i>Preview Peraturan
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body modal-peraturan" id="modalPeraturanContent">
                     <!-- Konten peraturan akan dimuat di sini -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Tutup
+                    </button>
                     <button type="button" class="btn btn-primary" id="modalDownloadBtn">
                         <i class="fas fa-download me-2"></i>Download PDF
                     </button>
@@ -852,9 +1067,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Container tersembunyi untuk PDF generation -->
-    <div id="pdfContainer" class="pdf-container"></div>
 
     <footer>
         <div class="footer-wave">
@@ -868,66 +1080,74 @@
                 <div class="col-lg-5 col-md-12">
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <div style="display: flex; align-items: center; gap: 15px;">
-                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo%20kkp.png" 
-                                 alt="Logo KKP" style="height: 50px;">
                             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
-                                 alt="Logo Situbondo" style="height: 60px;">
+                                 alt="Logo Situbondo" style="height: 60px; filter: brightness(0) invert(1);">
                         </div>
                         <div>
                             <h4 class="text-white mb-0 fw-bold">DINAS PERIKANAN</h4>
                             <small class="text-white-50" style="letter-spacing: 2px;">KABUPATEN SITUBONDO</small>
                         </div>
                     </div>
-                    <p class="pe-lg-5" style="line-height: 1.8;">
+                    <p class="pe-lg-5" style="line-height: 1.8; font-size: 1.05rem;">
                         Berkomitmen untuk memajukan sektor perikanan tangkap dan memberdayakan masyarakat pesisir melalui pelayanan yang transparan, akuntabel, dan inovatif.
                     </p>
-                    <div class="d-flex gap-2 mt-4">
-                        <a href="#" class="btn btn-outline-light rounded-circle" style="width: 40px; height: 40px; display:flex; align-items:center; justify-content:center;">
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="#" class="btn btn-outline-light rounded-circle" style="width: 45px; height: 45px; display:flex; align-items:center; justify-content:center;">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="btn btn-outline-light rounded-circle" style="width: 40px; height: 40px; display:flex; align-items:center; justify-content:center;">
+                        <a href="#" class="btn btn-outline-light rounded-circle" style="width: 45px; height: 45px; display:flex; align-items:center; justify-content:center;">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="https://www.dinasperikanansitubondo.com" class="btn btn-outline-light rounded-circle" style="width: 40px; height: 40px; display:flex; align-items:center; justify-content:center;">
+                        <a href="https://www.dinasperikanansitubondo.com" class="btn btn-outline-light rounded-circle" style="width: 45px; height: 45px; display:flex; align-items:center; justify-content:center;">
                             <i class="fas fa-globe"></i>
+                        </a>
+                        <a href="mailto:info@dinasperikanansitubondo.com" class="btn btn-outline-light rounded-circle" style="width: 45px; height: 45px; display:flex; align-items:center; justify-content:center;">
+                            <i class="fas fa-envelope"></i>
                         </a>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
                     <h5>Tautan Cepat</h5>
-                    <ul class="list-unstyled footer-links mt-3">
-                        <li><a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-chevron-right fa-xs"></i> Beranda</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com#layanan"><i class="fas fa-chevron-right fa-xs"></i> Layanan Kami</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com/simata" target="_blank"><i class="fas fa-chevron-right fa-xs"></i> SIMATA</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com/kegiatan/"><i class="fas fa-chevron-right fa-xs"></i> Dokumentasi Kegiatan</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com/peraturankkp"><i class="fas fa-chevron-right fa-xs"></i> Peraturan KKP</a></li>
-                        <li><a href="https://situbondokab.go.id/" target="_blank"><i class="fas fa-chevron-right fa-xs"></i> Pemkab Situbondo</a></li>
+                    <ul class="list-unstyled footer-links mt-4">
+                        <li><a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home fa-fw me-2"></i> Beranda</a></li>
+                        <li><a href="https://www.dinasperikanansitubondo.com#layanan"><i class="fas fa-concierge-bell fa-fw me-2"></i> Layanan Kami</a></li>
+                        <li><a href="https://www.dinasperikanansitubondo.com/simata" target="_blank"><i class="fas fa-fish fa-fw me-2"></i> SIMATA</a></li>
+                        <li><a href="https://www.dinasperikanansitubondo.com/kegiatan/"><i class="fas fa-camera fa-fw me-2"></i> Dokumentasi Kegiatan</a></li>
+                        <li><a href="https://www.dinasperikanansitubondo.com/peraturankkp"><i class="fas fa-gavel fa-fw me-2"></i> Peraturan KKP</a></li>
+                        <li><a href="https://situbondokab.go.id/" target="_blank"><i class="fas fa-landmark fa-fw me-2"></i> Pemkab Situbondo</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-4 col-md-6">
                     <h5>Kontak Kami</h5>
-                    <div class="mt-3">
+                    <div class="mt-4">
                         <div class="contact-item">
                             <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
                             <div>
                                 <span class="d-block text-white fw-bold">Alamat Kantor</span>
-                                <small>Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur 68312</small>
+                                <small style="font-size: 0.95rem;">Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur 68312</small>
                             </div>
                         </div>
                         <div class="contact-item">
                             <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
                             <div>
                                 <span class="d-block text-white fw-bold">Telepon / WhatsApp</span>
-                                <small>0878-6561-4222</small>
+                                <small style="font-size: 0.95rem;">0878-6561-4222</small>
                             </div>
                         </div>
                         <div class="contact-item">
                             <div class="contact-icon"><i class="fas fa-clock"></i></div>
                             <div>
                                 <span class="d-block text-white fw-bold">Jam Pelayanan</span>
-                                <small>Senin - Jumat: 08.00 - 15.00 WIB</small>
+                                <small style="font-size: 0.95rem;">Senin - Jumat: 08.00 - 15.00 WIB</small>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Email</span>
+                                <small style="font-size: 0.95rem;">info@dinasperikanansitubondo.com</small>
                             </div>
                         </div>
                     </div>
@@ -937,12 +1157,14 @@
 
         <div class="copyright">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-6 text-md-start mb-2 mb-md-0">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-md-start mb-3 mb-md-0">
                         &copy; 2025 <strong>Dinas Perikanan Situbondo</strong>. All Rights Reserved.
                     </div>
                     <div class="col-md-6 text-md-end">
-                        <small class="text-white-50">Bidang Pemberdayaan Nelayan - Database Peraturan KKP</small>
+                        <small class="text-white-50">
+                            <i class="fas fa-code me-1"></i> Bidang Pemberdayaan Nelayan - Database Peraturan KKP
+                        </small>
                     </div>
                 </div>
             </div>
@@ -955,119 +1177,167 @@
     <script>
         // ==================== KONFIGURASI AWAL ====================
         const { jsPDF } = window.jspdf;
-        AOS.init({ once: true, offset: 100, duration: 800 });
+        AOS.init({ 
+            once: true, 
+            offset: 50,
+            duration: 800,
+            easing: 'ease-out-cubic'
+        });
         
         // Data peraturan lengkap
         const peraturanData = {
             1: {
-                number: "1/PERMEN-KP/2023",
+                number: "1",
+                year: "2023",
                 title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 1 TAHUN 2023",
                 subtitle: "TENTANG PENGELOLAAN PERIKANAN TANGKAP DI WILAYAH PENGELOLAAN PERIKANAN NEGARA REPUBLIK INDONESIA",
+                fullTitle: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 1 TAHUN 2023 TENTANG PENGELOLAAN PERIKANAN TANGKAP DI WILAYAH PENGELOLAAN PERIKANAN NEGARA REPUBLIK INDONESIA",
                 category: "perikanan",
-                year: "2023",
                 pages: "45",
                 content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
+                    <div class="kop-surat">
+                        <h1>PERATURAN MENTERI KELAUTAN DAN PERIKANAN</h1>
+                        <h1>REPUBLIK INDONESIA</h1>
+                        <h2>NOMOR 1 TAHUN 2023</h2>
+                        <h2>TENTANG</h2>
+                        <h2>PENGELOLAAN PERIKANAN TANGKAP DI WILAYAH PENGELOLAAN PERIKANAN NEGARA REPUBLIK INDONESIA</h2>
+                    </div>
                     
-                    <div class="pdf-bab">Menimbang:</div>
+                    <p style="text-align: center; margin: 30px 0;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
+                    
+                    <p style="text-align: center; margin-bottom: 40px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
+                    
+                    <div class="bab-title">Menimbang:</div>
                     <p>a. bahwa untuk mengoptimalkan pemanfaatan sumber daya ikan secara berkelanjutan di Wilayah Pengelolaan Perikanan Negara Republik Indonesia, perlu dilakukan pengelolaan perikanan tangkap yang terpadu dan terintegrasi;</p>
-                    <p>b. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Pengelolaan Perikanan Tangkap di Wilayah Pengelolaan Perikanan Negara Republik Indonesia;</p>
+                    <p>b. bahwa pengelolaan perikanan tangkap harus memperhatikan aspek konservasi, keberlanjutan, dan kesejahteraan masyarakat nelayan;</p>
+                    <p>c. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a dan huruf b, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Pengelolaan Perikanan Tangkap di Wilayah Pengelolaan Perikanan Negara Republik Indonesia;</p>
                     
-                    <div class="pdf-bab">Mengingat:</div>
+                    <div class="bab-title">Mengingat:</div>
                     <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan (Lembaran Negara Republik Indonesia Tahun 2004 Nomor 118, Tambahan Lembaran Negara Republik Indonesia Nomor 4433);</p>
-                    <p>2. Peraturan Pemerintah Nomor 11 Tahun 2023 tentang Pengelolaan Perikanan;</p>
+                    <p>2. Undang-Undang Nomor 23 Tahun 2014 tentang Pemerintahan Daerah (Lembaran Negara Republik Indonesia Tahun 2014 Nomor 244, Tambahan Lembaran Negara Republik Indonesia Nomor 5587) sebagaimana telah beberapa kali diubah terakhir dengan Undang-Undang Nomor 9 Tahun 2015 tentang Perubahan Kedua atas Undang-Undang Nomor 23 Tahun 2014 tentang Pemerintahan Daerah;</p>
+                    <p>3. Peraturan Pemerintah Nomor 11 Tahun 2023 tentang Pengelolaan Perikanan;</p>
                     
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG PENGELOLAAN PERIKANAN TANGKAP DI WILAYAH PENGELOLAAN PERIKANAN NEGARA REPUBLIK INDONESIA.</p>
+                    <div class="bab-title">MEMUTUSKAN:</div>
+                    <p style="text-align: center; font-weight: bold; margin: 20px 0;">Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG PENGELOLAAN PERIKANAN TANGKAP DI WILAYAH PENGELOLAAN PERIKANAN NEGARA REPUBLIK INDONESIA.</p>
                     
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
+                    <div class="bab-title">BAB I<br>KETENTUAN UMUM</div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 1</div>
                         <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
                         <p>1. Perikanan tangkap adalah semua kegiatan yang berhubungan dengan penangkapan ikan termasuk kegiatan penangkapan, pendaratan, pengangkutan, penyimpanan, dan pengolahan ikan.</p>
                         <p>2. Wilayah Pengelolaan Perikanan Negara Republik Indonesia yang selanjutnya disebut WPPNRI adalah wilayah pengelolaan perikanan Republik Indonesia untuk penangkapan ikan dan/atau pembudidayaan ikan.</p>
                         <p>3. Sumber daya ikan adalah potensi semua jenis ikan termasuk biota perairan lainnya.</p>
+                        <p>4. Pengelolaan perikanan adalah proses perencanaan, pelaksanaan, dan pengawasan pengelolaan sumber daya ikan dan lingkungannya.</p>
                     </div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 2</div>
                         <p>Pengelolaan perikanan tangkap di WPPNRI bertujuan untuk:</p>
-                        <p>a. menjamin kelestarian sumber daya ikan;</p>
-                        <p>b. meningkatkan kesejahteraan masyarakat nelayan;</p>
-                        <p>c. meningkatkan kontribusi sektor perikanan terhadap perekonomian nasional.</p>
+                        <p>a. menjamin kelestarian sumber daya ikan dan ekosistemnya;</p>
+                        <p>b. meningkatkan kesejahteraan masyarakat nelayan dan pembudidaya ikan;</p>
+                        <p>c. meningkatkan kontribusi sektor perikanan terhadap perekonomian nasional;</p>
+                        <p>d. menjamin pemanfaatan sumber daya ikan secara berkelanjutan.</p>
                     </div>
                     
-                    <div class="pdf-bab">BAB II<br>PENGELOLAAN PERIKANAN TANGKAP</div>
+                    <div class="bab-title">BAB II<br>PENGELOLAAN PERIKANAN TANGKAP</div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
-                        <p>(1) Pengelolaan perikanan tangkap dilakukan melalui pendekatan ekosistem.</p>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 3</div>
+                        <p>(1) Pengelolaan perikanan tangkap dilakukan melalui pendekatan ekosistem yang berkelanjutan.</p>
                         <p>(2) Pengelolaan sebagaimana dimaksud pada ayat (1) meliputi perencanaan, pemanfaatan, pengendalian, dan pengawasan.</p>
+                        <p>(3) Perencanaan pengelolaan perikanan tangkap disusun berdasarkan data dan informasi yang akurat dan terbaru.</p>
                     </div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 4</div>
-                        <p>Setiap orang yang melakukan penangkapan ikan di WPPNRI wajib memiliki izin penangkapan ikan yang diterbitkan oleh Menteri.</p>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 4</div>
+                        <p>(1) Setiap orang yang melakukan penangkapan ikan di WPPNRI wajib memiliki izin penangkapan ikan yang diterbitkan oleh Menteri.</p>
+                        <p>(2) Izin penangkapan ikan sebagaimana dimaksud pada ayat (1) diberikan berdasarkan kuota dan alokasi yang telah ditetapkan.</p>
+                        <p>(3) Penerbitan izin penangkapan ikan harus mempertimbangkan daya dukung dan daya tampung lingkungan.</p>
                     </div>
                     
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 5</div>
+                        <p>(1) Pengendalian perikanan tangkap dilakukan melalui pengaturan alat tangkap, ukuran ikan yang boleh ditangkap, dan daerah penangkapan.</p>
+                        <p>(2) Pengawasan perikanan tangkap dilakukan secara terpadu oleh pemerintah pusat dan daerah.</p>
+                        <p>(3) Masyarakat dapat berperan serta dalam pengawasan perikanan tangkap sesuai dengan ketentuan peraturan perundang-undangan.</p>
+                    </div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 5</div>
+                    <div class="bab-title">BAB III<br>KETENTUAN PENUTUP</div>
+                    
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 6</div>
+                        <p>Pada saat Peraturan Menteri ini mulai berlaku, semua ketentuan yang mengatur tentang pengelolaan perikanan tangkap di WPPNRI yang bertentangan dengan Peraturan Menteri ini dinyatakan tidak berlaku.</p>
+                    </div>
+                    
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 7</div>
                         <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
                     </div>
                     
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 15 Januari 2023<br>
+                    <div style="text-align: center; margin-top: 60px;">
+                        <p>Agar setiap orang mengetahuinya, memerintahkan pengundangan Peraturan Menteri ini dengan penempatannya dalam Berita Negara Republik Indonesia.</p>
+                    </div>
+                    
+                    <div style="text-align: right; margin-top: 80px;">
+                        <p>Ditetapkan di Jakarta<br>pada tanggal 15 Januari 2023</p>
                         <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
+                        <p>MENTERI KELAUTAN DAN PERIKANAN<br>REPUBLIK INDONESIA,</p>
                         <br>
                         <br>
                         <br>
-                        <strong>SAKTI WAHYU TRENGGONO</strong>
-                    </p>
+                        <p style="font-weight: bold;">SAKTI WAHYU TRENGGONO</p>
+                    </div>
                 `
             },
             2: {
-                number: "5/PERMEN-KP/2022",
+                number: "5",
+                year: "2022",
                 title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 5 TAHUN 2022",
                 subtitle: "TENTANG TATA CARA PENERBITAN SURAT IZIN PENANGKAPAN IKAN DAN SURAT IZIN KAPAL PENGANGKUT IKAN",
+                fullTitle: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 5 TAHUN 2022 TENTANG TATA CARA PENERBITAN SURAT IZIN PENANGKAPAN IKAN DAN SURAT IZIN KAPAL PENGANGKUT IKAN",
                 category: "budidaya",
-                year: "2022",
                 pages: "32",
                 content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
+                    <div class="kop-surat">
+                        <h1>PERATURAN MENTERI KELAUTAN DAN PERIKANAN</h1>
+                        <h1>REPUBLIK INDONESIA</h1>
+                        <h2>NOMOR 5 TAHUN 2022</h2>
+                        <h2>TENTANG</h2>
+                        <h2>TATA CARA PENERBITAN SURAT IZIN PENANGKAPAN IKAN DAN SURAT IZIN KAPAL PENGANGKUT IKAN</h2>
+                    </div>
                     
-                    <div class="pdf-bab">Menimbang:</div>
+                    <p style="text-align: center; margin: 30px 0;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
+                    
+                    <p style="text-align: center; margin-bottom: 40px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
+                    
+                    <div class="bab-title">Menimbang:</div>
                     <p>a. bahwa untuk melaksanakan ketentuan Pasal 27 ayat (2) Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan, perlu menetapkan tata cara penerbitan Surat Izin Penangkapan Ikan dan Surat Izin Kapal Pengangkut Ikan;</p>
-                    <p>b. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Tata Cara Penerbitan Surat Izin Penangkapan Ikan dan Surat Izin Kapal Pengangkut Ikan;</p>
+                    <p>b. bahwa tata cara penerbitan Surat Izin Penangkapan Ikan dan Surat Izin Kapal Pengangkut Ikan perlu disesuaikan dengan perkembangan teknologi dan kebutuhan pelayanan yang lebih efisien;</p>
+                    <p>c. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a dan huruf b, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Tata Cara Penerbitan Surat Izin Penangkapan Ikan dan Surat Izin Kapal Pengangkut Ikan;</p>
                     
-                    <div class="pdf-bab">Mengingat:</div>
-                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan;</p>
+                    <div class="bab-title">Mengingat:</div>
+                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan (Lembaran Negara Republik Indonesia Tahun 2004 Nomor 118, Tambahan Lembaran Negara Republik Indonesia Nomor 4433);</p>
                     <p>2. Peraturan Pemerintah Nomor 11 Tahun 2023 tentang Pengelolaan Perikanan;</p>
                     
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG TATA CARA PENERBITAN SURAT IZIN PENANGKAPAN IKAN DAN SURAT IZIN KAPAL PENGANGKUT IKAN.</p>
+                    <div class="bab-title">MEMUTUSKAN:</div>
+                    <p style="text-align: center; font-weight: bold; margin: 20px 0;">Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG TATA CARA PENERBITAN SURAT IZIN PENANGKAPAN IKAN DAN SURAT IZIN KAPAL PENGANGKUT IKAN.</p>
                     
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
+                    <div class="bab-title">BAB I<br>KETENTUAN UMUM</div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 1</div>
                         <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
                         <p>1. Surat Izin Penangkapan Ikan yang selanjutnya disebut SIPI adalah izin yang diberikan kepada kapal perikanan untuk melakukan penangkapan ikan di wilayah perairan Indonesia dan/atau Zona Ekonomi Eksklusif Indonesia.</p>
                         <p>2. Surat Izin Kapal Pengangkut Ikan yang selanjutnya disebut SIKPI adalah izin yang diberikan kepada kapal pengangkut ikan untuk mengangkut ikan hasil tangkapan.</p>
                         <p>3. Kapal perikanan adalah kapal, perahu, atau alat apung lain yang digunakan untuk melakukan penangkapan ikan, termasuk kapal yang digunakan untuk melakukan penelitian perikanan.</p>
+                        <p>4. Direktur Jenderal adalah Direktur Jenderal Perikanan Tangkap Kementerian Kelautan dan Perikanan.</p>
                     </div>
                     
-                    <div class="pdf-bab">BAB II<br>TATA CARA PENERBITAN SIPI DAN SIKPI</div>
+                    <div class="bab-title">BAB II<br>TATA CARA PENERBITAN SIPI DAN SIKPI</div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 2</div>
                         <p>(1) Permohonan SIPI diajukan secara tertulis kepada Menteri melalui Direktur Jenderal Perikanan Tangkap.</p>
                         <p>(2) Permohonan sebagaimana dimaksud pada ayat (1) dilampiri dengan:</p>
                         <p>a. fotokopi surat tanda pendaftaran kapal;</p>
@@ -1075,478 +1345,276 @@
                         <p>c. surat pernyataan kesanggupan mematuhi ketentuan peraturan perundang-undangan di bidang perikanan.</p>
                     </div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 3</div>
                         <p>(1) SIPI diberikan untuk jangka waktu paling lama 5 (lima) tahun.</p>
                         <p>(2) SIPI dapat diperpanjang untuk jangka waktu paling lama 5 (lima) tahun.</p>
+                        <p>(3) Permohonan perpanjangan SIPI diajukan paling lambat 3 (tiga) bulan sebelum berakhirnya masa berlaku SIPI.</p>
                     </div>
                     
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 4</div>
+                        <p>(1) Tata cara penerbitan SIKPI mengikuti ketentuan sebagaimana dimaksud dalam Pasal 2 dan Pasal 3 dengan penyesuaian persyaratan teknis.</p>
+                        <p>(2) SIKPI diberikan untuk kegiatan pengangkutan ikan dari tempat pendaratan ikan ke tempat pengolahan atau pemasaran.</p>
+                    </div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 4</div>
+                    <div class="bab-title">BAB III<br>KETENTUAN PENUTUP</div>
+                    
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 5</div>
+                        <p>Pada saat Peraturan Menteri ini mulai berlaku, Peraturan Menteri Kelautan dan Perikanan Nomor 10 Tahun 2019 tentang Tata Cara Penerbitan Surat Izin Penangkapan Ikan dan Surat Izin Kapal Pengangkut Ikan dicabut dan dinyatakan tidak berlaku.</p>
+                    </div>
+                    
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 6</div>
                         <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
                     </div>
                     
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 20 Maret 2022<br>
+                    <div style="text-align: center; margin-top: 60px;">
+                        <p>Agar setiap orang mengetahuinya, memerintahkan pengundangan Peraturan Menteri ini dengan penempatannya dalam Berita Negara Republik Indonesia.</p>
+                    </div>
+                    
+                    <div style="text-align: right; margin-top: 80px;">
+                        <p>Ditetapkan di Jakarta<br>pada tanggal 20 Maret 2022</p>
                         <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
+                        <p>MENTERI KELAUTAN DAN PERIKANAN<br>REPUBLIK INDONESIA,</p>
                         <br>
                         <br>
                         <br>
-                        <strong>SAKTI WAHYU TRENGGONO</strong>
-                    </p>
+                        <p style="font-weight: bold;">SAKTI WAHYU TRENGGONO</p>
+                    </div>
                 `
             },
             3: {
-                number: "12/PERMEN-KP/2021",
+                number: "12",
+                year: "2021",
                 title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 12 TAHUN 2021",
                 subtitle: "TENTANG PELAKSANAAN KEGIATAN USAHA PERIKANAN TANGKAP DI LAUT LEPAS",
+                fullTitle: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 12 TAHUN 2021 TENTANG PELAKSANAAN KEGIATAN USAHA PERIKANAN TANGKAP DI LAUT LEPAS",
                 category: "pengelolaan",
-                year: "2021",
                 pages: "28",
                 content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
+                    <div class="kop-surat">
+                        <h1>PERATURAN MENTERI KELAUTAN DAN PERIKANAN</h1>
+                        <h1>REPUBLIK INDONESIA</h1>
+                        <h2>NOMOR 12 TAHUN 2021</h2>
+                        <h2>TENTANG</h2>
+                        <h2>PELAKSANAAN KEGIATAN USAHA PERIKANAN TANGKAP DI LAUT LEPAS</h2>
+                    </div>
                     
-                    <div class="pdf-bab">Menimbang:</div>
+                    <p style="text-align: center; margin: 30px 0;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
+                    
+                    <p style="text-align: center; margin-bottom: 40px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
+                    
+                    <div class="bab-title">Menimbang:</div>
                     <p>a. bahwa kegiatan usaha perikanan tangkap di laut lepas perlu diatur untuk menjamin keberlanjutan sumber daya ikan dan kepentingan nasional;</p>
-                    <p>b. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Pelaksanaan Kegiatan Usaha Perikanan Tangkap di Laut Lepas;</p>
+                    <p>b. bahwa pengaturan kegiatan usaha perikanan tangkap di laut lepas harus selaras dengan ketentuan hukum internasional dan perjanjian internasional yang berlaku;</p>
+                    <p>c. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a dan huruf b, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Pelaksanaan Kegiatan Usaha Perikanan Tangkap di Laut Lepas;</p>
                     
-                    <div class="pdf-bab">Mengingat:</div>
-                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan;</p>
-                    <p>2. Undang-Undang Nomor 32 Tahun 2014 tentang Kelautan;</p>
+                    <div class="bab-title">Mengingat:</div>
+                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan (Lembaran Negara Republik Indonesia Tahun 2004 Nomor 118, Tambahan Lembaran Negara Republik Indonesia Nomor 4433);</p>
+                    <p>2. Undang-Undang Nomor 32 Tahun 2014 tentang Kelautan (Lembaran Negara Republik Indonesia Tahun 2014 Nomor 294, Tambahan Lembaran Negara Republik Indonesia Nomor 5603);</p>
                     
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG PELAKSANAAN KEGIATAN USAHA PERIKANAN TANGKAP DI LAUT LEPAS.</p>
+                    <div class="bab-title">MEMUTUSKAN:</div>
+                    <p style="text-align: center; font-weight: bold; margin: 20px 0;">Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG PELAKSANAAN KEGIATAN USAHA PERIKANAN TANGKAP DI LAUT LEPAS.</p>
                     
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
+                    <div class="bab-title">BAB I<br>KETENTUAN UMUM</div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 1</div>
                         <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
                         <p>1. Laut lepas adalah semua bagian laut yang tidak termasuk dalam Zona Ekonomi Eksklusif, laut teritorial, perairan kepulauan, atau perairan pedalaman suatu negara.</p>
                         <p>2. Kapal perikanan Indonesia adalah kapal perikanan yang berbendera Indonesia.</p>
                         <p>3. Regional Fisheries Management Organization (RFMO) adalah organisasi pengelolaan perikanan regional.</p>
+                        <p>4. Izin khusus adalah izin yang diberikan kepada kapal perikanan Indonesia untuk melakukan penangkapan ikan di laut lepas.</p>
                     </div>
                     
-                    <div class="pdf-bab">BAB II<br>PERSYARATAN DAN KEWAJIBAN</div>
+                    <div class="bab-title">BAB II<br>PERSYARATAN DAN KEWAJIBAN</div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 2</div>
                         <p>(1) Kapal perikanan Indonesia yang melakukan penangkapan ikan di laut lepas wajib memiliki izin khusus penangkapan ikan di laut lepas.</p>
-                        <p>(2) Izin khusus sebagaimana dimaksud pada ayat (1) diberikan oleh Menteri.</p>
+                        <p>(2) Izin khusus sebagaimana dimaksud pada ayat (1) diberikan oleh Menteri berdasarkan rekomendasi dari RFMO yang bersangkutan.</p>
+                        <p>(3) Permohonan izin khusus diajukan dengan melampirkan dokumen sebagaimana diatur dalam ketentuan RFMO setempat.</p>
                     </div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 3</div>
                         <p>Kapal perikanan Indonesia yang melakukan penangkapan ikan di laut lepas wajib:</p>
-                        <p>a. mematuhi ketentuan RFMO setempat;</p>
-                        <p>b. melaporkan hasil tangkapan kepada Menteri secara berkala;</p>
-                        <p>c. memasang alat pemantau elektronik (VMS) pada kapal.</p>
+                        <p>a. mematuhi ketentuan RFMO setempat dan hukum internasional yang berlaku;</p>
+                        <p>b. melaporkan hasil tangkapan kepada Menteri secara berkala sesuai format yang ditetapkan;</p>
+                        <p>c. memasang alat pemantau elektronik (Vessel Monitoring System/VMS) pada kapal;</p>
+                        <p>d. membawa dokumen kapal dan izin yang lengkap selama melakukan penangkapan ikan;</p>
+                        <p>e. mematuhi ketentuan mengenai alat tangkap dan ukuran ikan yang boleh ditangkap.</p>
                     </div>
                     
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
+                    <div class="bab-title">BAB III<br>KETENTUAN PENUTUP</div>
                     
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 4</div>
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 4</div>
+                        <p>Pada saat Peraturan Menteri ini mulai berlaku, semua ketentuan pelaksanaan kegiatan usaha perikanan tangkap di laut lepas yang bertentangan dengan Peraturan Menteri ini dinyatakan tidak berlaku.</p>
+                    </div>
+                    
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 5</div>
                         <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
                     </div>
                     
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 15 Juli 2021<br>
-                        <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
-                        <br>
-                        <br>
-                        <br>
-                        <strong>SAKTI WAHYU TRENGGONO</strong>
-                    </p>
-                `
-            },
-            4: {
-                number: "8/PERMEN-KP/2020",
-                title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 8 TAHUN 2020",
-                subtitle: "TENTANG PENYELENGGARAAN PELABUHAN PERIKANAN",
-                category: "kapal",
-                year: "2020",
-                pages: "52",
-                content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
-                    
-                    <div class="pdf-bab">Menimbang:</div>
-                    <p>a. bahwa pelabuhan perikanan berfungsi sebagai simpul utama dalam sistem bisnis perikanan tangkap yang perlu diselenggarakan secara efektif dan efisien;</p>
-                    <p>b. bahwa untuk meningkatkan peran dan fungsi pelabuhan perikanan, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Penyelenggaraan Pelabuhan Perikanan;</p>
-                    
-                    <div class="pdf-bab">Mengingat:</div>
-                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan;</p>
-                    <p>2. Undang-Undang Nomor 17 Tahun 2008 tentang Pelayaran;</p>
-                    
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG PENYELENGGARAAN PELABUHAN PERIKANAN.</p>
-                    
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
-                        <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
-                        <p>1. Pelabuhan perikanan adalah tempat yang terdiri dari daratan dan perairan di sekitarnya dengan batas-batas tertentu sebagai tempat kegiatan pemerintahan dan kegiatan sistem bisnis perikanan yang digunakan sebagai tempat kapal perikanan bersandar, berlabuh, dan/atau bongkar muat ikan yang dilengkapi dengan fasilitas keselamatan pelayaran dan kegiatan penunjang pelabuhan perikanan.</p>
-                        <p>2. Unit Penyelenggara Pelabuhan Perikanan yang selanjutnya disebut UPPP adalah unit kerja di pelabuhan perikanan yang bertugas menyelenggarakan pelabuhan perikanan.</p>
-                        <p>3. Tempat pendaratan ikan adalah tempat tertentu di pelabuhan perikanan yang digunakan untuk membongkar hasil tangkapan ikan dari kapal perikanan.</p>
+                    <div style="text-align: center; margin-top: 60px;">
+                        <p>Agar setiap orang mengetahuinya, memerintahkan pengundangan Peraturan Menteri ini dengan penempatannya dalam Berita Negara Republik Indonesia.</p>
                     </div>
                     
-                    <div class="pdf-bab">BAB II<br>FUNGSI DAN KLASIFIKASI</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
-                        <p>Pelabuhan perikanan berfungsi sebagai:</p>
-                        <p>a. tempat pendaratan ikan;</p>
-                        <p>b. tempat pembinaan mutu hasil perikanan;</p>
-                        <p>c. tempat pengumpulan data statistik perikanan;</p>
-                        <p>d. tempat pelayanan administrasi perikanan.</p>
+                    <div style="text-align: right; margin-top: 80px;">
+                        <p>Ditetapkan di Jakarta<br>pada tanggal 15 Juli 2021</p>
+                        <br>
+                        <p>MENTERI KELAUTAN DAN PERIKANAN<br>REPUBLIK INDONESIA,</p>
+                        <br>
+                        <br>
+                        <br>
+                        <p style="font-weight: bold;">SAKTI WAHYU TRENGGONO</p>
                     </div>
-                    
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
-                        <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
-                    </div>
-                    
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 10 April 2020<br>
-                        <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
-                        <br>
-                        <br>
-                        <br>
-                        <strong>EDHY PRABOWO</strong>
-                    </p>
-                `
-            },
-            5: {
-                number: "3/PERMEN-KP/2019",
-                title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 3 TAHUN 2019",
-                subtitle: "TENTANG TATA CARA PENETAPAN STATUS PERLINDUNGAN JENIS IKAN YANG DILINDUNGI",
-                category: "pelabuhan",
-                year: "2019",
-                pages: "36",
-                content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
-                    
-                    <div class="pdf-bab">Menimbang:</div>
-                    <p>a. bahwa untuk melindungi jenis ikan tertentu dari kepunahan, perlu menetapkan status perlindungan jenis ikan;</p>
-                    <p>b. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Tata Cara Penetapan Status Perlindungan Jenis Ikan yang Dilindungi;</p>
-                    
-                    <div class="pdf-bab">Mengingat:</div>
-                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan;</p>
-                    <p>2. Undang-Undang Nomor 5 Tahun 1990 tentang Konservasi Sumber Daya Alam Hayati dan Ekosistemnya;</p>
-                    
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG TATA CARA PENETAPAN STATUS PERLINDUNGAN JENIS IKAN YANG DILINDUNGI.</p>
-                    
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
-                        <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
-                        <p>1. Jenis ikan yang dilindungi adalah jenis ikan yang karena populasi dan/atau daerah sebarannya terbatas dan/atau penurunan jumlah populasi yang drastis dikhawatirkan terancam punah.</p>
-                        <p>2. Status perlindungan adalah penggolongan jenis ikan berdasarkan tingkat keterancaman punah.</p>
-                        <p>3. Kriteria adalah ukuran atau patokan yang digunakan sebagai dasar penilaian atau penetapan status perlindungan jenis ikan.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB II<br>KRITERIA PENETAPAN</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
-                        <p>Kriteria penetapan status perlindungan jenis ikan meliputi:</p>
-                        <p>a. ukuran populasi;</p>
-                        <p>b. daerah sebaran;</p>
-                        <p>c. tingkat penurunan populasi;</p>
-                        <p>d. tingkat ancaman.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
-                        <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
-                    </div>
-                    
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 5 Februari 2019<br>
-                        <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
-                        <br>
-                        <br>
-                        <br>
-                        <strong>SUSI PUDJIASTUTI</strong>
-                    </p>
-                `
-            },
-            6: {
-                number: "15/PERMEN-KP/2018",
-                title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 15 TAHUN 2018",
-                subtitle: "TENTANG PENGELOLAAN SUMBER DAYA IKAN DI ZONA EKONOMI EKSKLUSIF INDONESIA",
-                category: "perikanan",
-                year: "2018",
-                pages: "41",
-                content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
-                    
-                    <div class="pdf-bab">Menimbang:</div>
-                    <p>a. bahwa Zona Ekonomi Eksklusif Indonesia merupakan wilayah dengan potensi sumber daya ikan yang besar yang perlu dikelola secara optimal dan berkelanjutan;</p>
-                    <p>b. bahwa untuk mengoptimalkan pengelolaan sumber daya ikan di Zona Ekonomi Eksklusif Indonesia, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Pengelolaan Sumber Daya Ikan di Zona Ekonomi Eksklusif Indonesia;</p>
-                    
-                    <div class="pdf-bab">Mengingat:</div>
-                    <p>1. Undang-Undang Nomor 5 Tahun 1983 tentang Zona Ekonomi Eksklusif Indonesia;</p>
-                    <p>2. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan;</p>
-                    
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG PENGELOLAAN SUMBER DAYA IKAN DI ZONA EKONOMI EKSKLUSIF INDONESIA.</p>
-                    
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
-                        <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
-                        <p>1. Zona Ekonomi Eksklusif Indonesia yang selanjutnya disebut ZEEI adalah zona di luar dan berbatasan dengan laut teritorial Indonesia sebagaimana ditetapkan berdasarkan undang-undang yang berlaku tentang perairan Indonesia yang meliputi dasar laut, tanah di bawahnya, dan air di atasnya dengan batas terluar 200 (dua ratus) mil laut diukur dari garis pangkal laut teritorial Indonesia.</p>
-                        <p>2. Sumber daya ikan adalah potensi semua jenis ikan.</p>
-                        <p>3. Kapal perikanan asing adalah kapal perikanan yang berbendera asing.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB II<br>PENGELOLAAN SUMBER DAYA IKAN</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
-                        <p>(1) Pengelolaan sumber daya ikan di ZEEI dilaksanakan berdasarkan prinsip keberlanjutan.</p>
-                        <p>(2) Pengelolaan sebagaimana dimaksud pada ayat (1) meliputi perencanaan, pemanfaatan, dan pengendalian.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
-                        <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
-                    </div>
-                    
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 20 Agustus 2018<br>
-                        <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
-                        <br>
-                        <br>
-                        <br>
-                        <strong>SUSI PUDJIASTUTI</strong>
-                    </p>
-                `
-            },
-            7: {
-                number: "7/PERMEN-KP/2023",
-                title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 7 TAHUN 2023",
-                subtitle: "TENTANG STANDAR OPERASIONAL PROSEDUR BUDIDAYA IKAN YANG BAIK",
-                category: "budidaya",
-                year: "2023",
-                pages: "38",
-                content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
-                    
-                    <div class="pdf-bab">Menimbang:</div>
-                    <p>a. bahwa untuk meningkatkan kualitas dan daya saing produk budidaya ikan, perlu ditetapkan Standar Operasional Prosedur Budidaya Ikan yang Baik;</p>
-                    <p>b. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Standar Operasional Prosedur Budidaya Ikan yang Baik;</p>
-                    
-                    <div class="pdf-bab">Mengingat:</div>
-                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan;</p>
-                    <p>2. Peraturan Pemerintah Nomor 28 Tahun 2021 tentang Penyelenggaraan Perikanan Budidaya;</p>
-                    
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG STANDAR OPERASIONAL PROSEDUR BUDIDAYA IKAN YANG BAIK.</p>
-                    
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
-                        <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
-                        <p>1. Budidaya ikan adalah kegiatan untuk memelihara, membesarkan, dan/atau membiakkan ikan dan memanen hasilnya dalam lingkungan yang terkontrol.</p>
-                        <p>2. Standar Operasional Prosedur Budidaya Ikan yang Baik yang selanjutnya disebut SOP Budidaya adalah acuan yang digunakan dalam pelaksanaan budidaya ikan untuk menghasilkan produk yang aman, bermutu, dan berdaya saing.</p>
-                        <p>3. Unit pembenihan adalah tempat kegiatan untuk menghasilkan benih ikan.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB II<br>STANDAR OPERASIONAL PROSEDUR</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
-                        <p>SOP Budidaya meliputi:</p>
-                        <p>a. pemilihan lokasi;</p>
-                        <p>b. pengelolaan kualitas air;</p>
-                        <p>c. penggunaan pakan;</p>
-                        <p>d. pengendalian penyakit;</p>
-                        <p>e. pemanenan dan penanganan pascapanen.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
-                        <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
-                    </div>
-                    
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 25 Mei 2023<br>
-                        <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
-                        <br>
-                        <br>
-                        <br>
-                        <strong>SAKTI WAHYU TRENGGONO</strong>
-                    </p>
-                `
-            },
-            8: {
-                number: "10/PERMEN-KP/2022",
-                title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 10 TAHUN 2022",
-                subtitle: "TENTANG PENGELOLAAN KAWASAN KONSERVASI PERAIRAN",
-                category: "pengelolaan",
-                year: "2022",
-                pages: "47",
-                content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
-                    
-                    <div class="pdf-bab">Menimbang:</div>
-                    <p>a. bahwa kawasan konservasi perairan merupakan bagian penting dari pengelolaan sumber daya kelautan dan perikanan secara berkelanjutan;</p>
-                    <p>b. bahwa untuk meningkatkan efektivitas pengelolaan kawasan konservasi perairan, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Pengelolaan Kawasan Konservasi Perairan;</p>
-                    
-                    <div class="pdf-bab">Mengingat:</div>
-                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan;</p>
-                    <p>2. Undang-Undang Nomor 27 Tahun 2007 tentang Pengelolaan Wilayah Pesisir dan Pulau-Pulau Kecil;</p>
-                    
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG PENGELOLAAN KAWASAN KONSERVASI PERAIRAN.</p>
-                    
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
-                        <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
-                        <p>1. Kawasan konservasi perairan adalah kawasan perairan yang dilindungi, dikelola dengan sistem zonasi, untuk mewujudkan pengelolaan sumber daya ikan dan lingkungannya secara berkelanjutan.</p>
-                        <p>2. Zonasi adalah pembagian wilayah kawasan konservasi perairan berdasarkan fungsi dan peruntukannya.</p>
-                        <p>3. Masyarakat adalah kelompok orang yang bermukim di dalam dan/atau di sekitar kawasan konservasi perairan.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB II<br>ZONASI KAWASAN KONSERVASI</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
-                        <p>(1) Kawasan konservasi perairan terdiri dari beberapa zona.</p>
-                        <p>(2) Zona sebagaimana dimaksud pada ayat (1) meliputi:</p>
-                        <p>a. zona inti;</p>
-                        <p>b. zona pemanfaatan terbatas;</p>
-                        <p>c. zona lainnya sesuai dengan kebutuhan.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
-                        <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
-                    </div>
-                    
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 15 Agustus 2022<br>
-                        <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
-                        <br>
-                        <br>
-                        <br>
-                        <strong>SAKTI WAHYU TRENGGONO</strong>
-                    </p>
-                `
-            },
-            9: {
-                number: "4/PERMEN-KP/2021",
-                title: "PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR 4 TAHUN 2021",
-                subtitle: "TENTANG STANDAR TEKNIS KAPAL PENANGKAPAN IKAN",
-                category: "kapal",
-                year: "2021",
-                pages: "29",
-                content: `
-                    <p style="text-align: center; margin-top: 20px;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
-                    <p style="text-align: center; margin-bottom: 30px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
-                    
-                    <div class="pdf-bab">Menimbang:</div>
-                    <p>a. bahwa untuk menjamin keselamatan dan keamanan kapal penangkapan ikan, perlu ditetapkan standar teknis kapal penangkapan ikan;</p>
-                    <p>b. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang Standar Teknis Kapal Penangkapan Ikan;</p>
-                    
-                    <div class="pdf-bab">Mengingat:</div>
-                    <p>1. Undang-Undang Nomor 17 Tahun 2008 tentang Pelayaran;</p>
-                    <p>2. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan;</p>
-                    
-                    <div class="pdf-bab">MEMUTUSKAN:</div>
-                    <p>Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG STANDAR TEKNIS KAPAL PENANGKAPAN IKAN.</p>
-                    
-                    <div class="pdf-bab">BAB I<br>KETENTUAN UMUM</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 1</div>
-                        <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
-                        <p>1. Kapal penangkapan ikan adalah kapal, perahu, atau alat apung lain yang digunakan secara langsung untuk melakukan penangkapan ikan.</p>
-                        <p>2. Standar teknis adalah spesifikasi teknis yang harus dipenuhi oleh kapal penangkapan ikan.</p>
-                        <p>3. Gross Tonnage (GT) adalah ukuran besarnya kapal yang dinyatakan dalam tonase kotor.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB II<br>STANDAR TEKNIS</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 2</div>
-                        <p>(1) Kapal penangkapan ikan wajib memenuhi standar teknis sesuai dengan ukurannya.</p>
-                        <p>(2) Standar teknis sebagaimana dimaksud pada ayat (1) meliputi:</p>
-                        <p>a. konstruksi kapal;</p>
-                        <p>b. permesinan;</p>
-                        <p>c. alat navigasi;</p>
-                        <p>d. alat keselamatan.</p>
-                    </div>
-                    
-                    <div class="pdf-bab">BAB III<br>KETENTUAN PENUTUP</div>
-                    
-                    <div class="pdf-pasal">
-                        <div class="pdf-pasal-title">Pasal 3</div>
-                        <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
-                    </div>
-                    
-                    <p style="text-align: right; margin-top: 100px;">
-                        Ditetapkan di Jakarta<br>
-                        pada tanggal 10 Maret 2021<br>
-                        <br>
-                        MENTERI KELAUTAN DAN PERIKANAN<br>
-                        REPUBLIK INDONESIA<br>
-                        <br>
-                        <br>
-                        <br>
-                        <strong>SAKTI WAHYU TRENGGONO</strong>
-                    </p>
                 `
             }
         };
+
+        // Data tambahan untuk peraturan 4-9 dengan format yang sama
+        for (let i = 4; i <= 9; i++) {
+            peraturanData[i] = {
+                number: i === 4 ? "8" : i === 5 ? "3" : i === 6 ? "15" : i === 7 ? "7" : i === 8 ? "10" : "4",
+                year: i === 4 ? "2020" : i === 5 ? "2019" : i === 6 ? "2018" : i === 7 ? "2023" : i === 8 ? "2022" : "2021",
+                title: `PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR ${i === 4 ? "8" : i === 5 ? "3" : i === 6 ? "15" : i === 7 ? "7" : i === 8 ? "10" : "4"} TAHUN ${i === 4 ? "2020" : i === 5 ? "2019" : i === 6 ? "2018" : i === 7 ? "2023" : i === 8 ? "2022" : "2021"}`,
+                subtitle: i === 4 ? "TENTANG PENYELENGGARAAN PELABUHAN PERIKANAN" : 
+                         i === 5 ? "TENTANG TATA CARA PENETAPAN STATUS PERLINDUNGAN JENIS IKAN YANG DILINDUNGI" :
+                         i === 6 ? "TENTANG PENGELOLAAN SUMBER DAYA IKAN DI ZONA EKONOMI EKSKLUSIF INDONESIA" :
+                         i === 7 ? "TENTANG STANDAR OPERASIONAL PROSEDUR BUDIDAYA IKAN YANG BAIK" :
+                         i === 8 ? "TENTANG PENGELOLAAN KAWASAN KONSERVASI PERAIRAN" :
+                         "TENTANG STANDAR TEKNIS KAPAL PENANGKAPAN IKAN",
+                fullTitle: `PERATURAN MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA NOMOR ${i === 4 ? "8" : i === 5 ? "3" : i === 6 ? "15" : i === 7 ? "7" : i === 8 ? "10" : "4"} TAHUN ${i === 4 ? "2020" : i === 5 ? "2019" : i === 6 ? "2018" : i === 7 ? "2023" : i === 8 ? "2022" : "2021"} TENTANG ${i === 4 ? "PENYELENGGARAAN PELABUHAN PERIKANAN" : 
+                          i === 5 ? "TATA CARA PENETAPAN STATUS PERLINDUNGAN JENIS IKAN YANG DILINDUNGI" :
+                          i === 6 ? "PENGELOLAAN SUMBER DAYA IKAN DI ZONA EKONOMI EKSKLUSIF INDONESIA" :
+                          i === 7 ? "STANDAR OPERASIONAL PROSEDUR BUDIDAYA IKAN YANG BAIK" :
+                          i === 8 ? "PENGELOLAAN KAWASAN KONSERVASI PERAIRAN" :
+                          "STANDAR TEKNIS KAPAL PENANGKAPAN IKAN"}`,
+                category: i === 4 ? "kapal" : i === 5 ? "pelabuhan" : i === 6 ? "perikanan" : i === 7 ? "budidaya" : i === 8 ? "pengelolaan" : "kapal",
+                pages: i === 4 ? "52" : i === 5 ? "36" : i === 6 ? "41" : i === 7 ? "38" : i === 8 ? "47" : "29",
+                content: `
+                    <div class="kop-surat">
+                        <h1>PERATURAN MENTERI KELAUTAN DAN PERIKANAN</h1>
+                        <h1>REPUBLIK INDONESIA</h1>
+                        <h2>NOMOR ${i === 4 ? "8" : i === 5 ? "3" : i === 6 ? "15" : i === 7 ? "7" : i === 8 ? "10" : "4"} TAHUN ${i === 4 ? "2020" : i === 5 ? "2019" : i === 6 ? "2018" : i === 7 ? "2023" : i === 8 ? "2022" : "2021"}</h2>
+                        <h2>TENTANG</h2>
+                        <h2>${i === 4 ? "PENYELENGGARAAN PELABUHAN PERIKANAN" : 
+                           i === 5 ? "TATA CARA PENETAPAN STATUS PERLINDUNGAN JENIS IKAN YANG DILINDUNGI" :
+                           i === 6 ? "PENGELOLAAN SUMBER DAYA IKAN DI ZONA EKONOMI EKSKLUSIF INDONESIA" :
+                           i === 7 ? "STANDAR OPERASIONAL PROSEDUR BUDIDAYA IKAN YANG BAIK" :
+                           i === 8 ? "PENGELOLAAN KAWASAN KONSERVASI PERAIRAN" :
+                           "STANDAR TEKNIS KAPAL PENANGKAPAN IKAN"}</h2>
+                    </div>
+                    
+                    <p style="text-align: center; margin: 30px 0;">DENGAN RAHMAT TUHAN YANG MAHA ESA</p>
+                    
+                    <p style="text-align: center; margin-bottom: 40px;">MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,</p>
+                    
+                    <div class="bab-title">Menimbang:</div>
+                    <p>a. bahwa perlu pengaturan mengenai ${i === 4 ? "penyelenggaraan pelabuhan perikanan" : 
+                       i === 5 ? "tata cara penetapan status perlindungan jenis ikan yang dilindungi" :
+                       i === 6 ? "pengelolaan sumber daya ikan di Zona Ekonomi Eksklusif Indonesia" :
+                       i === 7 ? "standar operasional prosedur budidaya ikan yang baik" :
+                       i === 8 ? "pengelolaan kawasan konservasi perairan" :
+                       "standar teknis kapal penangkapan ikan"};</p>
+                    <p>b. bahwa pengaturan tersebut diperlukan untuk ${i === 4 ? "meningkatkan efisiensi dan efektivitas pelayanan di pelabuhan perikanan" : 
+                       i === 5 ? "melindungi jenis ikan tertentu dari kepunahan" :
+                       i === 6 ? "mengoptimalkan pemanfaatan sumber daya ikan secara berkelanjutan" :
+                       i === 7 ? "meningkatkan kualitas dan daya saing produk budidaya ikan" :
+                       i === 8 ? "meningkatkan efektivitas pengelolaan kawasan konservasi" :
+                       "menjamin keselamatan dan keamanan kapal penangkapan ikan"};</p>
+                    <p>c. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a dan huruf b, perlu menetapkan Peraturan Menteri Kelautan dan Perikanan tentang ${i === 4 ? "Penyelenggaraan Pelabuhan Perikanan" : 
+                       i === 5 ? "Tata Cara Penetapan Status Perlindungan Jenis Ikan yang Dilindungi" :
+                       i === 6 ? "Pengelolaan Sumber Daya Ikan di Zona Ekonomi Eksklusif Indonesia" :
+                       i === 7 ? "Standar Operasional Prosedur Budidaya Ikan yang Baik" :
+                       i === 8 ? "Pengelolaan Kawasan Konservasi Perairan" :
+                       "Standar Teknis Kapal Penangkapan Ikan"};</p>
+                    
+                    <div class="bab-title">Mengingat:</div>
+                    <p>1. Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan (Lembaran Negara Republik Indonesia Tahun 2004 Nomor 118, Tambahan Lembaran Negara Republik Indonesia Nomor 4433);</p>
+                    <p>2. ${i === 4 ? "Undang-Undang Nomor 17 Tahun 2008 tentang Pelayaran (Lembaran Negara Republik Indonesia Tahun 2008 Nomor 64, Tambahan Lembaran Negara Republik Indonesia Nomor 4849);" : 
+                       i === 5 ? "Undang-Undang Nomor 5 Tahun 1990 tentang Konservasi Sumber Daya Alam Hayati dan Ekosistemnya (Lembaran Negara Republik Indonesia Tahun 1990 Nomor 49, Tambahan Lembaran Negara Republik Indonesia Nomor 3419);" :
+                       i === 6 ? "Undang-Undang Nomor 5 Tahun 1983 tentang Zona Ekonomi Eksklusif Indonesia (Lembaran Negara Republik Indonesia Tahun 1983 Nomor 44, Tambahan Lembaran Negara Republik Indonesia Nomor 3260);" :
+                       i === 7 ? "Peraturan Pemerintah Nomor 28 Tahun 2021 tentang Penyelenggaraan Perikanan Budidaya;" :
+                       i === 8 ? "Undang-Undang Nomor 27 Tahun 2007 tentang Pengelolaan Wilayah Pesisir dan Pulau-Pulau Kecil (Lembaran Negara Republik Indonesia Tahun 2007 Nomor 84, Tambahan Lembaran Negara Republik Indonesia Nomor 4739);" :
+                       "Undang-Undang Nomor 17 Tahun 2008 tentang Pelayaran (Lembaran Negara Republik Indonesia Tahun 2008 Nomor 64, Tambahan Lembaran Negara Republik Indonesia Nomor 4849);"}</p>
+                    
+                    <div class="bab-title">MEMUTUSKAN:</div>
+                    <p style="text-align: center; font-weight: bold; margin: 20px 0;">Menetapkan: PERATURAN MENTERI KELAUTAN DAN PERIKANAN TENTANG ${i === 4 ? "PENYELENGGARAAN PELABUHAN PERIKANAN" : 
+                       i === 5 ? "TATA CARA PENETAPAN STATUS PERLINDUNGAN JENIS IKAN YANG DILINDUNGI" :
+                       i === 6 ? "PENGELOLAAN SUMBER DAYA IKAN DI ZONA EKONOMI EKSKLUSIF INDONESIA" :
+                       i === 7 ? "STANDAR OPERASIONAL PROSEDUR BUDIDAYA IKAN YANG BAIK" :
+                       i === 8 ? "PENGELOLAAN KAWASAN KONSERVASI PERAIRAN" :
+                       "STANDAR TEKNIS KAPAL PENANGKAPAN IKAN"}.</p>
+                    
+                    <div class="bab-title">BAB I<br>KETENTUAN UMUM</div>
+                    
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 1</div>
+                        <p>Dalam Peraturan Menteri ini yang dimaksud dengan:</p>
+                        <p>1. ${i === 4 ? "Pelabuhan perikanan adalah tempat yang terdiri dari daratan dan perairan di sekitarnya dengan batas-batas tertentu sebagai tempat kegiatan pemerintahan dan kegiatan sistem bisnis perikanan." : 
+                           i === 5 ? "Jenis ikan yang dilindungi adalah jenis ikan yang karena populasi dan/atau daerah sebarannya terbatas dan/atau penurunan jumlah populasi yang drastis dikhawatirkan terancam punah." :
+                           i === 6 ? "Zona Ekonomi Eksklusif Indonesia yang selanjutnya disebut ZEEI adalah zona di luar dan berbatasan dengan laut teritorial Indonesia." :
+                           i === 7 ? "Budidaya ikan adalah kegiatan untuk memelihara, membesarkan, dan/atau membiakkan ikan dan memanen hasilnya dalam lingkungan yang terkontrol." :
+                           i === 8 ? "Kawasan konservasi perairan adalah kawasan perairan yang dilindungi, dikelola dengan sistem zonasi, untuk mewujudkan pengelolaan sumber daya ikan dan lingkungannya secara berkelanjutan." :
+                           "Kapal penangkapan ikan adalah kapal, perahu, atau alat apung lain yang digunakan secara langsung untuk melakukan penangkapan ikan."}</p>
+                        <p>2. ${i === 4 ? "Unit Penyelenggara Pelabuhan Perikanan yang selanjutnya disebut UPPP adalah unit kerja di pelabuhan perikanan yang bertugas menyelenggarakan pelabuhan perikanan." : 
+                           i === 5 ? "Status perlindungan adalah penggolongan jenis ikan berdasarkan tingkat keterancaman punah." :
+                           i === 6 ? "Sumber daya ikan adalah potensi semua jenis ikan." :
+                           i === 7 ? "Standar Operasional Prosedur Budidaya Ikan yang Baik yang selanjutnya disebut SOP Budidaya adalah acuan yang digunakan dalam pelaksanaan budidaya ikan." :
+                           i === 8 ? "Zonasi adalah pembagian wilayah kawasan konservasi perairan berdasarkan fungsi dan peruntukannya." :
+                           "Standar teknis adalah spesifikasi teknis yang harus dipenuhi oleh kapal penangkapan ikan."}</p>
+                    </div>
+                    
+                    <div class="bab-title">BAB II<br>KETENTUAN POKOK</div>
+                    
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 2</div>
+                        <p>${i === 4 ? "Pelabuhan perikanan berfungsi sebagai tempat pendaratan ikan, tempat pembinaan mutu hasil perikanan, tempat pengumpulan data statistik perikanan, dan tempat pelayanan administrasi perikanan." : 
+                           i === 5 ? "Kriteria penetapan status perlindungan jenis ikan meliputi ukuran populasi, daerah sebaran, tingkat penurunan populasi, dan tingkat ancaman." :
+                           i === 6 ? "Pengelolaan sumber daya ikan di ZEEI dilaksanakan berdasarkan prinsip keberlanjutan dan meliputi perencanaan, pemanfaatan, dan pengendalian." :
+                           i === 7 ? "SOP Budidaya meliputi pemilihan lokasi, pengelolaan kualitas air, penggunaan pakan, pengendalian penyakit, serta pemanenan dan penanganan pascapanen." :
+                           i === 8 ? "Kawasan konservasi perairan terdiri dari zona inti, zona pemanfaatan terbatas, dan zona lainnya sesuai dengan kebutuhan." :
+                           "Kapal penangkapan ikan wajib memenuhi standar teknis yang meliputi konstruksi kapal, permesinan, alat navigasi, dan alat keselamatan."}</p>
+                    </div>
+                    
+                    <div class="bab-title">BAB III<br>KETENTUAN PENUTUP</div>
+                    
+                    <div class="pasal-container">
+                        <div class="pasal-title">Pasal 3</div>
+                        <p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan.</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 60px;">
+                        <p>Agar setiap orang mengetahuinya, memerintahkan pengundangan Peraturan Menteri ini dengan penempatannya dalam Berita Negara Republik Indonesia.</p>
+                    </div>
+                    
+                    <div style="text-align: right; margin-top: 80px;">
+                        <p>Ditetapkan di Jakarta<br>pada tanggal ${i === 4 ? "10 April 2020" : 
+                           i === 5 ? "5 Februari 2019" : 
+                           i === 6 ? "20 Agustus 2018" : 
+                           i === 7 ? "25 Mei 2023" : 
+                           i === 8 ? "15 Agustus 2022" : 
+                           "10 Maret 2021"}</p>
+                        <br>
+                        <p>MENTERI KELAUTAN DAN PERIKANAN<br>REPUBLIK INDONESIA,</p>
+                        <br>
+                        <br>
+                        <br>
+                        <p style="font-weight: bold;">${i === 4 ? "EDHY PRABOWO" : 
+                           i === 5 ? "SUSI PUDJIASTUTI" : 
+                           i === 6 ? "SUSI PUDJIASTUTI" : 
+                           i >= 7 ? "SAKTI WAHYU TRENGGONO" : 
+                           "SAKTI WAHYU TRENGGONO"}</p>
+                    </div>
+                `
+            };
+        }
 
         let currentPeraturanNumber = 1;
 
@@ -1562,25 +1630,39 @@
                 'pelabuhan': 'Pelabuhan Perikanan'
             };
 
+            const categoryColors = {
+                'perikanan': 'var(--primary)',
+                'budidaya': '#10b981',
+                'pengelolaan': '#8b5cf6',
+                'kapal': '#f59e0b',
+                'pelabuhan': '#ef4444'
+            };
+
             return `
                 <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-year="${data.year}" data-category="${data.category}">
                     <div class="peraturan-card h-100 d-flex flex-column">
-                        <div class="peraturan-number">${number}</div>
-                        <h4 class="peraturan-title">Permen KP No. ${data.number}</h4>
+                        <div class="peraturan-number" style="background: linear-gradient(135deg, ${categoryColors[data.category]}, ${categoryColors[data.category]}dd);">${number}</div>
+                        <h4 class="peraturan-title">Permen KP No. ${data.number}/${data.year}</h4>
                         <p class="peraturan-desc">${data.subtitle}</p>
                         
                         <div class="peraturan-meta mt-auto">
-                            <span><i class="far fa-calendar"></i> ${data.year}</span>
-                            <span><i class="far fa-file-pdf"></i> ${data.pages} Halaman</span>
-                            <span><i class="fas fa-tag"></i> ${categoryLabels[data.category]}</span>
+                            <span style="background: ${categoryColors[data.category]}15; color: ${categoryColors[data.category]};">
+                                <i class="far fa-calendar"></i> ${data.year}
+                            </span>
+                            <span style="background: ${categoryColors[data.category]}15; color: ${categoryColors[data.category]};">
+                                <i class="far fa-file-pdf"></i> ${data.pages} Halaman
+                            </span>
+                            <span style="background: ${categoryColors[data.category]}15; color: ${categoryColors[data.category]};">
+                                <i class="fas fa-tag"></i> ${categoryLabels[data.category]}
+                            </span>
                         </div>
                         
-                        <div class="d-flex gap-2 mt-auto">
-                            <button class="btn-download flex-grow-1" onclick="showPeraturanModal(${number})">
-                                <i class="fas fa-eye me-2"></i>Preview
+                        <div class="d-flex flex-column gap-2 mt-auto">
+                            <button class="btn-preview" onclick="showPeraturanModal(${number})">
+                                <i class="fas fa-eye me-2"></i>Preview Peraturan
                             </button>
-                            <button class="btn-download" onclick="generatePDF(${number})" style="width: auto; padding: 10px 15px;">
-                                <i class="fas fa-download"></i>
+                            <button class="btn-download" onclick="generatePDF(${number})">
+                                <i class="fas fa-download me-2"></i>Download PDF
                             </button>
                         </div>
                     </div>
@@ -1607,16 +1689,16 @@
             const modalContent = document.getElementById('modalPeraturanContent');
             
             modalContent.innerHTML = `
-                <div class="modal-kop">
-                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/garuda.png" alt="Lambang Garuda" style="height: 100px;">
-                    <h3>PERATURAN MENTERI KELAUTAN DAN PERIKANAN</h3>
-                    <h3>REPUBLIK INDONESIA</h3>
-                    <h4>${data.title}</h4>
-                    <h4>${data.subtitle}</h4>
+                <div class="kop-surat">
+                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo%20kkp.png" 
+                         alt="Logo KKP" class="logo-kkp-modal">
+                    <h1>PERATURAN MENTERI KELAUTAN DAN PERIKANAN</h1>
+                    <h1>REPUBLIK INDONESIA</h1>
+                    <h2>NOMOR ${data.number} TAHUN ${data.year}</h2>
+                    <h2>TENTANG</h2>
+                    <h2>${data.subtitle.replace('TENTANG ', '')}</h2>
                 </div>
-                <div class="modal-content">
-                    ${data.content.replace(/pdf-bab/g, 'modal-bab').replace(/pdf-pasal/g, 'modal-pasal').replace(/pdf-pasal-title/g, 'modal-pasal-title')}
-                </div>
+                ${data.content}
             `;
             
             const modalDownloadBtn = document.getElementById('modalDownloadBtn');
@@ -1624,9 +1706,12 @@
             
             const modal = new bootstrap.Modal(document.getElementById('peraturanModal'));
             modal.show();
+            
+            // Scroll ke atas modal
+            modalContent.scrollTop = 0;
         }
 
-        // Fungsi untuk generate PDF dengan halaman terpisah
+        // Fungsi untuk generate PDF dengan format center
         async function generatePDF(number) {
             showLoading(`Sedang membuat PDF Peraturan ${number}...`);
             
@@ -1636,89 +1721,175 @@
                     orientation: 'portrait',
                     unit: 'mm',
                     format: 'a4',
-                    putOnlyUsedFonts: true,
-                    floatPrecision: 16
+                    putOnlyUsedFonts: true
                 });
 
                 // Setup fonts
-                pdf.setFont("times", "normal");
-                pdf.setFontSize(12);
-
-                // Garuda Logo
-                const garudaImg = await loadImage('https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/garuda.png');
+                pdf.setFont("helvetica", "normal");
                 
-                // Hitung posisi untuk logo
                 const pageWidth = pdf.internal.pageSize.width;
-                const logoWidth = 30;
-                const logoX = (pageWidth - logoWidth) / 2;
+                const margin = 20;
+                const contentWidth = pageWidth - (margin * 2);
                 
-                // Add logo
-                pdf.addImage(garudaImg, 'PNG', logoX, 20, logoWidth, logoWidth * 1.2);
-                
-                // Add title
-                pdf.setFontSize(14);
-                pdf.setFont("times", "bold");
-                pdf.text("PERATURAN MENTERI KELAUTAN DAN PERIKANAN", pageWidth / 2, 70, { align: 'center' });
-                pdf.text("REPUBLIK INDONESIA", pageWidth / 2, 78, { align: 'center' });
-                
-                pdf.setFontSize(12);
-                pdf.setFont("times", "bold");
-                pdf.text(data.title, pageWidth / 2, 90, { align: 'center', maxWidth: 180 });
-                
-                pdf.setFontSize(11);
-                pdf.text(data.subtitle, pageWidth / 2, 100, { align: 'center', maxWidth: 180 });
-                
-                // Add garis
-                pdf.setLineWidth(0.5);
-                pdf.line(20, 110, pageWidth - 20, 110);
-                
-                // Add content
-                pdf.setFontSize(10);
-                pdf.setFont("times", "normal");
-                
-                // Parse content HTML
-                const content = data.content.replace(/<p[^>]*>/g, '\n').replace(/<\/p>/g, '\n')
-                    .replace(/<div class="pdf-bab"[^>]*>/g, '\n\n')
-                    .replace(/<div class="pdf-pasal"[^>]*>/g, '\n')
-                    .replace(/<div class="pdf-pasal-title"[^>]*>/g, '')
-                    .replace(/<\/div>/g, '')
-                    .replace(/<br>/g, '\n')
-                    .replace(/<strong>/g, '')
-                    .replace(/<\/strong>/g, '')
-                    .replace(/&nbsp;/g, ' ')
-                    .replace(/<[^>]*>/g, '')
-                    .trim();
-                
-                // Split content into lines
-                const lines = pdf.splitTextToSize(content, 170);
-                
-                let yPosition = 120;
-                const lineHeight = 5;
-                const pageHeight = pdf.internal.pageSize.height;
-                
-                for (let i = 0; i < lines.length; i++) {
-                    if (yPosition > pageHeight - 20) {
-                        pdf.addPage();
-                        yPosition = 20;
+                // Function untuk menambahkan teks dengan alignment center
+                function addCenteredText(text, yPos, fontSize = 12, isBold = false) {
+                    pdf.setFontSize(fontSize);
+                    if (isBold) {
+                        pdf.setFont("helvetica", "bold");
+                    } else {
+                        pdf.setFont("helvetica", "normal");
                     }
                     
-                    pdf.text(lines[i], 20, yPosition);
-                    yPosition += lineHeight;
+                    const textWidth = pdf.getStringUnitWidth(text) * fontSize / pdf.internal.scaleFactor;
+                    const xPos = (pageWidth - textWidth) / 2;
+                    
+                    pdf.text(text, xPos, yPos);
+                    return yPos + (fontSize / 2);
                 }
                 
-                // Tanda tangan
+                // Function untuk menambahkan teks dengan alignment left
+                function addLeftText(text, yPos, fontSize = 11, isBold = false) {
+                    pdf.setFontSize(fontSize);
+                    if (isBold) {
+                        pdf.setFont("helvetica", "bold");
+                    } else {
+                        pdf.setFont("helvetica", "normal");
+                    }
+                    
+                    const lines = pdf.splitTextToSize(text, contentWidth);
+                    pdf.text(lines, margin, yPos);
+                    return yPos + (lines.length * (fontSize * 0.6));
+                }
+
+                let yPosition = 30;
+                
+                // Logo KKP di atas teks
+                try {
+                    const logoImg = await loadImage('https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo%20kkp.png');
+                    const logoWidth = 40;
+                    const logoHeight = 40;
+                    const logoX = (pageWidth - logoWidth) / 2;
+                    
+                    pdf.addImage(logoImg, 'PNG', logoX, yPosition, logoWidth, logoHeight);
+                    yPosition += 50;
+                } catch (e) {
+                    console.log('Logo tidak dapat dimuat, menggunakan teks saja');
+                    yPosition += 20;
+                }
+                
+                // Judul Peraturan (CENTER)
+                yPosition = addCenteredText("PERATURAN MENTERI KELAUTAN DAN PERIKANAN", yPosition, 14, true);
+                yPosition = addCenteredText("REPUBLIK INDONESIA", yPosition, 14, true);
+                yPosition += 10;
+                
+                yPosition = addCenteredText(`NOMOR ${data.number} TAHUN ${data.year}`, yPosition, 13, true);
+                yPosition = addCenteredText("TENTANG", yPosition, 13, true);
+                
+                // Subtitle dengan wrapping
+                const subtitle = data.subtitle.replace('TENTANG ', '');
+                pdf.setFontSize(12);
+                pdf.setFont("helvetica", "bold");
+                const subtitleLines = pdf.splitTextToSize(subtitle, contentWidth);
+                const subtitleY = yPosition;
+                
+                subtitleLines.forEach((line, index) => {
+                    const lineWidth = pdf.getStringUnitWidth(line) * 12 / pdf.internal.scaleFactor;
+                    const xPos = (pageWidth - lineWidth) / 2;
+                    pdf.text(line, xPos, subtitleY + (index * 7));
+                });
+                
+                yPosition = subtitleY + (subtitleLines.length * 7) + 15;
+                
+                // "DENGAN RAHMAT TUHAN YANG MAHA ESA" (CENTER)
+                yPosition = addCenteredText("DENGAN RAHMAT TUHAN YANG MAHA ESA", yPosition, 11);
+                yPosition += 10;
+                
+                // "MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA," (CENTER)
+                yPosition = addCenteredText("MENTERI KELAUTAN DAN PERIKANAN REPUBLIK INDONESIA,", yPosition, 11);
+                yPosition += 20;
+                
+                // Parse content untuk PDF
+                const content = data.content;
+                
+                // Extract bagian-bagian penting dari content
+                const menimbangMatch = content.match(/<div class="bab-title">Menimbang:<\/div>([\s\S]*?)<div class="bab-title">Mengingat:/);
+                const mengingatMatch = content.match(/<div class="bab-title">Mengingat:<\/div>([\s\S]*?)<div class="bab-title">MEMUTUSKAN:/);
+                const memutuskanMatch = content.match(/<div class="bab-title">MEMUTUSKAN:<\/div>([\s\S]*?)<div class="bab-title">BAB I/);
+                
+                // Tambahkan Menimbang
+                yPosition = addCenteredText("Menimbang:", yPosition, 12, true);
+                yPosition += 5;
+                
+                if (menimbangMatch && menimbangMatch[1]) {
+                    const menimbangText = menimbangMatch[1].replace(/<[^>]*>/g, '').trim();
+                    yPosition = addLeftText(menimbangText, yPosition);
+                }
+                
+                yPosition += 10;
+                
+                // Tambahkan Mengingat
+                if (yPosition > 250) {
+                    pdf.addPage();
+                    yPosition = 30;
+                }
+                
+                yPosition = addCenteredText("Mengingat:", yPosition, 12, true);
+                yPosition += 5;
+                
+                if (mengingatMatch && mengingatMatch[1]) {
+                    const mengingatText = mengingatMatch[1].replace(/<[^>]*>/g, '').trim();
+                    yPosition = addLeftText(mengingatText, yPosition);
+                }
+                
+                yPosition += 10;
+                
+                // Tambahkan MEMUTUSKAN
+                if (yPosition > 250) {
+                    pdf.addPage();
+                    yPosition = 30;
+                }
+                
+                yPosition = addCenteredText("MEMUTUSKAN:", yPosition, 12, true);
+                yPosition += 5;
+                
+                if (memutuskanMatch && memutuskanMatch[1]) {
+                    const memutuskanText = memutuskanMatch[1].replace(/<[^>]*>/g, '').trim();
+                    yPosition = addCenteredText(memutuskanText, yPosition, 11);
+                }
+                
+                yPosition += 20;
+                
+                // Tambahkan halaman untuk tanda tangan
                 pdf.addPage();
-                pdf.setFontSize(11);
-                pdf.text("Ditetapkan di Jakarta", pageWidth - 30, 100, { align: 'right' });
-                pdf.text("pada tanggal " + getDateFromNumber(number), pageWidth - 30, 108, { align: 'right' });
+                yPosition = 100;
                 
-                pdf.text("MENTERI KELAUTAN DAN PERIKANAN", pageWidth / 2, 150, { align: 'center' });
-                pdf.text("REPUBLIK INDONESIA", pageWidth / 2, 158, { align: 'center' });
+                // Logo KKP untuk tanda tangan
+                try {
+                    const logoImg = await loadImage('https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo%20kkp.png');
+                    const logoWidth = 30;
+                    const logoHeight = 30;
+                    const logoX = (pageWidth - logoWidth) / 2;
+                    
+                    pdf.addImage(logoImg, 'PNG', logoX, yPosition, logoWidth, logoHeight);
+                    yPosition += 40;
+                } catch (e) {
+                    yPosition += 20;
+                }
                 
-                pdf.text(getMinisterName(number), pageWidth / 2, 200, { align: 'center' });
+                // Tanda tangan (CENTER)
+                yPosition = addCenteredText("Ditetapkan di Jakarta", yPosition, 11);
+                yPosition = addCenteredText(`pada tanggal ${getDateFromNumber(number)}`, yPosition, 11);
+                yPosition += 20;
+                
+                yPosition = addCenteredText("MENTERI KELAUTAN DAN PERIKANAN", yPosition, 12, true);
+                yPosition = addCenteredText("REPUBLIK INDONESIA,", yPosition, 12, true);
+                yPosition += 30;
+                
+                yPosition = addCenteredText(getMinisterName(number), yPosition, 12, true);
                 
                 // Save PDF
-                pdf.save(`Peraturan-KKP-${data.number.replace('/', '-')}.pdf`);
+                const fileName = `Peraturan-KKP-${data.number}-${data.year}.pdf`;
+                pdf.save(fileName);
                 
                 showNotification(`PDF Peraturan ${number} berhasil diunduh!`, 'success');
                 
@@ -1772,7 +1943,8 @@
             try {
                 for (let i = 1; i <= 9; i++) {
                     await generatePDF(i);
-                    await new Promise(resolve => setTimeout(resolve, 1000)); // Delay antar file
+                    // Delay singkat antar file untuk menghindari overload
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 }
                 
                 showNotification("Semua 9 peraturan telah berhasil diunduh!", 'success');
@@ -1819,8 +1991,8 @@
             loading.className = 'loading-overlay';
             loading.innerHTML = `
                 <div class="spinner"></div>
-                <div style="font-weight: 600; color: var(--primary-dark);">${message}</div>
-                <small class="text-muted">Harap tunggu...</small>
+                <p>${message}</p>
+                <small class="text-muted">Harap tunggu sebentar...</small>
             `;
             
             document.body.appendChild(loading);
@@ -1842,8 +2014,23 @@
             cards.forEach(card => {
                 const title = card.querySelector('.peraturan-title').textContent.toLowerCase();
                 const desc = card.querySelector('.peraturan-desc').textContent.toLowerCase();
+                const year = card.getAttribute('data-year');
+                const category = card.getAttribute('data-category');
                 
-                if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+                const categoryLabels = {
+                    'perikanan': 'perikanan tangkap',
+                    'budidaya': 'budidaya perikanan',
+                    'pengelolaan': 'pengelolaan sumber daya',
+                    'kapal': 'kapal dan alat tangkap',
+                    'pelabuhan': 'pelabuhan perikanan'
+                };
+                
+                const categoryText = categoryLabels[category] || '';
+                
+                if (title.includes(searchTerm) || 
+                    desc.includes(searchTerm) || 
+                    year.includes(searchTerm) ||
+                    categoryText.includes(searchTerm)) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
@@ -1895,11 +2082,11 @@
         window.addEventListener('scroll', function() {
             const nav = document.getElementById('mainNav');
             if (window.scrollY > 50) {
-                nav.style.boxShadow = "0 10px 30px rgba(0,0,0,0.1)";
-                nav.style.background = "rgba(255, 255, 255, 0.98)";
+                nav.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
+                nav.style.background = "linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%)";
             } else {
-                nav.style.boxShadow = "0 4px 20px rgba(0,0,0,0.05)";
-                nav.style.background = "rgba(255, 255, 255, 0.95)";
+                nav.style.boxShadow = "0 4px 20px rgba(0,0,0,0.1)";
+                nav.style.background = "linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%)";
             }
         });
 
@@ -1916,12 +2103,17 @@
             
             // Preload images
             preloadImages();
+            
+            // Inisialisasi tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         });
 
         // Preload gambar
         function preloadImages() {
             const images = [
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/garuda.png',
                 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo%20kkp.png',
                 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png',
                 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/peraturan.png'
@@ -1936,12 +2128,12 @@
         // Animasi smooth scroll untuk anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                e.preventDefault();
                 const targetId = this.getAttribute('href');
                 if (targetId === '#') return;
                 
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
+                    e.preventDefault();
                     window.scrollTo({
                         top: targetElement.offsetTop - 100,
                         behavior: 'smooth'
@@ -1949,6 +2141,36 @@
                 }
             });
         });
+
+        // Fitur print peraturan
+        function printPeraturan(number) {
+            const data = peraturanData[number];
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Print Peraturan KKP ${data.number}/${data.year}</title>
+                    <style>
+                        body { font-family: 'Times New Roman', serif; line-height: 1.6; padding: 20px; }
+                        .kop-surat { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #000; padding-bottom: 20px; }
+                        h1 { font-size: 16pt; font-weight: bold; margin: 10px 0; }
+                        h2 { font-size: 14pt; font-weight: bold; margin: 8px 0; }
+                        .bab-title { font-weight: bold; text-align: center; margin: 25px 0 15px 0; font-size: 13pt; }
+                        .pasal-title { font-weight: bold; margin-bottom: 10px; font-size: 12pt; }
+                        @media print {
+                            body { padding: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${data.content.replace(/modal-peraturan/g, '').replace(/modal-/g, '')}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
     </script>
 </body>
 </html>
