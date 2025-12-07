@@ -203,12 +203,61 @@
         .footer-links a:hover { color: #fff; text-decoration: underline; }
         .footer-divider { margin: 0 5px; color: rgba(255,255,255,0.3); }
 
-        /* Welcome Notification Modal */
+        /* Welcome Notification Modal - IMPROVED */
         .welcome-modal-content { border: none; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
         .welcome-header { background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%); color: white; padding: 20px; text-align: center; border-bottom: 5px solid var(--accent-color); }
         .welcome-body { padding: 30px 20px; text-align: center; background: #fff; }
         .welcome-btn-reload { background: var(--success-color); color: white; font-weight: bold; padding: 10px 20px; border-radius: 50px; border: none; box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3); transition: all 0.3s; width: 100%; max-width: 250px; }
         .welcome-btn-reload:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(46, 204, 113, 0.4); background: #27ae60; color: white; }
+
+        /* NEW: Login Success Modal */
+        .login-success-modal .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(12, 36, 97, 0.3);
+            border: 2px solid rgba(246, 185, 59, 0.5);
+        }
+        .login-success-modal .modal-header {
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+        }
+        .login-success-modal .modal-body {
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+        .login-success-icon {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #0c2461, #0984e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .welcome-message {
+            font-size: 1.1rem;
+            color: #2d3436;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .welcome-highlight {
+            color: #0c2461;
+            font-weight: 700;
+            background: linear-gradient(135deg, #eaf0f9 0%, #ffffff 100%);
+            padding: 5px 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 5px 0;
+            border-left: 4px solid var(--accent-color);
+        }
 
         /* Hidden Div for QR Code Generation */
         #qr-code-generator { position: absolute; top: -9999px; left: -9999px; }
@@ -268,6 +317,7 @@
                 <form id="loginForm">
                     <div class="mb-4 text-center">
                         <p class="small text-muted mb-3">Masukkan kode keamanan untuk mengakses sistem.</p>
+                        <p class="small text-primary fw-bold mb-2" id="currentDateDisplay"></p>
                         <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
                             <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-key text-success"></i></span>
                             <input type="password" class="form-control bg-light border-0 fs-6" id="securityCode" placeholder="Masukkan kode keamanan" required>
@@ -275,6 +325,7 @@
                                 <i class="fas fa-eye" id="passwordToggleIcon"></i>
                             </button>
                         </div>
+                        <small class="text-muted mt-2 d-block" id="passwordHint">Kode keamanan berubah setiap hari berdasarkan tanggal</small>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton" style="background: var(--primary-gradient);">
                         BUKA DASHBOARD
@@ -288,6 +339,50 @@
         </div>
     </div>
     
+    <!-- Modal Notifikasi Login Berhasil -->
+    <div class="modal fade login-success-modal" id="loginSuccessModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fas fa-check-circle fa-3x mb-3 text-warning"></i>
+                    <h4 class="fw-bold mb-0">Akses Diotorisasi</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="login-success-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5 class="fw-bold text-center mb-4" style="color: #0c2461;">SELAMAT DATANG DI SIMATA</h5>
+                    
+                    <div class="welcome-message">
+                        <p class="mb-3">Anda telah berhasil mengakses <span class="fw-bold" style="color: #0c2461;">Sistem Informasi Pemetaan Data Nelayan Terpadu</span> Dinas Perikanan Kabupaten Situbondo.</p>
+                        
+                        <div class="welcome-highlight mb-3">
+                            <i class="fas fa-user-check me-2"></i>Akses Anda telah diverifikasi dan diotorisasi
+                        </div>
+                        
+                        <div class="welcome-highlight mb-3">
+                            <i class="fas fa-database me-2"></i>Sistem siap untuk pengelolaan data nelayan terpadu
+                        </div>
+                        
+                        <div class="welcome-highlight">
+                            <i class="fas fa-chart-line me-2"></i>Dashboard analitik tersedia untuk pengambilan keputusan
+                        </div>
+                    </div>
+                    
+                    <p class="text-muted small mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Sistem ini menggunakan teknologi keamanan dinamis untuk melindungi data sensitif
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button type="button" class="btn btn-primary px-5 fw-bold shadow" data-bs-dismiss="modal" id="btnContinueDashboard">
+                        <i class="fas fa-rocket me-2"></i>LANJUT KE DASHBOARD
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="welcomeModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content welcome-modal-content">
@@ -1035,16 +1130,42 @@
         let currentPage = 1;
         let duplicateCheckInterval = null;
         let currentDetailId = null; 
-        const SECURITY_CODE = "BidangPN1945"; 
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+        const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
         
+        // --- FUNGSI GENERATE KODE KEAMANAN DINAMIS ---
+        function generateSecurityCode() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // 01-12
+            const day = String(now.getDate()).padStart(2, '0'); // 01-31
+            
+            // Format: YYYYMMDD (8 digit)
+            return `${year}${month}${day}`;
+        }
+        
+        // --- FUNGSI UNTUK MENAMPILKAN TANGGAL SEKARANG ---
+        function displayCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('id-ID', options);
+            document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
+            
+            // Tampilkan hint untuk kode keamanan
+            const codeHint = generateSecurityCode();
+            document.getElementById('passwordHint').innerHTML = `Kode keamanan hari ini: <span class="fw-bold text-primary">${codeHint}</span>`;
+        }
+
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 initializeApp();
                 setupEventListeners();
                 initFishOptions();
+                
+                // Tampilkan tanggal sekarang di form login
+                displayCurrentDate();
                 
                 // Session Check for Persistence (Fix Reload Malfunction)
                 const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
@@ -1190,9 +1311,10 @@
                 const btn = document.getElementById('loginButton');
                 const spinner = document.getElementById('loginSpinner');
                 const inputCode = document.getElementById('securityCode').value;
+                const correctCode = generateSecurityCode();
                 
-                if (inputCode !== SECURITY_CODE) {
-                    showNotification('Kode keamanan salah!', 'error');
+                if (inputCode !== correctCode) {
+                    showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
                     return;
                 }
                 
@@ -1211,12 +1333,22 @@
                     updateDashboard();
                     renderDataTable();
                     
-                    welcomeModal.show();
+                    // Tampilkan modal notifikasi login berhasil
+                    loginSuccessModal.show();
                     
                     btn.disabled = false;
                     spinner.classList.add('d-none');
                     btn.innerHTML = 'BUKA DASHBOARD';
                 }, 1200);
+            });
+
+            // Event listener untuk tombol lanjut ke dashboard
+            document.getElementById('btnContinueDashboard').addEventListener('click', function() {
+                // Tutup modal login success dan tampilkan welcome modal
+                loginSuccessModal.hide();
+                setTimeout(() => {
+                    welcomeModal.show();
+                }, 300);
             });
 
             document.getElementById('btnWelcomeReload').addEventListener('click', function() {
@@ -1246,13 +1378,17 @@
             document.getElementById('privacyToggle').addEventListener('click', function(e) {
                 e.preventDefault();
                 const currentStatus = appSettings.privacyMode;
+                const currentCode = generateSecurityCode();
                 if (currentStatus === true) {
-                    const code = prompt("MASUKKAN KODE KEAMANAN untuk menonaktifkan sensor:");
-                    if (code === SECURITY_CODE) {
+                    const code = prompt("MASUKKAN KODE KEAMANAN untuk menonaktifkan sensor (kode hari ini):");
+                    if (code === currentCode) {
                         appSettings.privacyMode = false;
                         saveSettings(); updatePrivacyUI(); renderDataTable();
                         showNotification('Sensor Data dinonaktifkan.', 'warning');
-                    } else { alert("Kode Keamanan Salah!"); }
+                    } else { 
+                        alert("Kode Keamanan Salah! Kode hari ini: " + currentCode); 
+                        this.checked = true; // Kembalikan toggle ke posisi aktif
+                    }
                 } else {
                     appSettings.privacyMode = true;
                     saveSettings(); updatePrivacyUI(); renderDataTable();
@@ -1834,15 +1970,16 @@
         function bulkDeleteData() {
             const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
             if(checkedBoxes.length === 0) return;
-            const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN:`);
-            if(userCode === SECURITY_CODE) {
+            const currentCode = generateSecurityCode();
+            const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN (kode hari ini):`);
+            if(userCode === currentCode) {
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
                 saveData(); renderDataTable(); updateDashboard();
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 document.getElementById('selectAllCheckbox').checked = false;
                 checkGlobalDuplicates();
-            } else if (userCode !== null) alert("Kode keamanan SALAH!");
+            } else if (userCode !== null) alert("Kode keamanan SALAH! Kode hari ini: " + currentCode);
         }
 
         function editData(id) {
@@ -1914,15 +2051,16 @@
         }
 
         function deleteData(id) {
-            const userCode = prompt("Masukkan KODE KEAMANAN untuk menghapus data:");
-            if(userCode === SECURITY_CODE) {
+            const currentCode = generateSecurityCode();
+            const userCode = prompt("Masukkan KODE KEAMANAN (kode hari ini) untuk menghapus data:");
+            if(userCode === currentCode) {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
                     saveData(); renderDataTable(); updateDashboard();
                     showNotification('Data berhasil dihapus', 'success');
                     checkGlobalDuplicates();
                 }
-            } else if (userCode !== null) alert("Kode keamanan SALAH!");
+            } else if (userCode !== null) alert("Kode keamanan SALAH! Kode hari ini: " + currentCode);
         }
 
         function renderFilterTable() {
