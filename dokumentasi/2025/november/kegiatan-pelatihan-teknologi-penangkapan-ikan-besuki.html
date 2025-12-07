@@ -767,28 +767,6 @@
             border: 3px solid var(--accent-blue);
         }
 
-        .security-code-display {
-            background: var(--light-blue);
-            border: 2px dashed var(--secondary-blue);
-            border-radius: 12px;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--primary-blue);
-            letter-spacing: 3px;
-        }
-
-        .code-hint {
-            font-size: 0.9rem;
-            color: var(--text-gray);
-            text-align: center;
-            margin-top: 10px;
-            font-style: italic;
-        }
-
         .input-group-password {
             position: relative;
         }
@@ -815,6 +793,22 @@
             font-size: 0.9rem;
             margin-top: 10px;
             display: none;
+        }
+
+        .info-message {
+            background: var(--light-blue);
+            border-left: 4px solid var(--secondary-blue);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .attempts-counter {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            text-align: center;
+            margin-top: 15px;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -908,11 +902,6 @@
                 margin-bottom: 10px;
                 padding: 14px 20px;
             }
-
-            .security-code-display {
-                font-size: 1.1rem;
-                letter-spacing: 2px;
-            }
         }
     </style>
 </head>
@@ -952,14 +941,13 @@
             
             <div class="alert alert-warning" role="alert">
                 <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan. Masukkan kode keamanan untuk melanjutkan.
+                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan. Masukkan kode keamanan yang valid untuk melanjutkan.
             </div>
             
-            <div class="security-code-display" id="securityCodeDisplay">
-                <!-- Kode keamanan akan ditampilkan di sini -->
+            <div class="info-message">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Informasi Kode Keamanan:</strong> Kode keamanan berupa 8 digit angka yang berubah secara berkala. Untuk mendapatkan kode yang valid, harap hubungi petugas yang berwenang di Dinas Perikanan Situbondo.
             </div>
-            
-            <p class="code-hint">Kode keamanan di atas berlaku untuk periode tanggal <span id="currentDateText"></span> dan akan berubah setiap hari.</p>
             
             <div class="mb-4">
                 <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan</label>
@@ -968,15 +956,21 @@
                            class="form-control form-control-lg" 
                            id="securityCodeInput" 
                            placeholder="Masukkan 8 digit kode keamanan"
-                           maxlength="8">
+                           maxlength="8"
+                           onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                     <button type="button" class="password-toggle" id="passwordToggle">
                         <i class="fas fa-eye"></i>
                     </button>
                 </div>
                 <div class="error-message" id="errorMessage">
                     <i class="fas fa-times-circle me-2"></i>
-                    <span>Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
+                    <span id="errorText">Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
                 </div>
+            </div>
+            
+            <div class="attempts-counter">
+                <i class="fas fa-shield-alt me-2"></i>
+                Percobaan tersisa: <span id="attemptsLeft">3</span>
             </div>
             
             <div class="d-flex justify-content-between mt-4">
@@ -1712,20 +1706,55 @@
 
         // ==================== PDF AUTHORIZATION FUNCTIONS ====================
         
-        // Generate security code based on current date (DDMMYYYY)
+        // Security system variables
+        let maxAttempts = 3;
+        let currentAttempts = 0;
+        let lockoutTime = 0;
+        const lockoutDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+        
+        // Generate dynamic security code based on date (DDMMYYYY format)
+        // This is the SECRET code that only authorized personnel should know
+        // It changes daily based on the date
         function generateSecurityCode() {
             const now = new Date();
             const day = String(now.getDate()).padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
-            return day + month + year;
+            
+            // Create base code from date
+            const baseCode = day + month + year;
+            
+            // Optional: Add a simple transformation to make it less obvious
+            // This is just an example - in production, use a more secure method
+            const transformedCode = baseCode.split('').map(char => {
+                const num = parseInt(char);
+                return ((num + 3) % 10).toString();
+            }).join('');
+            
+            return transformedCode;
         }
 
-        // Get formatted date for display
-        function getFormattedDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return now.toLocaleDateString('id-ID', options);
+        // Check if user is locked out
+        function isLockedOut() {
+            if (lockoutTime > 0) {
+                const currentTime = new Date().getTime();
+                const timeRemaining = lockoutTime - currentTime;
+                
+                if (timeRemaining > 0) {
+                    const minutes = Math.floor(timeRemaining / 60000);
+                    const seconds = Math.floor((timeRemaining % 60000) / 1000);
+                    return {
+                        locked: true,
+                        message: `Akses terkunci. Silakan coba lagi dalam ${minutes} menit ${seconds} detik.`
+                    };
+                } else {
+                    // Lockout period has ended
+                    lockoutTime = 0;
+                    currentAttempts = 0;
+                    return { locked: false, message: '' };
+                }
+            }
+            return { locked: false, message: '' };
         }
 
         // Toggle password visibility
@@ -1747,17 +1776,21 @@
 
         // Open PDF authorization modal
         function openPdfAuthModal() {
-            const securityCode = generateSecurityCode();
-            const formattedDate = getFormattedDate();
-            
-            // Display security code
-            document.getElementById('securityCodeDisplay').textContent = securityCode;
-            document.getElementById('currentDateText').textContent = formattedDate;
+            // Check if user is locked out
+            const lockoutStatus = isLockedOut();
+            if (lockoutStatus.locked) {
+                alert(lockoutStatus.message);
+                return;
+            }
             
             // Reset form
             document.getElementById('securityCodeInput').value = '';
             document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('errorText').textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
             document.getElementById('securityCodeInput').classList.remove('is-invalid');
+            
+            // Update attempts counter
+            document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
             
             // Show modal
             document.getElementById('pdfAuthModal').style.display = 'flex';
@@ -1775,17 +1808,50 @@
 
         // Verify security code
         function verifySecurityCode() {
+            // Check if user is locked out
+            const lockoutStatus = isLockedOut();
+            if (lockoutStatus.locked) {
+                document.getElementById('errorText').textContent = lockoutStatus.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                return;
+            }
+            
             const userInput = document.getElementById('securityCodeInput').value;
-            const correctCode = generateSecurityCode();
+            const correctCode = generateSecurityCode(); // Get the SECRET code
             const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
             const inputElement = document.getElementById('securityCodeInput');
             
+            // Validate input
+            if (!userInput || userInput.length !== 8) {
+                errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
+                errorMessage.style.display = 'block';
+                inputElement.classList.add('is-invalid');
+                inputElement.focus();
+                return;
+            }
+            
             if (userInput === correctCode) {
-                // Code is correct
+                // Code is correct - reset attempts
+                currentAttempts = 0;
                 closePdfAuthModal();
                 generatePDFReport();
             } else {
                 // Code is incorrect
+                currentAttempts++;
+                
+                // Update attempts counter
+                const attemptsLeft = maxAttempts - currentAttempts;
+                document.getElementById('attemptsLeft').textContent = attemptsLeft;
+                
+                if (currentAttempts >= maxAttempts) {
+                    // Lock user out
+                    lockoutTime = new Date().getTime() + lockoutDuration;
+                    errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
+                } else {
+                    errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
+                }
+                
                 errorMessage.style.display = 'block';
                 inputElement.classList.add('is-invalid');
                 
@@ -2262,6 +2328,11 @@
             if (e.target === this) {
                 closePdfAuthModal();
             }
+        });
+        
+        // Restrict input to numbers only
+        document.getElementById('securityCodeInput').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
         });
     </script>
 </body>
