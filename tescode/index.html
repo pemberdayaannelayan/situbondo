@@ -1552,6 +1552,26 @@
             background: linear-gradient(135deg, #0d6efd, #084298);
             color: white;
         }
+        
+        /* Input tahun manual */
+        .year-input-container {
+            position: relative;
+        }
+        
+        .year-input-container input {
+            padding-right: 40px;
+        }
+        
+        .year-input-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #0d6efd;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -2105,9 +2125,12 @@
                                 <label class="form-label" for="filterTahun">
                                     <i class="fas fa-calendar"></i> Tahun
                                 </label>
-                                <select class="form-select" id="filterTahun">
-                                    <option value="">Semua Tahun</option>
-                                </select>
+                                <div class="year-input-container">
+                                    <input type="number" class="form-control" id="filterTahun" placeholder="Contoh: 2025" min="2000" max="2100">
+                                    <button type="button" class="year-input-btn" id="clearYearFilter">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label" for="filterBulan">
@@ -2444,9 +2467,12 @@
                                                 <label class="form-label" for="reportTahun">
                                                     <i class="fas fa-calendar"></i> Tahun
                                                 </label>
-                                                <select class="form-select" id="reportTahun">
-                                                    <option value="">Semua Tahun</option>
-                                                </select>
+                                                <div class="year-input-container">
+                                                    <input type="number" class="form-control" id="reportTahun" placeholder="Contoh: 2025" min="2000" max="2100">
+                                                    <button type="button" class="year-input-btn" id="clearReportYear">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="reportBulan">
@@ -3192,6 +3218,7 @@
         startDuplicateCheck();
         startAutoReload();
         
+        // Cek file reload.js saat inisialisasi
         setTimeout(() => {
             checkReloadJsFile();
         }, 2000);
@@ -3249,13 +3276,25 @@
         document.getElementById('filterJenis').addEventListener('change', applyFilters);
         document.getElementById('filterKategori').addEventListener('change', applyFilters);
         document.getElementById('filterPrioritas').addEventListener('change', applyFilters);
-        document.getElementById('filterTahun').addEventListener('change', applyFilters);
+        document.getElementById('filterTahun').addEventListener('input', applyFilters);
         document.getElementById('filterBulan').addEventListener('change', applyFilters);
         document.getElementById('filterDuplikat').addEventListener('change', applyFilters);
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('clearSearch').addEventListener('click', function() {
             document.getElementById('searchInput').value = '';
             applyFilters();
+        });
+        
+        // Clear year filter button
+        document.getElementById('clearYearFilter').addEventListener('click', function() {
+            document.getElementById('filterTahun').value = '';
+            applyFilters();
+        });
+        
+        // Clear report year filter button
+        document.getElementById('clearReportYear').addEventListener('click', function() {
+            document.getElementById('reportTahun').value = '';
+            applyReportFilters();
         });
         
         // Filter duplicate buttons
@@ -3556,7 +3595,7 @@
         });
         
         // Report filter tahun
-        document.getElementById('reportTahun').addEventListener('change', applyReportFilters);
+        document.getElementById('reportTahun').addEventListener('input', applyReportFilters);
         document.getElementById('reportBulan').addEventListener('change', applyReportFilters);
     }
     
@@ -3593,60 +3632,61 @@
             </button>
         `;
         
+        // Re-attach event listener untuk tombol tutup
         document.getElementById('closeWelcomeNotification').addEventListener('click', function() {
             document.getElementById('welcomeNotification').style.display = 'none';
         });
         
         showNotification('Login sebagai tamu berhasil. Akses terbatas.', 'info');
+        
+        // Start auto reload untuk tamu juga
+        startAutoReload();
+        checkReloadJsFile();
     }
     
     /**
      * Apply guest restrictions to UI
      */
     function applyGuestRestrictions() {
+        // Sembunyikan elemen dengan class guest-restricted
         document.querySelectorAll('.guest-restricted').forEach(el => {
-            el.style.display = 'none';
+            if (!el.classList.contains('always-show')) {
+                el.style.display = 'none';
+            }
         });
         
+        // Nonaktifkan input, select, textarea, button di dalam guest-restricted
         document.querySelectorAll('input, select, textarea, button').forEach(el => {
             if (el.closest('.guest-restricted')) {
                 el.disabled = true;
             }
         });
         
+        // Sembunyikan FAB
         document.getElementById('fabButton').style.display = 'none';
-        document.getElementById('reloadDataSection').style.display = 'none';
-        document.getElementById('autoReloadStatusSection').style.display = 'none';
+        
+        // Tampilkan reload data section untuk tamu (dengan akses terbatas)
+        document.getElementById('reloadDataSection').style.display = 'block';
+        document.getElementById('reloadDataSection').classList.add('always-show');
+        
+        // Tampilkan auto reload status untuk tamu
+        document.getElementById('autoReloadStatusSection').style.display = 'block';
+        document.getElementById('autoReloadStatusSection').classList.add('always-show');
+        
+        // Enable beberapa tombol untuk tamu
+        document.getElementById('autoReloadData').disabled = false;
+        document.getElementById('checkFileStatusBtn').disabled = false;
+        document.getElementById('autoReloadToggle').disabled = false;
     }
     
     /**
      * Update year filter options based on available data
      */
     function updateYearFilter() {
-        const yearSelect = document.getElementById('filterTahun');
-        const reportYearSelect = document.getElementById('reportTahun');
-        
-        yearSelect.innerHTML = '<option value="">Semua Tahun</option>';
-        reportYearSelect.innerHTML = '<option value="">Semua Tahun</option>';
-        
-        const years = new Set();
-        suratData.forEach(item => {
-            if (item.tanggal) {
-                const year = new Date(item.tanggal).getFullYear();
-                years.add(year);
-            }
-        });
-        
-        if (years.size === 0) {
-            years.add(new Date().getFullYear());
-        }
-        
-        const sortedYears = Array.from(years).sort((a, b) => b - a);
-        
-        sortedYears.forEach(year => {
-            yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
-            reportYearSelect.innerHTML += `<option value="${year}">${year}</option>`;
-        });
+        // Tidak perlu update dropdown karena sekarang menggunakan input manual
+        // Cukup kosongkan input tahun
+        document.getElementById('filterTahun').value = '';
+        document.getElementById('reportTahun').value = '';
     }
     
     /**
@@ -3985,15 +4025,14 @@
             updateBulkActionToolbarArsip();
         } else if (sectionId === 'dashboard') {
             updateDashboard();
-            if (autoReloadEnabled && !isGuest) {
+            if (autoReloadEnabled) {
                 startAutoReload();
             }
             
-            if (!isGuest) {
-                setTimeout(() => {
-                    checkReloadJsFile();
-                }, 500);
-            }
+            // Cek file reload.js saat masuk dashboard
+            setTimeout(() => {
+                checkReloadJsFile();
+            }, 500);
         } else if (sectionId === 'laporan') {
             updateReportCharts();
         } else if (sectionId === 'pengaturan') {
@@ -4070,14 +4109,19 @@
         }
         
         if (currentFilter.tahun) {
-            filteredData = filteredData.filter(item => {
-                const year = new Date(item.tanggal).getFullYear();
-                return year.toString() === currentFilter.tahun;
-            });
+            const filterYear = parseInt(currentFilter.tahun);
+            if (!isNaN(filterYear)) {
+                filteredData = filteredData.filter(item => {
+                    if (!item.tanggal) return false;
+                    const year = new Date(item.tanggal).getFullYear();
+                    return year === filterYear;
+                });
+            }
         }
         
         if (currentFilter.bulan) {
             filteredData = filteredData.filter(item => {
+                if (!item.tanggal) return false;
                 const month = new Date(item.tanggal).getMonth() + 1;
                 return month.toString() === currentFilter.bulan;
             });
@@ -4375,14 +4419,19 @@
         }
         
         if (tahun) {
-            filteredData = filteredData.filter(item => {
-                const year = new Date(item.tanggal).getFullYear();
-                return year.toString() === tahun;
-            });
+            const filterYear = parseInt(tahun);
+            if (!isNaN(filterYear)) {
+                filteredData = filteredData.filter(item => {
+                    if (!item.tanggal) return false;
+                    const year = new Date(item.tanggal).getFullYear();
+                    return year === filterYear;
+                });
+            }
         }
         
         if (bulan) {
             filteredData = filteredData.filter(item => {
+                if (!item.tanggal) return false;
                 const month = new Date(item.tanggal).getMonth() + 1;
                 return month.toString() === bulan;
             });
@@ -4657,10 +4706,12 @@
                 
                 document.getElementById('welcomeNotification').style.display = 'block';
                 
+                // Tampilkan semua elemen guest-restricted untuk admin
                 document.querySelectorAll('.guest-restricted').forEach(el => {
                     el.style.display = '';
                 });
                 
+                // Enable semua input di dalam guest-restricted untuk admin
                 document.querySelectorAll('input, select, textarea, button').forEach(el => {
                     if (el.closest('.guest-restricted')) {
                         el.disabled = false;
@@ -4672,7 +4723,10 @@
                 document.getElementById('autoReloadStatusSection').style.display = 'block';
                 
                 showNotification('Login berhasil. Selamat datang!', 'success');
+                
+                // Start auto reload untuk admin
                 startAutoReload();
+                checkReloadJsFile();
                 
             } else {
                 loginAttempts++;
@@ -5117,7 +5171,7 @@
     }
     
     // ====================================================
-    // RELOAD JS FUNCTIONS
+    // RELOAD JS FUNCTIONS - FIXED VERSION
     // ====================================================
     
     // Check reload.js file status
@@ -5129,24 +5183,29 @@
             showLoadingOverlay('Mengecek file reload.js...', 'Mohon tunggu');
         }
         
-        fetch('reload.js')
+        fetch('reload.js?t=' + new Date().getTime())
             .then(response => {
                 if (response.ok) {
-                    reloadJsFileStatus = 'found';
-                    statusIndicator.className = 'file-status-indicator file-status-found';
-                    statusText.innerHTML = '<i class="fas fa-check-circle me-2"></i> File reload.js ditemukan di server';
-                    
-                    if (manualCheck) {
-                        showNotification('File reload.js ditemukan di server', 'success');
-                    }
+                    return response.text();
                 } else {
-                    reloadJsFileStatus = 'not_found';
-                    statusIndicator.className = 'file-status-indicator file-status-not-found';
-                    statusText.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> File reload.js tidak ditemukan di server';
-                    
-                    if (manualCheck) {
-                        showNotification('File reload.js tidak ditemukan di server', 'warning');
-                    }
+                    throw new Error('File tidak ditemukan');
+                }
+            })
+            .then(scriptContent => {
+                reloadJsFileStatus = 'found';
+                statusIndicator.className = 'file-status-indicator file-status-found';
+                statusText.innerHTML = '<i class="fas fa-check-circle me-2"></i> File reload.js ditemukan di server';
+                
+                // Auto proses file jika ditemukan dan auto reload aktif
+                if (autoReloadEnabled && !manualCheck) {
+                    setTimeout(() => {
+                        processFetchedReloadJs(scriptContent);
+                    }, 1000);
+                }
+                
+                if (manualCheck) {
+                    showNotification('File reload.js ditemukan di server', 'success');
+                    hideLoadingOverlay();
                 }
             })
             .catch(error => {
@@ -5155,11 +5214,7 @@
                 statusText.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> File reload.js tidak ditemukan di server';
                 
                 if (manualCheck) {
-                    showNotification('Gagal mengecek file reload.js: ' + error.message, 'error');
-                }
-            })
-            .finally(() => {
-                if (manualCheck) {
+                    showNotification('File reload.js tidak ditemukan di server: ' + error.message, 'warning');
                     hideLoadingOverlay();
                 }
             });
@@ -5169,7 +5224,7 @@
     function fetchAndProcessReloadJs() {
         showLoadingOverlay('Memuat data dari file reload.js...', 'Mohon tunggu sebentar');
         
-        fetch('reload.js')
+        fetch('reload.js?t=' + new Date().getTime())
             .then(response => {
                 if (!response.ok) {
                     throw new Error('File tidak ditemukan');
@@ -5275,9 +5330,6 @@
         saveData();
         localStorage.setItem('deletedHistory', JSON.stringify(deletedHistory));
         
-        // Show result
-        showReloadResultModal(addedCount, duplicateCount, updatedCount, newData.length);
-        
         // Update UI
         updateStats();
         renderSuratTable();
@@ -5285,6 +5337,11 @@
         
         if (!document.getElementById('dashboard').classList.contains('d-none')) {
             updateDashboard();
+        }
+        
+        // Show result modal jika ada data baru
+        if (addedCount > 0 || duplicateCount > 0 || updatedCount > 0) {
+            showReloadResultModal(addedCount, duplicateCount, updatedCount, newData.length);
         }
         
         showNotification(`Data berhasil direload: ${addedCount} baru, ${duplicateCount} duplikat, ${updatedCount} diperbarui`, 'success');
@@ -5447,14 +5504,19 @@
             }
             
             if (tahun) {
-                dataToExport = dataToExport.filter(item => {
-                    const year = new Date(item.tanggal).getFullYear();
-                    return year.toString() === tahun;
-                });
+                const filterYear = parseInt(tahun);
+                if (!isNaN(filterYear)) {
+                    dataToExport = dataToExport.filter(item => {
+                        if (!item.tanggal) return false;
+                        const year = new Date(item.tanggal).getFullYear();
+                        return year === filterYear;
+                    });
+                }
             }
             
             if (bulan) {
                 dataToExport = dataToExport.filter(item => {
+                    if (!item.tanggal) return false;
                     const month = new Date(item.tanggal).getMonth() + 1;
                     return month.toString() === bulan;
                 });
@@ -5539,14 +5601,19 @@
             }
             
             if (tahun) {
-                dataToExport = dataToExport.filter(item => {
-                    const year = new Date(item.tanggal).getFullYear();
-                    return year.toString() === tahun;
-                });
+                const filterYear = parseInt(tahun);
+                if (!isNaN(filterYear)) {
+                    dataToExport = dataToExport.filter(item => {
+                        if (!item.tanggal) return false;
+                        const year = new Date(item.tanggal).getFullYear();
+                        return year === filterYear;
+                    });
+                }
             }
             
             if (bulan) {
                 dataToExport = dataToExport.filter(item => {
+                    if (!item.tanggal) return false;
                     const month = new Date(item.tanggal).getMonth() + 1;
                     return month.toString() === bulan;
                 });
