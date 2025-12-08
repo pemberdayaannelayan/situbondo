@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+    <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -3433,11 +3434,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <script>
-        // Inisialisasi variabel global
+        // ====================================================
+        // VARIABEL GLOBAL DAN INISIALISASI
+        // ====================================================
         let suratData = [];
         let archivedData = [];
         let currentPage = 1;
-        let itemsPerPage = 100;
+        let itemsPerPage = 10000; // Default 10000 item per halaman
         let currentFilter = {};
         let currentEditId = null;
         let loginAttempts = 0;
@@ -3448,99 +3451,89 @@
         let duplicateCheckInterval = null;
         let autoReloadInterval = null;
         let autoReloadEnabled = true;
-        let reloadJsFileStatus = 'unknown'; // unknown, found, not_found
-        const RESET_SECURITY_CODE = "19450817"; // Kode default untuk reset aplikasi
-        let isGuestMode = false; // Status mode tamu
-        
-        // DOM Ready
+        let reloadJsFileStatus = 'unknown';
+        const RESET_SECURITY_CODE = "19450817";
+        let isGuestMode = false;
+        let isInitialized = false;
+
+        // ====================================================
+        // FUNGSI UTAMA - INITIALIZATION
+        // ====================================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the application
             initApp();
-            
-            // Setup event listeners
             setupEventListeners();
             
-            // Show login modal on first load
             const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
             loginModal.show();
             
-            // Check for mobile device
             checkDeviceType();
         });
-        
-        // Check device type for mobile optimizations
+
         function checkDeviceType() {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             const isTablet = /iPad|Android(?!.*Mobile)|Tablet/i.test(navigator.userAgent);
             
             if (isMobile || isTablet) {
                 document.body.classList.add('touch-device');
-                // Add touch-friendly classes to buttons
                 document.querySelectorAll('.btn').forEach(btn => {
                     btn.classList.add('btn-touch-friendly');
                 });
             }
         }
-        
-        // Initialize the application
+
         async function initApp() {
-            // Load data from localStorage
+            if (isInitialized) return;
+            
             loadData();
             
-            // Generate validation code if not exists
             if (!localStorage.getItem('validationCode')) {
                 localStorage.setItem('validationCode', validationCode);
             } else {
                 validationCode = localStorage.getItem('validationCode');
             }
             
-            // Update validation code field
             document.getElementById('validationCode').value = validationCode;
             
-            // Setup charts
             initCharts();
-            
-            // Update stats
             updateStats();
-            
-            // Update browser info
             updateBrowserInfo();
             
-            // Check if welcome modal should be shown
             const welcomeShown = localStorage.getItem('welcomeShown');
             if (!welcomeShown) {
-                const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
-                welcomeModal.show();
-                
-                // Start countdown
-                let countdown = 5;
-                const countdownElement = document.getElementById('welcomeCountdown');
-                const countdownInterval = setInterval(() => {
-                    countdown--;
-                    countdownElement.textContent = countdown;
-                    
-                    if (countdown <= 0) {
-                        clearInterval(countdownInterval);
-                        welcomeModal.hide();
-                    }
-                }, 1000);
-                
+                showWelcomeModal();
                 localStorage.setItem('welcomeShown', 'true');
             }
             
-            // Start duplicate check interval
             startDuplicateCheck();
-            
-            // Start auto reload for dashboard
             startAutoReload();
             
-            // Check file reload.js status
             setTimeout(() => {
                 checkReloadJsFile();
             }, 2000);
+            
+            isInitialized = true;
         }
-        
-        // Setup event listeners
+
+        function showWelcomeModal() {
+            const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+            welcomeModal.show();
+            
+            let countdown = 5;
+            const countdownElement = document.getElementById('welcomeCountdown');
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    welcomeModal.hide();
+                }
+            }, 1000);
+        }
+
+        // ====================================================
+        // FUNGSI EVENT LISTENERS
+        // ====================================================
         function setupEventListeners() {
             // Menu navigation
             document.querySelectorAll('#menuList .nav-link').forEach(link => {
@@ -3549,7 +3542,6 @@
                     const target = this.getAttribute('data-bs-target');
                     showSection(target);
                     
-                    // Close mobile menu after selection
                     if (window.innerWidth < 992) {
                         document.getElementById('sidebarMenu').classList.remove('mobile-show');
                         document.getElementById('sidebarOverlay').classList.remove('mobile-show');
@@ -3557,7 +3549,7 @@
                 });
             });
             
-            // Floating menu navigation
+            // Floating menu
             document.querySelectorAll('.floating-menu-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const target = this.getAttribute('data-target');
@@ -3567,59 +3559,29 @@
                         logout();
                     }
                     
-                    // Close floating menu
-                    document.getElementById('floatingActionMenu').classList.remove('floating-menu-open');
-                    document.getElementById('floatingMenuIcon').classList.remove('fa-times');
-                    document.getElementById('floatingMenuIcon').classList.add('fa-bars');
+                    closeFloatingMenu();
                 });
             });
             
             // Floating menu toggle
-            document.getElementById('floatingMenuButton').addEventListener('click', function() {
-                const menu = document.getElementById('floatingActionMenu');
-                const icon = document.getElementById('floatingMenuIcon');
-                
-                menu.classList.toggle('floating-menu-open');
-                if (menu.classList.contains('floating-menu-open')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
+            document.getElementById('floatingMenuButton').addEventListener('click', toggleFloatingMenu);
             
-            // Mobile menu toggle
+            // Mobile menu
             document.getElementById('mobileMenuBtn').addEventListener('click', function() {
                 document.getElementById('sidebarMenu').classList.add('mobile-show');
                 document.getElementById('sidebarOverlay').classList.add('mobile-show');
             });
             
-            // Sidebar overlay click
             document.getElementById('sidebarOverlay').addEventListener('click', function() {
                 this.classList.remove('mobile-show');
                 document.getElementById('sidebarMenu').classList.remove('mobile-show');
             });
             
             // Form submission
-            document.getElementById('inputSuratForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                handleFormSubmit();
-            });
+            document.getElementById('inputSuratForm').addEventListener('submit', handleFormSubmit);
             
             // Check duplicate button
-            document.getElementById('checkDuplicateBtn').addEventListener('click', function() {
-                const nomorSurat = document.getElementById('nomorSurat').value.trim();
-                if (nomorSurat) {
-                    const duplicates = findDuplicates(nomorSurat);
-                    const resultElement = document.getElementById('duplicateCheckResult');
-                    if (duplicates.length > 0) {
-                        resultElement.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Peringatan: Nomor surat ini sudah ada ${duplicates.length} kali!</span>`;
-                    } else {
-                        resultElement.innerHTML = `<span class="text-success"><i class="fas fa-check-circle"></i> Nomor surat belum terdaftar</span>`;
-                    }
-                }
-            });
+            document.getElementById('checkDuplicateBtn').addEventListener('click', checkDuplicateNumber);
             
             // Filter events
             document.getElementById('filterJenis').addEventListener('change', applyFilters);
@@ -3638,9 +3600,7 @@
                 applyFilters();
             });
             
-            document.getElementById('markAllDuplicates').addEventListener('click', function() {
-                highlightAllDuplicates();
-            });
+            document.getElementById('markAllDuplicates').addEventListener('click', highlightAllDuplicates);
             
             // Export and print buttons
             document.getElementById('exportExcel').addEventListener('click', exportToExcel);
@@ -3655,67 +3615,28 @@
             document.getElementById('restoreData').addEventListener('click', restoreData);
             
             // Settings forms
-            document.getElementById('generalSettingsForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveGeneralSettings();
-            });
-            
-            document.getElementById('securitySettingsForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                changePassword();
-            });
+            document.getElementById('generalSettingsForm').addEventListener('submit', saveGeneralSettings);
+            document.getElementById('securitySettingsForm').addEventListener('submit', changePassword);
             
             // Generate validation code
             document.getElementById('generateValidationCode').addEventListener('click', generateValidationCode);
             
-            // Reset app with security
+            // Reset app
             document.getElementById('resetAppBtn').addEventListener('click', showResetAppModal);
             
             // Reset app modal events
-            document.getElementById('resetSecurityCode').addEventListener('input', function() {
-                const confirmBtn = document.getElementById('confirmResetApp');
-                const confirmCheck = document.getElementById('confirmReset').checked;
-                confirmBtn.disabled = !(this.value === RESET_SECURITY_CODE && confirmCheck);
-                
-                // Clear error message
-                document.getElementById('resetSecurityCodeError').style.display = 'none';
-                this.classList.remove('input-error');
-            });
-            
-            document.getElementById('confirmReset').addEventListener('change', function() {
-                const confirmBtn = document.getElementById('confirmResetApp');
-                const securityCode = document.getElementById('resetSecurityCode').value;
-                confirmBtn.disabled = !(securityCode === RESET_SECURITY_CODE && this.checked);
-            });
-            
+            document.getElementById('resetSecurityCode').addEventListener('input', validateResetCode);
+            document.getElementById('confirmReset').addEventListener('change', validateResetCode);
             document.getElementById('confirmResetApp').addEventListener('click', resetApplication);
             
             // Login form
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                handleLogin();
-            });
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
             
-            // Guest login button
-            document.getElementById('guestLoginButton').addEventListener('click', function() {
-                handleGuestLogin();
-            });
+            // Guest login
+            document.getElementById('guestLoginButton').addEventListener('click', handleGuestLogin);
             
             // Toggle password visibility
-            document.querySelector('.toggle-password').addEventListener('click', function() {
-                const passwordInput = document.getElementById('securityCode');
-                const icon = this.querySelector('i');
-                
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                }
-            });
+            document.querySelector('.toggle-password').addEventListener('click', togglePasswordVisibility);
             
             // Logout
             document.getElementById('logoutBtn').addEventListener('click', function(e) {
@@ -3723,14 +3644,14 @@
                 logout();
             });
             
-            // Report generation
+            // Report
             document.getElementById('generateReport').addEventListener('click', generateReport);
             document.getElementById('reportFilterForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 applyReportFilters();
             });
             
-            // Export report buttons
+            // Export report
             document.getElementById('exportReportExcel').addEventListener('click', function() {
                 exportToExcel('report');
             });
@@ -3741,7 +3662,7 @@
                 printData('report');
             });
             
-            // Export arsip buttons
+            // Export arsip
             document.getElementById('exportArsipExcel').addEventListener('click', function() {
                 exportToExcel('arsip');
             });
@@ -3750,815 +3671,187 @@
             });
             
             // Print single data
-            document.getElementById('printSingleData').addEventListener('click', function() {
-                printSingleData();
-            });
+            document.getElementById('printSingleData').addEventListener('click', printSingleData);
             
             // Save edit data
             document.getElementById('saveEditData').addEventListener('click', saveEditedData);
             
             // Confirm action
             document.getElementById('confirmAction').addEventListener('click', executeConfirmedAction);
-
-            // Pagination event listener
-            document.getElementById('pagination').addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = e.target.closest('.page-link');
-                
-                if (!target || target.parentElement.classList.contains('disabled')) {
-                    return;
-                }
-                
-                const page = parseInt(target.getAttribute('data-page'));
-                
-                if (!isNaN(page) && page !== currentPage) {
-                    currentPage = page;
-                    renderSuratTable();
-                }
-            });
-
-            // Beforeunload event for auto backup
+            
+            // Pagination
+            document.getElementById('pagination').addEventListener('click', handlePaginationClick);
+            
+            // Beforeunload for backup
             window.addEventListener('beforeunload', function(e) {
                 if (!document.getElementById('mainContent').classList.contains('app-content-unauthenticated')) {
-                     autoBackupOnExit();
+                    autoBackupOnExit();
                 }
             });
             
             // ====================================================
-            // NEW RELOAD DATA EVENT LISTENERS
+            // RELOAD DATA EVENT LISTENERS
             // ====================================================
-            
-            // Auto reload from file reload.js
-            document.getElementById('autoReloadData').addEventListener('click', function() {
-                fetchAndProcessReloadJs();
-            });
-            
-            // Manual reload button
+            document.getElementById('autoReloadData').addEventListener('click', fetchAndProcessReloadJs);
             document.getElementById('manualReloadBtn').addEventListener('click', function() {
-                const reloadModal = new bootstrap.Modal(document.getElementById('reloadModal'));
-                reloadModal.show();
+                new bootstrap.Modal(document.getElementById('reloadModal')).show();
             });
-            
-            // Check file status button
             document.getElementById('checkFileStatusBtn').addEventListener('click', function() {
                 checkReloadJsFile(true);
             });
-            
-            // Process reload data manually
             document.getElementById('processReloadData').addEventListener('click', processReloadDataManual);
-            
-            // Close welcome notification
             document.getElementById('closeWelcomeNotification').addEventListener('click', function() {
                 document.getElementById('welcomeNotification').style.display = 'none';
             });
-            
-            // Download reload.js buttons
             document.getElementById('downloadReloadJs').addEventListener('click', downloadReloadJs);
             document.getElementById('downloadReloadJsData').addEventListener('click', downloadReloadJs);
-            
-            // Reload data button in data surat
-            document.getElementById('reloadDataSuratBtn').addEventListener('click', function() {
-                fetchAndProcessReloadJs();
-            });
+            document.getElementById('reloadDataSuratBtn').addEventListener('click', fetchAndProcessReloadJs);
             
             // Auto reload toggle
-            document.getElementById('autoReloadToggle').addEventListener('change', function() {
-                autoReloadEnabled = this.checked;
-                localStorage.setItem('autoReloadEnabled', autoReloadEnabled);
-                
-                if (autoReloadEnabled) {
-                    startAutoReload();
-                    document.getElementById('autoReloadStatus').textContent = 'Fitur auto reload aktif. Data akan diperbarui otomatis setiap 30 detik.';
-                    showNotification('Auto reload diaktifkan', 'success');
-                } else {
-                    stopAutoReload();
-                    document.getElementById('autoReloadStatus').textContent = 'Fitur auto reload tidak aktif.';
-                    showNotification('Auto reload dinonaktifkan', 'info');
-                }
-            });
+            document.getElementById('autoReloadToggle').addEventListener('change', toggleAutoReload);
             
-            // Window resize event for responsive adjustments
-            window.addEventListener('resize', function() {
-                // Debounce resize events
-                clearTimeout(window.resizingFinished);
-                window.resizingFinished = setTimeout(function() {
-                    adjustLayoutForScreenSize();
-                }, 250);
-            });
+            // Window resize
+            window.addEventListener('resize', debounce(adjustLayoutForScreenSize, 250));
         }
-        
-        // Adjust layout based on screen size
-        function adjustLayoutForScreenSize() {
-            const width = window.innerWidth;
+
+        function toggleFloatingMenu() {
+            const menu = document.getElementById('floatingActionMenu');
+            const icon = document.getElementById('floatingMenuIcon');
             
-            if (width < 768) {
-                // Mobile adjustments
-                document.querySelectorAll('.card-header').forEach(header => {
-                    if (header.querySelector('.btn-group')) {
-                        header.classList.add('flex-column');
-                    }
-                });
-                
-                // Make tables more scrollable on mobile
-                document.querySelectorAll('.table-responsive').forEach(table => {
-                    table.style.overflowX = 'auto';
-                    table.style.webkitOverflowScrolling = 'touch';
-                });
-            }
-        }
-        
-        // ====================================================
-        // NEW FUNCTIONS FOR AUTO RELOAD FROM FILE reload.js
-        // ====================================================
-        
-        /**
-         * Check if reload.js file exists on server
-         * @param {boolean} showNotification - Whether to show notification
-         */
-        async function checkReloadJsFile(showNotification = false) {
-            try {
-                updateFileStatus('checking', 'Mengecek file...');
-                
-                const response = await fetch('reload.js?' + Date.now());
-                
-                if (response.ok) {
-                    const fileContent = await response.text();
-                    const sizeKB = (fileContent.length / 1024).toFixed(2);
-                    
-                    // Try to extract record count from file
-                    let recordCount = '?';
-                    const recordMatch = fileContent.match(/Jumlah data:\s*(\d+)/);
-                    if (recordMatch) {
-                        recordCount = recordMatch[1];
-                    }
-                    
-                    // Try to extract date from file
-                    let fileDate = '?';
-                    const dateMatch = fileContent.match(/Dibuat pada:\s*([^\n]+)/);
-                    if (dateMatch) {
-                        fileDate = dateMatch[1];
-                    }
-                    
-                    reloadJsFileStatus = 'found';
-                    updateFileStatus('found', `File ditemukan (${sizeKB} KB, ${recordCount} records, ${fileDate})`);
-                    
-                    if (showNotification) {
-                        showNotification(`File reload.js ditemukan di server (${recordCount} records)`, 'success');
-                    }
-                    
-                    return {
-                        exists: true,
-                        size: sizeKB,
-                        records: recordCount,
-                        date: fileDate,
-                        content: fileContent
-                    };
-                } else {
-                    reloadJsFileStatus = 'not_found';
-                    updateFileStatus('not_found', 'File reload.js tidak ditemukan di server');
-                    
-                    if (showNotification) {
-                        showNotification('File reload.js tidak ditemukan di server', 'warning');
-                    }
-                    
-                    return { exists: false };
-                }
-            } catch (error) {
-                console.error('Error checking reload.js file:', error);
-                reloadJsFileStatus = 'error';
-                updateFileStatus('error', `Error: ${error.message}`);
-                
-                if (showNotification) {
-                    showNotification(`Error: ${error.message}`, 'error');
-                }
-                
-                return { exists: false, error: error.message };
-            }
-        }
-        
-        /**
-         * Update file status indicator
-         * @param {string} status - Status: checking, found, not_found, error
-         * @param {string} message - Status message
-         */
-        function updateFileStatus(status, message) {
-            const indicator = document.getElementById('fileStatusIndicator');
-            const text = document.getElementById('fileStatusText');
-            
-            indicator.className = 'file-status-indicator';
-            
-            switch (status) {
-                case 'checking':
-                    indicator.classList.add('file-status-not-found');
-                    text.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i> ${message}`;
-                    break;
-                case 'found':
-                    indicator.classList.add('file-status-found');
-                    text.innerHTML = `<i class="fas fa-check-circle me-2"></i> ${message}`;
-                    break;
-                case 'not_found':
-                    indicator.classList.add('file-status-not-found');
-                    text.innerHTML = `<i class="fas fa-times-circle me-2"></i> ${message}`;
-                    break;
-                case 'error':
-                    indicator.classList.add('file-status-not-found');
-                    text.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> ${message}`;
-                    break;
-            }
-        }
-        
-        /**
-         * Fetch and process reload.js file from server
-         */
-        async function fetchAndProcessReloadJs() {
-            try {
-                // Show loading overlay
-                showLoadingOverlay('Mengambil data dari file reload.js...', 'Mohon tunggu, sistem sedang membaca data dari server.');
-                
-                // Check if auto-detect is enabled
-                const autoDetect = document.getElementById('autoDetectReloadJs').checked;
-                if (!autoDetect) {
-                    hideLoadingOverlay();
-                    const reloadModal = new bootstrap.Modal(document.getElementById('reloadModal'));
-                    reloadModal.show();
-                    return;
-                }
-                
-                // Check if file exists first
-                const fileCheck = await checkReloadJsFile();
-                
-                if (!fileCheck.exists) {
-                    hideLoadingOverlay();
-                    showNotification('File reload.js tidak ditemukan di server. Gunakan input manual.', 'warning');
-                    const reloadModal = new bootstrap.Modal(document.getElementById('reloadModal'));
-                    reloadModal.show();
-                    return;
-                }
-                
-                // Update loading message
-                updateLoadingMessage('Memproses data dari file reload.js...', 30);
-                
-                // Fetch the file content
-                const response = await fetch('reload.js?' + Date.now());
-                const fileContent = await response.text();
-                
-                // Update loading message
-                updateLoadingMessage('Mengekstrak data terenkripsi...', 60);
-                
-                // Process the file content
-                await processFetchedReloadJs(fileContent);
-                
-                // Hide loading overlay
-                hideLoadingOverlay();
-                
-            } catch (error) {
-                console.error('Error in fetchAndProcessReloadJs:', error);
-                hideLoadingOverlay();
-                showNotification(`Gagal memproses file: ${error.message}. Gunakan input manual.`, 'error');
-                
-                // Show manual input modal
-                const reloadModal = new bootstrap.Modal(document.getElementById('reloadModal'));
-                reloadModal.show();
-            }
-        }
-        
-        /**
-         * Process fetched reload.js file content
-         * @param {string} fileContent - Content of reload.js file
-         */
-        async function processFetchedReloadJs(fileContent) {
-            try {
-                // Update loading message
-                updateLoadingMessage('Mendekripsi data...', 80);
-                
-                // Extract encrypted string from file
-                let encryptedString = null;
-                
-                // Try different patterns to find encrypted data
-                const patterns = [
-                    /window\.SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/,
-                    /SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/,
-                    /"([A-Za-z0-9+/=]{100,})"/
-                ];
-                
-                for (const pattern of patterns) {
-                    const match = fileContent.match(pattern);
-                    if (match && match[1]) {
-                        encryptedString = match[1];
-                        break;
-                    }
-                }
-                
-                if (!encryptedString) {
-                    // Try direct base64 content
-                    const trimmedContent = fileContent.trim();
-                    if (trimmedContent.length > 100 && /^[A-Za-z0-9+/=]+$/.test(trimmedContent)) {
-                        encryptedString = trimmedContent;
-                    } else {
-                        throw new Error('Format data tidak dikenali dalam file reload.js');
-                    }
-                }
-                
-                // Decode from base64
-                const jsonString = atob(encryptedString);
-                const backupData = JSON.parse(jsonString);
-                
-                // Validate backup structure
-                if (!backupData.data || !Array.isArray(backupData.data)) {
-                    throw new Error('Format data backup tidak valid');
-                }
-                
-                // Update loading message
-                updateLoadingMessage('Memproses dan menggabungkan data...', 90);
-                
-                // Get reload options
-                const mergeData = document.getElementById('mergeOnReload').checked;
-                const markDuplicates = document.getElementById('markDuplicatesOnReload').checked;
-                
-                // Process the backup data
-                const result = await processBackupData(backupData.data, mergeData, true);
-                
-                // Show result
-                showReloadResultModal(
-                    result.originalCount,
-                    result.addedCount,
-                    result.updatedCount,
-                    backupData.data.length,
-                    result.duplicateCount,
-                    markDuplicates
-                );
-                
-                // Update file status
-                setTimeout(() => {
-                    checkReloadJsFile();
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Error processing fetched reload.js:', error);
-                throw new Error(`Gagal memproses file reload.js: ${error.message}`);
-            }
-        }
-        
-        /**
-         * Process backup data (merge or replace)
-         * @param {Array} importedData - Data to import
-         * @param {boolean} mergeData - Whether to merge data
-         * @param {boolean} showProgress - Whether to show progress
-         * @returns {Object} Result object
-         */
-        async function processBackupData(importedData, mergeData, showProgress = false) {
-            const originalCount = suratData.length;
-            let addedCount = 0;
-            let updatedCount = 0;
-            let duplicateCount = 0;
-            
-            // Track duplicates for counting
-            const duplicateMap = new Map();
-            
-            if (mergeData) {
-                // Merge data - add new items, update existing ones
-                for (let i = 0; i < importedData.length; i++) {
-                    const newItem = importedData[i];
-                    const existingIndex = suratData.findIndex(item => item.id === newItem.id);
-                    
-                    if (existingIndex === -1) {
-                        // Add new item
-                        suratData.push(newItem);
-                        addedCount++;
-                    } else {
-                        // Update existing item
-                        suratData[existingIndex] = {
-                            ...suratData[existingIndex],
-                            ...newItem,
-                            updatedAt: new Date().toISOString()
-                        };
-                        updatedCount++;
-                    }
-                    
-                    // Check for duplicate nomor surat
-                    if (newItem.nomor) {
-                        const key = newItem.nomor.toLowerCase();
-                        if (duplicateMap.has(key)) {
-                            duplicateMap.set(key, duplicateMap.get(key) + 1);
-                            duplicateCount++;
-                        } else {
-                            duplicateMap.set(key, 1);
-                        }
-                    }
-                    
-                    // Update progress if showing
-                    if (showProgress) {
-                        const progress = Math.round(((i + 1) / importedData.length) * 100);
-                        updateLoadingProgress(progress);
-                    }
-                }
+            menu.classList.toggle('floating-menu-open');
+            if (menu.classList.contains('floating-menu-open')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
             } else {
-                // Replace all data
-                suratData = importedData;
-                addedCount = importedData.length;
-                
-                // Count duplicates in imported data
-                const nomorCount = new Map();
-                importedData.forEach(item => {
-                    if (item.nomor) {
-                        const key = item.nomor.toLowerCase();
-                        nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
-                    }
-                });
-                
-                nomorCount.forEach(count => {
-                    if (count > 1) {
-                        duplicateCount += count;
-                    }
-                });
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
             }
-            
-            // Save data
-            saveData();
-            
-            // Refresh UI
-            renderSuratTable();
-            renderArsipTable();
-            updateStats();
-            
-            return {
-                originalCount,
-                addedCount,
-                updatedCount,
-                duplicateCount,
-                totalCount: suratData.length
-            };
         }
-        
-        /**
-         * Process reload data manually from textarea
-         */
-        function processReloadDataManual() {
-            const encryptedData = document.getElementById('encryptedData').value.trim();
-            const mergeData = document.getElementById('mergeDataCheck').checked;
-            const markDuplicates = document.getElementById('markDuplicatesCheck').checked;
+
+        function closeFloatingMenu() {
+            const menu = document.getElementById('floatingActionMenu');
+            const icon = document.getElementById('floatingMenuIcon');
             
-            if (!encryptedData) {
-                showNotification('Harap tempel data backup terenkripsi', 'warning');
+            menu.classList.remove('floating-menu-open');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('securityCode');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function handlePaginationClick(e) {
+            e.preventDefault();
+            const target = e.target.closest('.page-link');
+            
+            if (!target || target.parentElement.classList.contains('disabled')) {
                 return;
             }
             
-            try {
-                // Show loading
-                showLoadingOverlay('Memproses data backup...', 'Mohon tunggu, sistem sedang memproses data.');
-                
-                // Parse the encrypted data
-                const backupData = parseEncryptedData(encryptedData);
-                
-                // Validate backup structure
-                if (!backupData.data || !Array.isArray(backupData.data)) {
-                    throw new Error('Format backup tidak valid');
-                }
-                
-                // Process the backup data
-                const result = processBackupDataManual(backupData.data, mergeData);
-                
-                // Show result
-                showReloadResultModal(
-                    result.originalCount,
-                    result.addedCount,
-                    result.updatedCount,
-                    backupData.data.length,
-                    result.duplicateCount,
-                    markDuplicates
-                );
-                
-                // Close modal
-                const reloadModal = bootstrap.Modal.getInstance(document.getElementById('reloadModal'));
-                reloadModal.hide();
-                
-                // Hide loading
-                hideLoadingOverlay();
-                
-            } catch (error) {
-                console.error('Error processing manual reload:', error);
-                hideLoadingOverlay();
-                showNotification(`Gagal memproses data: ${error.message}`, 'error');
+            const page = parseInt(target.getAttribute('data-page'));
+            
+            if (!isNaN(page) && page !== currentPage) {
+                currentPage = page;
+                renderSuratTable();
             }
         }
-        
-        /**
-         * Process backup data manually
-         * @param {Array} importedData - Data to import
-         * @param {boolean} mergeData - Whether to merge data
-         * @returns {Object} Result object
-         */
-        function processBackupDataManual(importedData, mergeData) {
-            const originalCount = suratData.length;
-            let addedCount = 0;
-            let updatedCount = 0;
-            let duplicateCount = 0;
+
+        function toggleAutoReload() {
+            autoReloadEnabled = this.checked;
+            localStorage.setItem('autoReloadEnabled', autoReloadEnabled);
             
-            // Track duplicates for counting
-            const duplicateMap = new Map();
-            
-            if (mergeData) {
-                // Merge data
-                importedData.forEach(newItem => {
-                    const existingIndex = suratData.findIndex(item => item.id === newItem.id);
-                    
-                    if (existingIndex === -1) {
-                        suratData.push(newItem);
-                        addedCount++;
-                    } else {
-                        suratData[existingIndex] = {
-                            ...suratData[existingIndex],
-                            ...newItem,
-                            updatedAt: new Date().toISOString()
-                        };
-                        updatedCount++;
-                    }
-                    
-                    // Check for duplicate nomor surat
-                    if (newItem.nomor) {
-                        const key = newItem.nomor.toLowerCase();
-                        if (duplicateMap.has(key)) {
-                            duplicateMap.set(key, duplicateMap.get(key) + 1);
-                            duplicateCount++;
-                        } else {
-                            duplicateMap.set(key, 1);
-                        }
-                    }
-                });
+            if (autoReloadEnabled) {
+                startAutoReload();
+                document.getElementById('autoReloadStatus').textContent = 'Fitur auto reload aktif. Data akan diperbarui otomatis setiap 30 detik.';
+                showNotification('Auto reload diaktifkan', 'success');
             } else {
-                // Replace all data
-                suratData = importedData;
-                addedCount = importedData.length;
-                
-                // Count duplicates in imported data
-                const nomorCount = new Map();
-                importedData.forEach(item => {
-                    if (item.nomor) {
-                        const key = item.nomor.toLowerCase();
-                        nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
-                    }
-                });
-                
-                nomorCount.forEach(count => {
-                    if (count > 1) {
-                        duplicateCount += count;
-                    }
-                });
-            }
-            
-            // Save data
-            saveData();
-            
-            // Refresh UI
-            renderSuratTable();
-            renderArsipTable();
-            updateStats();
-            
-            return {
-                originalCount,
-                addedCount,
-                updatedCount,
-                duplicateCount,
-                totalCount: suratData.length
-            };
-        }
-        
-        /**
-         * Parse encrypted data from various formats
-         * @param {string} encryptedData - Encrypted data string
-         * @returns {Object} Parsed backup data
-         */
-        function parseEncryptedData(encryptedData) {
-            let jsonString;
-            
-            // Try different patterns
-            if (encryptedData.includes('window.SISMAT_BACKUP_ENCRYPTED')) {
-                const match = encryptedData.match(/window\.SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/);
-                if (match && match[1]) {
-                    jsonString = atob(match[1]);
-                } else {
-                    throw new Error('Format window.SISMAT_BACKUP_ENCRYPTED tidak valid');
-                }
-            } else if (encryptedData.includes('SISMAT_BACKUP_ENCRYPTED')) {
-                const match = encryptedData.match(/SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/);
-                if (match && match[1]) {
-                    jsonString = atob(match[1]);
-                } else {
-                    throw new Error('Format SISMAT_BACKUP_ENCRYPTED tidak valid');
-                }
-            } else {
-                // Assume direct base64
-                try {
-                    jsonString = atob(encryptedData);
-                } catch (e) {
-                    // Try to parse as direct JSON
-                    try {
-                        return JSON.parse(encryptedData);
-                    } catch (e2) {
-                        throw new Error('Format data tidak dikenali. Pastikan data dalam format base64 atau JSON.');
-                    }
-                }
-            }
-            
-            return JSON.parse(jsonString);
-        }
-        
-        /**
-         * Show reload result modal
-         * @param {number} originalCount - Original data count
-         * @param {number} addedCount - Added data count
-         * @param {number} updatedCount - Updated data count
-         * @param {number} importedCount - Imported data count
-         * @param {number} duplicateCount - Duplicate count
-         * @param {boolean} markDuplicates - Whether to mark duplicates
-         */
-        function showReloadResultModal(originalCount, addedCount, updatedCount, importedCount, duplicateCount, markDuplicates) {
-            const resultBody = document.getElementById('reloadResultBody');
-            
-            resultBody.innerHTML = `
-                <div class="alert alert-success">
-                    <h6><i class="fas fa-check-circle me-2"></i> Reload Data Berhasil!</h6>
-                    <p>Data berhasil dimuat dari backup.</p>
-                </div>
-                
-                <div class="mt-3">
-                    <h6>Ringkasan:</h6>
-                    <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Data sebelum reload
-                            <span class="badge bg-primary rounded-pill">${originalCount}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Data di file backup
-                            <span class="badge bg-info rounded-pill">${importedCount}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Data ditambahkan (baru)
-                            <span class="badge bg-success rounded-pill">${addedCount}</span>
-                        </li>
-                        ${updatedCount > 0 ? `
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Data diperbarui
-                            <span class="badge bg-warning rounded-pill">${updatedCount}</span>
-                        </li>
-                        ` : ''}
-                        ${duplicateCount > 0 ? `
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Data duplikat ditemukan
-                            <span class="badge bg-danger rounded-pill">${duplicateCount}</span>
-                        </li>
-                        ` : ''}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>Total data sekarang</strong>
-                            <strong><span class="badge bg-dark rounded-pill">${suratData.length}</span></strong>
-                        </li>
-                    </ul>
-                </div>
-                
-                ${markDuplicates && duplicateCount > 0 ? `
-                <div class="mt-3 alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Peringatan Duplikasi:</strong> ${duplicateCount} data dengan nomor surat duplikat telah ditandai dengan warna merah di tabel.
-                </div>
-                ` : ''}
-                
-                ${markDuplicates && duplicateCount === 0 ? `
-                <div class="mt-3 alert alert-success">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <strong>Tidak ada duplikat:</strong> Semua data memiliki nomor surat unik.
-                </div>
-                ` : ''}
-                
-                <div class="mt-3 alert alert-info">
-                    <i class="fas fa-lightbulb me-2"></i>
-                    <strong>Tip:</strong> Gunakan filter "Hanya Duplikat" untuk melihat data dengan nomor surat ganda.
-                </div>
-            `;
-            
-            // Show result modal
-            const resultModal = new bootstrap.Modal(document.getElementById('reloadResultModal'));
-            resultModal.show();
-            
-            // Show notification
-            showNotification(`Reload data berhasil! ${addedCount} data ditambahkan, ${updatedCount} data diperbarui.`, 'success');
-            
-            // Check for duplicates if enabled
-            if (markDuplicates) {
-                const duplicates = checkForDuplicates();
-                if (duplicates.length > 0) {
-                    setTimeout(() => {
-                        showNotification(`${duplicates.length} data duplikat ditemukan setelah reload!`, 'warning');
-                    }, 1000);
-                }
+                stopAutoReload();
+                document.getElementById('autoReloadStatus').textContent = 'Fitur auto reload tidak aktif.';
+                showNotification('Auto reload dinonaktifkan', 'info');
             }
         }
-        
-        /**
-         * Show loading overlay
-         * @param {string} title - Loading title
-         * @param {string} message - Loading message
-         */
-        function showLoadingOverlay(title, message) {
-            document.getElementById('loadingTitle').textContent = title;
-            document.getElementById('loadingMessage').textContent = message;
-            document.getElementById('loadingProgress').style.width = '0%';
-            document.getElementById('loadingOverlay').style.display = 'flex';
-        }
-        
-        /**
-         * Update loading message
-         * @param {string} message - New message
-         * @param {number} progress - Progress percentage
-         */
-        function updateLoadingMessage(message, progress) {
-            document.getElementById('loadingMessage').textContent = message;
-            document.getElementById('loadingProgress').style.width = progress + '%';
-        }
-        
-        /**
-         * Update loading progress
-         * @param {number} progress - Progress percentage
-         */
-        function updateLoadingProgress(progress) {
-            document.getElementById('loadingProgress').style.width = progress + '%';
-        }
-        
-        /**
-         * Hide loading overlay
-         */
-        function hideLoadingOverlay() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-        
+
         // ====================================================
-        // ORIGINAL FUNCTIONS (RETAINED WITH MINIMAL CHANGES)
+        // FUNGSI SECTION NAVIGATION
         // ====================================================
-        
-        // Show specific section
         function showSection(sectionId) {
-            // Hide all sections
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.add('d-none');
             });
             
-            // Show selected section
             document.getElementById(sectionId).classList.remove('d-none');
             
-            // Update active menu
             document.querySelectorAll('#menuList .nav-link').forEach(link => {
                 link.classList.remove('active');
             });
             
-            document.querySelector(`#menuList .nav-link[data-bs-target="${sectionId}"]`).classList.add('active');
-            
-            // Section-specific initializations
-            if (sectionId === 'dataSurat') {
-                renderSuratTable();
-            } else if (sectionId === 'arsipSurat') {
-                renderArsipTable();
-            } else if (sectionId === 'dashboard') {
-                updateDashboard();
-                // Start auto reload when on dashboard
-                if (autoReloadEnabled) {
-                    startAutoReload();
-                }
-                
-                // Check file status
-                setTimeout(() => {
-                    checkReloadJsFile();
-                }, 500);
-                
-                // Show guest reload info if in guest mode
-                if (isGuestMode) {
-                    document.getElementById('guestReloadInfo').style.display = 'block';
-                } else {
-                    document.getElementById('guestReloadInfo').style.display = 'none';
-                }
-            } else if (sectionId === 'laporan') {
-                updateReportCharts();
-            } else if (sectionId === 'pengaturan') {
-                // Update settings info
-                document.getElementById('settingsTotalSurat').textContent = suratData.length;
-                document.getElementById('lastUpdated').textContent = formatDateTime(new Date());
-                
-                // Load auto reload setting
-                const savedAutoReload = localStorage.getItem('autoReloadEnabled');
-                if (savedAutoReload !== null) {
-                    autoReloadEnabled = savedAutoReload === 'true';
-                    document.getElementById('autoReloadEnabled').checked = autoReloadEnabled;
-                    document.getElementById('autoReloadToggle').checked = autoReloadEnabled;
-                }
+            const activeLink = document.querySelector(`#menuList .nav-link[data-bs-target="${sectionId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
             }
             
-            // Apply guest mode restrictions
-            applyGuestModeRestrictions();
+            switch(sectionId) {
+                case 'dataSurat':
+                    renderSuratTable();
+                    break;
+                case 'arsipSurat':
+                    renderArsipTable();
+                    break;
+                case 'dashboard':
+                    updateDashboard();
+                    if (autoReloadEnabled) startAutoReload();
+                    setTimeout(() => checkReloadJsFile(), 500);
+                    document.getElementById('guestReloadInfo').style.display = isGuestMode ? 'block' : 'none';
+                    break;
+                case 'laporan':
+                    updateReportCharts();
+                    updateReportTable();
+                    break;
+                case 'pengaturan':
+                    updateSettingsInfo();
+                    break;
+            }
             
-            // Adjust layout for current screen size
+            applyGuestModeRestrictions();
             setTimeout(adjustLayoutForScreenSize, 100);
         }
-        
-        // Handle form submission
-        function handleFormSubmit() {
+
+        function updateDashboard() {
+            updateStats();
+            updateCharts();
+            updateRecentActivities();
+        }
+
+        function updateSettingsInfo() {
+            document.getElementById('settingsTotalSurat').textContent = suratData.length;
+            document.getElementById('lastUpdated').textContent = formatDateTime(new Date());
+            
+            const savedAutoReload = localStorage.getItem('autoReloadEnabled');
+            if (savedAutoReload !== null) {
+                autoReloadEnabled = savedAutoReload === 'true';
+                document.getElementById('autoReloadEnabled').checked = autoReloadEnabled;
+                document.getElementById('autoReloadToggle').checked = autoReloadEnabled;
+            }
+        }
+
+        // ====================================================
+        // FUNGSI FORM HANDLING
+        // ====================================================
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat menambah data.', 'error');
                 return;
@@ -4588,28 +3881,21 @@
                 
                 showNotification('Data surat berhasil disimpan!', 'success');
                 
-                // Reset form
                 document.getElementById('inputSuratForm').reset();
                 document.getElementById('duplicateCheckResult').innerHTML = '';
                 
-                // Update stats and dashboard
                 updateStats();
-                
-                // If on dashboard, update it
                 if (!document.getElementById('dashboard').classList.contains('d-none')) {
                     updateDashboard();
                 }
                 
-                // Check for duplicates
                 checkForDuplicates();
             }
         }
-        
-        // Validate form
+
         function validateForm() {
             let isValid = true;
             
-            // Reset error states
             document.querySelectorAll('.error-message').forEach(el => {
                 el.style.display = 'none';
             });
@@ -4617,7 +3903,6 @@
                 el.classList.remove('input-error');
             });
             
-            // Validate required fields
             const requiredFields = [
                 'jenisSurat', 'tanggalSurat', 'nomorSurat', 'tanggalTerima', 
                 'pengirim', 'penerima', 'perihal', 'kategori', 'prioritas'
@@ -4632,7 +3917,6 @@
                 }
             });
             
-            // Validate URL format if provided
             const linkDrive = document.getElementById('linkDrive').value;
             if (linkDrive && !isValidUrl(linkDrive)) {
                 document.getElementById('linkDrive').classList.add('input-error');
@@ -4640,7 +3924,6 @@
                 isValid = false;
             }
             
-            // Check for duplicate nomor surat
             const nomorSurat = document.getElementById('nomorSurat').value.trim();
             if (nomorSurat) {
                 const duplicates = findDuplicates(nomorSurat);
@@ -4651,104 +3934,39 @@
             
             return isValid;
         }
-        
-        // Check if URL is valid
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
+
+        function checkDuplicateNumber() {
+            const nomorSurat = document.getElementById('nomorSurat').value.trim();
+            if (nomorSurat) {
+                const duplicates = findDuplicates(nomorSurat);
+                const resultElement = document.getElementById('duplicateCheckResult');
+                if (duplicates.length > 0) {
+                    resultElement.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Peringatan: Nomor surat ini sudah ada ${duplicates.length} kali!</span>`;
+                } else {
+                    resultElement.innerHTML = `<span class="text-success"><i class="fas fa-check-circle"></i> Nomor surat belum terdaftar</span>`;
+                }
             }
         }
-        
-        // Find duplicates in suratData
+
         function findDuplicates(nomorSurat) {
             return suratData.filter(item => 
+                item.nomor && 
                 item.nomor.toLowerCase() === nomorSurat.toLowerCase() && 
                 item.status !== 'archived'
             );
         }
-        
-        // Start duplicate check interval
-        function startDuplicateCheck() {
-            if (duplicateCheckInterval) {
-                clearInterval(duplicateCheckInterval);
-            }
-            
-            duplicateCheckInterval = setInterval(function() {
-                checkForDuplicates();
-            }, 30000); // Check every 30 seconds
-        }
-        
-        // Check for duplicates in the database
-        function checkForDuplicates() {
-            const duplicateMap = new Map();
-            const duplicates = [];
-            
-            // Find all duplicates
-            suratData.forEach((item, index) => {
-                if (item.status !== 'archived') {
-                    const key = item.nomor.toLowerCase();
-                    if (duplicateMap.has(key)) {
-                        duplicateMap.get(key).push(index);
-                    } else {
-                        duplicateMap.set(key, [index]);
-                    }
-                }
-            });
-            
-            // Filter only actual duplicates (more than one)
-            duplicateMap.forEach((indices, nomor) => {
-                if (indices.length > 1) {
-                    indices.forEach(index => {
-                        duplicates.push({
-                            index: index,
-                            nomor: suratData[index].nomor,
-                            data: suratData[index]
-                        });
-                    });
-                }
-            });
-            
-            if (duplicates.length > 0) {
-                // Update duplicate count badge
-                const duplicateBadge = document.getElementById('duplicateCountBadge');
-                const duplicateCount = document.getElementById('duplicateCount');
-                duplicateCount.textContent = duplicates.length;
-                duplicateBadge.style.display = 'inline-block';
-                
-                // Update table to highlight duplicates
-                renderSuratTable();
-            } else {
-                document.getElementById('duplicateCountBadge').style.display = 'none';
-            }
-            
-            return duplicates;
-        }
-        
-        // Highlight all duplicates in the table
-        function highlightAllDuplicates() {
-            const duplicates = checkForDuplicates();
-            if (duplicates.length > 0) {
-                // Filter to show only duplicates
-                document.getElementById('filterDuplikat').value = 'duplikat';
-                applyFilters();
-                showNotification(`${duplicates.length} data duplikat ditampilkan`, 'info');
-            } else {
-                showNotification('Tidak ada data duplikat ditemukan', 'info');
-            }
-        }
-        
-        // Render surat table with pagination and duplicate highlighting
+
+        // ====================================================
+        // FUNGSI TABLE RENDERING
+        // ====================================================
         function renderSuratTable() {
             const tableBody = document.getElementById('dataSuratTable');
             const paginationElement = document.getElementById('pagination');
             const paginationInfoElement = document.getElementById('paginationInfo');
             
-            // Apply filters
             let filteredData = suratData.filter(item => item.status !== 'archived');
             
+            // Apply filters
             if (currentFilter.jenis) {
                 filteredData = filteredData.filter(item => item.jenis === currentFilter.jenis);
             }
@@ -4761,76 +3979,37 @@
                 filteredData = filteredData.filter(item => item.prioritas === currentFilter.prioritas);
             }
             
-            if (currentFilter.duplikat === 'duplikat') {
-                // Filter only duplicates
-                const duplicateNumbers = new Set();
-                const nomorCount = new Map();
-                
-                filteredData.forEach(item => {
-                    const key = item.nomor.toLowerCase();
-                    nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
-                });
-                
-                nomorCount.forEach((count, nomor) => {
-                    if (count > 1) {
-                        duplicateNumbers.add(nomor);
-                    }
-                });
-                
-                filteredData = filteredData.filter(item => 
-                    duplicateNumbers.has(item.nomor.toLowerCase())
-                );
-            } else if (currentFilter.duplikat === 'non-duplikat') {
-                // Filter only non-duplicates
-                const duplicateNumbers = new Set();
-                const nomorCount = new Map();
-                
-                filteredData.forEach(item => {
-                    const key = item.nomor.toLowerCase();
-                    nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
-                });
-                
-                nomorCount.forEach((count, nomor) => {
-                    if (count > 1) {
-                        duplicateNumbers.add(nomor);
-                    }
-                });
-                
-                filteredData = filteredData.filter(item => 
-                    !duplicateNumbers.has(item.nomor.toLowerCase())
-                );
-            }
-            
             if (currentFilter.search) {
                 const searchTerm = currentFilter.search.toLowerCase();
                 filteredData = filteredData.filter(item => 
-                    item.nomor.toLowerCase().includes(searchTerm) ||
-                    item.pengirim.toLowerCase().includes(searchTerm) ||
-                    item.penerima.toLowerCase().includes(searchTerm) ||
-                    item.perihal.toLowerCase().includes(searchTerm)
+                    (item.nomor && item.nomor.toLowerCase().includes(searchTerm)) ||
+                    (item.pengirim && item.pengirim.toLowerCase().includes(searchTerm)) ||
+                    (item.penerima && item.penerima.toLowerCase().includes(searchTerm)) ||
+                    (item.perihal && item.perihal.toLowerCase().includes(searchTerm))
                 );
             }
             
-            // Calculate pagination
+            // Filter duplicates
+            if (currentFilter.duplikat === 'duplikat') {
+                const duplicateNumbers = getDuplicateNumbers(filteredData);
+                filteredData = filteredData.filter(item => 
+                    duplicateNumbers.has(item.nomor ? item.nomor.toLowerCase() : '')
+                );
+            } else if (currentFilter.duplikat === 'non-duplikat') {
+                const duplicateNumbers = getDuplicateNumbers(filteredData);
+                filteredData = filteredData.filter(item => 
+                    !duplicateNumbers.has(item.nomor ? item.nomor.toLowerCase() : '')
+                );
+            }
+            
+            // Pagination
             const totalPages = Math.ceil(filteredData.length / itemsPerPage);
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
             const pageData = filteredData.slice(startIndex, endIndex);
             
             // Find duplicates for highlighting
-            const duplicateNumbers = new Set();
-            const nomorCount = new Map();
-            
-            filteredData.forEach(item => {
-                const key = item.nomor.toLowerCase();
-                nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
-            });
-            
-            nomorCount.forEach((count, nomor) => {
-                if (count > 1) {
-                    duplicateNumbers.add(nomor);
-                }
-            });
+            const duplicateNumbers = getDuplicateNumbers(filteredData);
             
             // Update pagination info
             if (filteredData.length > 0) {
@@ -4839,15 +4018,14 @@
                 paginationInfoElement.textContent = 'Menampilkan 0 dari 0 data';
             }
 
-            // Clear table
+            // Clear and populate table
             tableBody.innerHTML = '';
             
-            // Populate table
             if (pageData.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="9" class="text-center">Tidak ada data</td></tr>`;
             } else {
                 pageData.forEach((item, index) => {
-                    const isDuplicate = duplicateNumbers.has(item.nomor.toLowerCase());
+                    const isDuplicate = duplicateNumbers.has(item.nomor ? item.nomor.toLowerCase() : '');
                     const row = document.createElement('tr');
                     if (isDuplicate) {
                         row.classList.add('duplicate-warning');
@@ -4857,9 +4035,9 @@
                         <td>${startIndex + index + 1} ${isDuplicate ? '<i class="fas fa-exclamation-triangle duplicate-icon" title="Nomor surat duplikat"></i>' : ''}</td>
                         <td>${formatDate(item.tanggal)}</td>
                         <td><span class="badge ${item.jenis === 'masuk' ? 'bg-success' : 'bg-warning'}">${item.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</span></td>
-                        <td>${item.nomor} ${isDuplicate ? '<span class="badge duplicate-badge ms-1">Duplikat</span>' : ''}</td>
+                        <td>${item.nomor || '-'} ${isDuplicate ? '<span class="badge duplicate-badge ms-1">Duplikat</span>' : ''}</td>
                         <td>${item.jenis === 'masuk' ? item.pengirim : item.penerima}</td>
-                        <td>${item.perihal}</td>
+                        <td>${item.perihal || '-'}</td>
                         <td><span class="badge badge-kategori kategori-${item.kategori}">${capitalizeFirstLetter(item.kategori)}</span></td>
                         <td><span class="prioritas-indicator prioritas-${item.prioritas}"></span>${capitalizeFirstLetter(item.prioritas)}</td>
                         <td>
@@ -4885,27 +4063,61 @@
                 });
             }
             
-            // Update pagination controls
             updatePaginationControls(paginationElement, currentPage, totalPages);
-            
-            // Add event listeners to action buttons
             attachTableActionListeners();
-            
-            // Apply guest mode restrictions to buttons
             applyGuestModeRestrictions();
+            
+            // Update duplicate count
+            updateDuplicateCount(filteredData);
         }
-        
-        // Render arsip table
+
+        function getDuplicateNumbers(data) {
+            const duplicateNumbers = new Set();
+            const nomorCount = new Map();
+            
+            data.forEach(item => {
+                if (item.nomor) {
+                    const key = item.nomor.toLowerCase();
+                    nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
+                }
+            });
+            
+            nomorCount.forEach((count, nomor) => {
+                if (count > 1) {
+                    duplicateNumbers.add(nomor);
+                }
+            });
+            
+            return duplicateNumbers;
+        }
+
+        function updateDuplicateCount(data) {
+            const duplicateNumbers = getDuplicateNumbers(data);
+            let duplicateCount = 0;
+            
+            data.forEach(item => {
+                if (item.nomor && duplicateNumbers.has(item.nomor.toLowerCase())) {
+                    duplicateCount++;
+                }
+            });
+            
+            const duplicateBadge = document.getElementById('duplicateCountBadge');
+            const duplicateCountElement = document.getElementById('duplicateCount');
+            
+            if (duplicateCount > 0) {
+                duplicateCountElement.textContent = duplicateCount;
+                duplicateBadge.style.display = 'inline-block';
+            } else {
+                duplicateBadge.style.display = 'none';
+            }
+        }
+
         function renderArsipTable() {
             const tableBody = document.getElementById('arsipSuratTable');
-            
-            // Get archived data
             const archived = suratData.filter(item => item.status === 'archived');
             
-            // Clear table
             tableBody.innerHTML = '';
             
-            // Populate table
             if (archived.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="8" class="text-center">Tidak ada data arsip</td></tr>`;
             } else {
@@ -4915,9 +4127,9 @@
                         <td>${index + 1}</td>
                         <td>${formatDate(item.tanggal)}</td>
                         <td><span class="badge ${item.jenis === 'masuk' ? 'bg-success' : 'bg-warning'}">${item.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</span></td>
-                        <td>${item.nomor}</td>
+                        <td>${item.nomor || '-'}</td>
                         <td>${item.jenis === 'masuk' ? item.pengirim : item.penerima}</td>
-                        <td>${item.perihal}</td>
+                        <td>${item.perihal || '-'}</td>
                         <td><span class="badge badge-kategori kategori-${item.kategori}">${capitalizeFirstLetter(item.kategori)}</span></td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
@@ -4939,69 +4151,13 @@
                 });
             }
             
-            // Add event listeners to action buttons
             attachTableActionListeners();
         }
-        
-        // Attach event listeners to table action buttons
-        function attachTableActionListeners() {
-            // View buttons
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    viewData(id);
-                });
-            });
-            
-            // Edit buttons
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    editData(id);
-                });
-            });
-            
-            // Archive buttons
-            document.querySelectorAll('.archive-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    confirmAction('Apakah Anda yakin ingin mengarsipkan surat ini?', () => {
-                        archiveData(id);
-                    });
-                });
-            });
-            
-            // Delete buttons
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    const isArchived = this.closest('tr').querySelector('.restore-btn') !== null;
-                    const message = isArchived 
-                        ? 'Apakah Anda yakin ingin menghapus permanen surat ini?' 
-                        : 'Apakah Anda yakin ingin menghapus surat ini?';
-                    
-                    confirmAction(message, () => {
-                        deleteData(id);
-                    });
-                });
-            });
-            
-            // Restore buttons (for archived items)
-            document.querySelectorAll('.restore-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    confirmAction('Apakah Anda yakin ingin memulihkan surat ini?', () => {
-                        restoreArchivedData(id);
-                    });
-                });
-            });
-        }
-        
-        // Update pagination controls
+
         function updatePaginationControls(paginationElement, currentPage, totalPages) {
             paginationElement.innerHTML = '';
             
-            if (totalPages <= 1) return; // Don't render pagination if only one page
+            if (totalPages <= 1) return;
 
             // Previous button
             const prevLi = document.createElement('li');
@@ -5009,16 +4165,14 @@
             prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">Sebelumnya</a>`;
             paginationElement.appendChild(prevLi);
             
-            // Page numbers logic
+            // Page numbers
             const maxPagesToShow = 5;
             let startPage, endPage;
 
             if (totalPages <= maxPagesToShow) {
-                // Show all pages
                 startPage = 1;
                 endPage = totalPages;
             } else {
-                // Calculate start and end pages with ellipsis logic
                 const maxPagesBeforeCurrent = Math.floor(maxPagesToShow / 2);
                 const maxPagesAfterCurrent = Math.ceil(maxPagesToShow / 2) - 1;
                 if (currentPage <= maxPagesBeforeCurrent) {
@@ -5033,7 +4187,6 @@
                 }
             }
 
-            // Always show the first page
             if (startPage > 1) {
                 const firstPageLi = document.createElement('li');
                 firstPageLi.className = 'page-item';
@@ -5047,7 +4200,6 @@
                 }
             }
 
-            // Render page numbers
             for (let i = startPage; i <= endPage; i++) {
                 const pageLi = document.createElement('li');
                 pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
@@ -5055,7 +4207,6 @@
                 paginationElement.appendChild(pageLi);
             }
 
-            // Always show the last page
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) {
                     const ellipsisLi = document.createElement('li');
@@ -5075,8 +4226,58 @@
             nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">Selanjutnya</a>`;
             paginationElement.appendChild(nextLi);
         }
-        
-        // Apply filters to data table
+
+        function attachTableActionListeners() {
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    viewData(id);
+                });
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    editData(id);
+                });
+            });
+            
+            document.querySelectorAll('.archive-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    confirmAction('Apakah Anda yakin ingin mengarsipkan surat ini?', () => {
+                        archiveData(id);
+                    });
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const isArchived = this.closest('tr').querySelector('.restore-btn') !== null;
+                    const message = isArchived 
+                        ? 'Apakah Anda yakin ingin menghapus permanen surat ini?' 
+                        : 'Apakah Anda yakin ingin menghapus surat ini?';
+                    
+                    confirmAction(message, () => {
+                        deleteData(id);
+                    });
+                });
+            });
+            
+            document.querySelectorAll('.restore-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    confirmAction('Apakah Anda yakin ingin memulihkan surat ini?', () => {
+                        restoreArchivedData(id);
+                    });
+                });
+            });
+        }
+
+        // ====================================================
+        // FUNGSI FILTER
+        // ====================================================
         function applyFilters() {
             currentFilter = {
                 jenis: document.getElementById('filterJenis').value,
@@ -5089,13 +4290,23 @@
             currentPage = 1;
             renderSuratTable();
         }
-        
-        // Apply report filters
+
+        function highlightAllDuplicates() {
+            const duplicates = checkForDuplicates();
+            if (duplicates.length > 0) {
+                document.getElementById('filterDuplikat').value = 'duplikat';
+                applyFilters();
+                showNotification(`${duplicates.length} data duplikat ditampilkan`, 'info');
+            } else {
+                showNotification('Tidak ada data duplikat ditemukan', 'info');
+            }
+        }
+
         function applyReportFilters() {
             updateReportTable();
+            updateReportCharts();
         }
-        
-        // Update report table based on filters
+
         function updateReportTable() {
             const tableBody = document.getElementById('reportTable');
             const startDate = document.getElementById('reportStartDate').value;
@@ -5103,7 +4314,6 @@
             const jenis = document.getElementById('reportJenis').value;
             const kategori = document.getElementById('reportKategori').value;
             
-            // Filter data based on report criteria
             let filteredData = [...suratData];
             
             if (startDate) {
@@ -5122,10 +4332,8 @@
                 filteredData = filteredData.filter(item => item.kategori === kategori);
             }
             
-            // Clear table
             tableBody.innerHTML = '';
             
-            // Populate table
             if (filteredData.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="8" class="text-center">Tidak ada data yang sesuai dengan filter</td></tr>`;
             } else {
@@ -5135,9 +4343,9 @@
                         <td>${index + 1}</td>
                         <td>${formatDate(item.tanggal)}</td>
                         <td><span class="badge ${item.jenis === 'masuk' ? 'bg-success' : 'bg-warning'}">${item.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</span></td>
-                        <td>${item.nomor}</td>
+                        <td>${item.nomor || '-'}</td>
                         <td>${item.jenis === 'masuk' ? item.pengirim : item.penerima}</td>
-                        <td>${item.perihal}</td>
+                        <td>${item.perihal || '-'}</td>
                         <td><span class="badge badge-kategori kategori-${item.kategori}">${capitalizeFirstLetter(item.kategori)}</span></td>
                         <td><span class="prioritas-indicator prioritas-${item.prioritas}"></span>${capitalizeFirstLetter(item.prioritas)}</td>
                     `;
@@ -5145,15 +4353,15 @@
                 });
             }
         }
-        
-        // View data details
+
+        // ====================================================
+        // FUNGSI DATA OPERATIONS
+        // ====================================================
         function viewData(id) {
             const data = suratData.find(item => item.id === id);
             if (!data) return;
             
             const modalBody = document.getElementById('viewModalBody');
-            
-            // Apply guest mode restrictions to drive link
             const driveLink = data.linkDrive ? 
                 (isGuestMode ? 
                     '<p class="text-muted"><i>************ (Link tersedia hanya untuk user terdaftar)</i></p>' : 
@@ -5180,7 +4388,7 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nomor Surat</label>
-                            <p>${data.nomor}</p>
+                            <p>${data.nomor || '-'}</p>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -5223,7 +4431,7 @@
                 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Perihal</label>
-                    <p>${data.perihal}</p>
+                    <p>${data.perihal || '-'}</p>
                 </div>
                 
                 <div class="mb-3">
@@ -5252,14 +4460,11 @@
                 </div>
             `;
             
-            // Store current view ID for printing
             modalBody.setAttribute('data-current-id', id);
             
-            const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
-            viewModal.show();
+            new bootstrap.Modal(document.getElementById('viewModal')).show();
         }
-        
-        // Edit data
+
         function editData(id) {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat mengedit data.', 'error');
@@ -5298,7 +4503,7 @@
                             <label class="form-label" for="editNomorSurat">
                                 <i class="fas fa-hashtag"></i> Nomor Surat
                             </label>
-                            <input type="text" class="form-control" id="editNomorSurat" value="${data.nomor}" required>
+                            <input type="text" class="form-control" id="editNomorSurat" value="${data.nomor || ''}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="editTanggalTerima">
@@ -5381,18 +4586,16 @@
                 </form>
             `;
             
-            const editModal = new bootstrap.Modal(document.getElementById('editModal'));
-            editModal.show();
+            new bootstrap.Modal(document.getElementById('editModal')).show();
         }
-        
-        // Save edited data
+
         function saveEditedData() {
-            if (!currentEditId) return;
+            if (!currentEditId || isGuestMode) return;
             
             const dataIndex = suratData.findIndex(item => item.id === currentEditId);
             if (dataIndex === -1) return;
             
-            // Validate form
+            // Validate
             const requiredFields = [
                 'editJenisSurat', 'editTanggalSurat', 'editNomorSurat', 'editTanggalTerima', 
                 'editPengirim', 'editPenerima', 'editPerihal', 'editKategori', 'editPrioritas'
@@ -5440,19 +4643,16 @@
             
             showNotification('Data berhasil diperbarui', 'success');
             
-            // Close modal
-            const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-            editModal.hide();
+            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
             
-            // Refresh tables
             renderSuratTable();
+            renderArsipTable();
             updateStats();
-            
-            // Check for duplicates
             checkForDuplicates();
+            
+            currentEditId = null;
         }
-        
-        // Archive data
+
         function archiveData(id) {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat mengarsipkan data.', 'error');
@@ -5469,12 +4669,11 @@
             
             showNotification('Surat berhasil diarsipkan', 'success');
             
-            // Refresh tables
             renderSuratTable();
+            renderArsipTable();
             updateStats();
         }
-        
-        // Delete data
+
         function deleteData(id) {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat menghapus data.', 'error');
@@ -5490,13 +4689,11 @@
             
             showNotification('Data berhasil dihapus', 'success');
             
-            // Refresh tables
             renderSuratTable();
             renderArsipTable();
             updateStats();
         }
-        
-        // Restore archived data
+
         function restoreArchivedData(id) {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat memulihkan data.', 'error');
@@ -5513,13 +4710,11 @@
             
             showNotification('Surat berhasil dipulihkan', 'success');
             
-            // Refresh tables
             renderSuratTable();
             renderArsipTable();
             updateStats();
         }
-        
-        // Confirm action
+
         function confirmAction(message, callback) {
             const modalBody = document.getElementById('confirmationModalBody');
             modalBody.textContent = message;
@@ -5531,23 +4726,21 @@
             confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
             
             // Add new event listener
-            newConfirmBtn.addEventListener('click', function() {
+            document.getElementById('confirmAction').addEventListener('click', function() {
                 callback();
-                const modal = bootstrap.Modal.getInstance(document.getElementById('confirmationModal'));
-                modal.hide();
+                bootstrap.Modal.getInstance(document.getElementById('confirmationModal')).hide();
             });
             
-            const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('confirmationModal')).show();
         }
-        
-        // Execute confirmed action
+
         function executeConfirmedAction() {
-            // This is handled by the confirmAction function
-            // The actual action is passed as a callback
+            // Handled by confirmAction callback
         }
-        
-        // Export to Excel
+
+        // ====================================================
+        // FUNGSI EXPORT & PRINT
+        // ====================================================
         function exportToExcel(type = 'data') {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat mengexport data.', 'error');
@@ -5564,7 +4757,6 @@
                 dataToExport = suratData.filter(item => item.status === 'archived');
                 filename = 'arsip_surat.xlsx';
             } else if (type === 'report') {
-                // Get filtered report data
                 const startDate = document.getElementById('reportStartDate').value;
                 const endDate = document.getElementById('reportEndDate').value;
                 const jenis = document.getElementById('reportJenis').value;
@@ -5596,15 +4788,14 @@
                 return;
             }
             
-            // Prepare data for Excel
             const excelData = dataToExport.map(item => ({
                 'Jenis Surat': item.jenis === 'masuk' ? 'Surat Masuk' : 'Surat Keluar',
                 'Tanggal Surat': formatDate(item.tanggal),
-                'Nomor Surat': item.nomor,
+                'Nomor Surat': item.nomor || '',
                 'Tanggal Diterima/Dikirim': formatDate(item.tanggalTerima),
                 'Pengirim': item.pengirim,
                 'Penerima': item.penerima,
-                'Perihal': item.perihal,
+                'Perihal': item.perihal || '',
                 'Kategori': capitalizeFirstLetter(item.kategori),
                 'Prioritas': capitalizeFirstLetter(item.prioritas),
                 'Keterangan': item.keterangan || '',
@@ -5612,20 +4803,14 @@
                 'Status': item.status === 'archived' ? 'Diarsipkan' : 'Aktif'
             }));
             
-            // Create worksheet
             const ws = XLSX.utils.json_to_sheet(excelData);
-            
-            // Create workbook
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Data Surat');
-            
-            // Export to file
             XLSX.writeFile(wb, filename);
             
             showNotification('Data berhasil diexport ke Excel', 'success');
         }
-        
-        // Export to PDF
+
         function exportToPDF(type = 'data') {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat mengexport data.', 'error');
@@ -5645,7 +4830,6 @@
                 dataToExport = suratData.filter(item => item.status === 'archived');
                 title = 'ARSIP SURAT';
             } else if (type === 'report') {
-                // Get filtered report data
                 const startDate = document.getElementById('reportStartDate').value;
                 const endDate = document.getElementById('reportEndDate').value;
                 const jenis = document.getElementById('reportJenis').value;
@@ -5677,24 +4861,21 @@
                 return;
             }
             
-            // Prepare data for PDF
             const tableData = dataToExport.map(item => [
                 item.jenis === 'masuk' ? 'Masuk' : 'Keluar',
                 formatDate(item.tanggal),
-                item.nomor,
+                item.nomor || '',
                 item.jenis === 'masuk' ? item.pengirim : item.penerima,
-                item.perihal,
+                item.perihal || '',
                 capitalizeFirstLetter(item.kategori),
                 capitalizeFirstLetter(item.prioritas)
             ]);
             
-            // Add title
             doc.setFontSize(16);
             doc.text(title, 14, 15);
             doc.setFontSize(10);
             doc.text(`Generated on: ${formatDateTime(new Date())}`, 14, 22);
             
-            // Add table
             doc.autoTable({
                 startY: 30,
                 head: [['Jenis', 'Tanggal', 'Nomor', 'Pengirim/Penerima', 'Perihal', 'Kategori', 'Prioritas']],
@@ -5705,13 +4886,11 @@
                 }
             });
             
-            // Save PDF
             doc.save(`${title.toLowerCase().replace(/\s/g, '_')}.pdf`);
             
             showNotification('Data berhasil diexport ke PDF', 'success');
         }
-        
-        // Print data - MODIFIED FOR GUEST MODE
+
         function printData(type = 'data') {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat mencetak data.', 'error');
@@ -5725,7 +4904,6 @@
                 dataToPrint = suratData.filter(item => item.status !== 'archived');
                 title = 'DATA SURAT';
             } else if (type === 'report') {
-                // Get filtered report data
                 const startDate = document.getElementById('reportStartDate').value;
                 const endDate = document.getElementById('reportEndDate').value;
                 const jenis = document.getElementById('reportJenis').value;
@@ -5757,7 +4935,6 @@
                 return;
             }
             
-            // Create print window
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <!DOCTYPE html>
@@ -5804,9 +4981,9 @@
                                     <td>${index + 1}</td>
                                     <td>${item.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</td>
                                     <td>${formatDate(item.tanggal)}</td>
-                                    <td>${item.nomor}</td>
+                                    <td>${item.nomor || '-'}</td>
                                     <td>${item.jenis === 'masuk' ? item.pengirim : item.penerima}</td>
-                                    <td>${item.perihal}</td>
+                                    <td>${item.perihal || '-'}</td>
                                     <td>${capitalizeFirstLetter(item.kategori)}</td>
                                     <td>${capitalizeFirstLetter(item.prioritas)}</td>
                                 </tr>
@@ -5820,14 +4997,12 @@
             printWindow.document.close();
             printWindow.focus();
             
-            // Wait for content to load before printing
             setTimeout(() => {
                 printWindow.print();
                 printWindow.close();
             }, 250);
         }
-        
-        // Print single data - MODIFIED FOR GUEST MODE
+
         function printSingleData() {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat mencetak data.', 'error');
@@ -5879,7 +5054,7 @@
                         </tr>
                         <tr>
                             <td>Nomor Surat</td>
-                            <td>${data.nomor}</td>
+                            <td>${data.nomor || '-'}</td>
                         </tr>
                         <tr>
                             <td>Tanggal ${data.jenis === 'masuk' ? 'Diterima' : 'Dikirim'}</td>
@@ -5891,7 +5066,7 @@
                         </tr>
                         <tr>
                             <td>Perihal</td>
-                            <td>${data.perihal}</td>
+                            <td>${data.perihal || '-'}</td>
                         </tr>
                         <tr>
                             <td>Kategori</td>
@@ -5931,14 +5106,15 @@
             printWindow.document.close();
             printWindow.focus();
             
-            // Wait for content to load before printing
             setTimeout(() => {
                 printWindow.print();
                 printWindow.close();
             }, 250);
         }
-        
-        // Download reload.js file - MODIFIED FOR GUEST MODE
+
+        // ====================================================
+        // FUNGSI BACKUP & RESTORE
+        // ====================================================
         function downloadReloadJs() {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat mendownload data.', 'error');
@@ -5956,27 +5132,18 @@
                 }
             };
             
-            // Convert to JSON string and encode to base64
             const jsonString = JSON.stringify(backup);
             const encryptedString = btoa(jsonString);
             
-            // Create the reload.js file content
             const reloadJsContent = `/* 
  * File backup data SISMAT v2.1.2
  * Dibuat pada: ${formatDateTime(new Date())}
  * Jumlah data: ${suratData.length}
  * Catatan: ${backupNotes}
- * 
- * PETUNJUK PENGGUNAAN:
- * 1. Simpan file ini dengan aman
- * 2. Untuk restore, upload file ini ke server (folder yang sama dengan aplikasi)
- * 3. Klik "Auto Reload dari File reload.js" di aplikasi SISMAT
- * 4. Data akan otomatis terbaca dari file ini
  */
 
 window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             
-            // Create download link
             const dataStr = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(reloadJsContent);
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute('href', dataStr);
@@ -5985,13 +5152,11 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
             
-            // Add to backup history
             addToBackupHistory(backup);
             
             showNotification('File reload.js berhasil didownload', 'success');
         }
-        
-        // Add to backup history
+
         function addToBackupHistory(backup) {
             let backupHistory = JSON.parse(localStorage.getItem('backupHistory') || '[]');
             
@@ -6002,26 +5167,21 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 type: 'reload.js'
             });
             
-            // Keep only last 10 backups in history
             if (backupHistory.length > 10) {
                 backupHistory = backupHistory.slice(-10);
             }
             
             localStorage.setItem('backupHistory', JSON.stringify(backupHistory));
             
-            // Update backup history table
             updateBackupHistory();
         }
-        
-        // Update backup history table
+
         function updateBackupHistory() {
             const tableBody = document.getElementById('backupHistory');
             const backupHistory = JSON.parse(localStorage.getItem('backupHistory') || '[]');
             
-            // Clear table
             tableBody.innerHTML = '';
             
-            // Populate table
             if (backupHistory.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="5" class="text-center">Belum ada riwayat backup</td></tr>`;
             } else {
@@ -6040,8 +5200,7 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 });
             }
         }
-        
-        // Restore data
+
         function restoreData() {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat merestore data.', 'error');
@@ -6061,9 +5220,7 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 try {
                     let backupData;
                     
-                    // Check if it's a .js file (reload.js)
                     if (file.name.endsWith('.js')) {
-                        // Extract the encrypted string from window.SISMAT_BACKUP_ENCRYPTED
                         const content = e.target.result;
                         const match = content.match(/window\.SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/);
                         
@@ -6071,15 +5228,12 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                             throw new Error('Format file reload.js tidak valid');
                         }
                         
-                        // Decode from base64
                         const jsonString = atob(match[1]);
                         backupData = JSON.parse(jsonString);
                     } else {
-                        // Assume it's a JSON file
                         backupData = JSON.parse(e.target.result);
                     }
                     
-                    // Validate backup structure
                     if (!backupData.data || !Array.isArray(backupData.data)) {
                         throw new Error('Format file backup tidak valid');
                     }
@@ -6087,10 +5241,8 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                     const overwrite = document.getElementById('overwriteData').checked;
                     
                     if (overwrite) {
-                        // Replace all data
                         suratData = backupData.data;
                     } else {
-                        // Merge data, avoid duplicates by ID
                         backupData.data.forEach(newItem => {
                             const existingIndex = suratData.findIndex(item => item.id === newItem.id);
                             if (existingIndex === -1) {
@@ -6103,12 +5255,10 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                     
                     showNotification('Data berhasil direstore', 'success');
                     
-                    // Refresh UI
                     renderSuratTable();
                     renderArsipTable();
                     updateStats();
                     
-                    // Reset file input
                     fileInput.value = '';
                     document.getElementById('restoreData').disabled = true;
                     
@@ -6124,9 +5274,13 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             
             reader.readAsText(file);
         }
-        
-        // Save general settings
-        function saveGeneralSettings() {
+
+        // ====================================================
+        // FUNGSI PENGATURAN
+        // ====================================================
+        function saveGeneralSettings(e) {
+            e.preventDefault();
+            
             const appName = document.getElementById('appName').value;
             itemsPerPage = parseInt(document.getElementById('itemsPerPage').value);
             const dateFormat = document.getElementById('dateFormat').value;
@@ -6134,7 +5288,6 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             const autoBackupEnabled = document.getElementById('autoBackupEnabled').checked;
             autoReloadEnabled = document.getElementById('autoReloadEnabled').checked;
             
-            // Save settings to localStorage
             localStorage.setItem('appName', appName);
             localStorage.setItem('itemsPerPage', itemsPerPage);
             localStorage.setItem('dateFormat', dateFormat);
@@ -6142,26 +5295,23 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             localStorage.setItem('autoBackupEnabled', autoBackupEnabled);
             localStorage.setItem('autoReloadEnabled', autoReloadEnabled);
             
-            // Update app title
             document.querySelector('.app-title').textContent = appName;
             document.title = appName + ' - Sistem Manajemen Surat';
             
-            showNotification('Pengaturan berhasil disimpan', 'success');
-            
-            // Update auto reload toggle
             document.getElementById('autoReloadToggle').checked = autoReloadEnabled;
             
-            // Refresh table with new items per page
             renderSuratTable();
+            
+            showNotification('Pengaturan berhasil disimpan', 'success');
         }
-        
-        // Change password
-        function changePassword() {
+
+        function changePassword(e) {
+            e.preventDefault();
+            
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             
-            // Validate
             if (currentPassword !== validationCode) {
                 showNotification('Kode keamanan saat ini salah', 'error');
                 return;
@@ -6177,20 +5327,17 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 return;
             }
             
-            // Update validation code
             validationCode = newPassword;
             localStorage.setItem('validationCode', newPassword);
             document.getElementById('validationCode').value = newPassword;
             
-            // Clear form
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmPassword').value = '';
             
             showNotification('Kode keamanan berhasil diperbarui', 'success');
         }
-        
-        // Generate validation code
+
         function generateValidationCode() {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat generate kode.', 'error');
@@ -6204,25 +5351,31 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             
             showNotification('Kode validasi baru telah digenerate', 'success');
         }
-        
-        // Show reset app modal with security
+
         function showResetAppModal() {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat reset aplikasi.', 'error');
                 return;
             }
             
-            // Reset modal fields
             document.getElementById('resetSecurityCode').value = '';
             document.getElementById('confirmReset').checked = false;
             document.getElementById('confirmResetApp').disabled = true;
             document.getElementById('resetSecurityCodeError').style.display = 'none';
             
-            const resetModal = new bootstrap.Modal(document.getElementById('resetAppModal'));
-            resetModal.show();
+            new bootstrap.Modal(document.getElementById('resetAppModal')).show();
         }
-        
-        // Reset application with security code
+
+        function validateResetCode() {
+            const confirmBtn = document.getElementById('confirmResetApp');
+            const securityCode = document.getElementById('resetSecurityCode').value;
+            const confirmCheck = document.getElementById('confirmReset').checked;
+            confirmBtn.disabled = !(securityCode === RESET_SECURITY_CODE && confirmCheck);
+            
+            document.getElementById('resetSecurityCodeError').style.display = 'none';
+            document.getElementById('resetSecurityCode').classList.remove('input-error');
+        }
+
         function resetApplication() {
             const securityCode = document.getElementById('resetSecurityCode').value;
             
@@ -6232,29 +5385,28 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 return;
             }
             
-            // Close modal
-            const resetModal = bootstrap.Modal.getInstance(document.getElementById('resetAppModal'));
-            resetModal.hide();
+            bootstrap.Modal.getInstance(document.getElementById('resetAppModal')).hide();
             
-            // Clear all data
             localStorage.clear();
             suratData = [];
             saveData();
             
-            // Reset validation code to default
             validationCode = "BidangPN1988";
             localStorage.setItem('validationCode', validationCode);
             
-            // Reload the page
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
             
             showNotification('Aplikasi berhasil direset. Halaman akan direfresh...', 'success');
         }
-        
-        // Handle login
-        function handleLogin() {
+
+        // ====================================================
+        // FUNGSI LOGIN & AUTHENTICATION
+        // ====================================================
+        function handleLogin(e) {
+            e.preventDefault();
+            
             if (isBlocked) {
                 showNotification('Anda telah diblokir sementara. Silakan coba lagi nanti.', 'error');
                 return;
@@ -6265,42 +5417,29 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             const loginSpinner = document.getElementById('loginSpinner');
             const loginButtonText = document.querySelector('.login-button-text');
             
-            // Show loading state
             loginButton.disabled = true;
             loginSpinner.classList.remove('d-none');
             loginButtonText.textContent = 'Memproses...';
             
-            // Simulate network delay
             setTimeout(() => {
                 if (securityCode === validationCode) {
-                    // Successful login
                     loginAttempts = 0;
                     localStorage.setItem('loginAttempts', loginAttempts);
                     
-                    // Hide login modal
-                    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                    loginModal.hide();
+                    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
                     
-                    // Show app content
                     document.getElementById('mainContent').classList.remove('app-content-unauthenticated');
                     
-                    // Set guest mode to false
                     isGuestMode = false;
                     document.getElementById('guestWarning').style.display = 'none';
-                    
-                    // Show welcome notification
                     document.getElementById('welcomeNotification').style.display = 'block';
                     
                     showNotification('Login berhasil. Selamat datang!', 'success');
                     
-                    // Start auto reload for dashboard
                     startAutoReload();
-                    
-                    // Apply guest mode restrictions
                     applyGuestModeRestrictions();
                     
                 } else {
-                    // Failed login
                     loginAttempts++;
                     localStorage.setItem('loginAttempts', loginAttempts);
                     
@@ -6312,7 +5451,6 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                         document.getElementById('attemptsCount').style.display = 'none';
                         document.getElementById('blockedMessage').style.display = 'block';
                         
-                        // Start countdown
                         let countdown = 30;
                         const countdownElement = document.getElementById('countdown');
                         const countdownInterval = setInterval(() => {
@@ -6335,7 +5473,6 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                         document.getElementById('attemptsCount').textContent = `Percobaan login gagal: ${loginAttempts} dari 5`;
                         document.getElementById('attemptsCount').style.display = 'block';
                         
-                        // Shake animation for wrong password
                         document.getElementById('loginForm').classList.add('login-shake');
                         setTimeout(() => {
                             document.getElementById('loginForm').classList.remove('login-shake');
@@ -6345,78 +5482,63 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                     }
                 }
                 
-                // Reset login button
                 loginButton.disabled = false;
                 loginSpinner.classList.add('d-none');
                 loginButtonText.textContent = 'Masuk ke Aplikasi';
                 
             }, 1000);
         }
-        
-        // Handle guest login
+
         function handleGuestLogin() {
             const guestButton = document.getElementById('guestLoginButton');
             const guestSpinner = document.getElementById('guestSpinner');
             const guestButtonText = document.querySelector('.guest-button-text');
             
-            // Show loading state
             guestButton.disabled = true;
             guestSpinner.classList.remove('d-none');
             guestButtonText.textContent = 'Memproses...';
             
-            // Simulate network delay
             setTimeout(() => {
-                // Guest login successful
                 loginAttempts = 0;
                 localStorage.setItem('loginAttempts', loginAttempts);
                 
-                // Hide login modal
-                const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                loginModal.hide();
+                bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
                 
-                // Show app content
                 document.getElementById('mainContent').classList.remove('app-content-unauthenticated');
                 
-                // Set guest mode to true
                 isGuestMode = true;
                 document.getElementById('guestWarning').style.display = 'block';
                 
                 showNotification('Login sebagai tamu berhasil. Akses terbatas untuk melihat data dan reload data.', 'info');
                 
-                // Start auto reload for dashboard
                 startAutoReload();
-                
-                // Apply guest mode restrictions
                 applyGuestModeRestrictions();
                 
-                // Reset guest button
                 guestButton.disabled = false;
                 guestSpinner.classList.add('d-none');
                 guestButtonText.textContent = 'Masuk sebagai Tamu';
                 
             }, 1000);
         }
-        
-        // Apply guest mode restrictions - IMPROVED FOR RELOAD DATA ACCESS
+
         function applyGuestModeRestrictions() {
             if (isGuestMode) {
-                // Show guest warning
                 document.getElementById('guestWarning').style.display = 'block';
                 
-                // Disable input surat form
+                // Disable input surat
                 document.getElementById('saveSuratBtn').disabled = true;
                 document.getElementById('saveSuratBtn').classList.add('disabled-guest');
                 
-                // ENABLE reload data buttons for guest mode
+                // Enable reload data for guest
                 document.getElementById('autoReloadData').disabled = false;
                 document.getElementById('checkFileStatusBtn').disabled = false;
                 document.getElementById('reloadDataSuratBtn').disabled = false;
                 
-                // Disable manual reload button for guest (can't paste encrypted data)
+                // Disable manual reload for guest
                 document.getElementById('manualReloadBtn').disabled = true;
                 document.getElementById('manualReloadBtn').classList.add('disabled-guest');
                 
-                // Disable download buttons for guest
+                // Disable download buttons
                 document.getElementById('downloadReloadJs').disabled = true;
                 document.getElementById('downloadReloadJs').classList.add('disabled-guest');
                 document.getElementById('downloadReloadJsData').disabled = true;
@@ -6424,57 +5546,44 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 document.getElementById('downloadReloadJsBackup').disabled = true;
                 document.getElementById('downloadReloadJsBackup').classList.add('disabled-guest');
                 
-                // Disable export/print buttons in data surat
+                // Disable export/print
                 document.getElementById('exportExcel').disabled = true;
                 document.getElementById('exportExcel').classList.add('disabled-guest');
                 document.getElementById('exportPDF').disabled = true;
                 document.getElementById('exportPDF').classList.add('disabled-guest');
                 document.getElementById('printData').disabled = true;
                 document.getElementById('printData').classList.add('disabled-guest');
-                
-                // Disable export buttons in arsip
                 document.getElementById('exportArsipExcel').disabled = true;
                 document.getElementById('exportArsipExcel').classList.add('disabled-guest');
                 document.getElementById('exportArsipPDF').disabled = true;
                 document.getElementById('exportArsipPDF').classList.add('disabled-guest');
-                
-                // Disable export/print buttons in laporan
                 document.getElementById('exportReportExcel').disabled = true;
                 document.getElementById('exportReportExcel').classList.add('disabled-guest');
                 document.getElementById('exportReportPDF').disabled = true;
                 document.getElementById('exportReportPDF').classList.add('disabled-guest');
                 document.getElementById('printReport').disabled = true;
                 document.getElementById('printReport').classList.add('disabled-guest');
-                
-                // Disable generate report button
                 document.getElementById('generateReport').disabled = true;
                 document.getElementById('generateReport').classList.add('disabled-guest');
-                
-                // Disable restore data button
                 document.getElementById('restoreData').disabled = true;
                 document.getElementById('restoreData').classList.add('disabled-guest');
-                
-                // Disable settings buttons
                 document.getElementById('generateValidationCode').disabled = true;
                 document.getElementById('generateValidationCode').classList.add('disabled-guest');
                 document.getElementById('resetAppBtn').disabled = true;
                 document.getElementById('resetAppBtn').classList.add('disabled-guest');
-                
-                // Disable print single data button
                 document.getElementById('printSingleData').disabled = true;
                 document.getElementById('printSingleData').classList.add('print-disabled-guest');
                 
-                // Remove disabled-guest class from allowed buttons
+                // Remove disabled class from allowed buttons
                 document.getElementById('autoReloadData').classList.remove('disabled-guest');
                 document.getElementById('checkFileStatusBtn').classList.remove('disabled-guest');
                 document.getElementById('reloadDataSuratBtn').classList.remove('disabled-guest');
                 
-                // Hide floating menu items for restricted sections
+                // Hide restricted menu items
                 document.getElementById('floatingInput').style.display = 'none';
                 document.getElementById('floatingBackup').style.display = 'none';
                 document.getElementById('floatingSettings').style.display = 'none';
                 
-                // Hide menu items for restricted sections in sidebar
                 document.querySelectorAll('#menuList .nav-link[data-bs-target="inputSurat"]').forEach(el => {
                     el.parentElement.style.display = 'none';
                 });
@@ -6485,76 +5594,61 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                     el.parentElement.style.display = 'none';
                 });
             } else {
-                // Hide guest warning
                 document.getElementById('guestWarning').style.display = 'none';
                 
-                // Enable all buttons for regular users
                 document.querySelectorAll('.btn').forEach(btn => {
                     btn.disabled = false;
                     btn.classList.remove('disabled-guest');
                     btn.classList.remove('print-disabled-guest');
                 });
                 
-                // Show all floating menu items
                 document.querySelectorAll('.floating-menu-item').forEach(el => {
                     el.style.display = 'flex';
                 });
                 
-                // Show all menu items in sidebar
                 document.querySelectorAll('#menuList .nav-item').forEach(el => {
                     el.style.display = 'block';
                 });
             }
         }
-        
-        // Logout
+
         function logout() {
             confirmAction('Apakah Anda yakin ingin keluar dari aplikasi?', () => {
-                
-                // Auto backup before logout (only for regular users)
                 if (!isGuestMode) {
                     autoBackupOnExit();
                 }
 
-                // Stop auto reload
                 stopAutoReload();
 
-                // Show login modal
-                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                loginModal.show();
+                new bootstrap.Modal(document.getElementById('loginModal')).show();
                 
-                // Hide app content
                 document.getElementById('mainContent').classList.add('app-content-unauthenticated');
-                
-                // Clear password field
                 document.getElementById('securityCode').value = '';
                 
-                // Reset guest mode
                 isGuestMode = false;
                 document.getElementById('guestWarning').style.display = 'none';
                 
                 showNotification('Anda telah logout dari aplikasi', 'info');
             });
         }
-        
-        // Generate report
+
         function generateReport() {
             if (isGuestMode) {
                 showNotification('Akses ditolak. Mode tamu tidak dapat generate laporan.', 'error');
                 return;
             }
             
-            // This would generate a comprehensive report
-            // For now, we'll just update the report table and charts
             updateReportTable();
             updateReportCharts();
             
             showNotification('Laporan berhasil digenerate', 'success');
         }
-        
-        // Initialize charts
+
+        // ====================================================
+        // FUNGSI CHART & STATISTIK
+        // ====================================================
         function initCharts() {
-            // Jenis Surat Chart (Pie)
+            // Jenis Surat Chart
             const jenisSuratCtx = document.getElementById('jenisSuratChart').getContext('2d');
             charts.jenisSurat = new Chart(jenisSuratCtx, {
                 type: 'pie',
@@ -6570,9 +5664,7 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
+                        legend: { position: 'bottom' },
                         title: {
                             display: true,
                             text: 'Distribusi Jenis Surat'
@@ -6581,7 +5673,7 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 }
             });
             
-            // Monthly Stats Chart (Bar)
+            // Monthly Stats Chart
             const monthlyStatsCtx = document.getElementById('monthlyStatsChart').getContext('2d');
             charts.monthlyStats = new Chart(monthlyStatsCtx, {
                 type: 'bar',
@@ -6605,15 +5697,9 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
+                    scales: { y: { beginAtZero: true } },
                     plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
+                        legend: { position: 'bottom' },
                         title: {
                             display: true,
                             text: 'Statistik Bulanan'
@@ -6622,7 +5708,7 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 }
             });
             
-            // Report Chart (for laporan section)
+            // Report Chart
             const reportCtx = document.getElementById('reportChart').getContext('2d');
             charts.report = new Chart(reportCtx, {
                 type: 'bar',
@@ -6646,15 +5732,9 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
+                    scales: { y: { beginAtZero: true } },
                     plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
+                        legend: { position: 'bottom' },
                         title: {
                             display: true,
                             text: 'Distribusi Surat per Kategori'
@@ -6663,15 +5743,7 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 }
             });
         }
-        
-        // Update dashboard charts and stats
-        function updateDashboard() {
-            updateStats();
-            updateCharts();
-            updateRecentActivities();
-        }
-        
-        // Update stats
+
         function updateStats() {
             const totalSurat = suratData.length;
             const suratMasuk = suratData.filter(item => item.jenis === 'masuk' && item.status !== 'archived').length;
@@ -6683,14 +5755,11 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             document.getElementById('suratKeluar').textContent = suratKeluar;
             document.getElementById('suratArsip').textContent = suratArsip;
             
-            // Update settings page
             document.getElementById('settingsTotalSurat').textContent = totalSurat;
             document.getElementById('lastUpdated').textContent = formatDateTime(new Date());
         }
-        
-        // Update charts
+
         function updateCharts() {
-            // Update jenis surat chart
             const suratMasuk = suratData.filter(item => item.jenis === 'masuk' && item.status !== 'archived').length;
             const suratKeluar = suratData.filter(item => item.jenis === 'keluar' && item.status !== 'archived').length;
             
@@ -6699,7 +5768,6 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 charts.jenisSurat.update();
             }
             
-            // Update monthly stats chart
             const monthlyDataMasuk = Array(12).fill(0);
             const monthlyDataKeluar = Array(12).fill(0);
             
@@ -6720,20 +5788,15 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 charts.monthlyStats.update();
             }
         }
-        
-        // Update recent activities
+
         function updateRecentActivities() {
             const activitiesBody = document.getElementById('recentActivities');
-            
-            // Get recent activities (last 5)
             const recentData = [...suratData]
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                 .slice(0, 5);
             
-            // Clear table
             activitiesBody.innerHTML = '';
             
-            // Populate table
             if (recentData.length === 0) {
                 activitiesBody.innerHTML = `<tr><td colspan="6" class="text-center">Tidak ada data</td></tr>`;
             } else {
@@ -6744,17 +5807,15 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                         <td>${formatDate(item.tanggal)}</td>
                         <td><span class="badge ${item.jenis === 'masuk' ? 'bg-success' : 'bg-warning'}">${item.jenis === 'masuk' ? 'Masuk' : 'Keluar'}</span></td>
                         <td>${item.jenis === 'masuk' ? item.pengirim : item.penerima}</td>
-                        <td>${item.perihal}</td>
+                        <td>${item.perihal || '-'}</td>
                         <td><span class="badge ${item.status === 'archived' ? 'bg-secondary' : 'bg-success'}">${item.status === 'archived' ? 'Diarsipkan' : 'Aktif'}</span></td>
                     `;
                     activitiesBody.appendChild(row);
                 });
             }
         }
-        
-        // Update report charts
+
         function updateReportCharts() {
-            // Get filtered data for report
             const startDate = document.getElementById('reportStartDate').value;
             const endDate = document.getElementById('reportEndDate').value;
             const jenis = document.getElementById('reportJenis').value;
@@ -6778,7 +5839,6 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 filteredData = filteredData.filter(item => item.kategori === kategori);
             }
             
-            // Update report chart
             const categories = ['pemerintah', 'perusahaan', 'lembaga', 'opd', 'upt', 'perorangan', 'lainnya'];
             const dataMasuk = Array(7).fill(0);
             const dataKeluar = Array(7).fill(0);
@@ -6800,58 +5860,22 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 charts.report.update();
             }
         }
-        
-        // Update browser info
+
         function updateBrowserInfo() {
             const browserInfo = navigator.userAgent;
             let storageUsage = 0;
             try {
                 storageUsage = (JSON.stringify(localStorage).length / 1024).toFixed(2);
-            } catch (e) {
-                // Could be a security error in some browsers
-            }
+            } catch (e) {}
             const storageInfo = `${storageUsage} KB digunakan`;
 
             document.getElementById('browserInfo').textContent = navigator.platform;
             document.getElementById('storageInfo').textContent = storageInfo;
         }
-        
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const toast = document.querySelector('.notification-toast');
-            const toastBody = toast.querySelector('.toast-body');
-            const toastHeader = toast.querySelector('.toast-header');
-            
-            // Set message
-            toastBody.textContent = message;
-            
-            // Set icon and color based on type
-            let iconClass = 'fa-info-circle';
-            let bgClass = 'text-primary';
-            
-            switch (type) {
-                case 'success':
-                    iconClass = 'fa-check-circle';
-                    bgClass = 'text-success';
-                    break;
-                case 'error':
-                    iconClass = 'fa-exclamation-circle';
-                    bgClass = 'text-danger';
-                    break;
-                case 'warning':
-                    iconClass = 'fa-exclamation-triangle';
-                    bgClass = 'text-warning';
-                    break;
-            }
-            
-            toastHeader.querySelector('i').className = `fas ${iconClass} me-2 ${bgClass}`;
-            
-            // Show toast
-            const bsToast = new bootstrap.Toast(toast);
-            bsToast.show();
-        }
-        
-        // Load data from localStorage
+
+        // ====================================================
+        // FUNGSI DATA PERSISTENCE
+        // ====================================================
         function loadData() {
             const savedData = localStorage.getItem('suratData');
             if (savedData) {
@@ -6894,7 +5918,7 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 document.getElementById('autoReloadToggle').checked = autoReloadEnabled;
             }
             
-            // Load login attempts and block status
+            // Load login attempts
             const savedLoginAttempts = localStorage.getItem('loginAttempts');
             if (savedLoginAttempts) {
                 loginAttempts = parseInt(savedLoginAttempts);
@@ -6903,14 +5927,13 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             const savedBlockTime = localStorage.getItem('blockTime');
             if (savedBlockTime) {
                 const blockTimeDiff = Date.now() - parseInt(savedBlockTime);
-                if (blockTimeDiff < 30000) { // 30 seconds block
+                if (blockTimeDiff < 30000) {
                     isBlocked = true;
                     blockTime = parseInt(savedBlockTime);
                     
                     document.getElementById('attemptsCount').style.display = 'none';
                     document.getElementById('blockedMessage').style.display = 'block';
                     
-                    // Start countdown
                     let countdown = Math.ceil((30000 - blockTimeDiff) / 1000);
                     const countdownElement = document.getElementById('countdown');
                     countdownElement.textContent = countdown;
@@ -6931,16 +5954,67 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 }
             }
             
-            // Update backup history
             updateBackupHistory();
         }
-        
-        // Save data to localStorage
+
         function saveData() {
             localStorage.setItem('suratData', JSON.stringify(suratData));
         }
-        
-        // Start auto reload for dashboard
+
+        // ====================================================
+        // FUNGSI AUTO RELOAD & DUPLICATE CHECK
+        // ====================================================
+        function startDuplicateCheck() {
+            if (duplicateCheckInterval) {
+                clearInterval(duplicateCheckInterval);
+            }
+            
+            duplicateCheckInterval = setInterval(function() {
+                checkForDuplicates();
+            }, 30000);
+        }
+
+        function checkForDuplicates() {
+            const duplicates = [];
+            const duplicateMap = new Map();
+            
+            suratData.forEach((item, index) => {
+                if (item.status !== 'archived' && item.nomor) {
+                    const key = item.nomor.toLowerCase();
+                    if (duplicateMap.has(key)) {
+                        duplicateMap.get(key).push(index);
+                    } else {
+                        duplicateMap.set(key, [index]);
+                    }
+                }
+            });
+            
+            duplicateMap.forEach((indices, nomor) => {
+                if (indices.length > 1) {
+                    indices.forEach(index => {
+                        duplicates.push({
+                            index: index,
+                            nomor: suratData[index].nomor,
+                            data: suratData[index]
+                        });
+                    });
+                }
+            });
+            
+            if (duplicates.length > 0) {
+                const duplicateBadge = document.getElementById('duplicateCountBadge');
+                const duplicateCount = document.getElementById('duplicateCount');
+                duplicateCount.textContent = duplicates.length;
+                duplicateBadge.style.display = 'inline-block';
+                
+                renderSuratTable();
+            } else {
+                document.getElementById('duplicateCountBadge').style.display = 'none';
+            }
+            
+            return duplicates;
+        }
+
         function startAutoReload() {
             if (autoReloadInterval) {
                 clearInterval(autoReloadInterval);
@@ -6950,34 +6024,19 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
                 autoReloadInterval = setInterval(function() {
                     if (!document.getElementById('dashboard').classList.contains('d-none')) {
                         updateDashboard();
-                        // Optional: Show notification
-                        // showNotification('Dashboard diperbarui otomatis', 'info', 3000);
                     }
-                }, 30000); // Update every 30 seconds
+                }, 30000);
                 
                 document.getElementById('autoReloadStatus').textContent = 'Fitur auto reload aktif. Data akan diperbarui otomatis setiap 30 detik.';
             }
         }
-        
-        // Stop auto reload
+
         function stopAutoReload() {
             if (autoReloadInterval) {
                 clearInterval(autoReloadInterval);
                 autoReloadInterval = null;
             }
             document.getElementById('autoReloadStatus').textContent = 'Fitur auto reload tidak aktif.';
-        }
-        
-        // Auto backup on exit
-        function getFormattedTimestamp() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            return `${year}${month}${day}_${hours}${minutes}${seconds}`;
         }
 
         function autoBackupOnExit() {
@@ -7008,14 +6067,558 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             linkElement.click();
         }
 
-        // Format date
+        function getFormattedTimestamp() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+        }
+
+        // ====================================================
+        // FUNGSI RELOAD DATA DARI FILE reload.js
+        // ====================================================
+        async function checkReloadJsFile(showNotification = false) {
+            try {
+                updateFileStatus('checking', 'Mengecek file...');
+                
+                const response = await fetch('reload.js?' + Date.now());
+                
+                if (response.ok) {
+                    const fileContent = await response.text();
+                    const sizeKB = (fileContent.length / 1024).toFixed(2);
+                    
+                    let recordCount = '?';
+                    const recordMatch = fileContent.match(/Jumlah data:\s*(\d+)/);
+                    if (recordMatch) {
+                        recordCount = recordMatch[1];
+                    }
+                    
+                    let fileDate = '?';
+                    const dateMatch = fileContent.match(/Dibuat pada:\s*([^\n]+)/);
+                    if (dateMatch) {
+                        fileDate = dateMatch[1];
+                    }
+                    
+                    reloadJsFileStatus = 'found';
+                    updateFileStatus('found', `File ditemukan (${sizeKB} KB, ${recordCount} records, ${fileDate})`);
+                    
+                    if (showNotification) {
+                        showNotification(`File reload.js ditemukan di server (${recordCount} records)`, 'success');
+                    }
+                    
+                    return {
+                        exists: true,
+                        size: sizeKB,
+                        records: recordCount,
+                        date: fileDate,
+                        content: fileContent
+                    };
+                } else {
+                    reloadJsFileStatus = 'not_found';
+                    updateFileStatus('not_found', 'File reload.js tidak ditemukan di server');
+                    
+                    if (showNotification) {
+                        showNotification('File reload.js tidak ditemukan di server', 'warning');
+                    }
+                    
+                    return { exists: false };
+                }
+            } catch (error) {
+                console.error('Error checking reload.js file:', error);
+                reloadJsFileStatus = 'error';
+                updateFileStatus('error', `Error: ${error.message}`);
+                
+                if (showNotification) {
+                    showNotification(`Error: ${error.message}`, 'error');
+                }
+                
+                return { exists: false, error: error.message };
+            }
+        }
+
+        function updateFileStatus(status, message) {
+            const indicator = document.getElementById('fileStatusIndicator');
+            const text = document.getElementById('fileStatusText');
+            
+            indicator.className = 'file-status-indicator';
+            
+            switch (status) {
+                case 'checking':
+                    indicator.classList.add('file-status-not-found');
+                    text.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i> ${message}`;
+                    break;
+                case 'found':
+                    indicator.classList.add('file-status-found');
+                    text.innerHTML = `<i class="fas fa-check-circle me-2"></i> ${message}`;
+                    break;
+                case 'not_found':
+                    indicator.classList.add('file-status-not-found');
+                    text.innerHTML = `<i class="fas fa-times-circle me-2"></i> ${message}`;
+                    break;
+                case 'error':
+                    indicator.classList.add('file-status-not-found');
+                    text.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> ${message}`;
+                    break;
+            }
+        }
+
+        async function fetchAndProcessReloadJs() {
+            try {
+                showLoadingOverlay('Mengambil data dari file reload.js...', 'Mohon tunggu, sistem sedang membaca data dari server.');
+                
+                const autoDetect = document.getElementById('autoDetectReloadJs').checked;
+                if (!autoDetect) {
+                    hideLoadingOverlay();
+                    new bootstrap.Modal(document.getElementById('reloadModal')).show();
+                    return;
+                }
+                
+                const fileCheck = await checkReloadJsFile();
+                
+                if (!fileCheck.exists) {
+                    hideLoadingOverlay();
+                    showNotification('File reload.js tidak ditemukan di server. Gunakan input manual.', 'warning');
+                    new bootstrap.Modal(document.getElementById('reloadModal')).show();
+                    return;
+                }
+                
+                updateLoadingMessage('Memproses data dari file reload.js...', 30);
+                
+                const response = await fetch('reload.js?' + Date.now());
+                const fileContent = await response.text();
+                
+                updateLoadingMessage('Mengekstrak data terenkripsi...', 60);
+                
+                await processFetchedReloadJs(fileContent);
+                
+                hideLoadingOverlay();
+                
+            } catch (error) {
+                console.error('Error in fetchAndProcessReloadJs:', error);
+                hideLoadingOverlay();
+                showNotification(`Gagal memproses file: ${error.message}. Gunakan input manual.`, 'error');
+                
+                new bootstrap.Modal(document.getElementById('reloadModal')).show();
+            }
+        }
+
+        async function processFetchedReloadJs(fileContent) {
+            try {
+                updateLoadingMessage('Mendekripsi data...', 80);
+                
+                let encryptedString = null;
+                const patterns = [
+                    /window\.SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/,
+                    /SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/,
+                    /"([A-Za-z0-9+/=]{100,})"/
+                ];
+                
+                for (const pattern of patterns) {
+                    const match = fileContent.match(pattern);
+                    if (match && match[1]) {
+                        encryptedString = match[1];
+                        break;
+                    }
+                }
+                
+                if (!encryptedString) {
+                    const trimmedContent = fileContent.trim();
+                    if (trimmedContent.length > 100 && /^[A-Za-z0-9+/=]+$/.test(trimmedContent)) {
+                        encryptedString = trimmedContent;
+                    } else {
+                        throw new Error('Format data tidak dikenali dalam file reload.js');
+                    }
+                }
+                
+                const jsonString = atob(encryptedString);
+                const backupData = JSON.parse(jsonString);
+                
+                if (!backupData.data || !Array.isArray(backupData.data)) {
+                    throw new Error('Format data backup tidak valid');
+                }
+                
+                updateLoadingMessage('Memproses dan menggabungkan data...', 90);
+                
+                const mergeData = document.getElementById('mergeOnReload').checked;
+                const markDuplicates = document.getElementById('markDuplicatesOnReload').checked;
+                
+                const result = await processBackupData(backupData.data, mergeData, true);
+                
+                showReloadResultModal(
+                    result.originalCount,
+                    result.addedCount,
+                    result.updatedCount,
+                    backupData.data.length,
+                    result.duplicateCount,
+                    markDuplicates
+                );
+                
+                setTimeout(() => {
+                    checkReloadJsFile();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error processing fetched reload.js:', error);
+                throw new Error(`Gagal memproses file reload.js: ${error.message}`);
+            }
+        }
+
+        async function processBackupData(importedData, mergeData, showProgress = false) {
+            const originalCount = suratData.length;
+            let addedCount = 0;
+            let updatedCount = 0;
+            let duplicateCount = 0;
+            
+            const duplicateMap = new Map();
+            
+            if (mergeData) {
+                for (let i = 0; i < importedData.length; i++) {
+                    const newItem = importedData[i];
+                    const existingIndex = suratData.findIndex(item => item.id === newItem.id);
+                    
+                    if (existingIndex === -1) {
+                        suratData.push(newItem);
+                        addedCount++;
+                    } else {
+                        suratData[existingIndex] = {
+                            ...suratData[existingIndex],
+                            ...newItem,
+                            updatedAt: new Date().toISOString()
+                        };
+                        updatedCount++;
+                    }
+                    
+                    if (newItem.nomor) {
+                        const key = newItem.nomor.toLowerCase();
+                        if (duplicateMap.has(key)) {
+                            duplicateMap.set(key, duplicateMap.get(key) + 1);
+                            duplicateCount++;
+                        } else {
+                            duplicateMap.set(key, 1);
+                        }
+                    }
+                    
+                    if (showProgress) {
+                        const progress = Math.round(((i + 1) / importedData.length) * 100);
+                        updateLoadingProgress(progress);
+                    }
+                }
+            } else {
+                suratData = importedData;
+                addedCount = importedData.length;
+                
+                const nomorCount = new Map();
+                importedData.forEach(item => {
+                    if (item.nomor) {
+                        const key = item.nomor.toLowerCase();
+                        nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
+                    }
+                });
+                
+                nomorCount.forEach(count => {
+                    if (count > 1) {
+                        duplicateCount += count;
+                    }
+                });
+            }
+            
+            saveData();
+            
+            renderSuratTable();
+            renderArsipTable();
+            updateStats();
+            
+            return {
+                originalCount,
+                addedCount,
+                updatedCount,
+                duplicateCount,
+                totalCount: suratData.length
+            };
+        }
+
+        function processReloadDataManual() {
+            const encryptedData = document.getElementById('encryptedData').value.trim();
+            const mergeData = document.getElementById('mergeDataCheck').checked;
+            const markDuplicates = document.getElementById('markDuplicatesCheck').checked;
+            
+            if (!encryptedData) {
+                showNotification('Harap tempel data backup terenkripsi', 'warning');
+                return;
+            }
+            
+            try {
+                showLoadingOverlay('Memproses data backup...', 'Mohon tunggu, sistem sedang memproses data.');
+                
+                const backupData = parseEncryptedData(encryptedData);
+                
+                if (!backupData.data || !Array.isArray(backupData.data)) {
+                    throw new Error('Format backup tidak valid');
+                }
+                
+                const result = processBackupDataManual(backupData.data, mergeData);
+                
+                showReloadResultModal(
+                    result.originalCount,
+                    result.addedCount,
+                    result.updatedCount,
+                    backupData.data.length,
+                    result.duplicateCount,
+                    markDuplicates
+                );
+                
+                bootstrap.Modal.getInstance(document.getElementById('reloadModal')).hide();
+                
+                hideLoadingOverlay();
+                
+            } catch (error) {
+                console.error('Error processing manual reload:', error);
+                hideLoadingOverlay();
+                showNotification(`Gagal memproses data: ${error.message}`, 'error');
+            }
+        }
+
+        function processBackupDataManual(importedData, mergeData) {
+            const originalCount = suratData.length;
+            let addedCount = 0;
+            let updatedCount = 0;
+            let duplicateCount = 0;
+            
+            const duplicateMap = new Map();
+            
+            if (mergeData) {
+                importedData.forEach(newItem => {
+                    const existingIndex = suratData.findIndex(item => item.id === newItem.id);
+                    
+                    if (existingIndex === -1) {
+                        suratData.push(newItem);
+                        addedCount++;
+                    } else {
+                        suratData[existingIndex] = {
+                            ...suratData[existingIndex],
+                            ...newItem,
+                            updatedAt: new Date().toISOString()
+                        };
+                        updatedCount++;
+                    }
+                    
+                    if (newItem.nomor) {
+                        const key = newItem.nomor.toLowerCase();
+                        if (duplicateMap.has(key)) {
+                            duplicateMap.set(key, duplicateMap.get(key) + 1);
+                            duplicateCount++;
+                        } else {
+                            duplicateMap.set(key, 1);
+                        }
+                    }
+                });
+            } else {
+                suratData = importedData;
+                addedCount = importedData.length;
+                
+                const nomorCount = new Map();
+                importedData.forEach(item => {
+                    if (item.nomor) {
+                        const key = item.nomor.toLowerCase();
+                        nomorCount.set(key, (nomorCount.get(key) || 0) + 1);
+                    }
+                });
+                
+                nomorCount.forEach(count => {
+                    if (count > 1) {
+                        duplicateCount += count;
+                    }
+                });
+            }
+            
+            saveData();
+            
+            renderSuratTable();
+            renderArsipTable();
+            updateStats();
+            
+            return {
+                originalCount,
+                addedCount,
+                updatedCount,
+                duplicateCount,
+                totalCount: suratData.length
+            };
+        }
+
+        function parseEncryptedData(encryptedData) {
+            let jsonString;
+            
+            if (encryptedData.includes('window.SISMAT_BACKUP_ENCRYPTED')) {
+                const match = encryptedData.match(/window\.SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/);
+                if (match && match[1]) {
+                    jsonString = atob(match[1]);
+                } else {
+                    throw new Error('Format window.SISMAT_BACKUP_ENCRYPTED tidak valid');
+                }
+            } else if (encryptedData.includes('SISMAT_BACKUP_ENCRYPTED')) {
+                const match = encryptedData.match(/SISMAT_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/);
+                if (match && match[1]) {
+                    jsonString = atob(match[1]);
+                } else {
+                    throw new Error('Format SISMAT_BACKUP_ENCRYPTED tidak valid');
+                }
+            } else {
+                try {
+                    jsonString = atob(encryptedData);
+                } catch (e) {
+                    try {
+                        return JSON.parse(encryptedData);
+                    } catch (e2) {
+                        throw new Error('Format data tidak dikenali. Pastikan data dalam format base64 atau JSON.');
+                    }
+                }
+            }
+            
+            return JSON.parse(jsonString);
+        }
+
+        function showReloadResultModal(originalCount, addedCount, updatedCount, importedCount, duplicateCount, markDuplicates) {
+            const resultBody = document.getElementById('reloadResultBody');
+            
+            resultBody.innerHTML = `
+                <div class="alert alert-success">
+                    <h6><i class="fas fa-check-circle me-2"></i> Reload Data Berhasil!</h6>
+                    <p>Data berhasil dimuat dari backup.</p>
+                </div>
+                
+                <div class="mt-3">
+                    <h6>Ringkasan:</h6>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Data sebelum reload
+                            <span class="badge bg-primary rounded-pill">${originalCount}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Data di file backup
+                            <span class="badge bg-info rounded-pill">${importedCount}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Data ditambahkan (baru)
+                            <span class="badge bg-success rounded-pill">${addedCount}</span>
+                        </li>
+                        ${updatedCount > 0 ? `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Data diperbarui
+                            <span class="badge bg-warning rounded-pill">${updatedCount}</span>
+                        </li>
+                        ` : ''}
+                        ${duplicateCount > 0 ? `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Data duplikat ditemukan
+                            <span class="badge bg-danger rounded-pill">${duplicateCount}</span>
+                        </li>
+                        ` : ''}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Total data sekarang</strong>
+                            <strong><span class="badge bg-dark rounded-pill">${suratData.length}</span></strong>
+                        </li>
+                    </ul>
+                </div>
+                
+                ${markDuplicates && duplicateCount > 0 ? `
+                <div class="mt-3 alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Peringatan Duplikasi:</strong> ${duplicateCount} data dengan nomor surat duplikat telah ditandai dengan warna merah di tabel.
+                </div>
+                ` : ''}
+                
+                ${markDuplicates && duplicateCount === 0 ? `
+                <div class="mt-3 alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Tidak ada duplikat:</strong> Semua data memiliki nomor surat unik.
+                </div>
+                ` : ''}
+                
+                <div class="mt-3 alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Tip:</strong> Gunakan filter "Hanya Duplikat" untuk melihat data dengan nomor surat ganda.
+                </div>
+            `;
+            
+            new bootstrap.Modal(document.getElementById('reloadResultModal')).show();
+            
+            showNotification(`Reload data berhasil! ${addedCount} data ditambahkan, ${updatedCount} data diperbarui.`, 'success');
+            
+            if (markDuplicates) {
+                const duplicates = checkForDuplicates();
+                if (duplicates.length > 0) {
+                    setTimeout(() => {
+                        showNotification(`${duplicates.length} data duplikat ditemukan setelah reload!`, 'warning');
+                    }, 1000);
+                }
+            }
+        }
+
+        function showLoadingOverlay(title, message) {
+            document.getElementById('loadingTitle').textContent = title;
+            document.getElementById('loadingMessage').textContent = message;
+            document.getElementById('loadingProgress').style.width = '0%';
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function updateLoadingMessage(message, progress) {
+            document.getElementById('loadingMessage').textContent = message;
+            document.getElementById('loadingProgress').style.width = progress + '%';
+        }
+
+        function updateLoadingProgress(progress) {
+            document.getElementById('loadingProgress').style.width = progress + '%';
+        }
+
+        function hideLoadingOverlay() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // ====================================================
+        // FUNGSI UTILITY
+        // ====================================================
+        function showNotification(message, type = 'info') {
+            const toast = document.querySelector('.notification-toast');
+            const toastBody = toast.querySelector('.toast-body');
+            const toastHeader = toast.querySelector('.toast-header');
+            
+            toastBody.textContent = message;
+            
+            let iconClass = 'fa-info-circle';
+            let bgClass = 'text-primary';
+            
+            switch (type) {
+                case 'success':
+                    iconClass = 'fa-check-circle';
+                    bgClass = 'text-success';
+                    break;
+                case 'error':
+                    iconClass = 'fa-exclamation-circle';
+                    bgClass = 'text-danger';
+                    break;
+                case 'warning':
+                    iconClass = 'fa-exclamation-triangle';
+                    bgClass = 'text-warning';
+                    break;
+            }
+            
+            toastHeader.querySelector('i').className = `fas ${iconClass} me-2 ${bgClass}`;
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
         function formatDate(dateString, format = 'DD/MM/YYYY') {
             if (!dateString) return '-';
             
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return '-';
 
-            // Adjust for timezone offset to prevent date from changing
             const userTimezoneOffset = date.getTimezoneOffset() * 60000;
             const adjustedDate = new Date(date.getTime() + userTimezoneOffset);
             
@@ -7030,7 +6633,6 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             return `${day}/${month}/${year}`;
         }
         
-        // Format date and time
         function formatDateTime(dateString) {
             if (!dateString) return '-';
             
@@ -7046,10 +6648,47 @@ window.SISMAT_BACKUP_ENCRYPTED = "${encryptedString}";`;
             return `${day}/${month}/${year} ${hours}:${minutes}`;
         }
         
-        // Capitalize first letter
         function capitalizeFirstLetter(string) {
             if (!string) return '';
             return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function adjustLayoutForScreenSize() {
+            const width = window.innerWidth;
+            
+            if (width < 768) {
+                document.querySelectorAll('.card-header').forEach(header => {
+                    if (header.querySelector('.btn-group')) {
+                        header.classList.add('flex-column');
+                    }
+                });
+                
+                document.querySelectorAll('.table-responsive').forEach(table => {
+                    table.style.overflowX = 'auto';
+                    table.style.webkitOverflowScrolling = 'touch';
+                });
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
         }
     </script>
 </body>
