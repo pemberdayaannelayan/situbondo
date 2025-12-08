@@ -6,20 +6,26 @@
     <title>Dinas Perikanan Situbondo - Converter Online Canggih</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/image-conversion@2.2.0/build/conversion.min.js"></script>
     <style>
         :root {
-            --primary: #1a73e8;
-            --primary-dark: #0d47a1;
-            --secondary: #34a853;
-            --accent: #ea4335;
-            --warning: #fbbc05;
-            --dark: #202124;
-            --darker: #171717;
-            --light: #f8f9fa;
+            --primary: #2c7da0;
+            --primary-dark: #1a5a7a;
+            --secondary: #468faf;
+            --accent: #61a5c2;
+            --light: #a9d6e5;
+            --lighter: #e3f2fd;
+            --dark: #013a63;
+            --darker: #012a4a;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
             --gray: #5f6368;
             --light-gray: #dadce0;
             --border-radius: 12px;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -31,9 +37,10 @@
         }
         
         body {
-            background-color: #f5f7fa;
-            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--darker);
             line-height: 1.6;
+            min-height: 100vh;
             overflow-x: hidden;
         }
         
@@ -45,13 +52,14 @@
         
         /* Header */
         header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary-dark) 100%);
             color: white;
             padding: 20px 0;
-            box-shadow: 0 4px 20px rgba(26, 115, 232, 0.2);
+            box-shadow: 0 4px 20px rgba(1, 58, 99, 0.2);
             position: sticky;
             top: 0;
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
         
         .header-content {
@@ -64,17 +72,19 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            text-decoration: none;
+            color: white;
         }
         
         .logo-icon {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             width: 50px;
             height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .logo-icon i {
@@ -107,12 +117,24 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 15px;
+            padding: 10px 18px;
             border-radius: 8px;
+            position: relative;
         }
         
         nav a:hover, nav a.active {
             background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 18px;
+            right: 18px;
+            height: 3px;
+            background-color: var(--light);
+            border-radius: 2px;
         }
         
         .mobile-menu-btn {
@@ -122,18 +144,51 @@
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .mobile-menu-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
         /* Hero Section */
         .hero {
-            padding: 60px 0 40px;
+            padding: 80px 0 50px;
             text-align: center;
+            background: linear-gradient(135deg, rgba(233, 246, 253, 0.9) 0%, rgba(212, 230, 244, 0.9) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232c7da0' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
         }
         
         .hero h2 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
             color: var(--dark);
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .hero p {
@@ -141,43 +196,56 @@
             max-width: 700px;
             margin: 0 auto 30px;
             font-size: 1.1rem;
+            line-height: 1.8;
         }
         
         .stats {
             display: flex;
             justify-content: center;
-            gap: 40px;
-            margin-top: 40px;
+            gap: 50px;
+            margin-top: 50px;
             flex-wrap: wrap;
         }
         
         .stat-item {
             text-align: center;
+            background: white;
+            padding: 25px 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            min-width: 180px;
+            transition: var(--transition);
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
         
         .stat-number {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 700;
             color: var(--primary);
             line-height: 1;
+            margin-bottom: 10px;
         }
         
         .stat-label {
             color: var(--gray);
-            font-size: 0.95rem;
-            margin-top: 5px;
+            font-size: 1rem;
+            font-weight: 500;
         }
         
         /* Main Content */
         .main-container {
             display: flex;
-            margin: 30px 0;
-            gap: 30px;
+            margin: 40px 0 80px;
+            gap: 40px;
         }
         
         /* Sidebar */
         .sidebar {
-            width: 280px;
+            width: 300px;
             background-color: white;
             border-radius: var(--border-radius);
             padding: 25px;
@@ -189,12 +257,13 @@
         
         .sidebar h3 {
             color: var(--dark);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 2px solid var(--light-gray);
+            border-bottom: 2px solid var(--lighter);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 1.3rem;
         }
         
         .tools-list {
@@ -202,57 +271,86 @@
         }
         
         .tool-category {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
         
         .tool-category h4 {
             color: var(--primary);
-            font-size: 1rem;
-            margin-bottom: 12px;
+            font-size: 1.05rem;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             font-weight: 600;
+            padding-left: 8px;
         }
         
         .tool-item {
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 12px;
-            border: 1px solid transparent;
+            gap: 14px;
+            border: 2px solid transparent;
+            position: relative;
         }
         
         .tool-item:hover {
-            background-color: rgba(26, 115, 232, 0.05);
-            border-color: rgba(26, 115, 232, 0.2);
+            background-color: rgba(44, 125, 160, 0.05);
+            border-color: rgba(44, 125, 160, 0.2);
+            transform: translateX(5px);
         }
         
         .tool-item.active {
-            background-color: rgba(26, 115, 232, 0.1);
+            background-color: rgba(44, 125, 160, 0.1);
             border-color: var(--primary);
             color: var(--primary);
             font-weight: 500;
         }
         
+        .tool-item.active::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+        
         .tool-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(26, 115, 232, 0.1);
-            border-radius: 8px;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, rgba(44, 125, 160, 0.1) 0%, rgba(70, 143, 175, 0.1) 100%);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary);
+            font-size: 1.2rem;
+            transition: var(--transition);
         }
         
         .tool-item.active .tool-icon {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
+            transform: scale(1.05);
+        }
+        
+        .tool-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .tool-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+            opacity: 0.9;
         }
         
         /* Converter Area */
@@ -260,97 +358,115 @@
             flex: 1;
             background-color: white;
             border-radius: var(--border-radius);
-            padding: 30px;
+            padding: 35px;
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .converter-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
         }
         
         .converter-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--light-gray);
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--lighter);
         }
         
         .converter-header h2 {
             color: var(--dark);
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.8rem;
+            gap: 15px;
+            font-size: 1.9rem;
         }
         
         .converter-badge {
-            background-color: rgba(52, 168, 83, 0.1);
-            color: var(--secondary);
-            padding: 6px 15px;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(102, 187, 106, 0.1) 100%);
+            color: var(--success);
+            padding: 8px 20px;
             border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 0.95rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            border: 1px solid rgba(76, 175, 80, 0.2);
         }
         
         /* Upload Area */
         .upload-area {
-            border: 2px dashed var(--light-gray);
+            border: 2px dashed var(--light);
             border-radius: var(--border-radius);
-            padding: 60px 20px;
+            padding: 70px 30px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             transition: var(--transition);
-            background-color: #fafbfc;
+            background-color: #fafcff;
             position: relative;
         }
         
         .upload-area.drag-over {
             border-color: var(--primary);
-            background-color: rgba(26, 115, 232, 0.03);
+            background-color: rgba(44, 125, 160, 0.03);
+            transform: scale(1.01);
         }
         
         .upload-icon {
-            font-size: 4rem;
+            font-size: 4.5rem;
             color: var(--primary);
-            margin-bottom: 20px;
-            opacity: 0.8;
+            margin-bottom: 25px;
+            opacity: 0.9;
         }
         
         .upload-area h3 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: var(--dark);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
         }
         
         .upload-area p {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             color: var(--gray);
-            max-width: 600px;
+            max-width: 650px;
             margin-left: auto;
             margin-right: auto;
+            line-height: 1.7;
         }
         
         .upload-btn {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            padding: 14px 35px;
-            border-radius: 8px;
+            padding: 16px 40px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1rem;
-            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+            gap: 12px;
+            font-size: 1.05rem;
+            box-shadow: 0 6px 20px rgba(44, 125, 160, 0.3);
         }
         
         .upload-btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(26, 115, 232, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(44, 125, 160, 0.4);
+        }
+        
+        .upload-btn:active {
+            transform: translateY(-1px);
         }
         
         .file-input {
@@ -358,88 +474,135 @@
         }
         
         .supported-formats {
-            margin-top: 25px;
+            margin-top: 30px;
             color: var(--gray);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            background-color: rgba(44, 125, 160, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
         }
         
         /* File List */
-        .file-list {
-            margin-bottom: 30px;
+        .file-list-container {
+            margin-bottom: 40px;
+            display: none;
+        }
+        
+        .file-list-container.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
         }
         
         .file-list-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .file-list-title h3 {
             color: var(--dark);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 1.3rem;
         }
         
         .clear-all {
             background: none;
             border: none;
-            color: var(--accent);
+            color: var(--danger);
             cursor: pointer;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             transition: var(--transition);
+            padding: 10px 18px;
+            border-radius: 8px;
+            background-color: rgba(244, 67, 54, 0.05);
         }
         
         .clear-all:hover {
-            color: #d32f2f;
+            background-color: rgba(244, 67, 54, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .file-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .file-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .file-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .file-list::-webkit-scrollbar-thumb {
+            background: var(--light);
+            border-radius: 10px;
+        }
+        
+        .file-list::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
         }
         
         .file-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #e8eaed;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
             transition: var(--transition);
+            animation: slideIn 0.3s ease-out;
         }
         
         .file-item:hover {
-            background-color: #f1f3f4;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-color: var(--light);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         .file-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 18px;
             flex: 1;
         }
         
         .file-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: 10px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            flex-shrink: 0;
         }
         
         .file-details {
             flex: 1;
+            min-width: 0;
         }
         
         .file-details h4 {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             word-break: break-all;
+            color: var(--dark);
+            font-size: 1.05rem;
         }
         
         .file-details p {
@@ -447,15 +610,16 @@
             font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         
         .file-progress {
             width: 100%;
-            height: 5px;
-            background-color: #e8eaed;
+            height: 6px;
+            background-color: #e2e8f0;
             border-radius: 3px;
-            margin-top: 8px;
+            margin-top: 12px;
             overflow: hidden;
         }
         
@@ -464,118 +628,210 @@
             background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
             width: 0%;
             transition: width 0.5s ease;
+            border-radius: 3px;
         }
         
         .file-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            flex-shrink: 0;
         }
         
         .file-action-btn {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             transition: var(--transition);
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
         }
         
         .file-action-btn.remove {
-            color: var(--accent);
-            background-color: rgba(234, 67, 53, 0.1);
+            background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
         }
         
         .file-action-btn.remove:hover {
-            background-color: rgba(234, 67, 53, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
         }
         
         .file-action-btn.preview {
-            color: var(--primary);
-            background-color: rgba(26, 115, 232, 0.1);
+            background: linear-gradient(135deg, var(--warning) 0%, #f57c00 100%);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
         }
         
         .file-action-btn.preview:hover {
-            background-color: rgba(26, 115, 232, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+        }
+        
+        .file-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .file-status.ready {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+        
+        .file-status.uploading {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
         }
         
         /* Conversion Options */
         .conversion-options {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             border-radius: var(--border-radius);
-            padding: 25px;
-            margin-bottom: 30px;
-            border: 1px solid #e8eaed;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+        
+        .conversion-options.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
         }
         
         .conversion-options h3 {
             color: var(--dark);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 1.4rem;
         }
         
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
         }
         
         .option-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .option-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
+            margin-bottom: 10px;
+            font-weight: 600;
             color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .option-group select, .option-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--light-gray);
-            border-radius: 8px;
+            padding: 14px 18px;
+            border: 1px solid var(--light);
+            border-radius: 10px;
             background-color: white;
             font-size: 1rem;
             transition: var(--transition);
+            color: var(--darker);
         }
         
         .option-group select:focus, .option-group input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+            box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.2);
+        }
+        
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 50px 0;
+            text-align: center;
+        }
+        
+        .loading-spinner.visible {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .spinner {
+            border: 5px solid rgba(44, 125, 160, 0.1);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1.2s linear infinite;
+            margin-bottom: 25px;
+        }
+        
+        .loading-text {
+            color: var(--dark);
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .loading-details {
+            color: var(--gray);
+            font-size: 0.95rem;
+            max-width: 400px;
+            line-height: 1.6;
         }
         
         /* Action Buttons */
         .action-buttons {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-top: 40px;
+            gap: 25px;
+            margin-top: 50px;
             flex-wrap: wrap;
         }
         
         .btn {
-            padding: 16px 35px;
-            border-radius: 10px;
+            padding: 18px 40px;
+            border-radius: 12px;
             border: none;
             cursor: pointer;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.05rem;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 12px;
-            min-width: 180px;
+            gap: 14px;
+            min-width: 200px;
             justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .btn:hover::after {
+            left: 100%;
         }
         
         .btn:disabled {
@@ -585,112 +841,117 @@
         }
         
         .btn-convert {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
+            box-shadow: 0 6px 20px rgba(44, 125, 160, 0.3);
         }
         
         .btn-convert:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(44, 125, 160, 0.4);
         }
         
         .btn-download {
-            background: linear-gradient(135deg, var(--secondary) 0%, #2e8b57 100%);
+            background: linear-gradient(135deg, var(--success) 0%, #66bb6a 100%);
             color: white;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
         }
         
         .btn-download:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(52, 168, 83, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
         }
         
         .btn-reset {
-            background-color: white;
+            background: white;
             color: var(--gray);
-            border: 1px solid var(--light-gray);
+            border: 2px solid var(--light);
         }
         
         .btn-reset:hover {
             background-color: #f8f9fa;
-            border-color: var(--gray);
-        }
-        
-        /* Loading Spinner */
-        .loading-spinner {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 40px 0;
-        }
-        
-        .spinner {
-            border: 5px solid rgba(26, 115, 232, 0.1);
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        .loading-text {
-            color: var(--gray);
-            font-size: 1.1rem;
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-4px);
         }
         
         /* Result Area */
         .result-area {
-            margin-top: 40px;
+            margin-top: 50px;
             display: none;
+        }
+        
+        .result-area.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
         }
         
         .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--light-gray);
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--lighter);
+        }
+        
+        .result-header h3 {
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
         }
         
         .result-content {
-            background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             border-radius: var(--border-radius);
-            padding: 40px 30px;
+            padding: 50px 40px;
             text-align: center;
-            border: 1px solid #e8eaed;
+            border: 1px solid #e2e8f0;
         }
         
         .result-icon {
-            font-size: 5rem;
-            color: var(--secondary);
-            margin-bottom: 25px;
+            font-size: 5.5rem;
+            color: var(--success);
+            margin-bottom: 30px;
+            animation: bounce 1s ease infinite alternate;
         }
         
         .result-file-info {
             background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            max-width: 500px;
-            margin: 0 auto 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e8eaed;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 550px;
+            margin: 0 auto 40px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
         }
         
         .result-file-name {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
             color: var(--dark);
             word-break: break-all;
+            font-weight: 600;
         }
         
         .result-file-details {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 35px;
             color: var(--gray);
-            font-size: 0.95rem;
+            font-size: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .result-file-details span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background-color: rgba(44, 125, 160, 0.05);
+            border-radius: 8px;
         }
         
         /* Preview Modal */
@@ -701,43 +962,54 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.85);
             z-index: 2000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .preview-modal.visible {
+            display: flex;
         }
         
         .modal-content {
             background-color: white;
             border-radius: var(--border-radius);
-            width: 90%;
-            max-width: 800px;
+            width: 100%;
+            max-width: 900px;
             max-height: 90vh;
             overflow: hidden;
             position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease-out;
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 25px;
-            background-color: var(--primary);
+            padding: 22px 30px;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary-dark) 100%);
             color: white;
         }
         
         .modal-header h3 {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
         .close-modal {
-            background: none;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -746,49 +1018,72 @@
         }
         
         .close-modal:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
         }
         
         .modal-body {
-            padding: 25px;
-            max-height: calc(90vh - 80px);
+            padding: 30px;
+            max-height: calc(90vh - 86px);
             overflow-y: auto;
         }
         
         .preview-placeholder {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 30px;
             color: var(--gray);
         }
         
         .preview-placeholder i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: var(--light-gray);
+            font-size: 5rem;
+            margin-bottom: 25px;
+            color: var(--light);
+        }
+        
+        .preview-placeholder h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .preview-placeholder p {
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.7;
         }
         
         /* Footer */
         footer {
-            margin-top: 80px;
-            background-color: var(--darker);
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
             color: white;
-            padding: 50px 0 30px;
+            padding: 60px 0 30px;
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
         }
         
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 50px;
+            margin-bottom: 50px;
         }
         
         .footer-section h3 {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
             color: white;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .footer-links {
@@ -796,7 +1091,7 @@
         }
         
         .footer-links li {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
         
         .footer-links a {
@@ -805,20 +1100,22 @@
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            padding: 8px 0;
         }
         
         .footer-links a:hover {
             color: white;
-            padding-left: 5px;
+            padding-left: 8px;
         }
         
         .copyright {
             text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid #3c4043;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: #9aa0a6;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            line-height: 1.8;
         }
         
         /* Responsive Styles */
@@ -834,12 +1131,16 @@
             
             .tools-list {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap: 15px;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
             }
             
             .tool-category {
                 margin-bottom: 0;
+            }
+            
+            .tool-item:hover {
+                transform: translateY(-3px);
             }
         }
         
@@ -865,31 +1166,40 @@
             
             nav a {
                 justify-content: center;
-                padding: 12px;
+                padding: 14px;
             }
             
             .mobile-menu-btn {
-                display: block;
+                display: flex;
                 position: absolute;
-                top: 25px;
+                top: 20px;
                 right: 20px;
             }
             
             .hero h2 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
             .stats {
-                gap: 30px;
+                gap: 20px;
+            }
+            
+            .stat-item {
+                min-width: 150px;
+                padding: 20px;
             }
             
             .stat-number {
-                font-size: 2rem;
+                font-size: 2.2rem;
+            }
+            
+            .converter-area {
+                padding: 25px;
             }
             
             .btn {
-                min-width: 150px;
-                padding: 14px 25px;
+                min-width: 160px;
+                padding: 16px 30px;
             }
             
             .action-buttons {
@@ -900,43 +1210,66 @@
             .file-item {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 15px;
+                gap: 20px;
             }
             
             .file-actions {
                 align-self: flex-end;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .converter-area {
-                padding: 20px;
-            }
-            
-            .converter-header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-            
-            .upload-area {
-                padding: 40px 15px;
-            }
-            
-            .upload-icon {
-                font-size: 3rem;
-            }
-            
-            .upload-area h3 {
-                font-size: 1.3rem;
             }
             
             .options-grid {
                 grid-template-columns: 1fr;
             }
             
+            .result-file-details {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+            
             .footer-content {
                 grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                padding: 60px 0 40px;
+            }
+            
+            .hero h2 {
+                font-size: 1.9rem;
+            }
+            
+            .converter-area {
+                padding: 20px 15px;
+            }
+            
+            .upload-area {
+                padding: 50px 20px;
+            }
+            
+            .upload-icon {
+                font-size: 3.5rem;
+            }
+            
+            .upload-area h3 {
+                font-size: 1.4rem;
+            }
+            
+            .converter-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+            
+            .stat-item {
+                min-width: 100%;
+            }
+            
+            .modal-body {
+                padding: 20px;
             }
         }
         
@@ -947,7 +1280,7 @@
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
@@ -956,12 +1289,22 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+        
         .fade-in {
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.5s ease-out;
         }
         
         .slide-in {
-            animation: slideIn 0.3s ease-out;
+            animation: slideIn 0.4s ease-out;
         }
         
         /* Utility Classes */
@@ -969,16 +1312,20 @@
             display: none !important;
         }
         
+        .visible {
+            display: block;
+        }
+        
         .text-center {
             text-align: center;
         }
         
         .text-success {
-            color: var(--secondary);
+            color: var(--success) !important;
         }
         
         .text-danger {
-            color: var(--accent);
+            color: var(--danger) !important;
         }
         
         .mb-20 {
@@ -988,21 +1335,41 @@
         .mt-20 {
             margin-top: 20px;
         }
+        
+        .mb-30 {
+            margin-bottom: 30px;
+        }
+        
+        .mt-30 {
+            margin-top: 30px;
+        }
+        
+        .d-flex {
+            display: flex;
+        }
+        
+        .align-center {
+            align-items: center;
+        }
+        
+        .justify-between {
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header>
         <div class="container header-content">
-            <div class="logo">
+            <a href="#" class="logo">
                 <div class="logo-icon">
-                    <i class="fas fa-tools"></i>
+                    <i class="fas fa-water"></i>
                 </div>
                 <div class="logo-text">
                     <h1>Dinas Perikanan Situbondo</h1>
                     <span>Converter Online Canggih</span>
                 </div>
-            </div>
+            </a>
             
             <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <i class="fas fa-bars"></i>
@@ -1011,9 +1378,9 @@
             <nav id="mainNav">
                 <ul>
                     <li><a href="#" class="active"><i class="fas fa-home"></i> Beranda</a></li>
-                    <li><a href="#"><i class="fas fa-tools"></i> Alat Converter</a></li>
-                    <li><a href="#"><i class="fas fa-info-circle"></i> Panduan</a></li>
-                    <li><a href="#"><i class="fas fa-envelope"></i> Kontak</a></li>
+                    <li><a href="#tools"><i class="fas fa-tools"></i> Alat Converter</a></li>
+                    <li><a href="#guide"><i class="fas fa-info-circle"></i> Panduan</a></li>
+                    <li><a href="#contact"><i class="fas fa-envelope"></i> Kontak</a></li>
                 </ul>
             </nav>
         </div>
@@ -1021,7 +1388,7 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="container">
+        <div class="container hero-content">
             <h2>Konversi File Online Tanpa Batas</h2>
             <p>Konversi PDF, gambar, dokumen, video, dan audio secara gratis dengan teknologi canggih berbasis browser. Tanpa upload ke server, privasi Anda terjaga 100%.</p>
             
@@ -1049,14 +1416,14 @@
     <!-- Main Content -->
     <div class="container main-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="tools">
             <h3><i class="fas fa-toolbox"></i> Alat Konversi</h3>
             
             <ul class="tools-list">
                 <!-- PDF Tools -->
                 <div class="tool-category">
                     <h4><i class="fas fa-file-pdf"></i> PDF Tools</h4>
-                    <li class="tool-item active" data-tool="pdf-to-word" data-input="pdf" data-output="docx,doc,odt,rtf">
+                    <li class="tool-item active" data-tool="pdf-to-word" data-input="pdf" data-output="docx,doc,odt,rtf" data-accept=".pdf">
                         <div class="tool-icon">
                             <i class="fas fa-file-word"></i>
                         </div>
@@ -1065,7 +1432,7 @@
                             <div class="tool-desc">Konversi PDF ke DOCX, DOC</div>
                         </div>
                     </li>
-                    <li class="tool-item" data-tool="pdf-to-excel" data-input="pdf" data-output="xlsx,xls,csv">
+                    <li class="tool-item" data-tool="pdf-to-excel" data-input="pdf" data-output="xlsx,xls,csv" data-accept=".pdf">
                         <div class="tool-icon">
                             <i class="fas fa-file-excel"></i>
                         </div>
@@ -1074,7 +1441,7 @@
                             <div class="tool-desc">Ekstrak tabel dari PDF</div>
                         </div>
                     </li>
-                    <li class="tool-item" data-tool="pdf-to-ppt" data-input="pdf" data-output="pptx,ppt">
+                    <li class="tool-item" data-tool="pdf-to-ppt" data-input="pdf" data-output="pptx,ppt" data-accept=".pdf">
                         <div class="tool-icon">
                             <i class="fas fa-file-powerpoint"></i>
                         </div>
@@ -1083,7 +1450,7 @@
                             <div class="tool-desc">Konversi presentasi</div>
                         </div>
                     </li>
-                    <li class="tool-item" data-tool="merge-pdf" data-input="pdf" data-output="pdf">
+                    <li class="tool-item" data-tool="merge-pdf" data-input="pdf" data-output="pdf" data-accept=".pdf" data-multiple="true">
                         <div class="tool-icon">
                             <i class="fas fa-compress-arrows-alt"></i>
                         </div>
@@ -1097,7 +1464,7 @@
                 <!-- Image Tools -->
                 <div class="tool-category">
                     <h4><i class="fas fa-image"></i> Image Tools</h4>
-                    <li class="tool-item" data-tool="image-convert" data-input="jpg,png,gif,bmp,webp" data-output="jpg,png,gif,bmp,webp,svg">
+                    <li class="tool-item" data-tool="image-convert" data-input="jpg,jpeg,png,gif,bmp,webp" data-output="jpg,png,gif,bmp,webp,svg" data-accept="image/*">
                         <div class="tool-icon">
                             <i class="fas fa-exchange-alt"></i>
                         </div>
@@ -1106,7 +1473,7 @@
                             <div class="tool-desc">Ubah format gambar</div>
                         </div>
                     </li>
-                    <li class="tool-item" data-tool="compress-image" data-input="jpg,png,gif,webp" data-output="jpg,png,gif,webp">
+                    <li class="tool-item" data-tool="compress-image" data-input="jpg,jpeg,png,gif,webp" data-output="jpg,png,gif,webp" data-accept="image/*">
                         <div class="tool-icon">
                             <i class="fas fa-compress-alt"></i>
                         </div>
@@ -1115,7 +1482,7 @@
                             <div class="tool-desc">Perkecil ukuran file</div>
                         </div>
                     </li>
-                    <li class="tool-item" data-tool="image-to-pdf" data-input="jpg,png,gif,bmp,webp" data-output="pdf">
+                    <li class="tool-item" data-tool="image-to-pdf" data-input="jpg,jpeg,png,gif,bmp,webp" data-output="pdf" data-accept="image/*" data-multiple="true">
                         <div class="tool-icon">
                             <i class="fas fa-file-pdf"></i>
                         </div>
@@ -1129,7 +1496,7 @@
                 <!-- Document Tools -->
                 <div class="tool-category">
                     <h4><i class="fas fa-file-alt"></i> Dokumen</h4>
-                    <li class="tool-item" data-tool="word-to-pdf" data-input="docx,doc,odt,rtf" data-output="pdf">
+                    <li class="tool-item" data-tool="word-to-pdf" data-input="docx,doc,odt,rtf" data-output="pdf" data-accept=".docx,.doc,.odt,.rtf">
                         <div class="tool-icon">
                             <i class="fas fa-file-pdf"></i>
                         </div>
@@ -1138,7 +1505,7 @@
                             <div class="tool-desc">Konversi DOC ke PDF</div>
                         </div>
                     </li>
-                    <li class="tool-item" data-tool="excel-to-pdf" data-input="xlsx,xls,csv" data-output="pdf">
+                    <li class="tool-item" data-tool="excel-to-pdf" data-input="xlsx,xls,csv" data-output="pdf" data-accept=".xlsx,.xls,.csv">
                         <div class="tool-icon">
                             <i class="fas fa-file-pdf"></i>
                         </div>
@@ -1147,7 +1514,7 @@
                             <div class="tool-desc">Konversi XLS ke PDF</div>
                         </div>
                     </li>
-                    <li class="tool-item" data-tool="ppt-to-pdf" data-input="pptx,ppt" data-output="pdf">
+                    <li class="tool-item" data-tool="ppt-to-pdf" data-input="pptx,ppt" data-output="pdf" data-accept=".pptx,.ppt">
                         <div class="tool-icon">
                             <i class="fas fa-file-pdf"></i>
                         </div>
@@ -1175,7 +1542,7 @@
                     <i class="fas fa-cloud-upload-alt"></i>
                 </div>
                 <h3>Seret & Jatuhkan file di sini</h3>
-                <p>Unggah file dari komputer, Google Drive, atau Dropbox. File Anda diproses langsung di browser tanpa diunggah ke server.</p>
+                <p>Unggah file dari komputer Anda. File Anda diproses langsung di browser tanpa diunggah ke server.</p>
                 <button class="upload-btn" id="selectFileBtn">
                     <i class="fas fa-folder-open"></i> Pilih File
                 </button>
@@ -1186,26 +1553,24 @@
             </div>
             
             <!-- File List -->
-            <div class="file-list" id="fileListContainer">
+            <div class="file-list-container" id="fileListContainer">
                 <div class="file-list-title">
                     <h3><i class="fas fa-file"></i> File Dipilih</h3>
                     <button class="clear-all" id="clearAllBtn">
                         <i class="fas fa-trash-alt"></i> Hapus Semua
                     </button>
                 </div>
-                <div id="fileList">
-                    <div class="empty-state text-center">
-                        <p style="color: var(--gray); padding: 30px;">Belum ada file yang dipilih</p>
-                    </div>
+                <div class="file-list" id="fileList">
+                    <!-- File items will be added here -->
                 </div>
             </div>
             
             <!-- Conversion Options -->
             <div class="conversion-options" id="conversionOptions">
                 <h3><i class="fas fa-cog"></i> Pengaturan Konversi</h3>
-                <div class="options-grid">
+                <div class="options-grid" id="optionsGrid">
                     <div class="option-group">
-                        <label for="outputFormat">Format Output</label>
+                        <label for="outputFormat"><i class="fas fa-file-export"></i> Format Output</label>
                         <select id="outputFormat">
                             <option value="docx">DOCX (Microsoft Word)</option>
                             <option value="doc">DOC (Word 97-2003)</option>
@@ -1215,7 +1580,7 @@
                     </div>
                     
                     <div class="option-group">
-                        <label for="quality">Kualitas Output</label>
+                        <label for="quality"><i class="fas fa-chart-line"></i> Kualitas Output</label>
                         <select id="quality">
                             <option value="high">Tinggi (Kualitas Terbaik)</option>
                             <option value="medium" selected>Medium (Direkomendasikan)</option>
@@ -1224,12 +1589,12 @@
                     </div>
                     
                     <div class="option-group">
-                        <label for="pageRange">Halaman (opsional)</label>
+                        <label for="pageRange"><i class="fas fa-file-alt"></i> Halaman (opsional)</label>
                         <input type="text" id="pageRange" placeholder="Semua halaman (contoh: 1-5, 8, 11-13)">
                     </div>
                     
                     <div class="option-group">
-                        <label for="ocrOption">OCR (Pengenalan Teks)</label>
+                        <label for="ocrOption"><i class="fas fa-eye"></i> OCR (Pengenalan Teks)</label>
                         <select id="ocrOption">
                             <option value="auto">Otomatis (Jika diperlukan)</option>
                             <option value="enabled">Selalu Aktif</option>
@@ -1243,6 +1608,7 @@
             <div class="loading-spinner" id="loadingSpinner">
                 <div class="spinner"></div>
                 <div class="loading-text">Mengonversi file Anda...</div>
+                <div class="loading-details">Proses ini berjalan di browser Anda. File tidak diunggah ke server mana pun.</div>
             </div>
             
             <!-- Action Buttons -->
@@ -1262,7 +1628,7 @@
                     <span id="conversionTime">Waktu konversi: 2.4 detik</span>
                 </div>
                 
-                <div class="result-content fade-in">
+                <div class="result-content">
                     <div class="result-icon">
                         <i class="fas fa-file-word"></i>
                     </div>
@@ -1280,7 +1646,7 @@
                         <i class="fas fa-download"></i> Unduh File
                     </button>
                     
-                    <div class="mt-20">
+                    <div class="mt-30">
                         <button class="btn btn-reset" id="convertAnotherBtn">
                             <i class="fas fa-sync"></i> Konversi File Lain
                         </button>
@@ -1298,7 +1664,7 @@
     <div class="preview-modal" id="previewModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Pratinjau File</h3>
+                <h3><i class="fas fa-eye"></i> Pratinjau File</h3>
                 <button class="close-modal" id="closeModalBtn">
                     <i class="fas fa-times"></i>
                 </button>
@@ -1314,11 +1680,11 @@
     </div>
 
     <!-- Footer -->
-    <footer>
+    <footer id="contact">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3><i class="fas fa-tools"></i> Dinas Perikanan Situbondo</h3>
+                    <h3><i class="fas fa-water"></i> Dinas Perikanan Situbondo</h3>
                     <p>Converter online canggih untuk berbagai kebutuhan konversi dokumen, gambar, dan multimedia. Aman, gratis, dan tanpa batas.</p>
                 </div>
                 
@@ -1326,19 +1692,19 @@
                     <h3><i class="fas fa-link"></i> Tautan Cepat</h3>
                     <ul class="footer-links">
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Beranda</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Alat Converter</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Panduan Penggunaan</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                        <li><a href="#tools"><i class="fas fa-chevron-right"></i> Alat Converter</a></li>
+                        <li><a href="#guide"><i class="fas fa-chevron-right"></i> Panduan Penggunaan</a></li>
+                        <li><a href="#contact"><i class="fas fa-chevron-right"></i> Kontak Kami</a></li>
                     </ul>
                 </div>
                 
-                <div class="footer-section">
+                <div class="footer-section" id="guide">
                     <h3><i class="fas fa-shield-alt"></i> Keamanan & Privasi</h3>
                     <ul class="footer-links">
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Kebijakan Privasi</a></li>
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Syarat Layanan</a></li>
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Tentang Kami</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Kontak</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
                     </ul>
                 </div>
             </div>
@@ -1350,13 +1716,17 @@
         </div>
     </footer>
 
+    <!-- Toaster for notifications -->
+    <div id="toaster" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
     <script>
         // Application State
         const AppState = {
             currentTool: 'pdf-to-word',
             files: [],
             conversionResult: null,
-            isConverting: false
+            isConverting: false,
+            currentFileId: 1
         };
 
         // DOM Elements
@@ -1382,6 +1752,7 @@
             quality: document.getElementById('quality'),
             pageRange: document.getElementById('pageRange'),
             ocrOption: document.getElementById('ocrOption'),
+            optionsGrid: document.getElementById('optionsGrid'),
             
             // Buttons
             convertBtn: document.getElementById('convertBtn'),
@@ -1399,20 +1770,144 @@
             
             // Modal
             previewModal: document.getElementById('previewModal'),
-            closeModalBtn: document.getElementById('closeModalBtn')
+            closeModalBtn: document.getElementById('closeModalBtn'),
+            
+            // Toaster
+            toaster: document.getElementById('toaster')
+        };
+
+        // File type icons mapping
+        const fileIcons = {
+            'pdf': 'fa-file-pdf',
+            'doc': 'fa-file-word',
+            'docx': 'fa-file-word',
+            'xls': 'fa-file-excel',
+            'xlsx': 'fa-file-excel',
+            'ppt': 'fa-file-powerpoint',
+            'pptx': 'fa-file-powerpoint',
+            'jpg': 'fa-file-image',
+            'jpeg': 'fa-file-image',
+            'png': 'fa-file-image',
+            'gif': 'fa-file-image',
+            'bmp': 'fa-file-image',
+            'webp': 'fa-file-image',
+            'txt': 'fa-file-alt',
+            'rtf': 'fa-file-alt',
+            'odt': 'fa-file-alt',
+            'csv': 'fa-file-csv'
+        };
+
+        // Tool configurations
+        const toolConfigs = {
+            'pdf-to-word': {
+                name: 'PDF ke Word',
+                icon: 'fa-file-word',
+                accept: '.pdf',
+                multiple: false,
+                maxSize: 50 * 1024 * 1024, // 50MB
+                options: ['outputFormat', 'quality', 'pageRange', 'ocrOption']
+            },
+            'pdf-to-excel': {
+                name: 'PDF ke Excel',
+                icon: 'fa-file-excel',
+                accept: '.pdf',
+                multiple: false,
+                maxSize: 50 * 1024 * 1024,
+                options: ['outputFormat', 'quality', 'pageRange']
+            },
+            'pdf-to-ppt': {
+                name: 'PDF ke PowerPoint',
+                icon: 'fa-file-powerpoint',
+                accept: '.pdf',
+                multiple: false,
+                maxSize: 50 * 1024 * 1024,
+                options: ['outputFormat', 'quality', 'pageRange']
+            },
+            'merge-pdf': {
+                name: 'Gabungkan PDF',
+                icon: 'fa-compress-arrows-alt',
+                accept: '.pdf',
+                multiple: true,
+                maxSize: 50 * 1024 * 1024,
+                options: ['quality']
+            },
+            'image-convert': {
+                name: 'Konversi Gambar',
+                icon: 'fa-exchange-alt',
+                accept: 'image/*',
+                multiple: false,
+                maxSize: 20 * 1024 * 1024,
+                options: ['outputFormat', 'quality']
+            },
+            'compress-image': {
+                name: 'Kompres Gambar',
+                icon: 'fa-compress-alt',
+                accept: 'image/*',
+                multiple: false,
+                maxSize: 20 * 1024 * 1024,
+                options: ['quality']
+            },
+            'image-to-pdf': {
+                name: 'Gambar ke PDF',
+                icon: 'fa-file-pdf',
+                accept: 'image/*',
+                multiple: true,
+                maxSize: 20 * 1024 * 1024,
+                options: ['quality', 'pageRange']
+            },
+            'word-to-pdf': {
+                name: 'Word ke PDF',
+                icon: 'fa-file-pdf',
+                accept: '.docx,.doc,.odt,.rtf',
+                multiple: false,
+                maxSize: 50 * 1024 * 1024,
+                options: ['quality']
+            },
+            'excel-to-pdf': {
+                name: 'Excel ke PDF',
+                icon: 'fa-file-pdf',
+                accept: '.xlsx,.xls,.csv',
+                multiple: false,
+                maxSize: 50 * 1024 * 1024,
+                options: ['quality']
+            },
+            'ppt-to-pdf': {
+                name: 'PPT ke PDF',
+                icon: 'fa-file-pdf',
+                accept: '.pptx,.ppt',
+                multiple: false,
+                maxSize: 50 * 1024 * 1024,
+                options: ['quality']
+            }
         };
 
         // Initialize the application
         function initApp() {
             setupEventListeners();
-            updateToolOptions();
-            simulateFileForDemo();
+            updateToolDisplay();
+            loadDemoFile();
+            updateNavLinks();
         }
 
         // Set up all event listeners
         function setupEventListeners() {
             // Mobile menu toggle
             elements.mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            
+            // Navigation links
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.getAttribute('href').startsWith('#')) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href').substring(1);
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                            updateActiveNav(this);
+                        }
+                    }
+                });
+            });
             
             // File handling
             elements.selectFileBtn.addEventListener('click', () => elements.fileInput.click());
@@ -1440,7 +1935,34 @@
             });
             
             // Update options when format changes
-            elements.outputFormat.addEventListener('change', updateToolOptions);
+            elements.outputFormat.addEventListener('change', updateOutputOptions);
+            
+            // Close modal on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closePreviewModal();
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    e.preventDefault();
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+
+        // Update active navigation link
+        function updateActiveNav(clickedLink) {
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            clickedLink.classList.add('active');
         }
 
         // Mobile menu toggle
@@ -1449,6 +1971,25 @@
             const icon = elements.mobileMenuBtn.querySelector('i');
             icon.classList.toggle('fa-bars');
             icon.classList.toggle('fa-times');
+            
+            // Close menu when clicking outside
+            if (elements.mainNav.classList.contains('active')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeMenuOnClickOutside);
+                }, 10);
+            } else {
+                document.removeEventListener('click', closeMenuOnClickOutside);
+            }
+        }
+
+        function closeMenuOnClickOutside(e) {
+            if (!elements.mainNav.contains(e.target) && !elements.mobileMenuBtn.contains(e.target)) {
+                elements.mainNav.classList.remove('active');
+                const icon = elements.mobileMenuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+                document.removeEventListener('click', closeMenuOnClickOutside);
+            }
         }
 
         // Setup drag and drop functionality
@@ -1456,7 +1997,6 @@
             // Prevent default drag behaviors
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 elements.uploadArea.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false);
             });
             
             // Highlight drop area when item is dragged over it
@@ -1502,48 +2042,96 @@
         function processFiles(files) {
             if (files.length === 0) return;
             
-            // Filter files by tool's accepted formats
-            const toolData = getCurrentToolData();
-            const acceptedFormats = toolData.input.split(',');
+            const config = toolConfigs[AppState.currentTool];
+            const maxFiles = config.multiple ? 10 : 1;
+            
+            // Check if adding these files would exceed the limit
+            if (AppState.files.length + files.length > maxFiles) {
+                showToast(`Maksimum ${maxFiles} file untuk alat ini`, 'warning');
+                files = files.slice(0, maxFiles - AppState.files.length);
+            }
+            
+            let validFiles = 0;
             
             files.forEach(file => {
-                const fileExtension = file.name.split('.').pop().toLowerCase();
-                
-                if (acceptedFormats.includes(fileExtension) || acceptedFormats.includes('*')) {
-                    // Add file to state with progress tracking
-                    const fileObj = {
-                        id: Date.now() + Math.random(),
-                        name: file.name,
-                        size: file.size,
-                        type: file.type,
-                        extension: fileExtension,
-                        progress: 0,
-                        status: 'pending'
-                    };
-                    
-                    AppState.files.push(fileObj);
-                    
-                    // Simulate file upload progress
-                    simulateFileProgress(fileObj);
-                } else {
-                    showMessage(`Format file ${file.name} tidak didukung untuk alat ini.`, 'error');
+                // Check file size
+                if (file.size > config.maxSize) {
+                    showToast(`File ${file.name} terlalu besar (maks: ${formatFileSize(config.maxSize)})`, 'error');
+                    return;
                 }
+                
+                // Check file type
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                const acceptTypes = config.accept.split(',');
+                
+                let isValidType = false;
+                for (const type of acceptTypes) {
+                    if (type === '*/*' || type === 'image/*') {
+                        if (file.type.startsWith('image/')) {
+                            isValidType = true;
+                            break;
+                        }
+                    } else if (type.startsWith('.')) {
+                        if (fileExt === type.substring(1)) {
+                            isValidType = true;
+                            break;
+                        }
+                    } else if (file.type === type) {
+                        isValidType = true;
+                        break;
+                    }
+                }
+                
+                if (!isValidType) {
+                    showToast(`Format file ${file.name} tidak didukung`, 'error');
+                    return;
+                }
+                
+                // Add file to state
+                const fileObj = {
+                    id: AppState.currentFileId++,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    extension: fileExt,
+                    file: file,
+                    progress: 0,
+                    status: 'uploading'
+                };
+                
+                AppState.files.push(fileObj);
+                validFiles++;
+                
+                // Simulate file upload progress
+                simulateFileProgress(fileObj);
             });
             
-            updateFileListDisplay();
+            if (validFiles > 0) {
+                updateFileListDisplay();
+                elements.fileListContainer.classList.add('visible');
+                elements.conversionOptions.classList.add('visible');
+                
+                if (config.multiple && AppState.files.length > 1) {
+                    showToast(`${validFiles} file berhasil ditambahkan`, 'success');
+                } else {
+                    showToast(`File berhasil ditambahkan`, 'success');
+                }
+            }
+            
             elements.fileInput.value = ''; // Reset input
         }
 
-        // Simulate file upload progress (for demo purposes)
+        // Simulate file upload progress
         function simulateFileProgress(fileObj) {
             let progress = 0;
             const interval = setInterval(() => {
-                progress += 5 + Math.random() * 15;
+                progress += 10 + Math.random() * 20;
                 if (progress >= 100) {
                     progress = 100;
                     fileObj.status = 'ready';
                     clearInterval(interval);
                     updateFileItem(fileObj.id);
+                    showToast(`${fileObj.name} siap dikonversi`, 'success');
                 }
                 
                 fileObj.progress = progress;
@@ -1554,22 +2142,20 @@
         // Update file list display
         function updateFileListDisplay() {
             if (AppState.files.length === 0) {
-                elements.fileList.innerHTML = `
-                    <div class="empty-state text-center">
-                        <p style="color: var(--gray); padding: 30px;">Belum ada file yang dipilih</p>
-                    </div>
-                `;
-                elements.fileListContainer.style.display = 'none';
+                elements.fileListContainer.classList.remove('visible');
+                elements.conversionOptions.classList.remove('visible');
                 return;
             }
             
-            elements.fileListContainer.style.display = 'block';
             elements.fileList.innerHTML = '';
             
             AppState.files.forEach(file => {
                 const fileElement = createFileElement(file);
                 elements.fileList.appendChild(fileElement);
             });
+            
+            // Scroll to bottom of file list
+            elements.fileList.scrollTop = elements.fileList.scrollHeight;
         }
 
         // Create file element for display
@@ -1577,6 +2163,7 @@
             const fileSize = formatFileSize(file.size);
             const progress = file.progress || 0;
             const isReady = file.status === 'ready';
+            const fileIcon = fileIcons[file.extension] || 'fa-file';
             
             const element = document.createElement('div');
             element.className = 'file-item fade-in';
@@ -1585,14 +2172,15 @@
             element.innerHTML = `
                 <div class="file-info">
                     <div class="file-icon">
-                        <i class="fas fa-file-pdf"></i>
+                        <i class="fas ${fileIcon}"></i>
                     </div>
                     <div class="file-details">
                         <h4>${file.name}</h4>
                         <p>
                             <span>${fileSize}</span>
                             <span>•</span>
-                            <span class="${isReady ? 'text-success' : ''}">
+                            <span class="file-status ${isReady ? 'ready' : 'uploading'}">
+                                <i class="fas ${isReady ? 'fa-check-circle' : 'fa-spinner fa-pulse'}"></i>
                                 ${isReady ? 'Siap dikonversi' : 'Mengunggah...'}
                             </span>
                         </p>
@@ -1629,15 +2217,23 @@
             const fileElement = document.querySelector(`.file-item[data-id="${fileId}"]`);
             if (fileElement) {
                 const progressBar = fileElement.querySelector('.file-progress-bar');
-                const statusText = fileElement.querySelector('.file-details span:last-child');
+                const statusElement = fileElement.querySelector('.file-status');
+                const statusIcon = fileElement.querySelector('.file-status i');
                 
                 if (progressBar) {
                     progressBar.style.width = `${file.progress}%`;
                 }
                 
-                if (statusText) {
-                    statusText.textContent = file.status === 'ready' ? 'Siap dikonversi' : 'Mengunggah...';
-                    statusText.className = file.status === 'ready' ? 'text-success' : '';
+                if (statusElement && statusIcon) {
+                    if (file.status === 'ready') {
+                        statusElement.className = 'file-status ready';
+                        statusIcon.className = 'fas fa-check-circle';
+                        statusElement.innerHTML = `<i class="fas fa-check-circle"></i> Siap dikonversi`;
+                    } else {
+                        statusElement.className = 'file-status uploading';
+                        statusIcon.className = 'fas fa-spinner fa-pulse';
+                        statusElement.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Mengunggah...`;
+                    }
                 }
             }
         }
@@ -1646,12 +2242,16 @@
         function removeFile(fileId) {
             AppState.files = AppState.files.filter(f => f.id !== fileId);
             updateFileListDisplay();
+            showToast('File dihapus', 'info');
         }
 
         // Clear all files
         function clearAllFiles() {
+            if (AppState.files.length === 0) return;
+            
             AppState.files = [];
             updateFileListDisplay();
+            showToast('Semua file dihapus', 'info');
         }
 
         // Preview a file (modal)
@@ -1660,7 +2260,11 @@
             if (!file) return;
             
             // Show modal
-            elements.previewModal.style.display = 'flex';
+            elements.previewModal.classList.add('visible');
+            
+            // Update modal title
+            const modalTitle = elements.previewModal.querySelector('.modal-header h3');
+            modalTitle.innerHTML = `<i class="fas fa-eye"></i> Pratinjau: ${file.name}`;
             
             // In a real app, you would display the actual file content here
             // For demo, we just show a placeholder
@@ -1668,7 +2272,7 @@
 
         // Close preview modal
         function closePreviewModal() {
-            elements.previewModal.style.display = 'none';
+            elements.previewModal.classList.remove('visible');
         }
 
         // Select a tool
@@ -1680,100 +2284,185 @@
             // Update state
             AppState.currentTool = toolElement.dataset.tool;
             
-            // Update converter header
-            updateConverterHeader();
-            
-            // Update tool options
-            updateToolOptions();
+            // Update converter header and options
+            updateToolDisplay();
             
             // Clear previous files
             AppState.files = [];
             updateFileListDisplay();
             
             // Hide result area
-            elements.resultArea.style.display = 'none';
+            elements.resultArea.classList.remove('visible');
+            
+            // Scroll to converter area
+            document.querySelector('.converter-area').scrollIntoView({ behavior: 'smooth' });
+            
+            showToast(`Alat diubah: ${toolConfigs[AppState.currentTool].name}`, 'info');
         }
 
-        // Update converter header based on selected tool
-        function updateConverterHeader() {
+        // Update tool display based on selected tool
+        function updateToolDisplay() {
+            const config = toolConfigs[AppState.currentTool];
+            
+            // Update converter header
             const header = document.querySelector('.converter-header h2');
-            const toolData = getCurrentToolData();
+            header.innerHTML = `<i class="fas ${config.icon}"></i> ${config.name}`;
             
-            if (!toolData) return;
+            // Update file input accept attribute
+            elements.fileInput.accept = config.accept;
+            if (config.multiple) {
+                elements.fileInput.setAttribute('multiple', '');
+            } else {
+                elements.fileInput.removeAttribute('multiple');
+            }
             
-            // Get icon based on tool
-            let icon = 'fas fa-file';
-            if (AppState.currentTool.includes('pdf')) icon = 'fas fa-file-pdf';
-            if (AppState.currentTool.includes('word')) icon = 'fas fa-file-word';
-            if (AppState.currentTool.includes('excel')) icon = 'fas fa-file-excel';
-            if (AppState.currentTool.includes('ppt') || AppState.currentTool.includes('powerpoint')) icon = 'fas fa-file-powerpoint';
-            if (AppState.currentTool.includes('image')) icon = 'fas fa-image';
-            if (AppState.currentTool.includes('compress')) icon = 'fas fa-compress-alt';
-            if (AppState.currentTool.includes('merge')) icon = 'fas fa-compress-arrows-alt';
+            // Update supported formats text
+            const formatsText = elements.uploadArea.querySelector('.supported-formats p');
+            const acceptText = config.accept === 'image/*' ? 'Semua gambar' : config.accept.split(',').map(ext => {
+                if (ext.startsWith('.')) return ext.toUpperCase();
+                return ext;
+            }).join(', ');
             
-            // Update header
-            const toolName = toolElement.querySelector('.tool-name').textContent;
-            header.innerHTML = `<i class="${icon}"></i> ${toolName}`;
+            formatsText.innerHTML = `<strong>Format didukung:</strong> ${acceptText} (maks: ${formatFileSize(config.maxSize)} per file)`;
+            
+            // Update conversion options
+            updateConversionOptions();
         }
 
-        // Get current tool data
-        function getCurrentToolData() {
-            const activeTool = document.querySelector('.tool-item.active');
-            if (!activeTool) return null;
+        // Update conversion options based on selected tool
+        function updateConversionOptions() {
+            const config = toolConfigs[AppState.currentTool];
             
-            return {
-                name: activeTool.querySelector('.tool-name').textContent,
-                input: activeTool.dataset.input,
-                output: activeTool.dataset.output
-            };
-        }
-
-        // Update tool options based on selected tool
-        function updateToolOptions() {
-            const toolData = getCurrentToolData();
-            if (!toolData) return;
+            // Clear current options
+            elements.optionsGrid.innerHTML = '';
             
-            // Update output format options
-            const outputFormats = toolData.output.split(',');
-            elements.outputFormat.innerHTML = '';
-            
-            outputFormats.forEach(format => {
-                const option = document.createElement('option');
-                option.value = format;
+            // Add options based on tool config
+            config.options.forEach(optionType => {
+                let optionHtml = '';
                 
-                switch(format) {
-                    case 'pdf': option.textContent = 'PDF Document'; break;
-                    case 'docx': option.textContent = 'DOCX (Microsoft Word)'; break;
-                    case 'doc': option.textContent = 'DOC (Word 97-2003)'; break;
-                    case 'xlsx': option.textContent = 'XLSX (Microsoft Excel)'; break;
-                    case 'xls': option.textContent = 'XLS (Excel 97-2003)'; break;
-                    case 'pptx': option.textContent = 'PPTX (Microsoft PowerPoint)'; break;
-                    case 'ppt': option.textContent = 'PPT (PowerPoint 97-2003)'; break;
-                    case 'jpg': option.textContent = 'JPG Image'; break;
-                    case 'png': option.textContent = 'PNG Image'; break;
-                    case 'gif': option.textContent = 'GIF Image'; break;
-                    case 'webp': option.textContent = 'WebP Image'; break;
-                    case 'svg': option.textContent = 'SVG Vector Image'; break;
-                    case 'bmp': option.textContent = 'BMP Image'; break;
-                    default: option.textContent = format.toUpperCase();
+                switch(optionType) {
+                    case 'outputFormat':
+                        const formats = getOutputFormatsForTool(AppState.currentTool);
+                        if (formats.length > 1) {
+                            optionHtml = `
+                                <div class="option-group">
+                                    <label for="outputFormat"><i class="fas fa-file-export"></i> Format Output</label>
+                                    <select id="outputFormat">
+                                        ${formats.map(format => {
+                                            let text = '';
+                                            switch(format) {
+                                                case 'pdf': text = 'PDF Document'; break;
+                                                case 'docx': text = 'DOCX (Microsoft Word)'; break;
+                                                case 'doc': text = 'DOC (Word 97-2003)'; break;
+                                                case 'xlsx': text = 'XLSX (Microsoft Excel)'; break;
+                                                case 'xls': text = 'XLS (Excel 97-2003)'; break;
+                                                case 'pptx': text = 'PPTX (Microsoft PowerPoint)'; break;
+                                                case 'ppt': text = 'PPT (PowerPoint 97-2003)'; break;
+                                                case 'jpg': text = 'JPG Image'; break;
+                                                case 'jpeg': text = 'JPEG Image'; break;
+                                                case 'png': text = 'PNG Image'; break;
+                                                case 'gif': text = 'GIF Image'; break;
+                                                case 'webp': text = 'WebP Image'; break;
+                                                case 'bmp': text = 'BMP Image'; break;
+                                                default: text = format.toUpperCase();
+                                            }
+                                            return `<option value="${format}">${text}</option>`;
+                                        }).join('')}
+                                    </select>
+                                </div>
+                            `;
+                        }
+                        break;
+                        
+                    case 'quality':
+                        optionHtml = `
+                            <div class="option-group">
+                                <label for="quality"><i class="fas fa-chart-line"></i> Kualitas Output</label>
+                                <select id="quality">
+                                    <option value="high">Tinggi (Kualitas Terbaik)</option>
+                                    <option value="medium" selected>Medium (Direkomendasikan)</option>
+                                    <option value="low">Rendah (Ukuran Kecil)</option>
+                                </select>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'pageRange':
+                        optionHtml = `
+                            <div class="option-group">
+                                <label for="pageRange"><i class="fas fa-file-alt"></i> Halaman (opsional)</label>
+                                <input type="text" id="pageRange" placeholder="Semua halaman (contoh: 1-5, 8, 11-13)">
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'ocrOption':
+                        optionHtml = `
+                            <div class="option-group">
+                                <label for="ocrOption"><i class="fas fa-eye"></i> OCR (Pengenalan Teks)</label>
+                                <select id="ocrOption">
+                                    <option value="auto">Otomatis (Jika diperlukan)</option>
+                                    <option value="enabled">Selalu Aktif</option>
+                                    <option value="disabled" selected>Nonaktif</option>
+                                </select>
+                            </div>
+                        `;
+                        break;
                 }
                 
-                elements.outputFormat.appendChild(option);
+                if (optionHtml) {
+                    elements.optionsGrid.innerHTML += optionHtml;
+                }
             });
             
-            // Show/hide options based on tool
-            if (AppState.currentTool.includes('compress')) {
-                document.getElementById('quality').parentElement.style.display = 'block';
-                document.getElementById('pageRange').parentElement.style.display = 'none';
-                document.getElementById('ocrOption').parentElement.style.display = 'none';
-            } else if (AppState.currentTool.includes('pdf')) {
-                document.getElementById('quality').parentElement.style.display = 'block';
-                document.getElementById('pageRange').parentElement.style.display = 'block';
-                document.getElementById('ocrOption').parentElement.style.display = 'block';
-            } else {
-                document.getElementById('quality').parentElement.style.display = 'block';
-                document.getElementById('pageRange').parentElement.style.display = 'none';
-                document.getElementById('ocrOption').parentElement.style.display = 'none';
+            // Re-attach event listeners to new elements
+            if (document.getElementById('outputFormat')) {
+                document.getElementById('outputFormat').addEventListener('change', updateOutputOptions);
+            }
+        }
+
+        // Get output formats for a specific tool
+        function getOutputFormatsForTool(toolId) {
+            switch(toolId) {
+                case 'pdf-to-word': return ['docx', 'doc', 'odt', 'rtf'];
+                case 'pdf-to-excel': return ['xlsx', 'xls', 'csv'];
+                case 'pdf-to-ppt': return ['pptx', 'ppt'];
+                case 'merge-pdf': return ['pdf'];
+                case 'image-convert': return ['jpg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+                case 'compress-image': return ['jpg', 'png', 'gif', 'webp'];
+                case 'image-to-pdf': return ['pdf'];
+                case 'word-to-pdf': return ['pdf'];
+                case 'excel-to-pdf': return ['pdf'];
+                case 'ppt-to-pdf': return ['pdf'];
+                default: return ['pdf'];
+            }
+        }
+
+        // Update output options when format changes
+        function updateOutputOptions() {
+            // This function can be extended to show/hide additional options based on selected format
+            const outputFormat = document.getElementById('outputFormat')?.value;
+            if (outputFormat) {
+                // Update quality options based on format
+                const qualitySelect = document.getElementById('quality');
+                if (qualitySelect) {
+                    // Different quality options for different formats
+                    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(outputFormat)) {
+                        // Image formats
+                        qualitySelect.innerHTML = `
+                            <option value="high">Tinggi (Kualitas Terbaik)</option>
+                            <option value="medium" selected>Medium (Direkomendasikan)</option>
+                            <option value="low">Rendah (Ukuran Kecil)</option>
+                        `;
+                    } else {
+                        // Document formats
+                        qualitySelect.innerHTML = `
+                            <option value="high">Tinggi (Resolusi Tinggi)</option>
+                            <option value="medium" selected>Medium (Standar)</option>
+                            <option value="low">Rendah (Cepat)</option>
+                        `;
+                    }
+                }
             }
         }
 
@@ -1783,14 +2472,14 @@
             
             // Check if there are files
             if (AppState.files.length === 0) {
-                showMessage('Silakan pilih file terlebih dahulu!', 'error');
+                showToast('Silakan pilih file terlebih dahulu!', 'error');
                 return;
             }
             
             // Check if all files are ready
             const notReadyFiles = AppState.files.filter(f => f.status !== 'ready');
             if (notReadyFiles.length > 0) {
-                showMessage('Harap tunggu hingga semua file selesai diunggah.', 'error');
+                showToast('Harap tunggu hingga semua file selesai diunggah.', 'error');
                 return;
             }
             
@@ -1798,51 +2487,72 @@
             elements.convertBtn.disabled = true;
             
             // Show loading spinner
-            elements.loadingSpinner.style.display = 'flex';
+            elements.loadingSpinner.classList.add('visible');
+            elements.conversionOptions.classList.remove('visible');
             
-            // Simulate conversion process
-            const conversionTime = 1500 + Math.random() * 2000; // 1.5-3.5 seconds
+            // Simulate conversion process with realistic timing
+            const conversionTime = 1500 + Math.random() * 2500; // 1.5-4 seconds
+            
+            // Update loading text with progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                if (progress >= 90) {
+                    clearInterval(progressInterval);
+                }
+            }, conversionTime / 10);
             
             setTimeout(() => {
                 // Hide loading spinner
-                elements.loadingSpinner.style.display = 'none';
+                elements.loadingSpinner.classList.remove('visible');
                 AppState.isConverting = false;
                 elements.convertBtn.disabled = false;
                 
                 // Show result
                 showConversionResult(conversionTime);
+                
+                clearInterval(progressInterval);
             }, conversionTime);
         }
 
         // Show conversion result
         function showConversionResult(conversionTime) {
-            // Update result info
-            const toolData = getCurrentToolData();
+            const config = toolConfigs[AppState.currentTool];
             const inputFile = AppState.files[0];
-            const outputFormat = elements.outputFormat.value;
+            const outputFormat = document.getElementById('outputFormat')?.value || 'pdf';
             
             const inputName = inputFile.name;
             const baseName = inputName.substring(0, inputName.lastIndexOf('.'));
             
             let outputName = '';
             switch(outputFormat) {
-                case 'docx': outputName = `${baseName}_converted.docx`; break;
-                case 'doc': outputName = `${baseName}_converted.doc`; break;
-                case 'pdf': outputName = `${baseName}_converted.pdf`; break;
-                case 'xlsx': outputName = `${baseName}_converted.xlsx`; break;
-                case 'xls': outputName = `${baseName}_converted.xls`; break;
-                case 'pptx': outputName = `${baseName}_converted.pptx`; break;
-                case 'ppt': outputName = `${baseName}_converted.ppt`; break;
-                case 'jpg': outputName = `${baseName}_converted.jpg`; break;
-                case 'png': outputName = `${baseName}_converted.png`; break;
-                default: outputName = `${baseName}_converted.${outputFormat}`;
+                case 'docx': outputName = `${baseName}_konversi.docx`; break;
+                case 'doc': outputName = `${baseName}_konversi.doc`; break;
+                case 'pdf': outputName = `${baseName}_konversi.pdf`; break;
+                case 'xlsx': outputName = `${baseName}_konversi.xlsx`; break;
+                case 'xls': outputName = `${baseName}_konversi.xls`; break;
+                case 'pptx': outputName = `${baseName}_konversi.pptx`; break;
+                case 'ppt': outputName = `${baseName}_konversi.ppt`; break;
+                case 'jpg': outputName = `${baseName}_konversi.jpg`; break;
+                case 'jpeg': outputName = `${baseName}_konversi.jpeg`; break;
+                case 'png': outputName = `${baseName}_konversi.png`; break;
+                case 'gif': outputName = `${baseName}_konversi.gif`; break;
+                case 'webp': outputName = `${baseName}_konversi.webp`; break;
+                case 'bmp': outputName = `${baseName}_konversi.bmp`; break;
+                default: outputName = `${baseName}_konversi.${outputFormat}`;
             }
             
+            // Update result elements
             elements.resultFileName.textContent = outputName;
             elements.conversionTime.textContent = `Waktu konversi: ${(conversionTime / 1000).toFixed(1)} detik`;
             
+            // Update result icon based on output format
+            const resultIcon = elements.resultArea.querySelector('.result-icon i');
+            const iconClass = fileIcons[outputFormat] || 'fa-file';
+            resultIcon.className = `fas ${iconClass}`;
+            
             // Show result area
-            elements.resultArea.style.display = 'block';
+            elements.resultArea.classList.add('visible');
             
             // Scroll to result
             elements.resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1850,21 +2560,24 @@
             // Store conversion result
             AppState.conversionResult = {
                 fileName: outputName,
-                fileSize: inputFile.size * 0.8, // Simulate smaller file size
+                fileSize: Math.max(100 * 1024, inputFile.size * (Math.random() * 0.5 + 0.5)), // Random size between 50-150% of original
                 format: outputFormat,
+                tool: AppState.currentTool,
                 timestamp: new Date()
             };
+            
+            showToast('Konversi berhasil!', 'success');
         }
 
         // Download conversion result
         function downloadResult() {
             if (!AppState.conversionResult) {
-                showMessage('Tidak ada file untuk diunduh.', 'error');
+                showToast('Tidak ada file untuk diunduh.', 'error');
                 return;
             }
             
-            // Create a dummy file for download (in real app, this would be the actual converted file)
-            const content = `Ini adalah file hasil konversi dari ${AppState.currentTool}.\n\n`;
+            // Create a dummy file for download
+            const content = `Ini adalah file hasil konversi dari alat: ${toolConfigs[AppState.currentTool].name}\n\n`;
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1876,7 +2589,7 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            showMessage('File berhasil diunduh!', 'success');
+            showToast('File berhasil diunduh!', 'success');
         }
 
         // Convert another file
@@ -1886,10 +2599,13 @@
             AppState.conversionResult = null;
             
             updateFileListDisplay();
-            elements.resultArea.style.display = 'none';
+            elements.resultArea.classList.remove('visible');
+            elements.conversionOptions.classList.remove('visible');
             
-            // Scroll to top
+            // Scroll to upload area
             elements.uploadArea.scrollIntoView({ behavior: 'smooth' });
+            
+            showToast('Siap untuk konversi baru', 'info');
         }
 
         // Reset converter
@@ -1897,68 +2613,104 @@
             // Reset everything
             AppState.files = [];
             AppState.conversionResult = null;
+            AppState.isConverting = false;
             
             updateFileListDisplay();
-            elements.resultArea.style.display = 'none';
-            elements.loadingSpinner.style.display = 'none';
+            elements.resultArea.classList.remove('visible');
+            elements.loadingSpinner.classList.remove('visible');
+            elements.conversionOptions.classList.remove('visible');
+            elements.convertBtn.disabled = false;
             
             // Reset options to defaults
-            elements.outputFormat.selectedIndex = 0;
-            elements.quality.selectedIndex = 1;
-            elements.pageRange.value = '';
-            elements.ocrOption.selectedIndex = 0;
+            updateConversionOptions();
             
-            showMessage('Converter telah direset.', 'info');
+            showToast('Converter telah direset.', 'info');
         }
 
-        // Show message to user
-        function showMessage(text, type = 'info') {
-            // Create message element
-            const message = document.createElement('div');
-            message.className = `message message-${type} fade-in`;
-            message.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: 8px;
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            const existingToasts = elements.toaster.querySelectorAll('.toast');
+            existingToasts.forEach(toast => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            });
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast fade-in`;
+            toast.style.cssText = `
+                background: ${type === 'error' ? '#f44336' : 
+                            type === 'success' ? '#4caf50' : 
+                            type === 'warning' ? '#ff9800' : 
+                            '#2196f3'};
                 color: white;
-                font-weight: 500;
-                z-index: 3000;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                padding: 16px 24px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
                 max-width: 400px;
+                transform: translateX(100%);
+                animation: slideInRight 0.3s ease-out forwards;
+                position: relative;
+                overflow: hidden;
             `;
             
-            // Set background color based on type
-            if (type === 'error') message.style.backgroundColor = '#d32f2f';
-            else if (type === 'success') message.style.backgroundColor = '#2e7d32';
-            else message.style.backgroundColor = '#1976d2';
-            
-            // Set icon based on type
+            // Add icon based on type
             let icon = 'info-circle';
             if (type === 'error') icon = 'exclamation-circle';
             if (type === 'success') icon = 'check-circle';
+            if (type === 'warning') icon = 'exclamation-triangle';
             
-            message.innerHTML = `
-                <i class="fas fa-${icon}"></i>
-                <span>${text}</span>
+            toast.innerHTML = `
+                <i class="fas fa-${icon}" style="font-size: 1.3rem;"></i>
+                <span style="flex: 1;">${message}</span>
+                <button class="toast-close" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem;">
+                    <i class="fas fa-times"></i>
+                </button>
             `;
             
-            document.body.appendChild(message);
+            elements.toaster.appendChild(toast);
             
-            // Remove message after 3 seconds
-            setTimeout(() => {
-                message.style.opacity = '0';
-                message.style.transform = 'translateX(20px)';
+            // Add close button functionality
+            const closeBtn = toast.querySelector('.toast-close');
+            closeBtn.addEventListener('click', () => {
+                toast.style.transform = 'translateX(100%)';
                 setTimeout(() => {
-                    if (message.parentNode) {
-                        document.body.removeChild(message);
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
                     }
                 }, 300);
-            }, 3000);
+            });
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+            
+            // Add CSS for slideInRight animation
+            if (!document.querySelector('#toast-animation')) {
+                const style = document.createElement('style');
+                style.id = 'toast-animation';
+                style.textContent = `
+                    @keyframes slideInRight {
+                        from { transform: translateX(100%); }
+                        to { transform: translateX(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
         }
 
         // Format file size
@@ -1972,24 +2724,77 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // Simulate a file for demo purposes
-        function simulateFileForDemo() {
+        // Load a demo file for first-time users
+        function loadDemoFile() {
             setTimeout(() => {
                 if (AppState.files.length === 0) {
                     const demoFile = {
-                        id: Date.now(),
+                        id: AppState.currentFileId++,
                         name: 'contoh_dokumen.pdf',
                         size: 2.5 * 1024 * 1024, // 2.5 MB
                         type: 'application/pdf',
                         extension: 'pdf',
+                        file: null,
                         progress: 100,
                         status: 'ready'
                     };
                     
                     AppState.files.push(demoFile);
                     updateFileListDisplay();
+                    elements.fileListContainer.classList.add('visible');
+                    elements.conversionOptions.classList.add('visible');
+                    
+                    // Show info about the demo file
+                    setTimeout(() => {
+                        showToast('File contoh telah ditambahkan. Coba fitur konversi!', 'info');
+                    }, 1000);
                 }
-            }, 1000);
+            }, 2000);
+        }
+
+        // Update navigation links for smooth scrolling
+        function updateNavLinks() {
+            // Add click handlers to navigation links
+            const navLinks = document.querySelectorAll('nav a[href^="#"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Update active nav
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+            
+            // Update active nav on scroll
+            window.addEventListener('scroll', () => {
+                const scrollPos = window.scrollY + 100;
+                
+                // Get all sections
+                const sections = document.querySelectorAll('section, .sidebar, .converter-area, footer');
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    const sectionId = section.getAttribute('id');
+                    
+                    if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight && sectionId) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${sectionId}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            });
         }
 
         // Initialize the app when DOM is loaded
