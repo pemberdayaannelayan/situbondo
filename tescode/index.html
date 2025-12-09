@@ -151,20 +151,6 @@
             color: white;
         }
 
-        /* Menu yang terkunci untuk tamu */
-        .nav-link.disabled-for-guest {
-            opacity: 0.6;
-            cursor: not-allowed !important;
-            position: relative;
-        }
-        
-        .nav-link.disabled-for-guest::after {
-            content: "🔒";
-            position: absolute;
-            right: 10px;
-            font-size: 0.8rem;
-        }
-        
         /* Content Styling */
         .section-title {
             font-family: 'Montserrat', sans-serif;
@@ -211,17 +197,6 @@
             background: var(--gradient-accent);
             color: white;
             border: none;
-        }
-
-        .btn-guest {
-            background: linear-gradient(90deg, #6c757d, #adb5bd);
-            color: white;
-            border: none;
-        }
-
-        .btn-guest:hover {
-            background: linear-gradient(90deg, #5a6268, #868e96);
-            color: white;
         }
 
         /* Forms */
@@ -612,20 +587,6 @@
             box-shadow: 0 10px 20px rgba(238, 155, 0, 0.3);
         }
 
-        /* Guest Badge */
-        .guest-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: linear-gradient(90deg, #6c757d, #adb5bd);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 100;
-        }
-
         /* Logo Garuda */
         .logo-garuda {
             width: 80px;
@@ -638,6 +599,39 @@
             width: 40px;
             height: 40px;
             object-fit: contain;
+        }
+
+        /* Filter Container */
+        .filter-container {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        /* Ekstrak Data Styles */
+        .extract-security-form {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .extract-preview {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -678,15 +672,10 @@
                         </div>
                         
                         <div class="row g-2 mb-4">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <button type="submit" class="btn btn-login text-white w-100 py-3 fw-bold shadow-sm" id="loginButton">
-                                    <span class="login-button-text">MASUK ADMIN</span>
+                                    <span class="login-button-text">MASUK SISTEM</span>
                                     <span class="spinner-border spinner-border-sm d-none" id="loginSpinner"></span>
-                                </button>
-                            </div>
-                            <div class="col-6">
-                                <button type="button" class="btn btn-guest text-white w-100 py-3 fw-bold shadow-sm" id="guestLoginButton">
-                                    <i class="fas fa-user me-1"></i> MASUK TAMU
                                 </button>
                             </div>
                         </div>
@@ -725,7 +714,7 @@
                         <i class="fas fa-sync-alt me-2"></i> RELOAD DATA SEKARANG
                     </button>
                     
-                    <button type="button" class="btn btn-outline-light w-100 mt-3" id="skipReloadBtn" style="display: none;">
+                    <button type="button" class="btn btn-outline-light w-100 mt-3" id="skipReloadBtn">
                         <i class="fas fa-forward me-2"></i> LEWATI DAN LANJUTKAN
                     </button>
                     
@@ -745,11 +734,6 @@
         
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Guest Badge (akan ditampilkan jika login sebagai tamu) -->
-        <div class="guest-badge d-none" id="guestBadge">
-            <i class="fas fa-user me-1"></i> MODE TAMU
-        </div>
-        
         <div class="app-container animate-fadeIn">
             <div class="app-header">
                 <div class="app-logo">
@@ -758,7 +742,7 @@
                 </div>
                 <h1 class="app-title">SISTEM APLIKASI BANTUAN BARANG PINJAM PAKAI<br>BIDANG PEMBERDAYAAN NELAYAN</h1>
                 <p class="app-subtitle">Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
-                <div class="watermark">Professional Edition v2.1</div>
+                <div class="watermark">Professional Edition v2.2</div>
             </div>
             
             <div class="row g-0">
@@ -781,6 +765,10 @@
                         </button>
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button" role="tab">
                             <i class="fas fa-file-export feature-icon"></i> Ekspor Data
+                        </button>
+                        <!-- MENU BARU: Ekstrak Data -->
+                        <button class="nav-link" id="v-pills-extract-tab" data-bs-toggle="pill" data-bs-target="#v-pills-extract" type="button" role="tab">
+                            <i class="fas fa-map-marked-alt feature-icon"></i> Ekstrak Data
                         </button>
                         <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button" role="tab">
                             <i class="fas fa-download feature-icon"></i> Backup & Restore
@@ -1027,11 +1015,19 @@
                         <div class="tab-pane fade" id="v-pills-data" role="tabpanel">
                             <h3 class="section-title">Database Bantuan</h3>
                             <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
                                     <span><i class="fas fa-database me-2"></i> Daftar Penerima</span>
-                                    <div class="input-group" style="max-width: 300px;">
-                                        <input type="text" class="form-control form-control-sm" id="searchData" placeholder="Cari data...">
-                                        <button class="btn btn-sm btn-light border" id="clearSearchBtn"><i class="fas fa-times"></i></button>
+                                    <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                                        <select class="form-select form-select-sm" id="filterKecamatanData" style="width: auto;">
+                                            <option value="">Semua Kecamatan</option>
+                                        </select>
+                                        <select class="form-select form-select-sm" id="filterDesaData" style="width: auto;">
+                                            <option value="">Semua Desa</option>
+                                        </select>
+                                        <div class="input-group" style="max-width: 300px;">
+                                            <input type="text" class="form-control form-control-sm" id="searchData" placeholder="Cari data...">
+                                            <button class="btn btn-sm btn-light border" id="clearSearchBtn"><i class="fas fa-times"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
@@ -1188,6 +1184,59 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- TAB PANEL BARU: Ekstrak Data -->
+                        <div class="tab-pane fade" id="v-pills-extract" role="tabpanel">
+                            <h3 class="section-title">Ekstrak Data untuk Peta Statistik</h3>
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-map-marked-alt me-2"></i> Generate Data Peta</div>
+                                <div class="card-body">
+                                    <div class="alert alert-info">
+                                        <strong>Informasi:</strong> Fitur ini akan menghasilkan file data statistik per desa dalam format JavaScript (datapeta.js) yang dapat digunakan untuk visualisasi peta.
+                                    </div>
+                                    <div class="extract-security-form">
+                                        <div class="mb-3">
+                                            <label for="extractSecurityCode" class="form-label">Kode Keamanan</label>
+                                            <input type="password" class="form-control" id="extractSecurityCode" placeholder="Masukkan kode keamanan">
+                                            <div class="invalid-feedback" id="extractSecurityCodeError" style="display: none;">Kode keamanan salah.</div>
+                                        </div>
+                                        <div class="d-grid">
+                                            <button class="btn btn-primary" id="generateDataPetaBtn">
+                                                <i class="fas fa-map-marked-alt me-2"></i> Generate Data Peta
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4" id="extractPreviewSection" style="display: none;">
+                                        <h5 class="mb-3">Pratinjau Data Peta</h5>
+                                        <div class="extract-preview" id="extractPreview"></div>
+                                        <div class="d-flex justify-content-end mt-3">
+                                            <button class="btn btn-success" id="downloadDataPetaBtn">
+                                                <i class="fas fa-download me-2"></i> Download datapeta.js
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header"><i class="fas fa-info-circle me-2"></i> Panduan Penggunaan</div>
+                                <div class="card-body">
+                                    <h6>Langkah-langkah penggunaan data peta:</h6>
+                                    <ol>
+                                        <li>Masukkan kode keamanan: <strong>19450817</strong></li>
+                                        <li>Klik tombol "Generate Data Peta"</li>
+                                        <li>Preview data akan muncul, periksa kelengkapan data</li>
+                                        <li>Klik "Download datapeta.js" untuk mendapatkan file script</li>
+                                        <li>File datapeta.js dapat diupload ke repository untuk digunakan di website peta statistik</li>
+                                    </ol>
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <strong>Penting:</strong> File datapeta.js berisi data statistik per desa yang sudah diringkas dan dienkripsi untuk keamanan.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         
                         <div class="tab-pane fade" id="v-pills-backup" role="tabpanel">
                             <h3 class="section-title">Manajemen Data & Keamanan</h3>
@@ -1312,7 +1361,7 @@
                                 <div class="card-body">
                                     <h6 class="fw-bold text-primary">Informasi Teknis</h6>
                                     <div class="row small text-muted">
-                                        <div class="col-6">Versi: 2.1.0 (Professional)</div>
+                                        <div class="col-6">Versi: 2.2.0 (Professional)</div>
                                         <div class="col-6 text-end">Database: LocalStorage Encrypted</div>
                                         <div class="col-6">Browser: <span id="browserInfo">-</span></div>
                                         <div class="col-6 text-end">Usage: <span id="storageInfo">-</span></div>
@@ -1345,6 +1394,10 @@
             <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-backup-tab')">
                 <i class="fas fa-download"></i>
                 <span class="smart-menu-tooltip">Backup & Restore</span>
+            </a>
+            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-extract-tab')">
+                <i class="fas fa-map-marked-alt"></i>
+                <span class="smart-menu-tooltip">Ekstrak Data</span>
             </a>
             <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-export-tab')">
                 <i class="fas fa-file-export"></i>
@@ -1571,14 +1624,15 @@
         let isBlocked = false;
         let blockTimeout;
         let generatedCodes = {};
-        let isGuest = false;
         
         const SECURITY_CONSTANTS = {
             PIN: '17081945',
-            DEFAULT_PASS: 'BidangPN1945'
+            DEFAULT_PASS: 'BidangPN1945',
+            EXTRACT_CODE: '19450817' // Kode keamanan untuk ekstrak data
         };
 
         let pendingSecurityAction = null;
+        let generatedPetaData = null; // Menyimpan data peta yang dihasilkan
         
         const kecamatanList = [
             "Arjasa", "Asembagus", "Banyuglugur", "Banyuputih", "Besuki", 
@@ -1617,6 +1671,9 @@
             fillKecamatanDropdown();
             fillDesaDropdown();
             
+            // Fill filter dropdowns for data table
+            fillFilterDropdownsForDataTable();
+            
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('tanggalTerima').value = today;
             
@@ -1629,7 +1686,6 @@
         function setupEventListeners() {
             // Login & Auth
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            document.getElementById('guestLoginButton').addEventListener('click', handleGuestLogin);
             
             // Welcome Modal
             document.getElementById('welcomeReloadBtn').addEventListener('click', handleWelcomeReload);
@@ -1667,7 +1723,11 @@
             document.getElementById('searchData').addEventListener('input', handleSearch);
             document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
             
-            // Filter
+            // Filter for Data Table
+            document.getElementById('filterKecamatanData').addEventListener('change', handleDataTableFilter);
+            document.getElementById('filterDesaData').addEventListener('change', handleDataTableFilter);
+            
+            // Advanced Filter
             document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
             document.getElementById('resetFilterBtn').addEventListener('click', resetFilter);
             
@@ -1727,6 +1787,10 @@
 
             // Smart Menu Logic
             setupSmartMenu();
+
+            // FITUR BARU: Ekstrak Data
+            document.getElementById('generateDataPetaBtn').addEventListener('click', generateDataPeta);
+            document.getElementById('downloadDataPetaBtn').addEventListener('click', downloadDataPeta);
 
             window.addEventListener('beforeunload', autoBackupData);
         }
@@ -1800,6 +1864,20 @@
                 desaList.forEach(desa => select.add(new Option(desa, desa)));
             });
         }
+        
+        function fillFilterDropdownsForDataTable() {
+            // Fill kecamatan filter for data table
+            const kecFilter = document.getElementById('filterKecamatanData');
+            kecFilter.innerHTML = '';
+            kecFilter.add(new Option('Semua Kecamatan', ''));
+            kecamatanList.forEach(kec => kecFilter.add(new Option(kec, kec)));
+            
+            // Fill desa filter for data table
+            const desaFilter = document.getElementById('filterDesaData');
+            desaFilter.innerHTML = '';
+            desaFilter.add(new Option('Semua Desa', ''));
+            desaList.forEach(desa => desaFilter.add(new Option(desa, desa)));
+        }
 
         // --- AUTHENTICATION ---
         function handleLogin(e) {
@@ -1818,7 +1896,6 @@
                     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
                     if (loginModal) loginModal.hide();
                     
-                    isGuest = false;
                     showWelcomeMessage();
                 } else {
                     loginAttempts++;
@@ -1837,53 +1914,26 @@
 
                 loginButton.disabled = false;
                 document.getElementById('loginSpinner').classList.add('d-none');
-                document.querySelector('.login-button-text').textContent = 'MASUK APLIKASI';
+                document.querySelector('.login-button-text').textContent = 'MASUK SISTEM';
             }, 500);
-        }
-        
-        function handleGuestLogin() {
-            isGuest = true;
-            const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-            if (loginModal) loginModal.hide();
-            
-            showWelcomeMessage();
         }
         
         function showWelcomeMessage() {
             const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
             const welcomeMessage = document.getElementById('welcomeMessage');
-            const skipBtn = document.getElementById('skipReloadBtn');
             
-            if (isGuest) {
-                welcomeMessage.innerHTML = `
-                    <strong>Selamat datang Tamu!</strong><br>
-                    Anda login dalam mode tamu dengan akses terbatas.<br>
-                    <small class="text-white-75">Hanya dapat melihat Dashboard</small>
-                `;
-                document.getElementById('guestBadge').classList.remove('d-none');
-                skipBtn.style.display = 'block';
-                
-                // Terapkan pembatasan untuk tamu
-                applyGuestRestrictions();
-            } else {
-                const hours = new Date().getHours();
-                let greeting = '';
-                if (hours < 11) greeting = 'Pagi';
-                else if (hours < 15) greeting = 'Siang';
-                else if (hours < 19) greeting = 'Sore';
-                else greeting = 'Malam';
-                
-                welcomeMessage.innerHTML = `
-                    <strong>Selamat ${greeting}!</strong><br>
-                    Selamat datang di Sistem Bantuan Nelayan Kabupaten Situbondo.<br>
-                    <small class="text-white-75">Login sebagai Administrator - Akses penuh</small>
-                `;
-                document.getElementById('guestBadge').classList.add('d-none');
-                skipBtn.style.display = 'none';
-                
-                // Reset semua pembatasan untuk admin
-                resetGuestRestrictions();
-            }
+            const hours = new Date().getHours();
+            let greeting = '';
+            if (hours < 11) greeting = 'Pagi';
+            else if (hours < 15) greeting = 'Siang';
+            else if (hours < 19) greeting = 'Sore';
+            else greeting = 'Malam';
+            
+            welcomeMessage.innerHTML = `
+                <strong>Selamat ${greeting}!</strong><br>
+                Selamat datang di Sistem Bantuan Nelayan Kabupaten Situbondo.<br>
+                <small class="text-white-75">Login sebagai Administrator - Akses penuh</small>
+            `;
             
             welcomeModal.show();
         }
@@ -1892,9 +1942,7 @@
             const welcomeModal = bootstrap.Modal.getInstance(document.getElementById('welcomeModal'));
             if (welcomeModal) welcomeModal.hide();
             
-            if (!isGuest) {
-                handleReloadFromRepo();
-            }
+            handleReloadFromRepo();
             
             setTimeout(() => {
                 document.getElementById('appContent').style.display = 'block';
@@ -1908,97 +1956,6 @@
             
             document.getElementById('appContent').style.display = 'block';
             showNotification('Selamat datang! Sistem siap digunakan.', 'success');
-        }
-        
-        function applyGuestRestrictions() {
-            // Daftar menu yang TIDAK bisa diakses tamu (hanya dashboard yang boleh)
-            const restrictedMenus = [
-                'v-pills-input-tab',
-                'v-pills-data-tab',
-                'v-pills-filter-tab',
-                'v-pills-print-tab',
-                'v-pills-export-tab',
-                'v-pills-backup-tab',
-                'v-pills-settings-tab',
-                'btn-reload-repo'
-            ];
-            
-            // Nonaktifkan semua menu kecuali dashboard dan logout
-            restrictedMenus.forEach(menuId => {
-                const menu = document.getElementById(menuId);
-                if (menu) {
-                    menu.classList.add('disabled-for-guest');
-                    menu.setAttribute('disabled', 'disabled');
-                    menu.style.pointerEvents = 'none';
-                    menu.style.opacity = '0.6';
-                }
-            });
-            
-            // Aktifkan hanya dashboard dan logout
-            const allowedMenus = ['v-pills-dashboard-tab', 'v-pills-logout-tab'];
-            allowedMenus.forEach(menuId => {
-                const menu = document.getElementById(menuId);
-                if (menu) {
-                    menu.classList.remove('disabled-for-guest');
-                    menu.removeAttribute('disabled');
-                    menu.style.pointerEvents = 'auto';
-                    menu.style.opacity = '1';
-                }
-            });
-            
-            // Sembunyikan FAB button untuk tamu
-            document.getElementById('fabBtn').style.display = 'none';
-            
-            // Nonaktifkan smart menu item untuk tamu (hanya dashboard yang aktif)
-            const allSmartItems = document.querySelectorAll('.smart-menu-item');
-            allSmartItems.forEach(item => {
-                // Hanya izinkan item dashboard
-                if (item.onclick && item.onclick.toString().includes('v-pills-dashboard-tab')) {
-                    item.style.opacity = '1';
-                    item.style.pointerEvents = 'auto';
-                } else {
-                    item.style.opacity = '0.5';
-                    item.style.pointerEvents = 'none';
-                    item.title = 'Tidak tersedia untuk tamu';
-                }
-            });
-            
-            // Aktifkan tab dashboard secara otomatis
-            document.getElementById('v-pills-dashboard-tab').click();
-            
-            // Nonaktifkan form input jika tamu membuka URL langsung
-            document.getElementById('inputForm').querySelectorAll('input, select, textarea, button').forEach(el => {
-                if (el.id !== 'v-pills-logout-tab') {
-                    el.disabled = true;
-                }
-            });
-        }
-        
-        function resetGuestRestrictions() {
-            // Aktifkan semua menu untuk admin
-            const allMenus = document.querySelectorAll('.nav-link');
-            allMenus.forEach(menu => {
-                menu.classList.remove('disabled-for-guest');
-                menu.removeAttribute('disabled');
-                menu.style.pointerEvents = 'auto';
-                menu.style.opacity = '1';
-            });
-            
-            // Tampilkan FAB button untuk admin
-            document.getElementById('fabBtn').style.display = 'flex';
-            
-            // Aktifkan semua smart menu item untuk admin
-            const allSmartItems = document.querySelectorAll('.smart-menu-item');
-            allSmartItems.forEach(item => {
-                item.style.opacity = '1';
-                item.style.pointerEvents = 'auto';
-                item.title = '';
-            });
-            
-            // Aktifkan semua form input untuk admin
-            document.getElementById('inputForm').querySelectorAll('input, select, textarea, button').forEach(el => {
-                el.disabled = false;
-            });
         }
         
         function togglePasswordVisibility(btn, inputId) {
@@ -2045,9 +2002,6 @@
             if (confirm('Apakah Anda yakin ingin keluar?')) {
                 document.getElementById('appContent').style.display = 'none';
                 document.getElementById('securityCode').value = '';
-                document.getElementById('guestBadge').classList.add('d-none');
-                isGuest = false;
-                resetGuestRestrictions();
                 new bootstrap.Modal(document.getElementById('loginModal')).show();
                 showNotification('Anda telah berhasil logout.', 'info');
             }
@@ -2055,12 +2009,6 @@
         
         // --- SECURITY & PRIVACY LOGIC ---
         function requestHighSecurityAction(callback) {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur ini tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             pendingSecurityAction = callback;
             document.getElementById('universalPinInput').value = '';
             document.getElementById('universalPinError').style.display = 'none';
@@ -2082,13 +2030,6 @@
 
         function handlePrivacyToggle(e) {
             const toggle = e.target;
-            
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur pengaturan tidak tersedia untuk tamu.', 'error');
-                toggle.checked = !toggle.checked; // Kembalikan ke keadaan semula
-                return;
-            }
             
             // Jika user baru saja meng-uncheck (ingin mematikan sensor)
             if (!toggle.checked) {
@@ -2187,12 +2128,6 @@
         // --- FORM HANDLING & VALIDATION ---
         function handleFormSubmit(e) {
             e.preventDefault();
-            
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Halaman ini tidak tersedia untuk tamu.', 'error');
-                return;
-            }
             
             if (!validateForm()) {
                 showNotification('Harap perbaiki data yang salah pada formulir.', 'error');
@@ -2327,12 +2262,6 @@
         }
         
         function generateKodeValidasi() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur ini tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const nikInput = document.getElementById('nik');
             const nik = nikInput.value.trim();
             clearError('nik');
@@ -2424,12 +2353,6 @@
         function handleSaveSettings(e) {
             e.preventDefault();
             
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Halaman ini tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const newSecurityCode = document.getElementById('settingSecurityCode').value;
             if (newSecurityCode && newSecurityCode.trim() !== "") {
                 appSettings.securityCode = newSecurityCode;
@@ -2484,31 +2407,20 @@
                 const whatsappClass = appSettings.privacyMode ? 'text-muted text-decoration-none' : 'whatsapp-number';
                 const privacyClass = appSettings.privacyMode ? 'privacy-blurred' : '';
                 
-                // Tombol aksi - untuk tamu, tombol edit/hapus disembunyikan
-                let actionButtons = '';
-                if (isGuest) {
-                    actionButtons = `
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-info text-white" onclick="showDetailData(${data.id})" title="Lihat Detail">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    actionButtons = `
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-info text-white" onclick="showDetailData(${data.id})" title="Lihat Detail">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-warning text-white" onclick="editData(${data.id})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-danger" onclick="deleteData(${data.id})" title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                }
+                // Tombol aksi
+                let actionButtons = `
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-info text-white" onclick="showDetailData(${data.id})" title="Lihat Detail">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-warning text-white" onclick="editData(${data.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteData(${data.id})" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
                 
                 row.innerHTML = `
                     <td>${i + 1}</td>
@@ -2578,25 +2490,38 @@
         
         function handleSearch() {
             const searchTerm = document.getElementById('searchData').value.toLowerCase();
-            isFilterActive = !!searchTerm;
-            filteredData = isFilterActive ? appData.filter(d => Object.values(d).some(v => String(v).toLowerCase().includes(searchTerm))) : [];
+            const filterKecamatan = document.getElementById('filterKecamatanData').value;
+            const filterDesa = document.getElementById('filterDesaData').value;
+            
+            isFilterActive = !!searchTerm || !!filterKecamatan || !!filterDesa;
+            
+            filteredData = appData.filter(d => {
+                const matchesSearch = !searchTerm || Object.values(d).some(v => 
+                    String(v).toLowerCase().includes(searchTerm)
+                );
+                const matchesKecamatan = !filterKecamatan || d.kecamatan === filterKecamatan;
+                const matchesDesa = !filterDesa || d.desa === filterDesa;
+                
+                return matchesSearch && matchesKecamatan && matchesDesa;
+            });
+            
             currentPage = 1;
             renderDataTable();
         }
         
+        function handleDataTableFilter() {
+            handleSearch();
+        }
+        
         function clearSearch() {
             document.getElementById('searchData').value = '';
+            document.getElementById('filterKecamatanData').value = '';
+            document.getElementById('filterDesaData').value = '';
             handleSearch();
         }
         
         // --- FILTER ---
         function applyFilter() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur filter tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const filters = {
                 tahun: document.getElementById('filterTahun').value,
                 kecamatan: document.getElementById('filterKecamatan').value,
@@ -2617,12 +2542,6 @@
         }
         
         function resetFilter() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur filter tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             ['filterTahun', 'filterKecamatan', 'filterDesa', 'filterJenis'].forEach(id => document.getElementById(id).value = '');
             filteredData = [];
             renderFilterTable();
@@ -2662,12 +2581,6 @@
         
         // --- CRUD ACTIONS ---
         function editData(id) {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur edit tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const data = appData.find(item => item.id === id);
             if (!data) return;
             
@@ -2686,12 +2599,6 @@
         }
         
         function deleteData(id) {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur hapus tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             if (confirm('Konfirmasi: Anda yakin ingin menghapus data ini?')) {
                 requestHighSecurityAction(() => {
                     appData = appData.filter(item => item.id !== id);
@@ -2795,12 +2702,6 @@
         }
 
         function printToPdf() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur cetak tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const dataToPrint = getFilteredDataForExport('print');
             if (dataToPrint.length === 0) return showNotification('Tidak ada data untuk dicetak sesuai filter.', 'warning');
             
@@ -2826,12 +2727,6 @@
         }
         
         function showPreview() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur pratinjau tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const dataToPreview = getFilteredDataForExport('print');
             if (dataToPreview.length === 0) return showNotification('Tidak ada data untuk pratinjau sesuai filter.', 'warning');
 
@@ -2859,12 +2754,6 @@
         }
 
         function exportData(format) {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur ekspor tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const dataToExport = getFilteredDataForExport('export');
             if (dataToExport.length === 0) return showNotification('Tidak ada data untuk diekspor sesuai filter.', 'warning');
 
@@ -2907,6 +2796,162 @@
             document.body.removeChild(link);
         }
 
+        // --- FITUR BARU: EKSTRAK DATA UNTUK PETA STATISTIK ---
+        function generateDataPeta() {
+            const securityCode = document.getElementById('extractSecurityCode').value;
+            const errorElement = document.getElementById('extractSecurityCodeError');
+            
+            if (securityCode !== SECURITY_CONSTANTS.EXTRACT_CODE) {
+                errorElement.style.display = 'block';
+                showNotification('Kode keamanan salah.', 'error');
+                return;
+            }
+            
+            errorElement.style.display = 'none';
+            
+            if (appData.length === 0) {
+                showNotification('Tidak ada data untuk di-generate.', 'warning');
+                return;
+            }
+            
+            // Proses data untuk statistik per desa
+            const dataByDesa = {};
+            
+            appData.forEach(item => {
+                const key = `${item.desa}_${item.kecamatan}`;
+                
+                if (!dataByDesa[key]) {
+                    dataByDesa[key] = {
+                        desa: item.desa,
+                        kecamatan: item.kecamatan,
+                        jumlahPenerima: 0,
+                        jenisBantuan: {},
+                        totalBantuanUang: 0,
+                        totalBantuanBarang: 0,
+                        totalBantuanJasa: 0,
+                        detailPenerima: []
+                    };
+                }
+                
+                // Update statistik
+                dataByDesa[key].jumlahPenerima++;
+                
+                // Update jenis bantuan
+                if (!dataByDesa[key].jenisBantuan[item.jenisBantuan]) {
+                    dataByDesa[key].jenisBantuan[item.jenisBantuan] = 0;
+                }
+                dataByDesa[key].jenisBantuan[item.jenisBantuan]++;
+                
+                // Update total berdasarkan jenis
+                if (item.jenisBantuan === 'Uang') {
+                    dataByDesa[key].totalBantuanUang += parseFloat(item.jumlahBantuan) || 0;
+                } else if (item.jenisBantuan === 'Barang') {
+                    dataByDesa[key].totalBantuanBarang += parseFloat(item.jumlahBantuan) || 0;
+                } else if (item.jenisBantuan === 'Jasa') {
+                    dataByDesa[key].totalBantuanJasa += parseFloat(item.jumlahBantuan) || 0;
+                }
+                
+                // Tambah detail penerima (tanpa data sensitif)
+                dataByDesa[key].detailPenerima.push({
+                    nama: item.nama,
+                    jenisBantuan: item.jenisBantuan,
+                    namaBantuan: item.namaBantuan,
+                    jumlah: item.jumlahBantuan,
+                    satuan: item.satuanBantuan,
+                    tahun: item.tahunAnggaran
+                });
+            });
+            
+            // Konversi ke array dan format untuk peta
+            const dataPeta = {
+                metadata: {
+                    generatedAt: new Date().toISOString(),
+                    totalDesa: Object.keys(dataByDesa).length,
+                    totalPenerima: appData.length,
+                    sumber: 'Sistem Bantuan Nelayan Kab. Situbondo',
+                    versi: '2.0'
+                },
+                data: Object.values(dataByDesa).map(item => {
+                    // Format jenis bantuan untuk peta
+                    const jenisBantuanFormatted = Object.keys(item.jenisBantuan).map(jenis => ({
+                        jenis: jenis,
+                        jumlah: item.jenisBantuan[jenis]
+                    }));
+                    
+                    return {
+                        ...item,
+                        jenisBantuan: jenisBantuanFormatted,
+                        // Koordinat dummy (akan diisi manual atau dari database koordinat)
+                        koordinat: {
+                            lat: -7.7 + (Math.random() * 0.2), // Random lat di sekitar Situbondo
+                            lng: 113.9 + (Math.random() * 0.3) // Random lng di sekitar Situbondo
+                        }
+                    };
+                })
+            };
+            
+            // Simpan data untuk preview dan download
+            generatedPetaData = dataPeta;
+            
+            // Tampilkan preview
+            document.getElementById('extractPreviewSection').style.display = 'block';
+            document.getElementById('extractPreview').innerHTML = JSON.stringify(dataPeta, null, 2);
+            
+            showNotification('Data peta berhasil digenerate!', 'success');
+        }
+        
+        function downloadDataPeta() {
+            if (!generatedPetaData) {
+                showNotification('Generate data terlebih dahulu.', 'warning');
+                return;
+            }
+            
+            const timestamp = new Date().toISOString().slice(0, 10);
+            const fileContent = `// DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
+// Generated: ${new Date().toLocaleString('id-ID')}
+// Total Desa: ${generatedPetaData.metadata.totalDesa}
+// Total Penerima: ${generatedPetaData.metadata.totalPenerima}
+
+window.DATA_PETA_STATISTIK = ${JSON.stringify(generatedPetaData, null, 2)};
+
+// Fungsi untuk memuat data peta
+function loadDataPetaStatistik() {
+    if (typeof DATA_PETA_STATISTIK !== 'undefined') {
+        console.log('Data peta statistik berhasil dimuat:', DATA_PETA_STATISTIK);
+        return DATA_PETA_STATISTIK;
+    }
+    return null;
+}
+
+// Fungsi untuk mendapatkan data berdasarkan desa
+function getDataByDesa(namaDesa, kecamatan) {
+    if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return null;
+    
+    return DATA_PETA_STATISTIK.data.find(item => 
+        item.desa === namaDesa && item.kecamatan === kecamatan
+    );
+}
+
+// Fungsi untuk mendapatkan data berdasarkan kecamatan
+function getDataByKecamatan(kecamatan) {
+    if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return [];
+    
+    return DATA_PETA_STATISTIK.data.filter(item => item.kecamatan === kecamatan);
+}`;
+
+            const blob = new Blob([fileContent], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'datapeta.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('File datapeta.js berhasil didownload!', 'success');
+        }
+
         // --- BACKUP (RELOAD.JS) & RESTORE ---
         function autoBackupData() {
             if (appData.length === 0) return;
@@ -2915,12 +2960,6 @@
         }
 
         function backupData() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur backup tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             if (appData.length === 0) return showNotification('Tidak ada data untuk dibackup.', 'warning');
             
             // 1. Siapkan data JSON
@@ -2956,11 +2995,6 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
         }
         
         function handleReloadFromRepo() {
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur reload data tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             if(!confirm("Apakah Anda yakin ingin me-reload data dari repository? Data lokal akan digabungkan dengan data baru.")) return;
             const btn = document.getElementById('btn-reload-repo');
             const originalText = btn.innerHTML;
@@ -3047,12 +3081,6 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
         }
         
         function restoreData() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur restore tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const file = document.getElementById('restoreFileInput').files[0];
             if (!file || !confirm('PENTING: Restore akan menimpa semua data. Lanjutkan?')) return;
             
