@@ -493,6 +493,7 @@
         .smart-menu-container.active .smart-menu-item:nth-child(8) { transition-delay: 0.35s; }
         .smart-menu-container.active .smart-menu-item:nth-child(9) { transition-delay: 0.4s; }
         .smart-menu-container.active .smart-menu-item:nth-child(10) { transition-delay: 0.45s; }
+        .smart-menu-container.active .smart-menu-item:nth-child(11) { transition-delay: 0.5s; }
         
         .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 1050; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 45px; height: 45px; box-shadow: var(--shadow-lg); }
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; }
@@ -505,6 +506,48 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fadeIn { animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        
+        /* Data Peternakan Styling */
+        .peternakan-iframe-container {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .peternakan-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .peternakan-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .peternakan-error {
+            padding: 20px;
+            text-align: center;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .peternakan-refresh-btn {
+            margin-top: 15px;
+        }
         
         @media (max-width: 991.98px) {
             .app-container { margin: 0; border-radius: 0; }
@@ -520,6 +563,7 @@
             .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
             .smart-menu-container { bottom: 100px; right: 20px; }
             .floating-action-btn { bottom: 20px; right: 20px; }
+            .peternakan-iframe-container { height: 50vh; }
         }
 
         @media print {
@@ -787,6 +831,10 @@
                         </button>
                         <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab">
                             <i class="fas fa-cog feature-icon"></i> Pengaturan
+                        </button>
+                        <!-- MENU BARU: Data Peternakan -->
+                        <button class="nav-link" id="v-pills-peternakan-tab" data-bs-toggle="pill" data-bs-target="#v-pills-peternakan" type="button" role="tab">
+                            <i class="fas fa-cow feature-icon"></i> Data Peternakan
                         </button>
                         <button class="nav-link" id="btn-reload-repo" type="button">
                             <i class="fas fa-sync-alt feature-icon"></i> Reload Data
@@ -1320,6 +1368,84 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- TAB BARU: Data Peternakan -->
+                        <div class="tab-pane fade" id="v-pills-peternakan" role="tabpanel">
+                            <h3 class="section-title">Data Peternakan Kab. Situbondo</h3>
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-cow me-2"></i> Informasi Data Peternakan</span>
+                                    <button class="btn btn-sm btn-primary" id="refreshPeternakanBtn">
+                                        <i class="fas fa-sync-alt me-1"></i> Refresh
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info mb-4">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Menampilkan data langsung dari <strong>www.dinasperikanansitubondo.com/petadata</strong>
+                                    </div>
+                                    
+                                    <div class="peternakan-iframe-container">
+                                        <div class="peternakan-loading" id="peternakanLoading">
+                                            <div class="spinner-border text-primary mb-3" role="status">
+                                                <span class="visually-hidden">Memuat...</span>
+                                            </div>
+                                            <p class="text-muted">Memuat data peternakan...</p>
+                                        </div>
+                                        <iframe 
+                                            src="https://www.dinasperikanansitubondo.com/petadata" 
+                                            class="peternakan-iframe" 
+                                            id="peternakanIframe"
+                                            title="Data Peternakan Kabupaten Situbondo"
+                                            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
+                                            onload="document.getElementById('peternakanLoading').style.display='none';"
+                                            onerror="handlePeternakanIframeError()">
+                                        </iframe>
+                                    </div>
+                                    
+                                    <div class="peternakan-error d-none mt-3" id="peternakanError">
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <strong>Gagal memuat data peternakan!</strong>
+                                            <p class="mb-2 mt-2">Kemungkinan masalah:</p>
+                                            <ul class="mb-3">
+                                                <li>Website peternakan sedang tidak dapat diakses</li>
+                                                <li>Koneksi internet terputus</li>
+                                                <li>Blokir oleh pengaturan keamanan browser</li>
+                                            </ul>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-warning peternakan-refresh-btn" id="retryPeternakanBtn">
+                                                    <i class="fas fa-redo me-1"></i> Coba Lagi
+                                                </button>
+                                                <a href="https://www.dinasperikanansitubondo.com/petadata" target="_blank" class="btn btn-outline-primary">
+                                                    <i class="fas fa-external-link-alt me-1"></i> Buka di Tab Baru
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <h6 class="fw-bold text-primary mb-3">
+                                            <i class="fas fa-lightbulb me-2"></i> Informasi Tambahan
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="alert alert-light border">
+                                                    <h6 class="fw-bold"><i class="fas fa-database me-2 text-info"></i> Sumber Data</h6>
+                                                    <p class="small mb-0">Data diambil langsung dari sistem terpusat Dinas Peternakan dan Perikanan Kabupaten Situbondo.</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="alert alert-light border">
+                                                    <h6 class="fw-bold"><i class="fas fa-clock me-2 text-success"></i> Update Real-time</h6>
+                                                    <p class="small mb-0">Data diperbarui secara otomatis sesuai dengan update terbaru dari sumber.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1369,6 +1495,11 @@
             <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-dashboard-tab')">
                 <i class="fas fa-tachometer-alt"></i>
                 <span class="smart-menu-tooltip">Dashboard</span>
+            </a>
+            <!-- Smart Menu untuk Data Peternakan -->
+            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-peternakan-tab')">
+                <i class="fas fa-cow"></i>
+                <span class="smart-menu-tooltip">Data Peternakan</span>
             </a>
         </div>
 
@@ -1624,6 +1755,56 @@
             setupBrowserInfo();
             updateDashboard();
             applySettingsToUI();
+            
+            // Inisialisasi fitur peternakan
+            initializePeternakanFeature();
+        }
+
+        function initializePeternakanFeature() {
+            // Cek ketersediaan halaman peternakan
+            checkPeternakanAvailability();
+            
+            // Setup event listeners khusus untuk peternakan
+            document.getElementById('refreshPeternakanBtn').addEventListener('click', refreshPeternakanData);
+            document.getElementById('retryPeternakanBtn').addEventListener('click', refreshPeternakanData);
+        }
+        
+        function checkPeternakanAvailability() {
+            // Tes koneksi ke halaman peternakan
+            fetch('https://www.dinasperikanansitubondo.com/petadata', { 
+                method: 'HEAD',
+                mode: 'no-cors' // Mode no-cors untuk menghindari CORS error
+            }).then(() => {
+                // Jika berhasil, sembunyikan error
+                document.getElementById('peternakanError').classList.add('d-none');
+            }).catch(() => {
+                // Jika gagal, tampilkan error setelah 5 detik
+                setTimeout(() => {
+                    if (document.getElementById('peternakanIframe').contentWindow.location.href === 'about:blank') {
+                        handlePeternakanIframeError();
+                    }
+                }, 5000);
+            });
+        }
+        
+        function handlePeternakanIframeError() {
+            document.getElementById('peternakanLoading').style.display = 'none';
+            document.getElementById('peternakanError').classList.remove('d-none');
+            document.getElementById('peternakanIframe').style.display = 'none';
+        }
+        
+        function refreshPeternakanData() {
+            document.getElementById('peternakanError').classList.add('d-none');
+            document.getElementById('peternakanLoading').style.display = 'flex';
+            document.getElementById('peternakanIframe').style.display = 'block';
+            
+            // Reload iframe dengan timestamp untuk menghindari cache
+            const iframe = document.getElementById('peternakanIframe');
+            const currentSrc = iframe.src;
+            const separator = currentSrc.includes('?') ? '&' : '?';
+            iframe.src = currentSrc + separator + 't=' + new Date().getTime();
+            
+            showNotification('Memuat ulang data peternakan...', 'info');
         }
 
         function setupEventListeners() {
@@ -1911,7 +2092,7 @@
         }
         
         function applyGuestRestrictions() {
-            // Daftar menu yang TIDAK bisa diakses tamu (hanya dashboard yang boleh)
+            // Daftar menu yang TIDAK bisa diakses tamu (hanya dashboard dan peternakan yang boleh)
             const restrictedMenus = [
                 'v-pills-input-tab',
                 'v-pills-data-tab',
@@ -1923,7 +2104,7 @@
                 'btn-reload-repo'
             ];
             
-            // Nonaktifkan semua menu kecuali dashboard dan logout
+            // Nonaktifkan semua menu kecuali dashboard, peternakan, dan logout
             restrictedMenus.forEach(menuId => {
                 const menu = document.getElementById(menuId);
                 if (menu) {
@@ -1934,8 +2115,8 @@
                 }
             });
             
-            // Aktifkan hanya dashboard dan logout
-            const allowedMenus = ['v-pills-dashboard-tab', 'v-pills-logout-tab'];
+            // Aktifkan hanya dashboard, peternakan, dan logout
+            const allowedMenus = ['v-pills-dashboard-tab', 'v-pills-peternakan-tab', 'v-pills-logout-tab'];
             allowedMenus.forEach(menuId => {
                 const menu = document.getElementById(menuId);
                 if (menu) {
@@ -1949,11 +2130,11 @@
             // Sembunyikan FAB button untuk tamu
             document.getElementById('fabBtn').style.display = 'none';
             
-            // Nonaktifkan smart menu item untuk tamu (hanya dashboard yang aktif)
+            // Nonaktifkan smart menu item untuk tamu (hanya dashboard dan peternakan yang aktif)
             const allSmartItems = document.querySelectorAll('.smart-menu-item');
             allSmartItems.forEach(item => {
-                // Hanya izinkan item dashboard
-                if (item.onclick && item.onclick.toString().includes('v-pills-dashboard-tab')) {
+                // Hanya izinkan item dashboard dan peternakan
+                if (item.onclick && (item.onclick.toString().includes('v-pills-dashboard-tab') || item.onclick.toString().includes('v-pills-peternakan-tab'))) {
                     item.style.opacity = '1';
                     item.style.pointerEvents = 'auto';
                 } else {
