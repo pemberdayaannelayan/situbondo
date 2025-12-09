@@ -17,6 +17,7 @@
     <meta property="og:description" content="Akses mudah data KUSUKA, SIMATA, Bantuan Sarpras, dan Saluran Aspirasi Masyarakat Pesisir Situbondo.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1583212292454-1fe6229603b7?q=80&w=2074&auto=format&fit=crop">
 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Leaflet CSS untuk peta -->
@@ -24,31 +25,42 @@
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossorigin=""/>
     
+    <!-- Chart.js untuk statistik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Satisfy&display=swap" rel="stylesheet">
     
+    <!-- Font Awesome & AOS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
         :root {
             /* Palette Warna Laut Cerah & Profesional */
-            --primary: #0284c7;       /* Ocean Blue */
-            --primary-dark: #0c4a6e;  /* Deep Sea */
-            --secondary: #38bdf8;     /* Sky Blue */
-            --accent: #f59e0b;        /* Golden Sun (ORANGE) */
-            --accent-dark: #d97706;   /* Darker Orange */
-            --light-bg: #f0f9ff;      /* Very Light Blue */
+            --primary: #1a237e;
+            --primary-dark: #0c4a6e;
+            --secondary: #283593;
+            --accent: #1976d2;
+            --accent-dark: #1565c0;
+            --success-color: #06d6a0;
+            --warning-color: #ffd166;
+            --danger-color: #ff6b6b;
+            --light-bg: #f0f9ff;
             --white: #ffffff;
             
-            --text-main: #0f172a;     /* Slate 900 */
-            --text-sub: #475569;      /* Slate 600 */
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --gray-color: #666;
 
             --font-head: 'Outfit', sans-serif;
             --font-body: 'Plus Jakarta Sans', sans-serif;
-            /* Definisi Font Signatur (Hanya untuk Pemberdayaan Nelayan) */
             --font-signature: 'Satisfy', cursive;
+            
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
         }
 
         body {
@@ -88,7 +100,7 @@
 
         /* --- CSS Revisi untuk 'Situbondo Naik Kelas' (Orange) --- */
         .text-orange-gradient {
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
@@ -351,6 +363,933 @@
             display: block;
         }
 
+        /* ============================================ */
+        /* PERBAIKAN DESAIN PETA STATISTIK */
+        /* ============================================ */
+        
+        /* Header Peta - Desain Baru */
+        .peta-statistik-header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 25px 40px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 4px solid #f59e0b;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 40%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+            opacity: 0.5;
+        }
+        
+        /* Judul Peta - Warna dan Font Diperbaiki */
+        .peta-statistik-title {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            font-weight: 800;
+        }
+        
+        .peta-statistik-title i {
+            color: #f59e0b;
+            font-size: 2.5rem;
+            text-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+        }
+        
+        .peta-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            max-width: 800px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+        }
+        
+        /* Metadata - Desain Baru */
+        .metadata {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .meta-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .meta-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .meta-item i {
+            font-size: 1.1rem;
+            color: #f59e0b;
+        }
+        
+        /* Kontainer Utama Peta */
+        .peta-statistik-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid #e2e8f0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Sidebar - Warna Diperbaiki */
+        .peta-sidebar {
+            flex: 1;
+            min-width: 350px;
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 25px;
+            border-right: 1px solid #e2e8f0;
+            overflow-y: auto;
+            max-height: 800px;
+        }
+        
+        /* Tab Menu - Desain Baru */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            padding: 5px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #64748b;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+            font-size: 0.9rem;
+            flex: 1;
+            text-align: center;
+            border-radius: 8px;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+            background: rgba(25, 118, 210, 0.1);
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+            background: rgba(25, 118, 210, 0.05);
+        }
+        
+        /* Kotak Statistik - Desain Baru */
+        .stats-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            transition: var(--transition);
+        }
+        
+        .stats-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+            font-weight: 700;
+        }
+        
+        .stats-title i {
+            color: #f59e0b;
+        }
+        
+        /* Grid Statistik */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px 12px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: #e8eeff;
+            box-shadow: 0 10px 20px rgba(25, 118, 210, 0.15);
+            border-color: var(--accent);
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            font-family: var(--font-head);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-color);
+            font-weight: 600;
+        }
+        
+        /* Daftar Desa - Desain Baru */
+        .desa-list {
+            max-height: 350px;
+            overflow-y: auto;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .desa-list-header {
+            padding: 15px 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .desa-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .desa-item:hover {
+            background: #f8fafc;
+            padding-left: 25px;
+        }
+        
+        .desa-item.active {
+            background: #e8eeff;
+            border-left: 5px solid var(--accent);
+        }
+        
+        .desa-name {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .desa-details {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            display: flex;
+            gap: 12px;
+        }
+        
+        /* Container Peta - FIX UNTUK MOBILE */
+        .peta-map-container {
+            flex: 2;
+            min-width: 600px;
+            height: 700px;
+            position: relative;
+            background: #f8fafc;
+        }
+        
+        #statistikMap {
+            width: 100%;
+            height: 100%;
+            border-radius: 0 0 20px 0;
+            z-index: 1;
+        }
+        
+        /* Kontrol Peta - Desain Baru */
+        .peta-controls {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            z-index: 1000;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .control-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+        }
+        
+        .control-btn i {
+            font-size: 1.1rem;
+        }
+        
+        /* Legend Peta - Desain Baru */
+        .peta-legend {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 250px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .legend-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .legend-title i {
+            color: #f59e0b;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 3px solid white;
+            box-shadow: 0 0 8px rgba(0,0,0,0.2);
+        }
+        
+        .legend-label {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+        
+        /* Footer Peta - DESAIN BARU DENGAN FORMAT TEKS YANG LEBIH BAIK */
+        .peta-footer {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .peta-footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .peta-footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(25, 118, 210, 0.2);
+        }
+        
+        .peta-footer-logo i {
+            color: #f59e0b;
+            font-size: 1.2rem;
+        }
+        
+        /* PERBAIKAN FORMAT TEKS FOOTER - DESAIN BARU */
+        .footer-info-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(25, 118, 210, 0.1);
+            margin: 5px 0;
+            transition: var(--transition);
+        }
+        
+        .footer-info-item:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-3px);
+        }
+        
+        .footer-info-item i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+        
+        /* PERBAIKAN KHUSUS UNTUK TEKS VERSI APLIKASI */
+        .app-version {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .last-update {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Auto Update Info */
+        .auto-update-info {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+        }
+        
+        .auto-update-info i {
+            color: #f59e0b;
+        }
+        
+        /* Chart Container - WARNA DIPERBAIKI */
+        .chart-container {
+            height: 180px;
+            margin-top: 15px;
+            position: relative;
+        }
+        
+        /* Search Box */
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 14px 18px 14px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: white;
+            color: var(--text-main);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+            font-size: 1.1rem;
+        }
+        
+        /* Loading Screen */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 6px solid #f0f0f0;
+            border-top: 6px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 10000;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.3s ease-out;
+            max-width: 400px;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Detail Modal */
+        .detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .detail-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* ============================================ */
+        /* RESPONSIVE DESIGN UNTUK MOBILE */
+        /* ============================================ */
+        
+        @media (max-width: 1200px) {
+            .peta-content {
+                flex-direction: column;
+            }
+            
+            .peta-sidebar, .peta-map-container {
+                min-width: 100%;
+            }
+            
+            #statistikMap {
+                border-radius: 0;
+            }
+            
+            .peta-footer-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 25px;
+            }
+        }
+        
+        /* PERBAIKAN KHUSUS UNTUK TABLET & MOBILE */
+        @media (max-width: 991px) {
+            .peta-map-container {
+                height: 500px;
+                min-width: 100%;
+            }
+            
+            .peta-sidebar {
+                min-width: 100%;
+                max-height: 500px;
+            }
+            
+            .peta-controls {
+                flex-direction: column;
+                top: 15px;
+                right: 15px;
+                gap: 8px;
+            }
+            
+            .control-btn {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            
+            .peta-legend {
+                bottom: 15px;
+                right: 15px;
+                left: 15px;
+                max-width: none;
+            }
+            
+            .auto-update-info {
+                bottom: 15px;
+                left: 15px;
+                right: 15px;
+                justify-content: center;
+            }
+        }
+        
+        /* PERBAIKAN KHUSUS UNTUK SMARTPHONE */
+        @media (max-width: 768px) {
+            .peta-statistik-title {
+                font-size: 1.8rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .peta-statistik-title i {
+                font-size: 2rem;
+            }
+            
+            .metadata {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .meta-item {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .peta-map-container {
+                height: 400px;
+            }
+            
+            #statistikMap {
+                height: 400px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-value {
+                font-size: 1.8rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 12px;
+            }
+            
+            /* FIX UNTUK PETA YANG HILANG DI MOBILE */
+            .peta-section {
+                padding: 50px 0;
+            }
+            
+            .peta-statistik-container {
+                margin: 0 10px;
+            }
+            
+            .peta-content {
+                flex-direction: column-reverse;
+            }
+            
+            .peta-map-container {
+                order: 1;
+                min-height: 400px;
+            }
+            
+            .peta-sidebar {
+                order: 2;
+                max-height: none;
+            }
+            
+            /* Footer mobile */
+            .peta-footer {
+                padding: 20px 15px;
+            }
+            
+            .footer-info-item {
+                margin: 8px 0;
+            }
+            
+            .app-version, .last-update {
+                font-size: 0.85rem;
+                padding: 6px 12px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .peta-statistik-title {
+                font-size: 1.6rem;
+            }
+            
+            .peta-subtitle {
+                font-size: 1rem;
+            }
+            
+            .peta-map-container {
+                height: 350px;
+            }
+            
+            #statistikMap {
+                height: 350px;
+            }
+            
+            .peta-controls {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .control-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .control-btn i {
+                font-size: 1rem;
+            }
+            
+            .peta-legend {
+                padding: 15px;
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            
+            .auto-update-info {
+                padding: 10px 15px;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                font-size: 0.8rem;
+            }
+            
+            .stat-value {
+                font-size: 1.6rem;
+            }
+            
+            .stats-box {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .peta-map-container {
+                height: 300px;
+            }
+            
+            #statistikMap {
+                height: 300px;
+            }
+            
+            .peta-statistik-header {
+                padding: 20px;
+            }
+            
+            .peta-statistik-title {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* --- Form Section --- */
+        .aduan-section {
+            padding: 100px 0;
+            background-color: white; 
+            position: relative;
+        }
+
+        .form-container {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08); 
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .info-panel {
+            background: linear-gradient(160deg, var(--primary-dark) 0%, var(--primary) 100%);
+            padding: 50px;
+            color: white;
+            position: relative;
+        }
+
+        .info-panel h3 { color: white !important; }
+        .info-panel p { color: rgba(255,255,255,0.8); }
+
+        .form-panel {
+            padding: 50px;
+            background-color: white;
+        }
+
+        .form-label {
+            color: var(--text-main); 
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            background-color: #f8fafc;
+            border: 2px solid #cbd5e1;
+            color: #334155;
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .form-control:focus {
+            background-color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
+            color: #000;
+        }
+        
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        .btn-wa {
+            background-color: #25D366;
+            color: white;
+            font-weight: 700;
+            width: 100%;
+            padding: 16px;
+            border-radius: 10px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        .btn-wa:hover {
+            background-color: #1ebc57;
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+            color: white;
+        }
+
+        /* --- Peta Section --- */
+        .peta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
         /* --- Lightbox Modal Styles --- */
         .lightbox-modal .modal-dialog {
             max-width: 95%;
@@ -447,209 +1386,6 @@
             align-items: center;
         }
 
-        /* --- Form Section --- */
-        .aduan-section {
-            padding: 100px 0;
-            background-color: white; 
-            position: relative;
-        }
-
-        .form-container {
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.08); 
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-        }
-
-        .info-panel {
-            background: linear-gradient(160deg, var(--primary-dark) 0%, var(--primary) 100%);
-            padding: 50px;
-            color: white;
-            position: relative;
-        }
-
-        .info-panel h3 { color: white !important; }
-        .info-panel p { color: rgba(255,255,255,0.8); }
-
-        .form-panel {
-            padding: 50px;
-            background-color: white;
-        }
-
-        .form-label {
-            color: var(--text-main); 
-            font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
-
-        .form-control {
-            background-color: #f8fafc;
-            border: 2px solid #cbd5e1;
-            color: #334155;
-            padding: 12px 15px;
-            border-radius: 10px;
-            font-weight: 500;
-        }
-
-        .form-control:focus {
-            background-color: white;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
-            color: #000;
-        }
-        
-        .form-control::placeholder {
-            color: #94a3b8;
-        }
-
-        .btn-wa {
-            background-color: #25D366;
-            color: white;
-            font-weight: 700;
-            width: 100%;
-            padding: 16px;
-            border-radius: 10px;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1.1rem;
-            transition: 0.3s;
-        }
-        .btn-wa:hover {
-            background-color: #1ebc57;
-            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
-            color: white;
-        }
-
-        /* --- Peta Section --- */
-        .peta-section {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        }
-
-        #peta {
-            height: 600px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(2, 132, 199, 0.15);
-            border: 3px solid white;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .peta-legend {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            margin-top: 30px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 10px;
-            background: #f8fafc;
-            transition: all 0.3s ease;
-        }
-
-        .legend-item:hover {
-            background: #e0f2fe;
-            transform: translateX(5px);
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 15px;
-            border: 2px solid white;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-        }
-
-        .peta-controls {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            margin-top: 30px;
-        }
-
-        .peta-control-btn {
-            width: 100%;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 12px;
-            border-radius: 10px;
-            border: 2px solid var(--primary);
-            background: white;
-            color: var(--primary);
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .peta-control-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .peta-control-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Popup Peta Styling */
-        .leaflet-popup-content {
-            font-family: var(--font-body);
-            min-width: 250px;
-        }
-
-        .popup-title {
-            color: var(--primary-dark);
-            font-weight: 800;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 8px;
-        }
-
-        .popup-data-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .popup-data-label {
-            color: var(--text-sub);
-            font-weight: 600;
-        }
-
-        .popup-data-value {
-            color: var(--primary-dark);
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .popup-total {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-            text-align: center;
-            font-weight: 800;
-        }
-
         /* --- Footer --- */
         footer {
             background-color: var(--primary-dark);
@@ -690,7 +1426,7 @@
             bottom: -8px;
             width: 40px;
             height: 3px;
-            background-color: var(--accent);
+            background-color: #f59e0b;
             border-radius: 2px;
         }
 
@@ -776,9 +1512,6 @@
             .info-panel-logo {
                 width: 150px;
             }
-            #peta {
-                height: 450px;
-            }
         }
 
         @media (max-width: 768px) {
@@ -801,9 +1534,6 @@
             }
             .info-panel-logo {
                 width: 120px;
-            }
-            #peta {
-                height: 400px;
             }
         }
 
@@ -855,9 +1585,6 @@
                 width: 100px;
                 margin-bottom: 20px;
             }
-            #peta {
-                height: 350px;
-            }
         }
 
         @media (max-width: 400px) {
@@ -871,13 +1598,19 @@
             .info-panel-logo {
                 width: 80px;
             }
-            #peta {
-                height: 300px;
-            }
         }
     </style>
 </head>
 <body>
+
+    <!-- Loading Screen -->
+    <div class="loading hidden" id="loadingScreen">
+        <div class="spinner"></div>
+        <h2 style="color: var(--primary); margin-bottom: 10px;">Memuat Peta Statistik</h2>
+        <p style="color: var(--gray-color); max-width: 400px; text-align: center;">
+            Sedang memuat data statistik nelayan Kabupaten Situbondo...
+        </p>
+    </div>
 
     <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
         <div class="container">
@@ -895,7 +1628,7 @@
                 <ul class="navbar-nav align-items-center gap-2">
                     <li class="nav-item"><a class="nav-link" href="https://www.dinasperikanansitubondo.com">Beranda</a></li>
                     <li class="nav-item ms-lg-3">
-                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-cta">Hubungi Kami</a>
+                        <a href="#aduan" class="btn btn-cta">Hubungi Kami</a>
                     </li>
                 </ul>
             </div>
@@ -920,7 +1653,7 @@
                     </h1>
                     
                     <p class="lead mb-5" style="color: var(--text-sub); font-weight: 500;">
-                        Program kegiatan Bidang Bina Permberdayaan Nelayan yg merujuk pada rantai nilai perikanan, mulai dari kegiatan penangkapan ikan di laut (hulu) hingga proses pengolahan, distribusi, pemasaran, hingga akhirnya sampai ke konsumen (hilir), yang tujuannya meningkatkan kesejahteraan nelayan melalui data basis  nelayan yang terintegrasi, pemberdayaan, dan dukungan infrastruktur agar nelayan tidak tertinggal dan memiliki perlindungan sosial.
+                        Program kegiatan Bidang Bina Pemberdayaan Nelayan yg merujuk pada rantai nilai perikanan, mulai dari kegiatan penangkapan ikan di laut (hulu) hingga proses pengolahan, distribusi, pemasaran, hingga akhirnya sampai ke konsumen (hilir), yang tujuannya meningkatkan kesejahteraan nelayan melalui data basis  nelayan yang terintegrasi, pemberdayaan, dan dukungan infrastruktur agar nelayan tidak tertinggal dan memiliki perlindungan sosial.
                     </p>
                     <div class="d-flex gap-3">
                         <a href="#layanan" class="btn btn-cta px-4 py-3 shadow btn-pulse-primary">Layanan Kami</a>
@@ -936,7 +1669,7 @@
             <div class="text-center mb-5 section-header" data-aos="fade-up">
                 <span class="text-primary fw-bold text-uppercase letter-spacing-2">Menu Layanan</span>
                 <h2 class="display-6 mt-2">Akses Program Nelayan</h2>
-                <div style="width: 80px; height: 4px; background: var(--accent); margin: 15px auto; border-radius: 2px;"></div>
+                <div style="width: 80px; height: 4px; background: #f59e0b; margin: 15px auto; border-radius: 2px;"></div>
                 <p class="text-muted col-lg-6 mx-auto">Pilih menu di bawah ini untuk mengakses layanan digital dan program bantuan pemerintah.</p>
             </div>
 
@@ -951,7 +1684,7 @@
                 </div>
 
                 <div class="col-xl-4 col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="150">
-                    <a href="https://www.dinasperikanansitubondo.com/simata" target="_blank" class="service-card">
+                    <a href="#statistik" class="service-card">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logoku.png" alt="Logo SIMATA" class="menu-logo">
                         <h4 class="fw-bold mb-3">SIMATA</h4>
                         <p class="text-muted">Sistem Manajemen & Pemetaan Data. Monitoring data nelayan dan potensi tangkapan dalam satu peta.</p>
@@ -1085,55 +1818,162 @@
         </div>
     </section>
 
-    <!-- Peta Section -->
-    <section id="peta-section" class="peta-section">
+    <!-- Peta Statistik Section -->
+    <section id="statistik" class="peta-section">
         <div class="container">
             <div class="text-center mb-5 section-header" data-aos="fade-up">
                 <span class="text-primary fw-bold text-uppercase letter-spacing-2">Data Statistik</span>
-                <h2 class="display-6 mt-2">Peta Sebaran Nelayan Situbondo</h2>
-                <div style="width: 80px; height: 4px; background: var(--accent); margin: 15px auto; border-radius: 2px;"></div>
-                <p class="text-muted col-lg-6 mx-auto">Visualisasi data nelayan dan penerima bantuan per kecamatan di Kabupaten Situbondo.</p>
+                <h2 class="display-6 mt-2">Peta Statistik Nelayan Kab. Situbondo</h2>
+                <div style="width: 80px; height: 4px; background: #f59e0b; margin: 15px auto; border-radius: 2px;"></div>
+                <p class="text-muted col-lg-6 mx-auto">Visualisasi Data Bantuan Nelayan Berbasis Peta Digital - Sistem Pemantauan Terintegrasi</p>
             </div>
 
-            <div class="row">
-                <div class="col-lg-8" data-aos="fade-right">
-                    <div id="peta"></div>
-                </div>
-                <div class="col-lg-4" data-aos="fade-left">
-                    <div class="peta-controls">
-                        <h5 class="fw-bold mb-4">Kontrol Layer Peta</h5>
-                        <button class="peta-control-btn active" onclick="showAllData()">
-                            <i class="fas fa-layer-group"></i> Tampilkan Semua Data
-                        </button>
-                        <button class="peta-control-btn" onclick="filterByPenerima()">
-                            <i class="fas fa-users"></i> Filter Penerima Bantuan
-                        </button>
-                        <button class="peta-control-btn" onclick="resetMap()">
-                            <i class="fas fa-sync-alt"></i> Reset Peta
-                        </button>
+            <div class="peta-statistik-container">
+                <div class="peta-statistik-header">
+                    <div class="header-bg"></div>
+                    <div class="header-content">
+                        <h1 class="peta-statistik-title"><i class="fas fa-map-marked-alt"></i> Peta Statistik Nelayan Kab. Situbondo</h1>
+                        <div class="peta-subtitle">Visualisasi Data Bantuan Nelayan Berbasis Peta Digital - Sistem Pemantauan Terintegrasi</div>
+                        <div class="metadata">
+                            <div class="meta-item"><i class="fas fa-calendar-alt"></i> Terakhir Update: <span id="lastUpdate">9 Desember 2025</span></div>
+                            <div class="meta-item"><i class="fas fa-village"></i> Total Desa: <span id="totalDesa">27</span></div>
+                            <div class="meta-item"><i class="fas fa-users"></i> Total Penerima: <span id="totalPenerima">393</span></div>
+                            <div class="meta-item"><i class="fas fa-box"></i> Total Bantuan: <span id="totalBantuan">424</span> Unit</div>
+                            <div class="meta-item"><i class="fas fa-sync-alt"></i> Auto-update: <span id="autoReloadStatus">Aktif</span></div>
+                        </div>
                     </div>
-
-                    <div class="peta-legend">
-                        <h5 class="fw-bold mb-4">Legenda Data</h5>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #0284c7;"></div>
-                            <div>
-                                <strong>Kecamatan Pesisir</strong>
-                                <small class="d-block text-muted">Wilayah dengan aktivitas perikanan utama</small>
+                </div>
+                
+                <div class="peta-content">
+                    <div class="peta-sidebar">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="stats">Statistik</div>
+                            <div class="tab" data-tab="desa">Daftar Desa</div>
+                            <div class="tab" data-tab="charts">Grafik</div>
+                        </div>
+                        
+                        <div class="tab-content active" id="stats-tab">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" id="searchDesa" placeholder="Cari desa atau kecamatan...">
+                            </div>
+                            
+                            <div class="stats-box">
+                                <div class="stats-title"><i class="fas fa-chart-bar"></i> Ringkasan Statistik</div>
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="summaryDesa">27</div>
+                                        <div class="stat-label">Desa Terdata</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="summaryPenerima">393</div>
+                                        <div class="stat-label">Penerima Bantuan</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="summaryBarang">424</div>
+                                        <div class="stat-label">Bantuan Barang</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="summaryUang">0</div>
+                                        <div class="stat-label">Bantuan Uang</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="stats-box">
+                                <div class="stats-title"><i class="fas fa-star"></i> Top 5 Desa Penerima</div>
+                                <div id="topDesaList">
+                                    <!-- Akan diisi oleh JavaScript -->
+                                </div>
                             </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #f59e0b;"></div>
-                            <div>
-                                <strong>Penerima Bantuan</strong>
-                                <small class="d-block text-muted">Nelayan penerima bantuan sarpras</small>
+                        
+                        <div class="tab-content" id="desa-tab">
+                            <div class="stats-box">
+                                <div class="stats-title"><i class="fas fa-list"></i> Daftar Desa/Kelurahan</div>
+                                <div class="desa-list-header">
+                                    <span>Nama Desa</span>
+                                    <span>Penerima</span>
+                                </div>
+                                <div class="desa-list" id="desaList">
+                                    <!-- Akan diisi oleh JavaScript -->
+                                </div>
                             </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #10b981;"></div>
-                            <div>
-                                <strong>Pemilik Usaha Perikanan</strong>
-                                <small class="d-block text-muted">Pemilik usaha perikanan terdaftar</small>
+                        
+                        <div class="tab-content" id="charts-tab">
+                            <div class="stats-box">
+                                <div class="stats-title"><i class="fas fa-chart-pie"></i> Distribusi Bantuan</div>
+                                <div class="chart-container">
+                                    <canvas id="bantuanChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="stats-box">
+                                <div class="stats-title"><i class="fas fa-chart-line"></i> Tren Tahun Distribusi</div>
+                                <div class="chart-container">
+                                    <canvas id="tahunChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="peta-map-container">
+                        <div id="statistikMap"></div>
+                        
+                        <div class="peta-controls">
+                            <button class="control-btn" id="reloadBtn">
+                                <i class="fas fa-sync-alt"></i> Update Data
+                            </button>
+                            <button class="control-btn" id="resetViewBtn">
+                                <i class="fas fa-globe-asia"></i> Reset Peta
+                            </button>
+                            <button class="control-btn" id="fullscreenBtn">
+                                <i class="fas fa-expand"></i> Layar Penuh
+                            </button>
+                        </div>
+                        
+                        <div class="peta-legend">
+                            <div class="legend-title"><i class="fas fa-map-pin"></i> Kepadatan Penerima</div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--danger-color);"></div>
+                                <div class="legend-label">Tinggi (≥ 50 penerima)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--warning-color);"></div>
+                                <div class="legend-label">Sedang (20-49 penerima)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--success-color);"></div>
+                                <div class="legend-label">Rendah (≤ 19 penerima)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="auto-update-info">
+                            <i class="fas fa-sync-alt"></i> Data diperbarui setiap <span id="reloadInterval">120</span> detik
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="peta-footer">
+                    <div class="peta-footer-content">
+                        <div class="peta-footer-logo">
+                            <i class="fas fa-fish"></i>
+                            <span>Sistem Bantuan Nelayan Kab. Situbondo</span>
+                        </div>
+                        <div>
+                            <div class="footer-info-item">
+                                <i class="fas fa-database"></i> Sumber Data: Dinas Peternakan dan Perikanan Kab. Situbondo
+                            </div>
+                            <div class="footer-info-item">
+                                <i class="fas fa-code"></i> 
+                                <span class="app-version">Aplikasi Peta Statistik v3.0</span> | 
+                                Data terakhir: <span class="last-update" id="footerUpdate">9 Desember 2025 pukul 18.54</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="footer-info-item">
+                                <i class="fas fa-clock"></i> Auto-update: <span id="footerReloadStatus" style="color: #06d6a0; font-weight: bold;">Aktif</span>
                             </div>
                         </div>
                     </div>
@@ -1249,11 +2089,11 @@
                 <div class="col-lg-3 col-md-6">
                     <h5>Tautan Cepat</h5>
                     <ul class="list-unstyled footer-links mt-3">
-                        <li><a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-chevron-right fa-xs"></i> Beranda</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com#layanan"><i class="fas fa-chevron-right fa-xs"></i> Layanan Kami</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com/simata" target="_blank"><i class="fas fa-chevron-right fa-xs"></i> SIMATA</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com/kegiatan/"><i class="fas fa-chevron-right fa-xs"></i> Dokumentasi Kegiatan</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com/peraturankkp"><i class="fas fa-chevron-right fa-xs"></i> Peraturan KKP</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right fa-xs"></i> Beranda</a></li>
+                        <li><a href="#layanan"><i class="fas fa-chevron-right fa-xs"></i> Layanan Kami</a></li>
+                        <li><a href="#statistik"><i class="fas fa-chevron-right fa-xs"></i> SIMATA</a></li>
+                        <li><a href="https://www.dinasperikanansitubondo.com/kegiatan/" target="_blank"><i class="fas fa-chevron-right fa-xs"></i> Dokumentasi Kegiatan</a></li>
+                        <li><a href="https://www.dinasperikanansitubondo.com/peraturankkp" target="_blank"><i class="fas fa-chevron-right fa-xs"></i> Peraturan KKP</a></li>
                         <li><a href="https://situbondokab.go.id/" target="_blank"><i class="fas fa-chevron-right fa-xs"></i> Pemkab Situbondo</a></li>
                     </ul>
                 </div>
@@ -1300,6 +2140,21 @@
             </div>
         </div>
     </footer>
+
+    <!-- Detail Modal untuk Peta Statistik -->
+    <div class="detail-modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Detail Desa</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
 
     <!-- Lightbox Modal -->
     <div class="modal fade lightbox-modal" id="lightboxModal" tabindex="-1" aria-labelledby="lightboxModalLabel" aria-hidden="true">
@@ -1349,6 +2204,872 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
     <script>
+        // ============================================
+        // SISTEM PETA STATISTIK NELAYAN
+        // ============================================
+        
+        // Inisialisasi variabel global untuk peta statistik
+        let statistikMap;
+        let statistikMarkers = [];
+        let statistikMarkerLayerGroup;
+        let dataDesa = [];
+        let autoReloadInterval;
+        let updateCount = 0;
+        let bantuanChart = null;
+        let tahunChart = null;
+        let isFullscreen = false;
+        
+        // Konfigurasi aplikasi
+        const APP_CONFIG = {
+            autoReload: true,
+            reloadInterval: 120000, // 120 detik (2 menit)
+            showNotifications: true,
+            defaultMapZoom: 10,
+            situbondoCenter: [-7.7069, 113.6347],
+            maxMarkers: 100
+        };
+        
+        // Fungsi untuk menginisialisasi peta statistik
+        function initStatistikMap() {
+            // Inisialisasi peta
+            statistikMap = L.map('statistikMap').setView(APP_CONFIG.situbondoCenter, APP_CONFIG.defaultMapZoom);
+            
+            // Tambahkan tile layer (peta dasar)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 18,
+                minZoom: 8
+            }).addTo(statistikMap);
+            
+            // Tambahkan layer group untuk marker
+            statistikMarkerLayerGroup = L.layerGroup().addTo(statistikMap);
+            
+            // Tambahkan kontrol skala
+            L.control.scale({position: 'bottomleft'}).addTo(statistikMap);
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Load data pertama kali
+            loadData();
+            
+            // Setup auto-update jika diaktifkan
+            if (APP_CONFIG.autoReload) {
+                setupAutoUpdate();
+            }
+        }
+        
+        // Fungsi untuk setup event listeners peta statistik
+        function setupEventListeners() {
+            // Tombol update
+            document.getElementById('reloadBtn').addEventListener('click', updateData);
+            
+            // Tombol reset view
+            document.getElementById('resetViewBtn').addEventListener('click', resetView);
+            
+            // Tombol fullscreen
+            document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+            
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Hapus class active dari semua tab
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Tambah class active ke tab yang diklik
+                    this.classList.add('active');
+                    
+                    // Tampilkan konten tab yang sesuai
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Pencarian desa
+            document.getElementById('searchDesa').addEventListener('input', function(e) {
+                filterDesaList(e.target.value);
+            });
+            
+            // Modal close
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            
+            // Close modal dengan klik di luar
+            document.getElementById('detailModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // Close modal dengan ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+            
+            // Fullscreen change event
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+        }
+        
+        // Fungsi untuk setup auto-update
+        function setupAutoUpdate() {
+            // Update UI untuk menunjukkan auto-update aktif
+            document.getElementById('autoReloadStatus').textContent = 'Aktif';
+            document.getElementById('footerReloadStatus').textContent = 'Aktif';
+            document.getElementById('reloadInterval').textContent = APP_CONFIG.reloadInterval / 1000;
+            
+            // Setup interval untuk auto-update
+            autoReloadInterval = setInterval(() => {
+                updateData();
+                updateCount++;
+                
+                // Tampilkan notifikasi setiap 5 update
+                if (updateCount % 5 === 0 && APP_CONFIG.showNotifications) {
+                    showNotification(`Data telah diperbarui ${updateCount} kali`, 'info');
+                }
+            }, APP_CONFIG.reloadInterval);
+            
+            // Tampilkan notifikasi
+            if (APP_CONFIG.showNotifications) {
+                showNotification('Auto-update diaktifkan. Data akan diperbarui setiap 120 detik.', 'info');
+            }
+        }
+        
+        // Fungsi untuk memuat data dari datapeta.js
+        function loadData() {
+            // Tampilkan loading
+            showLoading(true);
+            
+            // Cek apakah data sudah tersedia di window object
+            if (window.DATA_PETA_STATISTIK) {
+                processData(window.DATA_PETA_STATISTIK);
+                showLoading(false);
+                return;
+            }
+            
+            // Jika data belum tersedia, load dari file
+            loadDataFile();
+        }
+        
+        // Fungsi untuk load data file dengan timestamp untuk menghindari cache
+        function loadDataFile() {
+            const timestamp = new Date().getTime();
+            const script = document.createElement('script');
+            script.src = `datapeta.js?t=${timestamp}`;
+            script.onload = function() {
+                if (window.DATA_PETA_STATISTIK) {
+                    processData(window.DATA_PETA_STATISTIK);
+                } else {
+                    console.error('Data tidak ditemukan setelah memuat file.');
+                    showNotification('Gagal memuat data. Format file mungkin tidak sesuai.', 'error');
+                }
+                showLoading(false);
+            };
+            script.onerror = function() {
+                console.error('Gagal memuat file datapeta.js');
+                showNotification('Gagal memuat file data. Periksa koneksi atau keberadaan file.', 'error');
+                showLoading(false);
+                
+                // Coba lagi setelah 5 detik
+                setTimeout(loadDataFile, 5000);
+            };
+            
+            document.head.appendChild(script);
+        }
+        
+        // Fungsi untuk memproses data yang telah dimuat
+        function processData(data) {
+            dataDesa = data.data || [];
+            
+            // Update informasi metadata
+            document.getElementById('lastUpdate').textContent = data.metadata.lastUpdate;
+            document.getElementById('totalDesa').textContent = data.metadata.totalDesa;
+            document.getElementById('totalPenerima').textContent = data.metadata.totalPenerima;
+            document.getElementById('totalBantuan').textContent = data.summary.totalBantuanBarang;
+            document.getElementById('footerUpdate').textContent = data.metadata.lastUpdate;
+            
+            // Update ringkasan statistik
+            document.getElementById('summaryDesa').textContent = data.metadata.totalDesa;
+            document.getElementById('summaryPenerima').textContent = data.metadata.totalPenerima;
+            document.getElementById('summaryBarang').textContent = data.summary.totalBantuanBarang;
+            document.getElementById('summaryUang').textContent = data.summary.totalBantuanUang;
+            
+            // Tampilkan desa terbanyak penerima
+            displayTopDesa(dataDesa);
+            
+            // Tampilkan daftar desa
+            displayDesaList(dataDesa);
+            
+            // Tampilkan marker di peta
+            displayMapMarkers(dataDesa);
+            
+            // Update charts
+            updateCharts(dataDesa);
+            
+            // Tampilkan notifikasi sukses
+            if (APP_CONFIG.showNotifications) {
+                showNotification('Data berhasil dimuat', 'success');
+            }
+        }
+        
+        // Fungsi untuk menampilkan top 5 desa dengan penerima terbanyak
+        function displayTopDesa(desaData) {
+            const topDesaList = document.getElementById('topDesaList');
+            topDesaList.innerHTML = '';
+            
+            // Urutkan berdasarkan jumlah penerima (descending) dan ambil 5 teratas
+            const sortedDesa = [...desaData]
+                .sort((a, b) => b.jumlahPenerima - a.jumlahPenerima)
+                .slice(0, 5);
+            
+            if (sortedDesa.length === 0) {
+                topDesaList.innerHTML = '<p style="text-align: center; color: var(--gray-color); padding: 20px;">Data tidak tersedia</p>';
+                return;
+            }
+            
+            sortedDesa.forEach((desa, index) => {
+                const desaItem = document.createElement('div');
+                desaItem.className = 'desa-item';
+                if (index === 0) desaItem.classList.add('pulse');
+                
+                // Tentukan ranking badge
+                let rankBadge = '';
+                if (index === 0) rankBadge = '<span style="background: gold; color: #333; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; margin-right: 8px;"><i class="fas fa-crown"></i> 1</span>';
+                else if (index === 1) rankBadge = '<span style="background: silver; color: #333; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; margin-right: 8px;">2</span>';
+                else if (index === 2) rankBadge = '<span style="background: #cd7f32; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; margin-right: 8px;">3</span>';
+                else rankBadge = `<span style="background: var(--primary); color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; margin-right: 8px;">${index + 1}</span>`;
+                
+                desaItem.innerHTML = `
+                    <div>
+                        <div class="desa-name">${rankBadge} ${desa.desa}, ${desa.kecamatan}</div>
+                        <div class="desa-details">
+                            <span><i class="fas fa-users"></i> ${desa.jumlahPenerima} Penerima</span>
+                            <span><i class="fas fa-box"></i> ${desa.totalBantuanBarang} Unit</span>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="control-btn" style="padding: 8px 12px; font-size: 0.9rem;" data-id="${desa.id}">
+                            <i class="fas fa-info-circle"></i> Detail
+                        </button>
+                    </div>
+                `;
+                
+                // Tambahkan event click untuk zoom ke desa tersebut
+                desaItem.addEventListener('click', function(e) {
+                    if (!e.target.closest('button')) {
+                        zoomToDesa(desa.id);
+                    }
+                });
+                
+                // Tambahkan event click untuk button detail
+                const detailBtn = desaItem.querySelector('button');
+                detailBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showDesaDetail(desa.id);
+                });
+                
+                topDesaList.appendChild(desaItem);
+            });
+        }
+        
+        // Fungsi untuk menampilkan daftar desa
+        function displayDesaList(desaData) {
+            const desaList = document.getElementById('desaList');
+            desaList.innerHTML = '';
+            
+            // Urutkan berdasarkan jumlah penerima (descending)
+            const sortedDesa = [...desaData].sort((a, b) => b.jumlahPenerima - a.jumlahPenerima);
+            
+            sortedDesa.forEach(desa => {
+                const desaItem = document.createElement('div');
+                desaItem.className = 'desa-item';
+                desaItem.dataset.id = desa.id;
+                
+                desaItem.innerHTML = `
+                    <div>
+                        <div class="desa-name">${desa.desa}, ${desa.kecamatan}</div>
+                        <div class="desa-details">
+                            <span><i class="fas fa-calendar"></i> ${desa.tahunDistribusi.map(t => t.tahun).join(', ')}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span style="background: ${getColorByPenerima(desa.jumlahPenerima)}; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold;">
+                            ${desa.jumlahPenerima}
+                        </span>
+                    </div>
+                `;
+                
+                // Tambahkan event click
+                desaItem.addEventListener('click', function() {
+                    zoomToDesa(desa.id);
+                });
+                
+                desaList.appendChild(desaItem);
+            });
+        }
+        
+        // Fungsi untuk filter daftar desa berdasarkan pencarian
+        function filterDesaList(query) {
+            const desaItems = document.querySelectorAll('#desaList .desa-item');
+            const lowerQuery = query.toLowerCase();
+            
+            desaItems.forEach(item => {
+                const desaName = item.querySelector('.desa-name').textContent.toLowerCase();
+                if (desaName.includes(lowerQuery) || query === '') {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Fungsi untuk menampilkan marker di peta
+        function displayMapMarkers(desaData) {
+            // Hapus marker lama
+            statistikMarkerLayerGroup.clearLayers();
+            statistikMarkers = [];
+            
+            // Batasi jumlah marker jika terlalu banyak
+            const displayData = desaData.slice(0, APP_CONFIG.maxMarkers);
+            
+            displayData.forEach(desa => {
+                if (!desa.koordinat || !desa.koordinat.lat || !desa.koordinat.lng) {
+                    console.warn(`Koordinat tidak valid untuk desa ${desa.desa}`);
+                    return;
+                }
+                
+                // Tentukan warna marker berdasarkan jumlah penerima
+                const markerColor = getColorByPenerima(desa.jumlahPenerima);
+                
+                // Buat custom icon untuk marker - DESAIN BARU DENGAN WARNA YANG LEBIH BAIK
+                const markerIcon = L.divIcon({
+                    html: `<div style="
+                        background: ${markerColor};
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                        border: 3px solid white;
+                        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: bold;
+                        font-size: 12px;
+                        cursor: pointer;
+                        font-family: var(--font-head);
+                        transition: all 0.3s ease;
+                    ">${desa.jumlahPenerima}</div>`,
+                    className: 'custom-marker',
+                    iconSize: [35, 35],
+                    iconAnchor: [17.5, 17.5]
+                });
+                
+                // Buat marker
+                const marker = L.marker([desa.koordinat.lat, desa.koordinat.lng], {
+                    icon: markerIcon,
+                    title: `${desa.desa}, ${desa.kecamatan} - ${desa.jumlahPenerima} penerima`
+                });
+                
+                // Tambahkan popup dengan informasi desa
+                const popupContent = createPopupContent(desa);
+                marker.bindPopup(popupContent);
+                
+                // Tambahkan event click untuk highlight
+                marker.on('click', function() {
+                    highlightDesa(desa.id);
+                });
+                
+                // Tambahkan ke layer group
+                marker.addTo(statistikMarkerLayerGroup);
+                
+                // Simpan reference
+                statistikMarkers.push({
+                    id: desa.id,
+                    marker: marker,
+                    desa: desa
+                });
+            });
+            
+            // Jika ada data, fit bounds ke semua marker
+            if (statistikMarkers.length > 0) {
+                const markerBounds = L.latLngBounds(statistikMarkers.map(m => [m.marker.getLatLng().lat, m.marker.getLatLng().lng]));
+                statistikMap.fitBounds(markerBounds, { padding: [100, 100], maxZoom: 12 });
+            }
+        }
+        
+        // Fungsi untuk membuat konten popup
+        function createPopupContent(desa) {
+            return `
+                <div style="max-width: 300px;">
+                    <h3 style="margin: 0 0 10px 0; color: var(--primary); font-family: var(--font-head);">${desa.desa}, ${desa.kecamatan}</h3>
+                    <p><strong><i class="fas fa-users" style="color: var(--accent);"></i> Jumlah Penerima:</strong> ${desa.jumlahPenerima} orang</p>
+                    <p><strong><i class="fas fa-box" style="color: #f59e0b;"></i> Total Bantuan Barang:</strong> ${desa.totalBantuanBarang} unit</p>
+                    <p><strong><i class="fas fa-calendar" style="color: var(--success-color);"></i> Tahun Distribusi:</strong> ${desa.tahunDistribusi.map(t => t.tahun).join(', ')}</p>
+                    <hr style="margin: 15px 0;">
+                    <div style="text-align: center;">
+                        <button onclick="showDesaDetail('${desa.id}')" style="
+                            background: linear-gradient(135deg, var(--accent), var(--primary));
+                            color: white;
+                            border: none;
+                            padding: 10px 18px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: bold;
+                            width: 100%;
+                            font-family: var(--font-head);
+                            transition: all 0.3s ease;
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(25, 118, 210, 0.3)'" 
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <i class="fas fa-info-circle"></i> Lihat Detail Lengkap
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Fungsi untuk mendapatkan warna berdasarkan jumlah penerima
+        function getColorByPenerima(jumlah) {
+            if (jumlah >= 50) return 'var(--danger-color)';
+            if (jumlah >= 20) return 'var(--warning-color)';
+            return 'var(--success-color)';
+        }
+        
+        // Fungsi untuk zoom ke desa tertentu
+        function zoomToDesa(desaId) {
+            const selectedMarker = statistikMarkers.find(m => m.id === desaId);
+            if (selectedMarker) {
+                statistikMap.setView(selectedMarker.marker.getLatLng(), 13);
+                selectedMarker.marker.openPopup();
+                highlightDesa(desaId);
+            }
+        }
+        
+        // Fungsi untuk highlight desa
+        function highlightDesa(desaId) {
+            // Reset semua marker
+            statistikMarkers.forEach(m => {
+                const markerEl = m.marker.getElement();
+                if (markerEl) {
+                    markerEl.style.transform = 'scale(1)';
+                    markerEl.style.zIndex = '1';
+                }
+            });
+            
+            // Highlight marker yang dipilih
+            const selectedMarker = statistikMarkers.find(m => m.id === desaId);
+            if (selectedMarker) {
+                const markerEl = selectedMarker.marker.getElement();
+                if (markerEl) {
+                    markerEl.style.transform = 'scale(1.4)';
+                    markerEl.style.zIndex = '1000';
+                    markerEl.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+                    markerEl.classList.add('pulse');
+                    
+                    // Hentikan animasi setelah 2 detik
+                    setTimeout(() => {
+                        markerEl.classList.remove('pulse');
+                    }, 2000);
+                }
+                
+                // Highlight item di daftar desa
+                highlightDesaListItem(desaId);
+            }
+        }
+        
+        // Fungsi untuk highlight item di daftar desa
+        function highlightDesaListItem(desaId) {
+            // Hapus class active dari semua item
+            const desaItems = document.querySelectorAll('.desa-item');
+            desaItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Tambahkan class active ke item yang dipilih
+            const selectedItem = document.querySelector(`.desa-item[data-id="${desaId}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('active');
+                
+                // Scroll ke item yang dipilih
+                selectedItem.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        }
+        
+        // Fungsi untuk menampilkan detail desa di modal
+        function showDesaDetail(desaId) {
+            const desaData = dataDesa.find(d => d.id === desaId);
+            if (!desaData) return;
+            
+            document.getElementById('modalTitle').textContent = `${desaData.desa}, ${desaData.kecamatan}`;
+            
+            // Buat konten modal
+            let modalHtml = `
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-item-title">Jumlah Penerima</div>
+                        <div class="detail-item-value">${desaData.jumlahPenerima} orang</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item-title">Total Bantuan Barang</div>
+                        <div class="detail-item-value">${desaData.totalBantuanBarang} unit</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item-title">Jenis Bantuan</div>
+                        <div class="detail-item-value">${desaData.jenisBantuan.map(b => b.jenis).join(', ')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item-title">Rata-rata Bantuan</div>
+                        <div class="detail-item-value">${desaData.rataBantuan.toFixed(2)} unit/orang</div>
+                    </div>
+                </div>
+                
+                <h4 style="margin: 25px 0 15px 0; color: var(--primary);"><i class="fas fa-calendar"></i> Tahun Distribusi</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
+            `;
+            
+            desaData.tahunDistribusi.forEach(tahun => {
+                modalHtml += `<span style="background: #e8eeff; padding: 8px 15px; border-radius: 20px; color: var(--primary); font-weight: bold;">${tahun.tahun}</span>`;
+            });
+            
+            modalHtml += `
+                </div>
+                
+                <h4 style="margin: 25px 0 15px 0; color: var(--primary);"><i class="fas fa-users"></i> Kelompok Distribusi</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
+            `;
+            
+            desaData.kelompokDistribusi.forEach(kelompok => {
+                modalHtml += `<span style="background: #f0f7ff; padding: 8px 15px; border-radius: 20px; color: var(--accent); font-weight: bold;">${kelompok.kelompok} (${kelompok.jumlah})</span>`;
+            });
+            
+            modalHtml += `
+                </div>
+                
+                <h4 style="margin: 25px 0 15px 0; color: var(--primary);"><i class="fas fa-map-marker-alt"></i> Koordinat</h4>
+                <p>Latitude: ${desaData.koordinat.lat}, Longitude: ${desaData.koordinat.lng}</p>
+                
+                <div style="margin-top: 30px; text-align: center;">
+                    <button onclick="zoomToDesa('${desaId}'); closeModal();" style="
+                        background: linear-gradient(135deg, var(--accent), var(--primary));
+                        color: white;
+                        border: none;
+                        padding: 12px 25px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        margin-right: 10px;
+                        font-family: var(--font-head);
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(25, 118, 210, 0.3)'" 
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        <i class="fas fa-map-marker-alt"></i> Zoom ke Lokasi
+                    </button>
+                    <button onclick="closeModal()" style="
+                        background: #f0f0f0;
+                        color: var(--gray-color);
+                        border: none;
+                        padding: 12px 25px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        font-family: var(--font-head);
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'" 
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('modalBody').innerHTML = modalHtml;
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        // Fungsi untuk menutup modal
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+        
+        // Fungsi untuk update data
+        function updateData() {
+            // Tampilkan loading
+            showLoading(true);
+            
+            // Hapus script lama jika ada
+            const oldScripts = document.querySelectorAll('script[src^="datapeta.js"]');
+            oldScripts.forEach(script => script.remove());
+            
+            // Load data baru
+            loadDataFile();
+            
+            // Tampilkan notifikasi
+            if (APP_CONFIG.showNotifications) {
+                showNotification('Memperbarui data terbaru...', 'info');
+            }
+        }
+        
+        // Fungsi untuk reset view peta
+        function resetView() {
+            statistikMap.setView(APP_CONFIG.situbondoCenter, APP_CONFIG.defaultMapZoom);
+            
+            // Reset highlight
+            const desaItems = document.querySelectorAll('.desa-item');
+            desaItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Reset marker
+            statistikMarkers.forEach(m => {
+                const markerEl = m.marker.getElement();
+                if (markerEl) {
+                    markerEl.style.transform = 'scale(1)';
+                    markerEl.style.zIndex = '1';
+                    markerEl.style.boxShadow = '0 0 15px rgba(0,0,0,0.3)';
+                }
+                m.marker.closePopup();
+            });
+        }
+        
+        // Fungsi untuk toggle fullscreen
+        function toggleFullscreen() {
+            const container = document.querySelector('.peta-statistik-container');
+            
+            if (!isFullscreen) {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.mozRequestFullScreen) {
+                    container.mozRequestFullScreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+        
+        // Fungsi untuk handle fullscreen change
+        function handleFullscreenChange() {
+            isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || 
+                            document.mozFullScreenElement || document.msFullscreenElement);
+            
+            // Update tombol
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            if (isFullscreen) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> Keluar Layar Penuh';
+                showNotification('Mode layar penuh diaktifkan', 'info');
+            } else {
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> Layar Penuh';
+            }
+        }
+        
+        // Fungsi untuk update charts - PERBAIKAN WARNA GRAFIK
+        function updateCharts(desaData) {
+            // Data untuk chart distribusi bantuan
+            const bantuanLabels = ['Tinggi (≥50)', 'Sedang (20-49)', 'Rendah (≤19)'];
+            const bantuanCounts = [0, 0, 0];
+            
+            desaData.forEach(desa => {
+                if (desa.jumlahPenerima >= 50) bantuanCounts[0]++;
+                else if (desa.jumlahPenerima >= 20) bantuanCounts[1]++;
+                else bantuanCounts[2]++;
+            });
+            
+            // Data untuk chart tahun distribusi
+            const tahunMap = {};
+            desaData.forEach(desa => {
+                desa.tahunDistribusi.forEach(t => {
+                    if (tahunMap[t.tahun]) {
+                        tahunMap[t.tahun] += t.jumlah;
+                    } else {
+                        tahunMap[t.tahun] = t.jumlah;
+                    }
+                });
+            });
+            
+            const tahunLabels = Object.keys(tahunMap).sort();
+            const tahunData = tahunLabels.map(tahun => tahunMap[tahun]);
+            
+            // Hancurkan chart lama jika ada
+            if (bantuanChart) bantuanChart.destroy();
+            if (tahunChart) tahunChart.destroy();
+            
+            // Buat chart distribusi bantuan - WARNA DIPERBAIKI
+            const bantuanCtx = document.getElementById('bantuanChart').getContext('2d');
+            bantuanChart = new Chart(bantuanCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: bantuanLabels,
+                    datasets: [{
+                        data: bantuanCounts,
+                        backgroundColor: [
+                            '#ff6b6b', // Merah cerah
+                            '#ffd166', // Kuning cerah
+                            '#06d6a0'  // Hijau cerah
+                        ],
+                        borderWidth: 3,
+                        borderColor: 'white',
+                        hoverBorderWidth: 4,
+                        hoverBorderColor: '#f1f5f9'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#475569',
+                                font: {
+                                    family: 'var(--font-body)',
+                                    size: 12,
+                                    weight: '600'
+                                },
+                                padding: 15
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+            
+            // Buat chart tahun distribusi - WARNA DIPERBAIKI
+            const tahunCtx = document.getElementById('tahunChart').getContext('2d');
+            tahunChart = new Chart(tahunCtx, {
+                type: 'bar',
+                data: {
+                    labels: tahunLabels,
+                    datasets: [{
+                        label: 'Jumlah Penerima per Tahun',
+                        data: tahunData,
+                        backgroundColor: 'rgba(25, 118, 210, 0.8)',
+                        borderColor: '#1976d2',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        hoverBackgroundColor: '#1565c0',
+                        hoverBorderColor: '#0d47a1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 10,
+                                color: '#475569',
+                                font: {
+                                    family: 'var(--font-body)',
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(203, 213, 225, 0.5)',
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#475569',
+                                font: {
+                                    family: 'var(--font-body)',
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(203, 213, 225, 0.5)',
+                                drawBorder: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleFont: {
+                                family: 'var(--font-head)',
+                                size: 13
+                            },
+                            bodyFont: {
+                                family: 'var(--font-body)',
+                                size: 12
+                            },
+                            padding: 10,
+                            cornerRadius: 6
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Fungsi untuk menampilkan loading
+        function showLoading(show) {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (show) {
+                loadingScreen.classList.remove('hidden');
+            } else {
+                // Tambahkan delay kecil untuk animasi yang lebih halus
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                }, 500);
+            }
+        }
+        
+        // Fungsi untuk menampilkan notifikasi
+        function showNotification(message, type = 'info') {
+            if (!APP_CONFIG.showNotifications) return;
+            
+            // Buat elemen notifikasi
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            // Icon berdasarkan type
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            else if (type === 'error') icon = 'exclamation-circle';
+            
+            notification.innerHTML = `
+                <i class="fas fa-${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Hapus notifikasi setelah 4 detik
+            setTimeout(() => {
+                notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+        
+        // ============================================
+        // SISTEM WEBSITE UTAMA (FUNGSI LAINNYA)
+        // ============================================
+        
         // Init Animation
         AOS.init({
             once: true,
@@ -1396,358 +3117,94 @@
             }
         });
 
-        // Data statistik per kecamatan
-        const dataKecamatan = [
-            {
-                nama: "Mlandingan",
-                lat: -7.706,
-                lng: 113.512,
-                penerima: 26,
-                nelayan: 320,
-                perahu: 85,
-                usaha: 15
-            },
-            {
-                nama: "Jangkar",
-                lat: -7.746,
-                lng: 114.014,
-                penerima: 133,
-                nelayan: 450,
-                perahu: 120,
-                usaha: 28
-            },
-            {
-                nama: "Suboh",
-                lat: -7.847,
-                lng: 113.757,
-                penerima: 98,
-                nelayan: 380,
-                perahu: 95,
-                usaha: 22
-            },
-            {
-                nama: "Banyuputih",
-                lat: -7.794,
-                lng: 113.739,
-                penerima: 64,
-                nelayan: 290,
-                perahu: 75,
-                usaha: 18
-            },
-            {
-                nama: "Arjasa",
-                lat: -7.792,
-                lng: 114.189,
-                penerima: 6,
-                nelayan: 85,
-                perahu: 25,
-                usaha: 8
-            },
-            {
-                nama: "Panarukan",
-                lat: -7.697,
-                lng: 113.938,
-                penerima: 37,
-                nelayan: 260,
-                perahu: 70,
-                usaha: 20
-            },
-            {
-                nama: "Besuki",
-                lat: -7.750,
-                lng: 113.697,
-                penerima: 24,
-                nelayan: 310,
-                perahu: 82,
-                usaha: 16
-            },
-            {
-                nama: "Banyuglugur",
-                lat: -7.765,
-                lng: 113.448,
-                penerima: 25,
-                nelayan: 180,
-                perahu: 48,
-                usaha: 12
-            },
-            {
-                nama: "Mangaran",
-                lat: -7.651,
-                lng: 113.997,
-                penerima: 46,
-                nelayan: 220,
-                perahu: 58,
-                usaha: 14
-            },
-            {
-                nama: "Kapongan",
-                lat: -7.704,
-                lng: 114.080,
-                penerima: 15,
-                nelayan: 140,
-                perahu: 38,
-                usaha: 10
-            },
-            {
-                nama: "Bungatan",
-                lat: -7.618,
-                lng: 113.884,
-                penerima: 10,
-                nelayan: 95,
-                perahu: 28,
-                usaha: 6
-            },
-            {
-                nama: "Kendit",
-                lat: -7.735,
-                lng: 114.092,
-                penerima: 1,
-                nelayan: 45,
-                perahu: 15,
-                usaha: 3
-            }
+        // Lightbox functionality
+        const photoUrls = [
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto1.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto2.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto3.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto4.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto5.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto6.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto7.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto8.jpeg',
+            'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto9.jpeg'
         ];
 
-        // Inisialisasi Peta
-        let map;
-        let markers = [];
+        let currentIndex = 0;
+        let zoomLevel = 1;
+        const maxZoom = 3;
+        const minZoom = 1;
+        const zoomStep = 0.2;
 
-        function initMap() {
-            // Pusat peta di Situbondo
-            map = L.map('peta').setView([-7.706, 113.977], 10);
-
-            // Tile layer dari OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
-            // Tambahkan marker untuk setiap kecamatan
-            dataKecamatan.forEach((data, index) => {
-                // Tentukan warna berdasarkan jumlah penerima
-                let color;
-                if (data.penerima >= 100) {
-                    color = '#ef4444'; // Merah untuk jumlah tinggi
-                } else if (data.penerima >= 50) {
-                    color = '#f59e0b'; // Oranye untuk jumlah sedang
-                } else if (data.penerima >= 10) {
-                    color = '#10b981'; // Hijau untuk jumlah rendah
-                } else {
-                    color = '#0284c7'; // Biru untuk jumlah sangat rendah
-                }
-
-                // Buat custom icon
-                const icon = L.divIcon({
-                    html: `<div style="background-color: ${color}; 
-                                      width: 25px; 
-                                      height: 25px; 
-                                      border-radius: 50%; 
-                                      border: 3px solid white;
-                                      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-                                      display: flex;
-                                      align-items: center;
-                                      justify-content: center;
-                                      color: white;
-                                      font-weight: bold;
-                                      font-size: 12px;">${data.penerima}</div>`,
-                    className: 'custom-marker',
-                    iconSize: [30, 30],
-                    iconAnchor: [15, 15]
-                });
-
-                // Buat popup content
-                const popupContent = `
-                    <div class="popup-title">${data.nama}</div>
-                    <div class="popup-data-item">
-                        <span class="popup-data-label">Jumlah Nelayan:</span>
-                        <span class="popup-data-value">${data.nelayan}</span>
-                    </div>
-                    <div class="popup-data-item">
-                        <span class="popup-data-label">Jumlah Perahu:</span>
-                        <span class="popup-data-value">${data.perahu}</span>
-                    </div>
-                    <div class="popup-data-item">
-                        <span class="popup-data-label">Pemilik Usaha:</span>
-                        <span class="popup-data-value">${data.usaha}</span>
-                    </div>
-                    <div class="popup-total">
-                        Penerima Bantuan: ${data.penerima} orang
-                    </div>
-                `;
-
-                // Tambahkan marker ke peta
-                const marker = L.marker([data.lat, data.lng], { icon: icon })
-                    .addTo(map)
-                    .bindPopup(popupContent);
-
-                markers.push(marker);
-            });
-
-            // Tambahkan legenda
-            const legend = L.control({ position: 'bottomright' });
-
-            legend.onAdd = function () {
-                const div = L.DomUtil.create('div', 'info legend');
-                div.style.backgroundColor = 'white';
-                div.style.padding = '15px';
-                div.style.borderRadius = '5px';
-                div.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
-                
-                div.innerHTML = `
-                    <h5 style="margin: 0 0 10px 0; font-size: 14px;">Legenda Penerima Bantuan:</h5>
-                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                        <div style="width: 15px; height: 15px; background-color: #ef4444; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 12px;">≥ 100 orang</span>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                        <div style="width: 15px; height: 15px; background-color: #f59e0b; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 12px;">50-99 orang</span>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                        <div style="width: 15px; height: 15px; background-color: #10b981; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 12px;">10-49 orang</span>
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 15px; height: 15px; background-color: #0284c7; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 12px;">≤ 9 orang</span>
-                    </div>
-                `;
-                return div;
-            };
-
-            legend.addTo(map);
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightbox();
+            const lightboxModal = new bootstrap.Modal(document.getElementById('lightboxModal'));
+            lightboxModal.show();
         }
 
-        // Fungsi untuk menampilkan semua data
-        function showAllData() {
-            markers.forEach(marker => {
-                marker.addTo(map);
-            });
-            updateControlButtons('all');
-        }
-
-        // Fungsi untuk filter berdasarkan penerima bantuan
-        function filterByPenerima() {
-            markers.forEach(marker => {
-                map.removeLayer(marker);
-            });
+        function updateLightbox() {
+            const lightboxImage = document.getElementById('lightboxImage');
+            const currentIndexElement = document.getElementById('currentIndex');
+            const totalImagesElement = document.getElementById('totalImages');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
             
-            // Tampilkan hanya kecamatan dengan penerima > 20
-            markers.forEach(marker => {
-                const text = marker.getPopup().getContent();
-                if (text.includes('Penerima Bantuan:') && !text.includes('Penerima Bantuan: 1') && !text.includes('Penerima Bantuan: 6')) {
-                    marker.addTo(map);
-                }
-            });
-            updateControlButtons('penerima');
-        }
-
-        // Fungsi reset peta
-        function resetMap() {
-            map.setView([-7.706, 113.977], 10);
-            showAllData();
-        }
-
-        // Fungsi update tombol kontrol
-        function updateControlButtons(activeBtn) {
-            const buttons = document.querySelectorAll('.peta-control-btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-            });
+            zoomLevel = 1;
+            lightboxImage.style.transform = `scale(${zoomLevel})`;
             
-            if (activeBtn === 'all') {
-                buttons[0].classList.add('active');
-            } else if (activeBtn === 'penerima') {
-                buttons[1].classList.add('active');
+            lightboxImage.src = photoUrls[currentIndex];
+            lightboxImage.alt = `Kegiatan ${currentIndex + 1}`;
+            
+            currentIndexElement.textContent = currentIndex + 1;
+            totalImagesElement.textContent = photoUrls.length;
+            
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === photoUrls.length - 1;
+            
+            document.getElementById('lightboxModalLabel').textContent = `Galeri Kegiatan - Foto ${currentIndex + 1}`;
+        }
+
+        function navigateLightbox(direction) {
+            if (direction === 'prev' && currentIndex > 0) {
+                currentIndex--;
+            } else if (direction === 'next' && currentIndex < photoUrls.length - 1) {
+                currentIndex++;
             }
+            updateLightbox();
         }
 
-        // Inisialisasi peta saat dokumen siap
-        document.addEventListener('DOMContentLoaded', function() {
-            initMap();
+        function zoomImage(action) {
+            const lightboxImage = document.getElementById('lightboxImage');
             
-            // Lightbox functionality
-            const photoUrls = [
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto1.jpeg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto2.jpeg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto3.jpeg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto4.jpeg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto5.jpeg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto6.jpeg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto7.jpeg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto8.jpeg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/foto9.jpeg'
-            ];
-
-            let currentIndex = 0;
-            let zoomLevel = 1;
-            const maxZoom = 3;
-            const minZoom = 1;
-            const zoomStep = 0.2;
-
-            window.openLightbox = function(index) {
-                currentIndex = index;
-                updateLightbox();
-                const lightboxModal = new bootstrap.Modal(document.getElementById('lightboxModal'));
-                lightboxModal.show();
-            }
-
-            function updateLightbox() {
-                const lightboxImage = document.getElementById('lightboxImage');
-                const currentIndexElement = document.getElementById('currentIndex');
-                const totalImagesElement = document.getElementById('totalImages');
-                const prevBtn = document.getElementById('prevBtn');
-                const nextBtn = document.getElementById('nextBtn');
-                
+            if (action === 'in' && zoomLevel < maxZoom) {
+                zoomLevel += zoomStep;
+            } else if (action === 'out' && zoomLevel > minZoom) {
+                zoomLevel -= zoomStep;
+            } else if (action === 'reset') {
                 zoomLevel = 1;
-                lightboxImage.style.transform = `scale(${zoomLevel})`;
-                
-                lightboxImage.src = photoUrls[currentIndex];
-                lightboxImage.alt = `Kegiatan ${currentIndex + 1}`;
-                
-                currentIndexElement.textContent = currentIndex + 1;
-                totalImagesElement.textContent = photoUrls.length;
-                
-                prevBtn.disabled = currentIndex === 0;
-                nextBtn.disabled = currentIndex === photoUrls.length - 1;
-                
-                document.getElementById('lightboxModalLabel').textContent = `Galeri Kegiatan - Foto ${currentIndex + 1}`;
             }
+            
+            zoomLevel = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
+            lightboxImage.style.transform = `scale(${zoomLevel})`;
+            lightboxImage.style.transition = 'transform 0.3s ease';
+        }
 
-            function navigateLightbox(direction) {
-                if (direction === 'prev' && currentIndex > 0) {
-                    currentIndex--;
-                } else if (direction === 'next' && currentIndex < photoUrls.length - 1) {
-                    currentIndex++;
-                }
-                updateLightbox();
-            }
-
-            function zoomImage(action) {
-                const lightboxImage = document.getElementById('lightboxImage');
-                
-                if (action === 'in' && zoomLevel < maxZoom) {
-                    zoomLevel += zoomStep;
-                } else if (action === 'out' && zoomLevel > minZoom) {
-                    zoomLevel -= zoomStep;
-                } else if (action === 'reset') {
-                    zoomLevel = 1;
-                }
-                
-                zoomLevel = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
-                lightboxImage.style.transform = `scale(${zoomLevel})`;
-                lightboxImage.style.transition = 'transform 0.3s ease';
-            }
-
-            // Navigation buttons
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi peta statistik
+            initStatistikMap();
+            
+            // Navigation buttons untuk lightbox
             document.getElementById('prevBtn').addEventListener('click', () => navigateLightbox('prev'));
             document.getElementById('nextBtn').addEventListener('click', () => navigateLightbox('next'));
             
-            // Zoom buttons
+            // Zoom buttons untuk lightbox
             document.getElementById('zoomInBtn').addEventListener('click', () => zoomImage('in'));
             document.getElementById('zoomOutBtn').addEventListener('click', () => zoomImage('out'));
             document.getElementById('resetZoomBtn').addEventListener('click', () => zoomImage('reset'));
             
-            // Keyboard navigation
+            // Keyboard navigation untuk lightbox
             document.addEventListener('keydown', function(e) {
                 const lightboxModal = document.getElementById('lightboxModal');
                 if (lightboxModal.classList.contains('show')) {
@@ -1769,7 +3226,19 @@
                     }
                 }
             });
+            
+            // Tampilkan pesan selamat datang untuk peta statistik
+            setTimeout(() => {
+                showNotification('Peta Statistik Nelayan Kab. Situbondo dimuat', 'success');
+                showNotification('Auto-update aktif. Data akan diperbarui setiap 120 detik.', 'info');
+            }, 1500);
         });
+        
+        // Ekspos fungsi ke global scope untuk digunakan di popup
+        window.showDesaDetail = showDesaDetail;
+        window.zoomToDesa = zoomToDesa;
+        window.closeModal = closeModal;
+        window.openLightbox = openLightbox;
     </script>
 </body>
 </html>
