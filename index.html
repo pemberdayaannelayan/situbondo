@@ -33,18 +33,15 @@
 
     <style>
         :root {
-            /* Palette Warna Laut Cerah & Profesional */
-            --primary: #0284c7;       /* Ocean Blue */
-            --primary-dark: #0c4a6e;  /* Deep Sea */
-            --secondary: #38bdf8;     /* Sky Blue */
-            --accent: #f59e0b;        /* Golden Sun (ORANGE) */
-            --accent-dark: #d97706;   /* Darker Orange */
-            --light-bg: #f0f9ff;      /* Very Light Blue */
+            --primary: #0284c7;
+            --primary-dark: #0c4a6e;
+            --secondary: #38bdf8;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --light-bg: #f0f9ff;
             --white: #ffffff;
-            
-            --text-main: #0f172a;     /* Slate 900 */
-            --text-sub: #475569;      /* Slate 600 */
-
+            --text-main: #0f172a;
+            --text-sub: #475569;
             --font-head: 'Outfit', sans-serif;
             --font-body: 'Plus Jakarta Sans', sans-serif;
             --font-signature: 'Satisfy', cursive;
@@ -542,6 +539,7 @@
             color: var(--primary);
             font-weight: 600;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .peta-control-btn:hover {
@@ -657,6 +655,16 @@
             background-color: #fff7ed;
             border-left: 3px solid var(--accent);
             padding-left: 8px;
+            font-weight: 700;
+        }
+
+        .popup-filter-info {
+            background-color: #e0f2fe;
+            border-left: 4px solid var(--primary);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 0.85rem;
         }
 
         /* Peta Filter Info */
@@ -679,6 +687,28 @@
             font-size: 0.85rem;
             color: var(--text-sub);
             margin-bottom: 0;
+        }
+
+        .filter-counter {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        /* Marker Filter Styles */
+        .marker-filtered {
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 0 rgba(245, 158, 11, 0.4);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
 
         /* --- Footer --- */
@@ -1110,9 +1140,9 @@
             <div class="row">
                 <div class="col-lg-8" data-aos="fade-right">
                     <div id="peta"></div>
-                    <div class="filter-info mt-3" id="filterInfo" style="display: none;">
-                        <h6><i class="fas fa-filter me-2"></i>Filter Aktif</h6>
-                        <p id="filterText">Menampilkan kecamatan dengan bantuan tertentu</p>
+                    <div class="filter-info mt-3" id="filterInfo">
+                        <h6><i class="fas fa-info-circle me-2"></i>Informasi Peta</h6>
+                        <p>Klik tombol di samping untuk memfilter data berdasarkan jenis bantuan atau jumlah penerima. <span id="filterDetail">Peta menampilkan semua data kecamatan.</span></p>
                     </div>
                 </div>
                 <div class="col-lg-4" data-aos="fade-left">
@@ -1122,53 +1152,53 @@
                             <i class="fas fa-layer-group"></i> Tampilkan Semua Data
                         </button>
                         <button class="peta-control-btn" onclick="filterByPenerima()" id="btnPenerima">
-                            <i class="fas fa-users"></i> Filter Penerima Bantuan
+                            <i class="fas fa-users"></i> Filter Penerima Bantuan (>20)
                         </button>
                         <button class="peta-control-btn" onclick="resetMap()">
-                            <i class="fas fa-sync-alt"></i> Reset Peta
+                            <i class="fas fa-sync-alt"></i> Reset Zoom Peta
                         </button>
                         
-                        <h6 class="fw-bold mt-4 mb-3">Filter Bantuan Sarpras</h6>
+                        <h6 class="fw-bold mt-4 mb-3">Filter Jenis Bantuan Sarpras</h6>
                         <div class="filter-buttons">
-                            <button class="filter-btn" onclick="filterBantuan('coolbox')" data-type="coolbox">Cool Box</button>
-                            <button class="filter-btn" onclick="filterBantuan('gillnet')" data-type="gillnet">Gill Net</button>
-                            <button class="filter-btn" onclick="filterBantuan('mesin24pk')" data-type="mesin24pk">Mesin 24PK</button>
-                            <button class="filter-btn" onclick="filterBantuan('compressor')" data-type="compressor">Compressor</button>
-                            <button class="filter-btn" onclick="filterBantuan('mesinkerang')" data-type="mesinkerang">Mesin Kerang</button>
-                            <button class="filter-btn" onclick="filterBantuan('mesinbor')" data-type="mesinbor">Mesin Bor</button>
-                            <button class="filter-btn" onclick="filterBantuan('genset')" data-type="genset">Genset</button>
-                            <button class="filter-btn" onclick="filterBantuan('perahufiber')" data-type="perahufiber">Perahu Fiber</button>
+                            <button class="filter-btn" onclick="filterBantuan('coolbox')" data-type="coolbox" data-total="331">Cool Box (331)</button>
+                            <button class="filter-btn" onclick="filterBantuan('gillnet')" data-type="gillnet" data-total="30">Gill Net (30)</button>
+                            <button class="filter-btn" onclick="filterBantuan('mesin24pk')" data-type="mesin24pk" data-total="12">Mesin 24PK (12)</button>
+                            <button class="filter-btn" onclick="filterBantuan('compressor')" data-type="compressor" data-total="8">Compressor (8)</button>
+                            <button class="filter-btn" onclick="filterBantuan('mesinkerang')" data-type="mesinkerang" data-total="4">Mesin Kerang (4)</button>
+                            <button class="filter-btn" onclick="filterBantuan('mesinbor')" data-type="mesinbor" data-total="7">Mesin Bor (7)</button>
+                            <button class="filter-btn" onclick="filterBantuan('genset')" data-type="genset" data-total="9">Genset (9)</button>
+                            <button class="filter-btn" onclick="filterBantuan('perahufiber')" data-type="perahufiber" data-total="4">Perahu Fiber (4)</button>
                         </div>
                     </div>
 
                     <div class="peta-legend">
-                        <h5 class="fw-bold mb-4">Legenda Data</h5>
+                        <h5 class="fw-bold mb-4">Legenda Jumlah Penerima</h5>
                         <div class="legend-item">
                             <div class="legend-color" style="background-color: #ef4444;"></div>
                             <div>
                                 <strong>≥ 100 Penerima</strong>
-                                <small class="d-block text-muted">Kecamatan dengan penerima tinggi</small>
+                                <small class="d-block text-muted">Tinggi (Jangkar: 133)</small>
                             </div>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background-color: #f59e0b;"></div>
                             <div>
                                 <strong>50-99 Penerima</strong>
-                                <small class="d-block text-muted">Kecamatan dengan penerima sedang</small>
+                                <small class="d-block text-muted">Sedang (Suboh: 98)</small>
                             </div>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background-color: #10b981;"></div>
                             <div>
                                 <strong>10-49 Penerima</strong>
-                                <small class="d-block text-muted">Kecamatan dengan penerima rendah</small>
+                                <small class="d-block text-muted">Rendah (Mangaran: 46)</small>
                             </div>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background-color: #0284c7;"></div>
                             <div>
                                 <strong>≤ 9 Penerima</strong>
-                                <small class="d-block text-muted">Kecamatan dengan penerima sangat rendah</small>
+                                <small class="d-block text-muted">Sangat Rendah (Kendit: 1)</small>
                             </div>
                         </div>
                     </div>
@@ -1654,6 +1684,7 @@
         let map;
         let markers = [];
         let currentFilter = 'all';
+        let currentFilterType = null;
 
         // Fungsi untuk mendapatkan label bantuan
         function getBantuanLabel(jenis) {
@@ -1674,6 +1705,7 @@
         function createPopupContent(data, highlightType = null) {
             let bantuanHTML = '';
             let totalUnits = 0;
+            let filteredCount = 0;
             
             Object.entries(data.bantuan).forEach(([key, value]) => {
                 if (value > 0) {
@@ -1687,11 +1719,25 @@
                             <span>${label}:</span>
                             <span class="bantuan-badge">${value} unit</span>
                         </div>`;
+                        
+                    if (isHighlighted) filteredCount = value;
                 }
             });
             
+            let filterInfoHTML = '';
+            if (highlightType) {
+                const label = getBantuanLabel(highlightType);
+                filterInfoHTML = `
+                    <div class="popup-filter-info">
+                        <i class="fas fa-filter me-1"></i>
+                        Filter Aktif: <strong>${label}</strong> (${filteredCount} unit di ${data.nama})
+                    </div>
+                `;
+            }
+            
             return `
                 <div class="popup-title">${data.nama}</div>
+                ${filterInfoHTML}
                 <div class="popup-data-item">
                     <span class="popup-data-label">Jumlah Nelayan:</span>
                     <span class="popup-data-value">${data.nelayan}</span>
@@ -1715,6 +1761,80 @@
                 </div>`;
         }
 
+        // Fungsi untuk membuat marker dengan animasi filter
+        function createMarker(data, index) {
+            // Tentukan warna berdasarkan jumlah penerima
+            let color;
+            if (data.penerima >= 100) {
+                color = '#ef4444';
+            } else if (data.penerima >= 50) {
+                color = '#f59e0b';
+            } else if (data.penerima >= 10) {
+                color = '#10b981';
+            } else {
+                color = '#0284c7';
+            }
+
+            // Buat custom icon
+            const icon = L.divIcon({
+                html: `<div style="background-color: ${color}; 
+                                  width: 30px; 
+                                  height: 30px; 
+                                  border-radius: 50%; 
+                                  border: 3px solid white;
+                                  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                                  display: flex;
+                                  align-items: center;
+                                  justify-content: center;
+                                  color: white;
+                                  font-weight: bold;
+                                  font-size: 12px;
+                                  cursor: pointer;">${data.penerima}</div>`,
+                className: 'custom-marker',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+
+            // Buat marker
+            const marker = L.marker([data.lat, data.lng], { 
+                icon: icon,
+                title: data.nama
+            })
+            .bindPopup(createPopupContent(data))
+            .addTo(map);
+
+            // Simpan data di marker
+            marker.dataIndex = index;
+            return marker;
+        }
+
+        // Fungsi untuk menghitung jumlah kecamatan yang ditampilkan
+        function getDisplayedCount(filterType = null) {
+            if (!filterType || filterType === 'all') {
+                return dataKecamatan.length;
+            } else if (filterType === 'penerima') {
+                return dataKecamatan.filter(k => k.penerima > 20).length;
+            } else {
+                return dataKecamatan.filter(k => k.bantuan[filterType] > 0).length;
+            }
+        }
+
+        // Fungsi untuk memperbarui informasi filter
+        function updateFilterInfo(filterType) {
+            const filterDetail = document.getElementById('filterDetail');
+            const displayedCount = getDisplayedCount(filterType);
+            
+            if (filterType === 'all') {
+                filterDetail.innerHTML = 'Peta menampilkan semua <strong>12 kecamatan</strong>.';
+            } else if (filterType === 'penerima') {
+                filterDetail.innerHTML = `Peta menampilkan <strong>${displayedCount} kecamatan</strong> dengan penerima bantuan > 20 orang.`;
+            } else {
+                const label = getBantuanLabel(filterType);
+                const total = totalBantuan[filterType];
+                filterDetail.innerHTML = `Peta menampilkan <strong>${displayedCount} kecamatan</strong> dengan bantuan <strong>${label}</strong> (Total: ${total} unit).`;
+            }
+        }
+
         function initMap() {
             // Pusat peta di Situbondo
             map = L.map('peta').setView([-7.706, 113.977], 10);
@@ -1728,152 +1848,120 @@
 
             // Tambahkan marker untuk setiap kecamatan
             dataKecamatan.forEach((data, index) => {
-                // Tentukan warna berdasarkan jumlah penerima
-                let color;
-                if (data.penerima >= 100) {
-                    color = '#ef4444';
-                } else if (data.penerima >= 50) {
-                    color = '#f59e0b';
-                } else if (data.penerima >= 10) {
-                    color = '#10b981';
-                } else {
-                    color = '#0284c7';
-                }
-
-                // Buat custom icon
-                const icon = L.divIcon({
-                    html: `<div style="background-color: ${color}; 
-                                      width: 30px; 
-                                      height: 30px; 
-                                      border-radius: 50%; 
-                                      border: 3px solid white;
-                                      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-                                      display: flex;
-                                      align-items: center;
-                                      justify-content: center;
-                                      color: white;
-                                      font-weight: bold;
-                                      font-size: 12px;
-                                      cursor: pointer;">${data.penerima}</div>`,
-                    className: 'custom-marker',
-                    iconSize: [36, 36],
-                    iconAnchor: [18, 18]
-                });
-
-                // Buat marker dengan popup
-                const marker = L.marker([data.lat, data.lng], { 
-                    icon: icon,
-                    title: data.nama
-                })
-                .bindPopup(createPopupContent(data))
-                .addTo(map);
-
-                // Simpan data di marker
-                marker.dataIndex = index;
+                const marker = createMarker(data, index);
                 markers.push(marker);
             });
 
-            // Tambahkan legenda
-            const legend = L.control({ position: 'bottomright' });
-
-            legend.onAdd = function () {
-                const div = L.DomUtil.create('div', 'info legend');
-                div.style.backgroundColor = 'white';
-                div.style.padding = '15px';
-                div.style.borderRadius = '5px';
-                div.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
-                
-                div.innerHTML = `
-                    <h5 style="margin: 0 0 10px 0; font-size: 14px;">Legenda Penerima Bantuan:</h5>
-                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                        <div style="width: 15px; height: 15px; background-color: #ef4444; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 12px;">≥ 100 orang</span>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                        <div style="width: 15px; height: 15px; background-color: #f59e0b; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 12px;">50-99 orang</span>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                        <div style="width: 15px; height: 15px; background-color: #10b981; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 12px;">10-49 orang</span>
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 15px; height: 15px; background-color: #0284c7; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 12px;">≤ 9 orang</span>
-                    </div>
-                `;
-                return div;
-            };
-
-            legend.addTo(map);
+            // Update info filter awal
+            updateFilterInfo('all');
         }
 
         // Fungsi untuk menampilkan semua data
         function showAllData() {
+            // Hapus semua marker dari peta
             markers.forEach(marker => {
-                marker.addTo(map);
-                const data = dataKecamatan[marker.dataIndex];
-                marker.setPopupContent(createPopupContent(data));
+                map.removeLayer(marker);
             });
             
+            // Buat ulang semua marker
+            markers = [];
+            dataKecamatan.forEach((data, index) => {
+                const marker = createMarker(data, index);
+                markers.push(marker);
+            });
+            
+            // Update kontrol dan filter
             updateControlButtons('all');
             updateFilterButtons('');
             currentFilter = 'all';
+            currentFilterType = null;
             
-            // Sembunyikan info filter
-            document.getElementById('filterInfo').style.display = 'none';
+            // Update informasi filter
+            updateFilterInfo('all');
         }
 
         // Fungsi untuk filter berdasarkan penerima bantuan (>20 orang)
         function filterByPenerima() {
+            // Hapus semua marker dari peta
             markers.forEach(marker => {
-                const data = dataKecamatan[marker.dataIndex];
+                map.removeLayer(marker);
+            });
+            
+            // Filter dan buat ulang marker
+            markers = [];
+            dataKecamatan.forEach((data, index) => {
                 if (data.penerima > 20) {
-                    marker.addTo(map);
-                    marker.setPopupContent(createPopupContent(data));
-                } else {
-                    map.removeLayer(marker);
+                    const marker = createMarker(data, index);
+                    markers.push(marker);
                 }
             });
             
+            // Update kontrol dan filter
             updateControlButtons('penerima');
             updateFilterButtons('');
             currentFilter = 'penerima';
+            currentFilterType = null;
             
-            // Tampilkan info filter
-            document.getElementById('filterInfo').style.display = 'block';
-            document.getElementById('filterText').innerHTML = 
-                'Menampilkan kecamatan dengan penerima bantuan > 20 orang';
+            // Update informasi filter
+            updateFilterInfo('penerima');
+            
+            // Fit bounds ke marker yang ditampilkan
+            if (markers.length > 0) {
+                const group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds());
+            }
         }
 
         // Fungsi untuk filter berdasarkan jenis bantuan
         function filterBantuan(jenis) {
             const label = getBantuanLabel(jenis);
             
+            // Hapus semua marker dari peta
             markers.forEach(marker => {
-                const data = dataKecamatan[marker.dataIndex];
+                map.removeLayer(marker);
+            });
+            
+            // Filter dan buat ulang marker
+            markers = [];
+            dataKecamatan.forEach((data, index) => {
                 if (data.bantuan[jenis] > 0) {
-                    marker.addTo(map);
+                    const marker = createMarker(data, index);
+                    // Update popup dengan highlight
                     marker.setPopupContent(createPopupContent(data, jenis));
-                } else {
-                    map.removeLayer(marker);
+                    markers.push(marker);
+                    
+                    // Tambahkan animasi pada marker
+                    marker.getElement().classList.add('marker-filtered');
                 }
             });
             
+            // Update kontrol dan filter
             updateControlButtons('bantuan');
             updateFilterButtons(jenis);
-            currentFilter = jenis;
+            currentFilter = 'bantuan';
+            currentFilterType = jenis;
             
-            // Tampilkan info filter
-            document.getElementById('filterInfo').style.display = 'block';
-            document.getElementById('filterText').innerHTML = 
-                `Menampilkan kecamatan dengan bantuan <strong>${label}</strong> (Total: ${totalBantuan[jenis]} unit)`;
+            // Update informasi filter
+            updateFilterInfo(jenis);
+            
+            // Fit bounds ke marker yang ditampilkan
+            if (markers.length > 0) {
+                const group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds());
+            }
         }
 
-        // Fungsi reset peta
+        // Fungsi reset peta (hanya zoom)
         function resetMap() {
             map.setView([-7.706, 113.977], 10);
-            showAllData();
+            
+            // Hapus animasi filter dari semua marker
+            markers.forEach(marker => {
+                const element = marker.getElement();
+                if (element) {
+                    element.classList.remove('marker-filtered');
+                }
+            });
         }
 
         // Fungsi update tombol kontrol
