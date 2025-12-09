@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peta Statistik Bantuan Nelayan - Kab. Situbondo</title>
+    <title>Peta Statistik Bantuan Nelayan - Dinas Perikanan Situbondo</title>
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
         :root {
@@ -31,36 +31,44 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
             color: #333;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
         
         .navbar {
             background: linear-gradient(120deg, #003049 0%, #005f73 40%, #0a9396 70%, #ca6702 100%);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+            color: white;
             display: flex;
             align-items: center;
             gap: 10px;
-            color: white;
         }
         
         .navbar-brand img {
             height: 40px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         
-        .header-container {
-            padding: 20px 0;
-            background-color: white;
-            border-bottom: 1px solid #dee2e6;
+        .main-container {
+            max-width: 1600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        
+        .header-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--accent-color);
         }
         
         .header-title {
@@ -76,63 +84,27 @@
         
         .map-container {
             position: relative;
-            border-radius: 12px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border: 1px solid #dee2e6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             background: white;
             margin-bottom: 25px;
+            height: 600px;
         }
         
         #map {
             width: 100%;
-            height: 650px;
+            height: 100%;
             z-index: 1;
-        }
-        
-        .legend {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            max-width: 250px;
-            border: 1px solid #dee2e6;
-        }
-        
-        .legend h6 {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 10px;
-            border: 1px solid rgba(0,0,0,0.1);
         }
         
         .control-panel {
             background: white;
-            border-radius: 12px;
+            border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             margin-bottom: 25px;
-            border: 1px solid #dee2e6;
+            border-left: 4px solid var(--secondary-color);
         }
         
         .control-title {
@@ -146,39 +118,30 @@
         
         .stats-panel {
             background: white;
-            border-radius: 12px;
+            border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             height: 100%;
-            border: 1px solid #dee2e6;
-        }
-        
-        .stats-title {
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            border-left: 4px solid var(--accent-color);
         }
         
         .stat-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 20px;
             margin-bottom: 15px;
-            border-left: 4px solid var(--secondary-color);
-            transition: transform 0.2s;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
         }
         
         .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
         
         .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--primary-color);
             line-height: 1;
         }
@@ -189,88 +152,29 @@
             margin-top: 5px;
         }
         
-        .data-table-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            margin-bottom: 25px;
-            border: 1px solid #dee2e6;
-        }
-        
-        .table-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-        
-        .data-table th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-            padding: 12px 10px;
-            text-align: left;
-        }
-        
-        .data-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .data-table tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .footer {
-            background-color: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-            padding: 20px 0;
-            margin-top: 40px;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        .footer a {
-            color: var(--secondary-color);
-            text-decoration: none;
-        }
-        
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        
         .loading-overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 10000;
-            border-radius: 12px;
+            z-index: 1000;
+            border-radius: 15px;
             flex-direction: column;
         }
         
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary-color);
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         @keyframes spin {
@@ -278,14 +182,21 @@
             100% { transform: rotate(360deg); }
         }
         
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+        .data-table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
         
-        .btn-primary:hover {
-            background-color: #004d5c;
-            border-color: #004d5c;
+        .table-title {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .search-box {
@@ -294,29 +205,42 @@
             left: 20px;
             z-index: 1000;
             background: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            width: 300px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            width: 320px;
             border: 1px solid #dee2e6;
         }
         
-        .search-box input {
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            padding: 8px 12px;
-            width: 100%;
-            font-size: 0.9rem;
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            max-width: 250px;
+            border: 1px solid #dee2e6;
+            backdrop-filter: blur(5px);
         }
         
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.2);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            font-weight: 600;
+            padding: 10px 20px;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #004d5c, #088488);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 95, 115, 0.3);
         }
         
         .popup-content {
-            max-width: 300px;
+            max-width: 350px;
         }
         
         .popup-title {
@@ -335,8 +259,14 @@
         .popup-stat {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-size: 0.9rem;
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .popup-stat:last-child {
+            border-bottom: none;
         }
         
         .popup-stat-label {
@@ -344,23 +274,17 @@
         }
         
         .popup-stat-value {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary-color);
         }
         
-        .popup-divider {
-            height: 1px;
-            background: #eee;
-            margin: 10px 0;
-        }
-        
-        .kecamatan-selector {
-            margin-top: 15px;
-        }
-        
-        .chart-container {
-            height: 300px;
-            margin-top: 20px;
+        .footer {
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            padding: 20px 0;
+            margin-top: 40px;
+            color: #6c757d;
+            font-size: 0.9rem;
         }
         
         .notification {
@@ -370,209 +294,313 @@
             z-index: 10000;
             background: white;
             padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-            border-left: 4px solid var(--secondary-color);
-            max-width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-left: 5px solid var(--secondary-color);
+            max-width: 400px;
             display: none;
+            transform: translateY(100px);
+            transition: transform 0.3s ease;
         }
         
         .notification.show {
             display: block;
-            animation: fadeInUp 0.3s ease-out;
+            transform: translateY(0);
         }
         
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .notification.success {
+            border-left-color: #28a745;
+        }
+        
+        .notification.error {
+            border-left-color: #dc3545;
+        }
+        
+        .notification.warning {
+            border-left-color: #ffc107;
+        }
+        
+        .notification.info {
+            border-left-color: #17a2b8;
+        }
+        
+        .data-source-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px dashed var(--primary-color);
         }
         
         @media (max-width: 768px) {
-            #map {
+            .map-container {
                 height: 450px;
             }
             
             .search-box {
                 width: calc(100% - 40px);
+                max-width: 300px;
             }
             
             .legend {
                 max-width: 200px;
                 padding: 10px;
+                bottom: 10px;
+                right: 10px;
             }
             
             .stat-value {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .kecamatan-summary {
+            margin-top: 25px;
+        }
+        
+        .kecamatan-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .kecamatan-item:hover {
+            background-color: #f8f9fa;
+            padding-left: 15px;
+        }
+        
+        .kecamatan-name {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .kecamatan-count {
+            float: right;
+            background: var(--secondary-color);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <div class="navbar-brand">
+            <a class="navbar-brand" href="#">
                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/garuda.png" alt="Logo">
                 <span>Peta Statistik Bantuan Nelayan</span>
-            </div>
-            <div class="text-white">
-                <small>Dinas Peternakan dan Perikanan Kab. Situbondo</small>
+            </a>
+            <div class="text-white text-end">
+                <div class="fw-bold">Dinas Peternakan dan Perikanan</div>
+                <small>Kabupaten Situbondo</small>
             </div>
         </div>
     </nav>
     
-    <!-- Header -->
-    <div class="header-container">
-        <div class="container">
-            <h1 class="header-title">Peta Distribusi Bantuan Nelayan Kabupaten Situbondo</h1>
-            <p class="header-subtitle">Visualisasi data statistik bantuan per desa berdasarkan data dari Sistem Bantuan Barang Pinjam Pakai</p>
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header-panel">
+            <h2 class="header-title">Peta Distribusi Bantuan Nelayan Kabupaten Situbondo</h2>
+            <p class="header-subtitle">Visualisasi data statistik per desa berdasarkan Sistem Bantuan Barang Pinjam Pakai - Bidang Pemberdayaan Nelayan</p>
+            
+            <div class="row mt-4">
+                <div class="col-md-9">
+                    <div class="data-source-info">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h6><i class="fas fa-database me-2"></i> Sumber Data</h6>
+                                <p class="mb-1 small">Data diperbarui otomatis dari file <code>datapeta.js</code> yang dihasilkan oleh Sistem Bantuan Nelayan</p>
+                                <p class="mb-0 small">URL: <span id="dataSourceUrl" class="fw-bold">https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/main/datapeta.js</span></p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <button id="reloadDataBtn" class="btn btn-primary">
+                                    <i class="fas fa-sync-alt me-2"></i> Reload Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="small text-muted mt-2">
+                        <i class="fas fa-clock me-1"></i> 
+                        Terakhir diperbarui: <span id="lastUpdateDate" class="fw-bold">-</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <!-- Main Container -->
-    <div class="container">
+        
         <!-- Control Panel -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="control-panel">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h5 class="control-title">
-                                <i class="fas fa-filter"></i>
-                                Kontrol Peta & Filter Data
-                            </h5>
-                            <p class="mb-0">Gunakan kontrol di bawah untuk mengatur tampilan peta dan memfilter data berdasarkan kriteria tertentu.</p>
-                        </div>
-                        <div class="col-md-4 text-end">
-                            <button id="reloadDataBtn" class="btn btn-primary">
-                                <i class="fas fa-sync-alt me-2"></i> Reload Data
-                            </button>
-                            <button id="resetViewBtn" class="btn btn-outline-secondary ms-2">
-                                <i class="fas fa-home me-2"></i> Reset Peta
-                            </button>
-                        </div>
+        <div class="control-panel">
+            <h5 class="control-title">
+                <i class="fas fa-sliders-h"></i>
+                Kontrol Peta & Filter Data
+            </h5>
+            
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Kecamatan</label>
+                    <select id="kecamatanFilter" class="form-select">
+                        <option value="">Semua Kecamatan</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Jenis Bantuan</label>
+                    <select id="jenisBantuanFilter" class="form-select">
+                        <option value="">Semua Jenis</option>
+                        <option value="Uang">Uang</option>
+                        <option value="Barang">Barang</option>
+                        <option value="Jasa">Jasa</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Tahun</label>
+                    <select id="tahunFilter" class="form-select">
+                        <option value="">Semua Tahun</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Tampilan</label>
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-outline-primary active" id="viewMarkers">
+                            <i class="fas fa-map-marker-alt"></i> Marker
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" id="viewHeatmap">
+                            <i class="fas fa-fire"></i> Heatmap
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" id="viewBoth">
+                            <i class="fas fa-layer-group"></i> Keduanya
+                        </button>
                     </div>
-                    
-                    <div class="row mt-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Filter Berdasarkan Kecamatan</label>
-                            <select id="kecamatanFilter" class="form-select">
-                                <option value="">Semua Kecamatan</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Filter Berdasarkan Jenis Bantuan</label>
-                            <select id="jenisBantuanFilter" class="form-select">
-                                <option value="">Semua Jenis</option>
-                                <option value="Uang">Uang</option>
-                                <option value="Barang">Barang</option>
-                                <option value="Jasa">Jasa</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Tahun Anggaran</label>
-                            <select id="tahunFilter" class="form-select">
-                                <option value="">Semua Tahun</option>
-                            </select>
-                        </div>
+                </div>
+            </div>
+            
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="clusterMarkers" checked>
+                        <label class="form-check-label" for="clusterMarkers">Cluster Marker</label>
                     </div>
-                    
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="showMarkers" checked>
-                                <label class="form-check-label" for="showMarkers">Tampilkan Marker</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="showHeatmap" checked>
-                                <label class="form-check-label" for="showHeatmap">Tampilkan Heatmap</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="clusterMarkers">
-                                <label class="form-check-label" for="clusterMarkers">Cluster Marker</label>
-                            </div>
-                        </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="showLabels" checked>
+                        <label class="form-check-label" for="showLabels">Tampilkan Label</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="autoZoom">
+                        <label class="form-check-label" for="autoZoom">Auto Zoom ke Filter</label>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Map and Stats -->
-        <div class="row mb-4">
-            <div class="col-lg-8 col-md-12">
+        <div class="row">
+            <div class="col-lg-8 col-md-12 mb-4">
                 <div class="map-container">
                     <div class="loading-overlay" id="loadingOverlay">
                         <div class="spinner"></div>
-                        <p class="mt-3">Memuat data peta...</p>
+                        <h5 class="mt-3">Memuat Data Peta...</h5>
+                        <p class="text-center mt-2" id="loadingMessage">Mengambil data dari GitHub</p>
+                        <div class="progress mt-3" style="width: 80%;">
+                            <div id="loadingProgress" class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%"></div>
+                        </div>
                     </div>
                     
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Cari desa atau kecamatan...">
-                        <div id="searchResults" class="mt-2" style="display: none;"></div>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Cari desa atau kecamatan...">
+                            <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div id="searchResults" class="mt-2" style="display: none; max-height: 300px; overflow-y: auto;"></div>
                     </div>
                     
                     <div id="map"></div>
                     
                     <div class="legend">
-                        <h6>Legenda Intensitas Bantuan</h6>
+                        <h6><i class="fas fa-key me-2"></i> Legenda Intensitas</h6>
                         <div class="legend-item">
-                            <div class="legend-color" style="background-color: #ffffcc;"></div>
-                            <span>Rendah (1-10 penerima)</span>
+                            <div class="legend-color" style="background-color: #ffffcc; border: 1px solid #ccc;"></div>
+                            <span>Rendah (≤10 penerima)</span>
                         </div>
                         <div class="legend-item">
-                            <div class="legend-color" style="background-color: #a1dab4;"></div>
+                            <div class="legend-color" style="background-color: #a1dab4; border: 1px solid #8bc9a3;"></div>
                             <span>Sedang (11-30 penerima)</span>
                         </div>
                         <div class="legend-item">
-                            <div class="legend-color" style="background-color: #41b6c4;"></div>
+                            <div class="legend-color" style="background-color: #41b6c4; border: 1px solid #36a0ad;"></div>
                             <span>Tinggi (31-60 penerima)</span>
                         </div>
                         <div class="legend-item">
-                            <div class="legend-color" style="background-color: #225ea8;"></div>
-                            <span>Sangat Tinggi (61+ penerima)</span>
+                            <div class="legend-color" style="background-color: #225ea8; border: 1px solid #1d4f8f;"></div>
+                            <span>Sangat Tinggi (>60 penerima)</span>
                         </div>
                         <hr class="my-2">
-                        <small class="text-muted">Klik marker untuk detail</small>
+                        <small class="text-muted"><i class="fas fa-info-circle me-1"></i> Klik marker untuk detail lengkap</small>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4 col-md-12">
+            <div class="col-lg-4 col-md-12 mb-4">
                 <div class="stats-panel">
-                    <h5 class="stats-title">
+                    <h5 class="control-title">
                         <i class="fas fa-chart-bar"></i>
-                        Statistik Keseluruhan
+                        Statistik Utama
                     </h5>
                     
-                    <div id="overallStats">
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalDesa">0</div>
-                            <div class="stat-label">Desa/Kelurahan</div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalDesa">0</div>
+                                <div class="stat-label">Desa/Kelurahan</div>
+                            </div>
                         </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalPenerima">0</div>
-                            <div class="stat-label">Total Penerima Bantuan</div>
+                        <div class="col-md-6 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalPenerima">0</div>
+                                <div class="stat-label">Total Penerima</div>
+                            </div>
                         </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalBantuan">Rp 0</div>
-                            <div class="stat-label">Total Nilai Bantuan</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalBantuan">Rp 0</div>
+                                <div class="stat-label">Total Nilai Bantuan</div>
+                            </div>
                         </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-value" id="rataBantuan">Rp 0</div>
-                            <div class="stat-label">Rata-rata per Penerima</div>
+                        <div class="col-md-6 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-value" id="rataBantuan">Rp 0</div>
+                                <div class="stat-label">Rata-rata per Penerima</div>
+                            </div>
                         </div>
-                        
-                        <div class="chart-container">
-                            <canvas id="jenisBantuanChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="jenisBantuanChart"></canvas>
+                    </div>
+                    
+                    <div class="kecamatan-summary">
+                        <h6 class="mt-4 mb-3"><i class="fas fa-map me-2"></i> Ringkasan per Kecamatan</h6>
+                        <div id="kecamatanList" style="max-height: 200px; overflow-y: auto;">
+                            <div class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                <p class="mt-2 small">Memuat data kecamatan...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -580,55 +608,44 @@
         </div>
         
         <!-- Data Table -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="data-table-container">
-                    <h5 class="table-title">
-                        <i class="fas fa-table"></i>
-                        Data Detail per Desa
-                    </h5>
-                    
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Desa/Kelurahan</th>
-                                    <th>Kecamatan</th>
-                                    <th>Jumlah Penerima</th>
-                                    <th>Uang (Rp)</th>
-                                    <th>Barang (Unit)</th>
-                                    <th>Jasa (Paket)</th>
-                                    <th>Total Bantuan</th>
-                                    <th>Rata-rata</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dataTableBody">
-                                <tr>
-                                    <td colspan="9" class="text-center py-4">Memuat data...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div class="text-muted small" id="tableInfo">Menampilkan 0 data</div>
-                        <nav>
-                            <ul class="pagination pagination-sm mb-0" id="pagination"></ul>
-                        </nav>
-                    </div>
-                </div>
+        <div class="data-table-container">
+            <h5 class="table-title">
+                <i class="fas fa-table"></i>
+                Data Detail per Desa
+            </h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover" id="dataTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>Desa/Kelurahan</th>
+                            <th>Kecamatan</th>
+                            <th>Jumlah Penerima</th>
+                            <th>Uang (Rp)</th>
+                            <th>Barang (Unit)</th>
+                            <th>Jasa (Paket)</th>
+                            <th>Total Bantuan</th>
+                            <th>Rata-rata</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        <tr>
+                            <td colspan="10" class="text-center py-5">
+                                <div class="spinner-border text-primary"></div>
+                                <p class="mt-2">Memuat data...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
-        
-        <!-- Info Panel -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="alert alert-info">
-                    <h6><i class="fas fa-info-circle me-2"></i> Informasi Teknis</h6>
-                    <p class="mb-2">Data pada peta ini diperbarui secara otomatis dari <code>datapeta.js</code> yang dihasilkan oleh Sistem Bantuan Nelayan. Data diperbarui setiap kali dilakukan proses ekstrak data dari sistem utama.</p>
-                    <p class="mb-0">URL Data: <span id="dataSourceUrl" class="fw-bold">https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/main/datapeta.js</span></p>
-                </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted small" id="tableInfo">Menampilkan 0 data</div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="pagination"></ul>
+                </nav>
             </div>
         </div>
     </div>
@@ -637,28 +654,38 @@
     <div class="footer">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <p>&copy; 2025 Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
-                    <p>Bidang Pemberdayaan Nelayan</p>
+                <div class="col-md-8">
+                    <h6>Dinas Peternakan dan Perikanan Kabupaten Situbondo</h6>
+                    <p class="mb-1">Bidang Pemberdayaan Nelayan</p>
+                    <p class="mb-0">Jl. PB. Sudirman No. 99 Situbondo - Jawa Timur</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p>
-                        <a href="https://www.dinasperikanansitubondo.com" target="_blank">
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-1">
+                        <a href="https://www.dinasperikanansitubondo.com" class="text-decoration-none" target="_blank">
                             <i class="fas fa-globe me-1"></i> www.dinasperikanansitubondo.com
                         </a>
                     </p>
-                    <p>Data terakhir diperbarui: <span id="lastUpdateDate">-</span></p>
+                    <p class="mb-0">
+                        <i class="fas fa-phone me-1"></i> (0338) 671123
+                    </p>
                 </div>
+            </div>
+            <hr class="my-3">
+            <div class="text-center small">
+                &copy; 2025 Peta Statistik Bantuan Nelayan - Sistem Informasi Geografis Kabupaten Situbondo
             </div>
         </div>
     </div>
     
     <!-- Notification -->
     <div class="notification" id="notification">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <strong id="notificationTitle">Notifikasi</strong>
-                <p id="notificationMessage" class="mb-0 mt-1"></p>
+        <div class="d-flex">
+            <div class="me-3" id="notificationIcon">
+                <i class="fas fa-info-circle fa-2x"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 id="notificationTitle" class="mb-1">Notifikasi</h6>
+                <p id="notificationMessage" class="mb-0 small"></p>
             </div>
             <button type="button" class="btn-close" id="closeNotificationBtn"></button>
         </div>
@@ -668,7 +695,7 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <!-- Leaflet Heatmap Plugin -->
+    <!-- Leaflet Heatmap -->
     <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.js"></script>
     
     <!-- Leaflet Marker Cluster -->
@@ -694,10 +721,12 @@
         let currentPage = 1;
         const itemsPerPage = 10;
         
-        // URL untuk datapeta.js di GitHub
-        const DATA_PETA_URL = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/main/datapeta.js';
+        // URL data peta - PASTIKAN URL INI BENAR!
+        // Sesuaikan dengan URL di repository GitHub Anda
+        const DATA_PETA_URL = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/datapeta.js';
+        // Alternatif: 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/main/datapeta.js'
         
-        // Warna untuk intensitas bantuan
+        // Warna untuk intensitas
         const intensityColors = {
             rendah: '#ffffcc',
             sedang: '#a1dab4',
@@ -705,25 +734,32 @@
             sangatTinggi: '#225ea8'
         };
         
+        // Mode tampilan
+        let viewMode = 'markers'; // 'markers', 'heatmap', 'both'
+        
         // Inisialisasi aplikasi
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Aplikasi peta statistik dimuat');
             initMap();
             loadPetaData();
             setupEventListeners();
         });
         
-        // Inisialisasi peta
+        // Inisialisasi peta Leaflet
         function initMap() {
-            // Posisi awal: Kabupaten Situbondo
+            console.log('Menginisialisasi peta...');
+            // Posisi tengah: Situbondo
             map = L.map('map').setView([-7.7062, 113.9603], 11);
             
-            // Tile layer OpenStreetMap
+            // Tambahkan tile layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
             
             // Tambahkan kontrol skala
-            L.control.scale().addTo(map);
+            L.control.scale({position: 'bottomleft'}).addTo(map);
+            
+            console.log('Peta berhasil diinisialisasi');
         }
         
         // Setup event listeners
@@ -731,34 +767,25 @@
             // Reload data button
             document.getElementById('reloadDataBtn').addEventListener('click', loadPetaData);
             
-            // Reset view button
-            document.getElementById('resetViewBtn').addEventListener('click', function() {
-                map.setView([-7.7062, 113.9603], 11);
-                showNotification('Peta direset ke tampilan awal', 'info');
-            });
-            
             // Filter events
             document.getElementById('kecamatanFilter').addEventListener('change', applyFilters);
             document.getElementById('jenisBantuanFilter').addEventListener('change', applyFilters);
             document.getElementById('tahunFilter').addEventListener('change', applyFilters);
             
+            // View mode buttons
+            document.getElementById('viewMarkers').addEventListener('click', function() {
+                setViewMode('markers');
+            });
+            
+            document.getElementById('viewHeatmap').addEventListener('click', function() {
+                setViewMode('heatmap');
+            });
+            
+            document.getElementById('viewBoth').addEventListener('click', function() {
+                setViewMode('both');
+            });
+            
             // Checkbox events
-            document.getElementById('showMarkers').addEventListener('change', function() {
-                if (this.checked) {
-                    addMarkersToMap();
-                } else {
-                    removeMarkersFromMap();
-                }
-            });
-            
-            document.getElementById('showHeatmap').addEventListener('change', function() {
-                if (this.checked) {
-                    addHeatmapToMap();
-                } else {
-                    removeHeatmapFromMap();
-                }
-            });
-            
             document.getElementById('clusterMarkers').addEventListener('change', function() {
                 if (petaData) {
                     applyFilters();
@@ -767,19 +794,143 @@
             
             // Search input
             document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('clearSearch').addEventListener('click', function() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('searchResults').style.display = 'none';
+            });
             
-            // Close notification button
+            // Close notification
             document.getElementById('closeNotificationBtn').addEventListener('click', function() {
                 document.getElementById('notification').classList.remove('show');
             });
+            
+            // Auto zoom checkbox
+            document.getElementById('autoZoom').addEventListener('change', function() {
+                if (this.checked && filteredData.length > 0) {
+                    zoomToFilteredData();
+                }
+            });
+            
+            console.log('Event listeners berhasil di-setup');
         }
         
-        // Muat data peta dari GitHub
+        // Set view mode
+        function setViewMode(mode) {
+            viewMode = mode;
+            
+            // Update button states
+            document.getElementById('viewMarkers').classList.remove('active');
+            document.getElementById('viewHeatmap').classList.remove('active');
+            document.getElementById('viewBoth').classList.remove('active');
+            
+            document.getElementById(`view${mode.charAt(0).toUpperCase() + mode.slice(1)}`).classList.add('active');
+            
+            // Update map display
+            updateMapDisplay();
+        }
+        
+        // Update map display based on view mode
+        function updateMapDisplay() {
+            // Clear existing layers
+            removeMarkersFromMap();
+            removeHeatmapFromMap();
+            
+            // Add layers based on view mode
+            if (viewMode === 'markers' || viewMode === 'both') {
+                addMarkersToMap();
+            }
+            
+            if (viewMode === 'heatmap' || viewMode === 'both') {
+                addHeatmapToMap();
+            }
+        }
+        
+        // Load data peta dari GitHub
         function loadPetaData() {
-            showLoading(true);
+            console.log('Memulai proses load data peta...');
+            showLoading(true, 'Mengambil data dari GitHub...');
             
             // Tambahkan timestamp untuk menghindari cache
-            const url = DATA_PETA_URL + '?t=' + Date.now();
+            const timestamp = Date.now();
+            const url = `${DATA_PETA_URL}?t=${timestamp}`;
+            
+            console.log('URL data peta:', url);
+            
+            // Update loading progress
+            updateLoadingProgress(10);
+            
+            // Coba metode fetch terlebih dahulu (lebih reliable)
+            fetch(url)
+                .then(response => {
+                    updateLoadingProgress(30);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status} ${response.statusText}`);
+                    }
+                    
+                    return response.text();
+                })
+                .then(scriptText => {
+                    updateLoadingProgress(60);
+                    console.log('Data berhasil di-fetch, panjang:', scriptText.length, 'karakter');
+                    
+                    // Coba parse data
+                    try {
+                        // Ekstrak data dari script JS
+                        const dataMatch = scriptText.match(/window\.DATA_PETA_STATISTIK\s*=\s*({[\s\S]*?});/);
+                        
+                        if (dataMatch && dataMatch[1]) {
+                            // Parse JSON data
+                            const dataJson = dataMatch[1];
+                            petaData = JSON.parse(dataJson);
+                            console.log('Data berhasil di-parse:', petaData);
+                        } else {
+                            // Coba eksekusi script untuk mendapatkan variabel
+                            console.log('Mencoba mengeksekusi script...');
+                            
+                            // Simpan variabel global sementara
+                            window._tempData = null;
+                            
+                            // Modifikasi script untuk menyimpan data ke variabel sementara
+                            const modifiedScript = scriptText.replace(
+                                'window.DATA_PETA_STATISTIK =',
+                                'window._tempData ='
+                            );
+                            
+                            // Eksekusi script
+                            eval(modifiedScript);
+                            
+                            if (window._tempData) {
+                                petaData = window._tempData;
+                                console.log('Data berhasil diambil dari eksekusi script:', petaData);
+                            } else {
+                                throw new Error('Data tidak ditemukan dalam script');
+                            }
+                        }
+                        
+                        // Process data
+                        processPetaData();
+                        updateLoadingProgress(100);
+                        showNotification('Data peta berhasil dimuat!', 'success');
+                        
+                    } catch (error) {
+                        console.error('Error parsing data:', error);
+                        showNotification(`Error parsing data: ${error.message}`, 'error');
+                        showLoading(false);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    
+                    // Coba metode alternatif dengan script tag
+                    console.log('Mencoba metode alternatif dengan script tag...');
+                    loadWithScriptTag(url);
+                });
+        }
+        
+        // Metode alternatif: Load dengan script tag
+        function loadWithScriptTag(url) {
+            showLoading(true, 'Mencoba metode alternatif...');
             
             // Hapus script sebelumnya jika ada
             const existingScript = document.getElementById('petaDataScript');
@@ -787,62 +938,84 @@
                 existingScript.remove();
             }
             
-            // Buat script baru untuk memuat datapeta.js
+            // Buat script element
             const script = document.createElement('script');
             script.id = 'petaDataScript';
             script.src = url;
             
+            // Timeout handling
+            const timeout = setTimeout(() => {
+                script.onerror = null;
+                script.remove();
+                showNotification('Timeout: Gagal memuat data. Periksa koneksi atau URL.', 'error');
+                showLoading(false);
+            }, 15000);
+            
             script.onload = function() {
-                // Data seharusnya tersedia di window.DATA_PETA_STATISTIK
+                clearTimeout(timeout);
+                updateLoadingProgress(80);
+                
                 if (window.DATA_PETA_STATISTIK) {
                     petaData = window.DATA_PETA_STATISTIK;
+                    console.log('Data berhasil dimuat via script tag:', petaData);
                     processPetaData();
-                    showNotification('Data peta berhasil dimuat', 'success');
+                    updateLoadingProgress(100);
+                    showNotification('Data peta berhasil dimuat via script tag!', 'success');
                 } else {
-                    showNotification('Gagal memuat data peta. Format file tidak sesuai.', 'error');
+                    showNotification('Data tidak ditemukan dalam file JS.', 'error');
+                    showLoading(false);
                 }
-                showLoading(false);
             };
             
             script.onerror = function() {
-                showNotification('Gagal memuat data peta dari GitHub. Pastikan URL benar.', 'error');
+                clearTimeout(timeout);
+                showNotification('Gagal memuat file datapeta.js. Pastikan file ada di repository.', 'error');
                 showLoading(false);
             };
             
             document.head.appendChild(script);
         }
         
-        // Proses data peta yang telah dimuat
+        // Process data peta
         function processPetaData() {
+            console.log('Memproses data peta...');
+            
             if (!petaData || !petaData.data) {
                 showNotification('Data peta kosong atau tidak valid', 'error');
+                showLoading(false);
                 return;
             }
             
             // Set filtered data awal
             filteredData = [...petaData.data];
             
-            // Update informasi metadata
-            document.getElementById('lastUpdateDate').textContent = petaData.metadata.lastUpdate || '-';
-            document.getElementById('dataSourceUrl').textContent = DATA_PETA_URL;
+            // Update metadata
+            document.getElementById('lastUpdateDate').textContent = 
+                petaData.metadata.lastUpdate || petaData.metadata.generatedAt || '-';
             
             // Update filter dropdowns
             updateFilterDropdowns();
             
-            // Update statistik keseluruhan
+            // Update statistik
             updateOverallStats();
-            
-            // Render peta
-            renderMapData();
-            
-            // Render tabel data
-            renderDataTable();
             
             // Update chart
             updateChart();
+            
+            // Render data
+            renderMapData();
+            renderDataTable();
+            updateKecamatanList();
+            
+            // Sembunyikan loading
+            setTimeout(() => {
+                showLoading(false);
+            }, 500);
+            
+            console.log('Data peta berhasil diproses:', filteredData.length, 'item');
         }
         
-        // Update dropdown filter
+        // Update filter dropdowns
         function updateFilterDropdowns() {
             if (!petaData) return;
             
@@ -853,165 +1026,259 @@
             kecamatanFilter.innerHTML = '<option value="">Semua Kecamatan</option>';
             tahunFilter.innerHTML = '<option value="">Semua Tahun</option>';
             
-            // Kumpulkan kecamatan unik
+            // Collect unique values
             const kecamatanSet = new Set();
             const tahunSet = new Set();
             
             petaData.data.forEach(item => {
-                kecamatanSet.add(item.kecamatan);
+                if (item.kecamatan) kecamatanSet.add(item.kecamatan);
                 
-                // Ambil tahun dari distribusi
                 if (item.tahunDistribusi && item.tahunDistribusi.length > 0) {
                     item.tahunDistribusi.forEach(td => {
-                        tahunSet.add(td.tahun);
+                        if (td.tahun) tahunSet.add(td.tahun);
                     });
                 }
             });
             
-            // Tambahkan ke dropdown
+            // Add to dropdowns
             Array.from(kecamatanSet).sort().forEach(kec => {
                 kecamatanFilter.add(new Option(kec, kec));
             });
             
-            Array.from(tahunSet).sort().reverse().forEach(tahun => {
+            Array.from(tahunSet).sort((a, b) => b - a).forEach(tahun => {
                 tahunFilter.add(new Option(tahun, tahun));
             });
         }
         
-        // Update statistik keseluruhan
+        // Update overall statistics
         function updateOverallStats() {
             if (!petaData) return;
             
             const totalDesa = petaData.data.length;
-            const totalPenerima = petaData.metadata.totalPenerima || 0;
-            const totalBantuan = petaData.summary.totalBantuanUang + 
-                                petaData.summary.totalBantuanBarang + 
-                                petaData.summary.totalBantuanJasa;
+            const totalPenerima = petaData.metadata.totalPenerima || 
+                petaData.data.reduce((sum, item) => sum + (item.jumlahPenerima || 0), 0);
+            
+            const totalBantuan = petaData.summary ? 
+                (petaData.summary.totalBantuanUang || 0) + 
+                (petaData.summary.totalBantuanBarang || 0) + 
+                (petaData.summary.totalBantuanJasa || 0) :
+                petaData.data.reduce((sum, item) => sum + (item.totalBantuan || 0), 0);
             
             const rataBantuan = totalPenerima > 0 ? totalBantuan / totalPenerima : 0;
             
-            document.getElementById('totalDesa').textContent = totalDesa;
+            document.getElementById('totalDesa').textContent = formatNumber(totalDesa);
             document.getElementById('totalPenerima').textContent = formatNumber(totalPenerima);
             document.getElementById('totalBantuan').textContent = 'Rp ' + formatNumber(totalBantuan);
             document.getElementById('rataBantuan').textContent = 'Rp ' + formatNumber(rataBantuan.toFixed(0));
         }
         
-        // Render data ke peta
-        function renderMapData() {
-            // Hapus layer sebelumnya
-            removeMarkersFromMap();
-            removeHeatmapFromMap();
+        // Update filtered statistics
+        function updateFilteredStats() {
+            if (!filteredData || filteredData.length === 0) return;
             
-            // Tambahkan marker berdasarkan data
-            addMarkersToMap();
+            const totalPenerima = filteredData.reduce((sum, item) => sum + (item.jumlahPenerima || 0), 0);
+            const totalBantuan = filteredData.reduce((sum, item) => sum + (item.totalBantuan || 0), 0);
+            const rataBantuan = totalPenerima > 0 ? totalBantuan / totalPenerima : 0;
             
-            // Tambahkan heatmap
-            addHeatmapToMap();
+            document.getElementById('totalDesa').textContent = formatNumber(filteredData.length);
+            document.getElementById('totalPenerima').textContent = formatNumber(totalPenerima);
+            document.getElementById('totalBantuan').textContent = 'Rp ' + formatNumber(totalBantuan);
+            document.getElementById('rataBantuan').textContent = 'Rp ' + formatNumber(rataBantuan.toFixed(0));
         }
         
-        // Tambahkan marker ke peta
-        function addMarkersToMap() {
-            if (!petaData || filteredData.length === 0) return;
+        // Update kecamatan list
+        function updateKecamatanList() {
+            if (!petaData) return;
             
-            // Hapus marker lama
-            markers.forEach(marker => map.removeLayer(marker));
-            markers = [];
+            const kecamatanListEl = document.getElementById('kecamatanList');
+            kecamatanListEl.innerHTML = '';
             
-            // Tentukan apakah menggunakan clustering
-            const useClustering = document.getElementById('clusterMarkers').checked;
+            // Group data by kecamatan
+            const kecamatanData = {};
             
-            if (useClustering) {
-                // Inisialisasi marker cluster
-                if (markerCluster) {
-                    markerCluster.clearLayers();
-                } else {
-                    markerCluster = L.markerClusterGroup();
-                }
-            }
-            
-            // Tambahkan marker untuk setiap desa
             filteredData.forEach(item => {
-                if (!item.koordinat || !item.koordinat.lat || !item.koordinat.lng) return;
+                if (!kecamatanData[item.kecamatan]) {
+                    kecamatanData[item.kecamatan] = {
+                        nama: item.kecamatan,
+                        jumlahDesa: 0,
+                        jumlahPenerima: 0,
+                        totalBantuan: 0
+                    };
+                }
                 
-                // Tentukan warna berdasarkan intensitas
-                const color = getIntensityColor(item.jumlahPenerima);
+                kecamatanData[item.kecamatan].jumlahDesa++;
+                kecamatanData[item.kecamatan].jumlahPenerima += item.jumlahPenerima || 0;
+                kecamatanData[item.kecamatan].totalBantuan += item.totalBantuan || 0;
+            });
+            
+            // Sort by jumlah penerima (descending)
+            const sortedKecamatan = Object.values(kecamatanData).sort((a, b) => b.jumlahPenerima - a.jumlahPenerima);
+            
+            // Add to list
+            sortedKecamatan.forEach(kec => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'kecamatan-item';
+                itemEl.innerHTML = `
+                    <div class="kecamatan-name">${kec.nama}</div>
+                    <div class="kecamatan-count">${kec.jumlahPenerima} penerima</div>
+                    <div class="small text-muted">${kec.jumlahDesa} desa</div>
+                `;
                 
-                // Buat custom marker icon
-                const icon = L.divIcon({
-                    html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>`,
-                    className: 'custom-marker',
-                    iconSize: [24, 24]
+                itemEl.addEventListener('click', function() {
+                    document.getElementById('kecamatanFilter').value = kec.nama;
+                    applyFilters();
                 });
                 
-                // Buat marker
-                const marker = L.marker([item.koordinat.lat, item.koordinat.lng], { icon: icon });
+                kecamatanListEl.appendChild(itemEl);
+            });
+        }
+        
+        // Render map data
+        function renderMapData() {
+            updateMapDisplay();
+            
+            // Auto zoom if enabled
+            if (document.getElementById('autoZoom').checked) {
+                zoomToFilteredData();
+            }
+        }
+        
+        // Add markers to map
+        function addMarkersToMap() {
+            if (!filteredData || filteredData.length === 0) return;
+            
+            // Clear existing markers
+            removeMarkersFromMap();
+            
+            // Check clustering option
+            const useClustering = document.getElementById('clusterMarkers').checked;
+            
+            if (useClustering && !markerCluster) {
+                markerCluster = L.markerClusterGroup({
+                    maxClusterRadius: 50,
+                    spiderfyOnMaxZoom: true,
+                    showCoverageOnHover: false,
+                    zoomToBoundsOnClick: true
+                });
+            }
+            
+            // Add markers for each location
+            filteredData.forEach(item => {
+                if (!item.koordinat || !item.koordinat.lat || !item.koordinat.lng) {
+                    console.warn('Koordinat tidak valid untuk:', item.desa);
+                    return;
+                }
                 
-                // Tambahkan popup dengan informasi
-                const popupContent = createPopupContent(item);
-                marker.bindPopup(popupContent);
+                // Determine color based on intensity
+                const color = getIntensityColor(item.jumlahPenerima || 0);
                 
-                // Tambahkan tooltip
-                marker.bindTooltip(`${item.desa}, ${item.kecamatan} (${item.jumlahPenerima} penerima)`);
+                // Create custom marker
+                const icon = L.divIcon({
+                    html: `
+                        <div style="
+                            background-color: ${color}; 
+                            width: 24px; 
+                            height: 24px; 
+                            border-radius: 50%; 
+                            border: 3px solid white; 
+                            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: bold;
+                            font-size: 10px;
+                        ">
+                            ${Math.min(item.jumlahPenerima || 0, 99)}
+                        </div>`,
+                    className: 'custom-marker',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15]
+                });
                 
-                // Simpan marker
-                markers.push(marker);
+                // Create marker
+                const marker = L.marker([item.koordinat.lat, item.koordinat.lng], { 
+                    icon: icon,
+                    title: `${item.desa}, ${item.kecamatan}`
+                });
                 
-                // Tambahkan ke peta atau cluster
+                // Add popup
+                marker.bindPopup(createPopupContent(item));
+                
+                // Add tooltip
+                if (document.getElementById('showLabels').checked) {
+                    marker.bindTooltip(`${item.desa} (${item.jumlahPenerima || 0})`, {
+                        permanent: false,
+                        direction: 'top'
+                    });
+                }
+                
+                // Add to map or cluster
                 if (useClustering) {
                     markerCluster.addLayer(marker);
                 } else {
                     marker.addTo(map);
                 }
+                
+                markers.push(marker);
             });
             
-            // Tambahkan cluster ke peta jika digunakan
+            // Add cluster to map if using clustering
             if (useClustering && markerCluster) {
                 map.addLayer(markerCluster);
             }
         }
         
-        // Hapus marker dari peta
+        // Remove markers from map
         function removeMarkersFromMap() {
-            markers.forEach(marker => map.removeLayer(marker));
+            markers.forEach(marker => {
+                if (markerCluster && markerCluster.hasLayer(marker)) {
+                    markerCluster.removeLayer(marker);
+                } else {
+                    map.removeLayer(marker);
+                }
+            });
+            
             markers = [];
             
             if (markerCluster) {
                 map.removeLayer(markerCluster);
+                markerCluster.clearLayers();
             }
         }
         
-        // Tambahkan heatmap ke peta
+        // Add heatmap to map
         function addHeatmapToMap() {
-            if (!petaData || filteredData.length === 0) return;
+            if (!filteredData || filteredData.length === 0) return;
             
-            // Hapus heatmap lama
+            // Remove existing heatmap
             removeHeatmapFromMap();
             
-            // Siapkan data untuk heatmap (lat, lng, intensity)
-            const heatmapData = filteredData.map(item => {
-                if (!item.koordinat || !item.koordinat.lat || !item.koordinat.lng) return null;
-                
-                // Intensitas berdasarkan jumlah penerima
-                const intensity = Math.min(1, item.jumlahPenerima / 100);
-                
-                return [item.koordinat.lat, item.koordinat.lng, intensity];
-            }).filter(item => item !== null);
+            // Prepare heatmap data
+            const heatmapData = filteredData
+                .filter(item => item.koordinat && item.koordinat.lat && item.koordinat.lng)
+                .map(item => {
+                    const intensity = Math.min(1, (item.jumlahPenerima || 0) / 100);
+                    return [item.koordinat.lat, item.koordinat.lng, intensity];
+                });
             
-            // Buat layer heatmap
-            heatmapLayer = L.heatLayer(heatmapData, {
-                radius: 25,
-                blur: 15,
-                maxZoom: 15,
-                gradient: {
-                    0.1: '#ffffcc',
-                    0.3: '#a1dab4',
-                    0.5: '#41b6c4',
-                    0.8: '#225ea8'
-                }
-            }).addTo(map);
+            // Create heatmap layer
+            if (heatmapData.length > 0) {
+                heatmapLayer = L.heatLayer(heatmapData, {
+                    radius: 25,
+                    blur: 20,
+                    maxZoom: 16,
+                    gradient: {
+                        0.1: '#ffffcc',
+                        0.3: '#a1dab4',
+                        0.5: '#41b6c4',
+                        0.8: '#225ea8'
+                    }
+                }).addTo(map);
+            }
         }
         
-        // Hapus heatmap dari peta
+        // Remove heatmap from map
         function removeHeatmapFromMap() {
             if (heatmapLayer) {
                 map.removeLayer(heatmapLayer);
@@ -1019,20 +1286,32 @@
             }
         }
         
-        // Buat konten popup untuk marker
+        // Create popup content
         function createPopupContent(item) {
-            const totalBantuan = item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa;
+            const totalBantuan = (item.totalBantuanUang || 0) + (item.totalBantuanBarang || 0) + (item.totalBantuanJasa || 0);
             const rataBantuan = item.jumlahPenerima > 0 ? totalBantuan / item.jumlahPenerima : 0;
             
-            let content = `
+            let jenisBantuanHtml = '';
+            if (item.jenisBantuan && item.jenisBantuan.length > 0) {
+                item.jenisBantuan.forEach(jenis => {
+                    jenisBantuanHtml += `<div class="popup-stat">
+                        <span class="popup-stat-label">${jenis.jenis}:</span>
+                        <span class="popup-stat-value">${jenis.jumlah} penerima</span>
+                    </div>`;
+                });
+            }
+            
+            return `
                 <div class="popup-content">
-                    <div class="popup-title">${item.desa}</div>
-                    <div class="popup-subtitle">Kecamatan ${item.kecamatan}</div>
+                    <div class="popup-title">${item.desa || 'Desa'}</div>
+                    <div class="popup-subtitle">Kecamatan ${item.kecamatan || '-'}</div>
                     
                     <div class="popup-stat">
                         <span class="popup-stat-label">Jumlah Penerima:</span>
-                        <span class="popup-stat-value">${item.jumlahPenerima}</span>
+                        <span class="popup-stat-value">${item.jumlahPenerima || 0}</span>
                     </div>
+                    
+                    ${jenisBantuanHtml}
                     
                     <div class="popup-stat">
                         <span class="popup-stat-label">Total Bantuan:</span>
@@ -1040,66 +1319,38 @@
                     </div>
                     
                     <div class="popup-stat">
-                        <span class="popup-stat-label">Rata-rata per Penerima:</span>
+                        <span class="popup-stat-label">Rata-rata:</span>
                         <span class="popup-stat-value">Rp ${formatNumber(rataBantuan.toFixed(0))}</span>
                     </div>
                     
-                    <div class="popup-divider"></div>
-                    
                     <div class="popup-stat">
-                        <span class="popup-stat-label">Bantuan Uang:</span>
-                        <span class="popup-stat-value">Rp ${formatNumber(item.totalBantuanUang)}</span>
+                        <span class="popup-stat-label">Uang:</span>
+                        <span class="popup-stat-value">Rp ${formatNumber(item.totalBantuanUang || 0)}</span>
                     </div>
                     
                     <div class="popup-stat">
-                        <span class="popup-stat-label">Bantuan Barang:</span>
-                        <span class="popup-stat-value">${formatNumber(item.totalBantuanBarang)} unit</span>
+                        <span class="popup-stat-label">Barang:</span>
+                        <span class="popup-stat-value">${formatNumber(item.totalBantuanBarang || 0)} unit</span>
                     </div>
                     
                     <div class="popup-stat">
-                        <span class="popup-stat-label">Bantuan Jasa:</span>
-                        <span class="popup-stat-value">${formatNumber(item.totalBantuanJasa)} paket</span>
+                        <span class="popup-stat-label">Jasa:</span>
+                        <span class="popup-stat-value">${formatNumber(item.totalBantuanJasa || 0)} paket</span>
                     </div>
                     
-                    <div class="popup-divider"></div>
-                    
-                    <div class="popup-stat">
-                        <span class="popup-stat-label">Koordinat:</span>
-                        <span class="popup-stat-value">${item.koordinat.lat.toFixed(4)}, ${item.koordinat.lng.toFixed(4)}</span>
-                    </div>
-                    
-                    <div class="mt-3">
-                        <button class="btn btn-sm btn-primary" onclick="zoomToDesa('${item.desa}', '${item.kecamatan}')">
-                            <i class="fas fa-search-plus me-1"></i> Zoom ke Lokasi
+                    <div class="mt-3 text-center">
+                        <button class="btn btn-sm btn-primary" onclick="window.zoomToDesa('${item.desa}', '${item.kecamatan}')">
+                            <i class="fas fa-search-plus me-1"></i> Zoom
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary ms-2" onclick="window.showDesaDetails('${item.desa}', '${item.kecamatan}')">
+                            <i class="fas fa-info-circle me-1"></i> Detail
                         </button>
                     </div>
                 </div>
             `;
-            
-            return content;
         }
         
-        // Fungsi untuk zoom ke desa tertentu
-        function zoomToDesa(desa, kecamatan) {
-            if (!petaData || !petaData.data) return;
-            
-            const item = petaData.data.find(d => d.desa === desa && d.kecamatan === kecamatan);
-            if (item && item.koordinat) {
-                map.setView([item.koordinat.lat, item.koordinat.lng], 14);
-                
-                // Buka popup jika ada marker
-                const marker = markers.find(m => {
-                    const latLng = m.getLatLng();
-                    return latLng.lat === item.koordinat.lat && latLng.lng === item.koordinat.lng;
-                });
-                
-                if (marker) {
-                    marker.openPopup();
-                }
-            }
-        }
-        
-        // Tentukan warna berdasarkan intensitas
+        // Get intensity color
         function getIntensityColor(jumlahPenerima) {
             if (jumlahPenerima <= 10) return intensityColors.rendah;
             if (jumlahPenerima <= 30) return intensityColors.sedang;
@@ -1107,7 +1358,7 @@
             return intensityColors.sangatTinggi;
         }
         
-        // Terapkan filter
+        // Apply filters
         function applyFilters() {
             if (!petaData) return;
             
@@ -1115,58 +1366,61 @@
             const jenisBantuan = document.getElementById('jenisBantuanFilter').value;
             const tahun = document.getElementById('tahunFilter').value;
             
-            // Filter data
+            // Apply filters
             filteredData = petaData.data.filter(item => {
-                // Filter kecamatan
+                // Kecamatan filter
                 if (kecamatan && item.kecamatan !== kecamatan) return false;
                 
-                // Filter jenis bantuan
+                // Jenis bantuan filter
                 if (jenisBantuan) {
-                    const jenis = item.jenisBantuan.find(j => j.jenis === jenisBantuan);
-                    if (!jenis || jenis.jumlah === 0) return false;
+                    const hasJenis = item.jenisBantuan && 
+                        item.jenisBantuan.some(j => j.jenis === jenisBantuan && j.jumlah > 0);
+                    if (!hasJenis) return false;
                 }
                 
-                // Filter tahun
+                // Tahun filter
                 if (tahun) {
-                    const tahunDist = item.tahunDistribusi.find(td => td.tahun == tahun);
-                    if (!tahunDist || tahunDist.jumlah === 0) return false;
+                    const hasTahun = item.tahunDistribusi && 
+                        item.tahunDistribusi.some(t => t.tahun == tahun && t.jumlah > 0);
+                    if (!hasTahun) return false;
                 }
                 
                 return true;
             });
             
-            // Update peta
+            // Update UI
             renderMapData();
-            
-            // Update tabel
-            currentPage = 1;
             renderDataTable();
-            
-            // Update statistik
             updateFilteredStats();
-            
-            // Update chart
             updateChart();
+            updateKecamatanList();
             
-            // Tampilkan notifikasi
-            showNotification(`Menampilkan ${filteredData.length} desa dari ${petaData.data.length} total`, 'info');
+            // Show notification
+            const kecFilterText = kecamatan ? `Kec. ${kecamatan}` : 'Semua Kecamatan';
+            const jenisFilterText = jenisBantuan ? `Jenis: ${jenisBantuan}` : 'Semua Jenis';
+            showNotification(`Filter: ${kecFilterText}, ${jenisFilterText}. Ditemukan ${filteredData.length} desa.`, 'info');
         }
         
-        // Update statistik setelah filter
-        function updateFilteredStats() {
+        // Zoom to filtered data
+        function zoomToFilteredData() {
             if (!filteredData || filteredData.length === 0) return;
             
-            const totalPenerima = filteredData.reduce((sum, item) => sum + item.jumlahPenerima, 0);
-            const totalBantuan = filteredData.reduce((sum, item) => sum + item.totalBantuan, 0);
-            const rataBantuan = totalPenerima > 0 ? totalBantuan / totalPenerima : 0;
+            // Calculate bounds
+            const bounds = L.latLngBounds();
             
-            document.getElementById('totalDesa').textContent = filteredData.length;
-            document.getElementById('totalPenerima').textContent = formatNumber(totalPenerima);
-            document.getElementById('totalBantuan').textContent = 'Rp ' + formatNumber(totalBantuan);
-            document.getElementById('rataBantuan').textContent = 'Rp ' + formatNumber(rataBantuan.toFixed(0));
+            filteredData.forEach(item => {
+                if (item.koordinat && item.koordinat.lat && item.koordinat.lng) {
+                    bounds.extend([item.koordinat.lat, item.koordinat.lng]);
+                }
+            });
+            
+            // Zoom to bounds if valid
+            if (bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
         }
         
-        // Render tabel data
+        // Render data table
         function renderDataTable() {
             const tableBody = document.getElementById('dataTableBody');
             tableBody.innerHTML = '';
@@ -1174,8 +1428,9 @@
             if (!filteredData || filteredData.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="9" class="text-center py-4">
-                            Tidak ada data yang sesuai dengan filter
+                        <td colspan="10" class="text-center py-4">
+                            <i class="fas fa-database fa-2x text-muted mb-3"></i>
+                            <p class="mb-0">Tidak ada data yang sesuai dengan filter</p>
                         </td>
                     </tr>
                 `;
@@ -1184,39 +1439,46 @@
                 return;
             }
             
-            // Hitung pagination
+            // Pagination
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
             const pageData = filteredData.slice(startIndex, endIndex);
             
-            // Isi tabel
+            // Fill table
             pageData.forEach((item, index) => {
-                const totalBantuan = item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa;
+                const totalBantuan = (item.totalBantuanUang || 0) + (item.totalBantuanBarang || 0) + (item.totalBantuanJasa || 0);
                 const rataBantuan = item.jumlahPenerima > 0 ? totalBantuan / item.jumlahPenerima : 0;
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${startIndex + index + 1}</td>
-                    <td><strong>${item.desa}</strong></td>
-                    <td>${item.kecamatan}</td>
-                    <td>${formatNumber(item.jumlahPenerima)}</td>
-                    <td>Rp ${formatNumber(item.totalBantuanUang)}</td>
-                    <td>${formatNumber(item.totalBantuanBarang)}</td>
-                    <td>${formatNumber(item.totalBantuanJasa)}</td>
+                    <td><strong>${item.desa || '-'}</strong></td>
+                    <td>${item.kecamatan || '-'}</td>
+                    <td class="text-center">${formatNumber(item.jumlahPenerima || 0)}</td>
+                    <td>Rp ${formatNumber(item.totalBantuanUang || 0)}</td>
+                    <td>${formatNumber(item.totalBantuanBarang || 0)}</td>
+                    <td>${formatNumber(item.totalBantuanJasa || 0)}</td>
                     <td><strong>Rp ${formatNumber(totalBantuan)}</strong></td>
                     <td>Rp ${formatNumber(rataBantuan.toFixed(0))}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="window.zoomToDesa('${item.desa}', '${item.kecamatan}')">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </button>
+                    </td>
                 `;
                 
-                // Tambahkan event untuk zoom ke lokasi
-                row.addEventListener('click', function() {
-                    zoomToDesa(item.desa, item.kecamatan);
+                // Add click event to row
+                row.addEventListener('click', function(e) {
+                    if (!e.target.closest('button')) {
+                        zoomToDesa(item.desa, item.kecamatan);
+                    }
                 });
                 row.style.cursor = 'pointer';
                 
                 tableBody.appendChild(row);
             });
             
-            // Update info tabel
+            // Update table info
             document.getElementById('tableInfo').textContent = 
                 `Menampilkan ${startIndex + 1} - ${endIndex} dari ${filteredData.length} data`;
             
@@ -1232,42 +1494,56 @@
             
             if (totalPages <= 1) return;
             
-            // Tombol sebelumnya
-            const prevLi = document.createElement('li');
-            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-            prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">Sebelumnya</a>`;
-            paginationEl.appendChild(prevLi);
-            
-            // Nomor halaman
-            const maxPagesToShow = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-            
-            if (endPage - startPage + 1 < maxPagesToShow) {
-                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            // Previous button
+            if (currentPage > 1) {
+                const prevLi = document.createElement('li');
+                prevLi.className = 'page-item';
+                prevLi.innerHTML = `
+                    <a class="page-link" href="#" aria-label="Previous" data-page="${currentPage - 1}">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                `;
+                paginationEl.appendChild(prevLi);
             }
             
-            for (let i = startPage; i <= endPage; i++) {
-                const pageLi = document.createElement('li');
-                pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
-                pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
-                paginationEl.appendChild(pageLi);
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                // Show only some pages
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const pageLi = document.createElement('li');
+                    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationEl.appendChild(pageLi);
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    // Add ellipsis
+                    const ellipsisLi = document.createElement('li');
+                    ellipsisLi.className = 'page-item disabled';
+                    ellipsisLi.innerHTML = '<span class="page-link">...</span>';
+                    paginationEl.appendChild(ellipsisLi);
+                }
             }
             
-            // Tombol berikutnya
-            const nextLi = document.createElement('li');
-            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-            nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">Berikutnya</a>`;
-            paginationEl.appendChild(nextLi);
+            // Next button
+            if (currentPage < totalPages) {
+                const nextLi = document.createElement('li');
+                nextLi.className = 'page-item';
+                nextLi.innerHTML = `
+                    <a class="page-link" href="#" aria-label="Next" data-page="${currentPage + 1}">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                `;
+                paginationEl.appendChild(nextLi);
+            }
             
-            // Event listener untuk pagination
+            // Add event listeners
             paginationEl.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const page = parseInt(this.getAttribute('data-page'));
-                    if (page >= 1 && page <= totalPages) {
+                    if (page && page >= 1 && page <= totalPages) {
                         currentPage = page;
                         renderDataTable();
+                        window.scrollTo({ top: document.getElementById('dataTable').offsetTop - 100, behavior: 'smooth' });
                     }
                 });
             });
@@ -1277,28 +1553,33 @@
         function updateChart() {
             const ctx = document.getElementById('jenisBantuanChart').getContext('2d');
             
-            // Hapus chart lama jika ada
+            // Destroy existing chart
             if (window.jenisBantuanChart) {
                 window.jenisBantuanChart.destroy();
             }
             
             if (!filteredData || filteredData.length === 0) return;
             
-            // Hitung total per jenis bantuan
+            // Calculate totals
             let totalUang = 0, totalBarang = 0, totalJasa = 0;
             let countUang = 0, countBarang = 0, countJasa = 0;
             
             filteredData.forEach(item => {
-                totalUang += item.totalBantuanUang;
-                totalBarang += item.totalBantuanBarang;
-                totalJasa += item.totalBantuanJasa;
+                totalUang += item.totalBantuanUang || 0;
+                totalBarang += item.totalBantuanBarang || 0;
+                totalJasa += item.totalBantuanJasa || 0;
                 
-                countUang += item.statistik.uang.jumlah;
-                countBarang += item.statistik.barang.jumlah;
-                countJasa += item.statistik.jasa.jumlah;
+                // Count penerima per jenis
+                if (item.jenisBantuan) {
+                    item.jenisBantuan.forEach(jenis => {
+                        if (jenis.jenis === 'Uang') countUang += jenis.jumlah || 0;
+                        if (jenis.jenis === 'Barang') countBarang += jenis.jumlah || 0;
+                        if (jenis.jenis === 'Jasa') countJasa += jenis.jumlah || 0;
+                    });
+                }
             });
             
-            // Buat chart
+            // Create chart
             window.jenisBantuanChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -1306,7 +1587,8 @@
                     datasets: [{
                         data: [countUang, countBarang, countJasa],
                         backgroundColor: ['#005f73', '#0a9396', '#ca6702'],
-                        borderWidth: 1
+                        borderColor: ['#004d5c', '#088488', '#b85c02'],
+                        borderWidth: 2
                     }]
                 },
                 options: {
@@ -1314,7 +1596,13 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
                         },
                         tooltip: {
                             callbacks: {
@@ -1322,7 +1610,7 @@
                                     const label = context.label || '';
                                     const value = context.raw || 0;
                                     const total = countUang + countBarang + countJasa;
-                                    const percentage = Math.round((value / total) * 100);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
                                     
                                     let nilai = 0;
                                     if (label === 'Uang') nilai = totalUang;
@@ -1338,7 +1626,7 @@
             });
         }
         
-        // Handle pencarian
+        // Handle search
         function handleSearch() {
             const searchTerm = this.value.toLowerCase().trim();
             const searchResults = document.getElementById('searchResults');
@@ -1350,84 +1638,210 @@
             
             if (!petaData || !petaData.data) return;
             
-            // Cari desa/kecamatan yang sesuai
+            // Search in data
             const results = petaData.data.filter(item => {
-                return item.desa.toLowerCase().includes(searchTerm) || 
-                       item.kecamatan.toLowerCase().includes(searchTerm);
-            }).slice(0, 5); // Batasi hasil
+                const desaMatch = item.desa && item.desa.toLowerCase().includes(searchTerm);
+                const kecamatanMatch = item.kecamatan && item.kecamatan.toLowerCase().includes(searchTerm);
+                const combinedMatch = `${item.desa} ${item.kecamatan}`.toLowerCase().includes(searchTerm);
+                
+                return desaMatch || kecamatanMatch || combinedMatch;
+            }).slice(0, 8); // Limit results
             
-            // Tampilkan hasil
+            // Display results
             if (results.length > 0) {
-                let html = '<div class="list-group">';
+                let html = '<div class="list-group list-group-flush">';
+                
                 results.forEach(item => {
                     html += `
                         <a href="#" class="list-group-item list-group-item-action" 
                            onclick="searchResultClicked('${item.desa}', '${item.kecamatan}'); return false;">
-                            <div><strong>${item.desa}</strong></div>
-                            <small class="text-muted">Kec. ${item.kecamatan} - ${item.jumlahPenerima} penerima</small>
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">${item.desa}</h6>
+                                <small class="text-muted">${item.jumlahPenerima || 0}</small>
+                            </div>
+                            <small class="text-muted">Kec. ${item.kecamatan}</small>
                         </a>
                     `;
                 });
-                html += '</div>';
                 
+                html += '</div>';
                 searchResults.innerHTML = html;
                 searchResults.style.display = 'block';
             } else {
-                searchResults.innerHTML = '<div class="text-muted p-2">Tidak ditemukan</div>';
+                searchResults.innerHTML = `
+                    <div class="alert alert-light mb-0">
+                        <i class="fas fa-search me-2"></i>
+                        Tidak ditemukan
+                    </div>
+                `;
                 searchResults.style.display = 'block';
             }
         }
         
-        // Handle klik hasil pencarian
+        // Handle search result click
         function searchResultClicked(desa, kecamatan) {
             document.getElementById('searchInput').value = '';
             document.getElementById('searchResults').style.display = 'none';
             
-            // Filter berdasarkan desa/kecamatan
+            // Set filter
             document.getElementById('kecamatanFilter').value = kecamatan;
             applyFilters();
             
-            // Zoom ke lokasi
+            // Zoom to location
             zoomToDesa(desa, kecamatan);
         }
         
-        // Tampilkan loading overlay
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        // Zoom to specific desa
+        function zoomToDesa(desa, kecamatan) {
+            if (!petaData || !petaData.data) return;
+            
+            const item = petaData.data.find(d => d.desa === desa && d.kecamatan === kecamatan);
+            
+            if (item && item.koordinat) {
+                map.setView([item.koordinat.lat, item.koordinat.lng], 14);
+                
+                // Open popup if marker exists
+                const marker = markers.find(m => {
+                    const latLng = m.getLatLng ? m.getLatLng() : null;
+                    return latLng && 
+                           Math.abs(latLng.lat - item.koordinat.lat) < 0.001 && 
+                           Math.abs(latLng.lng - item.koordinat.lng) < 0.001;
+                });
+                
+                if (marker) {
+                    marker.openPopup();
+                }
+                
+                showNotification(`Berpindah ke ${desa}, Kec. ${kecamatan}`, 'info');
+            }
         }
         
-        // Tampilkan notifikasi
+        // Show desa details
+        function showDesaDetails(desa, kecamatan) {
+            if (!petaData || !petaData.data) return;
+            
+            const item = petaData.data.find(d => d.desa === desa && d.kecamatan === kecamatan);
+            
+            if (item) {
+                const totalBantuan = (item.totalBantuanUang || 0) + (item.totalBantuanBarang || 0) + (item.totalBantuanJasa || 0);
+                const rataBantuan = item.jumlahPenerima > 0 ? totalBantuan / item.jumlahPenerima : 0;
+                
+                let detailHtml = `
+                    <h5>${item.desa}, ${item.kecamatan}</h5>
+                    <p class="mb-3"><strong>${item.jumlahPenerima || 0}</strong> penerima bantuan</p>
+                    
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Total Bantuan:</th>
+                            <td class="text-end"><strong>Rp ${formatNumber(totalBantuan)}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Rata-rata per Penerima:</th>
+                            <td class="text-end">Rp ${formatNumber(rataBantuan.toFixed(0))}</td>
+                        </tr>
+                        <tr>
+                            <th>Bantuan Uang:</th>
+                            <td class="text-end">Rp ${formatNumber(item.totalBantuanUang || 0)}</td>
+                        </tr>
+                        <tr>
+                            <th>Bantuan Barang:</th>
+                            <td class="text-end">${formatNumber(item.totalBantuanBarang || 0)} unit</td>
+                        </tr>
+                        <tr>
+                            <th>Bantuan Jasa:</th>
+                            <td class="text-end">${formatNumber(item.totalBantuanJasa || 0)} paket</td>
+                        </tr>
+                    </table>
+                `;
+                
+                // Show jenis bantuan
+                if (item.jenisBantuan && item.jenisBantuan.length > 0) {
+                    detailHtml += `<h6 class="mt-3">Distribusi Jenis Bantuan</h6>`;
+                    item.jenisBantuan.forEach(jenis => {
+                        detailHtml += `<div class="mb-1">${jenis.jenis}: ${jenis.jumlah} penerima</div>`;
+                    });
+                }
+                
+                // Show tahun distribusi
+                if (item.tahunDistribusi && item.tahunDistribusi.length > 0) {
+                    detailHtml += `<h6 class="mt-3">Distribusi per Tahun</h6>`;
+                    item.tahunDistribusi.forEach(tahun => {
+                        detailHtml += `<div class="mb-1">${tahun.tahun}: ${tahun.jumlah} penerima</div>`;
+                    });
+                }
+                
+                // Create modal or alert
+                alert(detailHtml);
+            }
+        }
+        
+        // Show loading overlay
+        function showLoading(show, message = 'Memuat data...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const messageEl = document.getElementById('loadingMessage');
+            
+            if (show) {
+                overlay.style.display = 'flex';
+                messageEl.textContent = message;
+            } else {
+                overlay.style.display = 'none';
+            }
+        }
+        
+        // Update loading progress
+        function updateLoadingProgress(percent) {
+            const progressBar = document.getElementById('loadingProgress');
+            if (progressBar) {
+                progressBar.style.width = `${percent}%`;
+                progressBar.textContent = `${percent}%`;
+            }
+        }
+        
+        // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             const title = document.getElementById('notificationTitle');
             const messageEl = document.getElementById('notificationMessage');
+            const icon = document.getElementById('notificationIcon');
             
-            // Set warna berdasarkan tipe
-            let borderColor = '#0a9396'; // default info
-            if (type === 'success') borderColor = '#28a745';
-            if (type === 'error') borderColor = '#dc3545';
-            if (type === 'warning') borderColor = '#ffc107';
+            // Set type
+            notification.className = 'notification';
+            notification.classList.add(type);
             
-            notification.style.borderLeftColor = borderColor;
+            // Set icon
+            let iconClass = 'fas fa-info-circle';
+            if (type === 'success') iconClass = 'fas fa-check-circle';
+            if (type === 'error') iconClass = 'fas fa-exclamation-circle';
+            if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+            
+            icon.innerHTML = `<i class="${iconClass} fa-2x"></i>`;
+            
+            // Set content
             title.textContent = type.charAt(0).toUpperCase() + type.slice(1);
             messageEl.textContent = message;
             
+            // Show notification
             notification.classList.add('show');
             
-            // Sembunyikan otomatis setelah 5 detik
+            // Auto hide after 5 seconds
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 5000);
         }
         
-        // Format angka dengan pemisah ribuan
+        // Format number with thousands separator
         function formatNumber(num) {
             return new Intl.NumberFormat('id-ID').format(num);
         }
         
-        // Ekspos fungsi ke global scope untuk digunakan di popup
+        // Expose functions to global scope
         window.zoomToDesa = zoomToDesa;
+        window.showDesaDetails = showDesaDetails;
         window.searchResultClicked = searchResultClicked;
+        window.loadPetaData = loadPetaData;
+        
+        // Initial log
+        console.log('Script peta statistik siap digunakan');
     </script>
 </body>
 </html>
