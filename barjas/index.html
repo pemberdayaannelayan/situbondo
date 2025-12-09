@@ -151,20 +151,6 @@
             color: white;
         }
 
-        /* Menu yang terkunci untuk tamu */
-        .nav-link.disabled-for-guest {
-            opacity: 0.6;
-            cursor: not-allowed !important;
-            position: relative;
-        }
-        
-        .nav-link.disabled-for-guest::after {
-            content: "🔒";
-            position: absolute;
-            right: 10px;
-            font-size: 0.8rem;
-        }
-        
         /* Content Styling */
         .section-title {
             font-family: 'Montserrat', sans-serif;
@@ -211,17 +197,6 @@
             background: var(--gradient-accent);
             color: white;
             border: none;
-        }
-
-        .btn-guest {
-            background: linear-gradient(90deg, #6c757d, #adb5bd);
-            color: white;
-            border: none;
-        }
-
-        .btn-guest:hover {
-            background: linear-gradient(90deg, #5a6268, #868e96);
-            color: white;
         }
 
         /* Forms */
@@ -612,20 +587,6 @@
             box-shadow: 0 10px 20px rgba(238, 155, 0, 0.3);
         }
 
-        /* Guest Badge */
-        .guest-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: linear-gradient(90deg, #6c757d, #adb5bd);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 100;
-        }
-
         /* Logo Garuda */
         .logo-garuda {
             width: 80px;
@@ -638,6 +599,16 @@
             width: 40px;
             height: 40px;
             object-fit: contain;
+        }
+
+        /* Filter Container */
+        .filter-container {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--secondary-color);
         }
     </style>
 </head>
@@ -678,15 +649,10 @@
                         </div>
                         
                         <div class="row g-2 mb-4">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <button type="submit" class="btn btn-login text-white w-100 py-3 fw-bold shadow-sm" id="loginButton">
-                                    <span class="login-button-text">MASUK ADMIN</span>
+                                    <span class="login-button-text">MASUK SISTEM</span>
                                     <span class="spinner-border spinner-border-sm d-none" id="loginSpinner"></span>
-                                </button>
-                            </div>
-                            <div class="col-6">
-                                <button type="button" class="btn btn-guest text-white w-100 py-3 fw-bold shadow-sm" id="guestLoginButton">
-                                    <i class="fas fa-user me-1"></i> MASUK TAMU
                                 </button>
                             </div>
                         </div>
@@ -725,7 +691,7 @@
                         <i class="fas fa-sync-alt me-2"></i> RELOAD DATA SEKARANG
                     </button>
                     
-                    <button type="button" class="btn btn-outline-light w-100 mt-3" id="skipReloadBtn" style="display: none;">
+                    <button type="button" class="btn btn-outline-light w-100 mt-3" id="skipReloadBtn">
                         <i class="fas fa-forward me-2"></i> LEWATI DAN LANJUTKAN
                     </button>
                     
@@ -744,11 +710,6 @@
         </button>
         
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
-        
-        <!-- Guest Badge (akan ditampilkan jika login sebagai tamu) -->
-        <div class="guest-badge d-none" id="guestBadge">
-            <i class="fas fa-user me-1"></i> MODE TAMU
-        </div>
         
         <div class="app-container animate-fadeIn">
             <div class="app-header">
@@ -1027,11 +988,19 @@
                         <div class="tab-pane fade" id="v-pills-data" role="tabpanel">
                             <h3 class="section-title">Database Bantuan</h3>
                             <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
                                     <span><i class="fas fa-database me-2"></i> Daftar Penerima</span>
-                                    <div class="input-group" style="max-width: 300px;">
-                                        <input type="text" class="form-control form-control-sm" id="searchData" placeholder="Cari data...">
-                                        <button class="btn btn-sm btn-light border" id="clearSearchBtn"><i class="fas fa-times"></i></button>
+                                    <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                                        <select class="form-select form-select-sm" id="filterKecamatanData" style="width: auto;">
+                                            <option value="">Semua Kecamatan</option>
+                                        </select>
+                                        <select class="form-select form-select-sm" id="filterDesaData" style="width: auto;">
+                                            <option value="">Semua Desa</option>
+                                        </select>
+                                        <div class="input-group" style="max-width: 300px;">
+                                            <input type="text" class="form-control form-control-sm" id="searchData" placeholder="Cari data...">
+                                            <button class="btn btn-sm btn-light border" id="clearSearchBtn"><i class="fas fa-times"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
@@ -1555,14 +1524,14 @@
         // --- GLOBAL VARIABLES & CONSTANTS ---
         let appData = [];
         let appSettings = {
-            securityCode: 'BidangPN1945', // KONSISTENSI: Default Hardcoded
+            securityCode: 'BidangPN1945',
             itemsPerPage: 25,
             notifications: true,
             appName: 'SISTEM BANTUAN NELAYAN',
             appSubtitle: 'Dinas Peternakan dan Perikanan Kab. Situbondo',
             defaultTahun: new Date().getFullYear(),
             lastBackupDate: '-',
-            privacyMode: true // Default Enabled (ON)
+            privacyMode: true
         };
         let currentPage = 1;
         let filteredData = [];
@@ -1571,15 +1540,13 @@
         let isBlocked = false;
         let blockTimeout;
         let generatedCodes = {};
-        let isGuest = false; // Variabel baru untuk mode tamu
         
-        // Konstanta keamanan refactored
         const SECURITY_CONSTANTS = {
             PIN: '17081945',
             DEFAULT_PASS: 'BidangPN1945'
         };
 
-        let pendingSecurityAction = null; // Menyimpan fungsi callback untuk aksi yang butuh PIN
+        let pendingSecurityAction = null;
         
         const kecamatanList = [
             "Arjasa", "Asembagus", "Banyuglugur", "Banyuputih", "Besuki", 
@@ -1618,6 +1585,9 @@
             fillKecamatanDropdown();
             fillDesaDropdown();
             
+            // Fill filter dropdowns for data table
+            fillFilterDropdownsForDataTable();
+            
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('tanggalTerima').value = today;
             
@@ -1630,7 +1600,6 @@
         function setupEventListeners() {
             // Login & Auth
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            document.getElementById('guestLoginButton').addEventListener('click', handleGuestLogin);
             
             // Welcome Modal
             document.getElementById('welcomeReloadBtn').addEventListener('click', handleWelcomeReload);
@@ -1668,7 +1637,11 @@
             document.getElementById('searchData').addEventListener('input', handleSearch);
             document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
             
-            // Filter
+            // Filter for Data Table
+            document.getElementById('filterKecamatanData').addEventListener('change', handleDataTableFilter);
+            document.getElementById('filterDesaData').addEventListener('change', handleDataTableFilter);
+            
+            // Advanced Filter
             document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
             document.getElementById('resetFilterBtn').addEventListener('click', resetFilter);
             
@@ -1801,6 +1774,20 @@
                 desaList.forEach(desa => select.add(new Option(desa, desa)));
             });
         }
+        
+        function fillFilterDropdownsForDataTable() {
+            // Fill kecamatan filter for data table
+            const kecFilter = document.getElementById('filterKecamatanData');
+            kecFilter.innerHTML = '';
+            kecFilter.add(new Option('Semua Kecamatan', ''));
+            kecamatanList.forEach(kec => kecFilter.add(new Option(kec, kec)));
+            
+            // Fill desa filter for data table
+            const desaFilter = document.getElementById('filterDesaData');
+            desaFilter.innerHTML = '';
+            desaFilter.add(new Option('Semua Desa', ''));
+            desaList.forEach(desa => desaFilter.add(new Option(desa, desa)));
+        }
 
         // --- AUTHENTICATION ---
         function handleLogin(e) {
@@ -1819,7 +1806,6 @@
                     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
                     if (loginModal) loginModal.hide();
                     
-                    isGuest = false;
                     showWelcomeMessage();
                 } else {
                     loginAttempts++;
@@ -1838,50 +1824,28 @@
 
                 loginButton.disabled = false;
                 document.getElementById('loginSpinner').classList.add('d-none');
-                document.querySelector('.login-button-text').textContent = 'MASUK APLIKASI';
+                document.querySelector('.login-button-text').textContent = 'MASUK SISTEM';
             }, 500);
-        }
-        
-        function handleGuestLogin() {
-            isGuest = true;
-            const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-            if (loginModal) loginModal.hide();
-            
-            showWelcomeMessage();
         }
         
         function showWelcomeMessage() {
             const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
             const welcomeMessage = document.getElementById('welcomeMessage');
-            const skipBtn = document.getElementById('skipReloadBtn');
             
-            if (isGuest) {
-                welcomeMessage.innerHTML = `
-                    <strong>Selamat datang Tamu!</strong><br>
-                    Anda login dalam mode tamu dengan akses terbatas.<br>
-                    <small class="text-white-75">Hanya dapat melihat Dashboard, Data Bantuan, dan Reload Data</small>
-                `;
-                document.getElementById('guestBadge').classList.remove('d-none');
-                skipBtn.style.display = 'block';
-            } else {
-                const hours = new Date().getHours();
-                let greeting = '';
-                if (hours < 11) greeting = 'Pagi';
-                else if (hours < 15) greeting = 'Siang';
-                else if (hours < 19) greeting = 'Sore';
-                else greeting = 'Malam';
-                
-                welcomeMessage.innerHTML = `
-                    <strong>Selamat ${greeting}!</strong><br>
-                    Selamat datang di Sistem Bantuan Nelayan Kabupaten Situbondo.<br>
-                    <small class="text-white-75">Login sebagai Administrator</small>
-                `;
-                document.getElementById('guestBadge').classList.add('d-none');
-                skipBtn.style.display = 'none';
-            }
+            const hours = new Date().getHours();
+            let greeting = '';
+            if (hours < 11) greeting = 'Pagi';
+            else if (hours < 15) greeting = 'Siang';
+            else if (hours < 19) greeting = 'Sore';
+            else greeting = 'Malam';
+            
+            welcomeMessage.innerHTML = `
+                <strong>Selamat ${greeting}!</strong><br>
+                Selamat datang di Sistem Bantuan Nelayan Kabupaten Situbondo.<br>
+                <small class="text-white-75">Login sebagai Administrator - Akses penuh</small>
+            `;
             
             welcomeModal.show();
-            applyGuestRestrictions();
         }
         
         function handleWelcomeReload() {
@@ -1890,7 +1854,6 @@
             
             handleReloadFromRepo();
             
-            // Set timeout untuk memastikan aplikasi dimuat setelah reload
             setTimeout(() => {
                 document.getElementById('appContent').style.display = 'block';
                 showNotification('Selamat datang! Sistem siap digunakan.', 'success');
@@ -1903,50 +1866,6 @@
             
             document.getElementById('appContent').style.display = 'block';
             showNotification('Selamat datang! Sistem siap digunakan.', 'success');
-        }
-        
-        function applyGuestRestrictions() {
-            const restrictedMenus = [
-                'v-pills-input-tab',
-                'v-pills-print-tab',
-                'v-pills-export-tab',
-                'v-pills-backup-tab',
-                'v-pills-settings-tab'
-            ];
-            
-            restrictedMenus.forEach(menuId => {
-                const menu = document.getElementById(menuId);
-                if (menu) {
-                    menu.classList.add('disabled-for-guest');
-                    menu.setAttribute('disabled', 'disabled');
-                    menu.style.pointerEvents = 'none';
-                }
-            });
-            
-            // Sembunyikan FAB button untuk tamu
-            if (isGuest) {
-                document.getElementById('fabBtn').style.display = 'none';
-            } else {
-                document.getElementById('fabBtn').style.display = 'flex';
-            }
-            
-            // Sembunyikan smart menu item yang terbatas
-            const restrictedSmartItems = [
-                'v-pills-input-tab',
-                'v-pills-print-tab',
-                'v-pills-export-tab',
-                'v-pills-backup-tab',
-                'v-pills-settings-tab'
-            ];
-            
-            restrictedSmartItems.forEach(item => {
-                const smartItem = document.querySelector(`.smart-menu-item[onclick*="${item}"]`);
-                if (smartItem) {
-                    smartItem.style.opacity = '0.5';
-                    smartItem.style.pointerEvents = 'none';
-                    smartItem.title = 'Tidak tersedia untuk tamu';
-                }
-            });
         }
         
         function togglePasswordVisibility(btn, inputId) {
@@ -1993,32 +1912,11 @@
             if (confirm('Apakah Anda yakin ingin keluar?')) {
                 document.getElementById('appContent').style.display = 'none';
                 document.getElementById('securityCode').value = '';
-                document.getElementById('guestBadge').classList.add('d-none');
-                isGuest = false;
-                resetGuestRestrictions();
                 new bootstrap.Modal(document.getElementById('loginModal')).show();
                 showNotification('Anda telah berhasil logout.', 'info');
             }
         }
         
-        function resetGuestRestrictions() {
-            const allMenus = document.querySelectorAll('.nav-link');
-            allMenus.forEach(menu => {
-                menu.classList.remove('disabled-for-guest');
-                menu.removeAttribute('disabled');
-                menu.style.pointerEvents = 'auto';
-            });
-            
-            document.getElementById('fabBtn').style.display = 'flex';
-            
-            const allSmartItems = document.querySelectorAll('.smart-menu-item');
-            allSmartItems.forEach(item => {
-                item.style.opacity = '';
-                item.style.pointerEvents = '';
-                item.title = '';
-            });
-        }
-
         // --- SECURITY & PRIVACY LOGIC ---
         function requestHighSecurityAction(callback) {
             pendingSecurityAction = callback;
@@ -2140,12 +2038,6 @@
         // --- FORM HANDLING & VALIDATION ---
         function handleFormSubmit(e) {
             e.preventDefault();
-            
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Halaman ini tidak tersedia untuk tamu.', 'error');
-                return;
-            }
             
             if (!validateForm()) {
                 showNotification('Harap perbaiki data yang salah pada formulir.', 'error');
@@ -2371,12 +2263,6 @@
         function handleSaveSettings(e) {
             e.preventDefault();
             
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Halaman ini tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const newSecurityCode = document.getElementById('settingSecurityCode').value;
             if (newSecurityCode && newSecurityCode.trim() !== "") {
                 appSettings.securityCode = newSecurityCode;
@@ -2431,31 +2317,20 @@
                 const whatsappClass = appSettings.privacyMode ? 'text-muted text-decoration-none' : 'whatsapp-number';
                 const privacyClass = appSettings.privacyMode ? 'privacy-blurred' : '';
                 
-                // Tombol aksi - untuk tamu, tombol edit/hapus disembunyikan
-                let actionButtons = '';
-                if (isGuest) {
-                    actionButtons = `
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-info text-white" onclick="showDetailData(${data.id})" title="Lihat Detail">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    actionButtons = `
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-info text-white" onclick="showDetailData(${data.id})" title="Lihat Detail">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-warning text-white" onclick="editData(${data.id})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-danger" onclick="deleteData(${data.id})" title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                }
+                // Tombol aksi
+                let actionButtons = `
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-info text-white" onclick="showDetailData(${data.id})" title="Lihat Detail">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-warning text-white" onclick="editData(${data.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteData(${data.id})" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
                 
                 row.innerHTML = `
                     <td>${i + 1}</td>
@@ -2525,14 +2400,33 @@
         
         function handleSearch() {
             const searchTerm = document.getElementById('searchData').value.toLowerCase();
-            isFilterActive = !!searchTerm;
-            filteredData = isFilterActive ? appData.filter(d => Object.values(d).some(v => String(v).toLowerCase().includes(searchTerm))) : [];
+            const filterKecamatan = document.getElementById('filterKecamatanData').value;
+            const filterDesa = document.getElementById('filterDesaData').value;
+            
+            isFilterActive = !!searchTerm || !!filterKecamatan || !!filterDesa;
+            
+            filteredData = appData.filter(d => {
+                const matchesSearch = !searchTerm || Object.values(d).some(v => 
+                    String(v).toLowerCase().includes(searchTerm)
+                );
+                const matchesKecamatan = !filterKecamatan || d.kecamatan === filterKecamatan;
+                const matchesDesa = !filterDesa || d.desa === filterDesa;
+                
+                return matchesSearch && matchesKecamatan && matchesDesa;
+            });
+            
             currentPage = 1;
             renderDataTable();
         }
         
+        function handleDataTableFilter() {
+            handleSearch();
+        }
+        
         function clearSearch() {
             document.getElementById('searchData').value = '';
+            document.getElementById('filterKecamatanData').value = '';
+            document.getElementById('filterDesaData').value = '';
             handleSearch();
         }
         
@@ -2597,12 +2491,6 @@
         
         // --- CRUD ACTIONS ---
         function editData(id) {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur edit tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const data = appData.find(item => item.id === id);
             if (!data) return;
             
@@ -2620,14 +2508,7 @@
             showNotification('Mode edit aktif. Klik "Simpan Data" setelah selesai.', 'info');
         }
         
-        // Modified Delete Data with Security PIN
         function deleteData(id) {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur hapus tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             if (confirm('Konfirmasi: Anda yakin ingin menghapus data ini?')) {
                 requestHighSecurityAction(() => {
                     appData = appData.filter(item => item.id !== id);
@@ -2731,12 +2612,6 @@
         }
 
         function printToPdf() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur cetak tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const dataToPrint = getFilteredDataForExport('print');
             if (dataToPrint.length === 0) return showNotification('Tidak ada data untuk dicetak sesuai filter.', 'warning');
             
@@ -2762,12 +2637,6 @@
         }
         
         function showPreview() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur pratinjau tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const dataToPreview = getFilteredDataForExport('print');
             if (dataToPreview.length === 0) return showNotification('Tidak ada data untuk pratinjau sesuai filter.', 'warning');
 
@@ -2795,12 +2664,6 @@
         }
 
         function exportData(format) {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur ekspor tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const dataToExport = getFilteredDataForExport('export');
             if (dataToExport.length === 0) return showNotification('Tidak ada data untuk diekspor sesuai filter.', 'warning');
 
@@ -2851,12 +2714,6 @@
         }
 
         function backupData() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur backup tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             if (appData.length === 0) return showNotification('Tidak ada data untuk dibackup.', 'warning');
             
             // 1. Siapkan data JSON
@@ -2978,12 +2835,6 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
         }
         
         function restoreData() {
-            // Cek jika tamu mencoba akses
-            if (isGuest) {
-                showNotification('Akses ditolak! Fitur restore tidak tersedia untuk tamu.', 'error');
-                return;
-            }
-            
             const file = document.getElementById('restoreFileInput').files[0];
             if (!file || !confirm('PENTING: Restore akan menimpa semua data. Lanjutkan?')) return;
             
