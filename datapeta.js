@@ -1,21 +1,21 @@
 // DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
-// Generated: 9/12/2025, 23.37.25
+// Generated: 10/12/2025, 09.17.09
 // Total Desa: 27
 // Total Penerima: 393
 // Sumber: Sistem Bantuan Nelayan Kab. Situbondo
-// Last Update: 9 Desember 2025 pukul 23.35
+// Last Update: 10 Desember 2025 pukul 09.16
 
 window.DATA_PETA_STATISTIK = {
   "metadata": {
-    "generatedAt": "2025-12-09T16:35:41.873Z",
-    "timestamp": 1765298141873,
+    "generatedAt": "2025-12-10T02:16:56.339Z",
+    "timestamp": 1765333016339,
     "totalDesa": 27,
     "totalPenerima": 393,
     "sumber": "Sistem Bantuan Nelayan Kab. Situbondo",
     "instansi": "Dinas Peternakan dan Perikanan Kab. Situbondo",
     "bidang": "Pemberdayaan Nelayan",
     "versi": "2.0",
-    "lastUpdate": "9 Desember 2025 pukul 23.35"
+    "lastUpdate": "10 Desember 2025 pukul 09.16"
   },
   "summary": {
     "totalBantuanUang": 0,
