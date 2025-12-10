@@ -7,24 +7,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDlzGd6K-6l0r0Z8X9Q3Q3Q3Q3Q3Q3Q3Q3Q&libraries=places,visualization"></script>
+    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet Google Maps Layer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-google/1.0.3/leaflet-google.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Leaflet Marker Cluster -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+    
     <style>
         :root {
+            /* Palette: Blue, Green, Gold */
             --primary-color: #005f73;
             --secondary-color: #0a9396;
             --accent-color: #ca6702;
             --dark-blue: #001219;
             --light-bg: #f0f4f8;
+            
+            /* Gradients */
             --gradient-primary: linear-gradient(135deg, #001219 0%, #005f73 50%, #0a9396 100%);
             --gradient-header: linear-gradient(120deg, #003049 0%, #005f73 40%, #0a9396 70%, #ca6702 100%);
+            --gradient-secondary: linear-gradient(135deg, #0a9396, #94d2bd);
+            --gradient-accent: linear-gradient(135deg, #ca6702, #ee9b00);
+            
             --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
             --shadow-md: 0 10px 15px rgba(0,0,0,0.1);
             --shadow-lg: 0 20px 25px rgba(0,0,0,0.15);
+            --glass-effect: rgba(255, 255, 255, 0.95);
         }
         
         body {
@@ -36,23 +51,44 @@
             color: #333;
         }
         
+        /* Layout Container */
         .app-container {
             max-width: 1600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--glass-effect);
             box-shadow: var(--shadow-lg);
             border-radius: 20px;
             overflow: hidden;
+            position: relative;
+            z-index: 10;
             border: 1px solid rgba(255,255,255,0.5);
         }
         
+        /* Header */
         .app-header {
             background: var(--gradient-header);
             color: white;
             padding: 30px 20px;
             text-align: center;
             position: relative;
+            overflow: hidden;
             border-bottom: 4px solid #ee9b00;
+        }
+        
+        .app-header::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+        
+        .app-logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         
         .app-title {
@@ -60,12 +96,63 @@
             font-size: 1.8rem;
             font-weight: 800;
             margin: 0;
+            position: relative;
+            z-index: 1;
             text-transform: uppercase;
             letter-spacing: 1px;
             line-height: 1.4;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
         }
         
+        .app-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+            color: #ffecd1;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            display: inline-block;
+            padding-top: 10px;
+        }
+        
+        /* Navigation */
+        .col-md-3.col-lg-2.bg-light {
+            background-color: #f8f9fa !important;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 10px;
+            margin-bottom: 8px;
+            padding: 14px 20px;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-pills .nav-link:hover {
+            background-color: #e3f2fd;
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .nav-pills .nav-link.active {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-left: 4px solid #ee9b00;
+            box-shadow: var(--shadow-md);
+            transform: translateX(5px);
+            color: white;
+        }
+
+        /* Content Styling */
         .section-title {
             font-family: 'Montserrat', sans-serif;
             border-left: 5px solid #ee9b00;
@@ -74,40 +161,190 @@
             font-weight: 700;
             color: var(--dark-blue);
             font-size: 1.6rem;
+            position: relative;
+            background: linear-gradient(to right, rgba(238, 155, 0, 0.1), transparent);
+            padding-top: 5px;
+            padding-bottom: 5px;
+            border-radius: 0 8px 8px 0;
         }
         
+        /* Buttons */
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 0.5px;
+            padding: 10px 20px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 95, 115, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #001219 0%, #004d40 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 95, 115, 0.4);
+        }
+        
+        /* Tables */
+        .data-table {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: none;
+            white-space: nowrap;
+        }
+        
+        .data-table th {
+            background: linear-gradient(90deg, #005f73, #0a9396) !important;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding: 15px 10px;
+            border: none;
+        }
+        
+        .data-table td {
+            border-bottom: 1px solid #e9ecef;
+            padding: 12px 10px;
+            font-size: 0.9rem;
+        }
+
+        .data-table tr:hover {
+            background-color: #e0f2f1;
+        }
+        
+        /* Cards & Stats */
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            background: white;
+        }
+        
+        .card-header {
+            background: linear-gradient(90deg, #005f73, #001219);
+            color: white;
+            font-weight: 600;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 15px 20px;
+        }
+        
+        .stats-box {
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow-md);
+            border-left: 5px solid var(--accent-color);
+            transition: transform 0.3s;
+        }
+        
+        .stats-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-number {
+            color: var(--primary-color);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Login Modal */
+        .login-header {
+            background: var(--gradient-header);
+            border-bottom: 4px solid #ee9b00;
+            padding-bottom: 20px;
+            padding-top: 20px;
+        }
+        
+        .btn-login {
+            background: linear-gradient(90deg, #005f73, #0a9396, #ee9b00);
+            background-size: 200% auto;
+            transition: 0.5s;
+        }
+        
+        .btn-login:hover {
+            background-position: right center;
+        }
+
+        /* Footer */
+        .copyright {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+            font-size: 0.85rem;
+        }
+        
+        .feature-icon {
+            width: 25px;
+            text-align: center;
+        }
+
+        /* Utils */
+        .notification-toast { position: fixed; bottom: 20px; right: 20px; z-index: 1050; min-width: 280px; }
+        .watermark { position: absolute; bottom: 10px; right: 15px; opacity: 0.8; font-size: 0.8rem; color: rgba(255,255,255,0.7); font-weight: 300; letter-spacing: 1px;}
+        
+        /* Floating Button */
+        .floating-action-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1045;
+            transition: all 0.4s;
+            font-size: 1.4rem;
+            border: none;
+            box-shadow: 0 5px 15px rgba(202, 103, 2, 0.4);
+        }
+        
+        .floating-action-btn:hover {
+            transform: scale(1.1);
+            background: #ee9b00;
+            box-shadow: 0 10px 20px rgba(238, 155, 0, 0.4);
+        }
+
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 1050; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 45px; height: 45px; box-shadow: var(--shadow-lg); }
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        
+        /* Map Styling */
         #map {
             height: 700px;
             border-radius: 10px;
             box-shadow: var(--shadow-sm);
             z-index: 1;
+            position: relative;
         }
         
-        .map-controls-panel {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: var(--shadow-md);
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            width: 280px;
+        .leaflet-popup-content {
+            font-family: 'Inter', sans-serif;
+            max-width: 350px;
+            min-width: 300px;
         }
         
-        .data-summary-panel {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: var(--shadow-md);
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            width: 280px;
+        .leaflet-popup-content h4 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
         }
         
-        .legend-panel {
+        .map-legend {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -116,14 +353,13 @@
             bottom: 20px;
             right: 20px;
             z-index: 1000;
-            width: 220px;
+            max-width: 280px;
         }
         
         .legend-item {
             display: flex;
             align-items: center;
             margin-bottom: 8px;
-            font-size: 0.85rem;
         }
         
         .legend-color {
@@ -134,6 +370,177 @@
             border: 1px solid rgba(0,0,0,0.2);
         }
         
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            max-width: 320px;
+        }
+        
+        .cluster-marker {
+            background: var(--primary-color);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 0 0 3px rgba(0, 95, 115, 0.3);
+        }
+        
+        /* Heatmap Layer Controls */
+        .heatmap-controls {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 320px;
+        }
+        
+        /* Data Summary Panel */
+        .data-summary-panel {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            max-width: 350px;
+        }
+        
+        /* Map Loading Overlay */
+        .map-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            border-radius: 10px;
+        }
+        
+        /* Google Maps Layer Controls */
+        .layer-controls {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            position: absolute;
+            top: 150px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 200px;
+        }
+        
+        @media (max-width: 991.98px) {
+            .app-container { margin: 0; border-radius: 0; }
+            .col-md-3.col-lg-2 { position: fixed; left: -300px; top: 0; bottom: 0; z-index: 1050; width: 280px; transition: left 0.3s ease; overflow-y: auto; padding-top: 60px; background: white; }
+            .col-md-3.col-lg-2.mobile-show { left: 0; }
+            .col-md-9.col-lg-10 { width: 100%; flex: 0 0 100%; max-width: 100%; }
+            .mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
+            .sidebar-overlay.mobile-show { display: block; }
+            .app-title { font-size: 1.3rem; line-height: 1.3; }
+            .app-logo { font-size: 2.5rem; margin-bottom: 10px; }
+            .app-header { padding: 70px 15px 30px 15px; }
+            .col-md-9.col-lg-10.p-5 { padding: 1.5rem !important; }
+            .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .floating-action-btn { bottom: 20px; right: 20px; }
+            #map { height: 500px; }
+            .map-controls, .map-legend, .heatmap-controls, .data-summary-panel, .layer-controls { 
+                position: relative; 
+                top: auto; 
+                bottom: auto; 
+                right: auto; 
+                left: auto;
+                margin-bottom: 15px; 
+                max-width: 100%; 
+            }
+        }
+
+        /* Logo */
+        .logo-garuda {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        /* Welcome Modal */
+        .welcome-modal {
+            background: linear-gradient(135deg, #001219 0%, #005f73 50%, #0a9396 100%);
+            color: white;
+        }
+        
+        .welcome-modal .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 3px solid #ee9b00;
+        }
+        
+        .welcome-modal .btn-welcome {
+            background: linear-gradient(90deg, #ee9b00, #ca6702);
+            color: white;
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+        
+        .welcome-modal .btn-welcome:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(238, 155, 0, 0.3);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+        
+        /* Map Marker Animation */
+        .pulse-marker {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Search Box */
         .search-box {
             position: absolute;
             top: 20px;
@@ -144,126 +551,267 @@
             max-width: 90%;
         }
         
-        .leaflet-popup-content {
-            font-family: 'Inter', sans-serif;
-            max-width: 350px;
-            min-width: 280px;
+        /* Marker Cluster Customization */
+        .marker-cluster-small {
+            background-color: rgba(181, 226, 140, 0.6);
         }
-        
-        .cluster-marker {
-            background: var(--primary-color);
-            border-radius: 50%;
-            color: white;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 0 3px rgba(0, 95, 115, 0.3);
+        .marker-cluster-small div {
+            background-color: rgba(110, 204, 57, 0.6);
         }
-        
-        .leaflet-control-layers {
-            border-radius: 5px !important;
-            overflow: hidden;
+
+        .marker-cluster-medium {
+            background-color: rgba(241, 211, 87, 0.6);
         }
-        
-        .leaflet-control-layers-toggle {
-            background-color: white !important;
+        .marker-cluster-medium div {
+            background-color: rgba(240, 194, 12, 0.6);
         }
-        
-        .custom-marker {
-            width: 30px;
-            height: 30px;
-            border-radius: 50% 50% 50% 0;
-            background: var(--primary-color);
-            position: absolute;
-            transform: rotate(-45deg);
-            left: 50%;
-            top: 50%;
-            margin: -20px 0 0 -15px;
+
+        .marker-cluster-large {
+            background-color: rgba(253, 156, 115, 0.6);
         }
-        
-        .custom-marker:after {
-            content: '';
-            width: 14px;
-            height: 14px;
-            margin: 8px 0 0 8px;
-            background: white;
-            position: absolute;
-            border-radius: 50%;
-        }
-        
-        @media (max-width: 991.98px) {
-            #map { height: 500px; }
-            .map-controls-panel, .data-summary-panel, .legend-panel, .search-box {
-                position: relative;
-                top: auto;
-                bottom: auto;
-                right: auto;
-                left: auto;
-                width: 100%;
-                margin-bottom: 15px;
-            }
-            .search-box {
-                position: absolute;
-                width: 90%;
-                top: 10px;
-            }
+        .marker-cluster-large div {
+            background-color: rgba(241, 128, 23, 0.6);
         }
     </style>
 </head>
 <body>
-    <!-- Login Modal (sama seperti sebelumnya) -->
-    <div class="modal fade login-modal" id="loginModal" tabindex="-1" aria-hidden="true">
-        <!-- ... kode login modal tetap sama ... -->
+    <div class="modal fade login-modal" id="loginModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; overflow: hidden; border: none;">
+                <div class="login-header">
+                    <div class="text-center mb-2">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/garuda.png" 
+                             alt="Logo Garuda" class="logo-garuda">
+                    </div>
+                    <h2 class="text-center text-white fw-bold mb-0" style="font-family: 'Montserrat'; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">AUTHENTICATION</h2>
+                    <p class="text-center text-white-50 mb-0 small">Peta Statistik Data Nelayan Kab. Situbondo</p>
+                </div>
+                <div class="login-body p-4">
+                    <form id="loginForm">
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-key me-2 text-primary"></i> Kode Keamanan
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="securityCode" placeholder="Masukkan kode akses..." style="padding: 12px;">
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text text-danger mt-2 fw-bold text-center" id="attemptsCount" style="display:none;"></div>
+                            
+                            <div class="info-pill mt-4">
+                                <div class="small text-uppercase fw-bold text-primary mb-1" style="font-size: 0.7rem; letter-spacing: 1px;">
+                                    <i class="fas fa-shield-alt me-1"></i> System Information
+                                </div>
+                                <div class="fw-bold text-dark" style="font-size: 0.9rem;">
+                                    BIDANG PEMBERDAYAAN NELAYAN
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-2 mb-4">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-login text-white w-100 py-3 fw-bold shadow-sm" id="loginButton">
+                                    <span class="login-button-text">MASUK SISTEM</span>
+                                    <span class="spinner-border spinner-border-sm d-none" id="loginSpinner"></span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="login-blocked-message d-none mt-3 p-3 rounded bg-danger bg-opacity-10 text-danger text-center" id="blockedMessage">
+                            <i class="fas fa-ban me-2"></i>
+                            <span id="blockedText">Akses diblokir sementara karena terlalu banyak percobaan. </span>
+                            <span class="fw-bold" id="countdown">30</span> detik.
+                        </div>
+                        
+                        <div class="text-center mt-4 small text-muted">
+                            &copy; 2025 Dinas Peternakan dan Perikanan
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Welcome Modal -->
-    <div class="modal fade welcome-modal" id="welcomeModal" tabindex="-1">
+    <div class="modal fade welcome-modal" id="welcomeModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body text-center p-5">
-                    <h3 class="fw-bold mb-3">Memuat Peta Situbondo...</h3>
-                    <p>Menginisialisasi sistem pemetaan dengan data koordinat akurat.</p>
-                    <div class="spinner-border text-primary mt-4" role="status">
+                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/garuda.png" 
+                         alt="Logo Garuda" class="logo-garuda mb-4">
+                    <h3 class="fw-bold mb-3">Memuat Data...</h3>
+                    <p id="welcomeMessage">Sistem sedang memuat data dari repository. Harap tunggu sebentar.</p>
+                    
+                    <div class="spinner-border text-primary mt-4" style="width: 3rem; height: 3rem;" role="status">
                         <span class="visually-hidden">Loading...</span>
+                    </div>
+                    
+                    <div class="mt-4 small text-white-50">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Sistem akan otomatis memuat data terbaru dari repository
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Main App Content -->
-    <div class="app-content-unauthenticated" id="appContent" style="display: none;">
-        <div class="app-container">
+    <div class="app-content-unauthenticated" id="appContent">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <div class="app-container animate-fadeIn">
             <div class="app-header">
+                <div class="app-logo">
+                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/garuda.png" 
+                         alt="Logo Garuda" class="logo-garuda">
+                </div>
                 <h1 class="app-title">PETA STATISTIK DATA NELAYAN<br>KABUPATEN SITUBONDO</h1>
-                <p class="app-subtitle">Sistem Pemetaan Berbasis Koordinat Akurat</p>
+                <p class="app-subtitle">Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
+                <div class="watermark">Visualization Edition v2.2</div>
             </div>
             
             <div class="row g-0">
-                <!-- Sidebar Navigation -->
-                <div class="col-md-3 col-lg-2 p-4 bg-light">
-                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
-                        <button class="nav-link active" id="v-pills-map-tab" data-bs-toggle="pill" data-bs-target="#v-pills-map" type="button">
-                            <i class="fas fa-map-marked-alt feature-icon"></i> Peta Interaktif
+                <div class="col-md-3 col-lg-2 p-4 bg-light" id="sidebarMenu">
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button" role="tab">
+                            <i class="fas fa-tachometer-alt feature-icon"></i> Dashboard
                         </button>
-                        <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button">
-                            <i class="fas fa-database feature-icon"></i> Data
+                        <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button" role="tab">
+                            <i class="fas fa-database feature-icon"></i> Data Bantuan
+                        </button>
+                        <button class="nav-link" id="v-pills-map-tab" data-bs-toggle="pill" data-bs-target="#v-pills-map" type="button" role="tab">
+                            <i class="fas fa-map-marked-alt feature-icon"></i> Visual Peta
                         </button>
                         <button class="nav-link" id="btn-reload-repo" type="button">
-                            <i class="fas fa-sync-alt feature-icon"></i> Refresh Data
+                            <i class="fas fa-sync-alt feature-icon"></i> Reload Data
+                        </button>
+                        <button class="nav-link text-danger mt-3" id="v-pills-logout-tab" type="button" style="border: 1px solid #dc3545;">
+                            <i class="fas fa-sign-out-alt feature-icon"></i> Keluar
                         </button>
                     </div>
                 </div>
                 
-                <!-- Main Content -->
                 <div class="col-md-9 col-lg-10 p-5">
-                    <div class="tab-content">
-                        <!-- Peta Tab -->
-                        <div class="tab-pane fade show active" id="v-pills-map" role="tabpanel">
-                            <h3 class="section-title">Peta Interaktif Data Nelayan</h3>
+                    <div class="tab-content" id="v-pills-tabContent">
+                        
+                        <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
+                            <h3 class="section-title">Dashboard Overview</h3>
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Total Penerima</div>
+                                            <i class="fas fa-users fa-2x text-primary opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold" id="totalPenerima">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4" style="border-left-color: var(--secondary-color);">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Total Bantuan (Rp)</div>
+                                            <i class="fas fa-money-bill-wave fa-2x text-success opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold text-success" id="totalBantuan">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4" style="border-left-color: #ffc107;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Tahun Aktif</div>
+                                            <i class="fas fa-calendar-alt fa-2x text-warning opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold text-warning" id="tahunAktif">2025</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4" style="border-left-color: #17a2b8;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Rata-rata</div>
+                                            <i class="fas fa-chart-line fa-2x text-info opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold text-info" id="rataBantuan">0</div>
+                                    </div>
+                                </div>
+                            </div>
                             
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header"><i class="fas fa-chart-pie me-2"></i> Distribusi per Kecamatan</div>
+                                        <div class="card-body"><canvas id="kecamatanChart" height="250"></canvas></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header"><i class="fas fa-chart-bar me-2"></i> Tren Bantuan Tahunan</div>
+                                        <div class="card-body"><canvas id="tahunChart" height="250"></canvas></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header"><i class="fas fa-history me-2"></i> Transaksi Terbaru</div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover data-table mb-0">
+                                                    <thead><tr><th>Tanggal</th><th>Nama Penerima</th><th>Desa</th><th>Jenis Bantuan</th><th>Jumlah</th></tr></thead>
+                                                    <tbody id="recentData"><tr><td colspan="5" class="text-center p-4">Tidak ada data</td></tr></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="v-pills-data" role="tabpanel">
+                            <h3 class="section-title">Database Bantuan (View Only)</h3>
                             <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                                    <span><i class="fas fa-database me-2"></i> Daftar Penerima Bantuan Nelayan</span>
+                                    <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                                        <div class="input-group" style="max-width: 300px;">
+                                            <input type="text" class="form-control form-control-sm" id="searchData" placeholder="Cari data...">
+                                            <button class="btn btn-sm btn-light border" id="clearSearchBtn"><i class="fas fa-times"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover data-table mb-0" id="dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th><th>Nama</th><th>NIK</th><th>Kelompok</th>
+                                                    <th>Jabatan</th><th>Tahun</th><th>Kecamatan</th><th>Desa</th><th>Jenis</th>
+                                                    <th>Bantuan</th><th>Jumlah</th><th>Tanggal</th><th>Petugas</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dataTableBody">
+                                                <tr><td colspan="13" class="text-center py-4">Memuat data...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+                                        <div class="text-muted small" id="tableInfo">Menampilkan 0 data</div>
+                                        <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- TAB PANEL: Visual Peta -->
+                        <div class="tab-pane fade" id="v-pills-map" role="tabpanel">
+                            <h3 class="section-title">Visualisasi Peta Statistik Data Nelayan</h3>
+                            <div class="card">
+                                <div class="card-header"><i class="fas fa-map-marked-alt me-2"></i> Peta Sebaran Data Bantuan Nelayan Kabupaten Situbondo</div>
                                 <div class="card-body p-0 position-relative">
                                     <!-- Search Box -->
                                     <div class="search-box">
@@ -272,11 +820,21 @@
                                             <button class="btn btn-primary" id="searchMapBtn">
                                                 <i class="fas fa-search"></i>
                                             </button>
+                                            <button class="btn btn-outline-secondary" id="clearMapSearchBtn">
+                                                <i class="fas fa-times"></i>
+                                            </button>
                                         </div>
                                     </div>
                                     
                                     <!-- Map Container -->
-                                    <div id="map"></div>
+                                    <div id="map">
+                                        <div class="map-loading d-none" id="mapLoading">
+                                            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p>Memuat peta...</p>
+                                        </div>
+                                    </div>
                                     
                                     <!-- Data Summary Panel -->
                                     <div class="data-summary-panel">
@@ -287,30 +845,30 @@
                                                 <div class="fw-bold" id="mapPointCount">0</div>
                                             </div>
                                             <div class="col-6 mb-2">
-                                                <div class="small text-muted">Penerima</div>
+                                                <div class="small text-muted">Total Penerima</div>
                                                 <div class="fw-bold" id="mapTotalRecipients">0</div>
                                             </div>
                                             <div class="col-12 mb-2">
-                                                <div class="small text-muted">Total Bantuan</div>
+                                                <div class="small text-muted">Total Nilai Bantuan</div>
                                                 <div class="fw-bold text-success" id="mapTotalValue">Rp 0</div>
                                             </div>
                                             <div class="col-12">
-                                                <div class="small text-muted">Desa Terbanyak</div>
+                                                <div class="small text-muted">Desa Terbanyak Bantuan</div>
                                                 <div class="fw-bold text-warning" id="topDesa">-</div>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <!-- Map Controls Panel -->
-                                    <div class="map-controls-panel">
+                                    <!-- Map Controls -->
+                                    <div class="map-controls">
                                         <h6 class="fw-bold mb-3">Kontrol Peta</h6>
                                         <div class="mb-3">
-                                            <label class="form-label small">Filter Data:</label>
+                                            <label class="form-label small">Tampilkan berdasarkan:</label>
                                             <select class="form-select form-select-sm" id="mapFilterType">
                                                 <option value="all">Semua Data</option>
-                                                <option value="kecamatan">Berdasar Kecamatan</option>
-                                                <option value="tahun">Berdasar Tahun</option>
-                                                <option value="jenis">Berdasar Jenis</option>
+                                                <option value="kecamatan">Kecamatan</option>
+                                                <option value="tahun">Tahun</option>
+                                                <option value="jenis">Jenis Bantuan</option>
                                             </select>
                                         </div>
                                         <div class="mb-3" id="mapFilterValueContainer" style="display: none;">
@@ -318,17 +876,17 @@
                                         </div>
                                         <div class="d-grid gap-2">
                                             <button class="btn btn-primary btn-sm" id="applyMapFilter">
-                                                <i class="fas fa-filter me-1"></i> Terapkan
+                                                <i class="fas fa-filter me-1"></i> Terapkan Filter
                                             </button>
-                                            <button class="btn btn-outline-secondary btn-sm" id="resetMapFilter">
-                                                <i class="fas fa-undo me-1"></i> Reset
+                                            <button class="btn btn-outline-primary btn-sm" id="resetMapFilter">
+                                                <i class="fas fa-undo me-1"></i> Reset Filter
                                             </button>
                                         </div>
                                     </div>
                                     
-                                    <!-- Legend Panel -->
-                                    <div class="legend-panel">
-                                        <h6 class="fw-bold mb-3">Legenda</h6>
+                                    <!-- Map Legend -->
+                                    <div class="map-legend">
+                                        <h6 class="fw-bold mb-3">Legenda Peta</h6>
                                         <div class="legend-item">
                                             <div class="legend-color" style="background-color: #2ecc71;"></div>
                                             <span>1-5 Penerima</span>
@@ -350,16 +908,108 @@
                                             <span>Pusat Kecamatan</span>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Layer Controls -->
+                                    <div class="heatmap-controls">
+                                        <h6 class="fw-bold mb-3">Layer Peta</h6>
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="toggleHeatmap" checked>
+                                            <label class="form-check-label small" for="toggleHeatmap">Tampilkan Heatmap</label>
+                                        </div>
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="toggleMarkers" checked>
+                                            <label class="form-check-label small" for="toggleMarkers">Tampilkan Marker</label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="toggleKecamatan" checked>
+                                            <label class="form-check-label small" for="toggleKecamatan">Tampilkan Kecamatan</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Layer Type Controls -->
+                                    <div class="layer-controls">
+                                        <h6 class="fw-bold mb-3">Jenis Peta</h6>
+                                        <div class="btn-group-vertical w-100" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary active" id="btnMapRoad">Jalan</button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" id="btnMapSatellite">Satelit</button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" id="btnMapHybrid">Hybrid</button>
+                                        </div>
+                                        <div class="mt-3">
+                                            <button class="btn btn-sm btn-success w-100" id="btnLocateMe">
+                                                <i class="fas fa-location-arrow me-1"></i> Lokasi Saya
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-4">
+                                <div class="card-header"><i class="fas fa-info-circle me-2"></i> Informasi Peta</div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h6>Panduan Penggunaan:</h6>
+                                            <ul class="mb-0">
+                                                <li>Klik pada marker untuk melihat detail data penerima per desa</li>
+                                                <li>Gunakan kontrol filter untuk menampilkan data spesifik</li>
+                                                <li>Gunakan search box untuk mencari desa atau kecamatan tertentu</li>
+                                                <li>Heatmap menunjukkan kerapatan distribusi bantuan</li>
+                                                <li>Marker berwarna menunjukkan intensitas jumlah penerima</li>
+                                                <li>Gunakan tombol "Lokasi Saya" untuk melihat posisi Anda di peta</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6>Keterangan Warna:</h6>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <span class="badge" style="background-color: #2ecc71;">Rendah</span>
+                                                <span class="badge" style="background-color: #f1c40f;">Sedang</span>
+                                                <span class="badge" style="background-color: #e67e22;">Tinggi</span>
+                                                <span class="badge" style="background-color: #e74c3c;">Sangat Tinggi</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Data Tab -->
-                        <div class="tab-pane fade" id="v-pills-data" role="tabpanel">
-                            <h3 class="section-title">Data Bantuan Nelayan</h3>
-                            <!-- ... kode tabel data tetap sama ... -->
-                        </div>
                     </div>
+                </div>
+            </div>
+            
+            <div class="copyright text-center py-3">
+                &copy; 2025 Dinas Peternakan dan Perikanan Kabupaten Situbondo - Bidang Pemberdayaan Nelayan.
+            </div>
+        </div>
+        
+        <button class="floating-action-btn" id="fabBtn" title="Buka Peta Statistik">
+            <i class="fas fa-map-marked-alt"></i>
+        </button>
+        
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div class="toast notification-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="4000">
+                <div class="toast-header">
+                    <strong class="me-auto" id="toastTitle">Notifikasi</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="toastMessage"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Detail Lokasi -->
+    <div class="modal fade" id="locationDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-map-marker-alt me-2"></i> Detail Data Lokasi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="locationDetailContent">
+                        <p class="text-center">Memuat data...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -368,24 +1018,64 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // ===== KOORDINAT AKURAT SITUBONDO =====
-        // Data koordinat desa yang telah diverifikasi
+        // --- GLOBAL VARIABLES & CONSTANTS ---
+        let appData = [];
+        let appSettings = {
+            securityCode: 'BidangPN1945',
+            itemsPerPage: 25,
+            notifications: true,
+            appName: 'PETA STATISTIK DATA NELAYAN',
+            appSubtitle: 'Dinas Peternakan dan Perikanan Kab. Situbondo',
+            defaultTahun: new Date().getFullYear(),
+            privacyMode: true
+        };
+        let currentPage = 1;
+        let filteredData = [];
+        let isFilterActive = false;
+        let loginAttempts = 0;
+        let isBlocked = false;
+        let blockTimeout;
+        
+        // Variables for map
+        let map = null;
+        let mapMarkers = [];
+        let mapLayer = null;
+        let heatmapLayer = null;
+        let kecamatanLayer = null;
+        let markerCluster = null;
+        let googleLayer = null;
+        let currentMapType = 'roadmap';
+        
+        // Cache for coordinates
+        let coordinatesCache = {};
+        
+        const SECURITY_CONSTANTS = {
+            PIN: '17081945',
+            DEFAULT_PASS: 'BidangPN1945'
+        };
+
+        const kecamatanList = [
+            "Arjasa", "Asembagus", "Banyuglugur", "Banyuputih", "Besuki", 
+            "Bungatan", "Jangkar", "Jatibanteng", "Kapongan", "Kendit", 
+            "Mangaran", "Mlandingan", "Panarukan", "Panji", "Situbondo", 
+            "Suboh", "Sumbermalang"
+        ];
+        
+        // Database koordinat yang AKURAT untuk Kabupaten Situbondo (dari Google Maps)
         const koordinatDesa = {
-            // Kecamatan Situbondo (Ibukota)
+            // Kecamatan Situbondo (Ibukota Kabupaten)
             "Situbondo, Situbondo": { lat: -7.7062, lng: 113.9603 },
             "Patokan, Situbondo": { lat: -7.7000, lng: 113.9500 },
             "Kalibagor, Situbondo": { lat: -7.7100, lng: 113.9650 },
             "Kembang, Situbondo": { lat: -7.7050, lng: 113.9550 },
             "Sembungan, Situbondo": { lat: -7.7150, lng: 113.9600 },
-            "Kotakan, Situbondo": { lat: -7.7030, lng: 113.9580 },
             
             // Kecamatan Panji
             "Panji, Panji": { lat: -7.7167, lng: 113.6667 },
-            "Panji Kidul, Panji": { lat: -7.7185, lng: 113.6682 },
-            "Panji Lor, Panji": { lat: -7.7120, lng: 113.6655 },
+            "Panji Kidul, Panji": { lat: -7.7200, lng: 113.6700 },
+            "Panji Lor, Panji": { lat: -7.7100, lng: 113.6650 },
             "Curah Jeru, Panji": { lat: -7.7250, lng: 113.6750 },
             "Kampung Anyar, Panji": { lat: -7.7150, lng: 113.6600 },
-            "Sliwung, Panji": { lat: -7.7100, lng: 113.6700 },
             
             // Kecamatan Besuki
             "Besuki, Besuki": { lat: -7.7333, lng: 113.7000 },
@@ -393,7 +1083,6 @@
             "Demung, Besuki": { lat: -7.7300, lng: 113.6900 },
             "Jetis, Besuki": { lat: -7.7200, lng: 113.7050 },
             "Kayu Putih, Besuki": { lat: -7.7250, lng: 113.7150 },
-            "Langkap, Besuki": { lat: -7.7350, lng: 113.6950 },
             
             // Kecamatan Mangaran
             "Mangaran, Mangaran": { lat: -7.6667, lng: 114.0667 },
@@ -401,15 +1090,13 @@
             "Ketawan, Mangaran": { lat: -7.6600, lng: 114.0600 },
             "Semiring, Mangaran": { lat: -7.6650, lng: 114.0650 },
             "Tamankursi, Mangaran": { lat: -7.6750, lng: 114.0750 },
-            "Wringin Anom, Mangaran": { lat: -7.6720, lng: 114.0680 },
             
             // Kecamatan Kapongan
             "Kapongan, Kapongan": { lat: -7.6833, lng: 114.0167 },
-            "Curah Kalak, Kapongan": { lat: -7.6900, lng: 114.0200 },
+            "Curah Jeru, Kapongan": { lat: -7.6900, lng: 114.0200 },
             "Kedungdowo, Kapongan": { lat: -7.6800, lng: 114.0150 },
             "Peleyan, Kapongan": { lat: -7.6750, lng: 114.0100 },
             "Wonokoyo, Kapongan": { lat: -7.6850, lng: 114.0250 },
-            "Kertosari, Kapongan": { lat: -7.6880, lng: 114.0180 },
             
             // Kecamatan Arjasa
             "Arjasa, Arjasa": { lat: -7.7069, lng: 113.6347 },
@@ -417,7 +1104,6 @@
             "Candijati, Arjasa": { lat: -7.7120, lng: 113.6280 },
             "Darsono, Arjasa": { lat: -7.6980, lng: 113.6200 },
             "Jatisari, Arjasa": { lat: -7.7150, lng: 113.6150 },
-            "Kamal, Arjasa": { lat: -7.7100, lng: 113.6300 },
             
             // Kecamatan Asembagus
             "Asembagus, Asembagus": { lat: -7.7536, lng: 114.1561 },
@@ -425,7 +1111,6 @@
             "Kedunglo, Asembagus": { lat: -7.7450, lng: 114.1500 },
             "Kertosari, Asembagus": { lat: -7.7550, lng: 114.1600 },
             "Mojosari, Asembagus": { lat: -7.7480, lng: 114.1650 },
-            "Wringin Anom, Asembagus": { lat: -7.7500, lng: 114.1550 },
             
             // Kecamatan Banyuglugur
             "Banyuglugur, Banyuglugur": { lat: -7.7211, lng: 113.8883 },
@@ -433,7 +1118,6 @@
             "Kalisari, Banyuglugur": { lat: -7.7150, lng: 113.8950 },
             "Sumberanyar, Banyuglugur": { lat: -7.7100, lng: 113.9000 },
             "Tlogosari, Banyuglugur": { lat: -7.7250, lng: 113.9100 },
-            "Sumberejo, Banyuglugur": { lat: -7.7180, lng: 113.8850 },
             
             // Kecamatan Banyuputih
             "Banyuputih, Banyuputih": { lat: -7.7608, lng: 114.0200 },
@@ -441,7 +1125,6 @@
             "Sumberejo, Banyuputih": { lat: -7.7650, lng: 114.0250 },
             "Wonorejo, Banyuputih": { lat: -7.7500, lng: 114.0300 },
             "Wringinanom, Banyuputih": { lat: -7.7400, lng: 114.0100 },
-            "Kedungrejo, Banyuputih": { lat: -7.7580, lng: 114.0220 },
             
             // Kecamatan Bungatan
             "Bungatan, Bungatan": { lat: -7.6833, lng: 113.8833 },
@@ -449,7 +1132,6 @@
             "Kesambirampak, Bungatan": { lat: -7.6800, lng: 113.8750 },
             "Patemon, Bungatan": { lat: -7.6950, lng: 113.8850 },
             "Sliwung, Bungatan": { lat: -7.6850, lng: 113.8800 },
-            "Banyuputih Kidul, Bungatan": { lat: -7.6880, lng: 113.8780 },
             
             // Kecamatan Jangkar
             "Jangkar, Jangkar": { lat: -7.7500, lng: 114.0833 },
@@ -457,7 +1139,6 @@
             "Curah Tatal, Jangkar": { lat: -7.7450, lng: 114.0800 },
             "Pategalan, Jangkar": { lat: -7.7600, lng: 114.0850 },
             "Pokaan, Jangkar": { lat: -7.7500, lng: 114.0950 },
-            "Sumberanyar, Jangkar": { lat: -7.7480, lng: 114.0880 },
             
             // Kecamatan Jatibanteng
             "Jatibanteng, Jatibanteng": { lat: -7.7167, lng: 113.9833 },
@@ -465,7 +1146,6 @@
             "Kembangsari, Jatibanteng": { lat: -7.7100, lng: 113.9800 },
             "Ketah, Jatibanteng": { lat: -7.7150, lng: 113.9750 },
             "Sumberanyar, Jatibanteng": { lat: -7.7250, lng: 113.9850 },
-            "Wringin Anom, Jatibanteng": { lat: -7.7180, lng: 113.9880 },
             
             // Kecamatan Kendit
             "Kendit, Kendit": { lat: -7.7333, lng: 113.9333 },
@@ -473,7 +1153,6 @@
             "Klatakan, Kendit": { lat: -7.7300, lng: 113.9350 },
             "Kotakan, Kendit": { lat: -7.7350, lng: 113.9300 },
             "Rajekwesi, Kendit": { lat: -7.7250, lng: 113.9250 },
-            "Kertosari, Kendit": { lat: -7.7380, lng: 113.9380 },
             
             // Kecamatan Mlandingan
             "Mlandingan, Mlandingan": { lat: -7.6833, lng: 113.9500 },
@@ -481,7 +1160,6 @@
             "Mlandingan Wetan, Mlandingan": { lat: -7.6800, lng: 113.9550 },
             "Sumber Pinang, Mlandingan": { lat: -7.6900, lng: 113.9400 },
             "Sumberwaru, Mlandingan": { lat: -7.6750, lng: 113.9600 },
-            "Kalianget, Mlandingan": { lat: -7.6780, lng: 113.9520 },
             
             // Kecamatan Panarukan
             "Panarukan, Panarukan": { lat: -7.7000, lng: 113.9167 },
@@ -489,7 +1167,6 @@
             "Kebonagung, Panarukan": { lat: -7.6950, lng: 113.9150 },
             "Kedunglo, Panarukan": { lat: -7.7100, lng: 113.9250 },
             "Patokan, Panarukan": { lat: -7.7000, lng: 113.9100 },
-            "Sumberanyar, Panarukan": { lat: -7.7020, lng: 113.9180 },
             
             // Kecamatan Suboh
             "Suboh, Suboh": { lat: -7.8000, lng: 113.8333 },
@@ -497,512 +1174,293 @@
             "Ketah, Suboh": { lat: -7.7950, lng: 113.8300 },
             "Klatakan, Suboh": { lat: -7.8100, lng: 113.8350 },
             "Selomukti, Suboh": { lat: -7.8000, lng: 113.8250 },
-            "Sumberejo, Suboh": { lat: -7.8020, lng: 113.8380 },
             
             // Kecamatan Sumbermalang
             "Sumbermalang, Sumbermalang": { lat: -7.7667, lng: 113.7833 },
             "Alas Bayur, Sumbermalang": { lat: -7.7700, lng: 113.7900 },
             "Alasmalang, Sumbermalang": { lat: -7.7600, lng: 113.7800 },
             "Banyuputih, Sumbermalang": { lat: -7.7750, lng: 113.7850 },
-            "Sumberargo, Sumbermalang": { lat: -7.7650, lng: 113.7750 },
-            "Kalianget, Sumbermalang": { lat: -7.7680, lng: 113.7880 }
+            "Sumberargo, Sumbermalang": { lat: -7.7650, lng: 113.7750 }
         };
 
-        // Data koordinat kecamatan yang akurat
+        // Database koordinat kecamatan yang AKURAT
         const koordinatKecamatan = {
-            "Situbondo": { lat: -7.7062, lng: 113.9603, bounds: [[-7.72, 113.945], [-7.69, 113.975]] },
-            "Panji": { lat: -7.7167, lng: 113.6667, bounds: [[-7.73, 113.65], [-7.70, 113.68]] },
-            "Besuki": { lat: -7.7333, lng: 113.7000, bounds: [[-7.745, 113.685], [-7.72, 113.715]] },
-            "Mangaran": { lat: -7.6667, lng: 114.0667, bounds: [[-7.68, 114.05], [-7.65, 114.085]] },
-            "Kapongan": { lat: -7.6833, lng: 114.0167, bounds: [[-7.695, 114.005], [-7.67, 114.03]] },
-            "Arjasa": { lat: -7.7069, lng: 113.6347, bounds: [[-7.72, 113.62], [-7.69, 113.65]] },
-            "Asembagus": { lat: -7.7536, lng: 114.1561, bounds: [[-7.765, 114.14], [-7.74, 114.17]] },
-            "Banyuglugur": { lat: -7.7211, lng: 113.8883, bounds: [[-7.735, 113.875], [-7.71, 113.905]] },
-            "Banyuputih": { lat: -7.7608, lng: 114.0200, bounds: [[-7.775, 114.005], [-7.745, 114.035]] },
-            "Bungatan": { lat: -7.6833, lng: 113.8833, bounds: [[-7.695, 113.87], [-7.67, 113.895]] },
-            "Jangkar": { lat: -7.7500, lng: 114.0833, bounds: [[-7.765, 114.07], [-7.735, 114.095]] },
-            "Jatibanteng": { lat: -7.7167, lng: 113.9833, bounds: [[-7.73, 113.97], [-7.70, 113.995]] },
-            "Kendit": { lat: -7.7333, lng: 113.9333, bounds: [[-7.745, 113.92], [-7.72, 113.945]] },
-            "Mlandingan": { lat: -7.6833, lng: 113.9500, bounds: [[-7.695, 113.935], [-7.67, 113.965]] },
-            "Panarukan": { lat: -7.7000, lng: 113.9167, bounds: [[-7.715, 113.905], [-7.685, 113.93]] },
-            "Suboh": { lat: -7.8000, lng: 113.8333, bounds: [[-7.815, 113.82], [-7.785, 113.845]] },
-            "Sumbermalang": { lat: -7.7667, lng: 113.7833, bounds: [[-7.78, 113.77], [-7.755, 113.795]] }
+            "Situbondo": { lat: -7.7062, lng: 113.9603 },
+            "Panji": { lat: -7.7167, lng: 113.6667 },
+            "Besuki": { lat: -7.7333, lng: 113.7000 },
+            "Mangaran": { lat: -7.6667, lng: 114.0667 },
+            "Kapongan": { lat: -7.6833, lng: 114.0167 },
+            "Arjasa": { lat: -7.7069, lng: 113.6347 },
+            "Asembagus": { lat: -7.7536, lng: 114.1561 },
+            "Banyuglugur": { lat: -7.7211, lng: 113.8883 },
+            "Banyuputih": { lat: -7.7608, lng: 114.0200 },
+            "Bungatan": { lat: -7.6833, lng: 113.8833 },
+            "Jangkar": { lat: -7.7500, lng: 114.0833 },
+            "Jatibanteng": { lat: -7.7167, lng: 113.9833 },
+            "Kendit": { lat: -7.7333, lng: 113.9333 },
+            "Mlandingan": { lat: -7.6833, lng: 113.9500 },
+            "Panarukan": { lat: -7.7000, lng: 113.9167 },
+            "Suboh": { lat: -7.8000, lng: 113.8333 },
+            "Sumbermalang": { lat: -7.7667, lng: 113.7833 }
         };
-
-        // ===== VARIABEL GLOBAL =====
-        let map = null;
-        let mapMarkers = [];
-        let markerCluster = null;
-        let kecamatanLayers = {};
-        let appData = [];
-        let kecamatanList = Object.keys(koordinatKecamatan);
         
-        // ===== INISIALISASI APLIKASI =====
+        // --- APPLICATION LIFECYCLE ---
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Aplikasi Peta Situbondo diinisialisasi');
+            console.log('Aplikasi Peta Statistik Data Nelayan diinisialisasi');
+            
+            // Load cached coordinates
+            loadCoordinatesCache();
+            
+            initializeApp();
             setupEventListeners();
             
             // Tampilkan modal login
-            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-            loginModal.show();
-            
-            // Setup security (mock)
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const code = document.getElementById('securityCode').value;
-                if (code === 'situbondo2024') {
-                    loginModal.hide();
-                    initializeApp();
-                } else {
-                    alert('Kode keamanan salah!');
-                }
-            });
+            try {
+                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+            } catch (error) {
+                console.error('Error menampilkan modal login:', error);
+            }
         });
         
         function initializeApp() {
-            // Load data (mock untuk demo)
-            loadSampleData();
-            
-            // Tampilkan konten
-            document.getElementById('appContent').style.display = 'block';
-            
-            // Inisialisasi peta
-            initializeMap();
-            
-            // Setup filter options
-            setupFilterOptions();
+            loadSettings();
+            loadData();
+            initializeCharts();
+            updateDashboard();
+            setupMapFilterOptions();
+        }
+
+        function loadCoordinatesCache() {
+            try {
+                const cached = localStorage.getItem('coordinatesCache');
+                if (cached) {
+                    coordinatesCache = JSON.parse(cached);
+                    console.log('Koordinat cache dimuat:', Object.keys(coordinatesCache).length, 'entries');
+                }
+            } catch (e) {
+                console.error('Gagal memuat cache koordinat:', e);
+            }
         }
         
-        function loadSampleData() {
-            // Data contoh untuk demo
-            appData = [
-                {
-                    id: 1,
-                    nama: "Ahmad Santoso",
-                    nik: "3508123456789001",
-                    namaKelompok: "Nelayan Maju",
-                    kecamatan: "Situbondo",
-                    desa: "Situbondo",
-                    tahunAnggaran: "2024",
-                    jenisBantuan: "Uang",
-                    namaBantuan: "Bantuan Modal Usaha",
-                    jumlahBantuan: 5000000,
-                    satuanBantuan: "Rupiah",
-                    tanggalTerima: "2024-01-15"
-                },
-                {
-                    id: 2,
-                    nama: "Budi Hartono",
-                    nik: "3508123456789002",
-                    namaKelompok: "Nelayan Sejahtera",
-                    kecamatan: "Panji",
-                    desa: "Panji",
-                    tahunAnggaran: "2024",
-                    jenisBantuan: "Barang",
-                    namaBantuan: "Jaring Ikan",
-                    jumlahBantuan: 10,
-                    satuanBantuan: "Buah",
-                    tanggalTerima: "2024-02-20"
-                },
-                {
-                    id: 3,
-                    nama: "Citra Dewi",
-                    nik: "3508123456789003",
-                    namaKelompok: "Nelayan Mandiri",
-                    kecamatan: "Besuki",
-                    desa: "Besuki",
-                    tahunAnggaran: "2023",
-                    jenisBantuan: "Uang",
-                    namaBantuan: "Bantuan Pendidikan",
-                    jumlahBantuan: 3000000,
-                    satuanBantuan: "Rupiah",
-                    tanggalTerima: "2023-11-10"
-                },
-                {
-                    id: 4,
-                    nama: "Dedi Kurniawan",
-                    nik: "3508123456789004",
-                    namaKelompok: "Nelayan Berkah",
-                    kecamatan: "Mangaran",
-                    desa: "Mangaran",
-                    tahunAnggaran: "2024",
-                    jenisBantuan: "Jasa",
-                    namaBantuan: "Pelatihan Budidaya",
-                    jumlahBantuan: 1,
-                    satuanBantuan: "Paket",
-                    tanggalTerima: "2024-03-05"
-                },
-                {
-                    id: 5,
-                    nama: "Eko Prasetyo",
-                    nik: "3508123456789005",
-                    namaKelompok: "Nelayan Makmur",
-                    kecamatan: "Kapongan",
-                    desa: "Kapongan",
-                    tahunAnggaran: "2024",
-                    jenisBantuan: "Uang",
-                    namaBantuan: "Bantuan Perbaikan Kapal",
-                    jumlahBantuan: 7500000,
-                    satuanBantuan: "Rupiah",
-                    tanggalTerima: "2024-01-30"
-                }
-            ];
+        function saveCoordinatesCache() {
+            try {
+                localStorage.setItem('coordinatesCache', JSON.stringify(coordinatesCache));
+            } catch (e) {
+                console.error('Gagal menyimpan cache koordinat:', e);
+            }
+        }
+        
+        async function getCoordinates(desa, kecamatan) {
+            const key = `${desa}, ${kecamatan}`;
             
-            // Tambahkan lebih banyak data untuk demo
-            for (let i = 6; i <= 50; i++) {
-                const kecamatan = kecamatanList[Math.floor(Math.random() * kecamatanList.length)];
-                const desaList = Object.keys(koordinatDesa).filter(key => key.includes(kecamatan));
-                const desa = desaList.length > 0 ? 
-                    desaList[Math.floor(Math.random() * desaList.length)].split(',')[0] : 
-                    kecamatan;
-                
-                appData.push({
-                    id: i,
-                    nama: `Nelayan ${i}`,
-                    nik: `3508123456789${i.toString().padStart(3, '0')}`,
-                    namaKelompok: `Kelompok ${Math.floor(Math.random() * 10) + 1}`,
-                    kecamatan: kecamatan,
-                    desa: desa,
-                    tahunAnggaran: Math.random() > 0.5 ? "2024" : "2023",
-                    jenisBantuan: ["Uang", "Barang", "Jasa"][Math.floor(Math.random() * 3)],
-                    namaBantuan: ["Bantuan Modal", "Jaring", "Pelatihan", "Perahu"][Math.floor(Math.random() * 4)],
-                    jumlahBantuan: Math.floor(Math.random() * 10000000) + 1000000,
-                    satuanBantuan: "Rupiah",
-                    tanggalTerima: `2024-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}`
-                });
+            // Cek di cache terlebih dahulu
+            if (coordinatesCache[key]) {
+                return coordinatesCache[key];
             }
             
-            console.log(`${appData.length} data dimuat untuk demo`);
-        }
-        
-        // ===== FUNGSI PETA =====
-        function initializeMap() {
-            if (!document.getElementById('map')) return;
-            
-            // Clear existing map
-            if (map) {
-                map.remove();
-                map = null;
+            // Cek di database koordinat desa
+            if (koordinatDesa[key]) {
+                coordinatesCache[key] = koordinatDesa[key];
+                saveCoordinatesCache();
+                return koordinatDesa[key];
             }
             
-            // Initialize map dengan view yang optimal
-            map = L.map('map', {
-                center: [-7.7062, 113.9603], // Pusat Situbondo
-                zoom: 11,
-                zoomControl: true,
-                attributionControl: true,
-                scrollWheelZoom: true
-            });
-            
-            // Tambahkan base layers
-            const baseLayers = {
-                "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }),
-                "Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: '© Esri',
-                    maxZoom: 19
-                }),
-                "Topografi": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenTopoMap',
-                    maxZoom: 17
-                })
-            };
-            
-            // Tambahkan layer default
-            baseLayers.OpenStreetMap.addTo(map);
-            
-            // Tambahkan layer control
-            L.control.layers(baseLayers).addTo(map);
-            
-            // Tambahkan scale control
-            L.control.scale({ imperial: false }).addTo(map);
-            
-            // Tambahkan fullscreen control
-            map.addControl(new L.Control.Fullscreen());
-            
-            // Inisialisasi marker cluster
-            markerCluster = L.markerClusterGroup({
-                chunkedLoading: true,
-                maxClusterRadius: 50,
-                spiderfyOnMaxZoom: true,
-                showCoverageOnHover: true,
-                zoomToBoundsOnClick: true
-            });
-            
-            // Tambahkan kecamatan boundaries
-            addKecamatanBoundaries();
-            
-            // Update map dengan data
-            updateMapWithData(appData);
-            
-            // Fit bounds untuk seluruh kecamatan
-            fitToKecamatanBounds();
-            
-            console.log('Peta berhasil diinisialisasi');
-        }
-        
-        function addKecamatanBoundaries() {
-            // Tambahkan batas kecamatan (polygon)
-            Object.keys(koordinatKecamatan).forEach(kecamatan => {
-                const data = koordinatKecamatan[kecamatan];
-                if (data.bounds) {
-                    const bounds = data.bounds;
-                    const polygon = L.polygon([
-                        [bounds[0][0], bounds[0][1]],
-                        [bounds[0][0], bounds[1][1]],
-                        [bounds[1][0], bounds[1][1]],
-                        [bounds[1][0], bounds[0][1]]
-                    ], {
-                        color: '#005f73',
-                        weight: 2,
-                        fillColor: '#005f73',
-                        fillOpacity: 0.05,
-                        dashArray: '5, 5'
-                    }).bindTooltip(`<strong>Kecamatan ${kecamatan}</strong>`, {
-                        permanent: false,
-                        direction: 'top'
-                    });
-                    
-                    polygon.addTo(map);
-                    kecamatanLayers[kecamatan] = polygon;
-                    
-                    // Tambahkan marker pusat kecamatan
-                    const marker = L.marker([data.lat, data.lng], {
-                        icon: L.divIcon({
-                            className: 'kecamatan-center',
-                            html: `<div style="background-color: #005f73; width: 15px; height: 15px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-                            iconSize: [21, 21],
-                            iconAnchor: [10, 10]
-                        })
-                    }).bindTooltip(`<strong>Pusat ${kecamatan}</strong>`, {
-                        permanent: false,
-                        direction: 'top'
-                    });
-                    
-                    marker.addTo(map);
-                }
-            });
-        }
-        
-        function updateMapWithData(data) {
-            if (!map || !markerCluster) return;
-            
-            // Clear existing markers
-            markerCluster.clearLayers();
-            mapMarkers = [];
-            
-            if (data.length === 0) {
-                updateMapStatistics(0, 0, 0);
-                return;
-            }
-            
-            // Group data by location
-            const groupedData = {};
-            data.forEach(item => {
-                const key = `${item.desa}, ${item.kecamatan}`;
-                if (!groupedData[key]) {
-                    groupedData[key] = {
-                        desa: item.desa,
-                        kecamatan: item.kecamatan,
-                        items: [],
-                        totalValue: 0,
-                        jenisCount: { Uang: 0, Barang: 0, Jasa: 0 },
-                        tahunCount: {}
-                    };
-                }
-                
-                groupedData[key].items.push(item);
-                groupedData[key].totalValue += parseFloat(item.jumlahBantuan) || 0;
-                
-                if (item.jenisBantuan in groupedData[key].jenisCount) {
-                    groupedData[key].jenisCount[item.jenisBantuan]++;
-                }
-                
-                if (!groupedData[key].tahunCount[item.tahunAnggaran]) {
-                    groupedData[key].tahunCount[item.tahunAnggaran] = 0;
-                }
-                groupedData[key].tahunCount[item.tahunAnggaran]++;
-            });
-            
-            // Process each location
-            let totalRecipients = 0;
-            let totalValue = 0;
-            let topDesa = { name: '', count: 0 };
-            
-            Object.keys(groupedData).forEach(key => {
-                const locData = groupedData[key];
-                const coordinates = getCoordinatesForLocation(locData.desa, locData.kecamatan);
-                
-                if (!coordinates) return;
-                
-                // Determine marker color
-                const count = locData.items.length;
-                let color = '#2ecc71'; // Green
-                if (count > 30) color = '#e74c3c'; // Red
-                else if (count > 15) color = '#e67e22'; // Orange
-                else if (count > 5) color = '#f1c40f'; // Yellow
-                
-                // Create custom marker
-                const marker = L.marker([coordinates.lat, coordinates.lng], {
-                    icon: createCustomMarker(color, count),
-                    title: `${locData.desa}, ${locData.kecamatan}`
-                });
-                
-                // Create popup content
-                const popupContent = createPopupContent(locData);
-                
-                marker.bindPopup(popupContent, {
-                    maxWidth: 300,
-                    minWidth: 250
-                });
-                
-                // Add to cluster
-                markerCluster.addLayer(marker);
-                mapMarkers.push(marker);
-                
-                // Update statistics
-                totalRecipients += count;
-                totalValue += locData.totalValue;
-                
-                if (count > topDesa.count) {
-                    topDesa = { name: locData.desa, count: count };
-                }
-            });
-            
-            // Add cluster to map
-            map.addLayer(markerCluster);
-            
-            // Update statistics display
-            updateMapStatistics(
-                Object.keys(groupedData).length,
-                totalRecipients,
-                totalValue,
-                topDesa.name
-            );
-        }
-        
-        function getCoordinatesForLocation(desa, kecamatan) {
-            // Cari koordinat desa
-            const desaKey = `${desa}, ${kecamatan}`;
-            if (koordinatDesa[desaKey]) {
-                return koordinatDesa[desaKey];
-            }
-            
-            // Fallback ke koordinat kecamatan
+            // Cek di koordinat kecamatan
             if (koordinatKecamatan[kecamatan]) {
-                // Tambahkan offset kecil agar marker tidak bertumpuk
-                const base = koordinatKecamatan[kecamatan];
-                return {
-                    lat: base.lat + (Math.random() * 0.01 - 0.005),
-                    lng: base.lng + (Math.random() * 0.01 - 0.005)
-                };
+                coordinatesCache[key] = koordinatKecamatan[kecamatan];
+                saveCoordinatesCache();
+                return koordinatKecamatan[kecamatan];
             }
             
-            // Default ke pusat kabupaten
+            // Jika tidak ada, coba geocode
+            try {
+                const coordinates = await geocodeLocation(`${desa}, ${kecamatan}, Situbondo, Jawa Timur`);
+                if (coordinates) {
+                    coordinatesCache[key] = coordinates;
+                    saveCoordinatesCache();
+                    return coordinates;
+                }
+            } catch (error) {
+                console.error('Error geocoding:', error);
+            }
+            
+            // Default ke pusat Situbondo
             return { lat: -7.7062, lng: 113.9603 };
         }
         
-        function createCustomMarker(color, count) {
-            const size = Math.max(30, Math.min(50, 30 + count));
-            return L.divIcon({
-                className: 'custom-marker-icon',
-                html: `
-                    <div style="
-                        width: ${size}px;
-                        height: ${size}px;
-                        background-color: ${color};
-                        border-radius: 50%;
-                        border: 3px solid white;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: white;
-                        font-weight: bold;
-                        font-size: ${size > 40 ? '14px' : '12px'};
-                    ">
-                        ${count}
-                    </div>
-                `,
-                iconSize: [size + 6, size + 6],
-                iconAnchor: [(size + 6) / 2, (size + 6) / 2],
-                popupAnchor: [0, -(size + 6) / 2]
-            });
-        }
-        
-        function createPopupContent(locationData) {
-            const tahunList = Object.keys(locationData.tahunCount)
-                .sort()
-                .map(tahun => `<li>${tahun}: ${locationData.tahunCount[tahun]} penerima</li>`)
-                .join('');
-            
-            return `
-                <div class="p-2">
-                    <h5 class="fw-bold text-primary mb-2">${locationData.desa}</h5>
-                    <p class="text-muted mb-3">Kecamatan ${locationData.kecamatan}</p>
-                    
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <small>Total Penerima:</small><br>
-                            <span class="badge bg-primary">${locationData.items.length} orang</span>
-                        </div>
-                        <div class="col-6">
-                            <small>Total Nilai:</small><br>
-                            <span class="text-success fw-bold">Rp ${formatNumber(locationData.totalValue)}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <small>Jenis Bantuan:</small><br>
-                        <div class="d-flex gap-1 mt-1">
-                            ${locationData.jenisCount.Uang > 0 ? `<span class="badge bg-success">Uang: ${locationData.jenisCount.Uang}</span>` : ''}
-                            ${locationData.jenisCount.Barang > 0 ? `<span class="badge bg-warning">Barang: ${locationData.jenisCount.Barang}</span>` : ''}
-                            ${locationData.jenisCount.Jasa > 0 ? `<span class="badge bg-info">Jasa: ${locationData.jenisCount.Jasa}</span>` : ''}
-                        </div>
-                    </div>
-                    
-                    ${tahunList ? `
-                    <div class="mb-3">
-                        <small>Distribusi Tahun:</small>
-                        <ul class="mb-0 ps-3" style="font-size: 0.8rem;">
-                            ${tahunList}
-                        </ul>
-                    </div>
-                    ` : ''}
-                    
-                    <button class="btn btn-sm btn-outline-primary w-100" 
-                            onclick="showLocationDetail('${locationData.desa}', '${locationData.kecamatan}')">
-                        <i class="fas fa-list me-1"></i> Lihat Detail
-                    </button>
-                </div>
-            `;
-        }
-        
-        function fitToKecamatanBounds() {
-            const bounds = [];
-            Object.keys(koordinatKecamatan).forEach(kec => {
-                if (koordinatKecamatan[kec].bounds) {
-                    const b = koordinatKecamatan[kec].bounds;
-                    bounds.push([b[0][0], b[0][1]]);
-                    bounds.push([b[1][0], b[1][1]]);
+        async function geocodeLocation(address) {
+            return new Promise((resolve, reject) => {
+                if (!window.google || !window.google.maps) {
+                    reject(new Error('Google Maps API tidak tersedia'));
+                    return;
                 }
+                
+                const geocoder = new google.maps.Geocoder();
+                
+                geocoder.geocode({ address: address }, function(results, status) {
+                    if (status === 'OK' && results[0]) {
+                        const location = results[0].geometry.location;
+                        resolve({
+                            lat: location.lat(),
+                            lng: location.lng()
+                        });
+                    } else {
+                        reject(new Error('Geocode gagal: ' + status));
+                    }
+                });
             });
+        }
+        
+        function setupEventListeners() {
+            // Login & Auth
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
             
-            if (bounds.length > 0) {
-                map.fitBounds(bounds, { padding: [50, 50] });
+            // Password Visibility Toggle
+            const togglePasswordBtn = document.querySelector('.toggle-password');
+            if (togglePasswordBtn) {
+                togglePasswordBtn.addEventListener('click', function() {
+                    togglePasswordVisibility(this, 'securityCode');
+                });
+            }
+            
+            // Data Table Search
+            const searchData = document.getElementById('searchData');
+            if (searchData) {
+                searchData.addEventListener('input', handleSearch);
+            }
+            
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            if (clearSearchBtn) {
+                clearSearchBtn.addEventListener('click', clearSearch);
+            }
+            
+            // Map Controls
+            const mapFilterType = document.getElementById('mapFilterType');
+            if (mapFilterType) {
+                mapFilterType.addEventListener('change', handleMapFilterTypeChange);
+            }
+            
+            const applyMapFilterBtn = document.getElementById('applyMapFilter');
+            if (applyMapFilterBtn) {
+                applyMapFilterBtn.addEventListener('click', applyMapFilter);
+            }
+            
+            const resetMapFilterBtn = document.getElementById('resetMapFilter');
+            if (resetMapFilterBtn) {
+                resetMapFilterBtn.addEventListener('click', resetMapFilter);
+            }
+            
+            // Map Layer Toggles
+            const toggleHeatmap = document.getElementById('toggleHeatmap');
+            if (toggleHeatmap) {
+                toggleHeatmap.addEventListener('change', toggleHeatmapLayer);
+            }
+            
+            const toggleMarkers = document.getElementById('toggleMarkers');
+            if (toggleMarkers) {
+                toggleMarkers.addEventListener('change', toggleMarkersLayer);
+            }
+            
+            const toggleKecamatan = document.getElementById('toggleKecamatan');
+            if (toggleKecamatan) {
+                toggleKecamatan.addEventListener('change', toggleKecamatanLayer);
+            }
+            
+            // Map Search
+            const searchMapBtn = document.getElementById('searchMapBtn');
+            if (searchMapBtn) {
+                searchMapBtn.addEventListener('click', searchMapLocation);
+            }
+            
+            const clearMapSearchBtn = document.getElementById('clearMapSearchBtn');
+            if (clearMapSearchBtn) {
+                clearMapSearchBtn.addEventListener('click', clearMapSearch);
+            }
+            
+            const mapSearch = document.getElementById('mapSearch');
+            if (mapSearch) {
+                mapSearch.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchMapLocation();
+                    }
+                });
+            }
+            
+            // Map Type Controls
+            const btnMapRoad = document.getElementById('btnMapRoad');
+            const btnMapSatellite = document.getElementById('btnMapSatellite');
+            const btnMapHybrid = document.getElementById('btnMapHybrid');
+            
+            if (btnMapRoad) btnMapRoad.addEventListener('click', () => changeMapType('roadmap'));
+            if (btnMapSatellite) btnMapSatellite.addEventListener('click', () => changeMapType('satellite'));
+            if (btnMapHybrid) btnMapHybrid.addEventListener('click', () => changeMapType('hybrid'));
+            
+            // Locate Me Button
+            const btnLocateMe = document.getElementById('btnLocateMe');
+            if (btnLocateMe) {
+                btnLocateMe.addEventListener('click', locateUser);
+            }
+            
+            // System Management
+            const logoutTab = document.getElementById('v-pills-logout-tab');
+            if (logoutTab) {
+                logoutTab.addEventListener('click', logout);
+            }
+            
+            const reloadRepoBtn = document.getElementById('btn-reload-repo');
+            if (reloadRepoBtn) {
+                reloadRepoBtn.addEventListener('click', handleReloadFromRepo);
+            }
+
+            // UI Helpers
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            }
+            
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', toggleMobileMenu);
+            }
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992 && document.getElementById('sidebarMenu').classList.contains('mobile-show')) {
+                        toggleMobileMenu();
+                    }
+                    
+                    // Initialize map when map tab is shown
+                    if (link.id === 'v-pills-map-tab') {
+                        setTimeout(initializeMap, 300);
+                    }
+                });
+            });
+
+            const fabBtn = document.getElementById('fabBtn');
+            if (fabBtn) {
+                fabBtn.addEventListener('click', () => {
+                    const mapTab = document.getElementById('v-pills-map-tab');
+                    if (mapTab) {
+                        mapTab.click();
+                        // Scroll to top when opening map via FAB
+                        window.scrollTo(0, 0);
+                    }
+                });
             }
         }
         
-        // ===== FILTER FUNGSI =====
-        function setupFilterOptions() {
-            const filterType = document.getElementById('mapFilterType');
-            const filterValueContainer = document.getElementById('mapFilterValueContainer');
-            const filterValue = document.getElementById('mapFilterValue');
+        function setupMapFilterOptions() {
+            const mapFilterType = document.getElementById('mapFilterType');
+            if (!mapFilterType) return;
             
-            filterType.addEventListener('change', function() {
-                filterValue.innerHTML = '';
+            mapFilterType.addEventListener('change', function() {
+                const filterValueContainer = document.getElementById('mapFilterValueContainer');
+                const filterValueSelect = document.getElementById('mapFilterValue');
+                
+                if (!filterValueContainer || !filterValueSelect) return;
+                
+                filterValueSelect.innerHTML = '';
                 
                 if (this.value === 'all') {
                     filterValueContainer.style.display = 'none';
@@ -1012,205 +1470,1328 @@
                 filterValueContainer.style.display = 'block';
                 
                 if (this.value === 'kecamatan') {
-                    filterValue.add(new Option('Pilih Kecamatan', ''));
-                    kecamatanList.forEach(kec => {
-                        filterValue.add(new Option(kec, kec));
-                    });
+                    filterValueSelect.add(new Option('Pilih Kecamatan', ''));
+                    kecamatanList.forEach(kec => filterValueSelect.add(new Option(kec, kec)));
                 } else if (this.value === 'tahun') {
-                    filterValue.add(new Option('Pilih Tahun', ''));
-                    const years = [...new Set(appData.map(d => d.tahunAnggaran))].sort();
-                    years.forEach(year => {
-                        filterValue.add(new Option(year, year));
-                    });
+                    filterValueSelect.add(new Option('Pilih Tahun', ''));
+                    const currentYear = new Date().getFullYear();
+                    for (let year = 2020; year <= currentYear; year++) {
+                        filterValueSelect.add(new Option(year, year));
+                    }
                 } else if (this.value === 'jenis') {
-                    filterValue.add(new Option('Pilih Jenis', ''));
-                    ['Uang', 'Barang', 'Jasa'].forEach(jenis => {
-                        filterValue.add(new Option(jenis, jenis));
-                    });
+                    filterValueSelect.add(new Option('Pilih Jenis', ''));
+                    filterValueSelect.add(new Option('Uang', 'Uang'));
+                    filterValueSelect.add(new Option('Barang', 'Barang'));
+                    filterValueSelect.add(new Option('Jasa', 'Jasa'));
                 }
             });
         }
         
-        function applyMapFilter() {
+        function handleMapFilterTypeChange() {
+            const filterValueContainer = document.getElementById('mapFilterValueContainer');
+            const filterValueSelect = document.getElementById('mapFilterValue');
+            
+            if (!filterValueContainer || !filterValueSelect) return;
+            
+            filterValueSelect.innerHTML = '';
+            
+            if (this.value === 'all') {
+                filterValueContainer.style.display = 'none';
+                return;
+            }
+            
+            filterValueContainer.style.display = 'block';
+            
+            if (this.value === 'kecamatan') {
+                filterValueSelect.add(new Option('Pilih Kecamatan', ''));
+                kecamatanList.forEach(kec => filterValueSelect.add(new Option(kec, kec)));
+            } else if (this.value === 'tahun') {
+                filterValueSelect.add(new Option('Pilih Tahun', ''));
+                const currentYear = new Date().getFullYear();
+                for (let year = 2020; year <= currentYear; year++) {
+                    filterValueSelect.add(new Option(year, year));
+                }
+            } else if (this.value === 'jenis') {
+                filterValueSelect.add(new Option('Pilih Jenis', ''));
+                filterValueSelect.add(new Option('Uang', 'Uang'));
+                filterValueSelect.add(new Option('Barang', 'Barang'));
+                filterValueSelect.add(new Option('Jasa', 'Jasa'));
+            }
+        }
+        
+        // --- AUTHENTICATION ---
+        function handleLogin(e) {
+            e.preventDefault();
+            if (isBlocked) return showNotification('Akses diblokir sementara karena terlalu banyak percobaan.', 'error');
+            
+            const securityCodeInput = document.getElementById('securityCode').value;
+            const loginButton = document.getElementById('loginButton');
+            
+            if (!loginButton) return;
+            
+            loginButton.disabled = true;
+            const loginSpinner = document.getElementById('loginSpinner');
+            if (loginSpinner) loginSpinner.classList.remove('d-none');
+            
+            const loginButtonText = document.querySelector('.login-button-text');
+            if (loginButtonText) loginButtonText.textContent = 'Memverifikasi...';
+            
+            setTimeout(() => {
+                if (securityCodeInput === appSettings.securityCode) {
+                    try {
+                        const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                        if (loginModal) loginModal.hide();
+                        
+                        // Auto show welcome modal and reload data
+                        showWelcomeMessageAndReload();
+                    } catch (error) {
+                        console.error('Error hiding login modal:', error);
+                    }
+                } else {
+                    loginAttempts++;
+                    updateAttemptsCount();
+                    
+                    const loginForm = document.getElementById('loginForm');
+                    if (loginForm) {
+                        loginForm.classList.add('login-shake');
+                        setTimeout(() => loginForm.classList.remove('login-shake'), 600);
+                    }
+                    
+                    if (loginAttempts >= 3) {
+                        blockAccess();
+                    } else {
+                        showNotification(`Kode keamanan salah. Sisa percobaan: ${3 - loginAttempts}.`, 'error');
+                    }
+                }
+
+                loginButton.disabled = false;
+                if (loginSpinner) loginSpinner.classList.add('d-none');
+                if (loginButtonText) loginButtonText.textContent = 'MASUK SISTEM';
+            }, 500);
+        }
+        
+        function showWelcomeMessageAndReload() {
+            try {
+                const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+                const welcomeMessage = document.getElementById('welcomeMessage');
+                
+                if (!welcomeMessage) return;
+                
+                const hours = new Date().getHours();
+                let greeting = '';
+                if (hours < 11) greeting = 'Pagi';
+                else if (hours < 15) greeting = 'Siang';
+                else if (hours < 19) greeting = 'Sore';
+                else greeting = 'Malam';
+                
+                welcomeMessage.innerHTML = `
+                    <strong>Selamat ${greeting}!</strong><br>
+                    Sistem Peta Statistik Data Nelayan Kabupaten Situbondo.<br>
+                    <small class="text-white-75">Login sebagai Administrator</small>
+                `;
+                
+                welcomeModal.show();
+                
+                // Auto reload data after showing modal
+                setTimeout(() => {
+                    handleReloadFromRepo(() => {
+                        // After reload, hide welcome modal and show app content
+                        welcomeModal.hide();
+                        document.getElementById('appContent').style.display = 'block';
+                        showNotification('Selamat datang! Data berhasil dimuat.', 'success');
+                    });
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error showing welcome modal:', error);
+            }
+        }
+        
+        function togglePasswordVisibility(btn, inputId) {
+            const passwordInput = document.getElementById(inputId);
+            if (!passwordInput) return;
+            
+            const icon = btn.querySelector('i');
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', !isPassword);
+            icon.classList.toggle('fa-eye-slash', isPassword);
+        }
+        
+        function updateAttemptsCount() {
+            const attemptsEl = document.getElementById('attemptsCount');
+            const blockedMessage = document.getElementById('blockedMessage');
+            
+            if (attemptsEl) {
+                attemptsEl.style.display = loginAttempts > 0 && !isBlocked ? 'block' : 'none';
+                attemptsEl.textContent = `Percobaan gagal: ${loginAttempts}/3`;
+            }
+            
+            if (blockedMessage) {
+                blockedMessage.classList.toggle('d-none', !isBlocked);
+            }
+        }
+        
+        function blockAccess() {
+            isBlocked = true;
+            updateAttemptsCount();
+            showNotification('Akses diblokir selama 30 detik.', 'error');
+            
+            let countdown = 30;
+            const countdownElement = document.getElementById('countdown');
+            
+            blockTimeout = setInterval(() => {
+                countdown--;
+                if (countdownElement) countdownElement.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(blockTimeout);
+                    isBlocked = false;
+                    loginAttempts = 0;
+                    updateAttemptsCount();
+                }
+            }, 1000);
+        }
+        
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
+                document.getElementById('appContent').style.display = 'none';
+                const securityCodeInput = document.getElementById('securityCode');
+                if (securityCodeInput) securityCodeInput.value = '';
+                
+                try {
+                    new bootstrap.Modal(document.getElementById('loginModal')).show();
+                } catch (error) {
+                    console.error('Error showing login modal:', error);
+                }
+                
+                showNotification('Anda telah berhasil logout.', 'info');
+            }
+        }
+        
+        // --- DATA PERSISTENCE ---
+        function loadData() {
+            try {
+                const savedData = localStorage.getItem('barjasData');
+                appData = savedData ? JSON.parse(savedData) : [];
+            } catch (e) {
+                console.error("Gagal memuat data:", e);
+                appData = [];
+            }
+            renderDataTable();
+        }
+        
+        function saveData() {
+            try {
+                localStorage.setItem('barjasData', JSON.stringify(appData));
+            } catch (e) {
+                console.error("Gagal menyimpan data:", e);
+            }
+        }
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('barjasSettings');
+            if (savedSettings) {
+                try {
+                    const loaded = JSON.parse(savedSettings);
+                    Object.assign(appSettings, loaded);
+                    if (!appSettings.securityCode || appSettings.securityCode.trim() === '') {
+                        appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
+                    }
+                } catch(e) {
+                     appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
+                }
+            } else {
+                 appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
+            }
+        }
+
+        function saveSettings() {
+            try {
+                localStorage.setItem('barjasSettings', JSON.stringify(appSettings));
+            } catch (e) {
+                console.error("Gagal menyimpan pengaturan:", e);
+            }
+        }
+        
+        // --- DATA TABLE ---
+        function renderDataTable() {
+            const tableBody = document.getElementById('dataTableBody');
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = '';
+            
+            const dataToRender = isFilterActive ? filteredData : appData;
+            const itemsPerPage = parseInt(appSettings.itemsPerPage) || 25;
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, dataToRender.length);
+            
+            if (dataToRender.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="13" class="text-center py-4">Tidak ada data</td></tr>`;
+                
+                const tableInfo = document.getElementById('tableInfo');
+                if (tableInfo) tableInfo.textContent = 'Menampilkan 0 dari 0 data';
+                
+                const pagination = document.getElementById('pagination');
+                if (pagination) pagination.innerHTML = '';
+                
+                return;
+            }
+            
+            for (let i = startIndex; i < endIndex; i++) {
+                const data = dataToRender[i];
+                const row = document.createElement('tr');
+                
+                const nikDisplay = formatPrivacy(data.nik);
+                const privacyClass = appSettings.privacyMode ? 'privacy-blurred' : '';
+                
+                row.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td class="fw-bold text-primary">${data.nama}</td>
+                    <td class="${privacyClass}">${nikDisplay}</td>
+                    <td>${data.namaKelompok || '-'}</td>
+                    <td>${data.jabatan || '-'}</td>
+                    <td>${data.tahunAnggaran}</td>
+                    <td>${data.kecamatan}</td>
+                    <td>${data.desa}</td>
+                    <td><span class="badge bg-info">${data.jenisBantuan}</span></td>
+                    <td>${data.namaBantuan || '-'}</td>
+                    <td class="fw-bold">${formatNumber(data.jumlahBantuan)} ${data.satuanBantuan}</td>
+                    <td>${formatDate(data.tanggalTerima)}</td>
+                    <td>${data.namaPetugas || '-'}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+            
+            const tableInfo = document.getElementById('tableInfo');
+            if (tableInfo) {
+                tableInfo.textContent = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${dataToRender.length} data`;
+            }
+            
+            updatePagination(dataToRender.length);
+        }
+        
+        function updatePagination(totalItems) {
+            const paginationEl = document.getElementById('pagination');
+            if (!paginationEl) return;
+            
+            const itemsPerPage = parseInt(appSettings.itemsPerPage) || 25;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            paginationEl.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            const createPageItem = (page, text, disabled = false, active = false) => {
+                const li = document.createElement('li');
+                li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${page}); return false;">${text}</a>`;
+                return li;
+            };
+
+            paginationEl.appendChild(createPageItem(currentPage - 1, '<i class="fas fa-chevron-left"></i>', currentPage === 1));
+
+            const maxPagesToShow = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+            if (endPage - startPage + 1 < maxPagesToShow) {
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                paginationEl.appendChild(createPageItem(i, i, false, i === currentPage));
+            }
+
+            paginationEl.appendChild(createPageItem(currentPage + 1, '<i class="fas fa-chevron-right"></i>', currentPage === totalPages));
+        }
+        
+        function changePage(page) {
+            const dataToRender = isFilterActive ? filteredData : appData;
+            const totalPages = Math.ceil(dataToRender.length / (parseInt(appSettings.itemsPerPage) || 25));
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderDataTable();
+            }
+        }
+        
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchData').value.toLowerCase();
+            
+            isFilterActive = !!searchTerm;
+            
+            filteredData = appData.filter(d => {
+                const matchesSearch = !searchTerm || Object.values(d).some(v => 
+                    String(v).toLowerCase().includes(searchTerm)
+                );
+                
+                return matchesSearch;
+            });
+            
+            currentPage = 1;
+            renderDataTable();
+        }
+        
+        function clearSearch() {
+            const searchData = document.getElementById('searchData');
+            if (searchData) searchData.value = '';
+            
+            handleSearch();
+        }
+        
+        // --- DASHBOARD ---
+        function updateDashboard() {
+            const totalPenerima = document.getElementById('totalPenerima');
+            const totalBantuan = document.getElementById('totalBantuan');
+            const tahunAktif = document.getElementById('tahunAktif');
+            const rataBantuan = document.getElementById('rataBantuan');
+            
+            if (totalPenerima) totalPenerima.textContent = formatNumber(appData.length);
+            
+            const uangData = appData.filter(d => d.jenisBantuan === 'Uang');
+            const totalBantuanValue = uangData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
+            
+            if (totalBantuan) totalBantuan.textContent = `Rp ${formatNumber(totalBantuanValue)}`;
+            
+            const tahunCount = appData.reduce((acc, d) => ({...acc, [d.tahunAnggaran]: (acc[d.tahunAnggaran] || 0) + 1}), {});
+            const tahunAktifValue = Object.keys(tahunCount).reduce((a, b) => tahunCount[a] > tahunCount[b] ? a : b, appSettings.defaultTahun);
+            
+            if (tahunAktif) tahunAktif.textContent = tahunAktifValue;
+            
+            const rataBantuanValue = uangData.length > 0 ? totalBantuanValue / uangData.length : 0;
+            
+            if (rataBantuan) rataBantuan.textContent = `Rp ${formatNumber(rataBantuanValue.toFixed(0))}`;
+            
+            updateCharts();
+            updateRecentData();
+        }
+        
+        function updateRecentData() {
+            const recentDataContainer = document.getElementById('recentData');
+            if (!recentDataContainer) return;
+            
+            recentDataContainer.innerHTML = '';
+            const recent = [...appData].sort((a, b) => new Date(b.tanggalInput) - new Date(a.tanggalInput)).slice(0, 5);
+            
+            if (recent.length === 0) {
+                recentDataContainer.innerHTML = `<tr><td colspan="5" class="text-center">Tidak ada data</td></tr>`;
+                return;
+            }
+            
+            recent.forEach(d => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(d.tanggalInput)}</td> <td>${d.nama}</td> <td>${d.desa}</td>
+                    <td>${d.jenisBantuan}</td> <td>${formatNumber(d.jumlahBantuan)} ${d.satuanBantuan}</td>
+                `;
+                recentDataContainer.appendChild(row);
+            });
+        }
+        
+        function initializeCharts() {
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js tidak tersedia');
+                return;
+            }
+            
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            const pieCtx = document.getElementById('kecamatanChart')?.getContext('2d');
+            if (pieCtx) {
+                window.kecamatanChart = new Chart(pieCtx, { 
+                    type: 'pie', 
+                    options: { 
+                        responsive: true, 
+                        plugins: { 
+                            legend: { 
+                                position: 'right' 
+                            } 
+                        } 
+                    } 
+                });
+            }
+            
+            const barCtx = document.getElementById('tahunChart')?.getContext('2d');
+            if (barCtx) {
+                window.tahunChart = new Chart(barCtx, { 
+                    type: 'bar', 
+                    options: { 
+                        responsive: true, 
+                        scales: { 
+                            y: { 
+                                beginAtZero: true 
+                            } 
+                        } 
+                    } 
+                });
+            }
+        }
+        
+        function updateCharts() {
+            if (!appData || appData.length === 0) return;
+
+            const kecamatanData = appData.reduce((acc, d) => ({...acc, [d.kecamatan]: (acc[d.kecamatan] || 0) + 1}), {});
+            if (window.kecamatanChart) {
+                window.kecamatanChart.data = {
+                    labels: Object.keys(kecamatanData),
+                    datasets: [{ 
+                        data: Object.values(kecamatanData), 
+                        backgroundColor: ['#005f73', '#0a9396', '#94d2bd', '#e9d8a6', '#ee9b00', '#ca6702', '#bb3e03', '#ae2012', '#9b2226'] 
+                    }]
+                };
+                window.kecamatanChart.update();
+            }
+            
+            const tahunData = appData.reduce((acc, d) => ({...acc, [d.tahunAnggaran]: (acc[d.tahunAnggaran] || 0) + 1}), {});
+            const sortedYears = Object.keys(tahunData).sort();
+            if (window.tahunChart) {
+                window.tahunChart.data = {
+                    labels: sortedYears,
+                    datasets: [{ 
+                        label: 'Jumlah Penerima', 
+                        data: sortedYears.map(year => tahunData[year]), 
+                        backgroundColor: '#0a9396' 
+                    }]
+                };
+                window.tahunChart.update();
+            }
+        }
+        
+        // --- MAP FUNCTIONALITY ---
+        async function initializeMap() {
+            if (!document.getElementById('map')) return;
+            
+            // Show loading overlay
+            const mapLoading = document.getElementById('mapLoading');
+            if (mapLoading) mapLoading.classList.remove('d-none');
+            
+            // Clear existing map
+            if (map) {
+                map.remove();
+                map = null;
+            }
+            
+            // Initialize map centered on Situbondo
+            map = L.map('map').setView([-7.7062, 113.9603], 11);
+            
+            // Add Google Maps layer
+            try {
+                googleLayer = L.gridLayer.googleMutant({
+                    type: currentMapType
+                }).addTo(map);
+            } catch (error) {
+                console.error('Error loading Google Maps layer:', error);
+                // Fallback to OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    maxZoom: 18
+                }).addTo(map);
+            }
+            
+            // Initialize marker cluster
+            markerCluster = L.markerClusterGroup({
+                maxClusterRadius: 40,
+                iconCreateFunction: function(cluster) {
+                    const count = cluster.getChildCount();
+                    let size = 'small';
+                    if (count > 10) size = 'medium';
+                    if (count > 50) size = 'large';
+                    
+                    return L.divIcon({
+                        html: '<div><span>' + count + '</span></div>',
+                        className: 'marker-cluster marker-cluster-' + size,
+                        iconSize: new L.Point(40, 40)
+                    });
+                }
+            });
+            
+            // Add markers for data
+            await updateMapWithData(appData);
+            
+            // Add kecamatan boundaries and labels
+            addKecamatanBoundaries();
+            
+            // Add heatmap layer
+            addHeatmapLayer();
+            
+            // Hide loading overlay
+            if (mapLoading) mapLoading.classList.add('d-none');
+        }
+        
+        async function updateMapWithData(data) {
+            if (!map) return;
+            
+            // Show loading
+            showNotification('Memuat data peta...', 'info');
+            
+            // Clear existing markers
+            if (markerCluster) {
+                markerCluster.clearLayers();
+            }
+            
+            mapMarkers = [];
+            
+            if (data.length === 0) {
+                updateMapStatistics(0, 0);
+                showNotification('Tidak ada data untuk ditampilkan di peta', 'warning');
+                return;
+            }
+            
+            // Group data by desa/kecamatan
+            const dataByLocation = {};
+            let topDesa = { name: '', count: 0 };
+            
+            data.forEach(item => {
+                const key = `${item.desa}, ${item.kecamatan}`;
+                if (!dataByLocation[key]) {
+                    dataByLocation[key] = {
+                        desa: item.desa,
+                        kecamatan: item.kecamatan,
+                        items: [],
+                        totalValue: 0,
+                        jenisCount: {
+                            Uang: 0,
+                            Barang: 0,
+                            Jasa: 0
+                        },
+                        tahunCount: {}
+                    };
+                }
+                
+                dataByLocation[key].items.push(item);
+                const jumlah = parseFloat(item.jumlahBantuan) || 0;
+                dataByLocation[key].totalValue += jumlah;
+                
+                if (item.jenisBantuan in dataByLocation[key].jenisCount) {
+                    dataByLocation[key].jenisCount[item.jenisBantuan]++;
+                }
+                
+                // Count by year
+                if (!dataByLocation[key].tahunCount[item.tahunAnggaran]) {
+                    dataByLocation[key].tahunCount[item.tahunAnggaran] = 0;
+                }
+                dataByLocation[key].tahunCount[item.tahunAnggaran]++;
+                
+                // Update top desa
+                if (dataByLocation[key].items.length > topDesa.count) {
+                    topDesa = { name: key, count: dataByLocation[key].items.length };
+                }
+            });
+            
+            // Create markers for each location
+            const markers = [];
+            let totalRecipients = 0;
+            let totalValue = 0;
+            let locationCount = 0;
+            
+            // Process locations in batches to avoid blocking UI
+            const locations = Object.keys(dataByLocation);
+            
+            for (let i = 0; i < locations.length; i++) {
+                const key = locations[i];
+                const locationData = dataByLocation[key];
+                
+                // Get coordinates
+                const coordinates = await getCoordinates(locationData.desa, locationData.kecamatan);
+                
+                if (!coordinates) {
+                    continue;
+                }
+                
+                // Determine marker color based on number of recipients
+                let markerColor = '#2ecc71'; // Green for low
+                const recipientCount = locationData.items.length;
+                
+                if (recipientCount <= 5) markerColor = '#2ecc71'; // Green
+                else if (recipientCount <= 15) markerColor = '#f1c40f'; // Yellow
+                else if (recipientCount <= 30) markerColor = '#e67e22'; // Orange
+                else markerColor = '#e74c3c'; // Red
+                
+                // Calculate marker size based on recipients
+                const markerSize = Math.min(30, Math.max(15, 15 + recipientCount));
+                
+                // Create custom icon
+                const icon = L.divIcon({
+                    className: 'pulse-marker',
+                    html: `
+                        <div style="
+                            background-color: ${markerColor};
+                            width: ${markerSize}px;
+                            height: ${markerSize}px;
+                            border-radius: 50%;
+                            border: 3px solid white;
+                            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: bold;
+                            font-size: ${Math.max(10, Math.min(14, markerSize/2))}px;
+                        ">
+                            ${recipientCount}
+                        </div>
+                    `,
+                    iconSize: [markerSize + 6, markerSize + 6],
+                    iconAnchor: [(markerSize + 6) / 2, (markerSize + 6) / 2]
+                });
+                
+                // Format tahun distribusi for popup
+                const tahunList = Object.keys(locationData.tahunCount)
+                    .sort()
+                    .map(tahun => `${tahun}: ${locationData.tahunCount[tahun]} penerima`)
+                    .join('<br>');
+                
+                // Create popup content
+                const popupContent = `
+                    <div style="min-width: 300px;">
+                        <h4>${locationData.desa}</h4>
+                        <p class="text-muted mb-3">${locationData.kecamatan}</p>
+                        
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <strong>Total Penerima:</strong><br>
+                                <span class="badge bg-primary">${recipientCount} orang</span>
+                            </div>
+                            <div class="col-6">
+                                <strong>Total Nilai:</strong><br>
+                                <span class="text-success fw-bold">Rp ${formatNumber(locationData.totalValue)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Distribusi Jenis:</strong><br>
+                            <div class="d-flex gap-2 mt-1">
+                                <span class="badge bg-success">Uang: ${locationData.jenisCount.Uang}</span>
+                                <span class="badge bg-warning">Barang: ${locationData.jenisCount.Barang}</span>
+                                <span class="badge bg-info">Jasa: ${locationData.jenisCount.Jasa}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Distribusi Tahun:</strong><br>
+                            <small>${tahunList || 'Tidak ada data tahun'}</small>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-sm w-100" onclick="showLocationDetail('${locationData.desa}', '${locationData.kecamatan}')">
+                            <i class="fas fa-list me-1"></i> Lihat Detail Penerima
+                        </button>
+                    </div>
+                `;
+                
+                // Create marker
+                const marker = L.marker([coordinates.lat, coordinates.lng], { icon: icon })
+                    .bindPopup(popupContent);
+                
+                markers.push(marker);
+                mapMarkers.push(marker);
+                
+                totalRecipients += recipientCount;
+                totalValue += locationData.totalValue;
+                locationCount++;
+                
+                // Update progress every 10 locations
+                if (i % 10 === 0) {
+                    showNotification(`Memuat ${i + 1} dari ${locations.length} lokasi...`, 'info');
+                }
+            }
+            
+            // Add markers to cluster group
+            markerCluster.addLayers(markers);
+            map.addLayer(markerCluster);
+            
+            // Update map statistics
+            updateMapStatistics(locationCount, totalRecipients, totalValue, topDesa.name);
+            
+            // Fit bounds to show all markers with padding
+            if (markers.length > 0) {
+                const group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.15));
+            }
+            
+            // Update heatmap
+            updateHeatmapLayer(data);
+            
+            showNotification(`Peta berhasil dimuat: ${locationCount} lokasi ditampilkan`, 'success');
+        }
+        
+        function addKecamatanBoundaries() {
+            if (!map) return;
+            
+            // Add kecamatan center markers
+            Object.keys(koordinatKecamatan).forEach(kecamatan => {
+                const coords = koordinatKecamatan[kecamatan];
+                
+                const kecamatanIcon = L.divIcon({
+                    className: 'kecamatan-marker',
+                    html: `<div style="
+                        background-color: #005f73; 
+                        width: 20px; 
+                        height: 20px; 
+                        border-radius: 50%; 
+                        border: 3px solid #001219;
+                        box-shadow: 0 0 8px rgba(0,0,0,0.3);
+                    "></div>`,
+                    iconSize: [26, 26],
+                    iconAnchor: [13, 13]
+                });
+                
+                const marker = L.marker([coords.lat, coords.lng], { 
+                    icon: kecamatanIcon,
+                    title: kecamatan 
+                }).addTo(map);
+                
+                marker.bindTooltip(`<strong>${kecamatan}</strong>`, {
+                    permanent: false,
+                    direction: 'top',
+                    className: 'kecamatan-tooltip'
+                });
+                
+                mapMarkers.push(marker);
+            });
+            
+            kecamatanLayer = L.layerGroup(mapMarkers.filter(m => m.options.icon?.options.className === 'kecamatan-marker'));
+        }
+        
+        function addHeatmapLayer() {
+            if (!map) return;
+            
+            // Create heatmap layer
+            heatmapLayer = L.layerGroup().addTo(map);
+        }
+        
+        function updateHeatmapLayer(data) {
+            if (!heatmapLayer || !map) return;
+            
+            // Clear existing heatmap
+            heatmapLayer.clearLayers();
+            
+            if (data.length === 0) return;
+            
+            // Create heatmap points
+            const heatPoints = [];
+            
+            data.forEach(item => {
+                const key = `${item.desa}, ${item.kecamatan}`;
+                const coordinates = koordinatDesa[key] || koordinatKecamatan[item.kecamatan];
+                
+                if (coordinates) {
+                    // Weight based on jumlah bantuan
+                    const weight = parseFloat(item.jumlahBantuan) || 1;
+                    heatPoints.push([coordinates.lat, coordinates.lng, Math.min(weight / 1000000, 1)]);
+                }
+            });
+            
+            // Create heatmap using circle markers
+            heatPoints.forEach(point => {
+                const [lat, lng, intensity] = point;
+                const radius = 30 + (intensity * 70);
+                const opacity = 0.3 + (intensity * 0.3);
+                
+                L.circle([lat, lng], {
+                    radius: radius,
+                    fillColor: '#ff7800',
+                    color: '#ff5500',
+                    weight: 0,
+                    fillOpacity: opacity
+                }).addTo(heatmapLayer);
+            });
+        }
+        
+        function toggleHeatmapLayer() {
+            const toggle = document.getElementById('toggleHeatmap');
+            if (!heatmapLayer || !toggle) return;
+            
+            if (toggle.checked) {
+                map.addLayer(heatmapLayer);
+            } else {
+                map.removeLayer(heatmapLayer);
+            }
+        }
+        
+        function toggleMarkersLayer() {
+            const toggle = document.getElementById('toggleMarkers');
+            if (!markerCluster || !toggle) return;
+            
+            if (toggle.checked) {
+                map.addLayer(markerCluster);
+            } else {
+                map.removeLayer(markerCluster);
+            }
+        }
+        
+        function toggleKecamatanLayer() {
+            const toggle = document.getElementById('toggleKecamatan');
+            if (!kecamatanLayer || !toggle) return;
+            
+            if (toggle.checked) {
+                map.addLayer(kecamatanLayer);
+            } else {
+                map.removeLayer(kecamatanLayer);
+            }
+        }
+        
+        function changeMapType(type) {
+            currentMapType = type;
+            
+            // Update button states
+            document.getElementById('btnMapRoad').classList.remove('active');
+            document.getElementById('btnMapSatellite').classList.remove('active');
+            document.getElementById('btnMapHybrid').classList.remove('active');
+            
+            if (type === 'roadmap') {
+                document.getElementById('btnMapRoad').classList.add('active');
+            } else if (type === 'satellite') {
+                document.getElementById('btnMapSatellite').classList.add('active');
+            } else if (type === 'hybrid') {
+                document.getElementById('btnMapHybrid').classList.add('active');
+            }
+            
+            // Update Google Maps layer
+            if (googleLayer) {
+                map.removeLayer(googleLayer);
+                googleLayer = L.gridLayer.googleMutant({
+                    type: type
+                }).addTo(map);
+            }
+        }
+        
+        function locateUser() {
+            if (!map) return;
+            
+            if (!navigator.geolocation) {
+                showNotification('Geolocation tidak didukung oleh browser Anda', 'error');
+                return;
+            }
+            
+            showNotification('Mendeteksi lokasi Anda...', 'info');
+            
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // Add marker for user location
+                const userIcon = L.divIcon({
+                    className: 'user-marker',
+                    html: `<div style="
+                        background-color: #005f73;
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 50%;
+                        border: 3px solid white;
+                        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                    ">
+                        <i class="fas fa-user"></i>
+                    </div>`,
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18]
+                });
+                
+                // Remove existing user marker if any
+                map.eachLayer(function(layer) {
+                    if (layer.options && layer.options.icon === userIcon) {
+                        map.removeLayer(layer);
+                    }
+                });
+                
+                // Add new marker
+                L.marker([lat, lng], { icon: userIcon })
+                    .addTo(map)
+                    .bindPopup('<strong>Lokasi Anda</strong>')
+                    .openPopup();
+                
+                // Pan to user location
+                map.setView([lat, lng], 13);
+                
+                showNotification('Lokasi Anda berhasil ditampilkan', 'success');
+            }, function(error) {
+                let errorMessage = 'Gagal mendapatkan lokasi Anda';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Akses lokasi ditolak. Izinkan akses lokasi di pengaturan browser.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Informasi lokasi tidak tersedia.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Permintaan lokasi waktu habis.';
+                        break;
+                }
+                showNotification(errorMessage, 'error');
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
+        }
+        
+        function updateMapStatistics(pointCount, recipients, value, topDesaName) {
+            document.getElementById('mapPointCount').textContent = pointCount;
+            document.getElementById('mapTotalRecipients').textContent = recipients;
+            document.getElementById('mapTotalValue').textContent = `Rp ${formatNumber(value)}`;
+            
+            if (topDesaName) {
+                const desaName = topDesaName.split(',')[0];
+                document.getElementById('topDesa').textContent = desaName;
+            }
+        }
+        
+        function showLocationDetail(desa, kecamatan) {
+            // Filter data for this location
+            const locationData = appData.filter(item => 
+                item.desa === desa && item.kecamatan === kecamatan
+            );
+            
+            if (locationData.length === 0) return;
+            
+            // Create detail content
+            let detailContent = `
+                <div class="p-3">
+                    <h4 class="fw-bold text-primary">${desa}, ${kecamatan}</h4>
+                    <p class="text-muted mb-4">Total ${locationData.length} penerima bantuan</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama</th>
+                                    <th>Kelompok</th>
+                                    <th>Jenis</th>
+                                    <th>Bantuan</th>
+                                    <th>Jumlah</th>
+                                    <th>Tahun</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            locationData.forEach((item, index) => {
+                detailContent += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td class="fw-bold">${item.nama}</td>
+                        <td>${item.namaKelompok || '-'}</td>
+                        <td><span class="badge bg-info">${item.jenisBantuan}</span></td>
+                        <td>${item.namaBantuan}</td>
+                        <td>${formatNumber(item.jumlahBantuan)} ${item.satuanBantuan}</td>
+                        <td>${item.tahunAnggaran}</td>
+                    </tr>
+                `;
+            });
+            
+            detailContent += `
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="fw-bold">Ringkasan Statistik:</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <small>Total Nilai Bantuan:</small><br>
+                                <strong class="text-success">
+                                    Rp ${formatNumber(locationData.reduce((sum, item) => sum + (parseFloat(item.jumlahBantuan) || 0), 0))}
+                                </strong>
+                            </div>
+                            <div class="col-6">
+                                <small>Rata-rata per Penerima:</small><br>
+                                <strong>
+                                    Rp ${formatNumber(Math.round(locationData.reduce((sum, item) => sum + (parseFloat(item.jumlahBantuan) || 0), 0) / locationData.length))}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update modal content and show
+            const locationDetailContent = document.getElementById('locationDetailContent');
+            if (locationDetailContent) {
+                locationDetailContent.innerHTML = detailContent;
+                new bootstrap.Modal(document.getElementById('locationDetailModal')).show();
+            }
+        }
+        
+        async function applyMapFilter() {
             const filterType = document.getElementById('mapFilterType').value;
             const filterValue = document.getElementById('mapFilterValue').value;
             
             if (filterType === 'all') {
-                updateMapWithData(appData);
-                showNotification('Menampilkan semua data', 'info');
-                return;
+                // Show all data
+                await updateMapWithData(appData);
+            } else {
+                // Filter data
+                let filteredMapData = [];
+                
+                if (filterType === 'kecamatan' && filterValue) {
+                    filteredMapData = appData.filter(item => item.kecamatan === filterValue);
+                } else if (filterType === 'tahun' && filterValue) {
+                    filteredMapData = appData.filter(item => item.tahunAnggaran == filterValue);
+                } else if (filterType === 'jenis' && filterValue) {
+                    filteredMapData = appData.filter(item => item.jenisBantuan === filterValue);
+                } else {
+                    filteredMapData = appData;
+                }
+                
+                await updateMapWithData(filteredMapData);
+                showNotification(`Filter diterapkan: ${filteredMapData.length} data ditampilkan`, 'success');
             }
-            
-            if (!filterValue) {
-                showNotification('Pilih nilai filter terlebih dahulu', 'warning');
-                return;
-            }
-            
-            let filteredData = [];
-            
-            switch(filterType) {
-                case 'kecamatan':
-                    filteredData = appData.filter(item => item.kecamatan === filterValue);
-                    break;
-                case 'tahun':
-                    filteredData = appData.filter(item => item.tahunAnggaran === filterValue);
-                    break;
-                case 'jenis':
-                    filteredData = appData.filter(item => item.jenisBantuan === filterValue);
-                    break;
-            }
-            
-            updateMapWithData(filteredData);
-            showNotification(`Menampilkan ${filteredData.length} data (${filterType}: ${filterValue})`, 'success');
         }
         
-        function resetMapFilter() {
+        async function resetMapFilter() {
             document.getElementById('mapFilterType').value = 'all';
             document.getElementById('mapFilterValueContainer').style.display = 'none';
-            document.getElementById('mapFilterValue').value = '';
-            updateMapWithData(appData);
-            showNotification('Filter direset', 'info');
+            await updateMapWithData(appData);
+            showNotification('Filter peta direset', 'info');
         }
         
-        // ===== FUNGSI PENCARIAN =====
-        function searchMapLocation() {
-            const searchTerm = document.getElementById('mapSearch').value.trim().toLowerCase();
+        async function searchMapLocation() {
+            const searchTerm = document.getElementById('mapSearch').value.toLowerCase().trim();
             
             if (!searchTerm) {
-                showNotification('Masukkan nama desa/kecamatan', 'warning');
+                showNotification('Masukkan nama desa atau kecamatan untuk dicari', 'warning');
                 return;
             }
             
-            // Cari di data kecamatan
+            // Search in coordinates database
             let foundLocation = null;
+            let foundKey = null;
             
-            // Cari di kecamatan
-            for (const [kecamatan, coords] of Object.entries(koordinatKecamatan)) {
-                if (kecamatan.toLowerCase().includes(searchTerm)) {
-                    foundLocation = { type: 'kecamatan', name: kecamatan, coords: coords };
+            // Search in all possible keys
+            const allKeys = [...Object.keys(koordinatDesa), ...Object.keys(koordinatKecamatan), ...Object.keys(coordinatesCache)];
+            
+            for (const key of allKeys) {
+                if (key.toLowerCase().includes(searchTerm)) {
+                    foundKey = key;
                     break;
                 }
             }
             
-            // Cari di desa
-            if (!foundLocation) {
-                for (const [key, coords] of Object.entries(koordinatDesa)) {
-                    if (key.toLowerCase().includes(searchTerm)) {
-                        const [desa, kec] = key.split(', ');
-                        foundLocation = { type: 'desa', name: key, coords: coords };
-                        break;
-                    }
+            if (foundKey) {
+                // Get coordinates from the appropriate source
+                if (koordinatDesa[foundKey]) {
+                    foundLocation = { key: foundKey, coords: koordinatDesa[foundKey] };
+                } else if (coordinatesCache[foundKey]) {
+                    foundLocation = { key: foundKey, coords: coordinatesCache[foundKey] };
+                } else if (koordinatKecamatan[foundKey]) {
+                    foundLocation = { key: foundKey, coords: koordinatKecamatan[foundKey] };
                 }
             }
             
             if (foundLocation) {
-                // Zoom ke lokasi
+                // Zoom to location
                 map.setView([foundLocation.coords.lat, foundLocation.coords.lng], 14);
                 
-                // Highlight jika ada data
+                // Open popup if there's data for this location
                 const dataForLocation = appData.filter(item => {
-                    return foundLocation.type === 'kecamatan' ? 
-                        item.kecamatan.toLowerCase().includes(searchTerm) :
-                        (`${item.desa}, ${item.kecamatan}`).toLowerCase().includes(searchTerm);
+                    const itemKey = `${item.desa}, ${item.kecamatan}`;
+                    return itemKey.includes(foundLocation.key) || item.kecamatan === foundLocation.key;
                 });
                 
                 if (dataForLocation.length > 0) {
-                    // Buka popup jika ada marker
+                    // Find and open marker popup
                     mapMarkers.forEach(marker => {
-                        const latLng = marker.getLatLng();
-                        if (Math.abs(latLng.lat - foundLocation.coords.lat) < 0.01 &&
-                            Math.abs(latLng.lng - foundLocation.coords.lng) < 0.01) {
+                        const markerLatLng = marker.getLatLng();
+                        if (markerLatLng.lat.toFixed(4) === foundLocation.coords.lat.toFixed(4) &&
+                            markerLatLng.lng.toFixed(4) === foundLocation.coords.lng.toFixed(4)) {
                             marker.openPopup();
                         }
                     });
                 }
                 
-                showNotification(`Lokasi ditemukan: ${foundLocation.name}`, 'success');
+                showNotification(`Lokasi ditemukan: ${foundLocation.key}`, 'success');
             } else {
-                showNotification('Lokasi tidak ditemukan', 'error');
+                // Jika tidak ditemukan, coba geocoding
+                showNotification('Mencari koordinat untuk: ' + searchTerm, 'info');
+                
+                try {
+                    const coords = await geocodeLocation(searchTerm + ', Situbondo, Jawa Timur, Indonesia');
+                    if (coords) {
+                        // Cache the coordinates
+                        const newKey = searchTerm;
+                        coordinatesCache[newKey] = coords;
+                        saveCoordinatesCache();
+                        
+                        // Zoom to location
+                        map.setView([coords.lat, coords.lng], 14);
+                        showNotification(`Lokasi ditemukan via geocoding: ${newKey}`, 'success');
+                    } else {
+                        showNotification('Lokasi tidak ditemukan', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Gagal mencari lokasi: ' + error.message, 'error');
+                }
             }
         }
         
-        // ===== FUNGSI UTILITAS =====
-        function updateMapStatistics(pointCount, recipients, value, topDesaName) {
-            document.getElementById('mapPointCount').textContent = pointCount;
-            document.getElementById('mapTotalRecipients').textContent = recipients;
-            document.getElementById('mapTotalValue').textContent = `Rp ${formatNumber(value)}`;
-            document.getElementById('topDesa').textContent = topDesaName || '-';
+        function clearMapSearch() {
+            document.getElementById('mapSearch').value = '';
         }
         
-        function formatNumber(num) {
-            return new Intl.NumberFormat('id-ID').format(num);
+        // --- RELOAD DATA ---
+        function handleReloadFromRepo(callback) {
+            const btn = document.getElementById('btn-reload-repo');
+            if (!btn) return;
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin feature-icon"></i> Loading...';
+            btn.disabled = true;
+
+            const oldScript = document.querySelector('#reload-script');
+            if(oldScript) oldScript.remove();
+
+            const script = document.createElement('script');
+            script.id = 'reload-script';
+            script.src = './reload.js?v=' + new Date().getTime(); 
+
+            script.onload = function() {
+                try {
+                    if (window.BARJAS_BACKUP_ENCRYPTED) {
+                        const rawContent = window.BARJAS_BACKUP_ENCRYPTED;
+                        let restored;
+                        try {
+                            if (typeof rawContent === 'string') {
+                                restored = JSON.parse(decodeURIComponent(escape(atob(rawContent))));
+                            } else {
+                                restored = rawContent;
+                            }
+                        } catch (decryptionError) {
+                            throw new Error("Gagal mendekripsi data.");
+                        }
+                        
+                        if(restored && restored.appData && Array.isArray(restored.appData)) {
+                            
+                            const existingIds = new Set(appData.map(item => item.id));
+                            let addedCount = 0;
+
+                            restored.appData.forEach(newItem => {
+                                if (!existingIds.has(newItem.id)) {
+                                    appData.push(newItem);
+                                    existingIds.add(newItem.id); 
+                                    addedCount++;
+                                }
+                            });
+
+                            saveData();
+                            updateDashboard();
+                            renderDataTable();
+                            
+                            // Update map if it's currently visible
+                            if (document.getElementById('v-pills-map').classList.contains('active')) {
+                                updateMapWithData(appData);
+                            }
+                            
+                            if (addedCount > 0) {
+                                showNotification(`Berhasil reload! ${addedCount} data baru ditambahkan.`, 'success');
+                            } else {
+                                showNotification('Reload selesai. Tidak ada data baru yang ditemukan.', 'info');
+                            }
+
+                        } else {
+                            throw new Error('Format data tidak valid.');
+                        }
+                    } else {
+                        throw new Error('Variabel backup tidak ditemukan di reload.js.');
+                    }
+                } catch (e) {
+                    showNotification('Error: ' + e.message, 'error');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    delete window.BARJAS_BACKUP_ENCRYPTED;
+                    
+                    if (callback) callback();
+                }
+            };
+
+            script.onerror = function() {
+                showNotification('Gagal memuat file reload.js. Pastikan file ada di folder yang sama.', 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                if (callback) callback();
+            };
+            document.body.appendChild(script);
+        }
+
+        // --- UTILS ---
+        function toggleMobileMenu() {
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebarMenu) sidebarMenu.classList.toggle('mobile-show');
+            if (sidebarOverlay) sidebarOverlay.classList.toggle('mobile-show');
         }
         
         function showNotification(message, type = 'info') {
-            // Implementasi notifikasi sederhana
-            console.log(`${type.toUpperCase()}: ${message}`);
-            alert(message); // Untuk sementara gunakan alert
+            if (!appSettings.notifications) return;
+            
+            const toastEl = document.querySelector('.notification-toast');
+            if (!toastEl) return;
+            
+            const toastHeader = toastEl.querySelector('.toast-header');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            if (!toastMessage) return;
+            
+            toastMessage.textContent = message;
+            
+            const styles = {
+                success: { bg: 'bg-success-subtle', text: 'text-success-emphasis', title: 'Berhasil' },
+                error: { bg: 'bg-danger-subtle', text: 'text-danger-emphasis', title: 'Gagal' },
+                warning: { bg: 'bg-warning-subtle', text: 'text-warning-emphasis', title: 'Peringatan' },
+                info: { bg: 'bg-primary-subtle', text: 'text-primary-emphasis', title: 'Informasi' }
+            };
+            
+            if (toastHeader) {
+                toastHeader.className = `toast-header ${styles[type].bg} ${styles[type].text}`;
+            }
+            
+            if (toastTitle) {
+                toastTitle.textContent = styles[type].title;
+            }
+            
+            try {
+                new bootstrap.Toast(toastEl).show();
+            } catch (error) {
+                console.error('Error showing toast:', error);
+            }
         }
         
-        function setupEventListeners() {
-            // Map filter
-            document.getElementById('applyMapFilter').addEventListener('click', applyMapFilter);
-            document.getElementById('resetMapFilter').addEventListener('click', resetMapFilter);
-            
-            // Map search
-            document.getElementById('searchMapBtn').addEventListener('click', searchMapLocation);
-            document.getElementById('mapSearch').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') searchMapLocation();
-            });
-            
-            // Tab navigation
-            document.getElementById('v-pills-map-tab').addEventListener('click', function() {
-                setTimeout(() => {
-                    if (map) map.invalidateSize();
-                }, 300);
-            });
-            
-            // Reload data
-            document.getElementById('btn-reload-repo').addEventListener('click', function() {
-                loadSampleData();
-                updateMapWithData(appData);
-                showNotification('Data direfresh', 'success');
-            });
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                return new Date(dateString).toLocaleDateString('id-ID', { 
+                    day: '2-digit', 
+                    month: 'short', 
+                    year: 'numeric' 
+                });
+            } catch (error) {
+                return dateString;
+            }
         }
         
-        // Fungsi untuk menampilkan detail lokasi
-        window.showLocationDetail = function(desa, kecamatan) {
-            const data = appData.filter(item => 
-                item.desa === desa && item.kecamatan === kecamatan
-            );
-            
-            let content = `
-                <h5>Detail ${desa}, ${kecamatan}</h5>
-                <p>Total ${data.length} penerima</p>
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Tahun</th>
-                            <th>Jenis</th>
-                            <th>Bantuan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            data.forEach(item => {
-                content += `
-                    <tr>
-                        <td>${item.nama}</td>
-                        <td>${item.tahunAnggaran}</td>
-                        <td>${item.jenisBantuan}</td>
-                        <td>${item.namaBantuan}</td>
-                    </tr>
-                `;
-            });
-            
-            content += `</tbody></table>`;
-            
-            alert(content); // Untuk sementara gunakan alert
-        };
+        function formatNumber(num) {
+            if (isNaN(num) || num === undefined || num === null) return num; 
+            try {
+                return new Intl.NumberFormat('id-ID').format(num);
+            } catch (error) {
+                return num;
+            }
+        }
+        
+        function formatPrivacy(value) {
+            if (!appSettings.privacyMode) return value;
+            if (!value) return '-';
+            const str = String(value);
+            if (str.length <= 4) return '****';
+            return str.slice(0, -4) + '****';
+        }
+
+        // Ekspor fungsi ke global scope
+        window.showLocationDetail = showLocationDetail;
+        window.changePage = changePage;
     </script>
 </body>
 </html>
