@@ -1224,7 +1224,7 @@
                                 <div class="card-body">
                                     <h6>Langkah-langkah penggunaan data peta:</h6>
                                     <ol>
-                                        <li>Masukkan kode keamanan: <strong>*******</strong></li>
+                                        <li>Masukkan kode keamanan: <strong>19450817</strong></li>
                                         <li>Klik tombol "Generate Data Peta"</li>
                                         <li>Preview data akan muncul, periksa kelengkapan data</li>
                                         <li>Klik "Download datapeta.js" untuk mendapatkan file script</li>
@@ -1409,7 +1409,7 @@
             </a>
             <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-filter-tab')">
                 <i class="fas fa-filter"></i>
-                                <span class="smart-menu-tooltip">Filter Data</span>
+                <span class="smart-menu-tooltip">Filter Data</span>
             </a>
             <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-data-tab')">
                 <i class="fas fa-database"></i>
@@ -1657,13 +1657,14 @@
         
         // --- DATABASE KOORDINAT DESA SITUBONDO YANG DIPERBAIKI (OpenStreetMap) ---
         const koordinatDesa = {
-            // Kecamatan Arjasa
+            // Kecamatan Arjasa - KOORDINAT DIPERBAIKI
             "Arjasa, Arjasa": { lat: -7.7069, lng: 113.6347 },
             "Biting, Arjasa": { lat: -7.7200, lng: 113.6430 },
             "Candijati, Arjasa": { lat: -7.7120, lng: 113.6280 },
             "Darsono, Arjasa": { lat: -7.6980, lng: 113.6200 },
             "Jatisari, Arjasa": { lat: -7.7150, lng: 113.6150 },
             "Kamal, Arjasa": { lat: -7.7020, lng: 113.6300 },
+            "Lamongan, Arjasa": { lat: -7.6856, lng: 113.6189 }, // KOORDINAT DIPERBAIKI
             
             // Kecamatan Asembagus
             "Asembagus, Asembagus": { lat: -7.7536, lng: 114.1561 },
@@ -1751,7 +1752,6 @@
             "Sumber Pinang, Mlandingan": { lat: -7.6900, lng: 113.9450 },
             "Sumberwaru, Mlandingan": { lat: -7.6850, lng: 113.9600 },
             "Tamansari, Mlandingan": { lat: -7.6750, lng: 113.9500 },
-            "Kedunglo, Mlandingan": { lat: -7.6780, lng: 113.9520 },
             
             // Kecamatan Panarukan
             "Panarukan, Panarukan": { lat: -7.7000, lng: 113.9167 },
@@ -1817,10 +1817,21 @@
         
         // --- APPLICATION LIFECYCLE ---
         document.addEventListener('DOMContentLoaded', function() {
+            // Cek jika ada error di console
+            if (typeof console !== 'undefined') {
+                console.log('Aplikasi Sistem Bantuan Nelayan Kab. Situbondo diinisialisasi');
+            }
+            
             initializeApp();
             setupEventListeners();
-            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-            loginModal.show();
+            
+            // Tampilkan modal login
+            try {
+                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+            } catch (error) {
+                console.error('Error menampilkan modal login:', error);
+            }
         });
         
         function initializeApp() {
@@ -1859,77 +1870,183 @@
             ];
             
             toggleHandlers.forEach(handler => {
-                document.querySelector(handler.btn).addEventListener('click', function() {
-                    togglePasswordVisibility(this, handler.input);
-                });
+                const btn = document.querySelector(handler.btn);
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        togglePasswordVisibility(this, handler.input);
+                    });
+                }
             });
             
             // Main Input Form
             document.getElementById('inputForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('inputForm').addEventListener('reset', resetForm);
-            document.getElementById('btnBukanKelompok').addEventListener('click', setBukanKelompok);
-            document.getElementById('generateKodeBtn').addEventListener('click', generateKodeValidasi);
-            document.getElementById('jabatan').addEventListener('change', handleJabatanChange);
-            document.getElementById('nik').addEventListener('input', () => {
-                document.getElementById('kodeValidasi').value = '';
-            });
+            
+            const btnBukanKelompok = document.getElementById('btnBukanKelompok');
+            if (btnBukanKelompok) {
+                btnBukanKelompok.addEventListener('click', setBukanKelompok);
+            }
+            
+            const generateKodeBtn = document.getElementById('generateKodeBtn');
+            if (generateKodeBtn) {
+                generateKodeBtn.addEventListener('click', generateKodeValidasi);
+            }
+            
+            const jabatanSelect = document.getElementById('jabatan');
+            if (jabatanSelect) {
+                jabatanSelect.addEventListener('change', handleJabatanChange);
+            }
+            
+            const nikInput = document.getElementById('nik');
+            if (nikInput) {
+                nikInput.addEventListener('input', () => {
+                    document.getElementById('kodeValidasi').value = '';
+                });
+            }
 
             // Form Live Validation
             ['nama', 'nik', 'whatsapp', 'namaPetugas', 'namaBantuan', 'jumlahBantuan', 'driveLink', 'kodeValidasi', 'kecamatan', 'desa', 'tanggalTerima'].forEach(id => {
-                document.getElementById(id).addEventListener('input', () => clearError(id));
-            });
-            
-            // Data Table & Search
-            document.getElementById('searchData').addEventListener('input', handleSearch);
-            document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
-            
-            // Filter for Data Table
-            document.getElementById('filterKecamatanData').addEventListener('change', handleDataTableFilter);
-            document.getElementById('filterDesaData').addEventListener('change', handleDataTableFilter);
-            
-            // Advanced Filter
-            document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
-            document.getElementById('resetFilterBtn').addEventListener('click', resetFilter);
-            
-            // Print & Export Actions
-            document.getElementById('printPdfBtn').addEventListener('click', printToPdf);
-            document.getElementById('previewBtn').addEventListener('click', showPreview);
-            document.getElementById('exportExcelBtn').addEventListener('click', () => exportData('excel'));
-            document.getElementById('exportCsvBtn').addEventListener('click', () => exportData('csv'));
-            document.getElementById('exportJsonBtn').addEventListener('click', () => exportData('json'));
-            document.getElementById('exportPdfBtn').addEventListener('click', () => exportData('pdf'));
-            
-            // System Management
-            document.getElementById('backupDataBtn').addEventListener('click', backupData);
-            document.getElementById('restoreFileInput').addEventListener('change', enableRestoreButton);
-            document.getElementById('restoreDataBtn').addEventListener('click', restoreData);
-            document.getElementById('resetConfirmationInput').addEventListener('input', enableResetButton);
-            
-            // Refactored Reset Listener (Double Security)
-            document.getElementById('confirmResetBtn').addEventListener('click', function() {
-                const inputVal = document.getElementById('resetConfirmationInput').value;
-                if(inputVal === 'RESET') {
-                    bootstrap.Modal.getInstance(document.getElementById('confirmResetModal')).hide();
-                    requestHighSecurityAction(() => {
-                        performFactoryReset();
-                    });
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', () => clearError(id));
                 }
             });
             
+            // Data Table & Search
+            const searchData = document.getElementById('searchData');
+            if (searchData) {
+                searchData.addEventListener('input', handleSearch);
+            }
+            
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            if (clearSearchBtn) {
+                clearSearchBtn.addEventListener('click', clearSearch);
+            }
+            
+            // Filter for Data Table
+            const filterKecamatanData = document.getElementById('filterKecamatanData');
+            if (filterKecamatanData) {
+                filterKecamatanData.addEventListener('change', handleDataTableFilter);
+            }
+            
+            const filterDesaData = document.getElementById('filterDesaData');
+            if (filterDesaData) {
+                filterDesaData.addEventListener('change', handleDataTableFilter);
+            }
+            
+            // Advanced Filter
+            const applyFilterBtn = document.getElementById('applyFilterBtn');
+            if (applyFilterBtn) {
+                applyFilterBtn.addEventListener('click', applyFilter);
+            }
+            
+            const resetFilterBtn = document.getElementById('resetFilterBtn');
+            if (resetFilterBtn) {
+                resetFilterBtn.addEventListener('click', resetFilter);
+            }
+            
+            // Print & Export Actions
+            const printPdfBtn = document.getElementById('printPdfBtn');
+            if (printPdfBtn) {
+                printPdfBtn.addEventListener('click', printToPdf);
+            }
+            
+            const previewBtn = document.getElementById('previewBtn');
+            if (previewBtn) {
+                previewBtn.addEventListener('click', showPreview);
+            }
+            
+            // Export buttons
+            const exportButtons = {
+                'exportExcelBtn': () => exportData('excel'),
+                'exportCsvBtn': () => exportData('csv'),
+                'exportJsonBtn': () => exportData('json'),
+                'exportPdfBtn': () => exportData('pdf')
+            };
+            
+            Object.keys(exportButtons).forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.addEventListener('click', exportButtons[id]);
+                }
+            });
+            
+            // System Management
+            const backupDataBtn = document.getElementById('backupDataBtn');
+            if (backupDataBtn) {
+                backupDataBtn.addEventListener('click', backupData);
+            }
+            
+            const restoreFileInput = document.getElementById('restoreFileInput');
+            if (restoreFileInput) {
+                restoreFileInput.addEventListener('change', enableRestoreButton);
+            }
+            
+            const restoreDataBtn = document.getElementById('restoreDataBtn');
+            if (restoreDataBtn) {
+                restoreDataBtn.addEventListener('click', restoreData);
+            }
+            
+            const resetConfirmationInput = document.getElementById('resetConfirmationInput');
+            if (resetConfirmationInput) {
+                resetConfirmationInput.addEventListener('input', enableResetButton);
+            }
+            
+            // Refactored Reset Listener (Double Security)
+            const confirmResetBtn = document.getElementById('confirmResetBtn');
+            if (confirmResetBtn) {
+                confirmResetBtn.addEventListener('click', function() {
+                    const inputVal = document.getElementById('resetConfirmationInput').value;
+                    if (inputVal === 'RESET') {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmResetModal'));
+                        if (modal) modal.hide();
+                        
+                        requestHighSecurityAction(() => {
+                            performFactoryReset();
+                        });
+                    }
+                });
+            }
+            
             // Settings Form
-            document.getElementById('settingsForm').addEventListener('submit', handleSaveSettings);
+            const settingsForm = document.getElementById('settingsForm');
+            if (settingsForm) {
+                settingsForm.addEventListener('submit', handleSaveSettings);
+            }
             
             // Privacy Toggle Logic
-            document.getElementById('privacyToggle').addEventListener('click', handlePrivacyToggle);
-            document.getElementById('submitPrivacyAuth').addEventListener('click', checkPrivacyPassword);
-            document.getElementById('closePrivacyModal').addEventListener('click', cancelPrivacyChange);
+            const privacyToggle = document.getElementById('privacyToggle');
+            if (privacyToggle) {
+                privacyToggle.addEventListener('click', handlePrivacyToggle);
+            }
+            
+            const submitPrivacyAuth = document.getElementById('submitPrivacyAuth');
+            if (submitPrivacyAuth) {
+                submitPrivacyAuth.addEventListener('click', checkPrivacyPassword);
+            }
+            
+            const closePrivacyModal = document.getElementById('closePrivacyModal');
+            if (closePrivacyModal) {
+                closePrivacyModal.addEventListener('click', cancelPrivacyChange);
+            }
             
             // Universal PIN Logic
-            document.getElementById('submitUniversalPin').addEventListener('click', handleUniversalPinSubmit);
+            const submitUniversalPin = document.getElementById('submitUniversalPin');
+            if (submitUniversalPin) {
+                submitUniversalPin.addEventListener('click', handleUniversalPinSubmit);
+            }
             
             // UI Helpers
-            document.getElementById('mobileMenuBtn').addEventListener('click', toggleMobileMenu);
-            document.getElementById('sidebarOverlay').addEventListener('click', toggleMobileMenu);
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            }
+            
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', toggleMobileMenu);
+            }
+            
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth < 992 && document.getElementById('sidebarMenu').classList.contains('mobile-show')) {
@@ -1938,19 +2055,47 @@
                 });
             });
 
-            document.getElementById('fabBtn').addEventListener('click', () => document.getElementById('v-pills-input-tab').click());
-            document.getElementById('jenisBantuan').addEventListener('change', updateSatuanBantuan);
-            document.getElementById('printFromPreviewBtn').addEventListener('click', () => window.print());
-            document.getElementById('v-pills-logout-tab').addEventListener('click', logout);
+            const fabBtn = document.getElementById('fabBtn');
+            if (fabBtn) {
+                fabBtn.addEventListener('click', () => {
+                    const inputTab = document.getElementById('v-pills-input-tab');
+                    if (inputTab) inputTab.click();
+                });
+            }
             
-            document.getElementById('btn-reload-repo').addEventListener('click', handleReloadFromRepo);
+            const jenisBantuan = document.getElementById('jenisBantuan');
+            if (jenisBantuan) {
+                jenisBantuan.addEventListener('change', updateSatuanBantuan);
+            }
+            
+            const printFromPreviewBtn = document.getElementById('printFromPreviewBtn');
+            if (printFromPreviewBtn) {
+                printFromPreviewBtn.addEventListener('click', () => window.print());
+            }
+            
+            const logoutTab = document.getElementById('v-pills-logout-tab');
+            if (logoutTab) {
+                logoutTab.addEventListener('click', logout);
+            }
+            
+            const reloadRepoBtn = document.getElementById('btn-reload-repo');
+            if (reloadRepoBtn) {
+                reloadRepoBtn.addEventListener('click', handleReloadFromRepo);
+            }
 
             // Smart Menu Logic
             setupSmartMenu();
 
             // FITUR BARU: Ekstrak Data
-            document.getElementById('generateDataPetaBtn').addEventListener('click', generateDataPeta);
-            document.getElementById('downloadDataPetaBtn').addEventListener('click', downloadDataPeta);
+            const generateDataPetaBtn = document.getElementById('generateDataPetaBtn');
+            if (generateDataPetaBtn) {
+                generateDataPetaBtn.addEventListener('click', generateDataPeta);
+            }
+            
+            const downloadDataPetaBtn = document.getElementById('downloadDataPetaBtn');
+            if (downloadDataPetaBtn) {
+                downloadDataPetaBtn.addEventListener('click', downloadDataPeta);
+            }
 
             window.addEventListener('beforeunload', autoBackupData);
         }
@@ -1959,6 +2104,8 @@
         function setupSmartMenu() {
             const smartMenuToggle = document.getElementById('smartMenuToggle');
             const smartMenuContainer = document.getElementById('smartMenu');
+            
+            if (!smartMenuToggle || !smartMenuContainer) return;
             
             smartMenuToggle.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -1980,8 +2127,10 @@
             if (targetEl) {
                 targetEl.click();
                 // Close menu after selection
-                document.getElementById('smartMenuToggle').classList.remove('active');
-                document.getElementById('smartMenu').classList.remove('active');
+                const smartMenuToggle = document.getElementById('smartMenuToggle');
+                const smartMenu = document.getElementById('smartMenu');
+                if (smartMenuToggle) smartMenuToggle.classList.remove('active');
+                if (smartMenu) smartMenu.classList.remove('active');
             }
         }
         
@@ -1991,6 +2140,8 @@
 
             yearSelects.forEach(selectId => {
                 const select = document.getElementById(selectId);
+                if (!select) return;
+                
                 select.innerHTML = '';
                 
                 if (!['tahunAnggaran', 'defaultTahun'].includes(selectId)) {
@@ -2008,6 +2159,8 @@
         function fillKecamatanDropdown() {
             ['kecamatan', 'filterKecamatan', 'printKecamatan', 'exportKecamatan'].forEach(selectId => {
                 const select = document.getElementById(selectId);
+                if (!select) return;
+                
                 select.innerHTML = '';
                 const defaultText = selectId === 'kecamatan' ? 'Pilih Kecamatan' : 'Semua Kecamatan';
                 select.add(new Option(defaultText, ''));
@@ -2018,6 +2171,8 @@
         function fillDesaDropdown() {
             ['desa', 'filterDesa'].forEach(selectId => {
                 const select = document.getElementById(selectId);
+                if (!select) return;
+                
                 select.innerHTML = '';
                 const defaultText = selectId === 'desa' ? 'Pilih Desa' : 'Semua Desa';
                 select.add(new Option(defaultText, ''));
@@ -2028,15 +2183,19 @@
         function fillFilterDropdownsForDataTable() {
             // Fill kecamatan filter for data table
             const kecFilter = document.getElementById('filterKecamatanData');
-            kecFilter.innerHTML = '';
-            kecFilter.add(new Option('Semua Kecamatan', ''));
-            kecamatanList.forEach(kec => kecFilter.add(new Option(kec, kec)));
+            if (kecFilter) {
+                kecFilter.innerHTML = '';
+                kecFilter.add(new Option('Semua Kecamatan', ''));
+                kecamatanList.forEach(kec => kecFilter.add(new Option(kec, kec)));
+            }
             
             // Fill desa filter for data table
             const desaFilter = document.getElementById('filterDesaData');
-            desaFilter.innerHTML = '';
-            desaFilter.add(new Option('Semua Desa', ''));
-            desaList.forEach(desa => desaFilter.add(new Option(desa, desa)));
+            if (desaFilter) {
+                desaFilter.innerHTML = '';
+                desaFilter.add(new Option('Semua Desa', ''));
+                desaList.forEach(desa => desaFilter.add(new Option(desa, desa)));
+            }
         }
 
         // --- AUTHENTICATION ---
@@ -2047,23 +2206,34 @@
             const securityCodeInput = document.getElementById('securityCode').value;
             const loginButton = document.getElementById('loginButton');
             
+            if (!loginButton) return;
+            
             loginButton.disabled = true;
-            document.getElementById('loginSpinner').classList.remove('d-none');
-            document.querySelector('.login-button-text').textContent = 'Memverifikasi...';
+            const loginSpinner = document.getElementById('loginSpinner');
+            if (loginSpinner) loginSpinner.classList.remove('d-none');
+            
+            const loginButtonText = document.querySelector('.login-button-text');
+            if (loginButtonText) loginButtonText.textContent = 'Memverifikasi...';
             
             setTimeout(() => {
                 if (securityCodeInput === appSettings.securityCode) {
-                    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                    if (loginModal) loginModal.hide();
-                    
-                    showWelcomeMessage();
+                    try {
+                        const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                        if (loginModal) loginModal.hide();
+                        
+                        showWelcomeMessage();
+                    } catch (error) {
+                        console.error('Error hiding login modal:', error);
+                    }
                 } else {
                     loginAttempts++;
                     updateAttemptsCount();
                     
                     const loginForm = document.getElementById('loginForm');
-                    loginForm.classList.add('login-shake');
-                    setTimeout(() => loginForm.classList.remove('login-shake'), 600);
+                    if (loginForm) {
+                        loginForm.classList.add('login-shake');
+                        setTimeout(() => loginForm.classList.remove('login-shake'), 600);
+                    }
                     
                     if (loginAttempts >= 3) {
                         blockAccess();
@@ -2073,53 +2243,69 @@
                 }
 
                 loginButton.disabled = false;
-                document.getElementById('loginSpinner').classList.add('d-none');
-                document.querySelector('.login-button-text').textContent = 'MASUK SISTEM';
+                if (loginSpinner) loginSpinner.classList.add('d-none');
+                if (loginButtonText) loginButtonText.textContent = 'MASUK SISTEM';
             }, 500);
         }
         
         function showWelcomeMessage() {
-            const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
-            const welcomeMessage = document.getElementById('welcomeMessage');
-            
-            const hours = new Date().getHours();
-            let greeting = '';
-            if (hours < 11) greeting = 'Pagi';
-            else if (hours < 15) greeting = 'Siang';
-            else if (hours < 19) greeting = 'Sore';
-            else greeting = 'Malam';
-            
-            welcomeMessage.innerHTML = `
-                <strong>Selamat ${greeting}!</strong><br>
-                Selamat datang di Sistem Bantuan Nelayan Kabupaten Situbondo.<br>
-                <small class="text-white-75">Login sebagai Administrator - Akses penuh</small>
-            `;
-            
-            welcomeModal.show();
+            try {
+                const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+                const welcomeMessage = document.getElementById('welcomeMessage');
+                
+                if (!welcomeMessage) return;
+                
+                const hours = new Date().getHours();
+                let greeting = '';
+                if (hours < 11) greeting = 'Pagi';
+                else if (hours < 15) greeting = 'Siang';
+                else if (hours < 19) greeting = 'Sore';
+                else greeting = 'Malam';
+                
+                welcomeMessage.innerHTML = `
+                    <strong>Selamat ${greeting}!</strong><br>
+                    Selamat datang di Sistem Bantuan Nelayan Kabupaten Situbondo.<br>
+                    <small class="text-white-75">Login sebagai Administrator - Akses penuh</small>
+                `;
+                
+                welcomeModal.show();
+            } catch (error) {
+                console.error('Error showing welcome modal:', error);
+            }
         }
         
         function handleWelcomeReload() {
-            const welcomeModal = bootstrap.Modal.getInstance(document.getElementById('welcomeModal'));
-            if (welcomeModal) welcomeModal.hide();
-            
-            handleReloadFromRepo();
-            
-            setTimeout(() => {
-                document.getElementById('appContent').style.display = 'block';
-                showNotification('Selamat datang! Sistem siap digunakan.', 'success');
-            }, 1000);
+            try {
+                const welcomeModal = bootstrap.Modal.getInstance(document.getElementById('welcomeModal'));
+                if (welcomeModal) welcomeModal.hide();
+                
+                handleReloadFromRepo();
+                
+                setTimeout(() => {
+                    document.getElementById('appContent').style.display = 'block';
+                    showNotification('Selamat datang! Sistem siap digunakan.', 'success');
+                }, 1000);
+            } catch (error) {
+                console.error('Error in welcome reload:', error);
+            }
         }
         
         function handleSkipReload() {
-            const welcomeModal = bootstrap.Modal.getInstance(document.getElementById('welcomeModal'));
-            if (welcomeModal) welcomeModal.hide();
-            
-            document.getElementById('appContent').style.display = 'block';
-            showNotification('Selamat datang! Sistem siap digunakan.', 'success');
+            try {
+                const welcomeModal = bootstrap.Modal.getInstance(document.getElementById('welcomeModal'));
+                if (welcomeModal) welcomeModal.hide();
+                
+                document.getElementById('appContent').style.display = 'block';
+                showNotification('Selamat datang! Sistem siap digunakan.', 'success');
+            } catch (error) {
+                console.error('Error in skip reload:', error);
+            }
         }
         
         function togglePasswordVisibility(btn, inputId) {
             const passwordInput = document.getElementById(inputId);
+            if (!passwordInput) return;
+            
             const icon = btn.querySelector('i');
             const isPassword = passwordInput.type === 'password';
             passwordInput.type = isPassword ? 'text' : 'password';
@@ -2131,9 +2317,14 @@
             const attemptsEl = document.getElementById('attemptsCount');
             const blockedMessage = document.getElementById('blockedMessage');
             
-            attemptsEl.style.display = loginAttempts > 0 && !isBlocked ? 'block' : 'none';
-            attemptsEl.textContent = `Percobaan gagal: ${loginAttempts}/3`;
-            blockedMessage.classList.toggle('d-none', !isBlocked);
+            if (attemptsEl) {
+                attemptsEl.style.display = loginAttempts > 0 && !isBlocked ? 'block' : 'none';
+                attemptsEl.textContent = `Percobaan gagal: ${loginAttempts}/3`;
+            }
+            
+            if (blockedMessage) {
+                blockedMessage.classList.toggle('d-none', !isBlocked);
+            }
         }
         
         function blockAccess() {
@@ -2143,11 +2334,10 @@
             
             let countdown = 30;
             const countdownElement = document.getElementById('countdown');
-            countdownElement.textContent = countdown;
             
             blockTimeout = setInterval(() => {
                 countdown--;
-                countdownElement.textContent = countdown;
+                if (countdownElement) countdownElement.textContent = countdown;
                 if (countdown <= 0) {
                     clearInterval(blockTimeout);
                     isBlocked = false;
@@ -2161,8 +2351,15 @@
             autoBackupData();
             if (confirm('Apakah Anda yakin ingin keluar?')) {
                 document.getElementById('appContent').style.display = 'none';
-                document.getElementById('securityCode').value = '';
-                new bootstrap.Modal(document.getElementById('loginModal')).show();
+                const securityCodeInput = document.getElementById('securityCode');
+                if (securityCodeInput) securityCodeInput.value = '';
+                
+                try {
+                    new bootstrap.Modal(document.getElementById('loginModal')).show();
+                } catch (error) {
+                    console.error('Error showing login modal:', error);
+                }
+                
                 showNotification('Anda telah berhasil logout.', 'info');
             }
         }
@@ -2170,21 +2367,41 @@
         // --- SECURITY & PRIVACY LOGIC ---
         function requestHighSecurityAction(callback) {
             pendingSecurityAction = callback;
-            document.getElementById('universalPinInput').value = '';
-            document.getElementById('universalPinError').style.display = 'none';
-            new bootstrap.Modal(document.getElementById('universalPinModal')).show();
+            const universalPinInput = document.getElementById('universalPinInput');
+            const universalPinError = document.getElementById('universalPinError');
+            
+            if (universalPinInput) universalPinInput.value = '';
+            if (universalPinError) universalPinError.style.display = 'none';
+            
+            try {
+                new bootstrap.Modal(document.getElementById('universalPinModal')).show();
+            } catch (error) {
+                console.error('Error showing universal pin modal:', error);
+            }
         }
 
         function handleUniversalPinSubmit() {
-            const pin = document.getElementById('universalPinInput').value;
+            const pinInput = document.getElementById('universalPinInput');
+            const pinError = document.getElementById('universalPinError');
+            
+            if (!pinInput || !pinError) return;
+            
+            const pin = pinInput.value;
             if (pin === SECURITY_CONSTANTS.PIN) {
-                bootstrap.Modal.getInstance(document.getElementById('universalPinModal')).hide();
-                if (pendingSecurityAction) {
-                    pendingSecurityAction();
-                    pendingSecurityAction = null;
+                try {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('universalPinModal'));
+                    if (modal) modal.hide();
+                    
+                    if (pendingSecurityAction) {
+                        pendingSecurityAction();
+                        pendingSecurityAction = null;
+                    }
+                } catch (error) {
+                    console.error('Error hiding universal pin modal:', error);
                 }
             } else {
-                document.getElementById('universalPinError').style.display = 'block';
+                pinError.style.display = 'block';
+                pinInput.classList.add('is-invalid');
             }
         }
 
@@ -2197,10 +2414,18 @@
                 toggle.checked = true;
                 
                 // Buka modal minta password
-                document.getElementById('privacyPasswordInput').value = '';
-                document.getElementById('privacyError').style.display = 'none';
-                const authModal = new bootstrap.Modal(document.getElementById('privacyAuthModal'));
-                authModal.show();
+                const privacyPasswordInput = document.getElementById('privacyPasswordInput');
+                const privacyError = document.getElementById('privacyError');
+                
+                if (privacyPasswordInput) privacyPasswordInput.value = '';
+                if (privacyError) privacyError.style.display = 'none';
+                
+                try {
+                    const authModal = new bootstrap.Modal(document.getElementById('privacyAuthModal'));
+                    authModal.show();
+                } catch (error) {
+                    console.error('Error showing privacy auth modal:', error);
+                }
             } else {
                 // Jika user baru saja men-check (ingin menyalakan sensor)
                 appSettings.privacyMode = true;
@@ -2212,28 +2437,40 @@
         }
 
         function checkPrivacyPassword() {
-            const input = document.getElementById('privacyPasswordInput').value;
+            const input = document.getElementById('privacyPasswordInput');
+            const errorElement = document.getElementById('privacyError');
             
-            if (input === SECURITY_CONSTANTS.PIN) { 
+            if (!input || !errorElement) return;
+            
+            const password = input.value;
+            
+            if (password === SECURITY_CONSTANTS.PIN) { 
                 appSettings.privacyMode = false;
                 saveSettings();
                 
-                document.getElementById('privacyToggle').checked = false;
-                const modalEl = document.getElementById('privacyAuthModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                modal.hide();
+                const privacyToggle = document.getElementById('privacyToggle');
+                if (privacyToggle) privacyToggle.checked = false;
+                
+                try {
+                    const modalEl = document.getElementById('privacyAuthModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                } catch (error) {
+                    console.error('Error hiding privacy auth modal:', error);
+                }
                 
                 renderDataTable();
                 renderFilterTable();
                 showNotification('Sensor Data dinonaktifkan. NIK dan No HP terlihat.', 'warning');
             } else {
-                document.getElementById('privacyError').style.display = 'block';
-                document.getElementById('privacyPasswordInput').classList.add('is-invalid');
+                errorElement.style.display = 'block';
+                input.classList.add('is-invalid');
             }
         }
 
         function cancelPrivacyChange() {
-            document.getElementById('privacyToggle').checked = true;
+            const privacyToggle = document.getElementById('privacyToggle');
+            if (privacyToggle) privacyToggle.checked = true;
         }
 
         function formatPrivacy(value) {
@@ -2254,35 +2491,48 @@
             const whatsappDisplay = data.whatsapp ? `+62 ${formatPrivacy(data.whatsapp)}` : '-';
             
             // Fill modal with data
-            document.getElementById('detailNama').textContent = data.nama || '-';
-            document.getElementById('detailNik').textContent = nikDisplay;
-            document.getElementById('detailWhatsapp').textContent = whatsappDisplay;
-            document.getElementById('detailKelompok').textContent = data.namaKelompok || '-';
-            document.getElementById('detailJabatan').textContent = data.jabatan || '-';
-            document.getElementById('detailTahun').textContent = data.tahunAnggaran || '-';
-            document.getElementById('detailKecamatan').textContent = data.kecamatan || '-';
-            document.getElementById('detailDesa').textContent = data.desa || '-';
-            document.getElementById('detailAlamat').textContent = data.alamat || '-';
-            document.getElementById('detailJenisBantuan').textContent = data.jenisBantuan || '-';
-            document.getElementById('detailNamaBantuan').textContent = data.namaBantuan || '-';
-            document.getElementById('detailJumlahBantuan').textContent = `${formatNumber(data.jumlahBantuan)} ${data.satuanBantuan}`;
-            document.getElementById('detailTanggal').textContent = formatDate(data.tanggalTerima) || '-';
-            document.getElementById('detailPetugas').textContent = data.namaPetugas || '-';
+            const elements = {
+                'detailNama': data.nama || '-',
+                'detailNik': nikDisplay,
+                'detailWhatsapp': whatsappDisplay,
+                'detailKelompok': data.namaKelompok || '-',
+                'detailJabatan': data.jabatan || '-',
+                'detailTahun': data.tahunAnggaran || '-',
+                'detailKecamatan': data.kecamatan || '-',
+                'detailDesa': data.desa || '-',
+                'detailAlamat': data.alamat || '-',
+                'detailJenisBantuan': data.jenisBantuan || '-',
+                'detailNamaBantuan': data.namaBantuan || '-',
+                'detailJumlahBantuan': `${formatNumber(data.jumlahBantuan)} ${data.satuanBantuan}`,
+                'detailTanggal': formatDate(data.tanggalTerima) || '-',
+                'detailPetugas': data.namaPetugas || '-',
+                'detailKodeValidasi': data.kodeValidasi || '-',
+                'detailKeterangan': data.keterangan || '-'
+            };
+            
+            Object.keys(elements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = elements[id];
+            });
             
             // Handle Google Drive link
             const driveLink = data.driveLink || '-';
-            if (driveLink !== '-' && driveLink.startsWith('http')) {
-                document.getElementById('detailDriveLink').innerHTML = `<a href="${driveLink}" target="_blank" class="drive-link">${driveLink}</a>`;
-            } else {
-                document.getElementById('detailDriveLink').textContent = driveLink;
+            const driveLinkElement = document.getElementById('detailDriveLink');
+            if (driveLinkElement) {
+                if (driveLink !== '-' && driveLink.startsWith('http')) {
+                    driveLinkElement.innerHTML = `<a href="${driveLink}" target="_blank" class="drive-link">${driveLink}</a>`;
+                } else {
+                    driveLinkElement.textContent = driveLink;
+                }
             }
             
-            document.getElementById('detailKodeValidasi').textContent = data.kodeValidasi || '-';
-            document.getElementById('detailKeterangan').textContent = data.keterangan || '-';
-            
             // Show modal
-            const detailModal = new bootstrap.Modal(document.getElementById('detailDataModal'));
-            detailModal.show();
+            try {
+                const detailModal = new bootstrap.Modal(document.getElementById('detailDataModal'));
+                detailModal.show();
+            } catch (error) {
+                console.error('Error showing detail modal:', error);
+            }
         }
         
         // --- FORM HANDLING & VALIDATION ---
@@ -2318,7 +2568,7 @@
                 kodeValidasi: document.getElementById('kodeValidasi').value,
                 keterangan: document.getElementById('keterangan').value.trim(),
                 tanggalInput: isEditing 
-                    ? appData.find(item => item.id === parseInt(editId)).tanggalInput 
+                    ? appData.find(item => item.id === parseInt(editId))?.tanggalInput 
                     : new Date().toISOString()
             };
             
@@ -2337,23 +2587,39 @@
             resetForm();
             updateDashboard();
             renderDataTable();
-            new bootstrap.Tab(document.getElementById('v-pills-data-tab')).show();
+            
+            try {
+                new bootstrap.Tab(document.getElementById('v-pills-data-tab')).show();
+            } catch (error) {
+                console.error('Error switching to data tab:', error);
+            }
         }
 
         function resetForm() {
             document.getElementById('inputForm').reset();
             document.getElementById('inputForm').removeAttribute('data-edit-id');
-            document.getElementById('jabatan').value = 'Individu';
-            document.getElementById('namaKelompok').value = '';
-            document.getElementById('tahunAnggaran').value = appSettings.defaultTahun;
-            document.getElementById('tanggalTerima').value = new Date().toISOString().split('T')[0];
-            document.getElementById('kodeValidasi').value = '';
+            
+            const elements = {
+                'jabatan': 'Individu',
+                'namaKelompok': '',
+                'tahunAnggaran': appSettings.defaultTahun,
+                'tanggalTerima': new Date().toISOString().split('T')[0],
+                'kodeValidasi': ''
+            };
+            
+            Object.keys(elements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.value = elements[id];
+            });
+            
             document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
         }
 
         function setError(id, message) {
-            document.getElementById(id).classList.add('input-error');
+            const element = document.getElementById(id);
+            if (element) element.classList.add('input-error');
+            
             const errorEl = document.getElementById(`${id}Error`);
             if (errorEl) {
                 errorEl.textContent = message;
@@ -2362,7 +2628,9 @@
         }
 
         function clearError(id) {
-            document.getElementById(id).classList.remove('input-error');
+            const element = document.getElementById(id);
+            if (element) element.classList.remove('input-error');
+            
             const errorEl = document.getElementById(`${id}Error`);
             if (errorEl) errorEl.style.display = 'none';
         }
@@ -2370,8 +2638,10 @@
         function validateForm() {
             let isValid = true;
             const requiredFields = ['nama', 'nik', 'whatsapp', 'namaPetugas', 'namaBantuan', 'jumlahBantuan', 'kodeValidasi', 'kecamatan', 'desa', 'tanggalTerima'];
+            
             requiredFields.forEach(id => {
-                if (!document.getElementById(id).value.trim()) {
+                const element = document.getElementById(id);
+                if (element && !element.value.trim()) {
                     setError(id, 'Kolom ini wajib diisi.');
                     isValid = false;
                 }
@@ -2407,16 +2677,19 @@
         }
         
         function setBukanKelompok() {
-            document.getElementById('namaKelompok').value = 'Individu';
-            document.getElementById('jabatan').value = 'Individu';
+            const namaKelompok = document.getElementById('namaKelompok');
+            const jabatan = document.getElementById('jabatan');
+            
+            if (namaKelompok) namaKelompok.value = 'Individu';
+            if (jabatan) jabatan.value = 'Individu';
         }
 
         function handleJabatanChange() {
             const jabatan = document.getElementById('jabatan').value;
             const namaKelompok = document.getElementById('namaKelompok');
             if (jabatan === 'Individu') {
-                namaKelompok.value = 'Individu';
-            } else if (namaKelompok.value.toLowerCase() === 'individu') {
+                if (namaKelompok) namaKelompok.value = 'Individu';
+            } else if (namaKelompok && namaKelompok.value.toLowerCase() === 'individu') {
                 namaKelompok.value = '';
             }
         }
@@ -2442,7 +2715,10 @@
             for (let i = 0; i < 5; i++) {
                 result += characters.charAt(Math.floor(Math.random() * characters.length));
             }
-            document.getElementById('kodeValidasi').value = result;
+            
+            const kodeValidasi = document.getElementById('kodeValidasi');
+            if (kodeValidasi) kodeValidasi.value = result;
+            
             clearError('kodeValidasi');
             showNotification('Kode validasi berhasil digenerate.', 'success');
         }
@@ -2450,6 +2726,8 @@
         function updateSatuanBantuan() {
             const jenis = document.getElementById('jenisBantuan').value;
             const satuanSelect = document.getElementById('satuanBantuan');
+            if (!satuanSelect) return;
+            
             const options = {
                 'Uang': ['Rupiah'],
                 'Barang': ['Unit', 'Paket', 'Set', 'Buah', 'Ekor'],
@@ -2474,8 +2752,12 @@
         }
         
         function saveData() {
-            localStorage.setItem('barjasData', JSON.stringify(appData));
-            localStorage.setItem('barjasGeneratedCodes', JSON.stringify(generatedCodes));
+            try {
+                localStorage.setItem('barjasData', JSON.stringify(appData));
+                localStorage.setItem('barjasGeneratedCodes', JSON.stringify(generatedCodes));
+            } catch (e) {
+                console.error("Gagal menyimpan data:", e);
+            }
         }
 
         function loadSettings() {
@@ -2498,16 +2780,33 @@
         }
 
         function saveSettings() {
-            localStorage.setItem('barjasSettings', JSON.stringify(appSettings));
+            try {
+                localStorage.setItem('barjasSettings', JSON.stringify(appSettings));
+            } catch (e) {
+                console.error("Gagal menyimpan pengaturan:", e);
+            }
         }
 
         function applySettingsToUI() {
-            document.getElementById('itemsPerPage').value = appSettings.itemsPerPage;
-            document.getElementById('notifications').checked = appSettings.notifications;
-            document.getElementById('appName').value = appSettings.appName;
-            document.getElementById('appSubtitle').value = appSettings.appSubtitle;
-            document.getElementById('defaultTahun').value = appSettings.defaultTahun;
-            document.getElementById('privacyToggle').checked = appSettings.privacyMode;
+            const elements = {
+                'itemsPerPage': appSettings.itemsPerPage,
+                'notifications': appSettings.notifications,
+                'appName': appSettings.appName,
+                'appSubtitle': appSettings.appSubtitle,
+                'defaultTahun': appSettings.defaultTahun,
+                'privacyToggle': appSettings.privacyMode
+            };
+            
+            Object.keys(elements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = elements[id];
+                    } else {
+                        element.value = elements[id];
+                    }
+                }
+            });
         }
 
         function handleSaveSettings(e) {
@@ -2516,11 +2815,9 @@
             const newSecurityCode = document.getElementById('settingSecurityCode').value;
             if (newSecurityCode && newSecurityCode.trim() !== "") {
                 appSettings.securityCode = newSecurityCode;
-            } else {
-                // Jangan ubah jika kosong, biarkan yang lama
             }
             
-            appSettings.itemsPerPage = parseInt(document.getElementById('itemsPerPage').value);
+            appSettings.itemsPerPage = parseInt(document.getElementById('itemsPerPage').value) || 25;
             appSettings.notifications = document.getElementById('notifications').checked;
             appSettings.appName = document.getElementById('appName').value;
             appSettings.appSubtitle = document.getElementById('appSubtitle').value;
@@ -2531,27 +2828,38 @@
             showNotification('Pengaturan berhasil disimpan.', 'success');
             renderDataTable();
             
-            document.querySelector('.app-title').innerHTML = appSettings.appName.replace(/\n/g, '<br>');
-            document.querySelector('.app-subtitle').textContent = appSettings.appSubtitle;
+            const appTitle = document.querySelector('.app-title');
+            const appSubtitle = document.querySelector('.app-subtitle');
+            
+            if (appTitle) appTitle.innerHTML = appSettings.appName.replace(/\n/g, '<br>');
+            if (appSubtitle) appSubtitle.textContent = appSettings.appSubtitle;
             
             // Clear password field for security
-            document.getElementById('settingSecurityCode').value = '';
+            const settingSecurityCode = document.getElementById('settingSecurityCode');
+            if (settingSecurityCode) settingSecurityCode.value = '';
         }
         
         // --- DATA TABLE ---
         function renderDataTable() {
             const tableBody = document.getElementById('dataTableBody');
+            if (!tableBody) return;
+            
             tableBody.innerHTML = '';
             
             const dataToRender = isFilterActive ? filteredData : appData;
-            const itemsPerPage = parseInt(appSettings.itemsPerPage);
+            const itemsPerPage = parseInt(appSettings.itemsPerPage) || 25;
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, dataToRender.length);
             
             if (dataToRender.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="18" class="text-center py-4">Tidak ada data</td></tr>`;
-                document.getElementById('tableInfo').textContent = 'Menampilkan 0 dari 0 data';
-                document.getElementById('pagination').innerHTML = '';
+                
+                const tableInfo = document.getElementById('tableInfo');
+                if (tableInfo) tableInfo.textContent = 'Menampilkan 0 dari 0 data';
+                
+                const pagination = document.getElementById('pagination');
+                if (pagination) pagination.innerHTML = '';
+                
                 return;
             }
             
@@ -2604,14 +2912,20 @@
                 tableBody.appendChild(row);
             }
             
-            document.getElementById('tableInfo').textContent = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${dataToRender.length} data`;
+            const tableInfo = document.getElementById('tableInfo');
+            if (tableInfo) {
+                tableInfo.textContent = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${dataToRender.length} data`;
+            }
+            
             updatePagination(dataToRender.length);
         }
         
         function updatePagination(totalItems) {
-            const itemsPerPage = parseInt(appSettings.itemsPerPage);
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
             const paginationEl = document.getElementById('pagination');
+            if (!paginationEl) return;
+            
+            const itemsPerPage = parseInt(appSettings.itemsPerPage) || 25;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
             paginationEl.innerHTML = '';
             
             if (totalPages <= 1) return;
@@ -2641,7 +2955,7 @@
         
         function changePage(page) {
             const dataToRender = isFilterActive ? filteredData : appData;
-            const totalPages = Math.ceil(dataToRender.length / parseInt(appSettings.itemsPerPage));
+            const totalPages = Math.ceil(dataToRender.length / (parseInt(appSettings.itemsPerPage) || 25));
             if (page >= 1 && page <= totalPages) {
                 currentPage = page;
                 renderDataTable();
@@ -2674,19 +2988,24 @@
         }
         
         function clearSearch() {
-            document.getElementById('searchData').value = '';
-            document.getElementById('filterKecamatanData').value = '';
-            document.getElementById('filterDesaData').value = '';
+            const searchData = document.getElementById('searchData');
+            const filterKecamatanData = document.getElementById('filterKecamatanData');
+            const filterDesaData = document.getElementById('filterDesaData');
+            
+            if (searchData) searchData.value = '';
+            if (filterKecamatanData) filterKecamatanData.value = '';
+            if (filterDesaData) filterDesaData.value = '';
+            
             handleSearch();
         }
         
         // --- FILTER ---
         function applyFilter() {
             const filters = {
-                tahun: document.getElementById('filterTahun').value,
-                kecamatan: document.getElementById('filterKecamatan').value,
-                desa: document.getElementById('filterDesa').value,
-                jenis: document.getElementById('filterJenis').value,
+                tahun: document.getElementById('filterTahun')?.value || '',
+                kecamatan: document.getElementById('filterKecamatan')?.value || '',
+                desa: document.getElementById('filterDesa')?.value || '',
+                jenis: document.getElementById('filterJenis')?.value || '',
             };
             
             filteredData = appData.filter(d => 
@@ -2697,20 +3016,36 @@
             );
             
             renderFilterTable();
-            document.getElementById('filterResultCount').textContent = `${filteredData.length} Data`;
+            
+            const filterResultCount = document.getElementById('filterResultCount');
+            if (filterResultCount) {
+                filterResultCount.textContent = `${filteredData.length} Data`;
+            }
+            
             showNotification(`Filter diterapkan. Ditemukan ${filteredData.length} data.`, 'success');
         }
         
         function resetFilter() {
-            ['filterTahun', 'filterKecamatan', 'filterDesa', 'filterJenis'].forEach(id => document.getElementById(id).value = '');
+            ['filterTahun', 'filterKecamatan', 'filterDesa', 'filterJenis'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.value = '';
+            });
+            
             filteredData = [];
             renderFilterTable();
-            document.getElementById('filterResultCount').textContent = '0 Data';
+            
+            const filterResultCount = document.getElementById('filterResultCount');
+            if (filterResultCount) {
+                filterResultCount.textContent = '0 Data';
+            }
+            
             showNotification('Filter direset.', 'info');
         }
         
         function renderFilterTable() {
             const tableBody = document.getElementById('filterTableBody');
+            if (!tableBody) return;
+            
             tableBody.innerHTML = '';
             
             if (filteredData.length === 0) {
@@ -2750,10 +3085,16 @@
             });
 
             const whatsappInput = document.getElementById('whatsapp');
-            whatsappInput.value = data.whatsapp; 
+            if (whatsappInput) whatsappInput.value = data.whatsapp; 
             
             document.getElementById('inputForm').setAttribute('data-edit-id', id);
-            new bootstrap.Tab(document.getElementById('v-pills-input-tab')).show();
+            
+            try {
+                new bootstrap.Tab(document.getElementById('v-pills-input-tab')).show();
+            } catch (error) {
+                console.error('Error switching to input tab:', error);
+            }
+            
             window.scrollTo(0, 0);
             showNotification('Mode edit aktif. Klik "Simpan Data" setelah selesai.', 'info');
         }
@@ -2772,18 +3113,26 @@
         
         // --- DASHBOARD ---
         function updateDashboard() {
-            document.getElementById('totalPenerima').textContent = formatNumber(appData.length);
+            const totalPenerima = document.getElementById('totalPenerima');
+            const totalBantuan = document.getElementById('totalBantuan');
+            const tahunAktif = document.getElementById('tahunAktif');
+            const rataBantuan = document.getElementById('rataBantuan');
+            
+            if (totalPenerima) totalPenerima.textContent = formatNumber(appData.length);
             
             const uangData = appData.filter(d => d.jenisBantuan === 'Uang');
-            const totalBantuan = uangData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
-            document.getElementById('totalBantuan').textContent = `Rp ${formatNumber(totalBantuan)}`;
+            const totalBantuanValue = uangData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
+            
+            if (totalBantuan) totalBantuan.textContent = `Rp ${formatNumber(totalBantuanValue)}`;
             
             const tahunCount = appData.reduce((acc, d) => ({...acc, [d.tahunAnggaran]: (acc[d.tahunAnggaran] || 0) + 1}), {});
-            const tahunAktif = Object.keys(tahunCount).reduce((a, b) => tahunCount[a] > tahunCount[b] ? a : b, appSettings.defaultTahun);
-            document.getElementById('tahunAktif').textContent = tahunAktif;
+            const tahunAktifValue = Object.keys(tahunCount).reduce((a, b) => tahunCount[a] > tahunCount[b] ? a : b, appSettings.defaultTahun);
             
-            const rataBantuan = uangData.length > 0 ? totalBantuan / uangData.length : 0;
-            document.getElementById('rataBantuan').textContent = `Rp ${formatNumber(rataBantuan.toFixed(0))}`;
+            if (tahunAktif) tahunAktif.textContent = tahunAktifValue;
+            
+            const rataBantuanValue = uangData.length > 0 ? totalBantuanValue / uangData.length : 0;
+            
+            if (rataBantuan) rataBantuan.textContent = `Rp ${formatNumber(rataBantuanValue.toFixed(0))}`;
             
             updateCharts();
             updateRecentData();
@@ -2791,6 +3140,8 @@
         
         function updateRecentData() {
             const recentDataContainer = document.getElementById('recentData');
+            if (!recentDataContainer) return;
+            
             recentDataContainer.innerHTML = '';
             const recent = [...appData].sort((a, b) => new Date(b.tanggalInput) - new Date(a.tanggalInput)).slice(0, 5);
             
@@ -2810,14 +3161,40 @@
         }
         
         function initializeCharts() {
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js tidak tersedia');
+                return;
+            }
+            
             Chart.defaults.font.family = "'Inter', sans-serif";
             const pieCtx = document.getElementById('kecamatanChart')?.getContext('2d');
             if (pieCtx) {
-                window.kecamatanChart = new Chart(pieCtx, { type: 'pie', options: { responsive: true, plugins: { legend: { position: 'right' } } } });
+                window.kecamatanChart = new Chart(pieCtx, { 
+                    type: 'pie', 
+                    options: { 
+                        responsive: true, 
+                        plugins: { 
+                            legend: { 
+                                position: 'right' 
+                            } 
+                        } 
+                    } 
+                });
             }
+            
             const barCtx = document.getElementById('tahunChart')?.getContext('2d');
             if (barCtx) {
-                window.tahunChart = new Chart(barCtx, { type: 'bar', options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+                window.tahunChart = new Chart(barCtx, { 
+                    type: 'bar', 
+                    options: { 
+                        responsive: true, 
+                        scales: { 
+                            y: { 
+                                beginAtZero: true 
+                            } 
+                        } 
+                    } 
+                });
             }
         }
         
@@ -2828,7 +3205,10 @@
             if (window.kecamatanChart) {
                 window.kecamatanChart.data = {
                     labels: Object.keys(kecamatanData),
-                    datasets: [{ data: Object.values(kecamatanData), backgroundColor: ['#005f73', '#0a9396', '#94d2bd', '#e9d8a6', '#ee9b00', '#ca6702', '#bb3e03', '#ae2012', '#9b2226'] }]
+                    datasets: [{ 
+                        data: Object.values(kecamatanData), 
+                        backgroundColor: ['#005f73', '#0a9396', '#94d2bd', '#e9d8a6', '#ee9b00', '#ca6702', '#bb3e03', '#ae2012', '#9b2226'] 
+                    }]
                 };
                 window.kecamatanChart.update();
             }
@@ -2838,7 +3218,11 @@
             if (window.tahunChart) {
                 window.tahunChart.data = {
                     labels: sortedYears,
-                    datasets: [{ label: 'Jumlah Penerima', data: sortedYears.map(year => tahunData[year]), backgroundColor: '#0a9396' }]
+                    datasets: [{ 
+                        label: 'Jumlah Penerima', 
+                        data: sortedYears.map(year => tahunData[year]), 
+                        backgroundColor: '#0a9396' 
+                    }]
                 };
                 window.tahunChart.update();
             }
@@ -2847,9 +3231,9 @@
         // --- PRINT & EXPORT ---
         function getFilteredDataForExport(prefix) {
             const filters = {
-                tahun: document.getElementById(`${prefix}Tahun`).value,
-                kecamatan: document.getElementById(`${prefix}Kecamatan`).value,
-                jenis: document.getElementById(`${prefix}Jenis`).value,
+                tahun: document.getElementById(`${prefix}Tahun`)?.value || '',
+                kecamatan: document.getElementById(`${prefix}Kecamatan`)?.value || '',
+                jenis: document.getElementById(`${prefix}Jenis`)?.value || '',
             };
             
             if (!filters.tahun && !filters.kecamatan && !filters.jenis) return appData;
@@ -2864,6 +3248,11 @@
         function printToPdf() {
             const dataToPrint = getFilteredDataForExport('print');
             if (dataToPrint.length === 0) return showNotification('Tidak ada data untuk dicetak sesuai filter.', 'warning');
+            
+            if (typeof window.jspdf === 'undefined') {
+                showNotification('Library jsPDF tidak tersedia.', 'error');
+                return;
+            }
             
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('landscape', 'pt', 'a4');
@@ -2881,7 +3270,16 @@
                 `${formatNumber(d.jumlahBantuan)} ${d.satuanBantuan}`, formatDate(d.tanggalTerima)
             ]);
             
-            doc.autoTable({ head: [cols], body: rows, startY: 80, theme: 'grid', headStyles: { fillColor: [0, 95, 115] } });
+            doc.autoTable({ 
+                head: [cols], 
+                body: rows, 
+                startY: 80, 
+                theme: 'grid', 
+                headStyles: { 
+                    fillColor: [0, 95, 115] 
+                } 
+            });
+            
             doc.save(`laporan_nelayan_${new Date().toISOString().slice(0,10)}.pdf`);
             showNotification('Laporan PDF berhasil diunduh.', 'success');
         }
@@ -2890,7 +3288,13 @@
             const dataToPreview = getFilteredDataForExport('print');
             if (dataToPreview.length === 0) return showNotification('Tidak ada data untuk pratinjau sesuai filter.', 'warning');
 
-            document.getElementById('previewModalTitle').textContent = `Pratinjau Laporan (${dataToPreview.length} data)`;
+            const previewModalTitle = document.getElementById('previewModalTitle');
+            const previewContent = document.getElementById('previewContent');
+            
+            if (!previewModalTitle || !previewContent) return;
+            
+            previewModalTitle.textContent = `Pratinjau Laporan (${dataToPreview.length} data)`;
+            
             let content = `
                 <div class="print-header text-center mb-4">
                     <h4>${appSettings.appName}</h4>
@@ -2909,8 +3313,13 @@
             });
 
             content += `</tbody></table>`;
-            document.getElementById('previewContent').innerHTML = content;
-            new bootstrap.Modal(document.getElementById('previewModal')).show();
+            previewContent.innerHTML = content;
+            
+            try {
+                new bootstrap.Modal(document.getElementById('previewModal')).show();
+            } catch (error) {
+                console.error('Error showing preview modal:', error);
+            }
         }
 
         function exportData(format) {
@@ -2922,24 +3331,49 @@
 
             switch(format) {
                 case 'excel':
+                    if (typeof XLSX === 'undefined') {
+                        showNotification('Library XLSX tidak tersedia.', 'error');
+                        return;
+                    }
+                    
                     const ws = XLSX.utils.json_to_sheet(dataToExport);
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, 'Data');
                     XLSX.writeFile(wb, `${filename}.xlsx`);
                     break;
+                    
                 case 'csv':
+                    if (typeof XLSX === 'undefined') {
+                        showNotification('Library XLSX tidak tersedia.', 'error');
+                        return;
+                    }
+                    
                     const csvWs = XLSX.utils.json_to_sheet(dataToExport);
                     const csv = XLSX.utils.sheet_to_csv(csvWs);
                     downloadFile(csv, 'text/csv', `${filename}.csv`);
                     break;
+                    
                 case 'json':
                     downloadFile(JSON.stringify(dataToExport, null, 2), 'application/json', `${filename}.json`);
                     break;
+                    
                 case 'pdf':
+                    if (typeof window.jspdf === 'undefined') {
+                        showNotification('Library jsPDF tidak tersedia.', 'error');
+                        return;
+                    }
+                    
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF('landscape', 'pt', 'a4');
                     doc.text('DATA BANTUAN NELAYAN', doc.internal.pageSize.getWidth()/2, 40, {align: 'center'});
-                    doc.autoTable({ body: dataToExport, startY: 60, theme: 'grid', headStyles: { fillColor: [0, 95, 115] } });
+                    doc.autoTable({ 
+                        body: dataToExport, 
+                        startY: 60, 
+                        theme: 'grid', 
+                        headStyles: { 
+                            fillColor: [0, 95, 115] 
+                        } 
+                    });
                     doc.save(`${filename}.pdf`);
                     break;
             }
@@ -2947,13 +3381,19 @@
         }
 
         function downloadFile(content, mimeType, filename) {
-            const blob = new Blob([content], { type: mimeType });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            try {
+                const blob = new Blob([content], { type: mimeType });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                showNotification('Gagal mengunduh file.', 'error');
+            }
         }
 
         // --- FITUR BARU: EKSTRAK DATA UNTUK PETA STATISTIK ---
@@ -2962,12 +3402,12 @@
             const errorElement = document.getElementById('extractSecurityCodeError');
             
             if (securityCode !== SECURITY_CONSTANTS.EXTRACT_CODE) {
-                errorElement.style.display = 'block';
+                if (errorElement) errorElement.style.display = 'block';
                 showNotification('Kode keamanan salah.', 'error');
                 return;
             }
             
-            errorElement.style.display = 'none';
+            if (errorElement) errorElement.style.display = 'none';
             
             if (appData.length === 0) {
                 showNotification('Tidak ada data untuk di-generate.', 'warning');
@@ -3140,8 +3580,11 @@
             generatedPetaData = dataPeta;
             
             // Tampilkan preview
-            document.getElementById('extractPreviewSection').style.display = 'block';
-            document.getElementById('extractPreview').innerHTML = JSON.stringify(dataPeta, null, 2);
+            const extractPreviewSection = document.getElementById('extractPreviewSection');
+            const extractPreview = document.getElementById('extractPreview');
+            
+            if (extractPreviewSection) extractPreviewSection.style.display = 'block';
+            if (extractPreview) extractPreview.innerHTML = JSON.stringify(dataPeta, null, 2);
             
             showNotification('Data peta berhasil digenerate!', 'success');
         }
@@ -3232,17 +3675,22 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }`;
 
-            const blob = new Blob([fileContent], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'datapeta.js';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showNotification('File datapeta.js berhasil didownload!', 'success');
+            try {
+                const blob = new Blob([fileContent], { type: 'text/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'datapeta.js';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('File datapeta.js berhasil didownload!', 'success');
+            } catch (error) {
+                console.error('Error downloading datapeta.js:', error);
+                showNotification('Gagal mengunduh file datapeta.js.', 'error');
+            }
         }
 
         // --- BACKUP (RELOAD.JS) & RESTORE ---
@@ -3258,7 +3706,7 @@ if (typeof module !== 'undefined' && module.exports) {
             // 1. Siapkan data JSON
             const dataToBackup = { appData, appSettings, generatedCodes, koordinatDesa, koordinatKecamatan };
             
-            // 2. Enkripsi ke Base64 (sama seperti sebelumnya)
+            // 2. Enkripsi ke Base64
             const encryptedString = btoa(unescape(encodeURIComponent(JSON.stringify(dataToBackup))));
             
             // 3. Buat konten file JS with NEW APP NAME
@@ -3289,7 +3737,10 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
         
         function handleReloadFromRepo() {
             if(!confirm("Apakah Anda yakin ingin me-reload data dari repository? Data lokal akan digabungkan dengan data baru.")) return;
+            
             const btn = document.getElementById('btn-reload-repo');
+            if (!btn) return;
+            
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin feature-icon"></i> Loading...';
             btn.disabled = true;
@@ -3380,7 +3831,10 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
         }
 
         function enableRestoreButton() {
-            document.getElementById('restoreDataBtn').disabled = !this.files.length;
+            const restoreDataBtn = document.getElementById('restoreDataBtn');
+            if (restoreDataBtn) {
+                restoreDataBtn.disabled = !this.files.length;
+            }
         }
         
         function restoreData() {
@@ -3436,7 +3890,10 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
                         saveSettings();
                         applySettingsToUI();
                         document.getElementById('restoreFileInput').value = '';
-                        document.getElementById('restoreDataBtn').disabled = true;
+                        
+                        const restoreDataBtn = document.getElementById('restoreDataBtn');
+                        if (restoreDataBtn) restoreDataBtn.disabled = true;
+                        
                         updateDashboard();
                         renderDataTable();
                         showNotification('Data berhasil direstore.', 'success');
@@ -3452,7 +3909,10 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
         }
         
         function enableResetButton() {
-            document.getElementById('confirmResetBtn').disabled = this.value !== 'RESET';
+            const confirmResetBtn = document.getElementById('confirmResetBtn');
+            if (confirmResetBtn) {
+                confirmResetBtn.disabled = this.value !== 'RESET';
+            }
         }
         
         function performFactoryReset() {
@@ -3463,7 +3923,9 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
             saveData();
             saveSettings();
             
-            document.getElementById('resetConfirmationInput').value = '';
+            const resetConfirmationInput = document.getElementById('resetConfirmationInput');
+            if (resetConfirmationInput) resetConfirmationInput.value = '';
+            
             updateDashboard();
             renderDataTable();
             showNotification('Data telah direset!', 'warning');
@@ -3476,26 +3938,41 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
             if (agent.indexOf("Firefox") > -1) browserName = "Firefox";
             else if (agent.indexOf("Chrome") > -1) browserName = "Chrome";
             else if (agent.indexOf("Safari") > -1) browserName = "Safari";
-            document.getElementById('browserInfo').textContent = browserName;
+            
+            const browserInfo = document.getElementById('browserInfo');
+            if (browserInfo) browserInfo.textContent = browserName;
+            
             try {
                 const usedStorage = (JSON.stringify(localStorage).length / 1024).toFixed(2);
-                document.getElementById('storageInfo').textContent = `${usedStorage} KB`;
+                const storageInfo = document.getElementById('storageInfo');
+                if (storageInfo) storageInfo.textContent = `${usedStorage} KB`;
             } catch (e) {
-                document.getElementById('storageInfo').textContent = 'Error';
+                const storageInfo = document.getElementById('storageInfo');
+                if (storageInfo) storageInfo.textContent = 'Error';
             }
         }
         
         function toggleMobileMenu() {
-            document.getElementById('sidebarMenu').classList.toggle('mobile-show');
-            document.getElementById('sidebarOverlay').classList.toggle('mobile-show');
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebarMenu) sidebarMenu.classList.toggle('mobile-show');
+            if (sidebarOverlay) sidebarOverlay.classList.toggle('mobile-show');
         }
         
         function showNotification(message, type = 'info') {
             if (!appSettings.notifications) return;
+            
             const toastEl = document.querySelector('.notification-toast');
+            if (!toastEl) return;
+            
             const toastHeader = toastEl.querySelector('.toast-header');
             const toastTitle = document.getElementById('toastTitle');
-            document.getElementById('toastMessage').textContent = message;
+            const toastMessage = document.getElementById('toastMessage');
+            
+            if (!toastMessage) return;
+            
+            toastMessage.textContent = message;
             
             const styles = {
                 success: { bg: 'bg-success-subtle', text: 'text-success-emphasis', title: 'Berhasil' },
@@ -3504,20 +3981,49 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
                 info: { bg: 'bg-primary-subtle', text: 'text-primary-emphasis', title: 'Informasi' }
             };
             
-            toastHeader.className = `toast-header ${styles[type].bg} ${styles[type].text}`;
-            toastTitle.textContent = styles[type].title;
-            new bootstrap.Toast(toastEl).show();
+            if (toastHeader) {
+                toastHeader.className = `toast-header ${styles[type].bg} ${styles[type].text}`;
+            }
+            
+            if (toastTitle) {
+                toastTitle.textContent = styles[type].title;
+            }
+            
+            try {
+                new bootstrap.Toast(toastEl).show();
+            } catch (error) {
+                console.error('Error showing toast:', error);
+            }
         }
         
         function formatDate(dateString) {
             if (!dateString) return '-';
-            return new Date(dateString).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            try {
+                return new Date(dateString).toLocaleDateString('id-ID', { 
+                    day: '2-digit', 
+                    month: 'short', 
+                    year: 'numeric' 
+                });
+            } catch (error) {
+                return dateString;
+            }
         }
         
         function formatNumber(num) {
-            if (isNaN(num)) return num; 
-            return new Intl.NumberFormat('id-ID').format(num);
+            if (isNaN(num) || num === undefined || num === null) return num; 
+            try {
+                return new Intl.NumberFormat('id-ID').format(num);
+            } catch (error) {
+                return num;
+            }
         }
+
+        // Ekspor fungsi ke global scope untuk aksi dari HTML
+        window.showDetailData = showDetailData;
+        window.editData = editData;
+        window.deleteData = deleteData;
+        window.triggerSmartMenu = triggerSmartMenu;
+        window.changePage = changePage;
     </script>
 </body>
 </html>
