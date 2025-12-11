@@ -683,7 +683,7 @@
             border-radius: 4px;
         }
         
-        ::webkit-scrollbar-thumb {
+        ::-webkit-scrollbar-thumb {
             background: var(--primary-color);
             border-radius: 4px;
         }
@@ -1821,7 +1821,6 @@
         ];
         
         // Database koordinat yang DIPERBAIKI untuk Kabupaten Situbondo (Koordinat AKURAT)
-        // DIPERBAIKI: Koordinat Kukusan dan Kendit yang benar
         const koordinatKecamatan = {
             "Arjasa": { lat: -7.7922, lng: 114.2626 },
             "Asembagus": { lat: -7.7530, lng: 114.1560 },
@@ -1832,7 +1831,7 @@
             "Jangkar": { lat: -7.7500, lng: 114.0830 },
             "Jatibanteng": { lat: -7.7170, lng: 113.9830 },
             "Kapongan": { lat: -7.6830, lng: 114.0160 },
-            "Kendit": { lat: -7.7166, lng: 113.9333 }, // DIPERBAIKI: Koordinat yang lebih akurat
+            "Kendit": { lat: -7.7166, lng: 113.9333 },
             "Mangaran": { lat: -7.6670, lng: 114.0670 },
             "Mlandingan": { lat: -7.6830, lng: 113.9500 },
             "Panarukan": { lat: -7.7000, lng: 113.9160 },
@@ -1843,7 +1842,6 @@
         };
 
         // Database koordinat desa yang DIPERBAIKI untuk Kabupaten Situbondo
-        // DIPERBAIKI: Koordinat Kukusan dan Kendit yang lebih akurat
         const koordinatDesa = {
             // ===== KECAMATAN ARJASA =====
             "Arjasa, Arjasa": { lat: -7.7922, lng: 114.2626 },
@@ -1907,11 +1905,11 @@
             "Curah Cottok, Kapongan": { lat: -7.6800, lng: 114.0150 },
             "Gelung, Kapongan": { lat: -7.6750, lng: 114.0100 },
 
-            // ===== KECAMATAN KENDIT ===== (DIPERBAIKI KOORDINAT)
+            // ===== KECAMATAN KENDIT =====
             "Balung, Kendit": { lat: -7.7300, lng: 113.9350 },
             "Keding, Kendit": { lat: -7.7250, lng: 113.9400 },
-            "Kendit, Kendit": { lat: -7.7166, lng: 113.9333 }, // DIPERBAIKI
-            "Kukusan, Kendit": { lat: -7.7083, lng: 113.9417 }, // DITAMBAHKAN: Koordinat Kukusan yang akurat
+            "Kendit, Kendit": { lat: -7.7166, lng: 113.9333 },
+            "Kukusan, Kendit": { lat: -7.7083, lng: 113.9417 },
 
             // ===== KECAMATAN MANGARAN =====
             "Mangaran, Mangaran": { lat: -7.6670, lng: 114.0670 },
@@ -2903,16 +2901,19 @@
                 }
                 locationDataMap[key].tahunDistribusi[item.tahunAnggaran]++;
                 
-                // Add to bantuan list
+                // Add to bantuan list - PERBAIKAN: Simpan SEMUA data lengkap
                 locationDataMap[key].bantuanList.push({
                     nama: item.nama,
-                    jenis: item.jenisBantuan,
-                    bantuan: item.namaBantuan,
-                    jumlah: item.jumlahBantuan,
-                    satuan: item.satuanBantuan,
-                    tahun: item.tahunAnggaran,
-                    kelompok: item.namaKelompok || 'Tidak ada kelompok',
-                    jabatan: item.jabatan || 'Anggota'
+                    nik: item.nik,
+                    namaKelompok: item.namaKelompok || 'Tidak ada kelompok',
+                    jabatan: item.jabatan || 'Anggota',
+                    jenisBantuan: item.jenisBantuan,
+                    namaBantuan: item.namaBantuan || '-',
+                    jumlahBantuan: item.jumlahBantuan,
+                    satuanBantuan: item.satuanBantuan || '',
+                    tahunAnggaran: item.tahunAnggaran,
+                    tanggalTerima: item.tanggalTerima,
+                    namaPetugas: item.namaPetugas || '-'
                 });
                 
                 // Collect kelompok data
@@ -3491,12 +3492,17 @@
                             <thead class="table-primary">
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Penerima</th>
+                                    <th>Nama</th>
+                                    <th>NIK</th>
                                     <th>Kelompok</th>
                                     <th>Jabatan</th>
                                     <th>Jenis Bantuan</th>
+                                    <th>Nama Bantuan</th>
                                     <th>Jumlah</th>
+                                    <th>Satuan</th>
                                     <th>Tahun</th>
+                                    <th>Tanggal Terima</th>
+                                    <th>Petugas</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3506,16 +3512,22 @@
             const sortedItems = [...locationData.bantuanList].sort((a, b) => a.nama.localeCompare(b.nama));
             
             sortedItems.forEach((item, index) => {
-                const colorScheme = jenisBantuanColors[item.jenis] || { bg: '#f8f9fa', text: '#6c757d', icon: 'gift' };
+                const nikDisplay = formatPrivacy(item.nik);
+                const colorScheme = jenisBantuanColors[item.jenisBantuan] || { bg: '#f8f9fa', text: '#6c757d', icon: 'gift' };
                 detailContent += `
                     <tr>
                         <td class="fw-bold">${index + 1}</td>
                         <td class="fw-bold text-primary">${item.nama}</td>
-                        <td>${item.kelompok || '-'}</td>
-                        <td>${item.jabatan || 'Anggota'}</td>
-                        <td><span class="badge py-1 px-2" style="background-color: ${colorScheme.bg}; color: ${colorScheme.text};">${item.jenis}</span></td>
-                        <td class="fw-bold">${formatNumber(item.jumlah)} ${item.satuan || ''}</td>
-                        <td><span class="badge bg-secondary">${item.tahun}</span></td>
+                        <td>${nikDisplay}</td>
+                        <td>${item.namaKelompok}</td>
+                        <td>${item.jabatan}</td>
+                        <td><span class="badge py-1 px-2" style="background-color: ${colorScheme.bg}; color: ${colorScheme.text};">${item.jenisBantuan}</span></td>
+                        <td>${item.namaBantuan}</td>
+                        <td class="fw-bold">${formatNumber(item.jumlahBantuan)}</td>
+                        <td>${item.satuanBantuan}</td>
+                        <td><span class="badge bg-secondary">${item.tahunAnggaran}</span></td>
+                        <td>${formatDate(item.tanggalTerima)}</td>
+                        <td>${item.namaPetugas}</td>
                     </tr>
                 `;
             });
