@@ -331,8 +331,8 @@
         
         .leaflet-popup-content {
             font-family: 'Inter', sans-serif;
-            max-width: 350px;
-            min-width: 300px;
+            max-width: 400px;
+            min-width: 350px;
         }
         
         .leaflet-popup-content h4 {
@@ -718,6 +718,116 @@
         .map-controls-transparent:hover {
             opacity: 1;
         }
+        
+        /* NEW: Improved popup styling */
+        .location-popup {
+            max-width: 400px !important;
+        }
+        
+        .popup-header {
+            background: linear-gradient(90deg, #005f73, #0a9396);
+            color: white;
+            padding: 10px 15px;
+            margin: -10px -10px 10px -10px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .popup-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 3px;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .jenis-bantuan-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .jenis-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .color-scheme-1 { background-color: #e3f2fd; color: #1565c0; }
+        .color-scheme-2 { background-color: #e8f5e9; color: #2e7d32; }
+        .color-scheme-3 { background-color: #fff3e0; color: #ef6c00; }
+        .color-scheme-4 { background-color: #fce4ec; color: #c2185b; }
+        .color-scheme-5 { background-color: #f3e5f5; color: #7b1fa2; }
+        
+        /* NEW: Marker color classes */
+        .marker-color-1 { background-color: #4CAF50; } /* Hijau - Rendah */
+        .marker-color-2 { background-color: #FFC107; } /* Kuning - Sedang */
+        .marker-color-3 { background-color: #FF9800; } /* Oranye - Tinggi */
+        .marker-color-4 { background-color: #F44336; } /* Merah - Sangat Tinggi */
+        .marker-color-5 { background-color: #9C27B0; } /* Ungu - Khusus */
+        
+        /* NEW: Enhanced legend */
+        .legend-enhanced {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .legend-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .legend-scale {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .legend-item-enhanced {
+            flex: 1;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .legend-color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 auto 5px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* NEW: Map layers panel */
+        .layers-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -782,7 +892,7 @@
                 </div>
                 <h1 class="app-title">PETA STATISTIK DATA NELAYAN<br>KABUPATEN SITUBONDO</h1>
                 <p class="app-subtitle">Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
-                <div class="watermark">Visualization Edition v2.4</div>
+                <div class="watermark">Visualization Edition v2.5</div>
             </div>
             
             <div class="row g-0">
@@ -989,6 +1099,7 @@
                                                 <option value="kecamatan">Kecamatan</option>
                                                 <option value="tahun">Tahun</option>
                                                 <option value="jenis">Jenis Bantuan</option>
+                                                <option value="desa">Desa</option>
                                             </select>
                                         </div>
                                         <div class="mb-2" id="mapFilterValueContainer" style="display: none;">
@@ -1004,45 +1115,53 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Map Legend -->
-                                    <div class="map-legend map-controls-transparent" id="mapLegend">
-                                        <h6 class="fw-bold mb-2">Legenda Peta</h6>
-                                        <div class="legend-item">
-                                            <div class="legend-color" style="background-color: #2ecc71;"></div>
-                                            <span>1-5 Penerima</span>
+                                    <!-- Enhanced Map Legend -->
+                                    <div class="map-legend map-controls-transparent legend-enhanced" id="mapLegend">
+                                        <div class="legend-title">Legenda Peta</div>
+                                        <div class="legend-scale">
+                                            <div class="legend-item-enhanced">
+                                                <div class="legend-color-box marker-color-1"></div>
+                                                <small>1-5 Penerima</small>
+                                            </div>
+                                            <div class="legend-item-enhanced">
+                                                <div class="legend-color-box marker-color-2"></div>
+                                                <small>6-15 Penerima</small>
+                                            </div>
+                                            <div class="legend-item-enhanced">
+                                                <div class="legend-color-box marker-color-3"></div>
+                                                <small>16-30 Penerima</small>
+                                            </div>
+                                            <div class="legend-item-enhanced">
+                                                <div class="legend-color-box marker-color-4"></div>
+                                                <small>31+ Penerima</small>
+                                            </div>
                                         </div>
-                                        <div class="legend-item">
-                                            <div class="legend-color" style="background-color: #f1c40f;"></div>
-                                            <span>6-15 Penerima</span>
-                                        </div>
-                                        <div class="legend-item">
-                                            <div class="legend-color" style="background-color: #e67e22;"></div>
-                                            <span>16-30 Penerima</span>
-                                        </div>
-                                        <div class="legend-item">
-                                            <div class="legend-color" style="background-color: #e74c3c;"></div>
-                                            <span>31+ Penerima</span>
-                                        </div>
-                                        <div class="legend-item mt-2">
-                                            <div class="legend-color" style="background-color: #005f73; border: 2px solid #001219;"></div>
-                                            <span>Pusat Kecamatan</span>
+                                        <div class="mt-3">
+                                            <div class="legend-item">
+                                                <div class="legend-color" style="background-color: #005f73; border: 2px solid #001219;"></div>
+                                                <span class="small">Pusat Kecamatan</span>
+                                            </div>
+                                            <div class="legend-item">
+                                                <div class="legend-color" style="background-color: #ff5500; opacity: 0.5;"></div>
+                                                <span class="small">Area Heatmap</span>
+                                            </div>
                                         </div>
                                     </div>
                                     
                                     <!-- Layer Controls -->
-                                    <div class="heatmap-controls map-controls-transparent" id="layerControls">
+                                    <div class="heatmap-controls map-controls-transparent layers-panel" id="layerControls">
                                         <h6 class="fw-bold mb-2">Layer Peta</h6>
-                                        <div class="form-check form-switch mb-1">
+                                        <div class="form-check form-switch mb-2">
                                             <input class="form-check-input" type="checkbox" id="toggleHeatmap" checked>
-                                            <label class="form-check-label small" for="toggleHeatmap">Heatmap</label>
-                                        </div>
-                                        <div class="form-check form-switch mb-1">
-                                            <input class="form-check-input" type="checkbox" id="toggleMarkers" checked>
-                                            <label class="form-check-label small" for="toggleMarkers">Marker</label>
+                                            <label class="form-check-label" for="toggleHeatmap">Heatmap</label>
                                         </div>
                                         <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="toggleMarkers" checked>
+                                            <label class="form-check-label" for="toggleMarkers">Marker</label>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
                                             <input class="form-check-input" type="checkbox" id="toggleKecamatan" checked>
-                                            <label class="form-check-label small" for="toggleKecamatan">Kecamatan</label>
+                                            <label class="form-check-label" for="toggleKecamatan">Kecamatan</label>
                                         </div>
                                         <div class="btn-group-vertical w-100" role="group">
                                             <button type="button" class="btn btn-sm btn-outline-primary active" id="btnMapRoad">Jalan</button>
@@ -1077,10 +1196,10 @@
                                         <div class="col-md-4">
                                             <h6>Keterangan Warna:</h6>
                                             <div class="d-flex flex-wrap gap-2">
-                                                <span class="badge" style="background-color: #2ecc71;">Rendah</span>
-                                                <span class="badge" style="background-color: #f1c40f;">Sedang</span>
-                                                <span class="badge" style="background-color: #e67e22;">Tinggi</span>
-                                                <span class="badge" style="background-color: #e74c3c;">Sangat Tinggi</span>
+                                                <span class="badge marker-color-1">Rendah (1-5)</span>
+                                                <span class="badge marker-color-2">Sedang (6-15)</span>
+                                                <span class="badge marker-color-3">Tinggi (16-30)</span>
+                                                <span class="badge marker-color-4">Sangat Tinggi (31+)</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1164,6 +1283,11 @@
         // Cache for coordinates
         let coordinatesCache = {};
         
+        // NEW: Data structures for enhanced visualization
+        let locationDataMap = {}; // Map untuk data lokasi
+        let jenisBantuanColors = {}; // Warna untuk jenis bantuan
+        let desaList = []; // Daftar desa untuk filter
+        
         const SECURITY_CONSTANTS = {
             PIN: '17081945',
             DEFAULT_PASS: '' // Password dihapus
@@ -1178,13 +1302,12 @@
         
         // Database koordinat yang DIPERBAIKI untuk Kabupaten Situbondo (Koordinat AKURAT)
         const koordinatKecamatan = {
-            // KOORDINAT YANG DIPERBAIKI DAN DIKONFIRMASI AKURAT
-            "Arjasa": { lat: -7.7922, lng: 114.2626 }, // KOORDINAT ARJASA YANG BENAR
+            "Arjasa": { lat: -7.7922, lng: 114.2626 },
             "Asembagus": { lat: -7.7530, lng: 114.1560 },
             "Banyuglugur": { lat: -7.7210, lng: 113.8880 },
             "Banyuputih": { lat: -7.7600, lng: 114.0200 },
             "Besuki": { lat: -7.7330, lng: 113.7000 },
-            "Bungatan": { lat: -7.7167, lng: 113.9000 }, // KOORDINAT BUNGATAN YANG BENAR
+            "Bungatan": { lat: -7.7167, lng: 113.9000 },
             "Jangkar": { lat: -7.7500, lng: 114.0830 },
             "Jatibanteng": { lat: -7.7170, lng: 113.9830 },
             "Kapongan": { lat: -7.6830, lng: 114.0160 },
@@ -1192,7 +1315,7 @@
             "Mangaran": { lat: -7.6670, lng: 114.0670 },
             "Mlandingan": { lat: -7.6830, lng: 113.9500 },
             "Panarukan": { lat: -7.7000, lng: 113.9160 },
-            "Panji": { lat: -7.7353, lng: 113.6983 }, // KOORDINAT PANJI YANG BENAR
+            "Panji": { lat: -7.7353, lng: 113.6983 },
             "Situbondo": { lat: -7.7060, lng: 113.9600 },
             "Suboh": { lat: -7.8000, lng: 113.8330 },
             "Sumbermalang": { lat: -7.7670, lng: 113.7830 }
@@ -1200,8 +1323,8 @@
 
         // Database koordinat desa yang DIPERBAIKI untuk Kabupaten Situbondo
         const koordinatDesa = {
-            // ===== KECAMATAN ARJASA (DIPERBAIKI DENGAN KOORDINAT AKURAT) =====
-            "Arjasa, Arjasa": { lat: -7.7922, lng: 114.2626 }, // PUSAT KECAMATAN ARJASA
+            // ===== KECAMATAN ARJASA =====
+            "Arjasa, Arjasa": { lat: -7.7922, lng: 114.2626 },
             "Bayeman, Arjasa": { lat: -7.7800, lng: 114.2500 },
             "Curah Tatal, Arjasa": { lat: -7.8000, lng: 114.2700 },
             "Jatisari, Arjasa": { lat: -7.7850, lng: 114.2650 },
@@ -1236,8 +1359,8 @@
             "Demung, Besuki": { lat: -7.7300, lng: 113.6900 },
             "Jetis, Besuki": { lat: -7.7200, lng: 113.7050 },
 
-            // ===== KECAMATAN BUNGATAN (DIPERBAIKI DENGAN KOORDINAT AKURAT) =====
-            "Bungatan, Bungatan": { lat: -7.7167, lng: 113.9000 }, // PUSAT KECAMATAN BUNGATAN
+            // ===== KECAMATAN BUNGATAN =====
+            "Bungatan, Bungatan": { lat: -7.7167, lng: 113.9000 },
             "Bungcalok, Bungatan": { lat: -7.7100, lng: 113.9050 },
             "Cemara, Bungatan": { lat: -7.7200, lng: 113.8950 },
             "Kembangsari, Bungatan": { lat: -7.7150, lng: 113.8900 },
@@ -1280,7 +1403,7 @@
             "Kilensari, Panarukan": { lat: -7.6950, lng: 113.9150 },
             "Paowan, Panarukan": { lat: -7.7100, lng: 113.9250 },
 
-            // ===== KECAMATAN PANJI (DIPERBAIKI DENGAN KOORDINAT AKURAT) =====
+            // ===== KECAMATAN PANJI =====
             "Ardirejo, Panji": { lat: -7.7400, lng: 113.7000 },
             "Kemiri, Panji": { lat: -7.7300, lng: 113.7050 },
             "Panji Kidul, Panji": { lat: -7.7350, lng: 113.6950 },
@@ -1312,12 +1435,26 @@
             // Load cached coordinates
             loadCoordinatesCache();
             
+            // Initialize jenis bantuan colors
+            initJenisBantuanColors();
+            
             // AUTO LOGIN - Tanpa password
             autoLogin();
             
             initializeApp();
             setupEventListeners();
         });
+        
+        function initJenisBantuanColors() {
+            // Warna untuk jenis bantuan
+            jenisBantuanColors = {
+                'Uang': { bg: '#e3f2fd', text: '#1565c0' },
+                'Barang': { bg: '#e8f5e9', text: '#2e7d32' },
+                'Jasa': { bg: '#fff3e0', text: '#ef6c00' },
+                'Modal': { bg: '#fce4ec', text: '#c2185b' },
+                'Sarana': { bg: '#f3e5f5', text: '#7b1fa2' }
+            };
+        }
         
         function autoLogin() {
             // Langsung login tanpa password
@@ -1352,6 +1489,7 @@
             initializeCharts();
             updateDashboard();
             setupMapFilterOptions();
+            extractDesaList();
         }
 
         function loadCoordinatesCache() {
@@ -1372,6 +1510,11 @@
             } catch (e) {
                 console.error('Gagal menyimpan cache koordinat:', e);
             }
+        }
+        
+        function extractDesaList() {
+            // Ekstrak daftar desa dari data yang ada
+            desaList = [...new Set(appData.map(item => item.desa))].sort();
         }
         
         async function getCoordinates(desa, kecamatan) {
@@ -1697,6 +1840,9 @@
                     filterValueSelect.add(new Option('Uang', 'Uang'));
                     filterValueSelect.add(new Option('Barang', 'Barang'));
                     filterValueSelect.add(new Option('Jasa', 'Jasa'));
+                } else if (this.value === 'desa') {
+                    filterValueSelect.add(new Option('Pilih Desa', ''));
+                    desaList.forEach(desa => filterValueSelect.add(new Option(desa, desa)));
                 }
             });
         }
@@ -1730,6 +1876,9 @@
                 filterValueSelect.add(new Option('Uang', 'Uang'));
                 filterValueSelect.add(new Option('Barang', 'Barang'));
                 filterValueSelect.add(new Option('Jasa', 'Jasa'));
+            } else if (this.value === 'desa') {
+                filterValueSelect.add(new Option('Pilih Desa', ''));
+                desaList.forEach(desa => filterValueSelect.add(new Option(desa, desa)));
             }
         }
         
@@ -2041,7 +2190,7 @@
                 map = null;
             }
             
-            // Initialize map centered on Situbondo dengan koordinat yang diperbaiki
+            // Initialize map centered on Situbondo
             map = L.map('map').setView([-7.7060, 113.9600], 11);
             
             // Add Google Maps layer
@@ -2111,6 +2260,7 @@
             }
             
             mapMarkers = [];
+            locationDataMap = {};
             
             if (data.length === 0) {
                 updateMapStatistics(0, 0);
@@ -2119,43 +2269,51 @@
             }
             
             // Group data by desa/kecamatan
-            const dataByLocation = {};
             let topDesa = { name: '', count: 0 };
             
             data.forEach(item => {
                 const key = `${item.desa}, ${item.kecamatan}`;
-                if (!dataByLocation[key]) {
-                    dataByLocation[key] = {
+                if (!locationDataMap[key]) {
+                    locationDataMap[key] = {
                         desa: item.desa,
                         kecamatan: item.kecamatan,
                         items: [],
                         totalValue: 0,
-                        jenisCount: {
-                            Uang: 0,
-                            Barang: 0,
-                            Jasa: 0
-                        },
-                        tahunCount: {}
+                        jenisBantuan: {},
+                        tahunDistribusi: {},
+                        bantuanList: []
                     };
                 }
                 
-                dataByLocation[key].items.push(item);
+                locationDataMap[key].items.push(item);
                 const jumlah = parseFloat(item.jumlahBantuan) || 0;
-                dataByLocation[key].totalValue += jumlah;
+                locationDataMap[key].totalValue += jumlah;
                 
-                if (item.jenisBantuan in dataByLocation[key].jenisCount) {
-                    dataByLocation[key].jenisCount[item.jenisBantuan]++;
+                // Count jenis bantuan
+                if (!locationDataMap[key].jenisBantuan[item.jenisBantuan]) {
+                    locationDataMap[key].jenisBantuan[item.jenisBantuan] = 0;
                 }
+                locationDataMap[key].jenisBantuan[item.jenisBantuan]++;
                 
                 // Count by year
-                if (!dataByLocation[key].tahunCount[item.tahunAnggaran]) {
-                    dataByLocation[key].tahunCount[item.tahunAnggaran] = 0;
+                if (!locationDataMap[key].tahunDistribusi[item.tahunAnggaran]) {
+                    locationDataMap[key].tahunDistribusi[item.tahunAnggaran] = 0;
                 }
-                dataByLocation[key].tahunCount[item.tahunAnggaran]++;
+                locationDataMap[key].tahunDistribusi[item.tahunAnggaran]++;
+                
+                // Add to bantuan list
+                locationDataMap[key].bantuanList.push({
+                    nama: item.nama,
+                    jenis: item.jenisBantuan,
+                    bantuan: item.namaBantuan,
+                    jumlah: item.jumlahBantuan,
+                    satuan: item.satuanBantuan,
+                    tahun: item.tahunAnggaran
+                });
                 
                 // Update top desa
-                if (dataByLocation[key].items.length > topDesa.count) {
-                    topDesa = { name: key, count: dataByLocation[key].items.length };
+                if (locationDataMap[key].items.length > topDesa.count) {
+                    topDesa = { name: key, count: locationDataMap[key].items.length };
                 }
             });
             
@@ -2165,14 +2323,14 @@
             let totalValue = 0;
             let locationCount = 0;
             
-            // Process locations in batches
-            const locations = Object.keys(dataByLocation);
+            // Process locations
+            const locations = Object.keys(locationDataMap);
             
             for (let i = 0; i < locations.length; i++) {
                 const key = locations[i];
-                const locationData = dataByLocation[key];
+                const locationData = locationDataMap[key];
                 
-                // Get coordinates - menggunakan koordinat yang sudah diperbaiki
+                // Get coordinates
                 const coordinates = await getCoordinates(locationData.desa, locationData.kecamatan);
                 
                 if (!coordinates) {
@@ -2180,16 +2338,76 @@
                 }
                 
                 // Determine marker color based on number of recipients
-                let markerColor = '#2ecc71'; // Green for low
+                let markerColorClass = 'marker-color-1'; // Default hijau
                 const recipientCount = locationData.items.length;
                 
-                if (recipientCount <= 5) markerColor = '#2ecc71'; // Green
-                else if (recipientCount <= 15) markerColor = '#f1c40f'; // Yellow
-                else if (recipientCount <= 30) markerColor = '#e67e22'; // Orange
-                else markerColor = '#e74c3c'; // Red
+                if (recipientCount <= 5) markerColorClass = 'marker-color-1'; // Hijau
+                else if (recipientCount <= 15) markerColorClass = 'marker-color-2'; // Kuning
+                else if (recipientCount <= 30) markerColorClass = 'marker-color-3'; // Oranye
+                else markerColorClass = 'marker-color-4'; // Merah
+                
+                // Get actual color from CSS class
+                let markerColor = '#4CAF50'; // Default green
+                if (markerColorClass === 'marker-color-2') markerColor = '#FFC107';
+                else if (markerColorClass === 'marker-color-3') markerColor = '#FF9800';
+                else if (markerColorClass === 'marker-color-4') markerColor = '#F44336';
                 
                 // Calculate marker size based on recipients
-                const markerSize = Math.min(30, Math.max(15, 15 + recipientCount));
+                const markerSize = Math.min(35, Math.max(20, 20 + recipientCount));
+                
+                // Format jenis bantuan for popup
+                const jenisBantuanHtml = Object.keys(locationData.jenisBantuan)
+                    .map(jenis => {
+                        const count = locationData.jenisBantuan[jenis];
+                        const colorScheme = jenisBantuanColors[jenis] || { bg: '#f8f9fa', text: '#6c757d' };
+                        return `<span class="jenis-badge" style="background-color: ${colorScheme.bg}; color: ${colorScheme.text};">${jenis}: ${count}</span>`;
+                    })
+                    .join(' ');
+                
+                // Format tahun distribusi for popup
+                const tahunList = Object.keys(locationData.tahunDistribusi)
+                    .sort()
+                    .map(tahun => `${tahun}: ${locationData.tahunDistribusi[tahun]} penerima`)
+                    .join('<br>');
+                
+                // Create popup content - IMPROVED VERSION
+                const popupContent = `
+                    <div class="location-popup">
+                        <div class="popup-header">
+                            <h5 class="mb-0">${locationData.desa}</h5>
+                            <small class="text-white-80">${locationData.kecamatan}</small>
+                        </div>
+                        
+                        <div class="popup-stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Total Penerima</div>
+                                <div class="stat-value text-primary">${recipientCount} orang</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Total Nilai</div>
+                                <div class="stat-value text-success">Rp ${formatNumber(locationData.totalValue)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="stat-label">Jenis Bantuan:</div>
+                            <div class="jenis-bantuan-list">
+                                ${jenisBantuanHtml}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="stat-label">Distribusi Tahun:</div>
+                            <div style="font-size: 0.8rem; color: #6c757d;">
+                                ${tahunList || 'Tidak ada data tahun'}
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-sm w-100" onclick="showLocationDetail('${locationData.desa}', '${locationData.kecamatan}')">
+                            <i class="fas fa-list me-1"></i> Lihat Detail Penerima (${recipientCount})
+                        </button>
+                    </div>
+                `;
                 
                 // Create custom icon
                 const icon = L.divIcon({
@@ -2208,6 +2426,7 @@
                             color: white;
                             font-weight: bold;
                             font-size: ${Math.max(10, Math.min(14, markerSize/2))}px;
+                            cursor: pointer;
                         ">
                             ${recipientCount}
                         </div>
@@ -2216,52 +2435,11 @@
                     iconAnchor: [(markerSize + 6) / 2, (markerSize + 6) / 2]
                 });
                 
-                // Format tahun distribusi for popup
-                const tahunList = Object.keys(locationData.tahunCount)
-                    .sort()
-                    .map(tahun => `${tahun}: ${locationData.tahunCount[tahun]} penerima`)
-                    .join('<br>');
-                
-                // Create popup content
-                const popupContent = `
-                    <div style="min-width: 300px;">
-                        <h4>${locationData.desa}</h4>
-                        <p class="text-muted mb-3">${locationData.kecamatan}</p>
-                        
-                        <div class="row mb-2">
-                            <div class="col-6">
-                                <strong>Total Penerima:</strong><br>
-                                <span class="badge bg-primary">${recipientCount} orang</span>
-                            </div>
-                            <div class="col-6">
-                                <strong>Total Nilai:</strong><br>
-                                <span class="text-success fw-bold">Rp ${formatNumber(locationData.totalValue)}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <strong>Distribusi Jenis:</strong><br>
-                            <div class="d-flex gap-2 mt-1">
-                                <span class="badge bg-success">Uang: ${locationData.jenisCount.Uang}</span>
-                                <span class="badge bg-warning">Barang: ${locationData.jenisCount.Barang}</span>
-                                <span class="badge bg-info">Jasa: ${locationData.jenisCount.Jasa}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <strong>Distribusi Tahun:</strong><br>
-                            <small>${tahunList || 'Tidak ada data tahun'}</small>
-                        </div>
-                        
-                        <button class="btn btn-primary btn-sm w-100" onclick="showLocationDetail('${locationData.desa}', '${locationData.kecamatan}')">
-                            <i class="fas fa-list me-1"></i> Lihat Detail Penerima
-                        </button>
-                    </div>
-                `;
-                
                 // Create marker
-                const marker = L.marker([coordinates.lat, coordinates.lng], { icon: icon })
-                    .bindPopup(popupContent);
+                const marker = L.marker([coordinates.lat, coordinates.lng], { 
+                    icon: icon,
+                    title: `${locationData.desa}, ${locationData.kecamatan} - ${recipientCount} penerima`
+                }).bindPopup(popupContent);
                 
                 markers.push(marker);
                 mapMarkers.push(marker);
@@ -2293,7 +2471,7 @@
         function addKecamatanBoundaries() {
             if (!map) return;
             
-            // Add kecamatan center markers dengan koordinat yang diperbaiki
+            // Add kecamatan center markers
             Object.keys(koordinatKecamatan).forEach(kecamatan => {
                 const coords = koordinatKecamatan[kecamatan];
                 
@@ -2516,28 +2694,72 @@
         }
         
         function showLocationDetail(desa, kecamatan) {
-            // Filter data for this location
-            const locationData = appData.filter(item => 
-                item.desa === desa && item.kecamatan === kecamatan
-            );
+            const key = `${desa}, ${kecamatan}`;
+            const locationData = locationDataMap[key];
             
-            if (locationData.length === 0) return;
+            if (!locationData || locationData.items.length === 0) {
+                alert('Data tidak ditemukan untuk lokasi ini');
+                return;
+            }
             
             // Create detail content
             let detailContent = `
                 <div class="p-3">
-                    <h4 class="fw-bold text-primary">${desa}, ${kecamatan}</h4>
-                    <p class="text-muted mb-4">Total ${locationData.length} penerima bantuan</p>
+                    <h4 class="fw-bold text-primary mb-2">${desa}, ${kecamatan}</h4>
+                    <p class="text-muted mb-4">Total ${locationData.items.length} penerima bantuan</p>
                     
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Statistik Lokasi</h6>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <small>Total Nilai:</small><br>
+                                            <strong class="text-success">Rp ${formatNumber(locationData.totalValue)}</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small>Rata-rata:</small><br>
+                                            <strong>Rp ${formatNumber(Math.round(locationData.totalValue / locationData.items.length))}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Jenis Bantuan</h6>
+                                    <div class="d-flex flex-wrap gap-2">
+            `;
+            
+            // Add jenis bantuan badges
+            Object.keys(locationData.jenisBantuan).forEach(jenis => {
+                const count = locationData.jenisBantuan[jenis];
+                const colorScheme = jenisBantuanColors[jenis] || { bg: '#f8f9fa', text: '#6c757d' };
+                detailContent += `
+                    <span class="badge" style="background-color: ${colorScheme.bg}; color: ${colorScheme.text};">
+                        ${jenis}: ${count}
+                    </span>
+                `;
+            });
+            
+            detailContent += `
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6 class="fw-bold mb-3">Daftar Penerima Bantuan</h6>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama</th>
-                                    <th>Kelompok</th>
-                                    <th>Jenis</th>
-                                    <th>Bantuan</th>
+                                    <th>Nama Penerima</th>
+                                    <th>Jenis Bantuan</th>
+                                    <th>Nama Bantuan</th>
                                     <th>Jumlah</th>
                                     <th>Tahun</th>
                                 </tr>
@@ -2545,16 +2767,19 @@
                             <tbody>
             `;
             
-            locationData.forEach((item, index) => {
+            // Sort by nama
+            const sortedItems = [...locationData.bantuanList].sort((a, b) => a.nama.localeCompare(b.nama));
+            
+            sortedItems.forEach((item, index) => {
+                const colorScheme = jenisBantuanColors[item.jenis] || { bg: '#f8f9fa', text: '#6c757d' };
                 detailContent += `
                     <tr>
                         <td>${index + 1}</td>
                         <td class="fw-bold">${item.nama}</td>
-                        <td>${item.namaKelompok || '-'}</td>
-                        <td><span class="badge bg-info">${item.jenisBantuan}</span></td>
-                        <td>${item.namaBantuan}</td>
-                        <td>${formatNumber(item.jumlahBantuan)} ${item.satuanBantuan}</td>
-                        <td>${item.tahunAnggaran}</td>
+                        <td><span class="badge" style="background-color: ${colorScheme.bg}; color: ${colorScheme.text};">${item.jenis}</span></td>
+                        <td>${item.bantuan || '-'}</td>
+                        <td>${formatNumber(item.jumlah)} ${item.satuan || ''}</td>
+                        <td>${item.tahun}</td>
                     </tr>
                 `;
             });
@@ -2562,24 +2787,6 @@
             detailContent += `
                             </tbody>
                         </table>
-                    </div>
-                    
-                    <div class="mt-4 p-3 bg-light rounded">
-                        <h6 class="fw-bold">Ringkasan Statistik:</h6>
-                        <div class="row">
-                            <div class="col-6">
-                                <small>Total Nilai Bantuan:</small><br>
-                                <strong class="text-success">
-                                    Rp ${formatNumber(locationData.reduce((sum, item) => sum + (parseFloat(item.jumlahBantuan) || 0), 0))}
-                                </strong>
-                            </div>
-                            <div class="col-6">
-                                <small>Rata-rata per Penerima:</small><br>
-                                <strong>
-                                    Rp ${formatNumber(Math.round(locationData.reduce((sum, item) => sum + (parseFloat(item.jumlahBantuan) || 0), 0) / locationData.length))}
-                                </strong>
-                            </div>
-                        </div>
                     </div>
                 </div>
             `;
@@ -2609,6 +2816,8 @@
                     filteredMapData = appData.filter(item => item.tahunAnggaran == filterValue);
                 } else if (filterType === 'jenis' && filterValue) {
                     filteredMapData = appData.filter(item => item.jenisBantuan === filterValue);
+                } else if (filterType === 'desa' && filterValue) {
+                    filteredMapData = appData.filter(item => item.desa === filterValue);
                 } else {
                     filteredMapData = appData;
                 }
@@ -2755,6 +2964,7 @@
                             saveData();
                             updateDashboard();
                             renderDataTable();
+                            extractDesaList();
                             
                             // Update map if it's currently visible
                             if (document.getElementById('v-pills-map').classList.contains('active')) {
