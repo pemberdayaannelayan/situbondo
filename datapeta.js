@@ -1,21 +1,21 @@
 // DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
-// Generated: 10/12/2025, 18.44.00
+// Generated: 11/12/2025, 19.00.40
 // Total Desa: 27
 // Total Penerima: 393
 // Sumber: Sistem Bantuan Nelayan Kab. Situbondo
-// Last Update: 10 Desember 2025 pukul 18.43
+// Last Update: 11 Desember 2025 pukul 18.42
 
 window.DATA_PETA_STATISTIK = {
   "metadata": {
-    "generatedAt": "2025-12-10T11:43:54.464Z",
-    "timestamp": 1765367034464,
+    "generatedAt": "2025-12-11T11:42:29.933Z",
+    "timestamp": 1765453349933,
     "totalDesa": 27,
     "totalPenerima": 393,
     "sumber": "Sistem Bantuan Nelayan Kab. Situbondo",
     "instansi": "Dinas Peternakan dan Perikanan Kab. Situbondo",
     "bidang": "Pemberdayaan Nelayan",
     "versi": "2.0",
-    "lastUpdate": "10 Desember 2025 pukul 18.43"
+    "lastUpdate": "11 Desember 2025 pukul 18.42"
   },
   "summary": {
     "totalBantuanUang": 0,
@@ -3319,8 +3319,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "lamongan__arjasa",
       "koordinat": {
-        "lat": -7.6856,
-        "lng": 113.6189
+        "lat": -7.695,
+        "lng": 113.635
       },
       "totalBantuan": 3,
       "rataBantuan": 1,
@@ -3912,8 +3912,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "kilensari__panarukan",
       "koordinat": {
-        "lat": -7.7,
-        "lng": 113.9167
+        "lat": -7.695,
+        "lng": 113.915
       },
       "totalBantuan": 37,
       "rataBantuan": 1,
@@ -4999,8 +4999,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "ketah__suboh",
       "koordinat": {
-        "lat": -7.795,
-        "lng": 113.83
+        "lat": -7.8,
+        "lng": 113.8333
       },
       "totalBantuan": 74,
       "rataBantuan": 1,
@@ -5064,8 +5064,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "gunung_malang__suboh",
       "koordinat": {
-        "lat": -7.8,
-        "lng": 113.8333
+        "lat": -7.81,
+        "lng": 113.835
       },
       "totalBantuan": 1,
       "rataBantuan": 1,
@@ -5873,8 +5873,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "tanjung_kamal__mangaran",
       "koordinat": {
-        "lat": -7.6667,
-        "lng": 114.0667
+        "lat": -7.675,
+        "lng": 114.075
       },
       "totalBantuan": 10,
       "rataBantuan": 1,
@@ -6295,8 +6295,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "tanjung_pecinan__mangaran",
       "koordinat": {
-        "lat": -7.668,
-        "lng": 114.068
+        "lat": -7.6667,
+        "lng": 114.0667
       },
       "totalBantuan": 21,
       "rataBantuan": 1,
@@ -6558,8 +6558,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "semiring__mangaran",
       "koordinat": {
-        "lat": -7.665,
-        "lng": 114.065
+        "lat": -7.67,
+        "lng": 114.07
       },
       "totalBantuan": 14,
       "rataBantuan": 1,
@@ -6823,8 +6823,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "landangan__kapongan",
       "koordinat": {
-        "lat": -7.6833,
-        "lng": 114.0167
+        "lat": -7.695,
+        "lng": 114.03
       },
       "totalBantuan": 15,
       "rataBantuan": 1,
@@ -8122,8 +8122,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "kukusan__kendit",
       "koordinat": {
-        "lat": -7.7333,
-        "lng": 113.9333
+        "lat": -7.725,
+        "lng": 113.925
       },
       "totalBantuan": 1,
       "rataBantuan": 1,
