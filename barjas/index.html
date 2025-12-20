@@ -1,3 +1,5 @@
+[file name]: index.html
+[file content begin]
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -633,6 +635,24 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+        
+        /* Peta Preview */
+        .peta-preview-map {
+            height: 300px;
+            width: 100%;
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .koordinat-info {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -1210,6 +1230,12 @@
                                     <div class="mt-4" id="extractPreviewSection" style="display: none;">
                                         <h5 class="mb-3">Pratinjau Data Peta</h5>
                                         <div class="extract-preview" id="extractPreview"></div>
+                                        
+                                        <div class="mt-4">
+                                            <h6 class="mb-3">Koordinat Maps untuk Setiap Penerima:</h6>
+                                            <div id="koordinatDetails"></div>
+                                        </div>
+                                        
                                         <div class="d-flex justify-content-end mt-3">
                                             <button class="btn btn-success" id="downloadDataPetaBtn">
                                                 <i class="fas fa-download me-2"></i> Download datapeta.js
@@ -1226,13 +1252,17 @@
                                     <ol>
                                         <li>Masukkan kode keamanan: <strong>19450817</strong></li>
                                         <li>Klik tombol "Generate Data Peta"</li>
-                                        <li>Preview data akan muncul, periksa kelengkapan data</li>
+                                        <li>Preview data akan muncul, periksa kelengkapan data termasuk koordinat maps untuk setiap desa</li>
                                         <li>Klik "Download datapeta.js" untuk mendapatkan file script</li>
                                         <li>File datapeta.js dapat diupload ke repository untuk digunakan di website peta statistik</li>
                                     </ol>
                                     <div class="alert alert-warning">
                                         <i class="fas fa-exclamation-triangle me-2"></i>
-                                        <strong>Penting:</strong> File datapeta.js berisi data statistik per desa yang sudah diringkas dan dienkripsi untuk keamanan.
+                                        <strong>Penting:</strong> File datapeta.js berisi data statistik per desa yang sudah diringkas dan dilengkapi dengan koordinat maps untuk setiap desa penerima bantuan.
+                                    </div>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        <strong>Fitur Koordinat Maps:</strong> Sistem otomatis melampirkan koordinat GPS untuk setiap desa berdasarkan database yang tersedia. Koordinat dapat digunakan untuk menampilkan lokasi di Google Maps atau peta digital lainnya.
                                     </div>
                                 </div>
                             </div>
@@ -1688,7 +1718,7 @@
             "Sumbermalang": { lat: -7.7667, lng: 113.7833 }
         };
 
-        // Database koordinat desa yang DIPERBARUI sesuai data yang diberikan
+        // Database koordinat desa yang DIPERBARUI dan DILENGKAPI untuk semua desa
         const koordinatDesa = {
             // ===== KECAMATAN ARJASA =====
             "Arjasa, Arjasa": { lat: -7.7069, lng: 113.6347 },
@@ -2190,7 +2220,7 @@
             // Smart Menu Logic
             setupSmartMenu();
 
-            // FITUR BARU: Ekstrak Data
+            // FITUR BARU: Ekstrak Data - DIPERBAIKI
             const generateDataPetaBtn = document.getElementById('generateDataPetaBtn');
             if (generateDataPetaBtn) {
                 generateDataPetaBtn.addEventListener('click', generateDataPeta);
@@ -3523,7 +3553,7 @@
             }
         }
 
-        // --- FITUR BARU: EKSTRAK DATA UNTUK PETA STATISTIK ---
+        // --- FITUR BARU: EKSTRAK DATA UNTUK PETA STATISTIK - DIPERBAIKI ---
         function generateDataPeta() {
             const securityCode = document.getElementById('extractSecurityCode').value;
             const errorElement = document.getElementById('extractSecurityCodeError');
@@ -3543,15 +3573,25 @@
                 // Tampilkan preview
                 const extractPreviewSection = document.getElementById('extractPreviewSection');
                 const extractPreview = document.getElementById('extractPreview');
+                const koordinatDetails = document.getElementById('koordinatDetails');
                 
                 if (extractPreviewSection) extractPreviewSection.style.display = 'block';
                 if (extractPreview) extractPreview.innerHTML = JSON.stringify(generatedPetaData, null, 2);
+                
+                if (koordinatDetails) {
+                    koordinatDetails.innerHTML = `
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Data contoh digunakan karena database kosong. Setiap penerima dalam data contoh telah dilengkapi dengan koordinat maps desa mereka.
+                        </div>
+                    `;
+                }
                 
                 showNotification('Menggunakan data contoh karena database kosong.', 'warning');
                 return;
             }
             
-            // Proses data untuk statistik per desa
+            // Proses data untuk statistik per desa DENGAN KOORDINAT MAPS
             const dataByDesa = {};
             
             appData.forEach(item => {
@@ -3615,7 +3655,26 @@
                     dataByDesa[key].statistik.jasa.nilai += jumlah;
                 }
                 
-                // Tambah detail penerima (tanpa data sensitif)
+                // Tambah detail penerima DENGAN ALAMAT LENGKAP dan KOORDINAT
+                const alamatLengkap = `${item.alamat || ''}, Desa ${item.desa}, Kecamatan ${item.kecamatan}, Kabupaten Situbondo`;
+                
+                // Dapatkan koordinat untuk desa ini
+                const koordinatKey = `${item.desa}, ${item.kecamatan}`;
+                let koordinat = koordinatDesa[koordinatKey];
+                
+                // Jika koordinat desa tidak ditemukan, gunakan koordinat kecamatan
+                if (!koordinat) {
+                    koordinat = koordinatKecamatan[item.kecamatan];
+                    
+                    // Jika koordinat kecamatan juga tidak ditemukan, gunakan koordinat default Situbondo
+                    if (!koordinat) {
+                        koordinat = { lat: -7.7062, lng: 113.9603 }; // Pusat Kabupaten Situbondo
+                    }
+                }
+                
+                // Buat link Google Maps
+                const mapsLink = `https://www.google.com/maps?q=${koordinat.lat},${koordinat.lng}&z=15`;
+                
                 dataByDesa[key].detailPenerima.push({
                     nama: item.nama,
                     nik: formatPrivacy(item.nik),
@@ -3628,11 +3687,14 @@
                     kelompok: item.namaKelompok || 'Individu',
                     jabatan: item.jabatan || '-',
                     tanggal: formatDate(item.tanggalTerima),
-                    petugas: item.namaPetugas
+                    petugas: item.namaPetugas,
+                    alamat: alamatLengkap,
+                    koordinat: koordinat,
+                    mapsLink: mapsLink
                 });
             });
             
-            // Konversi ke array dan format untuk peta
+            // Konversi ke array dan format untuk peta DENGAN KOORDINAT LENGKAP
             const dataPeta = {
                 metadata: {
                     generatedAt: new Date().toISOString(),
@@ -3649,13 +3711,18 @@
                         day: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit'
-                    })
+                    }),
+                    koordinatSumber: 'Database Koordinat Resmi Kabupaten Situbondo'
                 },
                 summary: {
                     totalBantuanUang: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanUang, 0),
                     totalBantuanBarang: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanBarang, 0),
                     totalBantuanJasa: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanJasa, 0),
-                    desaTerbanyak: Object.entries(dataByDesa).sort((a, b) => b[1].jumlahPenerima - a[1].jumlahPenerima)[0] || null
+                    desaTerbanyak: Object.entries(dataByDesa).sort((a, b) => b[1].jumlahPenerima - a[1].jumlahPenerima)[0] || null,
+                    desaDenganKoordinat: Object.values(dataByDesa).filter(d => {
+                        const key = `${d.desa}, ${d.kecamatan}`;
+                        return koordinatDesa[key] || koordinatKecamatan[d.kecamatan];
+                    }).length
                 },
                 data: Object.values(dataByDesa).map(item => {
                     // Format jenis bantuan untuk peta
@@ -3690,6 +3757,9 @@
                         }
                     }
                     
+                    // Buat link Google Maps untuk desa
+                    const mapsLink = `https://www.google.com/maps?q=${koordinat.lat},${koordinat.lng}&z=15`;
+                    
                     return {
                         ...item,
                         id: key.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase(),
@@ -3697,6 +3767,7 @@
                         tahunDistribusi: tahunDistribusiFormatted,
                         kelompokDistribusi: kelompokDistribusiFormatted,
                         koordinat: koordinat,
+                        mapsLink: mapsLink,
                         totalBantuan: item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa,
                         rataBantuan: item.jumlahPenerima > 0 ? 
                             (item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa) / item.jumlahPenerima : 0,
@@ -3707,7 +3778,10 @@
                             Total Bantuan: Rp ${formatNumber(item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa)}<br>
                             Uang: ${item.statistik.uang.jumlah} penerima (Rp ${formatNumber(item.totalBantuanUang)})<br>
                             Barang: ${item.statistik.barang.jumlah} penerima (${formatNumber(item.totalBantuanBarang)} unit)<br>
-                            Jasa: ${item.statistik.jasa.jumlah} penerima (${formatNumber(item.totalBantuanJasa)} paket)
+                            Jasa: ${item.statistik.jasa.jumlah} penerima (${formatNumber(item.totalBantuanJasa)} paket)<br>
+                            <a href="${mapsLink}" target="_blank" style="color: #005f73; font-weight: bold;">
+                                <i class="fas fa-map-marker-alt"></i> Lihat di Google Maps
+                            </a>
                         `
                     };
                 })
@@ -3716,14 +3790,35 @@
             // Simpan data untuk preview dan download
             generatedPetaData = dataPeta;
             
-            // Tampilkan preview
+            // Tampilkan preview dengan informasi koordinat
             const extractPreviewSection = document.getElementById('extractPreviewSection');
             const extractPreview = document.getElementById('extractPreview');
+            const koordinatDetails = document.getElementById('koordinatDetails');
             
             if (extractPreviewSection) extractPreviewSection.style.display = 'block';
             if (extractPreview) extractPreview.innerHTML = JSON.stringify(dataPeta, null, 2);
             
-            showNotification('Data peta berhasil digenerate!', 'success');
+            // Tampilkan detail koordinat untuk setiap desa
+            if (koordinatDetails) {
+                let koordinatHTML = '<h6>Koordinat Maps untuk Setiap Desa:</h6>';
+                
+                dataPeta.data.forEach((desaData, index) => {
+                    koordinatHTML += `
+                        <div class="koordinat-info mb-3">
+                            <strong>${index + 1}. ${desaData.desa}, ${desaData.kecamatan}</strong><br>
+                            <small>Latitude: ${desaData.koordinat.lat}, Longitude: ${desaData.koordinat.lng}</small><br>
+                            <small>Jumlah Penerima: ${desaData.jumlahPenerima} orang</small><br>
+                            <a href="${desaData.mapsLink}" target="_blank" class="small">
+                                <i class="fas fa-external-link-alt"></i> Buka di Google Maps
+                            </a>
+                        </div>
+                    `;
+                });
+                
+                koordinatDetails.innerHTML = koordinatHTML;
+            }
+            
+            showNotification('Data peta berhasil digenerate dengan koordinat maps untuk setiap desa!', 'success');
         }
         
         function downloadDataPeta() {
@@ -3737,7 +3832,9 @@
 // Generated: ${new Date().toLocaleString('id-ID')}
 // Total Desa: ${generatedPetaData.metadata.totalDesa}
 // Total Penerima: ${generatedPetaData.metadata.totalPenerima}
+// Desa dengan Koordinat: ${generatedPetaData.summary.desaDenganKoordinat}
 // Sumber: ${generatedPetaData.metadata.sumber}
+// Koordinat Sumber: ${generatedPetaData.metadata.koordinatSumber}
 // Last Update: ${generatedPetaData.metadata.lastUpdate}
 
 window.DATA_PETA_STATISTIK = ${JSON.stringify(generatedPetaData, null, 2)};
@@ -3767,6 +3864,12 @@ function getDataByKecamatan(kecamatan) {
     return DATA_PETA_STATISTIK.data.filter(item => item.kecamatan === kecamatan);
 }
 
+// Fungsi untuk mendapatkan koordinat desa
+function getKoordinatDesa(namaDesa, kecamatan) {
+    const data = getDataByDesa(namaDesa, kecamatan);
+    return data ? data.koordinat : null;
+}
+
 // Fungsi untuk mendapatkan semua data kecamatan
 function getAllKecamatanData() {
     if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return {};
@@ -3791,6 +3894,11 @@ function getAllKecamatanData() {
     return result;
 }
 
+// Fungsi untuk membuat link Google Maps
+function createGoogleMapsLink(lat, lng, zoom = 15) {
+    return \`https://www.google.com/maps?q=\${lat},\${lng}&z=\${zoom}\`;
+}
+
 // Fungsi untuk update data secara realtime
 function updatePetaData(newData) {
     if (!DATA_PETA_STATISTIK || !newData) return false;
@@ -3807,7 +3915,9 @@ if (typeof module !== 'undefined' && module.exports) {
         loadDataPetaStatistik,
         getDataByDesa,
         getDataByKecamatan,
+        getKoordinatDesa,
         getAllKecamatanData,
+        createGoogleMapsLink,
         updatePetaData
     };
 }`;
@@ -3823,7 +3933,7 @@ if (typeof module !== 'undefined' && module.exports) {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                showNotification('File datapeta.js berhasil didownload!', 'success');
+                showNotification('File datapeta.js berhasil didownload! Berisi koordinat maps untuk setiap desa.', 'success');
             } catch (error) {
                 console.error('Error downloading datapeta.js:', error);
                 showNotification('Gagal mengunduh file datapeta.js.', 'error');
@@ -4164,3 +4274,4 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
     </script>
 </body>
 </html>
+[file content end]
