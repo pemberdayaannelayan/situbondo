@@ -1634,6 +1634,7 @@
         let pendingSecurityAction = null;
         let generatedPetaData = null; // Menyimpan data peta yang dihasilkan
         
+        // DATA DESA/KECAMATAN YANG DIPERBARUI SESUAI PERMINTAAN
         const kecamatanList = [
             "Arjasa", "Asembagus", "Banyuglugur", "Banyuputih", "Besuki", 
             "Bungatan", "Jangkar", "Jatibanteng", "Kapongan", "Kendit", 
@@ -1641,22 +1642,32 @@
             "Suboh", "Sumbermalang"
         ];
         
-        const desaList = [
-            "Agel", "Alas Bayur", "Alasmalang", "Alastengah", "Arjasa", "Ardirejo", "Asembagus", 
-            "Awar-awar", "Awang-awang", "Baderan", "Balung", "Bantal", "Battal", "Bayeman", "Besuki", "Bletok", "Blimbing", "Bloro", "Buduan", "Bugeman", "Bungatan", 
-            "Campoan", "Cemara", "Curah Cottok", "Curah Jeru", "Curah Kalak", "Curah Suri", "Curah Tatal", "Dawuhan", "Demung", "Duwet", "Gadingan", "Gebangan", 
-            "Gelung", "Gudang", "Gunung Malang", "Gunung Putri", "Jangkar", "Jatisari", "Jatibanteng", "Jetis", "Juglangan", "Kalianget", "Kalibagor", "Kalimas", 
-            "Kalirejo", "Kalisari", "Kandang", "Kayu Putih", "Kayumas", "Kedungdowo", "Kedunglo", "Kembangsari", "Ketah", "Ketawan", "Kilensari", "Klampokan", 
-            "Klatakan", "Kotakan", "Kumbangsari", "Kukusan", "Lamongan", "Landangan", "Langkap", "Lebeng", "Lubawang", "Mangaran", "Mimbaan", "Mlandingan Kulon", 
-            "Mlandingan Wetan", "Mojodungkol", "Mojosari", "Olean", "Palangan", "Panarukan", "Panji Kidul", "Panji Lor", "Parante", "Pasir Putih", "Patemon", 
-            "Patokan", "Paowan", "Peleyan", "Pesisir", "Pesanggrahan", "Pategalan", "Plalangan", "Pokaan", "Rajekwesi", "Seletreng", "Selobanteng", 
-            "Selomukti", "Selowogo", "Semambung", "Semiring", "Sliwung", "Sopet", "Sumber Pinang", "Sumberanyar", "Sumberargo", "Sumberkolak", "Sumberejo", 
-            "Sumbertengah", "Sumberwaru", "Tamankursi", "Tamansari", "Taman", "Talkandang", "Tanjung Glugur", "Tanjung Kamal", "Tanjung Pecinan", "Tambak Ukir", 
-            "Telempong", "Tenggir", "Tepos", "Tokelan", "Tlogosari", "Trigonco", "Trebungan", "Widoropayung", "Wonokoyo", "Wonorejo", "Wringinanom"
-        ].sort();
+        // Data desa per kecamatan yang diperbarui
+        const desaByKecamatan = {
+            "Arjasa": ["Arjasa", "Bayeman", "Curah Tatal", "Jatisari", "Kayumas", "Kedungdowo", "Ketowan", "Lamongan"],
+            "Asembagus": ["Asembagus", "Awar-awar", "Bantal", "Gudang", "Kedunglo", "Kertosari", "Mojosari", "Parante", "Trigonco", "Wringin Anom"],
+            "Banyuglugur": ["Banyuglugur", "Kalianget", "Kalisari", "Lubawang", "Selobanteng", "Telempong", "Tepos"],
+            "Banyuputih": ["Banyuputih", "Sumberanyar", "Sumberejo", "Sumberwaru", "Wonorejo"],
+            "Besuki": ["Besuki", "Blimbing", "Bloro", "Demung", "Jetis", "Kalimas", "Langkap", "Pesisir", "Sumberejo", "Widoropayung"],
+            "Bungatan": ["Bletok", "Bungatan", "Mlandingan Wetan", "Pasir Putih", "Patemon", "Selowogo", "Sumbertengah"],
+            "Jangkar": ["Agel", "Curah Kalak", "Gadingan", "Jangkar", "Kumbangsari", "Palangan", "Pesanggrahan", "Sopet"],
+            "Jatibanteng": ["Curahsuri", "Jatibanteng", "Kembangsari", "Pategalan", "Patemon", "Semambung", "Sumberanyar", "Wringinanom"],
+            "Kapongan": ["Curah Cottok", "Gebangan", "Kandang", "Kapongan", "Kesambi Rampak", "Landangan", "Peleyan", "Pokaan", "Seletreng", "Wonokoyo"],
+            "Kendit": ["Balung", "Bugeman", "Kendit", "Klatakan", "Kukusan", "Rajekwesi", "Tambak Ukir"],
+            "Mangaran": ["Mangaran", "Semiring", "Tanjung Glugur", "Tanjung Kamal", "Tanjung Pecinan", "Trebungan"],
+            "Mlandingan": ["Alas Bayur", "Campoan", "Mlandingan Kulon", "Selomukti", "Sumberanyar", "Sumber Pinang", "Trebungan"],
+            "Panarukan": ["Alasmalang", "Duwet", "Gelung", "Kilensari", "Paowan", "Peleyan", "Sumberkolak", "Wringinanom"],
+            "Panji": ["Battal", "Curah Jeru", "Juglangan", "Kayu Putih", "Klampokan", "Panji Kidul", "Panji Lor", "Sliwung", "Tenggir", "Tokelan", "Ardirejo", "Mimbaan"],
+            "Situbondo": ["Kalibagor", "Kotakan", "Olean", "Talkandang", "Dawuhan", "Patokan"],
+            "Suboh": ["Buduan", "Cemara", "Dawuan", "Gunung Malang", "Gunung Putri", "Ketah", "Mojodungkol", "Suboh"],
+            "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
+        };
         
-        // ==================== DATABASE KOORDINAT YANG SANGAT AKURAT ====================
-        // Database koordinat kecamatan yang AKURAT untuk Kabupaten Situbondo
+        // Gabungkan semua desa untuk dropdown
+        const desaList = Object.values(desaByKecamatan).flat().sort();
+        
+        // ==================== DATABASE KOORDINAT YANG DIPERBARUI ====================
+        // Database koordinat kecamatan yang AKURAT untuk Kabupaten Situbondo (diperbarui)
         const koordinatKecamatan = {
             "Arjasa": { lat: -7.7069, lng: 113.6347 },
             "Asembagus": { lat: -7.7536, lng: 114.1561 },
@@ -1677,7 +1688,7 @@
             "Sumbermalang": { lat: -7.7667, lng: 113.7833 }
         };
 
-        // Database koordinat desa yang AKURAT untuk Kabupaten Situbondo
+        // Database koordinat desa yang DIPERBARUI sesuai data yang diberikan
         const koordinatDesa = {
             // ===== KECAMATAN ARJASA =====
             "Arjasa, Arjasa": { lat: -7.7069, lng: 113.6347 },
@@ -1686,136 +1697,171 @@
             "Jatisari, Arjasa": { lat: -7.6980, lng: 113.6400 },
             "Kayumas, Arjasa": { lat: -7.7100, lng: 113.6300 },
             "Kedungdowo, Arjasa": { lat: -7.7000, lng: 113.6500 },
-            "Ketawan, Arjasa": { lat: -7.7050, lng: 113.6200 },
+            "Ketowan, Arjasa": { lat: -7.7050, lng: 113.6200 },
             "Lamongan, Arjasa": { lat: -7.6950, lng: 113.6350 },
 
             // ===== KECAMATAN ASEMBAGUS =====
             "Asembagus, Asembagus": { lat: -7.7536, lng: 114.1561 },
-            "Banyuputih, Asembagus": { lat: -7.7600, lng: 114.1400 },
+            "Awar-awar, Asembagus": { lat: -7.7600, lng: 114.1400 },
+            "Bantal, Asembagus": { lat: -7.7500, lng: 114.1500 },
             "Gudang, Asembagus": { lat: -7.7500, lng: 114.1500 },
-            "Jangkar, Asembagus": { lat: -7.7450, lng: 114.1600 },
             "Kedunglo, Asembagus": { lat: -7.7450, lng: 114.1500 },
+            "Kertosari, Asembagus": { lat: -7.7480, lng: 114.1650 },
             "Mojosari, Asembagus": { lat: -7.7480, lng: 114.1650 },
+            "Parante, Asembagus": { lat: -7.7650, lng: 114.1450 },
             "Trigonco, Asembagus": { lat: -7.7650, lng: 114.1450 },
-            "Wringinanom, Asembagus": { lat: -7.7400, lng: 114.1700 },
+            "Wringin Anom, Asembagus": { lat: -7.7400, lng: 114.1700 },
 
             // ===== KECAMATAN BANYUGLUGUR =====
             "Banyuglugur, Banyuglugur": { lat: -7.7211, lng: 113.8883 },
             "Kalianget, Banyuglugur": { lat: -7.7300, lng: 113.8800 },
-            "Bloro, Banyuglugur": { lat: -7.7100, lng: 113.9000 },
+            "Kalisari, Banyuglugur": { lat: -7.7100, lng: 113.9000 },
+            "Lubawang, Banyuglugur": { lat: -7.7250, lng: 113.9100 },
+            "Selobanteng, Banyuglugur": { lat: -7.7200, lng: 113.8950 },
+            "Telempong, Banyuglugur": { lat: -7.7150, lng: 113.8850 },
             "Tepos, Banyuglugur": { lat: -7.7250, lng: 113.9100 },
 
             // ===== KECAMATAN BANYUPUTIH =====
+            "Banyuputih, Banyuputih": { lat: -7.7608, lng: 114.0200 },
             "Sumberanyar, Banyuputih": { lat: -7.7608, lng: 114.0200 },
             "Sumberejo, Banyuputih": { lat: -7.7650, lng: 114.0250 },
+            "Sumberwaru, Banyuputih": { lat: -7.7550, lng: 114.0150 },
             "Wonorejo, Banyuputih": { lat: -7.7500, lng: 114.0300 },
 
             // ===== KECAMATAN BESUKI =====
             "Besuki, Besuki": { lat: -7.7333, lng: 113.7000 },
-            "Boro, Besuki": { lat: -7.7400, lng: 113.7100 },
+            "Blimbing, Besuki": { lat: -7.7400, lng: 113.7100 },
+            "Bloro, Besuki": { lat: -7.7300, lng: 113.6900 },
             "Demung, Besuki": { lat: -7.7300, lng: 113.6900 },
             "Jetis, Besuki": { lat: -7.7200, lng: 113.7050 },
+            "Kalimas, Besuki": { lat: -7.7350, lng: 113.6950 },
             "Langkap, Besuki": { lat: -7.7350, lng: 113.6950 },
-            "Tambak, Besuki": { lat: -7.7150, lng: 113.7000 },
+            "Pesisir, Besuki": { lat: -7.7250, lng: 113.6800 },
+            "Sumberejo, Besuki": { lat: -7.7150, lng: 113.7000 },
+            "Widoropayung, Besuki": { lat: -7.7100, lng: 113.7100 },
 
             // ===== KECAMATAN BUNGATAN =====
+            "Bletok, Bungatan": { lat: -7.6833, lng: 113.8833 },
             "Bungatan, Bungatan": { lat: -7.6833, lng: 113.8833 },
-            "Bungcalok, Bungatan": { lat: -7.6900, lng: 113.8900 },
-            "Cemara, Bungatan": { lat: -7.6750, lng: 113.8700 },
-            "Kembangsari, Bungatan": { lat: -7.6800, lng: 113.8750 },
-            "Kenep, Bungatan": { lat: -7.6850, lng: 113.8800 },
-            "Patemon, Bungatan": { lat: -7.6950, lng: 113.8850 },
-            "Sokaan, Bungatan": { lat: -7.7000, lng: 113.9000 },
-            "Tambak Ukir, Bungatan": { lat: -7.6700, lng: 113.8650 },
+            "Mlandingan Wetan, Bungatan": { lat: -7.6900, lng: 113.8900 },
+            "Pasir Putih, Bungatan": { lat: -7.6750, lng: 113.8700 },
+            "Patemon, Bungatan": { lat: -7.6800, lng: 113.8750 },
+            "Selowogo, Bungatan": { lat: -7.6850, lng: 113.8800 },
+            "Sumbertengah, Bungatan": { lat: -7.6950, lng: 113.8850 },
 
             // ===== KECAMATAN JANGKAR =====
+            "Agel, Jangkar": { lat: -7.7500, lng: 114.0833 },
+            "Curah Kalak, Jangkar": { lat: -7.7450, lng: 114.0800 },
+            "Gadingan, Jangkar": { lat: -7.7550, lng: 114.0900 },
             "Jangkar, Jangkar": { lat: -7.7500, lng: 114.0833 },
-            "Curah Tatal, Jangkar": { lat: -7.7450, lng: 114.0800 },
-            "Gelung, Jangkar": { lat: -7.7550, lng: 114.0900 },
-            "Paowan, Jangkar": { lat: -7.7500, lng: 114.0950 },
-            "Peleyan, Jangkar": { lat: -7.7400, lng: 114.0750 },
-            "Talang, Jangkar": { lat: -7.7650, lng: 114.1000 },
-            "Tanjung Kamal, Jangkar": { lat: -7.7700, lng: 114.1050 },
+            "Kumbangsari, Jangkar": { lat: -7.7500, lng: 114.0950 },
+            "Palangan, Jangkar": { lat: -7.7400, lng: 114.0750 },
+            "Pesanggrahan, Jangkar": { lat: -7.7650, lng: 114.1000 },
+            "Sopet, Jangkar": { lat: -7.7700, lng: 114.1050 },
 
             // ===== KECAMATAN JATIBANTENG =====
             "Curahsuri, Jatibanteng": { lat: -7.7200, lng: 113.9900 },
             "Jatibanteng, Jatibanteng": { lat: -7.7167, lng: 113.9833 },
-            "Kalibagor, Jatibanteng": { lat: -7.7100, lng: 113.9800 },
-            "Pakel, Jatibanteng": { lat: -7.7250, lng: 113.9850 },
+            "Kembangsari, Jatibanteng": { lat: -7.7100, lng: 113.9800 },
+            "Pategalan, Jatibanteng": { lat: -7.7250, lng: 113.9850 },
             "Patemon, Jatibanteng": { lat: -7.7150, lng: 113.9750 },
             "Semambung, Jatibanteng": { lat: -7.7300, lng: 113.9950 },
+            "Sumberanyar, Jatibanteng": { lat: -7.7300, lng: 113.9950 },
             "Wringinanom, Jatibanteng": { lat: -7.7300, lng: 113.9950 },
 
             // ===== KECAMATAN KAPONGAN =====
-            "Batu Kapur, Kapongan": { lat: -7.6900, lng: 114.0200 },
-            "Curah Cottok, Kapongan": { lat: -7.6800, lng: 114.0150 },
+            "Curah Cottok, Kapongan": { lat: -7.6900, lng: 114.0200 },
+            "Gebangan, Kapongan": { lat: -7.6800, lng: 114.0150 },
+            "Kandang, Kapongan": { lat: -7.6833, lng: 114.0167 },
             "Kapongan, Kapongan": { lat: -7.6833, lng: 114.0167 },
-            "Landangan, Kapongan": { lat: -7.6950, lng: 114.0300 },
-            "Palangan, Kapongan": { lat: -7.6700, lng: 114.0050 },
-            "Pokaan, Kapongan": { lat: -7.7000, lng: 114.0350 },
-            "Tanjung Pecinan, Kapongan": { lat: -7.7200, lng: 114.0450 },
+            "Kesambi Rampak, Kapongan": { lat: -7.6950, lng: 114.0300 },
+            "Landangan, Kapongan": { lat: -7.6700, lng: 114.0050 },
+            "Peleyan, Kapongan": { lat: -7.7000, lng: 114.0350 },
+            "Pokaan, Kapongan": { lat: -7.7200, lng: 114.0450 },
+            "Seletreng, Kapongan": { lat: -7.7100, lng: 114.0400 },
+            "Wonokoyo, Kapongan": { lat: -7.7050, lng: 114.0250 },
 
             // ===== KECAMATAN KENDIT =====
             "Balung, Kendit": { lat: -7.7400, lng: 113.9400 },
+            "Bugeman, Kendit": { lat: -7.7333, lng: 113.9333 },
             "Kendit, Kendit": { lat: -7.7333, lng: 113.9333 },
-            "Kilensari, Kendit": { lat: -7.7350, lng: 113.9300 },
+            "Klatakan, Kendit": { lat: -7.7350, lng: 113.9300 },
             "Kukusan, Kendit": { lat: -7.7250, lng: 113.9250 },
-            "Paowan, Kendit": { lat: -7.7200, lng: 113.9200 },
-            "Patokan, Kendit": { lat: -7.7100, lng: 113.9150 },
+            "Rajekwesi, Kendit": { lat: -7.7200, lng: 113.9200 },
+            "Tambak Ukir, Kendit": { lat: -7.7100, lng: 113.9150 },
 
             // ===== KECAMATAN MANGARAN =====
             "Mangaran, Mangaran": { lat: -7.6667, lng: 114.0667 },
             "Semiring, Mangaran": { lat: -7.6700, lng: 114.0700 },
+            "Tanjung Glugur, Mangaran": { lat: -7.6750, lng: 114.0750 },
             "Tanjung Kamal, Mangaran": { lat: -7.6750, lng: 114.0750 },
+            "Tanjung Pecinan, Mangaran": { lat: -7.6800, lng: 114.0800 },
+            "Trebungan, Mangaran": { lat: -7.6650, lng: 114.0650 },
 
             // ===== KECAMATAN MLANDINGAN =====
-            "Besuki, Mlandingan": { lat: -7.6833, lng: 113.9500 },
+            "Alas Bayur, Mlandingan": { lat: -7.6833, lng: 113.9500 },
             "Campoan, Mlandingan": { lat: -7.6800, lng: 113.9550 },
-            "Glingseran, Mlandingan": { lat: -7.6900, lng: 113.9400 },
+            "Mlandingan Kulon, Mlandingan": { lat: -7.6900, lng: 113.9400 },
+            "Selomukti, Mlandingan": { lat: -7.6850, lng: 113.9450 },
+            "Sumberanyar, Mlandingan": { lat: -7.6900, lng: 113.9400 },
             "Sumber Pinang, Mlandingan": { lat: -7.6900, lng: 113.9400 },
+            "Trebungan, Mlandingan": { lat: -7.6750, lng: 113.9600 },
 
-            // ===== KECAMATAN PANARUKAN =====
-            "Gelung, Panarukan": { lat: -7.7050, lng: 113.9200 },
-            "Kilensari, Panarukan": { lat: -7.6950, lng: 113.9150 },
-            "Paowan, Panarukan": { lat: -7.7100, lng: 113.9250 },
-            "Peleyan, Panarukan": { lat: -7.7000, lng: 113.9100 },
-            "Sumberkolak, Panarukan": { lat: -7.7150, lng: 113.9300 },
-            "Wringinanom, Panarukan": { lat: -7.7200, lng: 113.9350 },
+            // ===== KECAMATAN PANARUKAN ===== (KOORDINAT DIPERBARUI SESUAI DATA)
+            "Alasmalang, Panarukan": { lat: -7.6970, lng: 113.7687 },
+            "Duwet, Panarukan": { lat: -7.6977, lng: 113.7882 },
+            "Gelung, Panarukan": { lat: -7.7134, lng: 113.8028 },
+            "Kilensari, Panarukan": { lat: -7.6843, lng: 113.7656 },
+            "Paowan, Panarukan": { lat: -7.7298, lng: 113.7800 },
+            "Peleyan, Panarukan": { lat: -7.6950, lng: 113.8071 },
+            "Sumberkolak, Panarukan": { lat: -7.7118, lng: 113.7618 },
+            "Wringinanom, Panarukan": { lat: -7.7061, lng: 113.8256 },
 
-            // ===== KECAMATAN PANJI =====
-            "Ardirejo, Panji": { lat: -7.7100, lng: 113.6700 },
-            "Kemiri, Panji": { lat: -7.7200, lng: 113.6750 },
-            "Panji Kidul, Panji": { lat: -7.7180, lng: 113.6650 },
-            "Panji Lor, Panji": { lat: -7.7150, lng: 113.6600 },
-            "Tokelan, Panji": { lat: -7.7250, lng: 113.6800 },
+            // ===== KECAMATAN PANJI ===== (KOORDINAT DIPERBARUI SESUAI DATA)
+            "Battal, Panji": { lat: -7.7099, lng: 113.6780 },
+            "Curah Jeru, Panji": { lat: -7.6941, lng: 113.6958 },
+            "Juglangan, Panji": { lat: -7.6946, lng: 113.6653 },
+            "Kayu Putih, Panji": { lat: -7.7025, lng: 113.6737 },
+            "Klampokan, Panji": { lat: -7.7272, lng: 113.6482 },
+            "Panji Kidul, Panji": { lat: -7.7126, lng: 113.7038 },
+            "Panji Lor, Panji": { lat: -7.7019, lng: 113.7059 },
+            "Sliwung, Panji": { lat: -7.7188, lng: 113.6806 },
+            "Tenggir, Panji": { lat: -7.7163, lng: 113.6579 },
+            "Tokelan, Panji": { lat: -7.7320, lng: 113.6703 },
+            "Ardirejo, Panji": { lat: -7.7155, lng: 113.6944 },
+            "Mimbaan, Panji": { lat: -7.7091, lng: 113.6952 },
 
-            // ===== KECAMATAN SITUBONDO =====
-            "Dawuhan, Situbondo": { lat: -7.7062, lng: 113.9603 },
-            "Karang Anyar, Situbondo": { lat: -7.7000, lng: 113.9500 },
-            "Karang Asem, Situbondo": { lat: -7.7100, lng: 113.9650 },
-            "Patokan, Situbondo": { lat: -7.7000, lng: 113.9500 },
-            "Kalibagor, Situbondo": { lat: -7.7100, lng: 113.9650 },
-            "Kembangsari, Situbondo": { lat: -7.7150, lng: 113.9600 },
-            "Olean, Situbondo": { lat: -7.7200, lng: 113.9700 },
+            // ===== KECAMATAN SITUBONDO ===== (KOORDINAT DIPERBARUI SESUAI DATA)
+            "Kalibagor, Situbondo": { lat: -7.7082, lng: 114.0061 },
+            "Kotakan, Situbondo": { lat: -7.6814, lng: 114.0225 },
+            "Olean, Situbondo": { lat: -7.6819, lng: 114.0367 },
+            "Talkandang, Situbondo": { lat: -7.6681, lng: 114.0475 },
+            "Dawuhan, Situbondo": { lat: -7.6926, lng: 113.9937 },
+            "Patokan, Situbondo": { lat: -7.6729, lng: 113.9771 },
 
-            // ===== KECAMATAN SUBOH =====
-            "Buduan, Suboh": { lat: -7.8050, lng: 113.8400 },
-            "Dawuan, Suboh": { lat: -7.7950, lng: 113.8300 },
-            "Gunung Malang, Suboh": { lat: -7.8100, lng: 113.8350 },
-            "Gunung Putri, Suboh": { lat: -7.8000, lng: 113.8250 },
-            "Suboh, Suboh": { lat: -7.8000, lng: 113.8333 },
+            // ===== KECAMATAN SUBOH ===== (KOORDINAT DIPERBARUI SESUAI DATA)
+            "Buduan, Suboh": { lat: -7.8523, lng: 113.7659 },
+            "Cemara, Suboh": { lat: -7.8267, lng: 113.7425 },
+            "Dawuan, Suboh": { lat: -7.8398, lng: 113.7719 },
+            "Gunung Malang, Suboh": { lat: -7.8708, lng: 113.7489 },
+            "Gunung Putri, Suboh": { lat: -7.8647, lng: 113.7325 },
+            "Ketah, Suboh": { lat: -7.8614, lng: 113.7894 },
+            "Mojodungkol, Suboh": { lat: -7.8360, lng: 113.7829 },
+            "Suboh, Suboh": { lat: -7.8475, lng: 113.7580 },
 
-            // ===== KECAMATAN SUMBERMALANG =====
-            "Baderan, Sumbermalang": { lat: -7.7700, lng: 113.7900 },
-            "Kalirejo, Sumbermalang": { lat: -7.7600, lng: 113.7800 },
-            "Plalangan, Sumbermalang": { lat: -7.7750, lng: 113.7850 },
-            "Sumber Anyar, Sumbermalang": { lat: -7.7650, lng: 113.7750 },
-            "Tamankursi, Sumbermalang": { lat: -7.7800, lng: 113.7950 },
-            "Tlogosari, Sumbermalang": { lat: -7.7850, lng: 113.8000 }
+            // ===== KECAMATAN SUMBERMALANG ===== (KOORDINAT DIPERBARUI SESUAI DATA)
+            "Alastengah, Sumbermalang": { lat: -7.8771, lng: 113.8437 },
+            "Baderan, Sumbermalang": { lat: -7.8318, lng: 113.8214 },
+            "Kalirejo, Sumbermalang": { lat: -7.8203, lng: 113.8525 },
+            "Plalangan, Sumbermalang": { lat: -7.8630, lng: 113.8629 },
+            "Sumberargo, Sumbermalang": { lat: -7.8405, lng: 113.8077 },
+            "Taman, Sumbermalang": { lat: -7.8482, lng: 113.8374 },
+            "Tamankursi, Sumbermalang": { lat: -7.8641, lng: 113.8256 },
+            "Tamansari, Sumbermalang": { lat: -7.8618, lng: 113.8125 },
+            "Tlogosari, Sumbermalang": { lat: -7.8816, lng: 113.8243 }
         };
 
-        // ==================== DATA CONTOH UNTUK PETA STATISTIK SELURUH WILAYAH ====================
-        // Data contoh untuk peta statistik (akan diganti dengan data sebenarnya dari datapeta.js)
+        // ==================== DATA CONTOH UNTUK PETA STATISTIK ====================
         const SAMPLE_DATA = {
             metadata: {
                 lastUpdate: "9 Desember 2025 pukul 23.35",
@@ -1869,325 +1915,9 @@
                     detailPenerima: [],
                     warnaIntensitas: 1.0,
                     popupContent: "<strong>Panarukan, Panarukan</strong><br>Jumlah Penerima: 145<br>Total Bantuan: Rp 85.000.000 + 180 unit + 25 paket<br>Uang: 35 penerima (Rp 85.000.000)<br>Barang: 145 penerima (180 unit)<br>Jasa: 25 penerima (25 paket)"
-                },
-                {
-                    id: "2",
-                    desa: "Mimbaan",
-                    kecamatan: "Panarukan",
-                    jumlahPenerima: 98,
-                    totalBantuanBarang: 120,
-                    totalBantuanUang: 45000000,
-                    totalBantuanJasa: 18,
-                    rataBantuan: 1.22,
-                    koordinat: { lat: -7.7167, lng: 113.6500 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 45 },
-                        { tahun: "2024", jumlah: 53 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 65 },
-                        { jenis: "Perahu", jumlah: 8 },
-                        { jenis: "Mesin", jumlah: 32 },
-                        { jenis: "Uang Tunai", jumlah: 25 },
-                        { jenis: "Pelatihan", jumlah: 18 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 68 },
-                        { kelompok: "Nelayan Modern", jumlah: 22 },
-                        { kelompok: "Individu", jumlah: 8 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 25, nilai: 45000000 },
-                        barang: { jumlah: 105, nilai: 120 },
-                        jasa: { jumlah: 18, nilai: 18 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 0.68,
-                    popupContent: "<strong>Mimbaan, Panarukan</strong><br>Jumlah Penerima: 98<br>Total Bantuan: Rp 45.000.000 + 120 unit + 18 paket<br>Uang: 25 penerima (Rp 45.000.000)<br>Barang: 105 penerima (120 unit)<br>Jasa: 18 penerima (18 paket)"
-                },
-                {
-                    id: "3",
-                    desa: "Arjasa",
-                    kecamatan: "Arjasa",
-                    jumlahPenerima: 76,
-                    totalBantuanBarang: 95,
-                    totalBantuanUang: 32000000,
-                    totalBantuanJasa: 12,
-                    rataBantuan: 1.25,
-                    koordinat: { lat: -7.7069, lng: 113.6347 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 35 },
-                        { tahun: "2024", jumlah: 41 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 45 },
-                        { jenis: "Perahu", jumlah: 10 },
-                        { jenis: "Mesin", jumlah: 25 },
-                        { jenis: "Uang Tunai", jumlah: 18 },
-                        { jenis: "Pelatihan", jumlah: 12 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 52 },
-                        { kelompok: "Nelayan Modern", jumlah: 18 },
-                        { kelompok: "Individu", jumlah: 6 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 18, nilai: 32000000 },
-                        barang: { jumlah: 76, nilai: 95 },
-                        jasa: { jumlah: 12, nilai: 12 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 0.52,
-                    popupContent: "<strong>Arjasa, Arjasa</strong><br>Jumlah Penerima: 76<br>Total Bantuan: Rp 32.000.000 + 95 unit + 12 paket<br>Uang: 18 penerima (Rp 32.000.000)<br>Barang: 76 penerima (95 unit)<br>Jasa: 12 penerima (12 paket)"
-                },
-                {
-                    id: "4",
-                    desa: "Besuki",
-                    kecamatan: "Besuki",
-                    jumlahPenerima: 112,
-                    totalBantuanBarang: 145,
-                    totalBantuanUang: 68000000,
-                    totalBantuanJasa: 22,
-                    rataBantuan: 1.30,
-                    koordinat: { lat: -7.7333, lng: 113.7000 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 52 },
-                        { tahun: "2024", jumlah: 60 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 68 },
-                        { jenis: "Perahu", jumlah: 12 },
-                        { jenis: "Mesin", jumlah: 38 },
-                        { jenis: "Uang Tunai", jumlah: 28 },
-                        { jenis: "Pelatihan", jumlah: 22 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 78 },
-                        { kelompok: "Nelayan Modern", jumlah: 28 },
-                        { kelompok: "Individu", jumlah: 6 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 28, nilai: 68000000 },
-                        barang: { jumlah: 118, nilai: 145 },
-                        jasa: { jumlah: 22, nilai: 22 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 0.77,
-                    popupContent: "<strong>Besuki, Besuki</strong><br>Jumlah Penerima: 112<br>Total Bantuan: Rp 68.000.000 + 145 unit + 22 paket<br>Uang: 28 penerima (Rp 68.000.000)<br>Barang: 118 penerima (145 unit)<br>Jasa: 22 penerima (22 paket)"
-                },
-                {
-                    id: "5",
-                    desa: "Situbondo",
-                    kecamatan: "Situbondo",
-                    jumlahPenerima: 165,
-                    totalBantuanBarang: 210,
-                    totalBantuanUang: 125000000,
-                    totalBantuanJasa: 35,
-                    rataBantuan: 1.27,
-                    koordinat: { lat: -7.7062, lng: 113.9603 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 75 },
-                        { tahun: "2024", jumlah: 90 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 95 },
-                        { jenis: "Perahu", jumlah: 18 },
-                        { jenis: "Mesin", jumlah: 52 },
-                        { jenis: "Uang Tunai", jumlah: 42 },
-                        { jenis: "Pelatihan", jumlah: 35 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 115 },
-                        { kelompok: "Nelayan Modern", jumlah: 38 },
-                        { kelompok: "Individu", jumlah: 12 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 42, nilai: 125000000 },
-                        barang: { jumlah: 165, nilai: 210 },
-                        jasa: { jumlah: 35, nilai: 35 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 1.14,
-                    popupContent: "<strong>Situbondo, Situbondo</strong><br>Jumlah Penerima: 165<br>Total Bantuan: Rp 125.000.000 + 210 unit + 35 paket<br>Uang: 42 penerima (Rp 125.000.000)<br>Barang: 165 penerima (210 unit)<br>Jasa: 35 penerima (35 paket)"
-                },
-                {
-                    id: "6",
-                    desa: "Panji Kidul",
-                    kecamatan: "Panji",
-                    jumlahPenerima: 88,
-                    totalBantuanBarang: 110,
-                    totalBantuanUang: 42000000,
-                    totalBantuanJasa: 16,
-                    rataBantuan: 1.25,
-                    koordinat: { lat: -7.7180, lng: 113.6650 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 40 },
-                        { tahun: "2024", jumlah: 48 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 52 },
-                        { jenis: "Perahu", jumlah: 9 },
-                        { jenis: "Mesin", jumlah: 29 },
-                        { jenis: "Uang Tunai", jumlah: 22 },
-                        { jenis: "Pelatihan", jumlah: 16 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 62 },
-                        { kelompok: "Nelayan Modern", jumlah: 20 },
-                        { kelompok: "Individu", jumlah: 6 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 22, nilai: 42000000 },
-                        barang: { jumlah: 90, nilai: 110 },
-                        jasa: { jumlah: 16, nilai: 16 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 0.61,
-                    popupContent: "<strong>Panji Kidul, Panji</strong><br>Jumlah Penerima: 88<br>Total Bantuan: Rp 42.000.000 + 110 unit + 16 paket<br>Uang: 22 penerima (Rp 42.000.000)<br>Barang: 90 penerima (110 unit)<br>Jasa: 16 penerima (16 paket)"
-                },
-                {
-                    id: "7",
-                    desa: "Kapongan",
-                    kecamatan: "Kapongan",
-                    jumlahPenerima: 67,
-                    totalBantuanBarang: 85,
-                    totalBantuanUang: 28000000,
-                    totalBantuanJasa: 10,
-                    rataBantuan: 1.27,
-                    koordinat: { lat: -7.6833, lng: 114.0167 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 30 },
-                        { tahun: "2024", jumlah: 37 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 40 },
-                        { jenis: "Perahu", jumlah: 7 },
-                        { jenis: "Mesin", jumlah: 22 },
-                        { jenis: "Uang Tunai", jumlah: 15 },
-                        { jenis: "Pelatihan", jumlah: 10 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 47 },
-                        { kelompok: "Nelayan Modern", jumlah: 15 },
-                        { kelompok: "Individu", jumlah: 5 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 15, nilai: 28000000 },
-                        barang: { jumlah: 67, nilai: 85 },
-                        jasa: { jumlah: 10, nilai: 10 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 0.46,
-                    popupContent: "<strong>Kapongan, Kapongan</strong><br>Jumlah Penerima: 67<br>Total Bantuan: Rp 28.000.000 + 85 unit + 10 paket<br>Uang: 15 penerima (Rp 28.000.000)<br>Barang: 67 penerima (85 unit)<br>Jasa: 10 penerima (10 paket)"
-                },
-                {
-                    id: "8",
-                    desa: "Kendit",
-                    kecamatan: "Kendit",
-                    jumlahPenerima: 54,
-                    totalBantuanBarang: 68,
-                    totalBantuanUang: 22000000,
-                    totalBantuanJasa: 8,
-                    rataBantuan: 1.26,
-                    koordinat: { lat: -7.7333, lng: 113.9333 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 25 },
-                        { tahun: "2024", jumlah: 29 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 32 },
-                        { jenis: "Perahu", jumlah: 6 },
-                        { jenis: "Mesin", jumlah: 18 },
-                        { jenis: "Uang Tunai", jumlah: 12 },
-                        { jenis: "Pelatihan", jumlah: 8 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 38 },
-                        { kelompok: "Nelayan Modern", jumlah: 12 },
-                        { kelompok: "Individu", jumlah: 4 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 12, nilai: 22000000 },
-                        barang: { jumlah: 54, nilai: 68 },
-                        jasa: { jumlah: 8, nilai: 8 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 0.37,
-                    popupContent: "<strong>Kendit, Kendit</strong><br>Jumlah Penerima: 54<br>Total Bantuan: Rp 22.000.000 + 68 unit + 8 paket<br>Uang: 12 penerima (Rp 22.000.000)<br>Barang: 54 penerima (68 unit)<br>Jasa: 8 penerima (8 paket)"
-                },
-                {
-                    id: "9",
-                    desa: "Mangaran",
-                    kecamatan: "Mangaran",
-                    jumlahPenerima: 72,
-                    totalBantuanBarang: 92,
-                    totalBantuanUang: 35000000,
-                    totalBantuanJasa: 14,
-                    rataBantuan: 1.28,
-                    koordinat: { lat: -7.6667, lng: 114.0667 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 33 },
-                        { tahun: "2024", jumlah: 39 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 43 },
-                        { jenis: "Perahu", jumlah: 8 },
-                        { jenis: "Mesin", jumlah: 24 },
-                        { jenis: "Uang Tunai", jumlah: 19 },
-                        { jenis: "Pelatihan", jumlah: 14 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 50 },
-                        { kelompok: "Nelayan Modern", jumlah: 17 },
-                        { kelompok: "Individu", jumlah: 5 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 19, nilai: 35000000 },
-                        barang: { jumlah: 72, nilai: 92 },
-                        jasa: { jumlah: 14, nilai: 14 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 0.50,
-                    popupContent: "<strong>Mangaran, Mangaran</strong><br>Jumlah Penerima: 72<br>Total Bantuan: Rp 35.000.000 + 92 unit + 14 paket<br>Uang: 19 penerima (Rp 35.000.000)<br>Barang: 72 penerima (92 unit)<br>Jasa: 14 penerima (14 paket)"
-                },
-                {
-                    id: "10",
-                    desa: "Jangkar",
-                    kecamatan: "Jangkar",
-                    jumlahPenerima: 61,
-                    totalBantuanBarang: 78,
-                    totalBantuanUang: 26000000,
-                    totalBantuanJasa: 11,
-                    rataBantuan: 1.28,
-                    koordinat: { lat: -7.7500, lng: 114.0833 },
-                    tahunDistribusi: [
-                        { tahun: "2023", jumlah: 28 },
-                        { tahun: "2024", jumlah: 33 }
-                    ],
-                    jenisBantuan: [
-                        { jenis: "Jaring", jumlah: 36 },
-                        { jenis: "Perahu", jumlah: 7 },
-                        { jenis: "Mesin", jumlah: 20 },
-                        { jenis: "Uang Tunai", jumlah: 13 },
-                        { jenis: "Pelatihan", jumlah: 11 }
-                    ],
-                    kelompokDistribusi: [
-                        { kelompok: "Nelayan Tradisional", jumlah: 43 },
-                        { kelompok: "Nelayan Modern", jumlah: 14 },
-                        { kelompok: "Individu", jumlah: 4 }
-                    ],
-                    statistik: {
-                        uang: { jumlah: 13, nilai: 26000000 },
-                        barang: { jumlah: 61, nilai: 78 },
-                        jasa: { jumlah: 11, nilai: 11 }
-                    },
-                    detailPenerima: [],
-                    warnaIntensitas: 0.42,
-                    popupContent: "<strong>Jangkar, Jangkar</strong><br>Jumlah Penerima: 61<br>Total Bantuan: Rp 26.000.000 + 78 unit + 11 paket<br>Uang: 13 penerima (Rp 26.000.000)<br>Barang: 61 penerima (78 unit)<br>Jasa: 11 penerima (11 paket)"
                 }
             ]
         };
-        // ==================== AKHIR DATA CONTOH ====================
 
         // --- APPLICATION LIFECYCLE ---
         document.addEventListener('DOMContentLoaded', function() {
@@ -2543,13 +2273,30 @@
         }
         
         function fillDesaDropdown() {
-            ['desa', 'filterDesa'].forEach(selectId => {
+            // Update desa dropdown berdasarkan kecamatan yang dipilih
+            const kecamatanSelect = document.getElementById('kecamatan');
+            const desaSelect = document.getElementById('desa');
+            
+            if (kecamatanSelect && desaSelect) {
+                kecamatanSelect.addEventListener('change', function() {
+                    const selectedKecamatan = this.value;
+                    desaSelect.innerHTML = '<option value="">Pilih Desa</option>';
+                    
+                    if (selectedKecamatan && desaByKecamatan[selectedKecamatan]) {
+                        desaByKecamatan[selectedKecamatan].forEach(desa => {
+                            desaSelect.add(new Option(desa, desa));
+                        });
+                    }
+                });
+            }
+            
+            // Untuk filter dropdowns
+            ['filterDesa'].forEach(selectId => {
                 const select = document.getElementById(selectId);
                 if (!select) return;
                 
                 select.innerHTML = '';
-                const defaultText = selectId === 'desa' ? 'Pilih Desa' : 'Semua Desa';
-                select.add(new Option(defaultText, ''));
+                select.add(new Option('Semua Desa', ''));
                 desaList.forEach(desa => select.add(new Option(desa, desa)));
             });
         }
@@ -2988,6 +2735,12 @@
             
             document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            
+            // Reset desa dropdown
+            const desaSelect = document.getElementById('desa');
+            if (desaSelect) {
+                desaSelect.innerHTML = '<option value="">Pilih Desa</option>';
+            }
         }
 
         function setError(id, message) {
