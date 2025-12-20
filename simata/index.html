@@ -51,10 +51,32 @@
         }
         
         /* Custom Badge Colors */
-        .badge-profesi-tetap { background-color: #0c2461 !important; color: white; }
-        .badge-profesi-musiman { background-color: #e58e26 !important; color: white; }
-        .badge-kusuka-ada { background-color: #27ae60 !important; color: white; }
-        .badge-kusuka-tidak { background-color: #7f8c8d !important; color: white; }
+        .badge-profesi-penuh { background-color: #0c2461 !important; color: white; }
+        .badge-profesi-sambilan-utama { background-color: #e58e26 !important; color: white; }
+        .badge-profesi-sambilan-tambahan { background-color: #27ae60 !important; color: white; }
+        
+        /* Tooltip untuk informasi API dan Kapal */
+        .info-tooltip {
+            cursor: help;
+            border-bottom: 1px dotted #0984e3;
+            color: #0984e3;
+        }
+        .api-info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #0984e3;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        .kapal-info-box {
+            background: #eaf0f9;
+            border-left: 4px solid #4a69bd;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
 
         /* --- LOGIN REDESIGN --- */
         .login-overlay {
@@ -300,6 +322,25 @@
         .password-toggle-btn:hover {
             color: var(--primary-color);
         }
+        
+        /* Fish checkbox styling */
+        .fish-option-box {
+            display: inline-block;
+            margin: 5px 10px 5px 0;
+            padding: 5px 10px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .fish-option-box:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        .fish-option-box input[type="checkbox"] {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -488,10 +529,10 @@
                                         <div class="card border-0 shadow-sm h-100">
                                             <div class="card-body">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <span class="text-muted small fw-bold text-uppercase">Pendapatan</span>
-                                                    <i class="fas fa-chart-line text-warning opacity-50 fa-2x"></i>
+                                                    <span class="text-muted small fw-bold text-uppercase">Penuh Waktu</span>
+                                                    <i class="fas fa-user-tie text-primary opacity-50 fa-2x"></i>
                                                 </div>
-                                                <h4 class="fw-bold text-dark mb-0 text-truncate" id="totalBantuan">Rp 0</h4>
+                                                <h2 class="fw-bold text-dark mb-0" id="totalPenuhWaktu">0</h2>
                                             </div>
                                         </div>
                                     </div>
@@ -566,8 +607,9 @@
                                                     <label for="profesi" class="form-label">Kategori Profesi <span class="text-danger">*</span></label>
                                                     <select class="form-select" id="profesi" required>
                                                         <option value="">Pilih Profesi...</option>
-                                                        <option value="Nelayan Tetap">Nelayan Tetap</option>
-                                                        <option value="Nelayan Musiman">Nelayan Musiman</option>
+                                                        <option value="Penuh Waktu">Penuh Waktu</option>
+                                                        <option value="Sambilan Utama">Sambilan Utama</option>
+                                                        <option value="Sambilan Tambahan">Sambilan Tambahan</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -582,15 +624,14 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <label for="kusuka" class="form-label fw-bold text-success"><i class="fas fa-id-card me-1"></i>Kepemilikan Kartu KUSUKA? <span class="text-danger">*</span></label>
-                                                    <select class="form-select border-success" id="kusuka" required>
-                                                        <option value="Tidak">Tidak Ada</option>
-                                                        <option value="Ada">Ada</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-4">
                                                     <label for="tahunLahir" class="form-label">Tahun Kelahiran <span class="text-danger">*</span></label>
                                                     <input type="number" class="form-control" id="tahunLahir" placeholder="YYYY" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="kecamatan" class="form-label fw-bold text-primary">Kecamatan <span class="text-danger">*</span></label>
+                                                    <select class="form-select border-primary" id="kecamatan" required>
+                                                        <option value="">Pilih Kecamatan</option>
+                                                    </select>
                                                 </div>
                                             </div>
 
@@ -600,23 +641,31 @@
                                                     <input type="text" class="form-control bg-light" id="usia" readonly>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="kecamatan" class="form-label fw-bold text-primary">Kecamatan <span class="text-danger">*</span></label>
-                                                    <select class="form-select border-primary" id="kecamatan" required>
-                                                        <option value="">Pilih Kecamatan</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
                                                     <label for="desa" class="form-label fw-bold text-primary">Desa / Kelurahan <span class="text-danger">*</span></label>
                                                     <select class="form-select border-primary" id="desa" required disabled>
                                                         <option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-6">
-                                                     <label for="alamat" class="form-label">Alamat Lengkap <span class="text-danger">*</span></label>
-                                                     <textarea class="form-control" id="alamat" rows="1" placeholder="Dusun, RT/RW" required></textarea>
+                                            </div>
+
+                                            <!-- ALAT PENANGKAPAN IKAN (API) - Dipindah ke menu utama -->
+                                            <div class="row mb-3">
+                                                <div class="col-md-12">
+                                                    <label class="form-label fw-bold">Alat Penangkapan Ikan (API) <span class="text-danger">*</span></label>
+                                                    <div class="card p-3 bg-light border">
+                                                        <select class="form-select" id="alatTangkap" required>
+                                                            <option value="">Pilih Alat Penangkapan Ikan...</option>
+                                                            <option value="Pukat Cincin">Pukat Cincin</option>
+                                                            <option value="Pukat Tarik">Pukat Tarik</option>
+                                                            <option value="Pancing Ulur">Pancing Ulur</option>
+                                                            <option value="Jaring Insang (gill net)">Jaring Insang (gill net)</option>
+                                                            <option value="Jaring Angkat (lift net)">Jaring Angkat (lift net)</option>
+                                                            <option value="Pancing">Pancing</option>
+                                                            <option value="Perangkap Bubu">Perangkap Bubu</option>
+                                                            <option value="Lainnya">Lainnya</option>
+                                                        </select>
+                                                        <div id="apiInfo" class="api-info-box mt-2" style="display:none;"></div>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -634,44 +683,12 @@
                                                             <option value="Perahu Jukung">Perahu Jukung</option>
                                                             <option value="Perahu Mayang">Perahu Mayang</option>
                                                             <option value="Perahu Slerek">Perahu Slerek</option>
+                                                            <option value="Perahu Insang">Perahu Insang</option>
+                                                            <option value="Perahu Jaring Angkat">Perahu Jaring Angkat</option>
+                                                            <option value="Perahu Pancing">Perahu Pancing</option>
                                                             <option value="Lainnya">Lainnya</option>
                                                         </select>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">Ukuran (GT)</label>
-                                                        <input type="text" class="form-control" id="ukuranKapal">
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="form-label">Mesin (PK)</label>
-                                                        <input type="text" class="form-control" id="mesinKapal">
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Alat Tangkap</label>
-                                                    <select class="form-select" id="alatTangkap">
-                                                        <option value="">Pilih Alat Tangkap...</option>
-                                                        <option value="Jaring Lingkar (purse seine)">Jaring Lingkar (purse seine)</option>
-                                                        <option value="Jaring Insang (gill net)">Jaring Insang (gill net)</option>
-                                                        <option value="Jaring Angkat (lift net)">Jaring Angkat (lift net)</option>
-                                                        <option value="Pancing">Pancing</option>
-                                                        <option value="Perangkap Bubu">Perangkap Bubu</option>
-                                                        <option value="Lainnya">Lainnya</option>
-                                                    </select>
-                                                </div>
-                                                <div class="p-3 bg-white border rounded">
-                                                    <label class="form-label d-block fw-bold">Kepemilikan Dokumen (BPKP / PAS)</label>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="dokumenOption" id="dokumenYa" value="Ya">
-                                                        <label class="form-check-label" for="dokumenYa">Ada</label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="dokumenOption" id="dokumenTidak" value="Tidak" checked>
-                                                        <label class="form-check-label" for="dokumenTidak">Tidak Ada</label>
-                                                    </div>
-                                                    <div id="nomorPasContainer" class="mt-2" style="display:none;">
-                                                        <input type="text" class="form-control form-control-sm" id="nomorPas" placeholder="Masukkan Nomor PAS KAPAL">
+                                                        <div id="kapalInfo" class="kapal-info-box mt-2" style="display:none;"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -693,15 +710,11 @@
                                             </div>
                                             
                                             <div class="row mb-3">
-                                                <div class="col-md-4">
-                                                    <label for="pendapatan" class="form-label">Est. Pendapatan/Bulan (Rp) <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" id="pendapatan" required>
-                                                </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-6">
                                                     <label for="tanggalValidasi" class="form-label">Tanggal Validasi <span class="text-danger">*</span></label>
-                                                    <input type="date" class="form-control" id="tanggalValidasi" required>
+                                                    <input type="date" class="form-control" id="tanggalValidasi" required readonly>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-6">
                                                     <label for="validator" class="form-label">Petugas Validator <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="validator" required>
                                                 </div>
@@ -764,7 +777,7 @@
                                                         <th class="col-contact-cell">Kontak</th>
                                                         <th class="col-status-cell">Profesi & Status</th>
                                                         <th class="col-status-cell">Aset Kapal</th>
-                                                        <th style="white-space: nowrap;">Pendapatan</th>
+                                                        <th style="white-space: nowrap;">API</th>
                                                         <th class="col-action sticky-col-right text-center">Aksi</th>
                                                     </tr>
                                                 </thead>
@@ -798,8 +811,9 @@
                                                 <label class="form-label small fw-bold">Profesi</label>
                                                 <select class="form-select form-select-sm" id="filterProfesi">
                                                     <option value="">Semua</option>
-                                                    <option value="Nelayan Tetap">Nelayan Tetap</option>
-                                                    <option value="Nelayan Musiman">Nelayan Musiman</option>
+                                                    <option value="Penuh Waktu">Penuh Waktu</option>
+                                                    <option value="Sambilan Utama">Sambilan Utama</option>
+                                                    <option value="Sambilan Tambahan">Sambilan Tambahan</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-3">
@@ -817,14 +831,22 @@
                                                     <option value="Perahu Jukung">Perahu Jukung</option>
                                                     <option value="Perahu Mayang">Perahu Mayang</option>
                                                     <option value="Perahu Slerek">Perahu Slerek</option>
+                                                    <option value="Perahu Insang">Perahu Insang</option>
+                                                    <option value="Perahu Jaring Angkat">Perahu Jaring Angkat</option>
+                                                    <option value="Perahu Pancing">Perahu Pancing</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-3">
-                                                <label class="form-label small fw-bold">Dokumen Kapal</label>
-                                                <select class="form-select form-select-sm" id="filterDokumen">
+                                                <label class="form-label small fw-bold">Alat Tangkap (API)</label>
+                                                <select class="form-select form-select-sm" id="filterAlatTangkap">
                                                     <option value="">Semua</option>
-                                                    <option value="Ya">Punya Dokumen</option>
-                                                    <option value="Tidak">Tidak Punya</option>
+                                                    <option value="Pukat Cincin">Pukat Cincin</option>
+                                                    <option value="Pukat Tarik">Pukat Tarik</option>
+                                                    <option value="Pancing Ulur">Pancing Ulur</option>
+                                                    <option value="Jaring Insang">Jaring Insang</option>
+                                                    <option value="Jaring Angkat">Jaring Angkat</option>
+                                                    <option value="Pancing">Pancing</option>
+                                                    <option value="Perangkap Bubu">Perangkap Bubu</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-3">
@@ -832,14 +854,6 @@
                                                 <select class="form-select form-select-sm" id="filterUsaha">
                                                     <option value="">Semua</option>
                                                     <option value="Ada">Ada Usaha Sampingan</option>
-                                                    <option value="Tidak">Tidak Ada</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label small fw-bold text-success">Kartu KUSUKA</label>
-                                                <select class="form-select form-select-sm border-success" id="filterKusuka">
-                                                    <option value="">Semua</option>
-                                                    <option value="Ada">Ada KUSUKA</option>
                                                     <option value="Tidak">Tidak Ada</option>
                                                 </select>
                                             </div>
@@ -862,8 +876,8 @@
                                                         <th class="col-id">NIK</th>
                                                         <th class="col-id">Nama & Identitas</th>
                                                         <th class="col-prof">Status</th>
-                                                        <th class="col-asset">KUSUKA</th>
-                                                        <th class="col-income">Pendapatan</th>
+                                                        <th class="col-asset">API</th>
+                                                        <th class="col-income">Profesi</th>
                                                         <th class="col-action">Aksi</th>
                                                     </tr>
                                                 </thead>
@@ -1026,8 +1040,8 @@
                                         <div class="detail-value" id="d_usia">-</div>
                                         <div class="detail-label">Kontak (WhatsApp/Telp)</div>
                                         <div class="detail-value font-monospace" id="d_wa">-</div>
-                                        <div class="detail-label">Alamat</div>
-                                        <div class="detail-value" id="d_alamat">-</div>
+                                        <div class="detail-label">Domisili</div>
+                                        <div class="detail-value" id="d_domisili">-</div>
                                     </div>
                                     <div class="col-md-6 ps-md-4 mt-3 mt-md-0">
                                         <h6 class="text-primary fw-bold mb-3">PROFESI & KEPEMILIKAN</h6>
@@ -1035,12 +1049,8 @@
                                         <div class="detail-value"><span id="d_profesi" class="badge bg-primary"></span></div>
                                         <div class="detail-label">Status</div>
                                         <div class="detail-value" id="d_status">-</div>
-                                        <div class="detail-label">KARTU KUSUKA</div>
-                                        <div class="detail-value" id="d_kusuka">-</div>
-                                        <div class="detail-label">Est. Pendapatan</div>
-                                        <div class="detail-value" id="d_pendapatan">-</div>
-                                        <div class="detail-label">Jenis Tangkapan</div>
-                                        <div class="detail-value" id="d_ikan"></div>
+                                        <div class="detail-label">Alat Penangkapan Ikan (API)</div>
+                                        <div class="detail-value" id="d_alatTangkap">-</div>
                                         <div class="detail-label">Usaha Sampingan</div>
                                         <div class="detail-value" id="d_usaha">-</div>
                                     </div>
@@ -1052,19 +1062,22 @@
                             <div class="card-body bg-white border-start border-4 border-info">
                                 <h6 class="text-info fw-bold mb-3"><i class="fas fa-ship me-2"></i>DATA KAPAL DIMILIKI</h6>
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <div class="detail-label">Nama Kapal</div>
                                         <div class="fw-bold" id="d_namaKapal">-</div>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="detail-label">Jenis / Ukuran</div>
-                                        <div class="fw-bold"><span id="d_jenisKapal">-</span> (<span id="d_ukuran">  -</span> GT)</div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="detail-label">Dokumen PAS</div>
-                                        <div class="fw-bold" id="d_pas">-</div>
+                                    <div class="col-6">
+                                        <div class="detail-label">Jenis Kapal</div>
+                                        <div class="fw-bold"><span id="d_jenisKapal">-</span></div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body bg-white border-start border-4 border-success">
+                                <h6 class="text-success fw-bold mb-3"><i class="fas fa-fish me-2"></i>JENIS IKAN TANGKAPAN</h6>
+                                <div id="d_ikan"></div>
                             </div>
                         </div>
 
@@ -1128,8 +1141,31 @@
         const FISH_TYPES = [
             "Lainnya", 
             "Ikan Tongkol", "Ikan Kembung", "Ikan Selar", "Ikan Tenggiri", "Ikan Layang", 
-            "Cumi-cumi", "Ikan Teri", "Kakap Merah", "Ikan Barakuda", "Kepiting"
+            "Cumi-cumi", "Ikan Teri", "Kakap Merah", "Ikan Barakuda", "Kepiting",
+            "Ikan Layur", "Ikan Mangla", "Ikan Kurisi", "Ikan Cakalang", "Ikan Kerapu", "Ikan Lemuru"
         ];
+
+        // Informasi untuk API dan Jenis Kapal
+        const API_INFO = {
+            "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis seperti tuna dan cakalang.",
+            "Pukat Tarik": "Jaring yang ditarik oleh kapal untuk menangkap ikan di permukaan atau pertengahan air. Cocok untuk ikan pelagis kecil seperti teri dan lemuru.",
+            "Pancing Ulur": "Pancing dengan sistem ulur (handline) yang dioperasikan secara manual. Digunakan untuk menangkap ikan dasar seperti kerapu dan kakap.",
+            "Jaring Insang (gill net)": "Jaring yang dipasang diam di air, ikan yang berenang akan tersangkut insangnya. Cocok untuk berbagai jenis ikan.",
+            "Jaring Angkat (lift net)": "Jaring berbentuk persegi yang diturunkan ke air lalu diangkat cepat. Efektif untuk ikan permukaan.",
+            "Pancing": "Alat tangkap tradisional menggunakan mata pancing dan umpan. Fleksibel untuk berbagai jenis ikan.",
+            "Perangkap Bubu": "Perangkap berbentuk kurungan untuk menjebak ikan. Umum untuk menangkap ikan karang dan udang.",
+            "Lainnya": "Alat tangkap lain yang tidak termasuk dalam kategori di atas."
+        };
+
+        const KAPAL_INFO = {
+            "Perahu Jukung": "Perahu tradisional kayu kecil, umumnya tanpa mesin atau bermesin kecil. Cocok untuk perairan tenang dan dekat pantai.",
+            "Perahu Mayang": "Perahu tradisional yang lebih besar dari jukung, biasanya bermesin tempel. Untuk penangkapan di perairan sedang.",
+            "Perahu Slerek": "Perahu khas Situbondo dengan bentuk ramping, biasanya menggunakan layar atau mesin kecil. Untuk operasi dekat pantai.",
+            "Perahu Insang": "Perahu khusus untuk operasi jaring insang (gill net), dilengkapi dengan sistem pemasangan jaring.",
+            "Perahu Jaring Angkat": "Perahu dengan sistem derek untuk mengoperasikan jaring angkat (lift net).",
+            "Perahu Pancing": "Perahu yang didesain khusus untuk operasi pancing, baik handline maupun rawai.",
+            "Lainnya": "Jenis kapal lain yang tidak termasuk dalam kategori di atas."
+        };
 
         // --- GLOBAL VARIABLES ---
         let appData = [];
@@ -1178,6 +1214,10 @@
                 // Tampilkan tanggal sekarang di form login
                 displayCurrentDate();
                 
+                // Set tanggal validasi otomatis ke hari ini
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('tanggalValidasi').value = today;
+                
                 // Session Check for Persistence (Fix Reload Malfunction)
                 const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
                 if (isSessionActive) {
@@ -1220,11 +1260,18 @@
             filterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
             [...allDesas].sort().forEach(d => filterDesaSelect.add(new Option(d, d)));
             
-            document.getElementById('tanggalValidasi').value = new Date().toISOString().split('T')[0];
+            // Filter Alat Tangkap
+            const filterAlatTangkap = document.getElementById('filterAlatTangkap');
+            filterAlatTangkap.innerHTML = `<option value="">Semua</option>`;
+            Object.keys(API_INFO).forEach(api => filterAlatTangkap.add(new Option(api, api)));
+            
             updateAppIdentity();
             updatePrivacyUI();
             
             startDuplicateChecker();
+            
+            // Setup informasi API dan Kapal
+            setupInfoTooltips();
         }
 
         function initFishOptions() {
@@ -1249,6 +1296,36 @@
                     inputLain.style.display = 'none';
                     inputLain.value = '';
                     inputLain.removeAttribute('required');
+                }
+            });
+        }
+
+        function setupInfoTooltips() {
+            // API Info
+            const alatTangkapSelect = document.getElementById('alatTangkap');
+            const apiInfoDiv = document.getElementById('apiInfo');
+            
+            alatTangkapSelect.addEventListener('change', function() {
+                const selected = this.value;
+                if (selected && API_INFO[selected]) {
+                    apiInfoDiv.style.display = 'block';
+                    apiInfoDiv.innerHTML = `<strong>${selected}:</strong> ${API_INFO[selected]}`;
+                } else {
+                    apiInfoDiv.style.display = 'none';
+                }
+            });
+
+            // Kapal Info
+            const jenisKapalSelect = document.getElementById('jenisKapal');
+            const kapalInfoDiv = document.getElementById('kapalInfo');
+            
+            jenisKapalSelect.addEventListener('change', function() {
+                const selected = this.value;
+                if (selected && KAPAL_INFO[selected]) {
+                    kapalInfoDiv.style.display = 'block';
+                    kapalInfoDiv.innerHTML = `<strong>${selected}:</strong> ${KAPAL_INFO[selected]}`;
+                } else {
+                    kapalInfoDiv.style.display = 'none';
                 }
             });
         }
@@ -1439,8 +1516,10 @@
                     btnWa.classList.remove('active', 'btn-secondary');
                     btnWa.classList.add('btn-outline-secondary');
                     btnWa.textContent = "Tidak Ada";
-                    document.getElementById('kusuka').value = "Tidak";
-                    toggleBoatRequirements(false);
+                    // Reset API info
+                    document.getElementById('apiInfo').style.display = 'none';
+                    // Reset Kapal info
+                    document.getElementById('kapalInfo').style.display = 'none';
                 }, 100);
             });
             
@@ -1448,17 +1527,11 @@
                 const isOwner = this.value === 'Pemilik Kapal';
                 const ownerFields = document.getElementById('ownerFields');
                 ownerFields.style.display = isOwner ? 'block' : 'none';
-                toggleBoatRequirements(isOwner);
-                if(isOwner) {
-                    document.querySelector('input[name="dokumenOption"]:checked').dispatchEvent(new Event('change'));
+                if(!isOwner) {
+                    document.getElementById('namaKapal').value = '';
+                    document.getElementById('jenisKapal').value = '';
+                    document.getElementById('kapalInfo').style.display = 'none';
                 }
-            });
-
-            document.querySelectorAll('input[name="dokumenOption"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const isYes = this.value === 'Ya';
-                    document.getElementById('nomorPasContainer').style.display = isYes ? 'block' : 'none';
-                });
             });
 
             document.getElementById('tahunLahir').addEventListener('input', function() {
@@ -1548,15 +1621,6 @@
             setupFloatingMenu();
         }
 
-        function toggleBoatRequirements(isRequired) {
-            const fields = ['namaKapal', 'jenisKapal', 'ukuranKapal', 'mesinKapal', 'alatTangkap'];
-            fields.forEach(id => {
-                const el = document.getElementById(id);
-                if(isRequired) el.setAttribute('required', 'required');
-                else el.removeAttribute('required');
-            });
-        }
-
         function setupFloatingMenu() {
             const fabMain = document.getElementById('fabMainBtn');
             const container = document.getElementById('fabMenu');
@@ -1628,22 +1692,15 @@
                 whatsapp: whatsapp,
                 profesi: document.getElementById('profesi').value,
                 status: document.getElementById('statusNelayan').value,
-                kusuka: document.getElementById('kusuka').value,
                 tahunLahir: document.getElementById('tahunLahir').value,
                 usia: document.getElementById('usia').value,
                 kecamatan: document.getElementById('kecamatan').value,
                 desa: document.getElementById('desa').value,
-                alamat: document.getElementById('alamat').value,
+                alatTangkap: document.getElementById('alatTangkap').value,
                 namaKapal: isOwner ? document.getElementById('namaKapal').value : '-',
                 jenisKapal: isOwner ? document.getElementById('jenisKapal').value : '-',
-                ukuranKapal: isOwner ? document.getElementById('ukuranKapal').value : '-',
-                mesinKapal: isOwner ? document.getElementById('mesinKapal').value : '-',
-                alatTangkap: isOwner ? document.getElementById('alatTangkap').value : '-',
-                punyaDokumen: isOwner ? document.querySelector('input[name="dokumenOption"]:checked').value : '-',
-                nomorPas: isOwner && document.getElementById('dokumenYa').checked ? document.getElementById('nomorPas').value : '-',
                 jenisIkan: selectedFish.join(", "),
                 usahaSampingan: document.getElementById('usahaSampingan').value,
-                pendapatan: document.getElementById('pendapatan').value,
                 tanggalValidasi: document.getElementById('tanggalValidasi').value,
                 validator: document.getElementById('validator').value,
                 driveLink: document.getElementById('driveLink').value,
@@ -1664,12 +1721,14 @@
             saveData();
             form.reset();
             document.getElementById('ownerFields').style.display = 'none';
-            toggleBoatRequirements(false); 
             document.getElementById('desa').innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
             document.getElementById('desa').disabled = true;
             document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('jenisIkanLainnya').style.display = 'none';
-            document.getElementById('kusuka').value = "Tidak";
+            
+            // Reset API dan Kapal info
+            document.getElementById('apiInfo').style.display = 'none';
+            document.getElementById('kapalInfo').style.display = 'none';
 
             updateDashboard(); renderDataTable();
             document.getElementById('v-pills-data-tab').click();
@@ -1698,11 +1757,12 @@
                 const kapalInfo = d.status === 'Pemilik Kapal' ? `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : '-';
                 const isDuplicate = nikCounts[d.nik] > 1;
                 const rowClass = isDuplicate ? 'table-danger' : '';
+                
                 let badgeClass = 'bg-secondary';
-                if(d.profesi === 'Nelayan Tetap') badgeClass = 'badge-profesi-tetap';
-                else if(d.profesi === 'Nelayan Musiman') badgeClass = 'badge-profesi-musiman';
-                const kusukaVal = d.kusuka || "Tidak";
-                const kusukaBadge = kusukaVal === "Ada" ? `<span class="badge badge-kusuka-ada ms-1" style="font-size:0.65em">KUSUKA</span>` : ``;
+                if(d.profesi === 'Penuh Waktu') badgeClass = 'badge-profesi-penuh';
+                else if(d.profesi === 'Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
+                else if(d.profesi === 'Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
+                
                 const displayNik = maskData(d.nik);
                 const displayWaRaw = maskData(d.whatsapp);
                 
@@ -1723,14 +1783,14 @@
                     <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
                     <td class="text-center">${start + i + 1}</td>
                     <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
-                        <div class="fw-bold text-dark text-wrap">${d.nama} ${kusukaBadge}</div>
+                        <div class="fw-bold text-dark text-wrap">${d.nama}</div>
                         <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
                         <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
                     </td>
                     <td class="col-contact-cell">${contactDisplay}</td>
                     <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
                     <td class="col-status-cell">${kapalInfo}</td>
-                    <td style="white-space:nowrap;">Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td>
+                    <td style="white-space:nowrap;"><span class="badge bg-info text-white">${d.alatTangkap}</span></td>
                     <td class="col-action sticky-col-right"><div class="btn-group shadow-sm" role="group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
                 </tr>`;
                 tableBody.appendChild(document.createElement('tbody')).innerHTML = row;
@@ -1748,19 +1808,20 @@
             document.getElementById('d_nik').innerText = d.nik; 
             document.getElementById('d_usia').innerText = `${d.usia} Tahun (${d.tahunLahir})`;
             document.getElementById('d_wa').innerText = d.whatsapp;
-            document.getElementById('d_alamat').innerText = `${d.alamat}, ${d.desa}, ${d.kecamatan}`;
+            document.getElementById('d_domisili').innerText = `${d.desa}, ${d.kecamatan}`;
             
             const profBadge = document.getElementById('d_profesi');
             profBadge.innerText = d.profesi;
-            profBadge.className = `badge ${d.profesi === 'Nelayan Tetap' ? 'badge-profesi-tetap' : 'badge-profesi-musiman'}`;
             
-            const kusukaVal = d.kusuka || "Tidak";
-            const kBadge = document.getElementById('d_kusuka');
-            kBadge.innerText = kusukaVal === "Ada" ? "MEMILIKI KARTU KUSUKA" : "TIDAK MEMILIKI KUSUKA";
-            kBadge.className = kusukaVal === "Ada" ? "detail-value text-success fw-bold" : "detail-value text-secondary";
+            // Set badge color based on profesi
+            let badgeClass = 'bg-primary';
+            if(d.profesi === 'Penuh Waktu') badgeClass = 'badge-profesi-penuh';
+            else if(d.profesi === 'Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
+            else if(d.profesi === 'Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
+            profBadge.className = `badge ${badgeClass}`;
 
             document.getElementById('d_status').innerText = d.status;
-            document.getElementById('d_pendapatan').innerText = `Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}`;
+            document.getElementById('d_alatTangkap').innerText = d.alatTangkap;
             document.getElementById('d_usaha').innerText = d.usahaSampingan || '-';
             
             const fishContainer = document.getElementById('d_ikan');
@@ -1775,8 +1836,6 @@
                 document.getElementById('d_kapal_card').style.display = 'block';
                 document.getElementById('d_namaKapal').innerText = d.namaKapal;
                 document.getElementById('d_jenisKapal').innerText = d.jenisKapal;
-                document.getElementById('d_ukuran').innerText = d.ukuranKapal;
-                document.getElementById('d_pas').innerText = d.punyaDokumen === 'Ya' ? `Ada (${d.nomorPas})` : 'Tidak Ada';
             } else {
                 document.getElementById('d_kapal_card').style.display = 'none';
             }
@@ -1842,7 +1901,7 @@
                     doc.setFont('helvetica', 'normal'); doc.text(label, 25, y);
                     doc.setFont('helvetica', 'bold'); 
                     
-                    if (label === 'Alamat Lengkap' || value.length > 50) {
+                    if (label === 'Domisili' || value.length > 50) {
                         const splitText = doc.splitTextToSize(': ' + value, 110);
                         doc.text(splitText, 80, y);
                         y += (splitText.length * 6);
@@ -1862,8 +1921,7 @@
                 printLine('Nama Lengkap', d.nama);
                 printLine('NIK', d.nik);
                 printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
-                printLine('Alamat Lengkap', `${d.alamat}`);
-                printLine('Desa / Kecamatan', `${d.desa}, ${d.kecamatan}`);
+                printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
                 printLine('No. Handphone', d.whatsapp);
                 y += 8;
 
@@ -1876,26 +1934,33 @@
                 doc.setFontSize(10);
                 printLine('Status Profesi', d.profesi);
                 printLine('Posisi Kerja', d.status);
-                printLine('Kartu KUSUKA', d.kusuka || "Tidak");
-                printLine('Estimasi Pendapatan', `Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}`);
-                printLine('Jenis Tangkapan', d.jenisIkan);
+                printLine('Alat Penangkapan Ikan (API)', d.alatTangkap);
                 printLine('Usaha Sampingan', d.usahaSampingan || '-');
                 y += 8;
 
-                // Section 3 (Optional)
+                // Section 3 - Jenis Ikan
+                checkPage(30);
+                doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+                doc.rect(20, y-4, 170, 6, 'F');
+                doc.text('III. JENIS IKAN TANGKAPAN UTAMA', 22, y); y += 12;
+
+                doc.setFontSize(10);
+                const fishList = d.jenisIkan ? d.jenisIkan.split(', ') : [];
+                fishList.forEach((fish, idx) => {
+                    printLine(`Ikan ${idx + 1}`, fish);
+                });
+                y += 8;
+
+                // Section 4 (Optional)
                 if(d.status === 'Pemilik Kapal') {
                     checkPage(30);
                     doc.setFontSize(11); doc.setFillColor(230, 230, 230);
                     doc.rect(20, y-4, 170, 6, 'F');
-                    doc.text('III. DATA ASET KAPAL', 22, y); y += 12;
+                    doc.text('IV. DATA ASET KAPAL', 22, y); y += 12;
 
                     doc.setFontSize(10);
                     printLine('Nama Kapal', d.namaKapal);
                     printLine('Jenis Kapal', d.jenisKapal);
-                    printLine('Ukuran (GT)', d.ukuranKapal);
-                    printLine('Mesin (PK)', d.mesinKapal);
-                    printLine('Alat Tangkap', d.alatTangkap);
-                    printLine('Dokumen PAS', d.punyaDokumen === 'Ya' ? d.nomorPas : 'Tidak Ada');
                 }
 
                 // --- FOOTER BLOCK ---
@@ -1999,10 +2064,8 @@
             const form = document.getElementById('inputForm');
             form.setAttribute('data-edit-id', id);
             
-            ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alamat', 'usahaSampingan', 'pendapatan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
+            ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
              .forEach(key => document.getElementById(key).value = d[key] || '');
-
-            document.getElementById('kusuka').value = d.kusuka || "Tidak";
 
             const waInput = document.getElementById('whatsapp');
             const btnWa = document.getElementById('btnNoWA');
@@ -2049,12 +2112,21 @@
             statusSelect.dispatchEvent(new Event('change'));
 
             if(d.status === 'Pemilik Kapal') {
-                ['namaKapal', 'jenisKapal', 'ukuranKapal', 'mesinKapal', 'alatTangkap', 'nomorPas'].forEach(key => {
+                ['namaKapal', 'jenisKapal'].forEach(key => {
                     document.getElementById(key).value = d[key] || '';
                 });
-                const docRadio = d.punyaDokumen === 'Ya' ? document.getElementById('dokumenYa') : document.getElementById('dokumenTidak');
-                docRadio.checked = true;
-                docRadio.dispatchEvent(new Event('change'));
+                
+                // Show kapal info jika ada
+                if(d.jenisKapal && KAPAL_INFO[d.jenisKapal]) {
+                    document.getElementById('kapalInfo').style.display = 'block';
+                    document.getElementById('kapalInfo').innerHTML = `<strong>${d.jenisKapal}:</strong> ${KAPAL_INFO[d.jenisKapal]}`;
+                }
+            }
+
+            // Show API info jika ada
+            if(d.alatTangkap && API_INFO[d.alatTangkap]) {
+                document.getElementById('apiInfo').style.display = 'block';
+                document.getElementById('apiInfo').innerHTML = `<strong>${d.alatTangkap}:</strong> ${API_INFO[d.alatTangkap]}`;
             }
 
             document.getElementById('v-pills-input-tab').click();
@@ -2080,9 +2152,8 @@
                 profesi: document.getElementById('filterProfesi').value,
                 status: document.getElementById('filterStatus').value,
                 jenisKapal: document.getElementById('filterJenisKapal').value,
-                dokumen: document.getElementById('filterDokumen').value,
-                usaha: document.getElementById('filterUsaha').value,
-                kusuka: document.getElementById('filterKusuka').value
+                alatTangkap: document.getElementById('filterAlatTangkap').value,
+                usaha: document.getElementById('filterUsaha').value
             };
 
             const filtered = appData.filter(d => {
@@ -2090,10 +2161,9 @@
                 const matchProfesi = !filters.profesi || d.profesi === filters.profesi;
                 const matchStatus = !filters.status || d.status === filters.status;
                 const matchJenis = !filters.jenisKapal || (d.status === 'Pemilik Kapal' && d.jenisKapal === filters.jenisKapal);
-                const matchDokumen = !filters.dokumen || (d.status === 'Pemilik Kapal' && d.punyaDokumen === filters.dokumen);
+                const matchAlatTangkap = !filters.alatTangkap || d.alatTangkap === filters.alatTangkap;
                 const matchUsaha = !filters.usaha || (filters.usaha === 'Ada' ? (d.usahaSampingan && d.usahaSampingan.length > 2) : (!d.usahaSampingan || d.usahaSampingan.length < 2));
-                const matchKusuka = !filters.kusuka || (d.kusuka === filters.kusuka);
-                return matchDesa && matchProfesi && matchStatus && matchJenis && matchDokumen && matchUsaha && matchKusuka;
+                return matchDesa && matchProfesi && matchStatus && matchJenis && matchAlatTangkap && matchUsaha;
             });
 
             const tbody = document.getElementById('filterTableBody');
@@ -2105,14 +2175,18 @@
 
             filtered.forEach((d, i) => {
                 const displayNik = maskData(d.nik);
-                const kusukaBadge = (d.kusuka === "Ada") ? '<span class="badge badge-kusuka-ada">Ada</span>' : '<span class="badge badge-kusuka-tidak">Tidak</span>';
+                let profesiBadge = 'bg-secondary';
+                if(d.profesi === 'Penuh Waktu') profesiBadge = 'badge-profesi-penuh';
+                else if(d.profesi === 'Sambilan Utama') profesiBadge = 'badge-profesi-sambilan-utama';
+                else if(d.profesi === 'Sambilan Tambahan') profesiBadge = 'badge-profesi-sambilan-tambahan';
+                
                 tbody.innerHTML += `<tr>
                     <td>${i+1}</td>
                     <td class="font-monospace small">${displayNik}</td>
                     <td><div class="fw-bold text-truncate" style="max-width:200px;">${d.nama}</div><div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div></td>
-                    <td><span class="badge ${d.profesi === 'Nelayan Tetap' ? 'badge-profesi-tetap' : 'badge-profesi-musiman'}">${d.profesi}</span><div class="small mt-1 text-muted">${d.status}</div></td>
-                    <td>${kusukaBadge}</td>
-                    <td>Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td>
+                    <td><span class="badge ${d.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">${d.status}</span></td>
+                    <td><span class="badge bg-warning text-dark">${d.alatTangkap}</span></td>
+                    <td><span class="badge ${profesiBadge}">${d.profesi}</span></td>
                     <td><div class="btn-group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
                 </tr>`;
             });
@@ -2133,8 +2207,7 @@
             filtered.sort((a,b) => a.nik.localeCompare(b.nik));
             filtered.forEach((d, i) => {
                 const displayNik = maskData(d.nik);
-                const kusukaBadge = (d.kusuka === "Ada") ? '<span class="badge badge-kusuka-ada">Ada</span>' : '<span class="badge badge-kusuka-tidak">Tidak</span>';
-                tbody.innerHTML += `<tr class="table-danger"><td>${i+1}</td><td class="fw-bold text-danger">${displayNik}</td><td><strong>${d.nama}</strong><br><small>${d.desa}</small></td><td>${d.status}</td><td>${kusukaBadge}</td><td>Rp ${parseInt(d.pendapatan).toLocaleString('id-ID')}</td><td><div class="btn-group"><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
+                tbody.innerHTML += `<tr class="table-danger"><td>${i+1}</td><td class="fw-bold text-danger">${displayNik}</td><td><strong>${d.nama}</strong><br><small>${d.desa}</small></td><td>${d.status}</td><td>${d.alatTangkap}</td><td>${d.profesi}</td><td><div class="btn-group"><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
             });
             showNotification(`PERINGATAN: Ditemukan ${filtered.length} baris data ganda!`, 'error');
         }
@@ -2180,8 +2253,8 @@
             if (!window.profesiChart || !window.kapalChart) return; 
 
             document.getElementById('totalPenerima').textContent = appData.length;
-            const income = appData.reduce((acc, curr) => acc + (parseInt(curr.pendapatan)||0), 0);
-            document.getElementById('totalBantuan').textContent = `Rp ${income.toLocaleString('id-ID')}`;
+            const penuhWaktuCount = appData.filter(d => d.profesi === 'Penuh Waktu').length;
+            document.getElementById('totalPenuhWaktu').textContent = penuhWaktuCount;
             document.getElementById('totalPemilik').textContent = appData.filter(d => d.status === 'Pemilik Kapal').length;
             const avgAge = appData.length ? Math.round(appData.reduce((acc, c) => acc + (parseInt(c.usia)||0), 0) / appData.length) : 0;
             document.getElementById('rataUsia').textContent = avgAge + " Thn";
@@ -2190,7 +2263,10 @@
             appData.forEach(d => pData[d.profesi] = (pData[d.profesi] || 0) + 1);
             window.profesiChart.data = {
                 labels: Object.keys(pData),
-                datasets: [{ data: Object.values(pData), backgroundColor: ['#0c2461', '#4a69bd', '#f6b93b'] }] 
+                datasets: [{ 
+                    data: Object.values(pData), 
+                    backgroundColor: ['#0c2461', '#e58e26', '#27ae60', '#4a69bd', '#f6b93b'] 
+                }] 
             };
             window.profesiChart.update();
 
@@ -2234,24 +2310,25 @@
             appData.forEach(d => {
                 const desa = d.desa || "Tidak Diketahui";
                 if (!desaStats[desa]) {
-                    desaStats[desa] = { count: 0, owner: 0, abk: 0, doc: 0, side: 0, kusuka: 0, income: 0 };
+                    desaStats[desa] = { count: 0, owner: 0, abk: 0, penuhWaktu: 0, sambilanUtama: 0, sambilanTambahan: 0 };
                 }
                 desaStats[desa].count++;
                 if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; else desaStats[desa].abk++;
-                if(d.punyaDokumen === 'Ya') desaStats[desa].doc++;
-                if(d.usahaSampingan && d.usahaSampingan.length > 2) desaStats[desa].side++;
-                if(d.kusuka === 'Ada') desaStats[desa].kusuka++;
-                desaStats[desa].income += parseInt(d.pendapatan || 0);
+                if(d.profesi === 'Penuh Waktu') desaStats[desa].penuhWaktu++;
+                else if(d.profesi === 'Sambilan Utama') desaStats[desa].sambilanUtama++;
+                else if(d.profesi === 'Sambilan Tambahan') desaStats[desa].sambilanTambahan++;
             });
 
             const tableRows = Object.keys(desaStats).sort().map((desa, index) => [
                 index + 1, desa, desaStats[desa].count, desaStats[desa].owner,
-                desaStats[desa].abk, desaStats[desa].doc, desaStats[desa].kusuka,
-                desaStats[desa].side, `Rp ${desaStats[desa].income.toLocaleString('id-ID')}`
+                desaStats[desa].abk, desaStats[desa].penuhWaktu, desaStats[desa].sambilanUtama,
+                desaStats[desa].sambilanTambahan
             ]);
 
             const totalNelayan = appData.length;
-            const totalPendapatanAll = appData.reduce((acc, curr) => acc + parseInt(curr.pendapatan || 0), 0);
+            const totalPenuhWaktu = appData.filter(d => d.profesi === 'Penuh Waktu').length;
+            const totalSambilanUtama = appData.filter(d => d.profesi === 'Sambilan Utama').length;
+            const totalSambilanTambahan = appData.filter(d => d.profesi === 'Sambilan Tambahan').length;
             
             // Generate Right Signature QR (Blue)
             document.getElementById('qr-right').innerHTML = "";
@@ -2286,7 +2363,7 @@
 
                 // --- TABLE ---
                 doc.autoTable({
-                    head: [['No', 'Desa / Kelurahan', 'Jml Nelayan', 'Pemilik Kapal', 'ABK', 'Berizin (PAS)', 'Ada KUSUKA', 'Usaha Sampingan', 'Est. Pendapatan Total']],
+                    head: [['No', 'Desa / Kelurahan', 'Jml Nelayan', 'Pemilik Kapal', 'ABK', 'Penuh Waktu', 'Sambilan Utama', 'Sambilan Tambahan']],
                     body: tableRows,
                     startY: 55,
                     theme: 'grid',
@@ -2294,10 +2371,9 @@
                     columnStyles: {
                         0: { halign: 'center' },
                         2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' },
-                        5: { halign: 'center' }, 6: { halign: 'center' }, 7: { halign: 'center' },
-                        8: { halign: 'right' }
+                        5: { halign: 'center' }, 6: { halign: 'center' }, 7: { halign: 'center' }
                     },
-                    foot: [['', 'TOTAL KESELURUHAN', totalNelayan, '', '', '', '', '', `Rp ${totalPendapatanAll.toLocaleString('id-ID')}`]],
+                    foot: [['', 'TOTAL KESELURUHAN', totalNelayan, '', '', totalPenuhWaktu, totalSambilanUtama, totalSambilanTambahan]],
                     footStyles: { fillColor: [246, 185, 59], textColor: [0, 0, 0], fontStyle: 'bold' }
                 });
 
