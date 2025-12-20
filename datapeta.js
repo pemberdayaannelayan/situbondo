@@ -1,21 +1,21 @@
 // DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
-// Generated: 20/12/2025, 18.52.23
+// Generated: 20/12/2025, 19.53.47
 // Total Desa: 27
 // Total Penerima: 393
 // Sumber: Sistem Bantuan Nelayan Kab. Situbondo
-// Last Update: 20 Desember 2025 pukul 18.51
+// Last Update: 20 Desember 2025 pukul 19.53
 
 window.DATA_PETA_STATISTIK = {
   "metadata": {
-    "generatedAt": "2025-12-20T11:51:22.880Z",
-    "timestamp": 1766231482880,
+    "generatedAt": "2025-12-20T12:53:27.004Z",
+    "timestamp": 1766235207004,
     "totalDesa": 27,
     "totalPenerima": 393,
     "sumber": "Sistem Bantuan Nelayan Kab. Situbondo",
     "instansi": "Dinas Peternakan dan Perikanan Kab. Situbondo",
     "bidang": "Pemberdayaan Nelayan",
     "versi": "2.0",
-    "lastUpdate": "20 Desember 2025 pukul 18.51"
+    "lastUpdate": "20 Desember 2025 pukul 19.53"
   },
   "summary": {
     "totalBantuanUang": 0,
@@ -3953,8 +3953,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 5,
       "rataBantuan": 1.6666666666666667,
       "koordinat": {
-        "lat": -7.7857,
-        "lng": 114.0911
+        "lat": -7.71924,
+        "lng": 114.12254
       },
       "tahunDistribusi": [
         {
@@ -4003,8 +4003,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Nov 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7857,
-            "lng": 114.0911
+            "lat": -7.71924,
+            "lng": 114.12254
           }
         },
         {
@@ -4021,8 +4021,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Nov 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7857,
-            "lng": 114.0911
+            "lat": -7.71924,
+            "lng": 114.12254
           }
         },
         {
@@ -4039,13 +4039,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Okt 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7857,
-            "lng": 114.0911
+            "lat": -7.71924,
+            "lng": 114.12254
           }
         }
       ],
       "warnaIntensitas": 0.04054054054054054,
-      "popupContent": "\n                            <strong>Arjasa, Arjasa</strong><br>\n                            Jumlah Penerima: 3<br>\n                            Total Bantuan: Rp 5<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 3 penerima (5 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.785700, 114.091100\n                        "
+      "popupContent": "\n                            <strong>Arjasa, Arjasa</strong><br>\n                            Jumlah Penerima: 3<br>\n                            Total Bantuan: Rp 5<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 3 penerima (5 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.719240, 114.122540\n                        "
     },
     {
       "id": "lamongan__arjasa",
@@ -4058,8 +4058,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 3,
       "rataBantuan": 1,
       "koordinat": {
-        "lat": -7.7793,
-        "lng": 114.1092
+        "lat": -7.726567,
+        "lng": 114.133433
       },
       "tahunDistribusi": [
         {
@@ -4108,8 +4108,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Nov 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7793,
-            "lng": 114.1092
+            "lat": -7.726567,
+            "lng": 114.133433
           }
         },
         {
@@ -4126,8 +4126,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Nov 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7793,
-            "lng": 114.1092
+            "lat": -7.726567,
+            "lng": 114.133433
           }
         },
         {
@@ -4144,13 +4144,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Okt 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7793,
-            "lng": 114.1092
+            "lat": -7.726567,
+            "lng": 114.133433
           }
         }
       ],
       "warnaIntensitas": 0.04054054054054054,
-      "popupContent": "\n                            <strong>Lamongan, Arjasa</strong><br>\n                            Jumlah Penerima: 3<br>\n                            Total Bantuan: Rp 3<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 3 penerima (3 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.779300, 114.109200\n                        "
+      "popupContent": "\n                            <strong>Lamongan, Arjasa</strong><br>\n                            Jumlah Penerima: 3<br>\n                            Total Bantuan: Rp 3<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 3 penerima (3 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.726567, 114.133433\n                        "
     },
     {
       "id": "kilensari__panarukan",
@@ -4163,8 +4163,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 37,
       "rataBantuan": 1,
       "koordinat": {
-        "lat": -7.6846,
-        "lng": 113.7659
+        "lat": -7.696519,
+        "lng": 113.939523
       },
       "tahunDistribusi": [
         {
@@ -4237,8 +4237,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4255,8 +4255,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4273,8 +4273,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4291,8 +4291,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4309,8 +4309,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4327,8 +4327,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4345,8 +4345,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4363,8 +4363,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4381,8 +4381,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4399,8 +4399,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4417,8 +4417,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4435,8 +4435,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4453,8 +4453,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4471,8 +4471,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4489,8 +4489,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4507,8 +4507,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4525,8 +4525,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4543,8 +4543,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4561,8 +4561,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4579,8 +4579,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4597,8 +4597,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4615,8 +4615,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4633,8 +4633,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4651,8 +4651,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4669,8 +4669,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4687,8 +4687,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4705,8 +4705,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "01 Jan 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4723,8 +4723,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4741,8 +4741,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4759,8 +4759,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4777,8 +4777,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4795,8 +4795,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4813,8 +4813,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4831,8 +4831,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4849,8 +4849,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4867,8 +4867,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         },
         {
@@ -4885,13 +4885,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "15 Des 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6846,
-            "lng": 113.7659
+            "lat": -7.696519,
+            "lng": 113.939523
           }
         }
       ],
       "warnaIntensitas": 0.5,
-      "popupContent": "\n                            <strong>Kilensari, Panarukan</strong><br>\n                            Jumlah Penerima: 37<br>\n                            Total Bantuan: Rp 37<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 37 penerima (37 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.684600, 113.765900\n                        "
+      "popupContent": "\n                            <strong>Kilensari, Panarukan</strong><br>\n                            Jumlah Penerima: 37<br>\n                            Total Bantuan: Rp 37<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 37 penerima (37 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.696519, 113.939523\n                        "
     },
     {
       "id": "ketah__suboh",
@@ -6570,8 +6570,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 8,
       "rataBantuan": 1,
       "koordinat": {
-        "lat": -7.7515,
-        "lng": 113.6895
+        "lat": -7.72818,
+        "lng": 113.684984
       },
       "tahunDistribusi": [
         {
@@ -6620,8 +6620,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7515,
-            "lng": 113.6895
+            "lat": -7.72818,
+            "lng": 113.684984
           }
         },
         {
@@ -6638,8 +6638,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7515,
-            "lng": 113.6895
+            "lat": -7.72818,
+            "lng": 113.684984
           }
         },
         {
@@ -6656,8 +6656,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7515,
-            "lng": 113.6895
+            "lat": -7.72818,
+            "lng": 113.684984
           }
         },
         {
@@ -6674,8 +6674,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7515,
-            "lng": 113.6895
+            "lat": -7.72818,
+            "lng": 113.684984
           }
         },
         {
@@ -6692,8 +6692,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7515,
-            "lng": 113.6895
+            "lat": -7.72818,
+            "lng": 113.684984
           }
         },
         {
@@ -6710,8 +6710,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7515,
-            "lng": 113.6895
+            "lat": -7.72818,
+            "lng": 113.684984
           }
         },
         {
@@ -6728,8 +6728,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7515,
-            "lng": 113.6895
+            "lat": -7.72818,
+            "lng": 113.684984
           }
         },
         {
@@ -6746,13 +6746,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.7515,
-            "lng": 113.6895
+            "lat": -7.72818,
+            "lng": 113.684984
           }
         }
       ],
       "warnaIntensitas": 0.10810810810810811,
-      "popupContent": "\n                            <strong>Pesisir, Besuki</strong><br>\n                            Jumlah Penerima: 8<br>\n                            Total Bantuan: Rp 8<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 8 penerima (8 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.751500, 113.689500\n                        "
+      "popupContent": "\n                            <strong>Pesisir, Besuki</strong><br>\n                            Jumlah Penerima: 8<br>\n                            Total Bantuan: Rp 8<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 8 penerima (8 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.728180, 113.684984\n                        "
     },
     {
       "id": "kalianget__banyuglugur",
