@@ -1,21 +1,21 @@
 // DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
-// Generated: 20/12/2025, 19.53.47
+// Generated: 20/12/2025, 20.31.16
 // Total Desa: 27
 // Total Penerima: 393
 // Sumber: Sistem Bantuan Nelayan Kab. Situbondo
-// Last Update: 20 Desember 2025 pukul 19.53
+// Last Update: 20 Desember 2025 pukul 20.31
 
 window.DATA_PETA_STATISTIK = {
   "metadata": {
-    "generatedAt": "2025-12-20T12:53:27.004Z",
-    "timestamp": 1766235207004,
+    "generatedAt": "2025-12-20T13:31:11.487Z",
+    "timestamp": 1766237471487,
     "totalDesa": 27,
     "totalPenerima": 393,
     "sumber": "Sistem Bantuan Nelayan Kab. Situbondo",
     "instansi": "Dinas Peternakan dan Perikanan Kab. Situbondo",
     "bidang": "Pemberdayaan Nelayan",
     "versi": "2.0",
-    "lastUpdate": "20 Desember 2025 pukul 19.53"
+    "lastUpdate": "20 Desember 2025 pukul 20.31"
   },
   "summary": {
     "totalBantuanUang": 0,
@@ -1407,8 +1407,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 20,
       "rataBantuan": 1.8181818181818181,
       "koordinat": {
-        "lat": -7.6499,
-        "lng": 113.8652
+        "lat": -7.75375,
+        "lng": 113.75871
       },
       "tahunDistribusi": [
         {
@@ -1461,8 +1461,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1479,8 +1479,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1497,8 +1497,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1515,8 +1515,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1533,8 +1533,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1551,8 +1551,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1569,8 +1569,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1587,8 +1587,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1605,8 +1605,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1623,8 +1623,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         },
         {
@@ -1641,13 +1641,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "13 Des 2023",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6499,
-            "lng": 113.8652
+            "lat": -7.75375,
+            "lng": 113.75871
           }
         }
       ],
       "warnaIntensitas": 0.14864864864864866,
-      "popupContent": "\n                            <strong>Selomukti, Mlandingan</strong><br>\n                            Jumlah Penerima: 11<br>\n                            Total Bantuan: Rp 20<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 11 penerima (20 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.649900, 113.865200\n                        "
+      "popupContent": "\n                            <strong>Selomukti, Mlandingan</strong><br>\n                            Jumlah Penerima: 11<br>\n                            Total Bantuan: Rp 20<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 11 penerima (20 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.753750, 113.758710\n                        "
     },
     {
       "id": "jangkar__jangkar",
@@ -7086,8 +7086,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 10,
       "rataBantuan": 1,
       "koordinat": {
-        "lat": -7.6396,
-        "lng": 114.0648
+        "lat": -7.66232,
+        "lng": 114.05351
       },
       "tahunDistribusi": [
         {
@@ -7140,8 +7140,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7158,8 +7158,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7176,8 +7176,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7194,8 +7194,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7212,8 +7212,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7230,8 +7230,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7248,8 +7248,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7266,8 +7266,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7284,8 +7284,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2025",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         },
         {
@@ -7302,13 +7302,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6396,
-            "lng": 114.0648
+            "lat": -7.66232,
+            "lng": 114.05351
           }
         }
       ],
       "warnaIntensitas": 0.13513513513513514,
-      "popupContent": "\n                            <strong>Tanjung Kamal, Mangaran</strong><br>\n                            Jumlah Penerima: 10<br>\n                            Total Bantuan: Rp 10<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 10 penerima (10 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.639600, 114.064800\n                        "
+      "popupContent": "\n                            <strong>Tanjung Kamal, Mangaran</strong><br>\n                            Jumlah Penerima: 10<br>\n                            Total Bantuan: Rp 10<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 10 penerima (10 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.662320, 114.053510\n                        "
     },
     {
       "id": "tanjung_kamal__mlandingan",
@@ -7390,8 +7390,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 21,
       "rataBantuan": 1,
       "koordinat": {
-        "lat": -7.6491,
-        "lng": 114.076
+        "lat": -7.63295,
+        "lng": 114.03352
       },
       "tahunDistribusi": [
         {
@@ -7452,8 +7452,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7470,8 +7470,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7488,8 +7488,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7506,8 +7506,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7524,8 +7524,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7542,8 +7542,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7560,8 +7560,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7578,8 +7578,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7596,8 +7596,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "07 Nov 2025",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7614,8 +7614,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7632,8 +7632,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7650,8 +7650,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7668,8 +7668,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7686,8 +7686,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7704,8 +7704,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7722,8 +7722,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7740,8 +7740,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7758,8 +7758,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7776,8 +7776,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7794,8 +7794,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         },
         {
@@ -7812,13 +7812,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6491,
-            "lng": 114.076
+            "lat": -7.63295,
+            "lng": 114.03352
           }
         }
       ],
       "warnaIntensitas": 0.28378378378378377,
-      "popupContent": "\n                            <strong>Tanjung Pecinan, Mangaran</strong><br>\n                            Jumlah Penerima: 21<br>\n                            Total Bantuan: Rp 21<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 21 penerima (21 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.649100, 114.076000\n                        "
+      "popupContent": "\n                            <strong>Tanjung Pecinan, Mangaran</strong><br>\n                            Jumlah Penerima: 21<br>\n                            Total Bantuan: Rp 21<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 21 penerima (21 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.632950, 114.033520\n                        "
     },
     {
       "id": "semiring__mangaran",
@@ -7831,8 +7831,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 14,
       "rataBantuan": 1,
       "koordinat": {
-        "lat": -7.6358,
-        "lng": 114.0758
+        "lat": -7.62998,
+        "lng": 114.022293
       },
       "tahunDistribusi": [
         {
@@ -7897,8 +7897,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -7915,8 +7915,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -7933,8 +7933,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -7951,8 +7951,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -7969,8 +7969,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -7987,8 +7987,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -8005,8 +8005,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -8023,8 +8023,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -8041,8 +8041,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -8059,8 +8059,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "12 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -8077,8 +8077,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "12 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -8095,8 +8095,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -8113,8 +8113,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         },
         {
@@ -8131,13 +8131,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6358,
-            "lng": 114.0758
+            "lat": -7.62998,
+            "lng": 114.022293
           }
         }
       ],
       "warnaIntensitas": 0.1891891891891892,
-      "popupContent": "\n                            <strong>Semiring, Mangaran</strong><br>\n                            Jumlah Penerima: 14<br>\n                            Total Bantuan: Rp 14<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 14 penerima (14 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.635800, 114.075800\n                        "
+      "popupContent": "\n                            <strong>Semiring, Mangaran</strong><br>\n                            Jumlah Penerima: 14<br>\n                            Total Bantuan: Rp 14<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 14 penerima (14 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.629980, 114.022293\n                        "
     },
     {
       "id": "landangan__kapongan",
@@ -8475,8 +8475,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 14,
       "rataBantuan": 1,
       "koordinat": {
-        "lat": -7.6579,
-        "lng": 113.8376
+        "lat": -7.7525,
+        "lng": 113.76926
       },
       "tahunDistribusi": [
         {
@@ -8525,8 +8525,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8543,8 +8543,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8561,8 +8561,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8579,8 +8579,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8597,8 +8597,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8615,8 +8615,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8633,8 +8633,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8651,8 +8651,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8669,8 +8669,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8687,8 +8687,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8705,8 +8705,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8723,8 +8723,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8741,8 +8741,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         },
         {
@@ -8759,13 +8759,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6579,
-            "lng": 113.8376
+            "lat": -7.7525,
+            "lng": 113.76926
           }
         }
       ],
       "warnaIntensitas": 0.1891891891891892,
-      "popupContent": "\n                            <strong>Mlandingan Kulon, Mlandingan</strong><br>\n                            Jumlah Penerima: 14<br>\n                            Total Bantuan: Rp 14<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 14 penerima (14 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.657900, 113.837600\n                        "
+      "popupContent": "\n                            <strong>Mlandingan Kulon, Mlandingan</strong><br>\n                            Jumlah Penerima: 14<br>\n                            Total Bantuan: Rp 14<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 14 penerima (14 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.752500, 113.769260\n                        "
     },
     {
       "id": "sumberwaru__banyuputih",
@@ -9291,8 +9291,8 @@ window.DATA_PETA_STATISTIK = {
       "totalBantuan": 10,
       "rataBantuan": 1,
       "koordinat": {
-        "lat": -7.6792,
-        "lng": 113.8617
+        "lat": -7.732109,
+        "lng": 113.789552
       },
       "tahunDistribusi": [
         {
@@ -9341,8 +9341,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9359,8 +9359,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9377,8 +9377,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9395,8 +9395,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9413,8 +9413,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9431,8 +9431,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9449,8 +9449,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9467,8 +9467,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9485,8 +9485,8 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         },
         {
@@ -9503,13 +9503,13 @@ window.DATA_PETA_STATISTIK = {
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
-            "lat": -7.6792,
-            "lng": 113.8617
+            "lat": -7.732109,
+            "lng": 113.789552
           }
         }
       ],
       "warnaIntensitas": 0.13513513513513514,
-      "popupContent": "\n                            <strong>Bletok, Bungatan</strong><br>\n                            Jumlah Penerima: 10<br>\n                            Total Bantuan: Rp 10<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 10 penerima (10 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.679200, 113.861700\n                        "
+      "popupContent": "\n                            <strong>Bletok, Bungatan</strong><br>\n                            Jumlah Penerima: 10<br>\n                            Total Bantuan: Rp 10<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 10 penerima (10 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.732109, 113.789552\n                        "
     },
     {
       "id": "talkandang__mangaran",
