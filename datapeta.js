@@ -1,21 +1,21 @@
 // DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
-// Generated: 20/12/2025, 20.31.16
-// Total Desa: 27
+// Generated: 20/12/2025, 21.25.43
+// Total Desa: 26
 // Total Penerima: 393
 // Sumber: Sistem Bantuan Nelayan Kab. Situbondo
-// Last Update: 20 Desember 2025 pukul 20.31
+// Last Update: 20 Desember 2025 pukul 21.25
 
 window.DATA_PETA_STATISTIK = {
   "metadata": {
-    "generatedAt": "2025-12-20T13:31:11.487Z",
-    "timestamp": 1766237471487,
-    "totalDesa": 27,
+    "generatedAt": "2025-12-20T14:25:39.266Z",
+    "timestamp": 1766240739266,
+    "totalDesa": 26,
     "totalPenerima": 393,
     "sumber": "Sistem Bantuan Nelayan Kab. Situbondo",
     "instansi": "Dinas Peternakan dan Perikanan Kab. Situbondo",
     "bidang": "Pemberdayaan Nelayan",
     "versi": "2.0",
-    "lastUpdate": "20 Desember 2025 pukul 20.31"
+    "lastUpdate": "20 Desember 2025 pukul 21.25"
   },
   "summary": {
     "totalBantuanUang": 0,
@@ -7079,11 +7079,11 @@ window.DATA_PETA_STATISTIK = {
       "id": "tanjung_kamal__mangaran",
       "desa": "Tanjung Kamal",
       "kecamatan": "Mangaran",
-      "jumlahPenerima": 10,
-      "totalBantuanBarang": 10,
+      "jumlahPenerima": 11,
+      "totalBantuanBarang": 11,
       "totalBantuanUang": 0,
       "totalBantuanJasa": 0,
-      "totalBantuan": 10,
+      "totalBantuan": 11,
       "rataBantuan": 1,
       "koordinat": {
         "lat": -7.66232,
@@ -7092,19 +7092,19 @@ window.DATA_PETA_STATISTIK = {
       "tahunDistribusi": [
         {
           "tahun": "2024",
-          "jumlah": 10
+          "jumlah": 11
         }
       ],
       "jenisBantuan": [
         {
           "jenis": "Barang",
-          "jumlah": 10
+          "jumlah": 11
         }
       ],
       "kelompokDistribusi": [
         {
           "kelompok": "KURISI",
-          "jumlah": 9
+          "jumlah": 10
         },
         {
           "kelompok": "TERI CANTIK",
@@ -7117,8 +7117,8 @@ window.DATA_PETA_STATISTIK = {
           "nilai": 0
         },
         "barang": {
-          "jumlah": 10,
-          "nilai": 10
+          "jumlah": 11,
+          "nilai": 11
         },
         "jasa": {
           "jumlah": 0,
@@ -7173,6 +7173,24 @@ window.DATA_PETA_STATISTIK = {
           "tahun": "2024",
           "kelompok": "KURISI",
           "jabatan": "Sekretaris",
+          "tanggal": "24 Sep 2024",
+          "petugas": "SALAM",
+          "koordinat": {
+            "lat": -7.66232,
+            "lng": 114.05351
+          }
+        },
+        {
+          "nama": "TOLAK HASAN",
+          "nik": "351209010772****",
+          "whatsapp": "-",
+          "jenisBantuan": "Barang",
+          "namaBantuan": "COOL BOX TANAGA 120 Liter",
+          "jumlah": "1",
+          "satuan": "Unit",
+          "tahun": "2024",
+          "kelompok": "KURISI",
+          "jabatan": "Anggota",
           "tanggal": "24 Sep 2024",
           "petugas": "SALAM",
           "koordinat": {
@@ -7307,77 +7325,8 @@ window.DATA_PETA_STATISTIK = {
           }
         }
       ],
-      "warnaIntensitas": 0.13513513513513514,
-      "popupContent": "\n                            <strong>Tanjung Kamal, Mangaran</strong><br>\n                            Jumlah Penerima: 10<br>\n                            Total Bantuan: Rp 10<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 10 penerima (10 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.662320, 114.053510\n                        "
-    },
-    {
-      "id": "tanjung_kamal__mlandingan",
-      "desa": "Tanjung Kamal",
-      "kecamatan": "Mlandingan",
-      "jumlahPenerima": 1,
-      "totalBantuanBarang": 1,
-      "totalBantuanUang": 0,
-      "totalBantuanJasa": 0,
-      "totalBantuan": 1,
-      "rataBantuan": 1,
-      "koordinat": {
-        "lat": -7.6644,
-        "lng": 113.8778
-      },
-      "tahunDistribusi": [
-        {
-          "tahun": "2024",
-          "jumlah": 1
-        }
-      ],
-      "jenisBantuan": [
-        {
-          "jenis": "Barang",
-          "jumlah": 1
-        }
-      ],
-      "kelompokDistribusi": [
-        {
-          "kelompok": "KURISI",
-          "jumlah": 1
-        }
-      ],
-      "statistik": {
-        "uang": {
-          "jumlah": 0,
-          "nilai": 0
-        },
-        "barang": {
-          "jumlah": 1,
-          "nilai": 1
-        },
-        "jasa": {
-          "jumlah": 0,
-          "nilai": 0
-        }
-      },
-      "detailPenerima": [
-        {
-          "nama": "TOLAK HASAN",
-          "nik": "351209010772****",
-          "whatsapp": "-",
-          "jenisBantuan": "Barang",
-          "namaBantuan": "COOL BOX TANAGA 120 Liter",
-          "jumlah": "1",
-          "satuan": "Unit",
-          "tahun": "2024",
-          "kelompok": "KURISI",
-          "jabatan": "Anggota",
-          "tanggal": "24 Sep 2024",
-          "petugas": "SALAM",
-          "koordinat": {
-            "lat": -7.6644,
-            "lng": 113.8778
-          }
-        }
-      ],
-      "warnaIntensitas": 0.013513513513513514,
-      "popupContent": "\n                            <strong>Tanjung Kamal, Mlandingan</strong><br>\n                            Jumlah Penerima: 1<br>\n                            Total Bantuan: Rp 1<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 1 penerima (1 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.664400, 113.877800\n                        "
+      "warnaIntensitas": 0.14864864864864866,
+      "popupContent": "\n                            <strong>Tanjung Kamal, Mangaran</strong><br>\n                            Jumlah Penerima: 11<br>\n                            Total Bantuan: Rp 11<br>\n                            Uang: 0 penerima (Rp 0)<br>\n                            Barang: 11 penerima (11 unit)<br>\n                            Jasa: 0 penerima (0 paket)<br>\n                            Koordinat: -7.662320, 114.053510\n                        "
     },
     {
       "id": "tanjung_pecinan__mangaran",
