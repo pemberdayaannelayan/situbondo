@@ -1,21 +1,21 @@
 // DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
-// Generated: 12/12/2025, 08.12.57
+// Generated: 20/12/2025, 16.13.32
 // Total Desa: 27
 // Total Penerima: 393
 // Sumber: Sistem Bantuan Nelayan Kab. Situbondo
-// Last Update: 12 Desember 2025 pukul 08.12
+// Last Update: 20 Desember 2025 pukul 16.13
 
 window.DATA_PETA_STATISTIK = {
   "metadata": {
-    "generatedAt": "2025-12-12T01:12:31.532Z",
-    "timestamp": 1765501951532,
+    "generatedAt": "2025-12-20T09:13:27.065Z",
+    "timestamp": 1766222007065,
     "totalDesa": 27,
     "totalPenerima": 393,
     "sumber": "Sistem Bantuan Nelayan Kab. Situbondo",
     "instansi": "Dinas Peternakan dan Perikanan Kab. Situbondo",
     "bidang": "Pemberdayaan Nelayan",
     "versi": "2.0",
-    "lastUpdate": "12 Desember 2025 pukul 08.12"
+    "lastUpdate": "20 Desember 2025 pukul 16.13"
   },
   "summary": {
     "totalBantuanUang": 0,
@@ -1296,8 +1296,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "selomukti__mlandingan",
       "koordinat": {
-        "lat": -7.6833,
-        "lng": 113.95
+        "lat": -7.685,
+        "lng": 113.945
       },
       "totalBantuan": 20,
       "rataBantuan": 1.8181818181818181,
@@ -2398,8 +2398,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "buduan__suboh",
       "koordinat": {
-        "lat": -7.805,
-        "lng": 113.84
+        "lat": -7.8523,
+        "lng": 113.7659
       },
       "totalBantuan": 27,
       "rataBantuan": 1.173913043478261,
@@ -3912,8 +3912,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "kilensari__panarukan",
       "koordinat": {
-        "lat": -7.695,
-        "lng": 113.915
+        "lat": -7.6843,
+        "lng": 113.7656
       },
       "totalBantuan": 37,
       "rataBantuan": 1,
@@ -4999,8 +4999,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "ketah__suboh",
       "koordinat": {
-        "lat": -7.8,
-        "lng": 113.8333
+        "lat": -7.8614,
+        "lng": 113.7894
       },
       "totalBantuan": 74,
       "rataBantuan": 1,
@@ -5064,8 +5064,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "gunung_malang__suboh",
       "koordinat": {
-        "lat": -7.81,
-        "lng": 113.835
+        "lat": -7.8708,
+        "lng": 113.7489
       },
       "totalBantuan": 1,
       "rataBantuan": 1,
@@ -5417,8 +5417,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "pesisir__besuki",
       "koordinat": {
-        "lat": -7.7333,
-        "lng": 113.7
+        "lat": -7.725,
+        "lng": 113.68
       },
       "totalBantuan": 8,
       "rataBantuan": 1,
@@ -6295,8 +6295,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "tanjung_pecinan__mangaran",
       "koordinat": {
-        "lat": -7.6667,
-        "lng": 114.0667
+        "lat": -7.68,
+        "lng": 114.08
       },
       "totalBantuan": 21,
       "rataBantuan": 1,
@@ -6823,8 +6823,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "landangan__kapongan",
       "koordinat": {
-        "lat": -7.695,
-        "lng": 114.03
+        "lat": -7.67,
+        "lng": 114.005
       },
       "totalBantuan": 15,
       "rataBantuan": 1,
@@ -7070,8 +7070,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "mlandingan_kulon__mlandingan",
       "koordinat": {
-        "lat": -7.6833,
-        "lng": 113.95
+        "lat": -7.69,
+        "lng": 113.94
       },
       "totalBantuan": 14,
       "rataBantuan": 1,
@@ -7373,8 +7373,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "sumberwaru__banyuputih",
       "koordinat": {
-        "lat": -7.7608,
-        "lng": 114.02
+        "lat": -7.755,
+        "lng": 114.015
       },
       "totalBantuan": 18,
       "rataBantuan": 1,
@@ -7439,7 +7439,7 @@ window.DATA_PETA_STATISTIK = {
       "id": "kumbangsari__jangkar",
       "koordinat": {
         "lat": -7.75,
-        "lng": 114.0833
+        "lng": 114.095
       },
       "totalBantuan": 1,
       "rataBantuan": 1,
@@ -7503,8 +7503,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "palangan__jangkar",
       "koordinat": {
-        "lat": -7.75,
-        "lng": 114.0833
+        "lat": -7.74,
+        "lng": 114.075
       },
       "totalBantuan": 1,
       "rataBantuan": 1,
@@ -8057,8 +8057,8 @@ window.DATA_PETA_STATISTIK = {
       },
       "id": "gadingan__jangkar",
       "koordinat": {
-        "lat": -7.75,
-        "lng": 114.0833
+        "lat": -7.755,
+        "lng": 114.09
       },
       "totalBantuan": 4,
       "rataBantuan": 1,
