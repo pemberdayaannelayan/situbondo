@@ -2609,7 +2609,8 @@
             
             // Apply privacy mode
             const nikDisplay = formatPrivacy(data.nik);
-            const whatsappDisplay = data.whatsapp ? `+62 ${formatPrivacy(data.whatsapp)}` : '-';
+            const whatsappRaw = data.whatsapp ? `0${data.whatsapp}` : '-';
+            const whatsappDisplay = formatPrivacy(whatsappRaw);
             
             // Fill modal with data
             const elements = {
@@ -3565,6 +3566,7 @@
                 
                 if (!dataByDesa[key]) {
                     dataByDesa[key] = {
+                        key: key, // Simpan key untuk referensi
                         desa: item.desa,
                         kecamatan: item.kecamatan,
                         jumlahPenerima: 0,
@@ -3684,20 +3686,35 @@
                         jumlah: item.kelompokDistribusi[kelompok]
                     }));
                     
+                    // Hitung total bantuan
+                    const totalBantuan = item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa;
+                    const maxPenerima = Math.max(...Object.values(dataByDesa).map(d => d.jumlahPenerima));
+                    const warnaIntensitas = maxPenerima > 0 ? item.jumlahPenerima / maxPenerima : 0;
+                    
+                    // Buat ID unik dari desa dan kecamatan
+                    const id = item.key.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+                    
                     return {
-                        ...item,
-                        id: key.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase(),
-                        jenisBantuan: jenisBantuanFormatted,
+                        id: id,
+                        desa: item.desa,
+                        kecamatan: item.kecamatan,
+                        jumlahPenerima: item.jumlahPenerima,
+                        totalBantuanBarang: item.totalBantuanBarang,
+                        totalBantuanUang: item.totalBantuanUang,
+                        totalBantuanJasa: item.totalBantuanJasa,
+                        totalBantuan: totalBantuan,
+                        rataBantuan: item.jumlahPenerima > 0 ? totalBantuan / item.jumlahPenerima : 0,
+                        koordinat: item.koordinat,
                         tahunDistribusi: tahunDistribusiFormatted,
+                        jenisBantuan: jenisBantuanFormatted,
                         kelompokDistribusi: kelompokDistribusiFormatted,
-                        totalBantuan: item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa,
-                        rataBantuan: item.jumlahPenerima > 0 ? 
-                            (item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa) / item.jumlahPenerima : 0,
-                        warnaIntensitas: Math.min(1, item.jumlahPenerima / Math.max(...Object.values(dataByDesa).map(d => d.jumlahPenerima))),
+                        statistik: item.statistik,
+                        detailPenerima: item.detailPenerima,
+                        warnaIntensitas: warnaIntensitas,
                         popupContent: `
                             <strong>${item.desa}, ${item.kecamatan}</strong><br>
                             Jumlah Penerima: ${item.jumlahPenerima}<br>
-                            Total Bantuan: Rp ${formatNumber(item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa)}<br>
+                            Total Bantuan: Rp ${formatNumber(totalBantuan)}<br>
                             Uang: ${item.statistik.uang.jumlah} penerima (Rp ${formatNumber(item.totalBantuanUang)})<br>
                             Barang: ${item.statistik.barang.jumlah} penerima (${formatNumber(item.totalBantuanBarang)} unit)<br>
                             Jasa: ${item.statistik.jasa.jumlah} penerima (${formatNumber(item.totalBantuanJasa)} paket)<br>
