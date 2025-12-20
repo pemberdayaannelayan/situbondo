@@ -183,9 +183,48 @@
         }
         .app-logo-icon:hover { transform: scale(1.05); }
         
-        .app-title { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; font-weight: 800; margin: 0; letter-spacing: 1px; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.3); text-transform: uppercase; }
-        .app-subtitle { font-size: 0.9rem; color: #fff; margin-top: 5px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-        .app-slogan { font-family: 'Dancing Script', cursive; font-size: 2rem; color: var(--orange-signature); text-shadow: 2px 2px 0px rgba(0,0,0,0.5); margin-top: 10px; font-weight: 700; transform: rotate(-2deg); display: inline-block; }
+        .app-title { 
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            margin: 0; 
+            letter-spacing: 1px; 
+            color: #fff; 
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            text-transform: uppercase; 
+        }
+        .app-subtitle { 
+            font-size: 1.1rem; 
+            color: #fff; 
+            margin-top: 5px; 
+            font-weight: 600; 
+            letter-spacing: 1.5px; 
+            text-transform: uppercase;
+            background-color: rgba(12, 36, 97, 0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .app-slogan { 
+            font-family: 'Dancing Script', cursive; 
+            font-size: 2rem; 
+            color: var(--orange-signature); 
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.5); 
+            margin-top: 10px; 
+            font-weight: 700; 
+            transform: rotate(-2deg); 
+            display: inline-block; 
+        }
+        .app-origin {
+            font-size: 0.85rem;
+            color: #dfe6e9;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 8px;
+            width: 80%;
+        }
         
         .app-container { max-width: 1600px; margin: 20px auto; background: white; box-shadow: var(--shadow-soft); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; min-height: 90vh; }
 
@@ -736,8 +775,9 @@
                     <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logoku2.png" alt="Logo SIMATA" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <h1 class="app-title">SISTEM PEMETAAN DATA NELAYAN</h1>
-                <p class="app-subtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</p>
+                <p class="app-subtitle" id="dynamicSubtitle">PEMERINTAH DESA KABUPATEN SITUBONDO</p>
                 <div class="app-slogan">Situbondo Naik Kelas</div>
+                <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
                     <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.1 (Encrypted)</span>
                 </div>
@@ -1318,12 +1358,14 @@
                                     <form id="settingsForm">
                                         <div class="row mb-3">
                                             <div class="col-md-6">
-                                                <label class="form-label">Nama Aplikasi</label>
-                                                <input type="text" class="form-control" id="appName" value="SISTEM PEMETAAN DATA NELAYAN">
+                                                <label class="form-label">Nama Aplikasi (Tetap)</label>
+                                                <input type="text" class="form-control" id="appName" value="SISTEM PEMETAAN DATA NELAYAN" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+                                                <small class="text-muted">Nama aplikasi tetap tidak dapat diubah</small>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Nama Instansi</label>
-                                                <input type="text" class="form-control" id="appSubtitle" value="PEMERINTAH KABUPATEN SITUBONDO">
+                                                <label class="form-label">Nama Instansi (Dapat Disesuaikan)</label>
+                                                <input type="text" class="form-control" id="appSubtitle" value="DINAS PERIKANAN SITUBONDO" placeholder="Masukkan nama instansi/desa">
+                                                <small class="text-muted">Nama instansi akan muncul di header aplikasi</small>
                                             </div>
                                         </div>
                                         
@@ -1647,7 +1689,7 @@
         let appData = [];
         let appSettings = {
             appName: 'SISTEM PEMETAAN DATA NELAYAN',
-            appSubtitle: 'DINAS PERIKANAN KABUPATEN SITUBONDO',
+            appSubtitle: 'PEMERINTAH DESA KABUPATEN SITUBONDO',
             itemsPerPage: 10,
             privacyMode: true 
         };
@@ -2067,9 +2109,17 @@
         }
 
         function updateAppIdentity() {
+            // Pastikan nama aplikasi tetap
+            appSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
+            
+            // Update header aplikasi
             document.querySelector('.app-title').textContent = appSettings.appName;
-            document.querySelector('.app-subtitle').textContent = appSettings.appSubtitle;
+            document.getElementById('dynamicSubtitle').textContent = appSettings.appSubtitle;
             document.getElementById('itemsPerPageSelect').value = appSettings.itemsPerPage;
+            
+            // Update form pengaturan
+            document.getElementById('appName').value = appSettings.appName;
+            document.getElementById('appSubtitle').value = appSettings.appSubtitle;
         }
 
         function updatePrivacyUI() {
@@ -2351,11 +2401,14 @@
 
             document.getElementById('settingsForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                appSettings.appName = document.getElementById('appName').value;
+                // Tetap pertahankan nama aplikasi yang tetap
+                appSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
                 appSettings.appSubtitle = document.getElementById('appSubtitle').value;
                 appSettings.itemsPerPage = parseInt(document.getElementById('itemsPerPageSelect').value);
-                saveSettings(); updateAppIdentity(); renderDataTable();
-                showNotification('Pengaturan tersimpan!', 'success');
+                saveSettings(); 
+                updateAppIdentity(); 
+                renderDataTable();
+                showNotification('Pengaturan tersimpan! Nama instansi berhasil diperbarui.', 'success');
             });
 
             setupFloatingMenu();
@@ -2619,12 +2672,17 @@
                 
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(14); doc.setFont('helvetica', 'bold');
-                doc.text('PEMERINTAH KABUPATEN SITUBONDO', 105, 22, { align: 'center' });
+                doc.text(appSettings.appName.toUpperCase(), 105, 22, { align: 'center' });
                 doc.setFontSize(16);
                 doc.text('DINAS PERIKANAN', 105, 29, { align: 'center' });
                 doc.setTextColor(246, 185, 59);
                 doc.setFont('times', 'italic'); doc.setFontSize(12);
                 doc.text('"Situbondo Naik Kelas"', 105, 37, { align: 'center' });
+                
+                // Subtitle (Nama Instansi)
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(10);
+                doc.text(appSettings.appSubtitle, 105, 45, { align: 'center' });
                 
                 // Title
                 doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
@@ -3046,9 +3104,26 @@
         }
 
         function saveData() { localStorage.setItem('nelayanData', JSON.stringify(appData)); }
-        function saveSettings() { localStorage.setItem('nelayanSettings', JSON.stringify(appSettings)); }
-        function loadData() { const d = localStorage.getItem('nelayanData'); if(d) appData = JSON.parse(d); }
-        function loadSettings() { const s = localStorage.getItem('nelayanSettings'); if(s) Object.assign(appSettings, JSON.parse(s)); }
+        function saveSettings() { 
+            // Pastikan nama aplikasi tetap
+            appSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
+            localStorage.setItem('nelayanSettings', JSON.stringify(appSettings)); 
+        }
+        
+        function loadData() { 
+            const d = localStorage.getItem('nelayanData'); 
+            if(d) appData = JSON.parse(d); 
+        }
+        
+        function loadSettings() { 
+            const s = localStorage.getItem('nelayanSettings'); 
+            if(s) {
+                const loadedSettings = JSON.parse(s);
+                // Pastikan nama aplikasi tetap
+                loadedSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
+                Object.assign(appSettings, loadedSettings);
+            }
+        }
 
         function exportData(type) {
             if(appData.length === 0) return showNotification('Tidak ada data', 'error');
@@ -3098,7 +3173,7 @@
             
             // Generate Right Signature QR (Blue)
             document.getElementById('qr-right').innerHTML = "";
-            const signText = `DOKUMEN REKAPITULASI RESMI\nDINAS PERIKANAN KAB. SITUBONDO\nTotal Data: ${totalNelayan}\nTimestamp: ${new Date().toISOString()}`;
+            const signText = `DOKUMEN REKAPITULASI RESMI\nDINAS PERIKANAN KAB. SITUBONDO\nInstansi: ${appSettings.appSubtitle}\nTotal Data: ${totalNelayan}\nTimestamp: ${new Date().toISOString()}`;
             new QRCode(document.getElementById("qr-right"), { 
                 text: signText, width: 256, height: 256,
                 colorDark: "#0984e3", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
@@ -3110,28 +3185,31 @@
 
                 // --- HEADER ---
                 doc.setFillColor(12, 36, 97);
-                doc.rect(0, 0, 297, 35, 'F');
+                doc.rect(0, 0, 297, 40, 'F');
                 
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(16); doc.setFont('helvetica', 'bold');
-                doc.text('PEMERINTAH KABUPATEN SITUBONDO', 148.5, 12, { align: 'center' });
+                doc.text(appSettings.appName.toUpperCase(), 148.5, 12, { align: 'center' });
                 doc.setFontSize(18);
                 doc.text('DINAS PERIKANAN', 148.5, 20, { align: 'center' });
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(12);
+                doc.text(appSettings.appSubtitle, 148.5, 28, { align: 'center' });
                 doc.setFont('times', 'italic'); doc.setFontSize(11); doc.setTextColor(246, 185, 59);
-                doc.text('"Situbondo Naik Kelas - Sistem Satu Data Kelautan & Perikanan"', 148.5, 28, { align: 'center' });
+                doc.text('"Situbondo Naik Kelas - Sistem Satu Data Kelautan & Perikanan"', 148.5, 35, { align: 'center' });
 
                 // --- INFO BAR ---
                 doc.setTextColor(0, 0, 0);
                 doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
-                doc.text(`LAPORAN REKAPITULASI DATA NELAYAN PER DESA`, 148.5, 45, { align: 'center' });
+                doc.text(`LAPORAN REKAPITULASI DATA NELAYAN PER DESA`, 148.5, 50, { align: 'center' });
                 doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-                doc.text(`Per Tanggal: ${new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'})}`, 148.5, 50, { align: 'center' });
+                doc.text(`Per Tanggal: ${new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'})}`, 148.5, 55, { align: 'center' });
 
                 // --- TABLE ---
                 doc.autoTable({
                     head: [['No', 'Desa / Kelurahan', 'Jml Nelayan', 'Pemilik Kapal', 'ABK', 'Penuh Waktu', 'Sambilan Utama', 'Sambilan Tambahan']],
                     body: tableRows,
-                    startY: 55,
+                    startY: 60,
                     theme: 'grid',
                     headStyles: { fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
                     columnStyles: {
@@ -3218,7 +3296,8 @@
     2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
     3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
     
-    APP NAME : ${appSettings.appSubtitle}
+    APP NAME : ${appSettings.appName}
+    INSTANSI : ${appSettings.appSubtitle}
     TANGGAL  : ${dateStr}
 */
 
