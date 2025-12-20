@@ -15,6 +15,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
         :root {
             /* Palette: Luxurious Green, Blue, Orange */
@@ -637,6 +640,57 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+        
+        /* Map Styles */
+        #mapDashboard {
+            height: 400px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 25px;
+            z-index: 1;
+        }
+        
+        .leaflet-container {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .map-marker-popup {
+            max-width: 300px;
+        }
+        
+        .map-marker-popup .popup-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .map-marker-popup .popup-item {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .whatsapp-toggle-container {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .whatsapp-toggle-container .btn {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+        }
+        
+        /* Generate Code Button State */
+        .generate-code-disabled {
+            background-color: #6c757d !important;
+            cursor: not-allowed !important;
+        }
+        
+        .generate-code-disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body>
@@ -798,6 +852,24 @@
                         <!-- Dashboard Tab -->
                         <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
                             <h3 class="section-title">Dashboard Overview</h3>
+                            
+                            <!-- Peta Data Bantuan -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-map-marked-alt me-2"></i> Visualisasi Peta Data Penerima Bantuan
+                                </div>
+                                <div class="card-body p-0">
+                                    <div id="mapDashboard"></div>
+                                    <div class="p-3 bg-light border-top">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Menampilkan lokasi penerima bantuan berdasarkan desa/kecamatan. Klik marker untuk detail.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Stats Overview -->
                             <div class="row">
                                 <div class="col-lg-3 col-md-6 mb-4">
                                     <div class="stats-box p-4">
@@ -817,26 +889,69 @@
                                         <div class="stats-number h2 fw-bold text-success" id="totalBantuan">0</div>
                                     </div>
                                 </div>
+                                <!-- TAMBAHAN: Total Bantuan Barang -->
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4" style="border-left-color: #ff6b6b;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Total Bantuan Barang</div>
+                                            <i class="fas fa-box fa-2x text-danger opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold text-danger" id="totalBarang">0</div>
+                                    </div>
+                                </div>
+                                <!-- TAMBAHAN: Total Bantuan Paket/Jasa -->
                                 <div class="col-lg-3 col-md-6 mb-4">
                                     <div class="stats-box p-4" style="border-left-color: #ffc107;">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <div class="stats-label text-muted">Tahun Aktif</div>
-                                            <i class="fas fa-calendar-alt fa-2x text-warning opacity-50"></i>
+                                            <div class="stats-label text-muted">Total Bantuan Paket</div>
+                                            <i class="fas fa-gift fa-2x text-warning opacity-50"></i>
                                         </div>
-                                        <div class="stats-number h2 fw-bold text-warning" id="tahunAktif">2025</div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-4">
-                                    <div class="stats-box p-4" style="border-left-color: #17a2b8;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <div class="stats-label text-muted">Rata-rata</div>
-                                            <i class="fas fa-chart-line fa-2x text-info opacity-50"></i>
-                                        </div>
-                                        <div class="stats-number h2 fw-bold text-info" id="rataBantuan">0</div>
+                                        <div class="stats-number h2 fw-bold text-warning" id="totalPaket">0</div>
                                     </div>
                                 </div>
                             </div>
                             
+                            <!-- TAMBAHAN: Stats Row 2 -->
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4" style="border-left-color: #17a2b8;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Tahun Aktif</div>
+                                            <i class="fas fa-calendar-alt fa-2x text-info opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold text-info" id="tahunAktif">2025</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4" style="border-left-color: #6f42c1;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Rata-rata Bantuan</div>
+                                            <i class="fas fa-chart-line fa-2x text-purple opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold text-purple" id="rataBantuan">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4" style="border-left-color: #20c997;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Total Kecamatan</div>
+                                            <i class="fas fa-map-marker-alt fa-2x text-teal opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold text-teal" id="totalKecamatan">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="stats-box p-4" style="border-left-color: #fd7e14;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="stats-label text-muted">Total Desa</div>
+                                            <i class="fas fa-home fa-2x text-orange opacity-50"></i>
+                                        </div>
+                                        <div class="stats-number h2 fw-bold text-orange" id="totalDesa">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Charts -->
                             <div class="row mt-4">
                                 <div class="col-md-6">
                                     <div class="card h-100">
@@ -852,6 +967,7 @@
                                 </div>
                             </div>
                             
+                            <!-- Recent Transactions -->
                             <div class="row mt-4">
                                 <div class="col-12">
                                     <div class="card">
@@ -892,9 +1008,14 @@
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label for="whatsapp" class="form-label"><i class="fab fa-whatsapp text-success me-2"></i> Nomor WhatsApp</label>
-                                                <div class="whatsapp-input-container">
-                                                    <span class="whatsapp-prefix">+62</span>
-                                                    <input type="tel" class="form-control whatsapp-input" id="whatsapp" placeholder="8xx-xxxx-xxxx" required>
+                                                <div class="whatsapp-toggle-container">
+                                                    <div class="whatsapp-input-container" style="flex: 3;">
+                                                        <span class="whatsapp-prefix">+62</span>
+                                                        <input type="tel" class="form-control whatsapp-input" id="whatsapp" placeholder="8xx-xxxx-xxxx">
+                                                    </div>
+                                                    <button type="button" class="btn btn-secondary" id="btnTidakAdaWhatsapp">
+                                                        <i class="fas fa-times-circle me-1"></i> Tidak Ada
+                                                    </button>
                                                 </div>
                                                 <div class="error-message" id="whatsappError">Nomor WhatsApp wajib diisi.</div>
                                             </div>
@@ -1000,6 +1121,7 @@
                                                     <input type="text" class="form-control" id="kodeValidasi" placeholder="Klik Generate" readonly required>
                                                     <button type="button" class="btn btn-primary" id="generateKodeBtn">Generate</button>
                                                 </div>
+                                                <small class="text-muted d-block mt-1">Satu NIK hanya bisa generate kode satu kali</small>
                                             </div>
                                         </div>
                                         
@@ -1225,7 +1347,7 @@
                                         <div class="extract-preview" id="extractPreview"></div>
                                         <div class="d-flex justify-content-end mt-3">
                                             <button class="btn btn-success" id="downloadDataPetaBtn">
-                                                <i class="fas fa-download me-2"></i> Download datapeta.js
+                                                <i class="fas fa-download me-2"></i> Download Data Peta
                                             </button>
                                         </div>
                                     </div>
@@ -1237,10 +1359,10 @@
                                 <div class="card-body">
                                     <h6>Langkah-langkah penggunaan data peta:</h6>
                                     <ol>
-                                        <li>Masukkan kode keamanan: <strong>19450817</strong></li>
+                                        <li>Masukkan kode keamanan yang telah diberikan</li>
                                         <li>Klik tombol "Generate Data Peta"</li>
                                         <li>Preview data akan muncul, periksa kelengkapan data</li>
-                                        <li>Klik "Download datapeta.js" untuk mendapatkan file script</li>
+                                        <li>Klik "Download Data Peta" untuk mendapatkan file script</li>
                                         <li>File datapeta.js dapat diupload ke repository untuk digunakan di website peta statistik</li>
                                     </ol>
                                     <div class="alert alert-warning">
@@ -1413,50 +1535,50 @@
             </a>
             <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-extract-tab')">
                 <i class="fas fa-map-marked-alt"></i>
-                <span class="smart-menu-tooltip">Ekstrak Data</span>
-            </a>
-            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-export-tab')">
-                <i class="fas fa-file-export"></i>
-                <span class="smart-menu-tooltip">Ekspor Data</span>
-            </a>
-            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-print-tab')">
-                <i class="fas fa-print"></i>
-                <span class="smart-menu-tooltip">Cetak Laporan</span>
-            </a>
-            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-filter-tab')">
-                <i class="fas fa-filter"></i>
-                <span class="smart-menu-tooltip">Filter Data</span>
-            </a>
-            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-data-tab')">
-                <i class="fas fa-database"></i>
-                <span class="smart-menu-tooltip">Data Bantuan</span>
-            </a>
-            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-input-tab')">
-                <i class="fas fa-pencil-alt"></i>
-                <span class="smart-menu-tooltip">Input Data</span>
-            </a>
-            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-dashboard-tab')">
-                <i class="fas fa-tachometer-alt"></i>
-                <span class="smart-menu-tooltip">Dashboard</span>
-            </a>
-        </div>
+                                <span class="smart-menu-tooltip">Ekstrak Data</span>
+                            </a>
+                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-export-tab')">
+                                <i class="fas fa-file-export"></i>
+                                <span class="smart-menu-tooltip">Ekspor Data</span>
+                            </a>
+                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-print-tab')">
+                                <i class="fas fa-print"></i>
+                                <span class="smart-menu-tooltip">Cetak Laporan</span>
+                            </a>
+                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-filter-tab')">
+                                <i class="fas fa-filter"></i>
+                                <span class="smart-menu-tooltip">Filter Data</span>
+                            </a>
+                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-data-tab')">
+                                <i class="fas fa-database"></i>
+                                <span class="smart-menu-tooltip">Data Bantuan</span>
+                            </a>
+                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-input-tab')">
+                                <i class="fas fa-pencil-alt"></i>
+                                <span class="smart-menu-tooltip">Input Data</span>
+                            </a>
+                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-dashboard-tab')">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span class="smart-menu-tooltip">Dashboard</span>
+                            </a>
+                        </div>
 
-        <!-- Floating Action Button -->
-        <button class="floating-action-btn fab-common" id="fabBtn" title="Tambah Data Baru">
-            <i class="fas fa-plus"></i>
-        </button>
-        
-        <!-- Toast Notifications -->
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div class="toast notification-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="4000">
-                <div class="toast-header">
-                    <strong class="me-auto" id="toastTitle">Notifikasi</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body" id="toastMessage"></div>
-            </div>
-        </div>
-    </div>
+                        <!-- Floating Action Button -->
+                        <button class="floating-action-btn fab-common" id="fabBtn" title="Tambah Data Baru">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        
+                        <!-- Toast Notifications -->
+                        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                            <div class="toast notification-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="4000">
+                                <div class="toast-header">
+                                    <strong class="me-auto" id="toastTitle">Notifikasi</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body" id="toastMessage"></div>
+                            </div>
+                        </div>
+                    </div>
     
     <!-- Modal Detail Data -->
     <div class="modal fade" id="detailDataModal" tabindex="-1">
@@ -1627,6 +1749,9 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Leaflet JS for Maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <!-- Main Application JavaScript -->
     <script>
         // --- GLOBAL VARIABLES & CONSTANTS ---
@@ -1648,6 +1773,7 @@
         let isBlocked = false;
         let blockTimeout;
         let generatedCodes = {};
+        let mapDashboard = null; // Peta dashboard
         
         const SECURITY_CONSTANTS = {
             PIN: '17081945',
@@ -1980,6 +2106,9 @@
             setupBrowserInfo();
             updateDashboard();
             applySettingsToUI();
+            
+            // Initialize map when dashboard tab is active
+            setTimeout(initializeMapDashboard, 500);
         }
 
         function setupEventListeners() {
@@ -2010,6 +2139,12 @@
             document.getElementById('inputForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('inputForm').addEventListener('reset', resetForm);
             
+            // Tombol "Tidak Ada" WhatsApp
+            const btnTidakAdaWhatsapp = document.getElementById('btnTidakAdaWhatsapp');
+            if (btnTidakAdaWhatsapp) {
+                btnTidakAdaWhatsapp.addEventListener('click', setTidakAdaWhatsapp);
+            }
+            
             const btnBukanKelompok = document.getElementById('btnBukanKelompok');
             if (btnBukanKelompok) {
                 btnBukanKelompok.addEventListener('click', setBukanKelompok);
@@ -2029,6 +2164,7 @@
             if (nikInput) {
                 nikInput.addEventListener('input', () => {
                     document.getElementById('kodeValidasi').value = '';
+                    checkNikForGeneratedCode();
                 });
             }
 
@@ -2180,6 +2316,11 @@
                     if (window.innerWidth < 992 && document.getElementById('sidebarMenu').classList.contains('mobile-show')) {
                         toggleMobileMenu();
                     }
+                    
+                    // Initialize map when dashboard tab is clicked
+                    if (link.id === 'v-pills-dashboard-tab') {
+                        setTimeout(initializeMapDashboard, 300);
+                    }
                 });
             });
 
@@ -2234,6 +2375,141 @@
                     updateDesaDropdown(this.value);
                 });
             }
+        }
+        
+        // --- FUNGSI BARU: MAP DASHBOARD ---
+        function initializeMapDashboard() {
+            const mapElement = document.getElementById('mapDashboard');
+            if (!mapElement || !appData || appData.length === 0) return;
+            
+            // Remove existing map if exists
+            if (mapDashboard) {
+                mapDashboard.remove();
+                mapDashboard = null;
+            }
+            
+            // Create new map
+            mapDashboard = L.map('mapDashboard').setView([-7.7062, 113.9603], 10);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 18
+            }).addTo(mapDashboard);
+            
+            // Group markers by desa/kecamatan for better visualization
+            const markersByLocation = {};
+            
+            appData.forEach((data, index) => {
+                const locationKey = `${data.desa}, ${data.kecamatan}`;
+                if (!markersByLocation[locationKey]) {
+                    markersByLocation[locationKey] = {
+                        location: locationKey,
+                        data: [],
+                        coordinates: data.koordinat || getKoordinatDesa(data.desa, data.kecamatan)
+                    };
+                }
+                markersByLocation[locationKey].data.push(data);
+            });
+            
+            // Add cluster markers
+            Object.values(markersByLocation).forEach(locationData => {
+                if (locationData.coordinates && locationData.data.length > 0) {
+                    const jumlahPenerima = locationData.data.length;
+                    const jenisBantuan = locationData.data.reduce((acc, d) => {
+                        acc[d.jenisBantuan] = (acc[d.jenisBantuan] || 0) + 1;
+                        return acc;
+                    }, {});
+                    
+                    const jenisBantuanStr = Object.entries(jenisBantuan)
+                        .map(([jenis, count]) => `${jenis}: ${count}`)
+                        .join(', ');
+                    
+                    const totalBantuan = locationData.data.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
+                    
+                    // Create popup content
+                    const popupContent = `
+                        <div class="map-marker-popup">
+                            <div class="popup-title">${locationData.location}</div>
+                            <div class="popup-item"><strong>Jumlah Penerima:</strong> ${jumlahPenerima}</div>
+                            <div class="popup-item"><strong>Jenis Bantuan:</strong> ${jenisBantuanStr}</div>
+                            <div class="popup-item"><strong>Total Bantuan:</strong> ${formatNumber(totalBantuan)}</div>
+                            <div class="popup-item"><strong>Koordinat:</strong> ${locationData.coordinates.lat.toFixed(6)}, ${locationData.coordinates.lng.toFixed(6)}</div>
+                            <hr>
+                            <div class="small text-muted">Klik untuk melihat detail penerima</div>
+                        </div>
+                    `;
+                    
+                    // Create marker with different colors based on jumlah penerima
+                    let markerColor = 'blue';
+                    if (jumlahPenerima > 10) markerColor = 'red';
+                    else if (jumlahPenerima > 5) markerColor = 'orange';
+                    else if (jumlahPenerima > 2) markerColor = 'green';
+                    
+                    const marker = L.marker([locationData.coordinates.lat, locationData.coordinates.lng], {
+                        icon: L.divIcon({
+                            className: 'custom-marker',
+                            html: `<div style="background-color: ${markerColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
+                        })
+                    }).addTo(mapDashboard);
+                    
+                    // Add popup with detailed information
+                    marker.bindPopup(popupContent);
+                    
+                    // Add click event to show detailed list
+                    marker.on('click', function() {
+                        const detailList = locationData.data.map((d, i) => `
+                            <div class="popup-item small">
+                                <strong>${i+1}. ${d.nama}</strong><br>
+                                ${d.jenisBantuan}: ${formatNumber(d.jumlahBantuan)} ${d.satuanBantuan}<br>
+                                ${formatDate(d.tanggalTerima)}
+                            </div>
+                        `).join('');
+                        
+                        const detailedPopup = `
+                            <div class="map-marker-popup">
+                                <div class="popup-title">Detail Penerima - ${locationData.location}</div>
+                                <div style="max-height: 200px; overflow-y: auto;">
+                                    ${detailList}
+                                </div>
+                                <div class="small text-muted mt-2">Total: ${jumlahPenerima} penerima</div>
+                            </div>
+                        `;
+                        
+                        marker.setPopupContent(detailedPopup);
+                    });
+                }
+            });
+            
+            // Fit bounds to show all markers
+            const markerBounds = L.latLngBounds(
+                Object.values(markersByLocation).map(loc => [loc.coordinates.lat, loc.coordinates.lng])
+            );
+            
+            if (Object.values(markersByLocation).length > 1) {
+                mapDashboard.fitBounds(markerBounds, { padding: [50, 50] });
+            }
+            
+            // Add legend
+            const legend = L.control({ position: 'bottomright' });
+            legend.onAdd = function() {
+                const div = L.DomUtil.create('div', 'info legend');
+                div.style.backgroundColor = 'white';
+                div.style.padding = '10px';
+                div.style.borderRadius = '5px';
+                div.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+                div.innerHTML = `
+                    <h6 style="margin-top: 0; margin-bottom: 8px;"><strong>Legenda Marker</strong></h6>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: red; border-radius: 50%; margin-right: 5px;"></span> > 10 penerima</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: orange; border-radius: 50%; margin-right: 5px;"></span> 5-10 penerima</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: green; border-radius: 50%; margin-right: 5px;"></span> 2-5 penerima</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: blue; border-radius: 50%; margin-right: 5px;"></span> 1 penerima</div>
+                `;
+                return div;
+            };
+            legend.addTo(mapDashboard);
         }
 
         // --- SMART MENU LOGIC ---
@@ -2705,6 +2981,48 @@
         }
         
         // --- FORM HANDLING & VALIDATION ---
+        function setTidakAdaWhatsapp() {
+            const whatsappInput = document.getElementById('whatsapp');
+            if (whatsappInput) {
+                whatsappInput.value = 'TIDAK ADA';
+                whatsappInput.disabled = true;
+                clearError('whatsapp');
+            }
+        }
+        
+        function checkNikForGeneratedCode() {
+            const nikInput = document.getElementById('nik');
+            const kodeValidasiInput = document.getElementById('kodeValidasi');
+            const generateKodeBtn = document.getElementById('generateKodeBtn');
+            
+            if (!nikInput || !kodeValidasiInput || !generateKodeBtn) return;
+            
+            const nik = nikInput.value.trim();
+            
+            // Check if NIK already has a generated code
+            if (generatedCodes[nik] && generatedCodes[nik].kode) {
+                kodeValidasiInput.value = generatedCodes[nik].kode;
+                generateKodeBtn.disabled = true;
+                generateKodeBtn.classList.add('generate-code-disabled');
+                generateKodeBtn.innerHTML = '<i class="fas fa-lock me-1"></i> Sudah Digenerate';
+                showNotification('Kode validasi untuk NIK ini sudah digenerate sebelumnya.', 'info');
+                return true;
+            }
+            
+            // Enable button if NIK is valid and doesn't have code yet
+            if (/^\d{16}$/.test(nik)) {
+                generateKodeBtn.disabled = false;
+                generateKodeBtn.classList.remove('generate-code-disabled');
+                generateKodeBtn.innerHTML = 'Generate';
+            } else {
+                generateKodeBtn.disabled = true;
+                generateKodeBtn.classList.add('generate-code-disabled');
+                generateKodeBtn.innerHTML = 'Generate';
+            }
+            
+            return false;
+        }
+        
         function handleFormSubmit(e) {
             e.preventDefault();
             
@@ -2720,7 +3038,7 @@
                 id: isEditing ? parseInt(editId) : Date.now(),
                 nama: document.getElementById('nama').value.trim(),
                 nik: document.getElementById('nik').value.trim(),
-                whatsapp: document.getElementById('whatsapp').value.replace(/\D/g, ''),
+                whatsapp: document.getElementById('whatsapp').value === 'TIDAK ADA' ? '' : document.getElementById('whatsapp').value.replace(/\D/g, ''),
                 namaKelompok: document.getElementById('namaKelompok').value.trim() || 'Individu',
                 jabatan: document.getElementById('jabatan').value,
                 tahunAnggaran: document.getElementById('tahunAnggaran').value,
@@ -2742,6 +3060,15 @@
                 koordinat: getKoordinatDesa(document.getElementById('desa').value, document.getElementById('kecamatan').value)
             };
             
+            // Save generated code to storage
+            if (!isEditing && formData.kodeValidasi && formData.nik) {
+                generatedCodes[formData.nik] = {
+                    kode: formData.kodeValidasi,
+                    tanggal: new Date().toISOString()
+                };
+                saveData();
+            }
+            
             if (isEditing) {
                 const index = appData.findIndex(item => item.id === parseInt(editId));
                 if (index > -1) {
@@ -2757,6 +3084,11 @@
             resetForm();
             updateDashboard();
             renderDataTable();
+            
+            // Update map if exists
+            if (mapDashboard) {
+                initializeMapDashboard();
+            }
             
             try {
                 new bootstrap.Tab(document.getElementById('v-pills-data-tab')).show();
@@ -2794,6 +3126,21 @@
                 desaSelect.disabled = true;
             }
             
+            // Reset WhatsApp input
+            const whatsappInput = document.getElementById('whatsapp');
+            if (whatsappInput) {
+                whatsappInput.disabled = false;
+                whatsappInput.value = '';
+            }
+            
+            // Reset generate button
+            const generateKodeBtn = document.getElementById('generateKodeBtn');
+            if (generateKodeBtn) {
+                generateKodeBtn.disabled = false;
+                generateKodeBtn.classList.remove('generate-code-disabled');
+                generateKodeBtn.innerHTML = 'Generate';
+            }
+            
             document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
         }
@@ -2819,7 +3166,7 @@
 
         function validateForm() {
             let isValid = true;
-            const requiredFields = ['nama', 'nik', 'whatsapp', 'namaPetugas', 'namaBantuan', 'jumlahBantuan', 'kodeValidasi', 'kecamatan', 'desa', 'tanggalTerima'];
+            const requiredFields = ['nama', 'nik', 'namaPetugas', 'namaBantuan', 'jumlahBantuan', 'kodeValidasi', 'kecamatan', 'desa', 'tanggalTerima'];
             
             requiredFields.forEach(id => {
                 const element = document.getElementById(id);
@@ -2830,18 +3177,24 @@
             });
 
             const nik = document.getElementById('nik').value.trim();
+            const editId = document.getElementById('inputForm').getAttribute('data-edit-id');
+            const isEditing = !!editId;
+            
             if (nik && !/^\d{16}$/.test(nik)) {
                 setError('nik', 'NIK harus terdiri dari 16 digit angka.');
                 isValid = false;
-            } else if (isNikExists(nik)) {
+            } else if (isNikExists(nik) && !isEditing) {
                 setError('nik', 'NIK ini sudah terdaftar di sistem.');
                 isValid = false;
             }
 
-            const whatsapp = document.getElementById('whatsapp').value.replace(/\D/g, '');
-            if (whatsapp && !/^\d{9,13}$/.test(whatsapp)) {
-                setError('whatsapp', 'Nomor WhatsApp tidak valid (9-13 digit).');
-                isValid = false;
+            const whatsapp = document.getElementById('whatsapp').value;
+            if (whatsapp && whatsapp !== 'TIDAK ADA') {
+                const whatsappNum = whatsapp.replace(/\D/g, '');
+                if (!/^\d{9,13}$/.test(whatsappNum)) {
+                    setError('whatsapp', 'Nomor WhatsApp tidak valid (9-13 digit).');
+                    isValid = false;
+                }
             }
 
             const driveLink = document.getElementById('driveLink').value.trim();
@@ -2886,6 +3239,23 @@
                 showNotification('NIK tidak valid untuk generate kode.', 'error');
                 return;
             }
+            
+            // Check if NIK already has generated code
+            if (generatedCodes[nik] && generatedCodes[nik].kode) {
+                const kodeValidasi = document.getElementById('kodeValidasi');
+                if (kodeValidasi) kodeValidasi.value = generatedCodes[nik].kode;
+                
+                const generateKodeBtn = document.getElementById('generateKodeBtn');
+                if (generateKodeBtn) {
+                    generateKodeBtn.disabled = true;
+                    generateKodeBtn.classList.add('generate-code-disabled');
+                    generateKodeBtn.innerHTML = '<i class="fas fa-lock me-1"></i> Sudah Digenerate';
+                }
+                
+                showNotification('Kode validasi untuk NIK ini sudah digenerate sebelumnya.', 'info');
+                return;
+            }
+            
             if (isNikExists(nik)) {
                 setError('nik', 'NIK ini sudah terdaftar, tidak bisa generate kode baru.');
                 showNotification('NIK sudah terdaftar.', 'error');
@@ -2901,8 +3271,22 @@
             const kodeValidasi = document.getElementById('kodeValidasi');
             if (kodeValidasi) kodeValidasi.value = result;
             
+            // Save generated code
+            generatedCodes[nik] = {
+                kode: result,
+                tanggal: new Date().toISOString()
+            };
+            
+            // Disable button after generation
+            const generateKodeBtn = document.getElementById('generateKodeBtn');
+            if (generateKodeBtn) {
+                generateKodeBtn.disabled = true;
+                generateKodeBtn.classList.add('generate-code-disabled');
+                generateKodeBtn.innerHTML = '<i class="fas fa-lock me-1"></i> Sudah Digenerate';
+            }
+            
             clearError('kodeValidasi');
-            showNotification('Kode validasi berhasil digenerate.', 'success');
+            showNotification('Kode validasi berhasil digenerate dan dikunci untuk NIK ini.', 'success');
         }
         
         function updateSatuanBantuan() {
@@ -3053,8 +3437,8 @@
                 const whatsappRaw = data.whatsapp ? `0${data.whatsapp}` : '-';
                 const whatsappDisplay = formatPrivacy(whatsappRaw);
                 
-                const whatsappLink = appSettings.privacyMode ? 'javascript:void(0)' : `https://wa.me/62${data.whatsapp}`;
-                const whatsappClass = appSettings.privacyMode ? 'text-muted text-decoration-none' : 'whatsapp-number';
+                const whatsappLink = (appSettings.privacyMode || !data.whatsapp) ? 'javascript:void(0)' : `https://wa.me/62${data.whatsapp}`;
+                const whatsappClass = (appSettings.privacyMode || !data.whatsapp) ? 'text-muted text-decoration-none' : 'whatsapp-number';
                 const privacyClass = appSettings.privacyMode ? 'privacy-blurred' : '';
                 
                 // Tombol aksi
@@ -3076,7 +3460,7 @@
                     <td>${i + 1}</td>
                     <td class="fw-bold text-primary">${data.nama}</td>
                     <td class="${privacyClass}">${nikDisplay}</td>
-                    <td><a href="${whatsappLink}" target="${appSettings.privacyMode ? '_self' : '_blank'}" class="${whatsappClass}">${whatsappDisplay}</a></td>
+                    <td><a href="${whatsappLink}" target="${(appSettings.privacyMode || !data.whatsapp) ? '_self' : '_blank'}" class="${whatsappClass}">${whatsappDisplay}</a></td>
                     <td>${data.namaKelompok || '-'}</td>
                     <td>${data.jabatan || '-'}</td>
                     <td>${data.tahunAnggaran}</td>
@@ -3268,7 +3652,14 @@
             });
 
             const whatsappInput = document.getElementById('whatsapp');
-            if (whatsappInput) whatsappInput.value = data.whatsapp; 
+            if (whatsappInput) {
+                if (data.whatsapp) {
+                    whatsappInput.value = data.whatsapp;
+                } else {
+                    whatsappInput.value = 'TIDAK ADA';
+                    whatsappInput.disabled = true;
+                }
+            }
             
             // PERBAIKAN: Aktifkan dropdown desa dan isi dengan desa yang sesuai
             const desaSelect = document.getElementById('desa');
@@ -3279,6 +3670,9 @@
                     desaSelect.value = data.desa;
                 }, 100);
             }
+            
+            // Check generated code for NIK
+            checkNikForGeneratedCode();
             
             document.getElementById('inputForm').setAttribute('data-edit-id', id);
             
@@ -3300,6 +3694,10 @@
                     showNotification('Data berhasil dihapus.', 'success');
                     updateDashboard();
                     renderDataTable();
+                    // Update map if exists
+                    if (mapDashboard) {
+                        initializeMapDashboard();
+                    }
                 });
             }
         }
@@ -3308,15 +3706,32 @@
         function updateDashboard() {
             const totalPenerima = document.getElementById('totalPenerima');
             const totalBantuan = document.getElementById('totalBantuan');
+            const totalBarang = document.getElementById('totalBarang');
+            const totalPaket = document.getElementById('totalPaket');
             const tahunAktif = document.getElementById('tahunAktif');
             const rataBantuan = document.getElementById('rataBantuan');
+            const totalKecamatan = document.getElementById('totalKecamatan');
+            const totalDesa = document.getElementById('totalDesa');
             
             if (totalPenerima) totalPenerima.textContent = formatNumber(appData.length);
             
+            // Hitung total bantuan uang
             const uangData = appData.filter(d => d.jenisBantuan === 'Uang');
             const totalBantuanValue = uangData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
             
             if (totalBantuan) totalBantuan.textContent = `Rp ${formatNumber(totalBantuanValue)}`;
+            
+            // Hitung total bantuan barang
+            const barangData = appData.filter(d => d.jenisBantuan === 'Barang');
+            const totalBarangValue = barangData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
+            
+            if (totalBarang) totalBarang.textContent = formatNumber(totalBarangValue);
+            
+            // Hitung total bantuan paket/jasa
+            const paketData = appData.filter(d => d.jenisBantuan === 'Jasa');
+            const totalPaketValue = paketData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
+            
+            if (totalPaket) totalPaket.textContent = formatNumber(totalPaketValue);
             
             const tahunCount = appData.reduce((acc, d) => ({...acc, [d.tahunAnggaran]: (acc[d.tahunAnggaran] || 0) + 1}), {});
             const tahunAktifValue = Object.keys(tahunCount).reduce((a, b) => tahunCount[a] > tahunCount[b] ? a : b, appSettings.defaultTahun);
@@ -3327,8 +3742,20 @@
             
             if (rataBantuan) rataBantuan.textContent = `Rp ${formatNumber(rataBantuanValue.toFixed(0))}`;
             
+            // Hitung total kecamatan dan desa unik
+            const kecamatanUnik = [...new Set(appData.map(d => d.kecamatan))];
+            const desaUnik = [...new Set(appData.map(d => d.desa))];
+            
+            if (totalKecamatan) totalKecamatan.textContent = kecamatanUnik.length;
+            if (totalDesa) totalDesa.textContent = desaUnik.length;
+            
             updateCharts();
             updateRecentData();
+            
+            // Update map if exists
+            if (mapDashboard && document.getElementById('v-pills-dashboard').classList.contains('show')) {
+                initializeMapDashboard();
+            }
         }
         
         function updateRecentData() {
@@ -3893,7 +4320,15 @@ if (typeof module !== 'undefined' && module.exports) {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                showNotification('File datapeta.js berhasil didownload!', 'success');
+                // Hapus preview data setelah download
+                generatedPetaData = null;
+                const extractPreviewSection = document.getElementById('extractPreviewSection');
+                const extractPreview = document.getElementById('extractPreview');
+                
+                if (extractPreviewSection) extractPreviewSection.style.display = 'none';
+                if (extractPreview) extractPreview.innerHTML = '';
+                
+                showNotification('File datapeta.js berhasil didownload! Preview data telah dihapus.', 'success');
             } catch (error) {
                 console.error('Error downloading datapeta.js:', error);
                 showNotification('Gagal mengunduh file datapeta.js.', 'error');
@@ -4008,6 +4443,11 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
                             updateDashboard();
                             renderDataTable();
                             
+                            // Update map
+                            if (mapDashboard) {
+                                initializeMapDashboard();
+                            }
+                            
                             if (addedCount > 0) {
                                 showNotification(`Berhasil reload! ${addedCount} data baru ditambahkan.`, 'success');
                             } else {
@@ -4103,6 +4543,12 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
                         
                         updateDashboard();
                         renderDataTable();
+                        
+                        // Update map
+                        if (mapDashboard) {
+                            initializeMapDashboard();
+                        }
+                        
                         showNotification('Data berhasil direstore.', 'success');
                     } else {
                         throw new Error("Struktur data tidak valid.");
@@ -4135,6 +4581,12 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
             
             updateDashboard();
             renderDataTable();
+            
+            // Update map
+            if (mapDashboard) {
+                initializeMapDashboard();
+            }
+            
             showNotification('Data telah direset!', 'warning');
         }
 
