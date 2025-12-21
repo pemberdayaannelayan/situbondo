@@ -247,6 +247,44 @@
             box-shadow: 0 0 20px rgba(2, 132, 199, 0.5);
         }
 
+        /* --- ANIMASI BARU UNTUK FOOTER --- */
+        @keyframes pulse-animation {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 12px rgba(37, 99, 235, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+            }
+        }
+
+        @keyframes pulse-green-animation {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 12px rgba(37, 211, 102, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse-animation 2s infinite;
+        }
+
+        .pulse-green-animation {
+            animation: pulse-green-animation 2s infinite;
+        }
+
+        .click-feedback {
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+
         /* --- Service Cards --- */
         .section-header h2 {
             font-weight: 800;
@@ -1873,54 +1911,61 @@
             position: relative;
             cursor: pointer;
             transition: all 0.3s ease;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
         }
         
         .contact-item.clickable {
             cursor: pointer;
         }
         
-        /* Animasi untuk contact item yang bisa diklik */
+        /* Efek hover untuk contact item */
         .contact-item.clickable:hover {
             transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
         
-        /* Animasi getaran/pancaran untuk alamat dan whatsapp */
-        @keyframes contact-pulse {
+        .contact-item.clickable:active {
+            transform: scale(0.98);
+        }
+        
+        /* Animasi getaran/pancaran untuk alamat dan whatsapp - VERSI PERBAIKAN */
+        @keyframes pulse-animation-smooth {
             0% {
-                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
             }
-            70% {
-                box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+            50% {
+                box-shadow: 0 0 0 10px rgba(37, 99, 235, 0.1);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+            }
+        }
+        
+        @keyframes pulse-green-animation-smooth {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(37, 211, 102, 0.1);
             }
             100% {
                 box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
             }
         }
         
-        @keyframes address-pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 15px rgba(25, 118, 210, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(25, 118, 210, 0);
-            }
+        .contact-item.clickable.active-pulse {
+            animation: pulse-animation-smooth 2s infinite;
         }
         
-        .contact-item.clickable.pulsing {
-            animation: contact-pulse 2s infinite;
-            border-radius: 12px;
-        }
-        
-        .contact-item.clickable.address-pulsing {
-            animation: address-pulse 2s infinite;
-            border-radius: 12px;
+        .contact-item.clickable.active-pulse-green {
+            animation: pulse-green-animation-smooth 2s infinite;
         }
         
         .contact-icon {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             width: 50px;
             height: 50px;
             border-radius: 12px;
@@ -2718,7 +2763,7 @@
                 <div class="col-lg-4 col-md-6">
                     <h5>Kontak Kami</h5>
                     <div class="mt-3">
-                        <!-- Alamat Kantor dengan efek klik -->
+                        <!-- Alamat Kantor dengan efek klik yang diperbaiki -->
                         <div class="contact-item clickable" id="alamatKantor">
                             <div class="contact-icon">
                                 <i class="fas fa-map-marker-alt"></i>
@@ -2728,7 +2773,7 @@
                                 <small>Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur 68312</small>
                             </div>
                         </div>
-                        <!-- Nomor WhatsApp dengan efek klik -->
+                        <!-- Nomor WhatsApp dengan efek klik yang diperbaiki -->
                         <div class="contact-item clickable" id="whatsappContact">
                             <div class="contact-icon">
                                 <i class="fas fa-phone-alt"></i>
@@ -4055,67 +4100,96 @@
         }
         
         // ============================================
-        // FITUR BARU: Alamat dan WhatsApp di Footer
+        // FITUR BARU YANG DIPERBAIKI: Alamat dan WhatsApp di Footer
         // ============================================
         
-        // Fungsi untuk setup efek klik pada alamat dan whatsapp di footer
+        // Fungsi untuk setup efek klik pada alamat dan whatsapp di footer - VERSI PERBAIKAN
         function setupFooterClickFeatures() {
             try {
                 // Alamat Kantor
                 const alamatKantor = document.getElementById('alamatKantor');
                 if (alamatKantor) {
-                    alamatKantor.classList.add('clickable');
+                    // Hapus class lama jika ada
+                    alamatKantor.classList.remove('address-pulsing', 'pulsing');
                     
-                    // Efek hover
+                    // Efek hover dengan animasi yang lebih halus
                     alamatKantor.addEventListener('mouseenter', function() {
-                        this.classList.add('address-pulsing');
+                        this.classList.add('active-pulse');
+                        this.style.transition = 'all 0.3s ease';
                     });
                     
                     alamatKantor.addEventListener('mouseleave', function() {
-                        this.classList.remove('address-pulsing');
+                        this.classList.remove('active-pulse');
                     });
                     
                     // Klik untuk membuka Google Maps
-                    alamatKantor.addEventListener('click', function() {
-                        window.open('https://maps.app.goo.gl/BxSQYHqFU5QstT2m8', '_blank');
-                        // Tambah efek visual saat diklik
-                        this.style.transform = 'scale(0.98)';
+                    alamatKantor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Efek visual saat diklik
+                        this.classList.add('click-feedback');
                         setTimeout(() => {
-                            this.style.transform = '';
+                            this.classList.remove('click-feedback');
                         }, 200);
+                        
+                        // Buka Google Maps
+                        window.open('https://maps.app.goo.gl/BxSQYHqFU5QstT2m8', '_blank');
+                    });
+                    
+                    // Untuk touch devices
+                    alamatKantor.addEventListener('touchstart', function() {
+                        this.classList.add('active-pulse');
+                    });
+                    
+                    alamatKantor.addEventListener('touchend', function() {
+                        this.classList.remove('active-pulse');
                     });
                 }
                 
                 // WhatsApp Contact
                 const whatsappContact = document.getElementById('whatsappContact');
                 if (whatsappContact) {
-                    whatsappContact.classList.add('clickable');
+                    // Hapus class lama jika ada
+                    whatsappContact.classList.remove('address-pulsing', 'pulsing');
                     
-                    // Efek hover
+                    // Efek hover dengan animasi yang lebih halus
                     whatsappContact.addEventListener('mouseenter', function() {
-                        this.classList.add('pulsing');
+                        this.classList.add('active-pulse-green');
+                        this.style.transition = 'all 0.3s ease';
                     });
                     
                     whatsappContact.addEventListener('mouseleave', function() {
-                        this.classList.remove('pulsing');
+                        this.classList.remove('active-pulse-green');
                     });
                     
                     // Klik untuk membuka WhatsApp
-                    whatsappContact.addEventListener('click', function() {
+                    whatsappContact.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Efek visual saat diklik
+                        this.classList.add('click-feedback');
+                        setTimeout(() => {
+                            this.classList.remove('click-feedback');
+                        }, 200);
+                        
+                        // Buka WhatsApp
                         const phoneNumber = '6287865614222';
                         const message = 'Halo, saya ingin informasi lebih lanjut tentang Dinas Perikanan Situbondo.';
                         const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
                         window.open(whatsappUrl, '_blank');
-                        
-                        // Tambah efek visual saat diklik
-                        this.style.transform = 'scale(0.98)';
-                        setTimeout(() => {
-                            this.style.transform = '';
-                        }, 200);
+                    });
+                    
+                    // Untuk touch devices
+                    whatsappContact.addEventListener('touchstart', function() {
+                        this.classList.add('active-pulse-green');
+                    });
+                    
+                    whatsappContact.addEventListener('touchend', function() {
+                        this.classList.remove('active-pulse-green');
                     });
                 }
                 
-                console.log('Footer click features setup completed');
+                console.log('Footer click features setup completed with improved animations');
             } catch (error) {
                 console.error('Error setting up footer click features:', error);
             }
@@ -4130,7 +4204,7 @@
                 // Setup smooth scroll
                 setupSmoothScroll();
                 
-                // Setup fitur klik pada alamat dan whatsapp di footer
+                // Setup fitur klik pada alamat dan whatsapp di footer dengan animasi yang diperbaiki
                 setupFooterClickFeatures();
                 
                 // Navigation buttons untuk lightbox
