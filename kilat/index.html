@@ -237,7 +237,7 @@
 <div class="container">
     <div class="header">
         <h1>KILAT</h1>
-        <p>(Kamera Interaktif Lacak Aktifitas Terkini) - ANTI MANIPULASI</p>
+        <p>(Kamera Interaktif Lacak Aktifitas Terkini)</p>
     </div>
 
     <div class="nav-tabs">
@@ -374,9 +374,8 @@
         accuracyScore: 0
     };
     let currentPhotoBlob = null;
-    let serverTime = null;
-    let timeOffset = 0;
-    let isTimeVerified = false;
+    let deviceTimeHistory = [];
+    let timeManipulationDetected = false;
     let lastPositions = [];
 
     // --- INIT ---
@@ -388,130 +387,172 @@
         updateRatio();
         
         // Update time every minute
-        setInterval(updateTimeDisplay, 60000);
-        setInterval(verifyTimeIntegrity, 30000);
-        setInterval(fetchServerTime, 60000); // Update server time every minute
+        setInterval(updateTimeDisplay, 30000);
+        setInterval(verifyTimeIntegrity, 60000);
     };
 
-    // --- TIME VERIFICATION SYSTEM ---
+    // --- TIME VERIFICATION SYSTEM (NO BACKEND) ---
     async function initTimeVerification() {
-        await fetchServerTime();
+        // Initialize time history
+        const now = new Date();
+        deviceTimeHistory.push({
+            timestamp: Date.now(),
+            deviceTime: now.getTime(),
+            year: now.getFullYear(),
+            month: now.getMonth(),
+            date: now.getDate(),
+            hours: now.getHours(),
+            minutes: now.getMinutes(),
+            seconds: now.getSeconds()
+        });
+        
         updateTimeDisplay();
         verifyTimeIntegrity();
     }
 
-    async function fetchServerTime() {
-        try {
-            // Try multiple time APIs for redundancy
-            const timeAPIs = [
-                'https://worldtimeapi.org/api/ip',
-                'https://timeapi.io/api/Time/current/zone?timeZone=UTC',
-                'https://time.akamai.com/'
-            ];
-
-            for (const api of timeAPIs) {
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-                    
-                    const response = await fetch(api, { 
-                        signal: controller.signal,
-                        headers: { 'Cache-Control': 'no-cache' }
-                    });
-                    clearTimeout(timeoutId);
-                    
-                    if (response.ok) {
-                        if (api.includes('worldtimeapi')) {
-                            const data = await response.json();
-                            serverTime = new Date(data.unixtime * 1000);
-                        } else if (api.includes('timeapi')) {
-                            const data = await response.json();
-                            serverTime = new Date(data.currentLocalTime);
-                        } else {
-                            // Akamai time - get from Date header
-                            const dateHeader = response.headers.get('Date');
-                            if (dateHeader) serverTime = new Date(dateHeader);
-                        }
-                        
-                        if (serverTime) {
-                            timeOffset = serverTime - Date.now();
-                            isTimeVerified = true;
-                            document.getElementById('timeWarning').style.display = 'none';
-                            return;
-                        }
-                    }
-                } catch (e) {
-                    console.log(`API ${api} failed, trying next...`);
-                }
-            }
-            
-            // If all APIs fail
-            isTimeVerified = false;
-            serverTime = null;
-            document.getElementById('timeWarning').style.display = 'inline-flex';
-            
-        } catch (error) {
-            console.error('Time fetch error:', error);
-            isTimeVerified = false;
-            serverTime = null;
-        }
-    }
-
     function updateTimeDisplay() {
-        const deviceTime = new Date();
-        const serverTimeDisplay = serverTime ? 
-            new Date(serverTime.getTime() + (Date.now() - serverTime.getTime())) : null;
+        const now = new Date();
+        const timeStr = now.toLocaleString('id-ID', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZoneName: 'short'
+        });
         
-        let timeHTML = `Perangkat: ${deviceTime.toLocaleString('id-ID')}`;
+        document.getElementById('deviceTime').innerHTML = timeStr;
         
-        if (serverTimeDisplay) {
-            timeHTML += `<br>Server: ${serverTimeDisplay.toLocaleString('id-ID')}`;
-            
-            const diff = Math.abs(serverTimeDisplay - deviceTime);
-            if (diff > 60000) { // More than 1 minute difference
-                timeHTML += `<br><strong style="color:#dc2626">Selisih: ${Math.round(diff/1000)} detik</strong>`;
-            }
+        // Store in history (keep last 10 entries)
+        deviceTimeHistory.push({
+            timestamp: Date.now(),
+            deviceTime: now.getTime(),
+            year: now.getFullYear(),
+            month: now.getMonth(),
+            date: now.getDate(),
+            hours: now.getHours(),
+            minutes: now.getMinutes(),
+            seconds: now.getSeconds()
+        });
+        
+        if (deviceTimeHistory.length > 10) {
+            deviceTimeHistory.shift();
         }
-        
-        document.getElementById('deviceTime').innerHTML = timeHTML;
     }
 
     function verifyTimeIntegrity() {
-        const deviceTime = new Date();
+        const now = new Date();
+        const deviceYear = now.getFullYear();
+        const deviceMonth = now.getMonth();
+        const deviceDate = now.getDate();
+        const deviceHour = now.getHours();
+        const deviceMinute = now.getMinutes();
+        const deviceSecond = now.getSeconds();
         
-        // Check for suspicious time settings
-        const year = deviceTime.getFullYear();
-        const isFuture = deviceTime > new Date(serverTime.getTime() + 86400000); // More than 1 day in future
-        const isPast = deviceTime < new Date(serverTime.getTime() - 86400000); // More than 1 day in past
+        // Reset warning first
+        document.getElementById('timeWarning').style.display = 'none';
+        document.getElementById('timeVerification').classList.remove('verified');
         
-        let warning = '';
-        
-        if (year < 2020 || year > 2030) warning = 'Tahun tidak wajar';
-        else if (isFuture) warning = 'Waktu diatur ke masa depan';
-        else if (isPast) warning = 'Waktu diatur ke masa lalu';
-        
-        if (warning) {
-            document.getElementById('timeWarning').textContent = warning;
+        // 1. Check for obviously wrong years
+        const currentYear = new Date().getFullYear(); // This should be current real year
+        if (deviceYear < 2020 || deviceYear > 2030) {
+            document.getElementById('timeWarning').textContent = 'TAHUN TIDAK WAJAR';
             document.getElementById('timeWarning').style.display = 'inline-flex';
-            document.getElementById('timeVerification').classList.remove('verified');
-        } else if (isTimeVerified) {
-            document.getElementById('timeWarning').style.display = 'none';
-            document.getElementById('timeVerification').classList.add('verified');
+            timeManipulationDetected = true;
+            return;
         }
+        
+        // 2. Check for invalid date/time values
+        if (deviceMonth < 0 || deviceMonth > 11 ||
+            deviceDate < 1 || deviceDate > 31 ||
+            deviceHour < 0 || deviceHour > 23 ||
+            deviceMinute < 0 || deviceMinute > 59 ||
+            deviceSecond < 0 || deviceSecond > 59) {
+            document.getElementById('timeWarning').textContent = 'FORMAT WAKTU TIDAK VALID';
+            document.getElementById('timeWarning').style.display = 'inline-flex';
+            timeManipulationDetected = true;
+            return;
+        }
+        
+        // 3. Check time progression (only if we have history)
+        if (deviceTimeHistory.length >= 2) {
+            const lastEntry = deviceTimeHistory[deviceTimeHistory.length - 2];
+            const currentEntry = deviceTimeHistory[deviceTimeHistory.length - 1];
+            
+            const realTimeDiff = currentEntry.timestamp - lastEntry.timestamp;
+            const deviceTimeDiff = currentEntry.deviceTime - lastEntry.deviceTime;
+            
+            // If device time is going backwards significantly (more than 1 minute)
+            if (deviceTimeDiff < -60000) {
+                document.getElementById('timeWarning').textContent = 'WAKTU MUNDUR';
+                document.getElementById('timeWarning').style.display = 'inline-flex';
+                timeManipulationDetected = true;
+                return;
+            }
+            
+            // If device time is jumping too fast forward (more than 10 minutes in 1 minute real time)
+            if (realTimeDiff > 0 && deviceTimeDiff > realTimeDiff + 600000) {
+                document.getElementById('timeWarning').textContent = 'WAKTU MELOMPAT';
+                document.getElementById('timeWarning').style.display = 'inline-flex';
+                timeManipulationDetected = true;
+                return;
+            }
+        }
+        
+        // 4. Check for unreasonable time (future too far or past too far)
+        const currentRealTime = Date.now();
+        const deviceTimeMs = now.getTime();
+        const timeDiff = Math.abs(currentRealTime - deviceTimeMs);
+        
+        // If device time is more than 24 hours off from real time
+        if (timeDiff > 86400000) { // 24 hours
+            document.getElementById('timeWarning').textContent = 'WAKTU TIDAK REALISTIS';
+            document.getElementById('timeWarning').style.display = 'inline-flex';
+            timeManipulationDetected = true;
+            return;
+        }
+        
+        // 5. Check for specific manipulation patterns
+        if (deviceTimeHistory.length >= 3) {
+            let irregularities = 0;
+            for (let i = 1; i < deviceTimeHistory.length; i++) {
+                const prev = deviceTimeHistory[i-1];
+                const curr = deviceTimeHistory[i];
+                
+                // Check for time reset (sudden jump to a very different time)
+                if (Math.abs(curr.deviceTime - prev.deviceTime) > 3600000 && // More than 1 hour difference
+                    Math.abs(curr.timestamp - prev.timestamp) < 60000) { // Within 1 minute real time
+                    irregularities++;
+                }
+            }
+            
+            if (irregularities >= 2) {
+                document.getElementById('timeWarning').textContent = 'POLA WAKTU ANEH';
+                document.getElementById('timeWarning').style.display = 'inline-flex';
+                timeManipulationDetected = true;
+                return;
+            }
+        }
+        
+        // If all checks pass, time is verified
+        document.getElementById('timeVerification').classList.add('verified');
+        timeManipulationDetected = false;
     }
 
     function getVerifiedTime() {
-        if (isTimeVerified && serverTime) {
-            // Return server time adjusted for elapsed time
-            return new Date(serverTime.getTime() + (Date.now() - serverTime.getTime()));
-        } else {
-            // Return device time with warning flag
-            return { 
-                time: new Date(), 
-                verified: false,
-                warning: 'Waktu dari perangkat (mungkin dimanipulasi)'
-            };
-        }
+        const now = new Date();
+        const deviceYear = now.getFullYear();
+        
+        // Check if time appears to be reasonable
+        const isReasonable = deviceYear >= 2020 && deviceYear <= 2030 && !timeManipulationDetected;
+        
+        return { 
+            time: now, 
+            verified: isReasonable,
+            warning: timeManipulationDetected ? 'Waktu perangkat mungkin dimanipulasi' : null
+        };
     }
 
     // --- GPS ANTI-SPOOFING SYSTEM ---
@@ -582,7 +623,7 @@
         lastPositions.push(positionData);
         if (lastPositions.length > 10) lastPositions.shift();
         
-        // Detect GPS spoofing
+        // Detect GPS spoofing (with more reasonable thresholds)
         const spoofDetected = detectGPSSpoofing(positionData);
         
         // Calculate accuracy score (0-100)
@@ -625,39 +666,47 @@
         
         txtCoords.innerText = coordText;
         
-        // Reverse geocoding (throttled)
+        // Try reverse geocoding if online, otherwise use coordinates
         if (isInitial || Math.random() > 0.7) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
-                const res = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${gpsData.lat}&lon=${gpsData.lon}&zoom=16`,
-                    { signal: controller.signal }
-                );
-                clearTimeout(timeoutId);
-                
-                const json = await res.json();
-                let address = '';
-                
-                if (json.address) {
-                    const a = json.address;
-                    const parts = [];
-                    if (a.road) parts.push(a.road);
-                    if (a.village) parts.push(a.village);
-                    if (a.suburb) parts.push(a.suburb);
-                    if (a.city_district) parts.push(a.city_district);
-                    if (a.city || a.regency) parts.push(a.city || a.regency);
-                    if (a.state) parts.push(a.state);
+            // Check if we're online
+            if (navigator.onLine) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
                     
-                    address = parts.join(", ");
-                    if (address.length > 80) address = address.substring(0, 77) + "...";
+                    const res = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${gpsData.lat}&lon=${gpsData.lon}&zoom=16`,
+                        { signal: controller.signal }
+                    );
+                    clearTimeout(timeoutId);
+                    
+                    const json = await res.json();
+                    let address = '';
+                    
+                    if (json.address) {
+                        const a = json.address;
+                        const parts = [];
+                        if (a.road) parts.push(a.road);
+                        if (a.village) parts.push(a.village);
+                        if (a.suburb) parts.push(a.suburb);
+                        if (a.city_district) parts.push(a.city_district);
+                        if (a.city || a.regency) parts.push(a.city || a.regency);
+                        if (a.state) parts.push(a.state);
+                        
+                        address = parts.join(", ");
+                        if (address.length > 80) address = address.substring(0, 77) + "...";
+                    }
+                    
+                    gpsData.addr = address || json.display_name || 'Alamat tidak ditemukan';
+                    txtAddr.innerText = gpsData.addr;
+                } catch (e) {
+                    console.log("Reverse geocoding failed:", e);
+                    gpsData.addr = `Koordinat: ${gpsData.lat}, ${gpsData.lon}`;
+                    txtAddr.innerText = gpsData.addr;
                 }
-                
-                gpsData.addr = address || json.display_name || 'Alamat tidak ditemukan';
+            } else {
+                gpsData.addr = `Koordinat: ${gpsData.lat}, ${gpsData.lon} (Offline)`;
                 txtAddr.innerText = gpsData.addr;
-            } catch (e) {
-                console.log("Reverse geocoding failed:", e);
             }
         }
         
@@ -685,13 +734,13 @@
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         const distance = R * c;
         
-        // Calculate speed
+        // Calculate speed (m/s)
         const speed = distance / timeDiff;
         
-        // Detection rules
-        if (speed > 300) return true; // > 1080 km/h (impossible for ground vehicle)
-        if (currentPos.acc > 1000) return true; // Very low accuracy
-        if (currentPos.altitude && Math.abs(currentPos.altitude) > 9000) return true; // Extreme altitude
+        // More reasonable detection rules
+        if (speed > 200) return true; // > 720 km/h (impossible for ground vehicle)
+        if (currentPos.acc > 5000) return true; // Very low accuracy (>5km)
+        if (currentPos.altitude && Math.abs(currentPos.altitude) > 10000) return true; // Extreme altitude
         
         // Check for sudden jumps
         if (lastPositions.length >= 3) {
@@ -706,7 +755,7 @@
             const avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
             const variance = speeds.reduce((a, b) => a + Math.pow(b - avgSpeed, 2), 0) / speeds.length;
             
-            if (variance > 10000) return true; // Highly inconsistent movement
+            if (variance > 50000) return true; // Highly inconsistent movement
         }
         
         return false;
@@ -908,7 +957,7 @@
         document.querySelector('.toolbar').style.display = 'none';
         
         // Show warning button if verification failed
-        if (gpsData.spoofDetected || !isTimeVerified || gpsData.accuracyScore < 60) {
+        if (gpsData.spoofDetected || timeManipulationDetected || gpsData.accuracyScore < 60) {
             document.getElementById('forceSaveBtn').style.display = 'block';
         } else {
             document.getElementById('forceSaveBtn').style.display = 'none';
@@ -932,16 +981,16 @@
         const timeInfo = getVerifiedTime();
         let timeStr, timeVerified;
         
-        if (typeof timeInfo.time === 'object') {
+        if (typeof timeInfo === 'object' && timeInfo.time) {
             const now = timeInfo.time;
             timeStr = now.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' | ' + 
                       now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.',':') + ' WIB';
             timeVerified = timeInfo.verified !== false;
         } else {
-            const now = timeInfo;
+            const now = new Date();
             timeStr = now.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' | ' + 
                       now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.',':') + ' WIB';
-            timeVerified = isTimeVerified;
+            timeVerified = !timeManipulationDetected;
         }
 
         // --- VERIFICATION STATUS ---
@@ -1007,7 +1056,7 @@
         // 4. Time Verification Details
         ctx.font = `600 ${baseSize * 0.8}px monospace`;
         ctx.fillStyle = timeVerified ? "#86efac" : "#fca5a5";
-        const timeSource = timeVerified ? "[TIME: SERVER VERIFIED]" : "[TIME: DEVICE - UNVERIFIED]";
+        const timeSource = timeVerified ? "[TIME: DEVICE VERIFIED]" : "[TIME: DEVICE - MUNGKIN DIMANIPULASI]";
         ctx.fillText(timeSource, margin, curY);
         curY -= (lineHeight * 1.3);
 
@@ -1082,14 +1131,14 @@
     function saveToGallery() {
         if(!currentPhotoBlob) return;
         
-        if (gpsData.spoofDetected || !isTimeVerified) {
+        if (gpsData.spoofDetected || timeManipulationDetected) {
             if (!confirm("⚠️ PERINGATAN: Data waktu atau lokasi tidak terverifikasi. Foto ini mungkin dimanipulasi. Tetap simpan?")) {
                 return;
             }
         }
         
         const keg = document.getElementById('inKegiatan').value;
-        const verified = isTimeVerified && gpsData.verified && !gpsData.spoofDetected;
+        const verified = !timeManipulationDetected && gpsData.verified && !gpsData.spoofDetected;
         
         const record = { 
             blob: currentPhotoBlob, 
@@ -1097,7 +1146,7 @@
             date: new Date().toISOString(),
             verified: verified,
             gpsData: gpsData,
-            timeVerified: isTimeVerified
+            timeManipulationDetected: timeManipulationDetected
         };
 
         const transaction = db.transaction(['photos'], 'readwrite');
@@ -1122,7 +1171,7 @@
             date: new Date().toISOString(),
             verified: verified,
             gpsData: gpsData,
-            timeVerified: isTimeVerified,
+            timeManipulationDetected: timeManipulationDetected,
             warning: "Disimpan dengan peringatan verifikasi"
         };
 
