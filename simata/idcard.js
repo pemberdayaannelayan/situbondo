@@ -3,7 +3,7 @@
  * File: idcard.js
  * Fungsi untuk menghasilkan ID Card nelayan profesional
  * Developer: Dinas Perikanan Kabupaten Situbondo
- * Version: 3.1 - Desain Premium & Responsif - DIPERBAIKI
+ * Version: 4.0 - Desain Premium & Responsif
  */
 
 // Style CSS khusus untuk ID Card - DIOPTIMALKAN
@@ -1013,4 +1013,4 @@ if (document.readyState === 'loading') {
     injectIDCardStyles();
 }
 
-console.log('✅ SIMATA ID Card Generator v3.1 loaded successfully - DESIGN IMPROVED');
+console.log('✅ SIMATA ID Card Generator v4.0 loaded successfully - DESIGN IMPROVED');
