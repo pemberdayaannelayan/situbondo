@@ -1525,7 +1525,7 @@
         .id-card-qr-area {
             position: absolute;
             right: 15px;
-            bottom: 40px;
+            top: 15px;
             width: 80px;
             height: 80px;
             background: white;
@@ -1535,6 +1535,7 @@
             justify-content: center;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 5px;
         }
 
         .id-card-qr-area img {
@@ -1622,7 +1623,7 @@
                 width: 70px;
                 height: 70px;
                 right: 12px;
-                bottom: 35px;
+                top: 12px;
             }
             
             .id-card-id-number {
@@ -1776,7 +1777,7 @@
         .id-card-improved-qr {
             position: absolute;
             right: 12px;
-            bottom: 35px;
+            top: 15px;
             width: 75px;
             height: 75px;
             background: white;
@@ -1787,6 +1788,7 @@
             overflow: hidden;
             box-shadow: 0 3px 8px rgba(0,0,0,0.1);
             border: 1px solid #e0e6f0;
+            padding: 3px;
         }
         
         .id-card-improved-qr img {
@@ -1817,6 +1819,33 @@
             margin-top: 2px;
             font-size: 9px;
             line-height: 1.2;
+        }
+        
+        /* Teks sangat kecil untuk "Kartu Identitas Resmi - Berlaku Selamanya" */
+        .id-card-validity-text {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 6px !important;
+            color: #6c757d;
+            letter-spacing: 0.2px;
+            font-weight: 400;
+        }
+        
+        /* QR Code Scan Text */
+        .id-card-scan-text {
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 7px;
+            color: #0c2461;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
         
         @media (max-width: 450px) {
@@ -1863,12 +1892,22 @@
                 width: 65px;
                 height: 65px;
                 right: 10px;
-                bottom: 30px;
+                top: 12px;
             }
             
             .id-card-improved-id {
                 font-size: 10px;
                 padding: 4px 10px;
+            }
+            
+            .id-card-validity-text {
+                bottom: 20px;
+                font-size: 5.5px !important;
+            }
+            
+            .id-card-scan-text {
+                bottom: -13px;
+                font-size: 6.5px;
             }
         }
     </style>
@@ -2812,7 +2851,7 @@
          * SIMATA ID Card Generator - VERSI DISEMPURNAKAN & DIPERBAIKI
          * Fungsi untuk menghasilkan ID Card nelayan profesional
          * Developer: Dinas Perikanan Kabupaten Situbondo
-         * Version: 8.0 - Desain Premium & Responsif (FIXED & IMPROVED)
+         * Version: 9.0 - Desain Premium & Responsif (FIXED & IMPROVED)
          */
 
         // Global variables untuk ID Card
@@ -2844,8 +2883,8 @@
                 qrContainer.id = 'idcard-qr-temp';
                 qrContainer.style.position = 'absolute';
                 qrContainer.style.left = '-9999px';
-                qrContainer.style.width = '300px'; // Ukuran lebih besar untuk kualitas baik
-                qrContainer.style.height = '300px';
+                qrContainer.style.width = '400px'; // Ukuran lebih besar untuk resolusi tinggi
+                qrContainer.style.height = '400px';
                 qrContainer.style.zIndex = '-9999';
                 document.body.appendChild(qrContainer);
                 
@@ -2864,19 +2903,19 @@
                     return;
                 }
                 
-                // Buat QR Code dengan error handling - TANPA BORDER
+                // Buat QR Code dengan error handling - RESOLUSI TINGGI
                 try {
                     // Buat canvas untuk QR Code yang lebih besar
                     const canvas = document.createElement('canvas');
-                    canvas.width = 300;
-                    canvas.height = 300;
+                    canvas.width = 400;
+                    canvas.height = 400;
                     qrContainer.appendChild(canvas);
                     
-                    // Buat QR Code dengan ukuran lebih besar untuk kualitas baik
+                    // Buat QR Code dengan ukuran lebih besar untuk resolusi tinggi
                     new QRCode(qrContainer, {
                         text: qrData,
-                        width: 300,
-                        height: 300,
+                        width: 400,
+                        height: 400,
                         colorDark: "#0c2461",
                         colorLight: "#ffffff",
                         correctLevel: QRCode.CorrectLevel.H,
@@ -2884,7 +2923,7 @@
                     });
                 } catch (qrError) {
                     console.error('Error membuat QR Code:', qrError);
-                    qrContainer.innerHTML = '<div style="background:#0c2461;color:white;width:300px;height:300px;display:flex;align-items:center;justify-content:center;font-size:18px;border-radius:10px;font-weight:bold;">SIMATA ID</div>';
+                    qrContainer.innerHTML = '<div style="background:#0c2461;color:white;width:400px;height:400px;display:flex;align-items:center;justify-content:center;font-size:18px;border-radius:10px;font-weight:bold;">SIMATA ID</div>';
                 }
                 
                 // Tunggu QR Code digenerate, lalu buat PDF
@@ -2919,6 +2958,8 @@
                 tanggalValidasi: nelayanData.tanggalValidasi,
                 domisili: `${nelayanData.desa}, ${nelayanData.kecamatan}`.toUpperCase(),
                 alatTangkap: nelayanData.alatTangkap,
+                namaKapal: nelayanData.namaKapal || 'N/A',
+                jenisKapal: nelayanData.jenisKapal || 'N/A',
                 timestamp: new Date().toISOString(),
                 verification_url: "https://simata.disnakansitubondo.com/verify"
             };
@@ -2927,7 +2968,7 @@
         }
 
         /**
-         * Generate PDF untuk ID Card (DESAIN BARU YANG LEBIH BAIK - TANPA LOGO)
+         * Generate PDF untuk ID Card (DESAIN BARU YANG LEBIH BAIK)
          */
         async function generateIDCardPDF(nelayanData, qrContainer) {
             if (typeof jspdf === 'undefined' || !jspdf.jsPDF) {
@@ -2976,7 +3017,40 @@
             doc.setFont('helvetica', 'normal');
             doc.text("DINAS PERIKANAN KABUPATEN SITUBONDO", 42.8, 9, { align: 'center' });
             
-            // 4. INFORMASI NELAYAN (dua kolom)
+            // 4. QR CODE AREA (kanan atas) - RESOLUSI TINGGI
+            const qrCanvas = qrContainer.querySelector('canvas');
+            if (qrCanvas) {
+                try {
+                    const qrDataUrl = qrCanvas.toDataURL('image/png', 2.0); // Kualitas maksimal 2x
+                    
+                    // QR Code tanpa border, ukuran 20x20mm
+                    doc.addImage(qrDataUrl, 'PNG', 62, 15, 20, 20);
+                    
+                    // Teks "SCAN VERIFIKASI" di bawah QR Code
+                    doc.setFontSize(5);
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text("SCAN VERIFIKASI", 72, 36, { align: 'center' });
+                    
+                    // Teks "Kartu Identitas Resmi - Berlaku Selamanya" di bawah scan verifikasi
+                    doc.setFontSize(4);
+                    doc.setTextColor(150, 150, 150);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text("Kartu Identitas Resmi - Berlaku Selamanya", 72, 38.5, { align: 'center' });
+                } catch (e) {
+                    console.warn('QR Code gagal ditambahkan:', e);
+                    // Fallback jika QR Code gagal
+                    doc.setFillColor(lightBlue[0], lightBlue[1], lightBlue[2]);
+                    doc.roundedRect(62, 15, 20, 20, 2, 2, 'F');
+                    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text("QR", 72, 23, { align: 'center' });
+                    doc.text("CODE", 72, 27, { align: 'center' });
+                }
+            }
+            
+            // 5. INFORMASI NELAYAN (dua kolom)
             let leftX = 5;
             let rightX = 45;
             let currentY = 16;
@@ -3082,45 +3156,39 @@
             // Usaha Sampingan
             doc.text(`Usaha Sampingan: ${nelayanData.usahaSampingan || '-'}`, rightX, currentY);
             
-            // 5. QR CODE AREA (kanan bawah) - TANPA BORDER, KUALITAS TINGGI
-            const qrCanvas = qrContainer.querySelector('canvas');
-            if (qrCanvas) {
-                try {
-                    const qrDataUrl = qrCanvas.toDataURL('image/png', 1.0); // Kualitas maksimal
-                    
-                    // QR Code tanpa border, ukuran 20x20mm
-                    doc.addImage(qrDataUrl, 'PNG', 62, 30, 20, 20);
-                    
-                    // Teks "SCAN VERIFIKASI" di bawah QR Code
-                    doc.setFontSize(4);
-                    doc.setTextColor(100, 100, 100);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text("SCAN VERIFIKASI", 72, 52, { align: 'center' });
-                } catch (e) {
-                    console.warn('QR Code gagal ditambahkan:', e);
-                    // Fallback jika QR Code gagal
-                    doc.setFillColor(lightBlue[0], lightBlue[1], lightBlue[2]);
-                    doc.roundedRect(62, 30, 20, 20, 2, 2, 'F');
-                    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text("QR", 72, 38, { align: 'center' });
-                    doc.text("CODE", 72, 42, { align: 'center' });
+            // 6. DATA KAPAL (jika pemilik kapal)
+            if (nelayanData.status === "Pemilik Kapal") {
+                currentY += lineHeight;
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(6);
+                doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                doc.text("DATA KAPAL:", rightX, currentY);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(6);
+                doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
+                
+                currentY += 3.5;
+                let namaKapal = nelayanData.namaKapal || '-';
+                if (namaKapal.length > 25) {
+                    namaKapal = namaKapal.substring(0, 23) + '...';
                 }
+                doc.text(`Nama: ${namaKapal}`, rightX, currentY);
+                
+                currentY += 3.5;
+                let jenisKapal = nelayanData.jenisKapal || '-';
+                if (jenisKapal.length > 25) {
+                    jenisKapal = jenisKapal.substring(0, 23) + '...';
+                }
+                doc.text(`Jenis: ${jenisKapal}`, rightX, currentY);
             }
             
-            // 6. ID VALIDASI (WARNA TERANG DAN JELAS)
+            // 7. ID VALIDASI (SISI PALING BAWAH)
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
             doc.setTextColor(230, 126, 34); // Warna oranye terang
             const idNumber = nelayanData.kodeValidasi || `SIMATA-${nelayanData.nik.substring(12)}`;
-            doc.text(`ID: ${idNumber}`, 42.8, 28, { align: 'center' });
-            
-            // 7. FOOTER INFORMASI (TANPA PERIODE AKTIF)
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(5);
-            doc.setTextColor(100, 100, 100);
-            doc.text("Kartu Identitas Resmi - Berlaku Selamanya", 42.8, 31, { align: 'center' });
+            doc.text(`ID: ${idNumber}`, 42.8, 48, { align: 'center' });
             
             // 8. BORDER KARTU
             doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
@@ -3235,7 +3303,8 @@
                             <div style="width: 100%; height: 100%; background: #ffffff; display: flex; align-items: center; justify-content: center; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
                                 <i class="fas fa-qrcode fa-2x" style="color: #0c2461;"></i>
                             </div>
-                            <div class="id-card-improved-qr-label">SCAN VERIFIKASI</div>
+                            <div class="id-card-scan-text">SCAN VERIFIKASI</div>
+                            <div class="id-card-validity-text">Kartu Identitas Resmi - Berlaku Selamanya</div>
                         </div>
                     </div>
                     
@@ -3394,7 +3463,7 @@
         window.getStatusColor = getStatusColor;
         window.checkRequiredLibraries = checkRequiredLibraries;
 
-        console.log('✅ SIMATA ID Card Generator v8.0 loaded successfully - DESIGN IMPROVED & FIXED');
+        console.log('✅ SIMATA ID Card Generator v9.0 loaded successfully - DESIGN IMPROVED & FIXED');
 
         // ================================
         // KODE UTAMA APLIKASI (TIDAK DIUBAH)
