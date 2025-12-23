@@ -9,7 +9,6 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Leaflet CSS untuk peta -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
@@ -20,15 +19,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
-    <!-- Load reload.js jika ada di server -->
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
-    
-    <!-- Load idcard.js untuk fitur ID Card -->
-    <script src="idcard.js"></script>
 
     <style>
         :root {
-            /* Palette: DEEP OCEAN PROFESSIONAL THEME */
             --primary-color: #0c2461; 
             --primary-gradient: linear-gradient(135deg, #0c2461 0%, #1e3799 100%); 
             --secondary-color: #4a69bd; 
@@ -43,7 +37,6 @@
             --danger-color: #e74c3c;
             --warning-color: #f39c12;
 
-            /* LOGIN PALETTE */
             --login-bg: linear-gradient(135deg, #d1f2eb 0%, #ffeaa7 50%, #74b9ff 100%);
             --simata-text: #0c2461;
         }
@@ -1350,36 +1343,339 @@
             }
         }
 
-    /* PERBAIKAN TAMBAHAN UNTUK ID CARD */
-            .idcard-error {
-                background: #fff3cd;
-                border: 1px solid #ffc107;
-                border-radius: 8px;
-                padding: 15px;
-                margin: 10px 0;
-                text-align: center;
+        /* PERBAIKAN TAMBAHAN UNTUK ID CARD */
+        .idcard-error {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .idcard-error i {
+            color: #856404;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .idcard-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .idcard-success i {
+            color: #155724;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* =============================== */
+        /* STYLE BARU UNTUK ID CARD YANG DIPERBAIKI */
+        /* =============================== */
+        
+        .id-card-container {
+            font-family: 'Inter', sans-serif;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .id-card-preview-container {
+            width: 360px;
+            height: 225px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 15px;
+            color: #333;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(12, 36, 97, 0.15);
+            border: 2px solid #0c2461;
+            margin: 15px auto;
+            transition: all 0.3s ease;
+            font-size: 11px;
+        }
+
+        .id-card-preview-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(12, 36, 97, 0.2);
+        }
+
+        .id-card-header {
+            background: linear-gradient(90deg, #0c2461 0%, #1e3799 100%);
+            margin: -15px -15px 12px -15px;
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid #f6b93b;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .id-card-title {
+            margin: 0;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .id-card-subtitle {
+            margin: 2px 0 0 0;
+            color: #f6b93b;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .id-card-content {
+            display: flex;
+            gap: 10px;
+            height: 140px;
+            position: relative;
+            margin-top: 3px;
+        }
+
+        .id-card-logo-area {
+            flex: 0 0 75px;
+            text-align: center;
+        }
+
+        .id-card-logo-box {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 6px;
+            border: 2px solid #0c2461;
+            margin: 0 auto 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            padding: 3px;
+        }
+
+        .id-card-logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .id-card-logo-label {
+            font-size: 8px;
+            color: #666;
+            font-weight: 600;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .id-card-info-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-right: 70px;
+        }
+
+        .id-card-name {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            color: #0c2461;
+            font-weight: 700;
+            border-bottom: 1px solid #e0e6f0;
+            padding-bottom: 3px;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .id-card-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .id-card-detail-row {
+            display: flex;
+            margin-bottom: 3px;
+            font-size: 9px;
+            line-height: 1.3;
+            align-items: flex-start;
+        }
+
+        .id-card-detail-label {
+            font-weight: 600;
+            color: #0c2461;
+            min-width: 50px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .id-card-detail-value {
+            color: #333;
+            flex: 1;
+            word-break: break-word;
+            font-weight: 500;
+        }
+
+        .id-card-profesi-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .id-card-footer {
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 0 15px;
+        }
+
+        .id-card-id-number {
+            font-size: 8px;
+            color: #0c2461;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: rgba(12, 36, 97, 0.08);
+            padding: 3px 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 2px;
+            border: 1px solid rgba(12, 36, 97, 0.1);
+            text-transform: uppercase;
+        }
+
+        .id-card-copyright {
+            font-size: 7px;
+            color: #888;
+            margin-top: 1px;
+            letter-spacing: 0.3px;
+        }
+
+        .id-card-qr-area {
+            position: absolute;
+            right: 15px;
+            bottom: 40px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 1.5px solid #0c2461;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 3px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+
+        .id-card-qr-label {
+            position: absolute;
+            bottom: -18px;
+            left: 0;
+            width: 100%;
+            font-size: 6.5px;
+            color: #666;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .id-card-status-badge {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 7px;
+            font-weight: 700;
+            margin-left: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Warna berdasarkan profesi */
+        .profesi-penuh { background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%); color: white; }
+        .profesi-sambilan-utama { background: linear-gradient(135deg, #e58e26 0%, #f39c12 100%); color: white; }
+        .profesi-sambilan-tambahan { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; }
+
+        /* Warna berdasarkan status */
+        .status-pemilik { background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%); color: white; }
+        .status-abk { background: linear-gradient(135deg, #a55eea 0%, #8854d0 100%); color: white; }
+
+        /* Responsif untuk ID Card preview */
+        @media (max-width: 400px) {
+            .id-card-preview-container {
+                width: 320px;
+                height: 200px;
+                padding: 12px;
             }
             
-            .idcard-error i {
-                color: #856404;
-                font-size: 1.5rem;
-                margin-bottom: 10px;
+            .id-card-content {
+                height: 125px;
+                gap: 8px;
             }
             
-            .idcard-success {
-                background: #d4edda;
-                border: 1px solid #c3e6cb;
-                border-radius: 8px;
-                padding: 15px;
-                margin: 10px 0;
-                text-align: center;
+            .id-card-logo-area {
+                flex: 0 0 65px;
             }
             
-            .idcard-success i {
-                color: #155724;
-                font-size: 1.5rem;
-                margin-bottom: 10px;
+            .id-card-logo-box {
+                width: 60px;
+                height: 60px;
             }
+            
+            .id-card-logo-img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .id-card-name {
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+            
+            .id-card-detail-row {
+                font-size: 8px;
+                margin-bottom: 2px;
+            }
+            
+            .id-card-detail-label {
+                min-width: 45px;
+            }
+            
+            .id-card-qr-area {
+                width: 50px;
+                height: 50px;
+                right: 12px;
+                bottom: 35px;
+            }
+            
+            .id-card-title {
+                font-size: 12px;
+            }
+            
+            .id-card-subtitle {
+                font-size: 8px;
+            }
+        }
+
+        /* Hapus watermark */
+        .id-card-watermark {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -2162,7 +2458,7 @@
                                     </form>
                                 </div>
                                 
-                                <div class="card p-4 border-0 shadow-sm border-start border-4 border-danger">
+                                <div class="card p-4 border-0 shadow-sm border-left border-4 border-danger">
                                     <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-user-shield me-2"></i>Privasi & Keamanan Data</h6>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
@@ -2242,7 +2538,7 @@
                         </div>
 
                         <div class="card border-0 shadow-sm mb-3" id="d_kapal_card" style="display:none;">
-                            <div class="card-body bg-white border-start border-4 border-info">
+                            <div class="card-body bg-white border-left border-4 border-info">
                                 <h6 class="text-info fw-bold mb-3"><i class="fas fa-ship me-2"></i>DATA KAPAL DIMILIKI</h6>
                                 <div class="row">
                                     <div class="col-6">
@@ -2258,7 +2554,7 @@
                         </div>
                         
                         <div class="card border-0 shadow-sm mb-3">
-                            <div class="card-body bg-white border-start border-4 border-success">
+                            <div class="card-body bg-white border-left border-4 border-success">
                                 <h6 class="text-success fw-bold mb-3"><i class="fas fa-fish me-2"></i>JENIS IKAN TANGKAPAN</h6>
                                 <div id="d_ikan"></div>
                             </div>
@@ -2309,12 +2605,690 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Leaflet JS untuk peta -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     
     <script>
-        // --- DATA CONSTANTS - TELAH DIPERBAIKI SESUAI DATA YANG DIBERIKAN ---
+        // ================================
+        // KODE IDCARD.JS YANG DIGABUNGKAN
+        // ================================
+
+        /**
+         * SIMATA ID Card Generator - VERSI DISEMPURNAKAN & DIPERBAIKI
+         * Fungsi untuk menghasilkan ID Card nelayan profesional
+         * Developer: Dinas Perikanan Kabupaten Situbondo
+         * Version: 7.0 - Desain Premium & Responsif (FIXED TOTAL)
+         */
+
+        // Global variables untuk ID Card
+        let idCardGenerated = false;
+
+        /**
+         * Fungsi utama untuk menghasilkan ID Card nelayan - DIPERBAIKI TOTAL
+         */
+        function generateSimataIDCard(nelayanData) {
+            if (!nelayanData) {
+                console.error('Data nelayan tidak ditemukan');
+                showNotification('Data nelayan tidak ditemukan!', 'error');
+                return;
+            }
+            
+            try {
+                // Tampilkan loading
+                const loadingEl = document.getElementById('idcardLoading');
+                if (loadingEl) {
+                    loadingEl.classList.add('active');
+                    const loadingText = loadingEl.querySelector('h6');
+                    if (loadingText) {
+                        loadingText.textContent = `Membuat ID Card untuk ${nelayanData.nama}`;
+                    }
+                }
+                
+                // Buat elemen sementara untuk QR Code
+                const qrContainer = document.createElement('div');
+                qrContainer.id = 'idcard-qr-temp';
+                qrContainer.style.position = 'absolute';
+                qrContainer.style.left = '-9999px';
+                qrContainer.style.width = '200px';
+                qrContainer.style.height = '200px';
+                qrContainer.style.zIndex = '-9999';
+                document.body.appendChild(qrContainer);
+                
+                // Generate QR Code untuk ID Card
+                const qrData = generateQRDataForIDCard(nelayanData);
+                
+                // Bersihkan container sebelumnya jika ada
+                qrContainer.innerHTML = '';
+                
+                // Periksa apakah QRCode tersedia
+                if (typeof QRCode === 'undefined') {
+                    console.error('QRCode library tidak ditemukan');
+                    showNotification('Library QRCode tidak tersedia!', 'error');
+                    if (loadingEl) loadingEl.classList.remove('active');
+                    document.body.removeChild(qrContainer);
+                    return;
+                }
+                
+                // Buat QR Code dengan error handling
+                try {
+                    new QRCode(qrContainer, {
+                        text: qrData,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#0c2461",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                } catch (qrError) {
+                    console.error('Error membuat QR Code:', qrError);
+                    qrContainer.innerHTML = '<div style="background:#0c2461;color:white;width:200px;height:200px;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:5px;font-weight:bold;">SIMATA ID</div>';
+                }
+                
+                // Tunggu QR Code digenerate, lalu buat PDF
+                setTimeout(() => {
+                    generateIDCardPDF(nelayanData, qrContainer);
+                    document.body.removeChild(qrContainer);
+                    
+                    if (loadingEl) loadingEl.classList.remove('active');
+                }, 800);
+                
+            } catch (error) {
+                console.error('Error generating ID Card:', error);
+                showNotification('Terjadi kesalahan saat membuat ID Card!', 'error');
+                
+                const loadingEl = document.getElementById('idcardLoading');
+                if (loadingEl) loadingEl.classList.remove('active');
+            }
+        }
+
+        /**
+         * Generate data untuk QR Code
+         */
+        function generateQRDataForIDCard(nelayanData) {
+            const data = {
+                system: "SIMATA",
+                id: nelayanData.id,
+                nik: nelayanData.nik,
+                nama: nelayanData.nama.toUpperCase(),
+                profesi: nelayanData.profesi,
+                status: nelayanData.status,
+                kodeValidasi: nelayanData.kodeValidasi || 'N/A',
+                tanggalValidasi: nelayanData.tanggalValidasi,
+                domisili: `${nelayanData.desa}, ${nelayanData.kecamatan}`.toUpperCase(),
+                alatTangkap: nelayanData.alatTangkap,
+                timestamp: new Date().toISOString(),
+                verification_url: "https://simata.disnakansitubondo.com/verify"
+            };
+            
+            return JSON.stringify(data);
+        }
+
+        /**
+         * Load logo untuk ID Card
+         */
+        function loadLogoForIDCard() {
+            return new Promise((resolve, reject) => {
+                const logoUrl = "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png";
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    canvas.width = 150;
+                    canvas.height = 150;
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    const size = Math.min(canvas.width, canvas.height) * 0.85;
+                    const x = (canvas.width - size) / 2;
+                    const y = (canvas.height - size) / 2;
+                    
+                    ctx.drawImage(img, x, y, size, size);
+                    
+                    resolve(canvas.toDataURL('image/png'));
+                };
+                
+                img.onerror = function() {
+                    console.warn('Logo tidak dapat dimuat, menggunakan fallback');
+                    resolve(null);
+                };
+                
+                img.src = logoUrl + '?t=' + Date.now();
+            });
+        }
+
+        /**
+         * Generate PDF untuk ID Card (DESAIN BARU YANG LEBIH BAIK)
+         */
+        async function generateIDCardPDF(nelayanData, qrContainer) {
+            if (typeof jspdf === 'undefined' || !jspdf.jsPDF) {
+                console.error('jsPDF tidak ditemukan');
+                showNotification('Library PDF tidak tersedia!', 'error');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            
+            const logoDataUrl = await loadLogoForIDCard();
+            
+            // Buat PDF dengan orientasi landscape untuk kartu ID (ukuran standar)
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: [85.6, 54]
+            });
+            
+            // Warna tema baru yang lebih cerah dan profesional
+            const primaryColor = [12, 36, 97];
+            const accentColor = [246, 185, 59];
+            const lightBlue = [240, 248, 255];
+            const white = [255, 255, 255];
+            const lightGray = [248, 249, 250];
+            const darkGray = [33, 37, 41];
+            
+            // 1. BACKGROUND UTAMA dengan warna cerah
+            doc.setFillColor(lightBlue[0], lightBlue[1], lightBlue[2]);
+            doc.rect(0, 0, 85.6, 54, 'F');
+            
+            // 2. HEADER dengan gradien yang lebih halus
+            doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.roundedRect(2, 2, 81.6, 8, 2, 2, 'F');
+            
+            // Garis aksen di header
+            doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
+            doc.setLineWidth(0.5);
+            doc.line(2, 10, 83.6, 10);
+            
+            // 3. JUDUL UTAMA
+            doc.setTextColor(white[0], white[1], white[2]);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7);
+            doc.text("KARTU IDENTITAS NELAYAN", 42.8, 5.5, { align: 'center' });
+            
+            doc.setFontSize(5.5);
+            doc.setFont('helvetica', 'normal');
+            doc.text("DINAS PERIKANAN KABUPATEN SITUBONDO", 42.8, 7.5, { align: 'center' });
+            
+            // 4. AREA LOGO (Kiri) - Lebih kecil dan rapi
+            doc.setFillColor(white[0], white[1], white[2]);
+            doc.roundedRect(4, 12, 18, 18, 2, 2, 'F');
+            doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.setLineWidth(0.3);
+            doc.roundedRect(4, 12, 18, 18, 2, 2);
+            
+            if (logoDataUrl) {
+                try {
+                    doc.addImage(logoDataUrl, 'PNG', 5, 13, 16, 16);
+                } catch (e) {
+                    drawFallbackLogo(doc, 13, 21);
+                }
+            } else {
+                drawFallbackLogo(doc, 13, 21);
+            }
+            
+            // 5. TEKS "LOGO RESMI"
+            doc.setFontSize(4);
+            doc.setTextColor(100, 100, 100);
+            doc.setFont('helvetica', 'bold');
+            doc.text("LOGO RESMI", 13, 31.5, { align: 'center' });
+            
+            // 6. INFORMASI NELAYAN (Tengah)
+            const infoStartX = 25;
+            let currentY = 13;
+            
+            // Nama Lengkap
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            
+            let namaDisplay = nelayanData.nama.toUpperCase();
+            if (namaDisplay.length > 20) {
+                namaDisplay = namaDisplay.substring(0, 18) + '...';
+            }
+            doc.text(namaDisplay, infoStartX, currentY);
+            
+            currentY += 4.5;
+            
+            // Garis bawah nama
+            doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2], 30);
+            doc.setLineWidth(0.2);
+            doc.line(infoStartX, currentY - 1, 65, currentY - 1);
+            
+            // Informasi detail
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(5.5);
+            doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
+            
+            const lineHeight = 4;
+            
+            // NIK
+            doc.text(`NIK: ${nelayanData.nik}`, infoStartX, currentY);
+            currentY += lineHeight;
+            
+            // Usia
+            doc.text(`Usia: ${nelayanData.usia} Tahun`, infoStartX, currentY);
+            currentY += lineHeight;
+            
+            // Domisili
+            const domisili = `${nelayanData.desa}, ${nelayanData.kecamatan}`;
+            let domisiliDisplay = domisili;
+            if (domisiliDisplay.length > 25) {
+                domisiliDisplay = domisiliDisplay.substring(0, 23) + '...';
+            }
+            doc.text(`Domisili: ${domisiliDisplay}`, infoStartX, currentY);
+            currentY += lineHeight;
+            
+            // Profesi dengan badge
+            let profesiColor = primaryColor;
+            if (nelayanData.profesi === "Nelayan Penuh Waktu") {
+                profesiColor = [12, 36, 97];
+            } else if (nelayanData.profesi === "Nelayan Sambilan Utama") {
+                profesiColor = [229, 142, 38];
+            } else if (nelayanData.profesi === "Nelayan Sambilan Tambahan") {
+                profesiColor = [39, 174, 96];
+            }
+            
+            doc.setFillColor(profesiColor[0], profesiColor[1], profesiColor[2]);
+            doc.roundedRect(infoStartX - 0.5, currentY - 2.5, 20, 4, 2, 2, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(5);
+            
+            let profesiDisplay = nelayanData.profesi.toUpperCase();
+            if (profesiDisplay.length > 20) {
+                profesiDisplay = profesiDisplay.substring(0, 18) + '...';
+            }
+            doc.text(profesiDisplay, infoStartX + 9.5, currentY - 0.5, { align: 'center' });
+            
+            // Status pekerjaan
+            let statusColor = [74, 105, 189];
+            if (nelayanData.status === "Pemilik Kapal") {
+                statusColor = [9, 132, 227];
+            } else if (nelayanData.status === "Anak Buah Kapal") {
+                statusColor = [165, 94, 234];
+            }
+            
+            doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
+            doc.roundedRect(infoStartX + 21.5, currentY - 2.5, 16, 4, 2, 2, 'F');
+            doc.text(nelayanData.status.toUpperCase(), infoStartX + 29.5, currentY - 0.5, { align: 'center' });
+            
+            currentY += lineHeight;
+            
+            // Alat Tangkap
+            doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(5.5);
+            
+            let alatTangkap = nelayanData.alatTangkap;
+            if (alatTangkap.length > 20) {
+                alatTangkap = alatTangkap.substring(0, 18) + '...';
+            }
+            doc.text(`Alat: ${alatTangkap}`, infoStartX, currentY);
+            
+            // 7. QR CODE AREA (Kanan) - Posisi yang lebih baik
+            const qrCanvas = qrContainer.querySelector('canvas');
+            if (qrCanvas) {
+                try {
+                    const qrDataUrl = qrCanvas.toDataURL('image/png');
+                    
+                    doc.setFillColor(white[0], white[1], white[2]);
+                    doc.roundedRect(65, 12, 16, 16, 2, 2, 'F');
+                    
+                    doc.addImage(qrDataUrl, 'PNG', 66, 13, 14, 14);
+                    
+                    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                    doc.setLineWidth(0.3);
+                    doc.roundedRect(65, 12, 16, 16, 2, 2);
+                    
+                    doc.setFontSize(4);
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text("SCAN", 73, 30, { align: 'center' });
+                    doc.text("VERIFIKASI", 73, 32.5, { align: 'center' });
+                } catch (e) {
+                    console.warn('QR Code gagal ditambahkan:', e);
+                    doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
+                    doc.roundedRect(65, 12, 16, 16, 2, 2, 'F');
+                    doc.setDrawColor(200, 200, 200);
+                    doc.roundedRect(65, 12, 16, 16, 2, 2);
+                    doc.setTextColor(150, 150, 150);
+                    doc.setFontSize(6);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text("QR", 73, 19, { align: 'center' });
+                    doc.text("CODE", 73, 22, { align: 'center' });
+                }
+            }
+            
+            // 8. FOOTER INFORMASI
+            doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2], 10);
+            doc.roundedRect(2, 38, 81.6, 8, 2, 2, 'F');
+            
+            // Nomor ID Card
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(6.5);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            
+            const idNumber = nelayanData.kodeValidasi || `SIMATA-${nelayanData.nik.substring(12)}`;
+            let idNumberDisplay = `ID: ${idNumber}`;
+            if (idNumberDisplay.length > 25) {
+                idNumberDisplay = idNumberDisplay.substring(0, 23) + '...';
+            }
+            doc.text(idNumberDisplay, 42.8, 41.5, { align: 'center' });
+            
+            // Masa berlaku
+            const today = new Date();
+            const expireDate = new Date(today);
+            expireDate.setFullYear(today.getFullYear() + 2);
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(4.5);
+            doc.setTextColor(80, 80, 80);
+            doc.text(`Berlaku: ${formatDate(today)} - ${formatDate(expireDate)}`, 42.8, 45, { align: 'center' });
+            
+            // 9. BORDER KARTU
+            doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.setLineWidth(0.6);
+            doc.roundedRect(1, 1, 83.6, 52, 3, 3);
+            
+            // 10. SIMPAN FILE
+            const fileName = `ID_CARD_${nelayanData.nama.replace(/\s+/g, '_').toUpperCase()}_${nelayanData.nik}.pdf`;
+            
+            setTimeout(() => {
+                try {
+                    doc.save(fileName);
+                    idCardGenerated = true;
+                    
+                    if (typeof showNotification === 'function') {
+                        showNotification(`✅ ID Card ${nelayanData.nama} berhasil dibuat!`, 'success');
+                    }
+                } catch (saveError) {
+                    console.error('Error saving PDF:', saveError);
+                    showNotification('Gagal menyimpan ID Card. Coba lagi!', 'error');
+                }
+            }, 500);
+        }
+
+        /**
+         * Format tanggal untuk ID Card
+         */
+        function formatDate(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear().toString().substring(2);
+            return `${day}/${month}/${year}`;
+        }
+
+        /**
+         * Gambar logo fallback
+         */
+        function drawFallbackLogo(doc, x, y) {
+            doc.setFillColor(240, 240, 240);
+            doc.roundedRect(x - 7, y - 5, 14, 10, 1, 1, 'F');
+            
+            doc.setFontSize(4);
+            doc.setTextColor(100, 100, 100);
+            doc.setFont('helvetica', 'bold');
+            doc.text("LOGO", x, y - 2, { align: 'center' });
+            doc.text("KABUPATEN", x, y, { align: 'center' });
+            doc.text("SITUBONDO", x, y + 2, { align: 'center' });
+        }
+
+        /**
+         * Fungsi untuk menghasilkan preview ID Card dalam format HTML
+         */
+        function previewIDCardHTML(nelayanData) {
+            let profesiClass = 'profesi-penuh';
+            if (nelayanData.profesi === "Nelayan Sambilan Utama") profesiClass = 'profesi-sambilan-utama';
+            else if (nelayanData.profesi === "Nelayan Sambilan Tambahan") profesiClass = 'profesi-sambilan-tambahan';
+            
+            let statusClass = 'status-pemilik';
+            if (nelayanData.status === "Anak Buah Kapal") statusClass = 'status-abk';
+            
+            let namaDisplay = nelayanData.nama.toUpperCase();
+            if (namaDisplay.length > 22) {
+                namaDisplay = namaDisplay.substring(0, 20) + '...';
+            }
+            
+            let domisiliDisplay = `${nelayanData.desa}, ${nelayanData.kecamatan}`.toUpperCase();
+            if (domisiliDisplay.length > 28) {
+                domisiliDisplay = domisiliDisplay.substring(0, 26) + '...';
+            }
+            
+            let alatTangkapDisplay = nelayanData.alatTangkap;
+            if (alatTangkapDisplay.length > 22) {
+                alatTangkapDisplay = alatTangkapDisplay.substring(0, 20) + '...';
+            }
+            
+            const nikDisplay = nelayanData.nik;
+            
+            return `
+            <div class="id-card-container">
+                <div class="id-card-preview-container">
+                    <div class="id-card-header">
+                        <h4 class="id-card-title">KARTU IDENTITAS NELAYAN</h4>
+                        <p class="id-card-subtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</p>
+                    </div>
+                    
+                    <div class="id-card-content">
+                        <div class="id-card-logo-area">
+                            <div class="id-card-logo-box">
+                                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
+                                     class="id-card-logo-img" 
+                                     alt="Logo Situbondo"
+                                     onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\\'width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#0c2461;font-weight:bold;font-size:10px;text-align:center;\\'><div>LOGO</div><div>KABUPATEN</div><div>SITUBONDO</div></div>';">
+                            </div>
+                            <div class="id-card-logo-label">LOGO RESMI</div>
+                        </div>
+                        
+                        <div class="id-card-info-area">
+                            <h5 class="id-card-name">${namaDisplay}</h5>
+                            
+                            <div class="id-card-details">
+                                <div class="id-card-detail-row">
+                                    <span class="id-card-detail-label">NIK:</span>
+                                    <span class="id-card-detail-value">${nikDisplay}</span>
+                                </div>
+                                <div class="id-card-detail-row">
+                                    <span class="id-card-detail-label">USIA:</span>
+                                    <span class="id-card-detail-value">${nelayanData.usia} TAHUN</span>
+                                </div>
+                                <div class="id-card-detail-row">
+                                    <span class="id-card-detail-label">DOMISILI:</span>
+                                    <span class="id-card-detail-value">${domisiliDisplay}</span>
+                                </div>
+                                <div class="id-card-detail-row">
+                                    <span class="id-card-detail-label">PROFESI:</span>
+                                    <span class="id-card-detail-value">
+                                        <span class="id-card-profesi-badge ${profesiClass}">${nelayanData.profesi.toUpperCase()}</span>
+                                    </span>
+                                </div>
+                                <div class="id-card-detail-row">
+                                    <span class="id-card-detail-label">STATUS:</span>
+                                    <span class="id-card-detail-value">
+                                        <span class="id-card-status-badge ${statusClass}">${nelayanData.status.toUpperCase()}</span>
+                                    </span>
+                                </div>
+                                <div class="id-card-detail-row">
+                                    <span class="id-card-detail-label">ALAT TANGKAP:</span>
+                                    <span class="id-card-detail-value">${alatTangkapDisplay}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="id-card-qr-area">
+                            <div style="width: 45px; height: 45px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #ccc; border-radius: 4px; border: 1px solid #ddd;">
+                                <i class="fas fa-qrcode fa-lg"></i>
+                            </div>
+                            <div class="id-card-qr-label">SCAN UNTUK VERIFIKASI</div>
+                        </div>
+                    </div>
+                    
+                    <div class="id-card-footer">
+                        <div class="id-card-id-number">ID: ${nelayanData.kodeValidasi || 'SIMATA'}</div>
+                        <div class="id-card-copyright">© ${new Date().getFullYear()} SIMATA - DINAS PERIKANAN KAB. SITUBONDO</div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        /**
+         * Fungsi untuk batch generate ID Card (multiple)
+         */
+        function batchGenerateIDCards(nelayanIds) {
+            if (!nelayanIds || nelayanIds.length === 0) {
+                if (typeof showNotification === 'function') {
+                    showNotification('Tidak ada data nelayan yang dipilih!', 'warning');
+                }
+                return;
+            }
+            
+            if (!confirm(`Anda akan membuat ${nelayanIds.length} ID Card. Lanjutkan?`)) {
+                return;
+            }
+            
+            if (typeof showNotification === 'function') {
+                showNotification(`Memproses ${nelayanIds.length} ID Card...`, 'info');
+            }
+            
+            const appData = JSON.parse(localStorage.getItem('nelayanData') || '[]');
+            const selectedNelayan = appData.filter(n => nelayanIds.includes(n.id.toString()));
+            
+            if (selectedNelayan.length === 0) {
+                if (typeof showNotification === 'function') {
+                    showNotification('Data nelayan tidak ditemukan!', 'error');
+                }
+                return;
+            }
+            
+            let processed = 0;
+            const processNext = () => {
+                if (processed >= selectedNelayan.length) {
+                    if (typeof showNotification === 'function') {
+                        showNotification(`✅ ${selectedNelayan.length} ID Card siap diunduh!`, 'success');
+                    }
+                    return;
+                }
+                
+                const nelayan = selectedNelayan[processed];
+                generateSimataIDCard(nelayan);
+                processed++;
+                
+                setTimeout(processNext, 1500);
+            };
+            
+            processNext();
+        }
+
+        /**
+         * Fungsi untuk menampilkan preview modal ID Card
+         */
+        function showIDCardPreview(nelayanData) {
+            const modalHTML = `
+            <div class="modal fade" id="idCardPreviewModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title"><i class="fas fa-id-card me-2"></i>Preview ID Card</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            ${previewIDCardHTML(nelayanData)}
+                            <div class="alert alert-info mt-3 mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Ini adalah preview ID Card. Klik "Download" untuk mendapatkan versi PDF resmi.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-primary" onclick="generateSimataIDCard(${JSON.stringify(nelayanData).replace(/'/g, "\\'")})">
+                                <i class="fas fa-download me-2"></i>Download ID Card (PDF)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            
+            const modalContainer = document.createElement('div');
+            modalContainer.innerHTML = modalHTML;
+            document.body.appendChild(modalContainer);
+            
+            const modalElement = document.getElementById('idCardPreviewModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                if (modalContainer && modalContainer.parentNode) {
+                    document.body.removeChild(modalContainer);
+                }
+            });
+        }
+
+        /**
+         * Helper function untuk mendapatkan warna berdasarkan profesi
+         */
+        function getProfesiColor(profesi) {
+            switch(profesi) {
+                case 'Nelayan Penuh Waktu': return '#0c2461';
+                case 'Nelayan Sambilan Utama': return '#e58e26';
+                case 'Nelayan Sambilan Tambahan': return '#27ae60';
+                default: return '#4a69bd';
+            }
+        }
+
+        /**
+         * Helper function untuk mendapatkan warna berdasarkan status
+         */
+        function getStatusColor(status) {
+            switch(status) {
+                case 'Pemilik Kapal': return '#0984e3';
+                case 'Anak Buah Kapal': return '#a55eea';
+                default: return '#4a69bd';
+            }
+        }
+
+        /**
+         * Fungsi untuk mengecek ketersediaan library yang diperlukan
+         */
+        function checkRequiredLibraries() {
+            const missing = [];
+            
+            if (typeof jspdf === 'undefined' || !jspdf.jsPDF) {
+                missing.push('jsPDF');
+            }
+            
+            if (typeof QRCode === 'undefined') {
+                missing.push('QRCode');
+            }
+            
+            if (missing.length > 0) {
+                console.warn(`Library yang diperlukan tidak ditemukan: ${missing.join(', ')}`);
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Ekspor fungsi ke global scope
+        window.generateSimataIDCard = generateSimataIDCard;
+        window.previewIDCardHTML = previewIDCardHTML;
+        window.batchGenerateIDCards = batchGenerateIDCards;
+        window.showIDCardPreview = showIDCardPreview;
+        window.getProfesiColor = getProfesiColor;
+        window.getStatusColor = getStatusColor;
+        window.checkRequiredLibraries = checkRequiredLibraries;
+
+        console.log('✅ SIMATA ID Card Generator v7.0 loaded successfully - DESIGN IMPROVED & FIXED');
+
+        // ================================
+        // KODE UTAMA APLIKASI
+        // ================================
+
+        // --- DATA CONSTANTS ---
         const SITUBONDO_DATA = {
             "Arjasa": [
                 "Arjasa", "Bayeman", "Curah Tatal", "Jatisari", "Kayumas", "Kedungdowo", "Ketowan", "Lamongan"
@@ -2356,11 +3330,11 @@
                 "Alasmalang", "Duwet", "Gelung", "Kilensari", "Paowan", "Peleyan", "Sumberkolak", "Wringinanom"
             ],
             "Panji": [
-                "Ardirejo", "Mimbaan", // Kelurahan
+                "Ardirejo", "Mimbaan",
                 "Battal", "Curah Jeru", "Juglangan", "Kayu Putih", "Klampokan", "Panji Kidul", "Panji Lor", "Sliwung", "Tenggir", "Tokelan"
             ],
             "Situbondo": [
-                "Dawuhan", "Patokan", // Kelurahan
+                "Dawuhan", "Patokan",
                 "Kalibagor", "Kotakan", "Olean", "Talkandang"
             ],
             "Suboh": [
@@ -2371,9 +3345,7 @@
             ]
         };
 
-        // DATA KOORDINAT DESA/KELURAHAN
         const COORDINATES_DATA = {
-            // Kecamatan Panarukan
             "Panarukan, Alasmalang": [-7.6970, 113.7687],
             "Panarukan, Duwet": [-7.6977, 113.7882],
             "Panarukan, Gelung": [-7.7134, 113.8028],
@@ -2383,7 +3355,6 @@
             "Panarukan, Sumberkolak": [-7.7118, 113.7618],
             "Panarukan, Wringinanom": [-7.7061, 113.8256],
             
-            // Kecamatan Panji
             "Panji, Battal": [-7.7099, 113.6780],
             "Panji, Curah Jeru": [-7.6941, 113.6958],
             "Panji, Juglangan": [-7.6946, 113.6653],
@@ -2397,7 +3368,6 @@
             "Panji, Ardirejo": [-7.7155, 113.6944],
             "Panji, Mimbaan": [-7.7091, 113.6952],
             
-            // Kecamatan Situbondo
             "Situbondo, Kalibagor": [-7.7082, 114.0061],
             "Situbondo, Kotakan": [-7.6814, 114.0225],
             "Situbondo, Olean": [-7.6819, 114.0367],
@@ -2405,7 +3375,6 @@
             "Situbondo, Dawuhan": [-7.6926, 113.9937],
             "Situbondo, Patokan": [-7.6729, 113.9771],
             
-            // Kecamatan Suboh
             "Suboh, Buduan": [-7.8523, 113.7659],
             "Suboh, Cemara": [-7.8267, 113.7425],
             "Suboh, Dawuan": [-7.8398, 113.7719],
@@ -2415,7 +3384,6 @@
             "Suboh, Mojodungkol": [-7.8360, 113.7829],
             "Suboh, Suboh": [-7.8475, 113.7580],
             
-            // Kecamatan Sumbermalang
             "Sumbermalang, Alastengah": [-7.8771, 113.8437],
             "Sumbermalang, Baderan": [-7.8318, 113.8214],
             "Sumbermalang, Kalirejo": [-7.8203, 113.8525],
@@ -2427,7 +3395,6 @@
             "Sumbermalang, Tlogosari": [-7.8816, 113.8243]
         };
 
-        // Koordinat default untuk wilayah yang tidak ada dalam data
         const DEFAULT_COORDINATES = {
             "Arjasa": [-7.7825, 113.7900],
             "Asembagus": [-7.7533, 114.2500],
@@ -2450,7 +3417,6 @@
             "Ikan Layur", "Ikan Mangla", "Ikan Kurisi", "Ikan Cakalang", "Ikan Kerapu", "Ikan Lemuru"
         ];
 
-        // Informasi untuk API dan Jenis Kapal
         const API_INFO = {
             "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis seperti tuna dan cakalang.",
             "Pukat Tarik": "Jaring yang ditarik oleh kapal untuk menangkap ikan di permukaan atau pertengahan air. Cocok untuk ikan pelagis kecil seperti teri dan lemuru.",
@@ -2472,11 +3438,10 @@
             "Lainnya": "Jenis kapal lain yang tidak termasuk dalam kategori di atas."
         };
 
-        // Informasi Profesi Nelayan
         const PROFESI_INFO = {
-            "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain. Menghabiskan sebagian besar waktu untuk aktivitas penangkapan ikan.",
-            "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan. Biasanya memiliki pekerjaan lain tetapi tetap aktif menangkap ikan secara rutin.",
-            "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan. Aktivitas penangkapan ikan tidak rutin dan lebih bersifat insidental."
+            "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain.",
+            "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan.",
+            "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan."
         };
 
         // --- GLOBAL VARIABLES ---
@@ -2486,7 +3451,7 @@
             appSubtitle: 'DINAS PERIKANAN KABUPATEN SITUBONDO',
             itemsPerPage: 10,
             privacyMode: true,
-            securityCodeSensor: '987654321' // Kode keamanan sensor default
+            securityCodeSensor: '987654321'
         };
         let currentPage = 1;
         let duplicateCheckInterval = null;
@@ -2506,19 +3471,16 @@
         let currentMarkers = [];
         let mapView = 'all';
         
-        // Mapping untuk tampilan profesi (untuk kompatibilitas data lama)
         const PROFESI_MAPPING = {
             "Penuh Waktu": "Nelayan Penuh Waktu",
             "Sambilan Utama": "Nelayan Sambilan Utama",
             "Sambilan Tambahan": "Nelayan Sambilan Tambahan"
         };
         
-        // Fungsi untuk mendapatkan label profesi yang benar
         function getProfesiLabel(profesi) {
             return PROFESI_MAPPING[profesi] || profesi;
         }
         
-        // Fungsi untuk migrasi data lama ke format baru
         function migrateOldData() {
             appData.forEach(item => {
                 if (PROFESI_MAPPING[item.profesi]) {
@@ -2528,14 +3490,13 @@
             saveData();
         }
         
-        // --- FUNGSI GENERATE KODE KEAMANAN DINAMIS (UNTUK LOGIN) ---
+        // --- FUNGSI GENERATE KODE KEAMANAN DINAMIS ---
         function generateSecurityCode() {
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
             
-            // Format: YYYYMMDD (8 digit)
             return `${year}${month}${day}`;
         }
         
@@ -2781,12 +3742,9 @@
                     return;
                 }
                 
-                // Tampilkan loading
                 loadingEl.classList.add('active');
                 
-                // Cek apakah fungsi ID Card tersedia
                 if (typeof window.generateSimataIDCard === 'function') {
-                    // Panggil fungsi dengan timeout untuk menghindari blocking
                     setTimeout(() => {
                         try {
                             window.generateSimataIDCard(d);
@@ -2798,7 +3756,6 @@
                         }
                     }, 100);
                 } else {
-                    // Fallback: download detail PDF biasa
                     showNotification('Fitur ID Card sedang dimuat...', 'info');
                     setTimeout(() => {
                         if (typeof window.generateSimataIDCard === 'function') {
@@ -2826,7 +3783,6 @@
                 
                 displayCurrentDate();
                 
-                // PERBAIKAN: Set tanggal validasi otomatis dengan hari ini
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('tanggalValidasi').value = today;
                 
@@ -2856,7 +3812,6 @@
             loadData();
             loadSettings();
             
-            // Migrasi data lama ke format baru
             migrateOldData();
             
             if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
@@ -2998,7 +3953,6 @@
             let str = data.toString();
             if (str.length <= 4) return str;
             
-            // Sensor 4 digit terakhir
             const maskedLength = Math.min(4, str.length);
             const visiblePart = str.slice(0, -maskedLength);
             const maskedPart = '*'.repeat(maskedLength);
@@ -3102,13 +4056,11 @@
                 }
             });
 
-            // PERBAIKAN: Sensor data menggunakan kode keamanan sensor
             document.getElementById('privacyToggle').addEventListener('click', function(e) {
                 e.preventDefault();
                 const currentStatus = appSettings.privacyMode;
                 
                 if (currentStatus === true) {
-                    // Menonaktifkan sensor - memerlukan kode keamanan sensor
                     const code = prompt("MASUKKAN KODE KEAMANAN SENSOR untuk menonaktifkan sensor:");
                     if (code === appSettings.securityCodeSensor) {
                         appSettings.privacyMode = false;
@@ -3121,7 +4073,6 @@
                         this.checked = true;
                     }
                 } else {
-                    // Mengaktifkan sensor - tidak perlu kode
                     appSettings.privacyMode = true;
                     saveSettings(); 
                     updatePrivacyUI(); 
@@ -3145,7 +4096,6 @@
 
             document.getElementById('inputForm').addEventListener('submit', handleFormSubmit);
             
-            // PERBAIKAN: Event reset form dengan pengaturan tanggal validasi otomatis
             document.getElementById('inputForm').addEventListener('reset', () => {
                 setTimeout(() => {
                     document.getElementById('ownerFields').style.display = 'none';
@@ -3168,7 +4118,6 @@
                     document.getElementById('kapalInfo').style.display = 'none';
                     document.getElementById('profesiHelp').innerHTML = '';
                     
-                    // PERBAIKAN: Set tanggal validasi otomatis dengan hari ini saat reset
                     const today = new Date().toISOString().split('T')[0];
                     document.getElementById('tanggalValidasi').value = today;
                 }, 100);
@@ -3271,7 +4220,6 @@
                 showNotification('Pengaturan tersimpan! Nama instansi berhasil diperbarui.', 'success');
             });
 
-            // Form untuk mengubah kode keamanan sensor
             document.getElementById('sensorCodeForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -3412,7 +4360,6 @@
             document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('jenisIkanLainnya').style.display = 'none';
             
-            // PERBAIKAN: Set tanggal validasi otomatis setelah simpan
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('tanggalValidasi').value = today;
             
@@ -3733,7 +4680,6 @@
             if(checked) btn.classList.remove('d-none'); else btn.classList.add('d-none');
         }
 
-        // PERBAIKAN: bulkDeleteData menggunakan kode keamanan sensor
         function bulkDeleteData() {
             const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
             if(checkedBoxes.length === 0) return;
@@ -3826,7 +4772,6 @@
             window.scrollTo(0,0);
         }
 
-        // PERBAIKAN: deleteData menggunakan kode keamanan sensor
         function deleteData(id) {
             const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk menghapus data:");
             if(userCode === appSettings.securityCodeSensor) {
@@ -4002,7 +4947,6 @@
             if(s) {
                 const loadedSettings = JSON.parse(s);
                 loadedSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
-                // Pastikan securityCodeSensor ada
                 if (!loadedSettings.securityCodeSensor) {
                     loadedSettings.securityCodeSensor = '987654321';
                 }
@@ -4328,7 +5272,6 @@ window.SIMATA_BACKUP_ENCRYPTED = "${encryptedData}";`;
             
             bsToast.show();
         }
-
     </script>
 </body>
 </html>
