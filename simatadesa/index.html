@@ -1269,6 +1269,33 @@
                 align-items: center;
             }
         }
+        
+        /* PERBAIKAN TAMBAHAN: Style untuk periode tanggal validasi yang terkunci */
+        .tanggal-validasi-container {
+            position: relative;
+        }
+        
+        .tanggal-validasi-container .form-control:read-only {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+            border-color: #ced4da;
+            color: #6c757d;
+        }
+        
+        .tanggal-validasi-container .period-info {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 3px;
+            display: block;
+        }
+        
+        .tanggal-validasi-container .lock-icon {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            color: #6c757d;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -1749,10 +1776,17 @@
                                                 </div>
                                             </div>
                                             
+                                            <!-- PERBAIKAN: Periode tanggal validasi yang terkunci -->
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
-                                                    <label for="tanggalValidasi" class="form-label">Tanggal Validasi <span class="text-danger">*</span></label>
-                                                    <input type="date" class="form-control" id="tanggalValidasi" required readonly>
+                                                    <div class="tanggal-validasi-container">
+                                                        <label for="tanggalValidasi" class="form-label">Tanggal Validasi <span class="text-danger">*</span></label>
+                                                        <div class="position-relative">
+                                                            <input type="date" class="form-control" id="tanggalValidasi" required readonly>
+                                                            <i class="fas fa-lock lock-icon"></i>
+                                                        </div>
+                                                        <small class="period-info">Periode validasi terkunci pada tanggal saat ini</small>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label for="validator" class="form-label">Petugas Validator <span class="text-danger">*</span></label>
@@ -2641,6 +2675,12 @@
             }
         }
 
+        // --- FUNGSI UNTUK MENGATUR TANGGAL VALIDASI OTOMATIS ---
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggalValidasi').value = today;
+        }
+
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
             try {
@@ -2650,8 +2690,8 @@
                 
                 displayCurrentDate();
                 
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('tanggalValidasi').value = today;
+                // Set tanggal hari ini untuk tanggal validasi
+                setTodayDate();
                 
                 const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
                 if (isSessionActive) {
@@ -2948,8 +2988,8 @@
                     appSettings.privacyMode = true;
                     saveSettings(); 
                     updatePrivacyUI(); 
-                    renderDataTable();
-                    showNotification('Sensor Data diaktifkan.', 'success');
+                        renderDataTable();
+                        showNotification('Sensor Data diaktifkan.', 'success');
                 }
             });
 
@@ -2967,6 +3007,8 @@
             });
 
             document.getElementById('inputForm').addEventListener('submit', handleFormSubmit);
+            
+            // PERBAIKAN: Event reset form dengan mengatur tanggal validasi ke hari ini
             document.getElementById('inputForm').addEventListener('reset', () => {
                 setTimeout(() => {
                     document.getElementById('ownerFields').style.display = 'none';
@@ -2988,6 +3030,9 @@
                     document.getElementById('apiInfo').style.display = 'none';
                     document.getElementById('kapalInfo').style.display = 'none';
                     document.getElementById('profesiHelp').innerHTML = '';
+                    
+                    // PERBAIKAN PENTING: Set tanggal validasi ke hari ini saat reset
+                    setTodayDate();
                 }, 100);
             });
             
@@ -3223,6 +3268,10 @@
 
             saveData();
             form.reset();
+            
+            // Set tanggal validasi ke hari ini setelah reset form
+            setTodayDate();
+            
             document.getElementById('ownerFields').style.display = 'none';
             document.getElementById('desa').innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
             document.getElementById('desa').disabled = true;
