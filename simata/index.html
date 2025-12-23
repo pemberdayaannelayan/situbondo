@@ -22,6 +22,9 @@
     
     <!-- Load reload.js jika ada di server -->
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
+    
+    <!-- Load idcard.js untuk fitur ID Card -->
+    <script src="idcard.js"></script>
 
     <style>
         :root {
@@ -352,7 +355,7 @@
         .col-id-cell { min-width: 250px; max-width: 300px; white-space: normal; word-wrap: break-word; } 
         .col-contact-cell { min-width: 160px; white-space: nowrap; }
         .col-status-cell { min-width: 140px; white-space: nowrap; }
-        .col-action { width: 130px; min-width: 130px; text-align: center; background: #fff; z-index: 5; }
+        .col-action { width: 180px; min-width: 180px; text-align: center; background: #fff; z-index: 5; }
         
         /* Sticky Right Column with better shadow and border */
         .sticky-col-right { position: sticky; right: 0; box-shadow: -4px 0 10px rgba(0,0,0,0.05); background-color: #fff; border-left: 1px solid #f1f2f6; }
@@ -1269,6 +1272,23 @@
                 align-items: center;
             }
         }
+
+        /* Style tambahan untuk tombol ID Card */
+        .btn-idcard {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-idcard:hover {
+            background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -1413,7 +1433,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.1 (Encrypted)</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.2 (ID Card Feature)</span>
                 </div>
             </div>
             
@@ -3317,7 +3337,14 @@
                     <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
                     <td class="col-status-cell">${kapalInfo}</td>
                     <td style="white-space:nowrap;"><span class="badge bg-info text-white">${d.alatTangkap}</span></td>
-                    <td class="col-action sticky-col-right"><div class="btn-group shadow-sm" role="group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
+                    <td class="col-action sticky-col-right">
+                        <div class="btn-group shadow-sm" role="group">
+                            <button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="btn btn-sm btn-idcard" onclick="generateIDCard('${d.id}')" title="Cetak ID Card"><i class="fas fa-id-card"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
                 </tr>`;
                 tableBody.appendChild(document.createElement('tbody')).innerHTML = row;
             });
@@ -3542,6 +3569,19 @@
             }, 500);
         }
 
+        // --- FUNGSI GENERATE ID CARD (Pemanggilan ke idcard.js) ---
+        function generateIDCard(id) {
+            const d = appData.find(item => item.id == id);
+            if(!d) return;
+            
+            // Panggil fungsi dari idcard.js
+            if (typeof window.generateSimataIDCard === 'function') {
+                window.generateSimataIDCard(d);
+            } else {
+                showNotification('Fitur ID Card belum tersedia. Pastikan file idcard.js sudah dimuat.', 'error');
+            }
+        }
+
         function updatePagination(total) {
             const pages = Math.ceil(total / appSettings.itemsPerPage);
             const ul = document.getElementById('pagination');
@@ -3708,7 +3748,7 @@
                     <td><span class="badge ${d.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">${d.status}</span></td>
                     <td><span class="badge bg-warning text-dark">${d.alatTangkap}</span></td>
                     <td><span class="badge ${profesiBadge}">${d.profesi}</span></td>
-                    <td><div class="btn-group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
+                    <td><div class="btn-group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-idcard" onclick="generateIDCard('${d.id}')" title="ID Card"><i class="fas fa-id-card"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
                 </tr>`;
             });
             showNotification(`Filter berhasil: ${filtered.length} data ditemukan`, 'success');
