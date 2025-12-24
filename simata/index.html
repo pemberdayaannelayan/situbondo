@@ -2014,7 +2014,7 @@
         console.log('✅ SIMATA ID Card Generator v10.1 & Verifikasi KIN loaded successfully');
 
         // ================================
-        // KODE UTAMA APLIKASI (DENGAN PENAMBAHAN VERIFIKASI DAN FITUR INPUT EXCEL)
+        // KODE UTAMA APLIKASI (DENGAN PERBAIKAN LOGIN DAN REFACTORING)
         // ================================
 
         // --- DATA CONSTANTS ---
@@ -2219,7 +2219,7 @@
             saveData();
         }
         
-        // --- FUNGSI GENERATE KODE KEAMANAN DINAMIS ---
+        // --- FUNGSI GENERATE KODE KEAMANAN DINAMIS (PERIODE TERBALIK) ---
         function generateSecurityCode() {
             const now = new Date();
             const year = now.getFullYear();
@@ -2236,7 +2236,7 @@
             const dateString = now.toLocaleDateString('id-ID', options);
             document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
             
-            document.getElementById('passwordHint').innerHTML = `Kode keamanan berubah setiap hari berdasarkan tanggal.`;
+            document.getElementById('passwordHint').innerHTML = `Kode keamanan berubah setiap hari berdasarkan tanggal (format: YYYYMMDD).`;
         }
 
         // --- FUNGSI UNTUK MENDAPATKAN KOORDINAT BERDASARKAN DESA ---
@@ -2920,12 +2920,21 @@
                 });
             }
 
+            // ================================================
+            // PERBAIKAN UTAMA: FIX LOGIN SECURITY
+            // ================================================
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const btn = document.getElementById('loginButton');
                 const spinner = document.getElementById('loginSpinner');
-                const inputCode = document.getElementById('securityCode').value;
+                const inputCode = document.getElementById('securityCode').value.trim();
                 const correctCode = generateSecurityCode();
+                
+                // Validasi input: harus 8 digit angka
+                if (!/^\d{8}$/.test(inputCode)) {
+                    showNotification('Kode keamanan harus 8 digit angka (format: YYYYMMDD)!', 'error');
+                    return;
+                }
                 
                 if (inputCode !== correctCode) {
                     showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
@@ -3007,9 +3016,9 @@
                 } else {
                     appSettings.privacyMode = true;
                     saveSettings(); 
-                    updatePrivacyUI(); 
-                    renderDataTable();
-                    showNotification('Sensor Data diaktifkan.', 'success');
+                        updatePrivacyUI(); 
+                        renderDataTable();
+                        showNotification('Sensor Data diaktifkan.', 'success');
                 }
             });
 
@@ -4175,7 +4184,7 @@
         window.handleExcelUpload = handleExcelUpload;
         window.downloadExcelTemplate = downloadExcelTemplate;
 
-        console.log('SIMATA v5.4 loaded successfully');
+        console.log('SIMATA v5.4 - Login Security Fixed loaded successfully');
     </script>
 </body>
 </html>
