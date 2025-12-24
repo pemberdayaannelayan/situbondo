@@ -1507,7 +1507,7 @@
             padding: 0 15px;
         }
         
-        /* PERBAIKAN: ID Validasi di kiri bawah */
+        /* PERBAIKAN: ID Validasi di kiri bawah - POSISI DIPERBAIKI */
         .id-card-improved-id-left {
             position: absolute;
             bottom: 10px;
@@ -1516,9 +1516,11 @@
             color: #0c2461;
             font-weight: 700;
             letter-spacing: 0.5px;
-            text-transform: uppercase;
             text-align: left;
             line-height: 1.3;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
         
         .id-card-id-number-left {
@@ -1528,6 +1530,7 @@
             letter-spacing: 0.5px;
             display: block;
             margin-bottom: 2px;
+            line-height: 1.2;
         }
         
         .id-card-validity-text {
@@ -1537,6 +1540,7 @@
             font-weight: 400;
             display: block;
             line-height: 1.2;
+            margin-top: 1px;
         }
         
         /* PERBAIKAN: QR Code di kanan bawah */
@@ -2602,7 +2606,7 @@
          * SIMATA ID Card Generator - VERSI DISEMPURNAKAN & DIPERBAIKI DENGAN LAYOUT BARU
          * Fungsi untuk menghasilkan ID Card nelayan profesional
          * Developer: Dinas Perikanan Kabupaten Situbondo
-         * Version: 10.0 - Layout Revisi (ID di kiri bawah, QR di kanan bawah)
+         * Version: 10.1 - Layout Revisi (ID di kiri bawah, QR di kanan bawah) - DIPERBAIKI
          */
 
         // Global variables untuk ID Card
@@ -2639,8 +2643,8 @@
                 qrContainer.style.zIndex = '-9999';
                 document.body.appendChild(qrContainer);
                 
-                // Generate QR Code untuk ID Card
-                const qrData = generateQRDataForIDCard(nelayanData);
+                // Generate QR Code untuk ID Card - DIPERBAIKI: hanya berisi link
+                const qrData = "www.dinasperikanansitubondo.com/simata/kin/verifikasi.html";
                 
                 // Bersihkan container sebelumnya jika ada
                 qrContainer.innerHTML = '';
@@ -2693,31 +2697,14 @@
         }
 
         /**
-         * Generate data untuk QR Code
+         * Generate data untuk QR Code - DIPERBAIKI: hanya link
          */
         function generateQRDataForIDCard(nelayanData) {
-            const data = {
-                system: "SIMATA",
-                id: nelayanData.id,
-                nik: nelayanData.nik,
-                nama: nelayanData.nama.toUpperCase(),
-                profesi: nelayanData.profesi,
-                status: nelayanData.status,
-                kodeValidasi: nelayanData.kodeValidasi || 'N/A',
-                tanggalValidasi: nelayanData.tanggalValidasi,
-                domisili: `${nelayanData.desa}, ${nelayanData.kecamatan}`.toUpperCase(),
-                alatTangkap: nelayanData.alatTangkap,
-                namaKapal: nelayanData.namaKapal || 'N/A',
-                jenisKapal: nelayanData.jenisKapal || 'N/A',
-                timestamp: new Date().toISOString(),
-                verification_url: "https://simata.disnakansitubondo.com/verify"
-            };
-            
-            return JSON.stringify(data);
+            return "www.dinasperikanansitubondo.com/simata/kin/verifikasi.html";
         }
 
         /**
-         * Generate PDF untuk ID Card dengan LAYOUT BARU (ID di kiri bawah, QR di kanan bawah)
+         * Generate PDF untuk ID Card dengan LAYOUT BARU (ID di kiri bawah, QR di kanan bawah) - DIPERBAIKI
          */
         async function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
             if (typeof jspdf === 'undefined' || !jspdf.jsPDF) {
@@ -2894,18 +2881,18 @@
                 doc.text(`Jenis: ${jenisKapal}`, rightX, currentY);
             }
             
-            // 6. ID VALIDASI DI KIRI BAWAH (POSISI BARU)
+            // 6. ID VALIDASI DI KIRI BAWAH (POSISI DIPERBAIKI)
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
             doc.setTextColor(230, 126, 34); // Warna oranye
             const idNumber = nelayanData.kodeValidasi || `SIMATA-${nelayanData.nik.substring(12)}`;
-            doc.text(`ID: ${idNumber}`, 15, 45);
+            doc.text(`ID: ${idNumber}`, 5, 45);
             
-            // 7. TEKS "Kartu Identitas Resmi - Berlaku Selamanya" di bawah ID
+            // 7. TEKS "Kartu Identitas Resmi - Berlaku Selamanya" di bawah ID - DIPERBAIKI POSISI
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(5);
             doc.setTextColor(100, 100, 100);
-            doc.text("Kartu Identitas Resmi - Berlaku Selamanya", 15, 48);
+            doc.text("Kartu Identitas Resmi - Berlaku Selamanya", 5, 47.5);
             
             // 8. QR CODE DI KANAN BAWAH (POSISI BARU)
             if (qrContainer) {
@@ -2975,7 +2962,7 @@
         }
 
         /**
-         * Fungsi untuk menghasilkan preview ID Card dalam format HTML dengan LAYOUT BARU
+         * Fungsi untuk menghasilkan preview ID Card dalam format HTML dengan LAYOUT BARU - DIPERBAIKI
          */
         function previewIDCardHTML(nelayanData) {
             let profesiClass = 'profesi-penuh';
@@ -3061,7 +3048,7 @@
                         </div>
                     </div>
                     
-                    <!-- ID Validasi di kiri bawah -->
+                    <!-- ID Validasi di kiri bawah - POSISI DIPERBAIKI -->
                     <div class="id-card-improved-id-left">
                         <span class="id-card-id-number-left">ID: ${nelayanData.kodeValidasi || 'SIMATA'}</span>
                         <span class="id-card-validity-text">Kartu Identitas Resmi - Berlaku Selamanya</span>
@@ -3226,7 +3213,7 @@
         window.getStatusColor = getStatusColor;
         window.checkRequiredLibraries = checkRequiredLibraries;
 
-        console.log('✅ SIMATA ID Card Generator v10.0 loaded successfully - LAYOUT REVISI (ID kiri bawah, QR kanan bawah)');
+        console.log('✅ SIMATA ID Card Generator v10.1 loaded successfully - LAYOUT REVISI DIPERBAIKI (ID kiri bawah, QR kanan bawah)');
 
         // ================================
         // KODE UTAMA APLIKASI (TIDAK DIUBAH KECUALI ID CARD FUNGSI)
