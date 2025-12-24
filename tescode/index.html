@@ -2,1284 +2,1088 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KILAT - Kamera Interaktif Anti Manipulasi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMATA - Verifikasi Kartu Identitas Nelayan (KIN)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logoku.png" type="image/png">
+    
     <style>
         :root {
-            --primary: #0284c7;
-            --primary-dark: #0369a1;
-            --secondary: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text: #0f172a;
+            --primary-light: #e3f2fd; /* Biru muda 80% dominan */
+            --primary-medium: #2196f3;
+            --primary-dark: #0c2461;
+            --accent-orange: #ff9800;
+            --accent-orange-dark: #f57c00;
+            --success-green: #4caf50;
+            --success-green-dark: #388e3c;
+            --text-dark: #2d3436;
+            --text-light: #f8f9fa;
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 15px 40px rgba(0, 0, 0, 0.12);
         }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
+        
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary-light) 0%, #f5f7fa 100%);
             min-height: 100vh;
-            color: var(--text);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-
+        
         .container {
+            max-width: 1200px;
             width: 100%;
-            max-width: 600px;
             margin: 0 auto;
-            background: var(--card);
-            min-height: 100vh;
+        }
+        
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-medium);
+            margin: 0 auto 20px;
+            border: 5px solid var(--primary-medium);
+            overflow: hidden;
+        }
+        
+        .logo img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+        
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--primary-medium);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .description {
+            font-size: 1rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        /* SEARCH SECTION */
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+            border-top: 8px solid var(--accent-orange);
+        }
+        
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--accent-orange);
+        }
+        
+        .search-form {
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 25px rgba(0,0,0,0.08);
+            gap: 20px;
+            margin-bottom: 30px;
         }
-
-        /* Header Update */
-        .header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 25px 20px 20px 20px;
-            text-align: center;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2);
-            margin-bottom: 10px;
-            z-index: 10;
+        
+        .form-group {
+            margin-bottom: 20px;
         }
-        .header h1 { 
-            margin: 0; 
-            font-size: 2.2rem; 
-            font-weight: 900; 
-            letter-spacing: 2px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            display: block;
+            font-size: 1.1rem;
         }
-        .header p { 
-            margin: 5px 0 0; 
-            font-size: 0.85rem; 
-            font-weight: 400; 
-            opacity: 0.95; 
-            font-style: italic;
-        }
-
-        /* Navigation Tabs */
-        .nav-tabs {
+        
+        .input-group {
             display: flex;
-            padding: 5px 15px;
-            gap: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-medium);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-orange-dark) 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.4);
+        }
+        
+        .search-btn:active {
+            transform: translateY(0);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            border-left: 5px solid var(--success-green);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .info-box p {
+            margin-bottom: 10px;
+            color: #2e7d32;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .info-box i {
+            color: var(--success-green);
+            margin-top: 3px;
+        }
+        
+        /* VERIFICATION RESULT */
+        .verification-result {
+            display: none;
             background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out;
+            border-top: 8px solid var(--success-green);
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .verification-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .status-valid {
+            background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
+            color: white;
+        }
+        
+        .status-invalid {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+        
+        .status-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        
+        .valid-text {
+            color: var(--success-green);
+        }
+        
+        .invalid-text {
+            color: #f44336;
+        }
+        
+        .timestamp {
+            color: #666;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+        
+        /* ID CARD PREVIEW */
+        .id-card-preview {
+            background: linear-gradient(145deg, #ffffff 0%, #f5f9ff 100%);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--primary-medium);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .id-card-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary-dark) 0%, var(--accent-orange) 50%, var(--success-green) 100%);
+        }
+        
+        .id-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e6f0;
+        }
+        
+        .id-card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+        }
+        
+        .id-card-subtitle {
+            font-size: 1rem;
+            color: var(--primary-medium);
+            font-weight: 600;
+        }
+        
+        .id-card-qr {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid #e0e6f0;
+            overflow: hidden;
+        }
+        
+        .id-card-qr i {
+            font-size: 3.5rem;
+            color: var(--primary-dark);
+        }
+        
+        .id-card-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .id-card-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .id-card-field {
+            margin-bottom: 15px;
+        }
+        
+        .field-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        
+        .field-value {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            font-weight: 500;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-orange);
+            word-break: break-word;
+        }
+        
+        .field-highlight {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 1.2rem;
+        }
+        
+        .badge-profesi {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-top: 5px;
         }
-        .nav-item {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
+        
+        .badge-penuh {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1e3799 100%);
+            color: white;
+        }
+        
+        .badge-sambilan-utama {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #ff8a00 100%);
+            color: white;
+        }
+        
+        .badge-sambilan-tambahan {
+            background: linear-gradient(135deg, var(--success-green) 0%, #2e7d32 100%);
+            color: white;
+        }
+        
+        .id-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e6f0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .verification-code {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            background: #f0f7ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px dashed var(--primary-medium);
+        }
+        
+        .validity-info {
+            color: var(--success-green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* VERIFICATION DETAILS */
+        .verification-details {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 40px;
+            border-top: 8px solid var(--primary-medium);
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .detail-card {
             background: #f8fafc;
             border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-left: 5px solid var(--accent-orange);
         }
-        .nav-item.active {
-            background: #e0f2fe;
-            color: var(--primary);
-            border-color: #bae6fd;
-            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.1);
-        }
-
-        /* Sections */
-        .section { display: none; padding: 20px; flex: 1; animation: fadeIn 0.3s ease; }
-        .section.active { display: flex; flex-direction: column; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Form Styling */
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.85rem; color: #334155; }
-        .form-group input {
-            width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0;
-            border-radius: 12px; font-size: 1rem; box-sizing: border-box;
-            transition: all 0.2s; background: #f8fafc; color: #334155;
-        }
-        .form-group input:focus { 
-            border-color: var(--primary); 
-            background: #fff; 
-            outline: none; 
-            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1); 
-        }
-        /* Placeholder styling */
-        ::placeholder { color: #94a3b8; opacity: 1; }
-
-        /* Buttons */
-        .btn {
-            width: 100%; padding: 16px; border: none; border-radius: 14px;
-            background: var(--primary); color: white; font-size: 1rem;
-            font-weight: 700; cursor: pointer; display: flex;
-            justify-content: center; align-items: center; gap: 8px;
-            transition: transform 0.1s, filter 0.2s;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
-        }
-        .btn:active { transform: scale(0.97); }
-        .btn-secondary { background: white; color: var(--text); border: 2px solid #e2e8f0; box-shadow: none; }
-        .btn-success { background: var(--success); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25); }
-        .btn-warning { background: var(--warning); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25); }
-
-        /* Camera UI */
-        .camera-container {
-            position: relative;
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            width: 100%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        
+        .detail-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-dark);
             margin-bottom: 15px;
-        }
-        video, img#result-preview { width: 100%; height: 100%; object-fit: cover; display: block; }
-        video.mirrored { transform: scaleX(-1); }
-
-        .toolbar {
-            display: flex; gap: 10px; margin-bottom: 15px;
-            overflow-x: auto; padding-bottom: 5px;
-        }
-        .tool-pill {
-            padding: 8px 16px; background: white; border: 1px solid #cbd5e1;
-            border-radius: 20px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;
-            cursor: pointer; display: flex; align-items: center; gap: 6px; color: #475569;
-        }
-
-        /* Status & Gallery */
-        .status-bar {
-            background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-            padding: 10px 14px; border-radius: 10px; font-size: 0.8rem;
-            margin-top: -60px; position: relative; z-index: 5;
-            margin-bottom: 25px; margin-left: 10px; margin-right: 10px;
-            border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .status-dot { width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid white; }
-        .status-dot.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-        .status-dot.warning { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
-
-        /* Gallery Grid */
-        .gallery-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-            padding-bottom: 40px;
-        }
-        .gallery-item {
-            position: relative; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden;
-            border: 1px solid #e2e8f0; background: #f1f5f9; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .gallery-item:active img { transform: scale(1.05); }
-        .gallery-date {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            color: white; font-weight: 500;
-            font-size: 0.75rem; padding: 12px 8px 8px 8px; text-align: left;
-        }
-        .empty-state { text-align: center; color: #94a3b8; padding: 40px; font-style: italic; }
-
-        /* Modal Preview */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.98); z-index: 1000; display: none;
-            flex-direction: column; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box;
-        }
-        .modal.open { display: flex; }
-        .modal img { max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .modal-close {
-            position: absolute; top: 20px; right: 20px; color: white;
-            font-size: 2.5rem; cursor: pointer; opacity: 0.8;
-        }
-        .modal-actions { margin-top: 20px; display: flex; gap: 12px; width: 100%; max-width: 400px; }
-
-        /* Warning Badge */
-        .warning-badge {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 5px;
-            margin-left: 10px;
+            gap: 10px;
         }
-
-        /* Verification Info */
-        .verification-info {
-            background: #fef3c7;
-            border: 1px solid #fde68a;
-            border-radius: 10px;
-            padding: 12px;
+        
+        .detail-card h4 i {
+            color: var(--accent-orange);
+        }
+        
+        /* ACTIONS */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        
+        .action-btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Montserrat', sans-serif;
+            min-width: 200px;
+        }
+        
+        .btn-print {
+            background: linear-gradient(135deg, var(--primary-medium) 0%, #1976d2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+        
+        .btn-verify-another {
+            background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-report {
+            background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .action-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--primary-medium);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(76, 175, 80, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .search-section, .verification-result, .verification-details {
+                padding: 25px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .input-group input {
+                min-width: 100%;
+            }
+            
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .timestamp {
+                text-align: left;
+            }
+        }
+        
+        /* LOADING */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--primary-light);
+            border-top: 5px solid var(--primary-medium);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* NO RESULT */
+        .no-result {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 40px;
+            border-top: 8px solid #f44336;
+        }
+        
+        .no-result-icon {
+            font-size: 4rem;
+            color: #f44336;
+            margin-bottom: 20px;
+        }
+        
+        .no-result h3 {
+            color: #d32f2f;
             margin-bottom: 15px;
-            font-size: 0.8rem;
-            color: #92400e;
         }
-        .verification-info.verified {
-            background: #d1fae5;
-            border-color: #a7f3d0;
-            color: #065f46;
+        
+        .no-result p {
+            color: #666;
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="header">
-        <h1>KILAT</h1>
-        <p>(Kamera Interaktif Lacak Aktifitas Terkini) - ANTI MANIPULASI</p>
-    </div>
-
-    <div class="nav-tabs">
-        <div class="nav-item active" onclick="switchTab('form')">📝 Form Data</div>
-        <div class="nav-item" onclick="switchTab('camera')">📸 Kamera</div>
-        <div class="nav-item" onclick="switchTab('gallery')">📂 Galeri</div>
-    </div>
-
-    <div id="view-form" class="section active">
-        <div class="verification-info" id="timeVerification">
-            ⏱️ Waktu Sistem: <span id="deviceTime">Memuat...</span>
-            <span id="timeWarning" class="warning-badge" style="display:none">WAKTU TIDAK TERPERCAYA</span>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logoku.png" alt="Logo SIMATA">
+                </div>
+            </div>
+            <h1 class="title">SISTEM VERIFIKASI KARTU IDENTITAS NELAYAN</h1>
+            <p class="subtitle">Dinas Perikanan Kabupaten Situbondo</p>
+            <p class="description">
+                Layanan verifikasi resmi untuk memvalidasi keabsahan Kartu Identitas Nelayan (KIN) yang dikeluarkan oleh Sistem Informasi Pemetaan Data Nelayan Terpadu (SIMATA). Masukkan kode validasi atau NIK untuk memverifikasi data.
+            </p>
         </div>
-
-        <div class="form-group">
-            <label>Nama Petugas</label>
-            <input type="text" id="inUser" placeholder="Nama Petugas" autocapitalize="words" oninput="saveDraft()">
-        </div>
-        <div class="form-group">
-            <label>Nama Kegiatan</label>
-            <input type="text" id="inKegiatan" placeholder="Contoh: Monitoring Lapangan" autocapitalize="words" oninput="saveDraft()">
-        </div>
-        <div class="form-group">
-            <label>Instansi / Dinas</label>
-            <input type="text" id="inDinas" placeholder="Dinas Perikanan Situbondo" autocapitalize="words" oninput="saveDraft()">
-        </div>
-        <div class="form-group">
-            <label>Bidang / Unit (Opsional)</label>
-            <input type="text" id="inBidang" placeholder="Bidang Pemberdayaan Nelayan" autocapitalize="words" oninput="saveDraft()">
-        </div>
-        <div style="flex:1"></div>
-        <button class="btn" onclick="goToCamera()">Buka Kamera 📸</button>
-    </div>
-
-    <div id="view-camera" class="section">
-        <div class="verification-info" id="gpsVerification">
-            📍 Status GPS: <span id="gpsStatus">Memeriksa...</span>
-            <span id="gpsWarning" class="warning-badge" style="display:none">LOKASI TIDAK TERPERCAYA</span>
-        </div>
-
-        <div class="toolbar">
-            <button class="tool-pill" onclick="toggleCam()">🔄 Balik Kamera</button>
-            <select id="selRatio" class="tool-pill" onchange="updateRatio()" style="border:none; outline:none; background:transparent">
-                <option value="0.75">Rasio 3:4 (Potret)</option>
-                <option value="1.33">Rasio 4:3 (Lanskap)</option>
-                <option value="0.56">Rasio 9:16 (Story)</option>
-                <option value="1.77">Rasio 16:9 (Wide)</option>
-            </select>
-        </div>
-
-        <div id="cam-container" class="camera-container">
-            <video id="video" autoplay playsinline muted></video>
-            <img id="result-preview" style="display:none">
-        </div>
-
-        <div class="status-bar">
-            <div id="gps-dot" class="status-dot"></div>
-            <div style="display:flex; flex-direction:column;">
-                 <span id="gps-coords" style="font-weight:700">Memverifikasi GPS...</span>
-                 <span id="gps-addr" style="font-size:0.75rem; opacity:0.8">Memeriksa integritas lokasi...</span>
+        
+        <!-- SEARCH SECTION -->
+        <div class="search-section">
+            <h2 class="section-title"><i class="fas fa-search-check"></i> Verifikasi KIN</h2>
+            <div class="search-form">
+                <div class="form-group">
+                    <label class="form-label" for="verificationCode">Kode Validasi KIN</label>
+                    <div class="input-group">
+                        <input type="text" id="verificationCode" placeholder="Contoh: VLD-ABC123 atau SIMATA-2024001" maxlength="50">
+                        <button class="search-btn" id="verifyBtn">
+                            <i class="fas fa-shield-check"></i> Verifikasi Sekarang
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="nikNumber">Atau Masukkan NIK (Nomor Induk Kependudukan)</label>
+                    <div class="input-group">
+                        <input type="text" id="nikNumber" placeholder="16 digit NIK" maxlength="16">
+                        <button class="search-btn" id="verifyByNIKBtn">
+                            <i class="fas fa-id-card"></i> Verifikasi dengan NIK
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <p><i class="fas fa-info-circle"></i> <strong>Informasi Penting:</strong> Sistem verifikasi ini hanya memvalidasi KIN yang telah terdaftar dalam database SIMATA Dinas Perikanan Kabupaten Situbondo.</p>
+                <p><i class="fas fa-check-circle"></i> Kartu yang valid akan menampilkan data lengkap nelayan beserta status verifikasi resmi dari sistem.</p>
             </div>
         </div>
-
-        <div id="cam-controls">
-            <button class="btn" onclick="takePicture()">🔘 JEPRET FOTO</button>
-            <button class="btn btn-secondary" onclick="switchTab('form')">⬅️ Edit Data</button>
-        </div>
-
-        <div id="res-controls" style="display:none">
-            <button class="btn btn-success" onclick="saveToGallery()">💾 Simpan ke Galeri App</button>
-            <button class="btn btn-warning" id="forceSaveBtn" onclick="forceSaveWithWarning()" style="display:none">⚠️ Simpan dengan Peringatan</button>
-            <button class="btn btn-secondary" onclick="retake()">🔄 Foto Ulang</button>
+        
+        <!-- LOADING INDICATOR -->
+        <div class="loading" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+            <h3>Memverifikasi Data KIN...</h3>
+            <p>Sedang memvalidasi data dengan database SIMATA. Harap tunggu sebentar.</p>
         </div>
         
-        <canvas id="canvas" style="display:none"></canvas>
-    </div>
-
-    <div id="view-gallery" class="section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
-            <h3 style="margin:0; font-size:1.1rem; color:#334155;">Arsip Foto</h3>
-            <button class="tool-pill" onclick="loadGallery()">🔄 Refresh</button>
-        </div>
-        <div id="gallery-grid" class="gallery-grid">
-        </div>
-        <div id="empty-msg" class="empty-state">Belum ada foto tersimpan.</div>
-    </div>
-</div>
-
-<div id="imgModal" class="modal">
-    <span class="modal-close" onclick="closeModal()">&times;</span>
-    <img id="modalImg">
-    <div class="modal-actions">
-        <a id="modalDown" class="btn" href="#" download>⬇️ Download</a>
-        <button class="btn" style="background:#ef4444" onclick="deleteCurrentPhoto()">🗑️ Hapus</button>
-    </div>
-</div>
-
-<script>
-    // --- DATABASE (IndexedDB) untuk Offline Storage ---
-    const DB_NAME = 'KilatDB_V5';
-    const DB_VERSION = 1;
-    let db;
-
-    function initDB() {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = (e) => {
-            db = e.target.result;
-            if (!db.objectStoreNames.contains('photos')) {
-                const store = db.createObjectStore('photos', { keyPath: 'id', autoIncrement: true });
-                store.createIndex('date', 'date', { unique: false });
-                store.createIndex('verified', 'verified', { unique: false });
-            }
-        };
-        request.onsuccess = (e) => { db = e.target.result; loadGallery(); };
-        request.onerror = (e) => console.error("DB Error", e);
-    }
-
-    // --- APP STATE ---
-    let stream = null;
-    let facingMode = 'environment';
-    let currentRatio = 0.75;
-    let gpsData = { 
-        lat: '-', 
-        lon: '-', 
-        addr: 'Mode Offline / Lokasi Tidak Terdeteksi', 
-        acc: 0,
-        altitude: null,
-        altitudeAccuracy: null,
-        heading: null,
-        speed: null,
-        timestamp: 0,
-        verified: false,
-        spoofDetected: false,
-        accuracyScore: 0
-    };
-    let currentPhotoBlob = null;
-    let serverTime = null;
-    let timeOffset = 0;
-    let isTimeVerified = false;
-    let lastPositions = [];
-
-    // --- INIT ---
-    window.onload = async () => {
-        initDB();
-        loadDraft(); 
-        initTimeVerification();
-        initGPS();
-        updateRatio();
-        
-        // Update time every minute
-        setInterval(updateTimeDisplay, 60000);
-        setInterval(verifyTimeIntegrity, 30000);
-        setInterval(fetchServerTime, 60000);
-    };
-
-    // --- TIME VERIFICATION SYSTEM (FIXED VERSION) ---
-    async function initTimeVerification() {
-        await fetchServerTime();
-        updateTimeDisplay();
-        verifyTimeIntegrity();
-    }
-
-    async function fetchServerTime() {
-        try {
-            // Try multiple time APIs with fallback
-            const timeAPIs = [
-                'https://worldtimeapi.org/api/ip',
-                'https://timeapi.io/api/Time/current/zone?timeZone=UTC',
-                'https://time.akamai.com/',
-                'https://time.googleapis.com/time/v1/current?key=test' // May fail but try anyway
-            ];
-
-            let success = false;
+        <!-- VERIFICATION RESULT (akan ditampilkan setelah verifikasi) -->
+        <div class="verification-result" id="verificationResult">
+            <div class="result-header">
+                <div class="verification-status">
+                    <div class="status-icon status-valid pulse-animation" id="statusIcon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div>
+                        <h2 class="status-text valid-text" id="statusText">KIN TERVERIFIKASI & VALID</h2>
+                        <p id="statusDescription">Kartu Identitas Nelayan ini terdaftar resmi di database SIMATA</p>
+                    </div>
+                </div>
+                <div class="timestamp">
+                    <i class="far fa-clock"></i> <span id="verificationTime">27 April 2025, 14:30 WIB</span>
+                </div>
+            </div>
             
-            for (const api of timeAPIs) {
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-                    
-                    const response = await fetch(api, { 
-                        signal: controller.signal,
-                        headers: { 'Cache-Control': 'no-cache' },
-                        mode: 'cors'
-                    });
-                    clearTimeout(timeoutId);
-                    
-                    if (response.ok) {
-                        if (api.includes('worldtimeapi')) {
-                            const data = await response.json();
-                            serverTime = new Date(data.unixtime * 1000);
-                            success = true;
-                        } else if (api.includes('timeapi')) {
-                            const data = await response.json();
-                            serverTime = new Date(data.currentLocalTime);
-                            success = true;
-                        } else {
-                            // Akamai/Google time - get from Date header
-                            const dateHeader = response.headers.get('Date');
-                            if (dateHeader) {
-                                serverTime = new Date(dateHeader);
-                                success = true;
-                            }
-                        }
+            <!-- ID CARD PREVIEW -->
+            <div class="id-card-preview">
+                <div class="id-card-header">
+                    <div>
+                        <h3 class="id-card-title" id="cardTitle">KARTU IDENTITAS NELAYAN</h3>
+                        <p class="id-card-subtitle" id="cardSubtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</p>
+                    </div>
+                    <div class="id-card-qr">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                </div>
+                
+                <div class="id-card-content">
+                    <div>
+                        <div class="id-card-field">
+                            <div class="field-label">Nama Lengkap</div>
+                            <div class="field-value field-highlight" id="fieldNama">SUGENG PURWO PRIYANTO</div>
+                        </div>
                         
-                        if (success) {
-                            timeOffset = serverTime - Date.now();
-                            isTimeVerified = true;
-                            console.log('Server time fetched from:', api, serverTime);
-                            break;
-                        }
-                    }
-                } catch (e) {
-                    console.log(`API ${api} failed, trying next...`);
-                }
-            }
-            
-            // If all APIs fail, use device time with warning but DON'T mark as manipulated
-            if (!success) {
-                console.log('All time APIs failed, using device time');
-                serverTime = new Date(); // Use device time as fallback
-                isTimeVerified = false; // Not verified but not necessarily manipulated
-                document.getElementById('timeWarning').style.display = 'none'; // Don't show warning
-                document.getElementById('timeWarning').textContent = 'TIDAK DAPAT MENGUJI SERVER';
-            }
-            
-        } catch (error) {
-            console.error('Time fetch error:', error);
-            serverTime = new Date(); // Fallback to device time
-            isTimeVerified = false;
-            document.getElementById('timeWarning').style.display = 'none';
-        }
-    }
-
-    function updateTimeDisplay() {
-        const deviceTime = new Date();
-        let timeHTML = `Perangkat: ${deviceTime.toLocaleString('id-ID')}`;
-        
-        if (serverTime && isTimeVerified) {
-            const serverTimeDisplay = new Date(serverTime.getTime() + (Date.now() - serverTime.getTime()));
-            timeHTML += `<br>Server: ${serverTimeDisplay.toLocaleString('id-ID')}`;
-            
-            // Only show difference if it's significant (more than 5 minutes)
-            const diff = Math.abs(serverTimeDisplay - deviceTime);
-            if (diff > 300000) { // More than 5 minutes difference
-                timeHTML += `<br><small style="color:#dc2626">Selisih: ${Math.round(diff/1000)} detik</small>`;
-            }
-        } else if (serverTime) {
-            timeHTML += `<br><small>Server: Tidak dapat terhubung</small>`;
-        }
-        
-        document.getElementById('deviceTime').innerHTML = timeHTML;
-    }
-
-    function verifyTimeIntegrity() {
-        const deviceTime = new Date();
-        const deviceYear = deviceTime.getFullYear();
-        const deviceMonth = deviceTime.getMonth();
-        const deviceDate = deviceTime.getDate();
-        
-        // More reasonable year range
-        const currentYear = serverTime ? serverTime.getFullYear() : new Date().getFullYear();
-        const minYear = currentYear - 2;
-        const maxYear = currentYear + 2;
-        
-        // Reset warning first
-        document.getElementById('timeWarning').style.display = 'none';
-        document.getElementById('timeVerification').classList.remove('verified');
-        
-        // Check if server time is available
-        if (serverTime && isTimeVerified) {
-            const adjustedServerTime = new Date(serverTime.getTime() + (Date.now() - serverTime.getTime()));
-            const timeDiff = Math.abs(adjustedServerTime - deviceTime);
-            
-            // More reasonable threshold: 10 minutes instead of 1 minute
-            if (timeDiff > 600000) { // 10 minutes in milliseconds
-                document.getElementById('timeWarning').textContent = 'PERBEDAAN WAKTU BESAR';
-                document.getElementById('timeWarning').style.display = 'inline-flex';
-                return;
-            }
-            
-            // If time difference is acceptable, mark as verified
-            document.getElementById('timeVerification').classList.add('verified');
-            document.getElementById('timeWarning').style.display = 'none';
-            
-        } else if (serverTime && !isTimeVerified) {
-            // Server time exists but couldn't verify (network issues, etc.)
-            // Check only device time sanity
-            if (deviceYear < minYear || deviceYear > maxYear) {
-                document.getElementById('timeWarning').textContent = 'TAHUN TIDAK WAJAR';
-                document.getElementById('timeWarning').style.display = 'inline-flex';
-            } else {
-                // Device time seems reasonable
-                document.getElementById('timeVerification').classList.add('verified');
-                document.getElementById('timeWarning').style.display = 'none';
-            }
-            
-        } else {
-            // No server time available, only check device time sanity
-            if (deviceYear < 2020 || deviceYear > 2035) { // Expanded reasonable range
-                document.getElementById('timeWarning').textContent = 'TAHUN TIDAK WAJAR';
-                document.getElementById('timeWarning').style.display = 'inline-flex';
-            } else {
-                // Device time seems reasonable
-                document.getElementById('timeVerification').classList.add('verified');
-                document.getElementById('timeWarning').style.display = 'none';
-            }
-        }
-        
-        // Additional sanity checks for device time
-        const hour = deviceTime.getHours();
-        const minute = deviceTime.getMinutes();
-        const second = deviceTime.getSeconds();
-        
-        // Check for obviously wrong time settings
-        if (hour > 23 || minute > 59 || second > 59) {
-            document.getElementById('timeWarning').textContent = 'FORMAT WAKTU TIDAK VALID';
-            document.getElementById('timeWarning').style.display = 'inline-flex';
-            document.getElementById('timeVerification').classList.remove('verified');
-        }
-    }
-
-    function getVerifiedTime() {
-        if (isTimeVerified && serverTime) {
-            // Return server time adjusted for elapsed time
-            return new Date(serverTime.getTime() + (Date.now() - serverTime.getTime()));
-        } else {
-            // Return device time - don't mark as manipulated if server is unreachable
-            const deviceTime = new Date();
-            const deviceYear = deviceTime.getFullYear();
-            
-            // Check if device time is at least reasonable
-            const isReasonable = deviceYear >= 2020 && deviceYear <= 2035;
-            
-            return { 
-                time: deviceTime, 
-                verified: isReasonable, // Verify based on reasonableness, not server connection
-                warning: isReasonable ? null : 'Waktu perangkat tidak wajar'
-            };
-        }
-    }
-
-    // --- GPS ANTI-SPOOFING SYSTEM ---
-    function initGPS() {
-        const dot = document.getElementById('gps-dot');
-        const txtCoords = document.getElementById('gps-coords');
-        const txtAddr = document.getElementById('gps-addr');
-        
-        if (!("geolocation" in navigator)) {
-            dot.classList.remove('active');
-            txtCoords.innerText = "GPS tidak didukung";
-            gpsData.spoofDetected = true;
-            updateGPSVerification();
-            return;
-        }
-
-        let watchId = null;
-        
-        // First get high accuracy position
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                processPosition(pos, true);
-                // Then start watching
-                watchId = navigator.geolocation.watchPosition(
-                    processPosition,
-                    handleGPSError,
-                    { 
-                        enableHighAccuracy: true, 
-                        maximumAge: 0,
-                        timeout: 10000 
-                    }
-                );
-            },
-            handleGPSError,
-            { 
-                enableHighAccuracy: true, 
-                maximumAge: 0,
-                timeout: 15000 
-            }
-        );
-
-        // Store watchId for cleanup
-        window.addEventListener('beforeunload', () => {
-            if (watchId) navigator.geolocation.clearWatch(watchId);
-        });
-    }
-
-    async function processPosition(pos, isInitial = false) {
-        const dot = document.getElementById('gps-dot');
-        const txtCoords = document.getElementById('gps-coords');
-        const txtAddr = document.getElementById('gps-addr');
-        
-        dot.classList.add('active');
-        
-        // Store position history for analysis
-        const positionData = {
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-            acc: pos.coords.accuracy,
-            alt: pos.coords.altitude,
-            altAcc: pos.coords.altitudeAccuracy,
-            heading: pos.coords.heading,
-            speed: pos.coords.speed,
-            timestamp: pos.timestamp,
-            deviceTime: Date.now()
-        };
-        
-        lastPositions.push(positionData);
-        if (lastPositions.length > 10) lastPositions.shift();
-        
-        // Detect GPS spoofing (with more reasonable thresholds)
-        const spoofDetected = detectGPSSpoofing(positionData);
-        
-        // Calculate accuracy score (0-100)
-        let accuracyScore = 0;
-        if (pos.coords.accuracy < 10) accuracyScore += 40;
-        else if (pos.coords.accuracy < 50) accuracyScore += 30;
-        else if (pos.coords.accuracy < 100) accuracyScore += 20;
-        else accuracyScore += 10;
-        
-        if (pos.coords.altitudeAccuracy && pos.coords.altitudeAccuracy < 10) accuracyScore += 20;
-        if (pos.coords.speed !== null) accuracyScore += 10;
-        if (!spoofDetected) accuracyScore += 30;
-        
-        // Update GPS data
-        gpsData = {
-            lat: pos.coords.latitude.toFixed(6),
-            lon: pos.coords.longitude.toFixed(6),
-            addr: gpsData.addr, // Keep previous address until updated
-            acc: Math.round(pos.coords.accuracy),
-            altitude: pos.coords.altitude,
-            altitudeAccuracy: pos.coords.altitudeAccuracy,
-            heading: pos.coords.heading,
-            speed: pos.coords.speed,
-            timestamp: pos.timestamp,
-            verified: accuracyScore > 60 && !spoofDetected,
-            spoofDetected: spoofDetected,
-            accuracyScore: accuracyScore
-        };
-        
-        // Update display
-        let coordText = `${gpsData.lat}, ${gpsData.lon}`;
-        if (gpsData.acc) coordText += ` (±${gpsData.acc}m)`;
-        
-        if (spoofDetected) {
-            dot.classList.add('warning');
-            coordText += " ⚠️";
-        } else {
-            dot.classList.remove('warning');
-        }
-        
-        txtCoords.innerText = coordText;
-        
-        // Reverse geocoding (throttled)
-        if (isInitial || Math.random() > 0.7) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
-                const res = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${gpsData.lat}&lon=${gpsData.lon}&zoom=16`,
-                    { signal: controller.signal }
-                );
-                clearTimeout(timeoutId);
-                
-                const json = await res.json();
-                let address = '';
-                
-                if (json.address) {
-                    const a = json.address;
-                    const parts = [];
-                    if (a.road) parts.push(a.road);
-                    if (a.village) parts.push(a.village);
-                    if (a.suburb) parts.push(a.suburb);
-                    if (a.city_district) parts.push(a.city_district);
-                    if (a.city || a.regency) parts.push(a.city || a.regency);
-                    if (a.state) parts.push(a.state);
+                        <div class="id-card-field">
+                            <div class="field-label">NIK (Nomor Induk Kependudukan)</div>
+                            <div class="field-value" id="fieldNIK">3510110101010001</div>
+                        </div>
+                        
+                        <div class="id-card-field">
+                            <div class="field-label">Usia / Tahun Lahir</div>
+                            <div class="field-value" id="fieldUsia">48 Tahun / 1976</div>
+                        </div>
+                        
+                        <div class="id-card-field">
+                            <div class="field-label">Domisili</div>
+                            <div class="field-value" id="fieldDomisili">Panarukan, Sumberkolak, Situbondo</div>
+                        </div>
+                    </div>
                     
-                    address = parts.join(", ");
-                    if (address.length > 80) address = address.substring(0, 77) + "...";
-                }
+                    <div>
+                        <div class="id-card-field">
+                            <div class="field-label">Profesi</div>
+                            <div class="field-value">
+                                <span id="fieldProfesi">Nelayan Penuh Waktu</span>
+                                <span class="badge-profesi badge-penuh" id="profesiBadge">PENUH WAKTU</span>
+                            </div>
+                        </div>
+                        
+                        <div class="id-card-field">
+                            <div class="field-label">Status Pekerjaan</div>
+                            <div class="field-value" id="fieldStatus">Pemilik Kapal</div>
+                        </div>
+                        
+                        <div class="id-card-field">
+                            <div class="field-label">Alat Penangkapan Ikan (API)</div>
+                            <div class="field-value" id="fieldAlatTangkap">Pukat Cincin</div>
+                        </div>
+                        
+                        <div class="id-card-field">
+                            <div class="field-label">Nama Kapal</div>
+                            <div class="field-value" id="fieldNamaKapal">JAYA MURNI 04</div>
+                        </div>
+                    </div>
+                </div>
                 
-                gpsData.addr = address || json.display_name || 'Alamat tidak ditemukan';
-                txtAddr.innerText = gpsData.addr;
-            } catch (e) {
-                console.log("Reverse geocoding failed:", e);
-            }
-        }
-        
-        updateGPSVerification();
-    }
-
-    function detectGPSSpoofing(currentPos) {
-        if (lastPositions.length < 2) return false;
-        
-        const prevPos = lastPositions[lastPositions.length - 2];
-        const timeDiff = (currentPos.timestamp - prevPos.timestamp) / 1000;
-        
-        if (timeDiff <= 0) return false;
-        
-        // Calculate distance using Haversine formula
-        const R = 6371e3;
-        const φ1 = prevPos.lat * Math.PI/180;
-        const φ2 = currentPos.lat * Math.PI/180;
-        const Δφ = (currentPos.lat - prevPos.lat) * Math.PI/180;
-        const Δλ = (currentPos.lon - prevPos.lon) * Math.PI/180;
-        
-        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                  Math.cos(φ1) * Math.cos(φ2) *
-                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        const distance = R * c;
-        
-        // Calculate speed (m/s)
-        const speed = distance / timeDiff;
-        
-        // More reasonable detection rules
-        if (speed > 200) return true; // > 720 km/h (impossible for ground vehicle)
-        if (currentPos.acc > 5000) return true; // Very low accuracy (>5km)
-        if (currentPos.altitude && Math.abs(currentPos.altitude) > 10000) return true; // Extreme altitude
-        
-        // Check for sudden jumps
-        if (lastPositions.length >= 3) {
-            const speeds = [];
-            for (let i = 1; i < lastPositions.length; i++) {
-                const dist = calculateDistance(lastPositions[i-1], lastPositions[i]);
-                const time = (lastPositions[i].timestamp - lastPositions[i-1].timestamp) / 1000;
-                if (time > 0) speeds.push(dist / time);
-            }
+                <div class="id-card-footer">
+                    <div>
+                        <div class="field-label">Kode Verifikasi</div>
+                        <div class="verification-code" id="verificationCodeDisplay">VLD-SMT2025001</div>
+                    </div>
+                    <div class="validity-info">
+                        <i class="fas fa-certificate"></i>
+                        <span>Kartu Berlaku: <strong>SEUMUR HIDUP</strong></span>
+                    </div>
+                </div>
+            </div>
             
-            // Check for inconsistent speeds
-            const avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
-            const variance = speeds.reduce((a, b) => a + Math.pow(b - avgSpeed, 2), 0) / speeds.length;
+            <!-- VERIFICATION DETAILS -->
+            <div class="verification-details">
+                <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Detail Verifikasi</h2>
+                
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <h4><i class="fas fa-database"></i> Status Database</h4>
+                        <p><strong>Terdaftar di SIMATA:</strong> <span class="valid-text">✓ YA</span></p>
+                        <p><strong>Tanggal Pendaftaran:</strong> 15 Januari 2023</p>
+                        <p><strong>Terakhir Diperbarui:</strong> 10 Maret 2025</p>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h4><i class="fas fa-user-check"></i> Validasi Administratif</h4>
+                        <p><strong>NIK Terverifikasi:</strong> <span class="valid-text">✓ SESUAI</span></p>
+                        <p><strong>Data Domisili:</strong> <span class="valid-text">✓ TERKONFIRMASI</span></p>
+                        <p><strong>Status Profesi:</strong> <span class="valid-text">✓ AKTIF</span></p>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h4><i class="fas fa-file-contract"></i> Dokumen Pendukung</h4>
+                        <p><strong>Surat Keterangan Nelayan:</strong> <span class="valid-text">✓ TERSEDIA</span></p>
+                        <p><strong>Izin Kapal:</strong> <span class="valid-text">✓ TERSEDIA</span></p>
+                        <p><strong>Foto Terbaru:</strong> <span class="valid-text">✓ TERSEDIA</span></p>
+                    </div>
+                </div>
+            </div>
             
-            if (variance > 50000) return true; // Highly inconsistent movement
-        }
+            <!-- ACTION BUTTONS -->
+            <div class="action-buttons">
+                <button class="action-btn btn-print" id="printBtn">
+                    <i class="fas fa-print"></i> Cetak Hasil Verifikasi
+                </button>
+                <button class="action-btn btn-verify-another" id="verifyAnotherBtn">
+                    <i class="fas fa-redo"></i> Verifikasi KIN Lain
+                </button>
+                <button class="action-btn btn-report" id="reportBtn">
+                    <i class="fas fa-flag"></i> Laporkan Masalah
+                </button>
+            </div>
+        </div>
         
-        return false;
-    }
+        <!-- NO RESULT (untuk KIN tidak valid) -->
+        <div class="no-result" id="noResult">
+            <div class="no-result-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>KIN TIDAK DITEMUKAN ATAU TIDAK VALID</h3>
+            <p>Kartu Identitas Nelayan dengan kode atau NIK yang dimasukkan tidak terdaftar dalam database SIMATA Dinas Perikanan Kabupaten Situbondo. Silakan periksa kembali kode yang dimasukkan atau hubungi kantor Dinas Perikanan untuk verifikasi lebih lanjut.</p>
+            <button class="action-btn btn-verify-another" id="tryAgainBtn">
+                <i class="fas fa-redo"></i> Coba Verifikasi Kembali
+            </button>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="footer">
+            <p><strong>SISTEM INFORMASI PEMETAAN DATA NELAYAN TERPADU (SIMATA)</strong></p>
+            <p>Dinas Perikanan Kabupaten Situbondo | Jl. Raya Situbondo No. 123 | Telp. (0338) 671234</p>
+            <p>© 2025 Dinas Perikanan Kabupaten Situbondo. Semua hak dilindungi.</p>
+            
+            <div class="footer-links">
+                <a href="https://dinasperikanansitubondo.com" target="_blank"><i class="fas fa-globe"></i> Website Resmi</a>
+                <a href="https://dinasperikanansitubondo.com/simata" target="_blank"><i class="fas fa-tachometer-alt"></i> Dashboard SIMATA</a>
+                <a href="mailto:info@dinasperikanansitubondo.com"><i class="fas fa-envelope"></i> Kontak Email</a>
+            </div>
+        </div>
+    </div>
 
-    function calculateDistance(pos1, pos2) {
-        const R = 6371e3;
-        const φ1 = pos1.lat * Math.PI/180;
-        const φ2 = pos2.lat * Math.PI/180;
-        const Δφ = (pos2.lat - pos1.lat) * Math.PI/180;
-        const Δλ = (pos2.lon - pos1.lon) * Math.PI/180;
-        
-        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                  Math.cos(φ1) * Math.cos(φ2) *
-                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    }
-
-    function handleGPSError(error) {
-        const dot = document.getElementById('gps-dot');
-        const txtCoords = document.getElementById('gps-coords');
-        
-        dot.classList.remove('active');
-        
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                txtCoords.innerText = "Akses GPS ditolak";
-                break;
-            case error.POSITION_UNAVAILABLE:
-                txtCoords.innerText = "GPS tidak tersedia";
-                break;
-            case error.TIMEOUT:
-                txtCoords.innerText = "Timeout GPS";
-                break;
-            default:
-                txtCoords.innerText = "Error GPS";
-        }
-        
-        gpsData.spoofDetected = true;
-        updateGPSVerification();
-    }
-
-    function updateGPSVerification() {
-        const gpsStatus = document.getElementById('gpsStatus');
-        const gpsWarning = document.getElementById('gpsWarning');
-        const verificationBox = document.getElementById('gpsVerification');
-        
-        if (gpsData.spoofDetected) {
-            gpsStatus.innerHTML = `<span style="color:#dc2626">⚠️ LOKASI TIDAK TERPERCAYA</span>`;
-            gpsWarning.textContent = "GPS Mungkin Dimanipulasi";
-            gpsWarning.style.display = 'inline-flex';
-            verificationBox.classList.remove('verified');
-            document.getElementById('gps-dot').classList.add('warning');
-        } else if (gpsData.accuracyScore > 70) {
-            gpsStatus.innerHTML = `<span style="color:#059669">✓ LOKASI TERVERIFIKASI</span>`;
-            gpsWarning.style.display = 'none';
-            verificationBox.classList.add('verified');
-            document.getElementById('gps-dot').classList.remove('warning');
-        } else if (gpsData.accuracyScore > 40) {
-            gpsStatus.innerHTML = `<span style="color:#d97706">⚠️ LOKASI KURANG AKURAT</span>`;
-            gpsWarning.textContent = "Akurasi GPS Rendah";
-            gpsWarning.style.display = 'inline-flex';
-            verificationBox.classList.remove('verified');
-            document.getElementById('gps-dot').classList.add('warning');
-        } else {
-            gpsStatus.innerHTML = `<span style="color:#dc2626">✗ LOKASI TIDAK AKURAT</span>`;
-            gpsWarning.textContent = "GPS Tidak Akurat";
-            gpsWarning.style.display = 'inline-flex';
-            verificationBox.classList.remove('verified');
-            document.getElementById('gps-dot').classList.add('warning');
-        }
-    }
-
-    // --- NAVIGATION ---
-    function switchTab(tabId) {
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        
-        document.getElementById(`view-${tabId}`).classList.add('active');
-        const index = ['form', 'camera', 'gallery'].indexOf(tabId);
-        document.querySelectorAll('.nav-item')[index].classList.add('active');
-
-        if (tabId === 'camera') startCamera();
-        else stopCamera();
-        
-        if (tabId === 'gallery') loadGallery();
-    }
-
-    function goToCamera() {
-        const user = document.getElementById('inUser').value;
-        const keg = document.getElementById('inKegiatan').value;
-        if(!user || !keg) { 
-            alert("Mohon lengkapi Nama Petugas & Kegiatan!"); 
-            return; 
-        }
-        switchTab('camera');
-    }
-
-    // --- FORM DRAFTING ---
-    function saveDraft() {
-        const data = {
-            user: document.getElementById('inUser').value,
-            keg: document.getElementById('inKegiatan').value,
-            dinas: document.getElementById('inDinas').value,
-            bid: document.getElementById('inBidang').value
+    <script>
+        // Data contoh untuk simulasi verifikasi
+        const sampleData = {
+            valid: {
+                nama: "SUGENG PURWO PRIYANTO",
+                nik: "3510110101010001",
+                usia: "48 Tahun / 1976",
+                domisili: "Panarukan, Sumberkolak, Situbondo",
+                profesi: "Nelayan Penuh Waktu",
+                profesiClass: "badge-penuh",
+                status: "Pemilik Kapal",
+                alatTangkap: "Pukat Cincin",
+                namaKapal: "JAYA MURNI 04",
+                kodeValidasi: "VLD-SMT2025001",
+                tanggalDaftar: "15 Januari 2023",
+                tanggalUpdate: "10 Maret 2025"
+            },
+            invalid: {
+                kode: "VLD-INVALID001",
+                pesan: "Kode validasi tidak ditemukan dalam database"
+            }
         };
-        localStorage.setItem('kilat_draft_v5', JSON.stringify(data));
-    }
-    
-    function loadDraft() {
-        const data = JSON.parse(localStorage.getItem('kilat_draft_v5'));
-        if(data) {
-            document.getElementById('inUser').value = data.user;
-            document.getElementById('inKegiatan').value = data.keg;
-            document.getElementById('inDinas').value = data.dinas;
-            document.getElementById('inBidang').value = data.bid;
-        }
-    }
-
-    // --- CAMERA ENGINE ---
-    async function startCamera() {
-        const video = document.getElementById('video');
-        if (stream) return;
-
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: facingMode,
-                    width: { ideal: 4096 },
-                    height: { ideal: 2160 }
-                },
-                audio: false
-            });
-            video.srcObject = stream;
-            video.classList.toggle('mirrored', facingMode === 'user');
-        } catch (err) {
-            alert("Gagal akses kamera. Pastikan izin diberikan.");
-        }
-    }
-
-    function stopCamera() {
-        if (stream) stream.getTracks().forEach(t => t.stop());
-        stream = null;
-    }
-
-    function toggleCam() {
-        facingMode = facingMode === 'environment' ? 'user' : 'environment';
-        stopCamera();
-        startCamera();
-    }
-
-    function updateRatio() {
-        currentRatio = parseFloat(document.getElementById('selRatio').value);
-        document.getElementById('cam-container').style.aspectRatio = `${currentRatio}`;
-    }
-
-    // --- CORE: SMART WATERMARK (VERSION 5.0 - ANTI MANIPULASI) ---
-    function takePicture() {
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d', { alpha: false });
-
-        const vw = video.videoWidth;
-        const vh = video.videoHeight;
-        let sw, sh, sx, sy;
-        const vidRatio = vw / vh;
-
-        // Smart Cropping
-        if (vidRatio > currentRatio) {
-            sh = vh; sw = vh * currentRatio;
-            sx = (vw - sw) / 2; sy = 0;
-        } else {
-            sw = vw; sh = vw / currentRatio;
-            sx = 0; sy = (vh - sh) / 2;
-        }
-
-        canvas.width = sw;
-        canvas.height = sh;
-
-        // Draw Image
-        ctx.drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh);
-
-        // Draw Watermark with verification info
-        drawSmartWatermark(ctx, sw, sh);
-
-        // Output
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-        const imgEl = document.getElementById('result-preview');
-        imgEl.src = dataUrl;
-        imgEl.style.display = 'block';
-        video.style.display = 'none';
-
-        canvas.toBlob(blob => currentPhotoBlob = blob, 'image/jpeg', 0.92);
-
-        // UI Updates
-        document.getElementById('cam-controls').style.display = 'none';
-        document.getElementById('res-controls').style.display = 'flex';
-        document.querySelector('.toolbar').style.display = 'none';
         
-        // Show warning button if verification failed
-        if (gpsData.spoofDetected || !isTimeVerified || gpsData.accuracyScore < 60) {
-            document.getElementById('forceSaveBtn').style.display = 'block';
-        } else {
-            document.getElementById('forceSaveBtn').style.display = 'none';
-        }
-    }
-
-    function drawSmartWatermark(ctx, w, h) {
-        // --- KONFIGURASI UKURAN ---
-        const minSide = Math.min(w, h);
-        const baseSize = minSide * 0.024;
-        const margin = baseSize * 1.5;
-        const lineHeight = baseSize * 1.4;
-
-        // --- DATA ---
-        const user = document.getElementById('inUser').value; 
-        const keg = document.getElementById('inKegiatan').value;
-        const dinas = document.getElementById('inDinas').value;
-        const unit = document.getElementById('inBidang').value;
+        // Element references
+        const verificationResult = document.getElementById('verificationResult');
+        const noResult = document.getElementById('noResult');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const verifyByNIKBtn = document.getElementById('verifyByNIKBtn');
+        const verifyAnotherBtn = document.getElementById('verifyAnotherBtn');
+        const tryAgainBtn = document.getElementById('tryAgainBtn');
+        const printBtn = document.getElementById('printBtn');
+        const reportBtn = document.getElementById('reportBtn');
         
-        // Get verified time (updated logic)
-        const timeInfo = getVerifiedTime();
-        let timeStr, timeVerified;
-        
-        if (typeof timeInfo === 'object' && timeInfo.time) {
-            const now = timeInfo.time;
-            timeStr = now.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' | ' + 
-                      now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.',':') + ' WIB';
-            timeVerified = timeInfo.verified !== false;
-        } else {
+        // Fungsi untuk menampilkan hasil verifikasi (valid)
+        function showValidResult() {
+            // Update data pada kartu
+            document.getElementById('fieldNama').textContent = sampleData.valid.nama;
+            document.getElementById('fieldNIK').textContent = sampleData.valid.nik;
+            document.getElementById('fieldUsia').textContent = sampleData.valid.usia;
+            document.getElementById('fieldDomisili').textContent = sampleData.valid.domisili;
+            document.getElementById('fieldProfesi').textContent = sampleData.valid.profesi;
+            document.getElementById('profesiBadge').textContent = sampleData.valid.profesi.toUpperCase().replace("NELAYAN ", "");
+            document.getElementById('profesiBadge').className = `badge-profesi ${sampleData.valid.profesiClass}`;
+            document.getElementById('fieldStatus').textContent = sampleData.valid.status;
+            document.getElementById('fieldAlatTangkap').textContent = sampleData.valid.alatTangkap;
+            document.getElementById('fieldNamaKapal').textContent = sampleData.valid.namaKapal;
+            document.getElementById('verificationCodeDisplay').textContent = sampleData.valid.kodeValidasi;
+            
+            // Update waktu verifikasi
             const now = new Date();
-            timeStr = now.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' | ' + 
-                      now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.',':') + ' WIB';
-            timeVerified = isTimeVerified;
-        }
-
-        // --- VERIFICATION STATUS ---
-        const isFullyVerified = timeVerified && gpsData.verified && !gpsData.spoofDetected;
-        const verificationText = isFullyVerified ? 
-            "✓ TERVERIFIKASI (WAKTU & LOKASI ASLI)" : 
-            "⚠️ PERINGATAN: DATA MUNGKIN DIMANIPULASI";
-
-        // --- TEXT WRAPPING CALCULATION ---
-        ctx.font = `800 ${baseSize * 1.3}px sans-serif`; 
-        const maxTextWidth = w - (margin * 2);
-        const kegLines = getLines(ctx, keg, maxTextWidth);
-
-        // Hitung total baris
-        let blockCount = kegLines.length + 6; // Basic lines + verification
-        if (dinas) blockCount++;
-        if (unit) blockCount++;
-
-        const totalBlockHeight = (blockCount * lineHeight * 1.2) + (margin * 2);
-
-        // --- BACKGROUND ---
-        const bgColor = isFullyVerified ? 
-            "rgba(0, 100, 0, 0.95)" : 
-            "rgba(120, 53, 15, 0.95)";
-        
-        const grad = ctx.createLinearGradient(0, h - totalBlockHeight, 0, h);
-        grad.addColorStop(0, "rgba(0,0,0,0)");
-        grad.addColorStop(0.3, `rgba(0,0,0,0.6)`);
-        grad.addColorStop(1, bgColor);
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, h - totalBlockHeight, w, totalBlockHeight);
-
-        // --- DRAWING TEXT (Bottom Up) ---
-        ctx.textBaseline = 'bottom';
-        ctx.textAlign = 'left';
-        let curY = h - margin;
-
-        // 1. URL
-        ctx.font = `italic ${baseSize * 0.7}px sans-serif`;
-        ctx.fillStyle = "rgba(255,255,255,0.6)";
-        ctx.fillText("www.dinasperikanansitubondo.com/kilat", margin, curY);
-        curY -= (lineHeight * 1.2);
-
-        // 2. Verification Status (COLOR CODED)
-        ctx.font = `700 ${baseSize * 0.9}px sans-serif`;
-        ctx.fillStyle = isFullyVerified ? "#86efac" : "#fca5a5";
-        ctx.fillText(verificationText, margin, curY);
-        curY -= (lineHeight * 1.3);
-
-        // 3. GPS Verification Details
-        ctx.font = `600 ${baseSize * 0.8}px monospace`;
-        ctx.fillStyle = gpsData.spoofDetected ? "#fca5a5" : 
-                       gpsData.verified ? "#86efac" : "#fde68a";
-        
-        let gpsStatusText = `GPS: ${gpsData.lat}, ${gpsData.lon}`;
-        if (gpsData.acc) gpsStatusText += ` (±${gpsData.acc}m)`;
-        if (gpsData.spoofDetected) gpsStatusText += " [SPOOF DETECTED]";
-        else if (!gpsData.verified) gpsStatusText += " [LOW ACCURACY]";
-        
-        ctx.fillText(gpsStatusText, margin, curY);
-        curY -= lineHeight;
-
-        // 4. Time Verification Details
-        ctx.font = `600 ${baseSize * 0.8}px monospace`;
-        ctx.fillStyle = timeVerified ? "#86efac" : "#fca5a5";
-        const timeSource = timeVerified ? "[TIME: SERVER VERIFIED]" : "[TIME: DEVICE - UNVERIFIED]";
-        ctx.fillText(timeSource, margin, curY);
-        curY -= (lineHeight * 1.3);
-
-        // 5. Bidang / Unit
-        if(unit) {
-            ctx.font = `600 ${baseSize}px sans-serif`;
-            ctx.fillStyle = "#e2e8f0";
-            ctx.fillText(unit, margin, curY);
-            curY -= lineHeight;
-        }
-
-        // 6. Dinas / Instansi
-        if(dinas) {
-            ctx.font = `700 ${baseSize}px sans-serif`;
-            ctx.fillStyle = "#f1f5f9";
-            ctx.fillText(dinas, margin, curY);
-            curY -= lineHeight;
-        }
-
-        // 7. User
-        ctx.font = `500 ${baseSize * 0.9}px sans-serif`;
-        ctx.fillStyle = "#cbd5e1";
-        ctx.fillText(`OLEH: ${user}`, margin, curY);
-        curY -= (lineHeight * 1.3);
-
-        // 8. Lokasi Alamat
-        let addr = gpsData.addr;
-        if(addr.length > 75) addr = addr.substring(0, 75) + "...";
-        ctx.font = `400 ${baseSize * 0.85}px sans-serif`;
-        ctx.fillStyle = "#fff";
-        ctx.fillText(addr, margin, curY);
-        curY -= (lineHeight * 1.3);
-
-        // 9. Waktu
-        ctx.font = `bold ${baseSize * 1.1}px sans-serif`;
-        ctx.fillStyle = timeVerified ? "#facc15" : "#fca5a5";
-        ctx.fillText(timeStr, margin, curY);
-        curY -= (lineHeight * 1.3);
-
-        // 10. KEGIATAN (Judul Utama)
-        ctx.font = `800 ${baseSize * 1.4}px sans-serif`;
-        ctx.fillStyle = isFullyVerified ? "#38bdf8" : "#fbbf24";
-        ctx.shadowColor = "rgba(0,0,0,0.8)";
-        ctx.shadowBlur = 4;
-        
-        for (let i = kegLines.length - 1; i >= 0; i--) {
-            ctx.fillText(kegLines[i], margin, curY);
-            curY -= (lineHeight * 1.3);
-        }
-    }
-
-    function getLines(ctx, text, maxWidth) {
-        var words = text.split(" ");
-        var lines = [];
-        var currentLine = words[0];
-
-        for (var i = 1; i < words.length; i++) {
-            var word = words[i];
-            var width = ctx.measureText(currentLine + " " + word).width;
-            if (width < maxWidth) {
-                currentLine += " " + word;
-            } else {
-                lines.push(currentLine);
-                currentLine = word;
-            }
-        }
-        lines.push(currentLine);
-        return lines;
-    }
-
-    // --- GALLERY SYSTEM ---
-    function saveToGallery() {
-        if(!currentPhotoBlob) return;
-        
-        if (gpsData.spoofDetected || !isTimeVerified) {
-            if (!confirm("⚠️ PERINGATAN: Data waktu atau lokasi tidak terverifikasi. Foto ini mungkin dimanipulasi. Tetap simpan?")) {
-                return;
-            }
-        }
-        
-        const keg = document.getElementById('inKegiatan').value;
-        const verified = isTimeVerified && gpsData.verified && !gpsData.spoofDetected;
-        
-        const record = { 
-            blob: currentPhotoBlob, 
-            kegiatan: keg, 
-            date: new Date().toISOString(),
-            verified: verified,
-            gpsData: gpsData,
-            timeVerified: isTimeVerified
-        };
-
-        const transaction = db.transaction(['photos'], 'readwrite');
-        transaction.objectStore('photos').add(record);
-
-        transaction.oncomplete = () => {
-            alert(verified ? "✅ Foto tersimpan (TERVERIFIKASI)!" : "⚠️ Foto tersimpan (DENGAN PERINGATAN)!");
-            switchTab('gallery');
-            retake();
-        };
-    }
-
-    function forceSaveWithWarning() {
-        if(!currentPhotoBlob) return;
-        
-        const keg = document.getElementById('inKegiatan').value;
-        const verified = false; // Force false karena ada warning
-        
-        const record = { 
-            blob: currentPhotoBlob, 
-            kegiatan: keg, 
-            date: new Date().toISOString(),
-            verified: verified,
-            gpsData: gpsData,
-            timeVerified: isTimeVerified,
-            warning: "Disimpan dengan peringatan verifikasi"
-        };
-
-        const transaction = db.transaction(['photos'], 'readwrite');
-        transaction.objectStore('photos').add(record);
-
-        transaction.oncomplete = () => {
-            alert("⚠️ Foto tersimpan dengan status TIDAK TERVERIFIKASI!");
-            switchTab('gallery');
-            retake();
-        };
-    }
-
-    function loadGallery() {
-        if(!db) return;
-        const grid = document.getElementById('gallery-grid');
-        grid.innerHTML = '';
-        const store = db.transaction(['photos'], 'readonly').objectStore('photos');
-        const req = store.getAll();
-
-        req.onsuccess = () => {
-            const items = req.result.sort((a,b) => new Date(b.date) - new Date(a.date));
-            if(items.length === 0) {
-                document.getElementById('empty-msg').style.display = 'block';
-                return;
-            }
-            document.getElementById('empty-msg').style.display = 'none';
-
-            items.forEach(item => {
-                const url = URL.createObjectURL(item.blob);
-                const div = document.createElement('div');
-                div.className = 'gallery-item';
-                div.onclick = () => openModal(url, item.kegiatan, item.id, item.verified);
-                
-                const d = new Date(item.date);
-                const dateStr = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
-                
-                let statusBadge = '';
-                if (item.verified) {
-                    statusBadge = '<div style="position:absolute; top:8px; right:8px; background:#059669; color:white; padding:4px 8px; border-radius:10px; font-size:0.7rem; font-weight:bold;">✓</div>';
-                } else {
-                    statusBadge = '<div style="position:absolute; top:8px; right:8px; background:#dc2626; color:white; padding:4px 8px; border-radius:10px; font-size:0.7rem; font-weight:bold;">⚠️</div>';
-                }
-                
-                div.innerHTML = `<img src="${url}" loading="lazy">${statusBadge}<div class="gallery-date">${item.kegiatan}<br><small>${dateStr}</small></div>`;
-                grid.appendChild(div);
-            });
-        };
-    }
-
-    function retake() {
-        document.getElementById('result-preview').style.display = 'none';
-        document.getElementById('video').style.display = 'block';
-        document.getElementById('cam-controls').style.display = 'flex';
-        document.getElementById('res-controls').style.display = 'none';
-        document.getElementById('forceSaveBtn').style.display = 'none';
-        document.querySelector('.toolbar').style.display = 'flex';
-    }
-
-    // --- MODAL & DELETE ---
-    let currentModalId = null;
-
-    function openModal(url, title, id, verified) {
-        const modal = document.getElementById('imgModal');
-        const img = document.getElementById('modalImg');
-        const btn = document.getElementById('modalDown');
-        
-        img.src = url;
-        btn.href = url;
-        
-        const safeTitle = title.replace(/[^a-zA-Z0-9]/g, '_') || 'FOTO';
-        const prefix = verified ? 'TERVERIFIKASI_' : 'PERINGATAN_';
-        btn.download = `KILAT_${prefix}${safeTitle}.jpg`;
-        currentModalId = id;
-        
-        modal.classList.add('open');
-    }
-
-    function closeModal() {
-        document.getElementById('imgModal').classList.remove('open');
-    }
-
-    function deleteCurrentPhoto() {
-        if(confirm("Hapus foto ini dari galeri?")) {
-            const tx = db.transaction(['photos'], 'readwrite');
-            tx.objectStore('photos').delete(currentModalId);
-            tx.oncomplete = () => {
-                closeModal();
-                loadGallery();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'Asia/Jakarta',
+                timeZoneName: 'short'
             };
+            document.getElementById('verificationTime').textContent = now.toLocaleDateString('id-ID', options);
+            
+            // Tampilkan hasil verifikasi
+            verificationResult.style.display = 'block';
+            noResult.style.display = 'none';
+            
+            // Scroll ke hasil verifikasi
+            verificationResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-    }
-</script>
+        
+        // Fungsi untuk menampilkan hasil tidak valid
+        function showInvalidResult() {
+            verificationResult.style.display = 'none';
+            noResult.style.display = 'block';
+            
+            // Scroll ke hasil
+            noResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Fungsi untuk memulai proses verifikasi
+        function startVerification() {
+            const verificationCode = document.getElementById('verificationCode').value.trim();
+            const nikNumber = document.getElementById('nikNumber').value.trim();
+            
+            // Validasi input
+            if (!verificationCode && !nikNumber) {
+                alert("Harap masukkan Kode Validasi KIN atau NIK untuk verifikasi.");
+                return;
+            }
+            
+            // Tampilkan loading
+            verificationResult.style.display = 'none';
+            noResult.style.display = 'none';
+            loadingIndicator.style.display = 'block';
+            
+            // Simulasi proses verifikasi (dalam aplikasi nyata, ini akan request ke server)
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+                
+                // Untuk demo, kita asumsikan:
+                // - Kode yang mengandung "VLD-" atau "SIMATA-" adalah valid
+                // - NIK dengan 16 digit adalah valid
+                const isValid = 
+                    (verificationCode && (verificationCode.includes("VLD-") || verificationCode.includes("SIMATA-"))) ||
+                    (nikNumber && nikNumber.length === 16 && /^\d+$/.test(nikNumber));
+                
+                if (isValid) {
+                    showValidResult();
+                } else {
+                    showInvalidResult();
+                }
+            }, 1500);
+        }
+        
+        // Fungsi untuk mereset form dan kembali ke halaman awal
+        function resetVerification() {
+            document.getElementById('verificationCode').value = '';
+            document.getElementById('nikNumber').value = '';
+            verificationResult.style.display = 'none';
+            noResult.style.display = 'none';
+            loadingIndicator.style.display = 'none';
+            
+            // Scroll kembali ke atas
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Fungsi untuk mencetak hasil verifikasi
+        function printVerification() {
+            window.print();
+        }
+        
+        // Fungsi untuk melaporkan masalah
+        function reportIssue() {
+            const email = "info@dinasperikanansitubondo.com";
+            const subject = "Laporan Masalah Verifikasi KIN SIMATA";
+            const body = `Saya ingin melaporkan masalah verifikasi KIN dengan detail berikut:%0D%0A%0D%0AKode/NIK yang diverifikasi: ${document.getElementById('verificationCode').value || document.getElementById('nikNumber').value}%0D%0A%0D%0AMasalah yang dialami:%0D%0A%0D%0A%0D%0ANama:%0D%0AInstansi:%0D%0AKontak:`;
+            
+            window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${body}`, '_blank');
+        }
+        
+        // Event Listeners
+        verifyBtn.addEventListener('click', startVerification);
+        verifyByNIKBtn.addEventListener('click', startVerification);
+        verifyAnotherBtn.addEventListener('click', resetVerification);
+        tryAgainBtn.addEventListener('click', resetVerification);
+        printBtn.addEventListener('click', printVerification);
+        reportBtn.addEventListener('click', reportIssue);
+        
+        // Enter key support untuk input field
+        document.getElementById('verificationCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startVerification();
+            }
+        });
+        
+        document.getElementById('nikNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startVerification();
+            }
+        });
+        
+        // Cek parameter URL untuk verifikasi otomatis
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const nik = urlParams.get('nik');
+            
+            if (code) {
+                document.getElementById('verificationCode').value = code;
+                // Auto-verifikasi setelah halaman dimuat
+                setTimeout(startVerification, 1000);
+            } else if (nik) {
+                document.getElementById('nikNumber').value = nik;
+                // Auto-verifikasi setelah halaman dimuat
+                setTimeout(startVerification, 1000);
+            }
+        });
+    </script>
 </body>
 </html>
