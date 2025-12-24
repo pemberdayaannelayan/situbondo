@@ -3674,7 +3674,7 @@
         }
 
         // ================================
-        // FUNGSI VERIFIKASI KIN BARU
+        // FUNGSI VERIFIKASI KIN BARU - TELAH DIPERBAIKI (TOMBOL CETAK KIN DIHAPUS)
         // ================================
 
         /**
@@ -3724,7 +3724,7 @@
         }
 
         /**
-         * Fungsi untuk menampilkan hasil verifikasi
+         * Fungsi untuk menampilkan hasil verifikasi - TELAH DIPERBAIKI (TOMBOL CETAK KIN DIHAPUS)
          */
         function showVerificationResult(nelayanData, isValid, input = '') {
             const verifyResultContainer = document.getElementById('verifyResultContainer');
@@ -3804,9 +3804,6 @@
                         </div>
                         
                         <div class="verify-actions">
-                            <button type="button" class="btn btn-primary verify-action-btn" onclick="generateSimataIDCard(${JSON.stringify(nelayanData).replace(/'/g, "\\'")})">
-                                <i class="fas fa-id-card me-1"></i> Cetak KIN
-                            </button>
                             <button type="button" class="btn btn-outline-primary verify-action-btn" onclick="viewDetail('${nelayanData.id}')">
                                 <i class="fas fa-eye me-1"></i> Lihat Detail Lengkap
                             </button>
@@ -5759,235 +5756,171 @@
                         0: { halign: 'center' },
                         2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' },
                         5: { halign: 'center' }, 6: { halign: 'center' }, 7: { halign: 'center' }
-                    },
-                    foot: [['', 'TOTAL KESELURUHAN', totalNelayan, '', '', totalPenuhWaktu, totalSambilanUtama, totalSambilanTambahan]],
-                    footStyles: { fillColor: [246, 185, 59], textColor: [0, 0, 0], fontStyle: 'bold' }
+                    }
                 });
 
-            let finalY = doc.lastAutoTable.finalY + 10;
-            if (finalY > 150) { doc.addPage(); finalY = 20; }
+                const qrRightCanvas = document.querySelector('#qr-right canvas');
+                if(qrRightCanvas) {
+                    const imgRight = qrRightCanvas.toDataURL("image/png");
+                    const pageWidth = doc.internal.pageSize.width;
+                    const pageHeight = doc.internal.pageSize.height;
+                    
+                    let lastY = doc.lastAutoTable.finalY || 100;
+                    if(lastY > pageHeight - 60) {
+                        doc.addPage();
+                        lastY = 20;
+                    }
+                    
+                    doc.addImage(imgRight, 'PNG', pageWidth - 60, lastY + 10, 40, 40);
+                    doc.setFontSize(9); doc.setTextColor(100);
+                    doc.text('QR Validasi Dokumen', pageWidth - 40, lastY + 55, { align: 'center' });
+                }
 
-            const footerY = finalY + 10;
-            const sigCenterX = 230; 
-            const leftX = 20;
+                doc.setFontSize(8); doc.setTextColor(100);
+                doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Total: ${totalNelayan} Data | Penuh Waktu: ${totalPenuhWaktu} | Sambilan Utama: ${totalSambilanUtama} | Sambilan Tambahan: ${totalSambilanTambahan}`, 148.5, 200, { align: 'center' });
+                
+                const totalPages = doc.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    doc.text(`Halaman ${i} dari ${totalPages} - Dokumen Resmi Dinas Perikanan Kab. Situbondo`, 148.5, 290, { align: 'center' });
+                }
 
-            doc.setDrawColor(150);
-            doc.setLineWidth(0.5);
-            doc.rect(leftX, footerY, 70, 30);
-            
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(8);
-            doc.setTextColor(100);
-            doc.text("DOKUMEN REKAP INI TERVALIDASI", leftX + 35, footerY + 6, {align: 'center'});
-            doc.text("OLEH SISTEM SATU DATA (SIMATA)", leftX + 35, footerY + 10, {align: 'center'});
-            
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(7);
-            doc.text("Dinas Perikanan Kabupaten Situbondo", leftX + 35, footerY + 20, {align: 'center'});
-            doc.setTextColor(0, 0, 255);
-            doc.text("www.disnakansitubondo.com/simata", leftX + 35, footerY + 25, {align: 'center'});
+                doc.save(`Rekap_Nelayan_${appSettings.appSubtitle}_${Date.now()}.pdf`);
+                document.getElementById('qr-right').innerHTML = "";
+                showNotification('Laporan PDF berhasil diunduh!', 'success');
 
-            doc.setFontSize(10); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'normal');
-            doc.text(`Situbondo, ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}`, sigCenterX, footerY, {align: 'center'});
-            doc.text('Kepala Bidang Pemberdayaan Nelayan', sigCenterX, footerY + 5, {align: 'center'});
-            
-            const qrRightCanvas = document.querySelector('#qr-right canvas');
-            if(qrRightCanvas) {
-                const imgRight = qrRightCanvas.toDataURL("image/png");
-                doc.addImage(imgRight, 'PNG', sigCenterX - 12.5, footerY + 8, 25, 25);
-            }
-
-            doc.setFont('helvetica', 'bold');
-            doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', sigCenterX, footerY + 38, {align: 'center'});
-            doc.setFont('helvetica', 'normal');
-            doc.text('NIP. 19761103 200903 1 001', sigCenterX, footerY + 43, {align: 'center'});
-
-            const totalPages = doc.getNumberOfPages();
-            for (let i = 1; i <= totalPages; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setTextColor(100);
-                doc.text(`Halaman ${i} dari ${totalPages} - Rekapitulasi Resmi`, 148.5, 205, { align: 'center' });
-            }
-
-            doc.save(`Laporan_Rekapitulasi_Nelayan_${Date.now()}.pdf`);
-            document.getElementById('qr-right').innerHTML = ""; 
-
-            }, 800);
+            }, 500);
         }
 
-        // --- BACKUP & RESTORE ENCRYPTED ---
-        function backupData(filename = null) {
-            if(appData.length === 0) return showNotification('Tidak ada data untuk dibackup', 'warning');
+        function backupData(filename = 'backup.json') {
+            const data = {
+                appData: appData,
+                appSettings: appSettings,
+                timestamp: new Date().toISOString(),
+                version: 'SIMATA v5.3'
+            };
             
-            const jsonStr = JSON.stringify(appData);
-            const encryptedData = btoa(unescape(encodeURIComponent(jsonStr)));
-
-            const dateStr = new Date().toLocaleString('id-ID');
-            
-            const content = `/* PETUNJUK PENGGUNAAN RELOAD REPO:
-    1. Ini adalah file backup otomatis dari Aplikasi.
-    2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
-    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
-    
-    APP NAME : ${appSettings.appName}
-    INSTANSI : ${appSettings.appSubtitle}
-    TANGGAL  : ${dateStr}
-*/
-
-
-window.SIMATA_BACKUP_ENCRYPTED = "${encryptedData}";`;
-            
-            const blob = new Blob([content], { type: 'text/javascript' });
+            const encrypted = btoa(JSON.stringify(data));
+            const blob = new Blob([`window.SIMATA_BACKUP_ENCRYPTED = "${encrypted}";`], {type: 'application/javascript'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = filename || `reload.js`;
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showNotification('Database terenkripsi (reload.js) berhasil diunduh.', 'success');
+            showNotification('Backup data berhasil diunduh.', 'success');
         }
 
         function restoreData() {
-            const input = document.getElementById('restoreFileInput');
-            if(!input.files.length) return;
+            const fileInput = document.getElementById('restoreFileInput');
+            if(!fileInput.files.length) return;
             
-            const file = input.files[0];
+            const file = fileInput.files[0];
             const reader = new FileReader();
             
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    let newData = [];
-                    let isEncrypted = false;
-
-                    if (content.includes('window.SIMATA_BACKUP_ENCRYPTED')) {
-                        const regex = /window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/;
-                        const match = content.match(regex);
-                        if (match && match[1]) {
-                            const encrypted = match[1];
-                            const decrypted = decodeURIComponent(escape(window.atob(encrypted)));
-                            newData = JSON.parse(decrypted);
-                            isEncrypted = true;
+                    let backupData = null;
+                    
+                    if(file.name.endsWith('.js')) {
+                        eval(content);
+                        if(typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined') {
+                            const decrypted = atob(window.SIMATA_BACKUP_ENCRYPTED);
+                            backupData = JSON.parse(decrypted);
                         }
-                    } 
-                    else {
-                        let jsonStr = content;
-                        if(content.includes('=')) {
-                            jsonStr = content.substring(content.indexOf('=') + 1);
-                            jsonStr = jsonStr.split(';')[0]; 
-                        }
-                        newData = JSON.parse(jsonStr);
+                    } else if(file.name.endsWith('.json')) {
+                        backupData = JSON.parse(content);
+                    } else {
+                        backupData = JSON.parse(content);
                     }
                     
-                    if(!Array.isArray(newData)) throw new Error("Format data tidak valid");
-
-                    let addedCount = 0;
-                    newData.forEach(newItem => {
-                        const existingIndex = appData.findIndex(d => d.nik === newItem.nik);
-                        if(existingIndex <= -1) {
-                            appData.push(newItem);
-                            addedCount++;
+                    if(!backupData || !backupData.appData) {
+                        throw new Error('Format file backup tidak valid');
+                    }
+                    
+                    const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk restore data:");
+                    if(userCode !== appSettings.securityCodeSensor) {
+                        if(userCode !== null) alert("Kode keamanan sensor SALAH!");
+                        return;
+                    }
+                    
+                    const existingIds = new Set(appData.map(d => d.id));
+                    let newCount = 0;
+                    let updatedCount = 0;
+                    
+                    backupData.appData.forEach(backupItem => {
+                        const existingIndex = appData.findIndex(d => d.nik === backupItem.nik);
+                        
+                        if(existingIndex !== -1) {
+                            appData[existingIndex] = {...appData[existingIndex], ...backupItem};
+                            updatedCount++;
+                        } else {
+                            if(!existingIds.has(backupItem.id)) {
+                                appData.push(backupItem);
+                                newCount++;
+                            } else {
+                                backupItem.id = Date.now() + Math.random();
+                                appData.push(backupItem);
+                                newCount++;
+                            }
                         }
                     });
-
+                    
                     saveData();
                     renderDataTable();
                     updateDashboard();
-                    if (map) {
+                    if(map) {
                         renderMapMarkers();
                         updateMapStatistics();
                     }
-                    checkGlobalDuplicates();
                     
-                    const msgType = isEncrypted ? 'Database Terenkripsi' : 'Database Lama';
-                    showNotification(`Restore Sukses (${msgType}): ${addedCount} data baru ditambahkan.`, 'success');
-                    input.value = ''; 
+                    showNotification(`Restore berhasil: ${newCount} data baru, ${updatedCount} data diperbarui. Total sekarang: ${appData.length}`, 'success');
+                    document.getElementById('restoreFileInput').value = '';
                     document.getElementById('restoreDataBtn').disabled = true;
                     
-                } catch(err) {
-                    console.error(err);
-                    showNotification('Gagal memproses file. Pastikan file adalah reload.js yang valid.', 'error');
+                } catch(error) {
+                    console.error('Restore error:', error);
+                    showNotification('Gagal restore data. Format file tidak valid.', 'error');
                 }
             };
+            
+            reader.onerror = function() {
+                showNotification('Gagal membaca file.', 'error');
+            };
+            
             reader.readAsText(file);
         }
 
         function handleReloadRepo() {
-            const btn = document.getElementById('btn-reload-repo');
-            const icon = btn.querySelector('i');
-            icon.classList.add('fa-spin');
-            
-            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
-                try {
-                    const encrypted = window.SIMATA_BACKUP_ENCRYPTED;
-                    const decrypted = decodeURIComponent(escape(window.atob(encrypted)));
-                    const newData = JSON.parse(decrypted);
-
-                    if(Array.isArray(newData)) {
-                        let count = 0;
-                        newData.forEach(newItem => {
-                            if (!appData.some(d => d.nik === newItem.nik)) {
-                                appData.push(newItem);
-                                count++;
-                            }
-                        });
-                        saveData();
-                        if (map) {
-                            renderMapMarkers();
-                            updateMapStatistics();
-                        }
-                        showNotification(`Sinkronisasi Berhasil: ${count} data baru dimuat dari Server.`, 'success');
-                        setTimeout(() => location.reload(), 1500);
-                        return;
-                    }
-                } catch (e) {
-                    console.error("Decrypt error", e);
-                }
+            if(typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined') {
+                restoreData();
+            } else {
+                showNotification('Tidak ada data repositori untuk direload.', 'info');
             }
-
-            setTimeout(() => {
-                icon.classList.remove('fa-spin');
-                if (typeof window.SIMATA_BACKUP_ENCRYPTED === 'undefined') {
-                    showNotification('File reload.js belum terdeteksi di server hosting.', 'warning');
-                } else {
-                    window.location.reload(); 
-                }
-            }, 1000);
         }
 
-        // --- UTILITIES ---
         function showNotification(message, type = 'info') {
-            const toastEl = document.querySelector('.notification-toast');
-            const toastBody = document.getElementById('toastMessage');
+            const toast = document.querySelector('.notification-toast');
             const toastTitle = document.getElementById('toastTitle');
-            const bsToast = new bootstrap.Toast(toastEl);
+            const toastMessage = document.getElementById('toastMessage');
             
-            toastBody.textContent = message;
+            toastTitle.textContent = type === 'error' ? 'Error' : type === 'success' ? 'Sukses' : 'Info';
+            toastMessage.textContent = message;
             
-            if(type === 'success') {
-                toastEl.classList.remove('bg-danger', 'bg-warning', 'text-white');
-                toastEl.classList.add('bg-success', 'text-white');
-                toastTitle.className = 'me-auto text-white';
-                toastTitle.innerHTML = '<i class="fas fa-check-circle me-2"></i>Berhasil';
-            } else if(type === 'error') {
-                toastEl.classList.remove('bg-success', 'bg-warning', 'text-white');
-                toastEl.classList.add('bg-danger', 'text-white');
-                toastTitle.className = 'me-auto text-white';
-                toastTitle.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Gagal';
-            } else if(type === 'warning') {
-                toastEl.classList.remove('bg-success', 'bg-danger', 'text-white');
-                toastEl.classList.add('bg-warning', 'text-dark');
-                toastTitle.className = 'me-auto text-dark';
-                toastTitle.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Peringatan';
-            } else {
-                toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'text-white');
-                toastTitle.className = 'me-auto';
-                toastTitle.textContent = 'Notifikasi';
+            toast.classList.remove('bg-success', 'bg-danger', 'bg-info', 'bg-warning');
+            switch(type) {
+                case 'success': toast.classList.add('bg-success', 'text-white'); break;
+                case 'error': toast.classList.add('bg-danger', 'text-white'); break;
+                case 'warning': toast.classList.add('bg-warning'); break;
+                default: toast.classList.add('bg-info', 'text-white');
             }
             
+            const bsToast = new bootstrap.Toast(toast);
             bsToast.show();
         }
     </script>
