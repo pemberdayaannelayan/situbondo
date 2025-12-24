@@ -370,7 +370,9 @@
                             
                             <div class="tab-pane fade" id="v-pills-input">
                                 <h3 class="section-title">Formulir Pendataan</h3>
-                                <div class="card border-0 shadow-sm">
+                                
+                                <!-- FORM INPUT MANUAL -->
+                                <div class="card border-0 shadow-sm mb-4">
                                     <div class="card-header bg-white py-3 border-bottom"><i class="fas fa-file-alt me-2 text-primary"></i> Entri Data Baru</div>
                                     <div class="card-body p-4">
                                         <form id="inputForm" novalidate>
@@ -442,7 +444,7 @@
                                                 </div>
                                             </div>
 
-                                            <!-- ALAT PENANGKAPAN IKAN (API) - Dipindah ke menu utama -->
+                                            <!-- ALAT PENANGKAPAN IKAN (API) -->
                                             <div class="row mb-3">
                                                 <div class="col-md-12">
                                                     <label class="form-label fw-bold">Alat Penangkapan Ikan (API) <span class="text-danger">*</span></label>
@@ -546,6 +548,48 @@
                                                 <button type="submit" class="btn btn-primary px-4 fw-bold shadow"><i class="fas fa-save me-2"></i>SIMPAN DATA</button>
                                             </div>
                                         </form>
+                                    </div>
+                                </div>
+
+                                <!-- FITUR INPUT CEPAT DARI EXCEL -->
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white py-3 border-bottom"><i class="fas fa-file-excel me-2 text-success"></i> Input Cepat dari Excel/Spreadsheet</div>
+                                    <div class="card-body p-4">
+                                        <div class="alert alert-info small mb-4 border-0 bg-light-info">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Upload file Excel (.xlsx, .xls) atau CSV dengan format kolom sesuai template. Data akan otomatis ditambahkan ke database.
+                                            <br><strong>Format kolom yang diharapkan:</strong> nama, nik, whatsapp, profesi, status, tahunLahir, usia, kecamatan, desa, alatTangkap, namaKapal, jenisKapal, jenisIkan, usahaSampingan, tanggalValidasi, validator, driveLink, kodeValidasi, keterangan
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="excelFile" class="form-label">Pilih File Excel/Spreadsheet</label>
+                                                <input class="form-control" type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+                                                <small class="text-muted">Format: Excel (.xlsx, .xls) atau CSV</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Aksi</label>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-success" id="btnUploadExcel">
+                                                        <i class="fas fa-upload me-2"></i> Upload dan Proses Data
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary" onclick="downloadExcelTemplate()">
+                                                        <i class="fas fa-download me-2"></i> Download Template Excel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="progress mb-3" style="display: none;" id="uploadProgress">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        
+                                        <div id="excelUploadResult" class="mt-3"></div>
+                                        
+                                        <div class="alert alert-warning small mt-3">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <strong>Perhatian:</strong> Sistem akan memvalidasi NIK duplikat. Data dengan NIK yang sudah terdaftar akan dilewati. Pastikan format data sesuai.
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1970,7 +2014,7 @@
         console.log('✅ SIMATA ID Card Generator v10.1 & Verifikasi KIN loaded successfully');
 
         // ================================
-        // KODE UTAMA APLIKASI (DENGAN PENAMBAHAN VERIFIKASI)
+        // KODE UTAMA APLIKASI (DENGAN PENAMBAHAN VERIFIKASI DAN FITUR INPUT EXCEL)
         // ================================
 
         // --- DATA CONSTANTS ---
@@ -2459,6 +2503,206 @@
             }
         }
 
+        // --- FUNGSI INPUT CEPAT DARI EXCEL ---
+        function handleExcelUpload() {
+            const fileInput = document.getElementById('excelFile');
+            if (!fileInput.files.length) {
+                showNotification('Pilih file terlebih dahulu!', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            // Tampilkan progress bar
+            const progressBar = document.getElementById('uploadProgress');
+            progressBar.style.display = 'block';
+            const progressBarInner = progressBar.querySelector('.progress-bar');
+            progressBarInner.style.width = '10%';
+
+            reader.onload = function(e) {
+                try {
+                    progressBarInner.style.width = '30%';
+                    
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                    if (jsonData.length < 2) {
+                        showNotification('File tidak berisi data.', 'error');
+                        progressBar.style.display = 'none';
+                        return;
+                    }
+
+                    // Ambil header (baris pertama)
+                    const headers = jsonData[0].map(h => h ? h.toString().trim() : '');
+                    
+                    // Cari indeks kolom yang diperlukan
+                    const colIndex = {};
+                    const requiredFields = ['nama', 'nik', 'whatsapp', 'profesi', 'status', 'tahunLahir', 'usia', 'kecamatan', 'desa', 'alatTangkap', 'namaKapal', 'jenisKapal', 'jenisIkan', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan'];
+                    
+                    requiredFields.forEach(field => {
+                        // Cari header yang cocok (case insensitive, tanpa spasi)
+                        const foundIndex = headers.findIndex(h => 
+                            h && h.toString().toLowerCase().replace(/\s/g, '') === field.toLowerCase()
+                        );
+                        if (foundIndex !== -1) {
+                            colIndex[field] = foundIndex;
+                        }
+                    });
+
+                    // Pastikan kolom wajib ada: nama, nik
+                    if (colIndex['nama'] === undefined || colIndex['nik'] === undefined) {
+                        showNotification('File harus memiliki kolom "nama" dan "nik".', 'error');
+                        progressBar.style.display = 'none';
+                        return;
+                    }
+
+                    progressBarInner.style.width = '50%';
+                    
+                    let newCount = 0;
+                    let skipCount = 0;
+                    let errorCount = 0;
+
+                    // Mulai dari baris kedua (indeks 1)
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        
+                        // Jika baris kosong, lewati
+                        if (!row || (!row[colIndex['nama']] && !row[colIndex['nik']])) continue;
+
+                        const nama = row[colIndex['nama']] ? row[colIndex['nama']].toString().trim() : '';
+                        const nik = row[colIndex['nik']] ? row[colIndex['nik']].toString().trim() : '';
+
+                        if (!nama || !nik) {
+                            skipCount++;
+                            continue;
+                        }
+
+                        // Cek NIK harus 16 digit
+                        if (nik.length !== 16 || !/^\d+$/.test(nik)) {
+                            errorCount++;
+                            continue;
+                        }
+
+                        // Cek duplikasi NIK
+                        const exists = appData.find(d => d.nik === nik);
+                        if (exists) {
+                            skipCount++;
+                            continue;
+                        }
+
+                        // Mapping data
+                        const newData = {
+                            id: Date.now() + i, // ID unik
+                            nama: nama,
+                            nik: nik,
+                            whatsapp: row[colIndex['whatsapp']] ? row[colIndex['whatsapp']].toString().trim() : '',
+                            profesi: row[colIndex['profesi']] ? row[colIndex['profesi']].toString().trim() : 'Nelayan Penuh Waktu',
+                            status: row[colIndex['status']] ? row[colIndex['status']].toString().trim() : 'Anak Buah Kapal',
+                            tahunLahir: row[colIndex['tahunLahir']] ? row[colIndex['tahunLahir']].toString().trim() : '',
+                            usia: row[colIndex['usia']] ? row[colIndex['usia']].toString().trim() : '',
+                            kecamatan: row[colIndex['kecamatan']] ? row[colIndex['kecamatan']].toString().trim() : '',
+                            desa: row[colIndex['desa']] ? row[colIndex['desa']].toString().trim() : '',
+                            alatTangkap: row[colIndex['alatTangkap']] ? row[colIndex['alatTangkap']].toString().trim() : 'Pancing',
+                            namaKapal: row[colIndex['namaKapal']] ? row[colIndex['namaKapal']].toString().trim() : '',
+                            jenisKapal: row[colIndex['jenisKapal']] ? row[colIndex['jenisKapal']].toString().trim() : '',
+                            jenisIkan: row[colIndex['jenisIkan']] ? row[colIndex['jenisIkan']].toString().trim() : '',
+                            usahaSampingan: row[colIndex['usahaSampingan']] ? row[colIndex['usahaSampingan']].toString().trim() : '',
+                            tanggalValidasi: row[colIndex['tanggalValidasi']] ? row[colIndex['tanggalValidasi']].toString().trim() : new Date().toISOString().split('T')[0],
+                            validator: row[colIndex['validator']] ? row[colIndex['validator']].toString().trim() : 'Petugas Validator',
+                            driveLink: row[colIndex['driveLink']] ? row[colIndex['driveLink']].toString().trim() : '',
+                            kodeValidasi: row[colIndex['kodeValidasi']] ? row[colIndex['kodeValidasi']].toString().trim() : `VLD-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+                            keterangan: row[colIndex['keterangan']] ? row[colIndex['keterangan']].toString().trim() : ''
+                        };
+
+                        // Hitung usia jika tidak ada
+                        if (!newData.usia && newData.tahunLahir) {
+                            const currentYear = new Date().getFullYear();
+                            const birthYear = parseInt(newData.tahunLahir);
+                            if (!isNaN(birthYear) && birthYear > 1900 && birthYear <= currentYear) {
+                                newData.usia = (currentYear - birthYear).toString();
+                            }
+                        }
+
+                        appData.push(newData);
+                        newCount++;
+                    }
+
+                    progressBarInner.style.width = '80%';
+
+                    if (newCount > 0) {
+                        saveData();
+                        updateDashboard();
+                        renderDataTable();
+                        if (map) {
+                            renderMapMarkers();
+                            updateMapStatistics();
+                        }
+                        checkGlobalDuplicates();
+                    }
+
+                    progressBarInner.style.width = '100%';
+
+                    const resultDiv = document.getElementById('excelUploadResult');
+                    let resultHtml = `<div class="alert alert-success">`;
+                    resultHtml += `<strong>Upload Berhasil!</strong><br>`;
+                    resultHtml += `• Data baru ditambahkan: ${newCount}<br>`;
+                    resultHtml += `• Data dilewati (duplikat): ${skipCount}<br>`;
+                    if (errorCount > 0) {
+                        resultHtml += `• Data error (format salah): ${errorCount}<br>`;
+                    }
+                    resultHtml += `</div>`;
+                    resultDiv.innerHTML = resultHtml;
+
+                    showNotification(`Upload Excel berhasil: ${newCount} data baru ditambahkan.`, 'success');
+
+                    // Reset file input
+                    fileInput.value = '';
+                    
+                    // Sembunyikan progress bar setelah 2 detik
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        progressBarInner.style.width = '0%';
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Error processing Excel file:', error);
+                    showNotification('Terjadi kesalahan saat memproses file Excel.', 'error');
+                    progressBar.style.display = 'none';
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- FUNGSI DOWNLOAD TEMPLATE EXCEL ---
+        function downloadExcelTemplate() {
+            // Buat data contoh untuk template
+            const templateData = [
+                ['nama', 'nik', 'whatsapp', 'profesi', 'status', 'tahunLahir', 'usia', 'kecamatan', 'desa', 'alatTangkap', 'namaKapal', 'jenisKapal', 'jenisIkan', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan'],
+                ['John Doe', '1234567890123456', '81234567890', 'Nelayan Penuh Waktu', 'Pemilik Kapal', '1980', '44', 'Panji', 'Panji Kidul', 'Pancing', 'Jaya Sejahtera', 'Perahu Jukung', 'Ikan Tongkol, Ikan Kembung', 'Warung Kelontong', '2024-01-15', 'Petugas Validator', 'https://drive.google.com/...', 'VLD-ABC123', 'Data contoh'],
+                ['Jane Smith', '2345678901234567', '82345678901', 'Nelayan Sambilan Utama', 'Anak Buah Kapal', '1990', '34', 'Situbondo', 'Kalibagor', 'Jaring Insang', '', '', 'Ikan Tenggiri, Cumi-cumi', 'Ternak Ayam', '2024-01-16', 'Petugas Validator', '', 'VLD-DEF456', '')
+            ];
+
+            const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Template Data Nelayan");
+            
+            // Set column widths
+            const wscols = [
+                {wch: 20}, {wch: 20}, {wch: 15}, {wch: 25}, {wch: 20}, 
+                {wch: 12}, {wch: 8}, {wch: 15}, {wch: 20}, {wch: 20},
+                {wch: 20}, {wch: 15}, {wch: 30}, {wch: 20}, {wch: 15},
+                {wch: 20}, {wch: 30}, {wch: 15}, {wch: 30}
+            ];
+            worksheet['!cols'] = wscols;
+
+            XLSX.writeFile(workbook, 'Template_Data_Nelayan_SIMATA.xlsx');
+            showNotification('Template Excel berhasil diunduh.', 'success');
+        }
+
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
             try {
@@ -2890,6 +3134,9 @@
                     verifyKIN();
                 }
             });
+
+            // Event listeners untuk fitur input Excel
+            document.getElementById('btnUploadExcel').addEventListener('click', handleExcelUpload);
 
             document.getElementById('printPdfBtn').addEventListener('click', printData);
             document.getElementById('exportExcelBtn').addEventListener('click', () => exportData('xlsx'));
@@ -3784,10 +4031,15 @@
             showNotification('Backup data berhasil diunduh.', 'success');
         }
 
+        // --- MODIFIED RESTORE DATA FUNCTION (REMOVED SECURITY CODE FOR RESTORE) ---
         function restoreData() {
             const fileInput = document.getElementById('restoreFileInput');
             if (!fileInput.files.length) return;
             
+            if (!confirm("Restore data dari file? Data akan digabungkan (merge) dengan data yang ada.")) {
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -3795,22 +4047,19 @@
                     if (window.SIMATA_BACKUP_ENCRYPTED) {
                         const restoredData = JSON.parse(atob(window.SIMATA_BACKUP_ENCRYPTED));
                         if (restoredData && Array.isArray(restoredData)) {
-                            const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk proses Restore:");
-                            if (userCode === appSettings.securityCodeSensor) {
-                                const oldCount = appData.length;
-                                restoredData.forEach(newItem => {
-                                    const exists = appData.find(d => d.nik === newItem.nik);
-                                    if (!exists) appData.push(newItem);
-                                });
-                                saveData(); renderDataTable(); updateDashboard();
-                                if (map) {
-                                    renderMapMarkers();
-                                    updateMapStatistics();
-                                }
-                                const added = appData.length - oldCount;
-                                showNotification(`Restore berhasil! ${added} data baru ditambahkan. ${oldCount} data lama tetap ada.`, 'success');
-                                checkGlobalDuplicates();
-                            } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
+                            const oldCount = appData.length;
+                            restoredData.forEach(newItem => {
+                                const exists = appData.find(d => d.nik === newItem.nik);
+                                if (!exists) appData.push(newItem);
+                            });
+                            saveData(); renderDataTable(); updateDashboard();
+                            if (map) {
+                                renderMapMarkers();
+                                updateMapStatistics();
+                            }
+                            const added = appData.length - oldCount;
+                            showNotification(`Restore berhasil! ${added} data baru ditambahkan. ${oldCount} data lama tetap ada.`, 'success');
+                            checkGlobalDuplicates();
                         } else {
                             showNotification('Format file backup tidak valid.', 'error');
                         }
@@ -3827,10 +4076,10 @@
             reader.readAsText(fileInput.files[0]);
         }
 
+        // --- MODIFIED HANDLE RELOAD REPO FUNCTION (REMOVED SECURITY CODE FOR SYNC) ---
         function handleReloadRepo() {
             if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined') {
-                const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk sinkronisasi data:");
-                if (userCode === appSettings.securityCodeSensor) {
+                if (confirm("Lakukan sinkronisasi data dari repository? Data baru akan ditambahkan.")) {
                     const restoredData = JSON.parse(atob(window.SIMATA_BACKUP_ENCRYPTED));
                     if (restoredData && Array.isArray(restoredData)) {
                         const oldCount = appData.length;
@@ -3849,7 +4098,7 @@
                     } else {
                         showNotification('Data dari repository tidak valid.', 'error');
                     }
-                } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
+                }
             } else {
                 showNotification('Tidak ada data repository untuk disinkronisasi.', 'warning');
             }
@@ -3923,8 +4172,10 @@
         window.getFishIconClass = getFishIconClass;
         window.handleFormSubmit = handleFormSubmit;
         window.initializeMap = initializeMap;
+        window.handleExcelUpload = handleExcelUpload;
+        window.downloadExcelTemplate = downloadExcelTemplate;
 
-        console.log('SIMATA v5.3 loaded successfully');
+        console.log('SIMATA v5.4 loaded successfully');
     </script>
 </body>
 </html>
