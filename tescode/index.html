@@ -4801,6 +4801,299 @@
                 showNotification('Kode Validasi berhasil dibuat dan terkunci.', 'success');
             });
 
+             // Event listeners untuk fitur impor Excel
+            document.getElementById('downloadTemplateBtn').addEventListener('click', downloadExcelTemplate);
+            
+            document.getElementById('browseFileBtn').addEventListener('click', function() {
+                document.getElementById('excelFileInput').click();
+            });
+            
+            document.getElementById('excelFileInput').addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const fileInfo = document.getElementById('fileInfo');
+                    const fileName = document.getElementById('fileName');
+                    const fileSize = document.getElementById('fileSize');
+                    
+                    fileName.textContent = file.name;
+                    fileSize.textContent = formatFileSize(file.size);
+                    fileInfo.style.display = 'block';
+                    
+                    document.getElementById('uploadExcelBtn').disabled = false;
+                }
+            });
+            
+            document.getElementById('uploadExcelBtn').addEventListener('click', handleExcelImport);
+            
+            // Drag and drop untuk file
+            const dropzone = document.getElementById('importFileDropzone');
+            dropzone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            
+            dropzone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            
+            dropzone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.name.match(/\.(xlsx|xls|csv)$/)) {
+                        document.getElementById('excelFileInput').files = files;
+                        
+                        // Trigger change event
+                        const event = new Event('change', { bubbles: true });
+                        document.getElementById('excelFileInput').dispatchEvent(event);
+                    } else {
+                        showNotification('Hanya file Excel (.xlsx, .xls, .csv) yang diperbolehkan!', 'error');
+                    }
+                }
+            });
+
+            const overlay = document.getElementById('sidebarOverlay');
+            const sidebar = document.getElementById('sidebarMenu');
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                sidebar.classList.add('mobile-show');
+                overlay.classList.add('active');
+            });
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('mobile-show');
+                overlay.classList.remove('active');
+            });
+            document.querySelectorAll('#sidebarMenu .nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992) {
+                        sidebar.classList.remove('mobile-show');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+            
+            document.getElementById('v-pills-logout-tab').addEventListener('click', () => {
+                if(confirm('Apakah Anda yakin ingin keluar? Sistem akan mengunduh data (reload.js) secara otomatis.')) {
+                    sessionStorage.removeItem('simata_session');
+                    backupData('reload.js');
+                    setTimeout(() => location.reload(), 2000);
+                }
+            });
+
+            document.getElementById('searchData').addEventListener('input', renderDataTable);
+            document.getElementById('applyFilterBtn').addEventListener('click', renderFilterTable);
+            document.getElementById('btnCekGanda').addEventListener('click', showDuplicateDataInFilter);
+            document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.row-checkbox');
+                checkboxes.forEach(cb => cb.checked = this.checked);
+                toggleBulkDeleteBtn();
+            });
+            document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
+
+            // Event listeners untuk verifikasi KIN
+            document.getElementById('verifyButton').addEventListener('click', verifyKIN);
+            document.getElementById('verifyInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyKIN();
+                }
+            });
+
+            document.getElementById('printPdfBtn').addEventListener('click', printData);
+            document.getElementById('exportExcelBtn').addEventListener('click', () => exportData('xlsx'));
+            document.getElementById('sendWaBtn').addEventListener('click', sendDataToWhatsapp);
+            document.getElementById('backupDataBtn').addEventListener('click', () => backupData());
+            document.getElementById('restoreFileInput').addEventListener('change', function() {
+                document.getElementById('restoreDataBtn').disabled = !this.files.length;
+            });
+            document.getElementById('restoreDataBtn').addEventListener('click', restoreData);
+            document.getElementById('btn-reload-repo').addEventListener('click', handleReloadRepo);
+            
+            document.getElementById('btnDownloadDetailPdf').addEventListener('click', () => {
+                downloadSinglePdf(currentDetailId);
+            });
+
+            document.getElementById('settingsForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                appSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
+                appSettings.appSubtitle = document.getElementById('appSubtitle').value;
+                appSettings.itemsPerPage = parseInt(document.getElementById('itemsPerPageSelect').value);
+                saveSettings(); 
+                updateAppIdentity(); 
+                renderDataTable();
+                showNotification('Pengaturan tersimpan! Nama instansi berhasil diperbarui.', 'success');
+            });
+
+            document.getElementById('sensorCodeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const currentCode = document.getElementById('currentSensorCode').value;
+                const newCode = document.getElementById('newSensorCode').value;
+                const confirmCode = document.getElementById('confirmSensorCode').value;
+                
+                if (currentCode !== appSettings.securityCodeSensor) {
+                    showNotification('Kode keamanan sensor saat ini salah!', 'error');
+                    return;
+                }
+                
+                if (newCode.length < 6) {
+                    showNotification('Kode keamanan baru minimal 6 digit!', 'error');
+                    return;
+                }
+                
+                if (newCode !== confirmCode) {
+                    showNotification('Konfirmasi kode baru tidak cocok!', 'error');
+                    return;
+                }
+                
+                appSettings.securityCodeSensor = newCode;
+                saveSettings();
+                
+                document.getElementById('currentSensorCode').value = '';
+                document.getElementById('newSensorCode').value = '';
+                document.getElementById('confirmSensorCode').value = '';
+                
+                showNotification('Kode keamanan sensor berhasil diperbarui!', 'success');
+            });
+
+            setupFloatingMenu();
+        }
+
+        function setupFloatingMenu() {
+            const fabMain = document.getElementById('fabMainBtn');
+            const container = document.getElementById('fabMenu');
+            fabMain.addEventListener('click', () => {
+                container.classList.toggle('open');
+                const icon = fabMain.querySelector('i');
+                if(container.classList.contains('open')){
+                    icon.classList.remove('fa-plus'); icon.classList.add('fa-times');
+                    fabMain.style.transform = "rotate(90deg)";
+                } else {
+                    icon.classList.add('fa-plus'); icon.classList.remove('fa-times');
+                    fabMain.style.transform = "rotate(0deg)";
+                }
+            });
+            const shortcuts = {'fabInput': 'v-pills-input-tab', 'fabFilter': 'v-pills-filter-tab', 'fabExport': 'v-pills-export-tab', 'fabBackup': 'v-pills-backup-tab', 'fabSettings': 'v-pills-settings-tab'};
+            for (const [id, tabId] of Object.entries(shortcuts)) {
+                document.getElementById(id).addEventListener('click', (e) => {
+                    e.preventDefault(); document.getElementById(tabId).click(); container.classList.remove('open');
+                });
+            }
+            document.getElementById('fabReload').addEventListener('click', (e) => {
+                e.preventDefault(); handleReloadRepo();
+            });
+        }
+
+        // Helper function untuk format ukuran file
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // --- CORE LOGIC ---
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const form = document.getElementById('inputForm');
+            const kodeVal = document.getElementById('kodeValidasi').value;
+            if (!kodeVal || kodeVal.trim() === '') {
+                showNotification('Anda WAJIB melakukan GENERATE KODE VALIDASI terlebih dahulu!', 'error');
+                document.getElementById('generateKodeBtn').focus();
+                return;
+            }
+            if (!form.checkValidity()) {
+                e.stopPropagation();
+                form.reportValidity(); 
+                return;
+            }
+
+            const nik = document.getElementById('nik').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            if(nik.length !== 16) return showNotification('NIK harus 16 digit', 'error');
+            if(!whatsapp.match(/^\d+$/)) return showNotification('WhatsApp hanya angka', 'error');
+
+            let selectedFish = [];
+            document.querySelectorAll('.fish-checkbox:checked').forEach(cb => {
+                if(cb.value === "Lainnya") {
+                    const otherVal = document.getElementById('jenisIkanLainnya').value.trim();
+                    if(otherVal) selectedFish.push(otherVal);
+                } else {
+                    selectedFish.push(cb.value);
+                }
+            });
+            if(selectedFish.length === 0) return showNotification('Pilih minimal satu jenis ikan!', 'error');
+
+            const editId = form.getAttribute('data-edit-id');
+            const duplicateCheck = appData.find(d => d.nik === nik);
+            if (duplicateCheck && (!editId || duplicateCheck.id != editId)) {
+                return showNotification('GAGAL: NIK sudah terdaftar dalam sistem!', 'error');
+            }
+
+            const isOwner = document.getElementById('statusNelayan').value === 'Pemilik Kapal';
+            const formData = {
+                id: editId || Date.now(),
+                nama: document.getElementById('nama').value,
+                nik: nik,
+                whatsapp: whatsapp,
+                profesi: document.getElementById('profesi').value,
+                status: document.getElementById('statusNelayan').value,
+                tahunLahir: document.getElementById('tahunLahir').value,
+                usia: document.getElementById('usia').value,
+                kecamatan: document.getElementById('kecamatan').value,
+                desa: document.getElementById('desa').value,
+                alatTangkap: document.getElementById('alatTangkap').value,
+                namaKapal: isOwner ? document.getElementById('namaKapal').value : '-',
+                jenisKapal: isOwner ? document.getElementById('jenisKapal').value : '-',
+                jenisIkan: selectedFish.join(", "),
+                usahaSampingan: document.getElementById('usahaSampingan').value,
+                tanggalValidasi: document.getElementById('tanggalValidasi').value,
+                validator: document.getElementById('validator').value,
+                driveLink: document.getElementById('driveLink').value,
+                kodeValidasi: document.getElementById('kodeValidasi').value,
+                keterangan: document.getElementById('keterangan').value
+            };
+
+            if (editId) {
+                const index = appData.findIndex(item => item.id == editId);
+                appData[index] = formData;
+                form.removeAttribute('data-edit-id');
+                showNotification('Data berhasil diperbarui', 'success');
+            } else {
+                appData.push(formData);
+                showNotification('Data berhasil disimpan', 'success');
+            }
+
+            saveData();
+            form.reset();
+            document.getElementById('ownerFields').style.display = 'none';
+            document.getElementById('desa').innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
+            document.getElementById('desa').disabled = true;
+            document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
+            document.getElementById('jenisIkanLainnya').style.display = 'none';
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggalValidasi').value = today;
+            
+            document.getElementById('apiInfo').style.display = 'none';
+            document.getElementById('kapalInfo').style.display = 'none';
+            document.getElementById('profesiHelp').innerHTML = '';
+
+            updateDashboard(); 
+            renderDataTable();
+            if (map) {
+                renderMapMarkers();
+                updateMapStatistics();
+            }
+            document.getElementById('v-pills-data-tab').click();
+            checkGlobalDuplicates();
+        }
+
+
             const overlay = document.getElementById('sidebarOverlay');
             const sidebar = document.getElementById('sidebarMenu');
             document.getElementById('mobileMenuBtn').addEventListener('click', () => {
@@ -5861,6 +6154,16 @@
                     toastHeader.style.color = 'white';
                 }
             }, 10);
+        }
+
+        / --- FUNGSI UNTUK RELOAD REPOSITORY ---
+        function handleReloadRepo() {
+            if (confirm('Reload data dari repository? Data lokal akan digabung dengan data terbaru.')) {
+                showNotification('Memuat data dari repository...', 'info');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
         }
     </script>
 </body>
