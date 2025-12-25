@@ -1378,13 +1378,17 @@ function toggleFAQ(id) {
 // ========================================
 
 function setupEventListeners() {
-    // Login form
+    // Login form - FIXED: Kode keamanan yang benar
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('loginButton');
         const spinner = document.getElementById('loginSpinner');
-        const inputCode = document.getElementById('securityCode').value;
+        const inputCode = document.getElementById('securityCode').value.trim();
         const correctCode = generateSecurityCode();
+        
+        // Debug: Tampilkan kode yang benar di console (untuk testing)
+        console.log('Kode yang dimasukkan:', inputCode);
+        console.log('Kode yang benar:', correctCode);
         
         if (inputCode !== correctCode) {
             showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
@@ -1728,6 +1732,12 @@ function handleFormSubmit(e) {
     const nik = document.getElementById('nik').value;
     const whatsapp = document.getElementById('whatsapp').value;
     if(nik.length !== 16) return showNotification('NIK harus 16 digit', 'error');
+    
+    // Validasi WhatsApp: jika bukan '00000000', maka harus 10-14 digit
+    if(whatsapp !== '00000000' && (whatsapp.length < 10 || whatsapp.length > 14)) {
+        return showNotification('WhatsApp harus 10-14 digit angka (atau pilih "Tidak Ada")', 'error');
+    }
+    
     if(!whatsapp.match(/^\d+$/)) return showNotification('WhatsApp hanya angka', 'error');
 
     let selectedFish = [];
