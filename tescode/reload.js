@@ -1,14 +1,46 @@
-/* PETUNJUK PENGGUNAAN RELOAD REPO:
-    1. Ini adalah file backup otomatis dari Aplikasi.
-    2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
-    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
-    
-    APP NAME : SISTEM PEMETAAN DATA NELAYAN
-    INSTANSI : DINAS PERIKANAN KABUPATEN SITUBONDO
-    TANGGAL  : 23/12/2025, 16.21.38
-*/
-
-
-window.SIMATA_BACKUP_ENCRYPTED = "W3siaWQiOiIxNzY2NDY4MTIyMzE0IiwibmFtYSI6IlNVUllPIFAuIFlBWVVLIiwibmlrIjoiIDM1MTIwMjA3MDQ1NTAwMCIsIndoYXRzYXBwIjoiMDg1MjMwODQxOTMxIiwicHJvZmVzaSI6Ik5lbGF5YW4gUGVudWggV2FrdHUiLCJzdGF0dXMiOiJBbmFrIEJ1YWggS2FwYWwiLCJ0YWh1bkxhaGlyIjoiMTk1NSIsInVzaWEiOiI3MCIsImtlY2FtYXRhbiI6IkJlc3VraSIsImRlc2EiOiJQZXNpc2lyIiwiYWxhdFRhbmdrYXAiOiJQdWthdCBUYXJpayIsIm5hbWFLYXBhbCI6Ii0iLCJqZW5pc0thcGFsIjoiLSIsImplbmlzSWthbiI6IklrYW4gVG9uZ2tvbCwgSWthbiBTZWxhciwgSWthbiBMYXlhbmciLCJ1c2FoYVNhbXBpbmdhbiI6IiIsInRhbmdnYWxWYWxpZGFzaSI6IjIwMjUtMTItMjMiLCJ2YWxpZGF0b3IiOiJNVUhBTU1BRCBTIiwiZHJpdmVMaW5rIjoiIiwia29kZVZhbGlkYXNpIjoiVkxELVc4SDFERCIsImtldGVyYW5nYW4iOiJURVJEQUZUQVIgS1VTVUtBIn0seyJpZCI6IjE3NjY0NzMyMzkzMzkiLCJuYW1hIjoiU1VEQVJNTyIsIm5payI6IjM1MTIwMjEyMDQ1MTAwMDIiLCJ3aGF0c2FwcCI6IjA4NTIzMDg0MTkzMSIsInByb2Zlc2kiOiJOZWxheWFuIFBlbnVoIFdha3R1Iiwic3RhdHVzIjoiQW5hayBCdWFoIEthcGFsIiwidGFodW5MYWhpciI6IjE5NTEiLCJ1c2lhIjoiNzQiLCJrZWNhbWF0YW4iOiJCZXN1a2kiLCJkZXNhIjoiUGVzaXNpciIsImFsYXRUYW5na2FwIjoiUHVrYXQgVGFyaWsiLCJuYW1hS2FwYWwiOiItIiwiamVuaXNLYXBhbCI6Ii0iLCJqZW5pc0lrYW4iOiJJa2FuIFRvbmdrb2wsIElrYW4gU2VsYXIsIElrYW4gVGVuZ2dpcmksIElrYW4gTGF5YW5nIiwidXNhaGFTYW1waW5nYW4iOiIiLCJ0YW5nZ2FsVmFsaWRhc2kiOiIyMDI1LTEyLTIzIiwidmFsaWRhdG9yIjoiTVVIQU1NQUQgUyIsImRyaXZlTGluayI6IiIsImtvZGVWYWxpZGFzaSI6IlZMRC1JSUhSNEQiLCJrZXRlcmFuZ2FuIjoiVEVSREFGVEFSIEtVU1VLQSJ9LHsiaWQiOiIxNzY2NDczNDI4OTg0IiwibmFtYSI6Ik1BRFJPRUwiLCJuaWsiOiIgMzUxMjAyMDEwMTUzMDAzIiwid2hhdHNhcHAiOiIwODUyMzA4NDE5MzEiLCJwcm9mZXNpIjoiTmVsYXlhbiBQZW51aCBXYWt0dSIsInN0YXR1cyI6IkFuYWsgQnVhaCBLYXBhbCIsInRhaHVuTGFoaXIiOiIxOTUzIiwidXNpYSI6IjcyIiwia2VjYW1hdGFuIjoiQmVzdWtpIiwiZGVzYSI6IlBlc2lzaXIiLCJhbGF0VGFuZ2thcCI6IlB1a2F0IFRhcmlrIiwibmFtYUthcGFsIjoiLSIsImplbmlzS2FwYWwiOiItIiwiamVuaXNJa2FuIjoiSWthbiBCYXJha3VkYSwgSWthbiBMYXl1ciwgSWthbiBLdXJpc2ksIElrYW4gQ2FrYWxhbmciLCJ1c2FoYVNhbXBpbmdhbiI6IiIsInRhbmdnYWxWYWxpZGFzaSI6IjIwMjUtMTItMjMiLCJ2YWxpZGF0b3IiOiJNVUhBTU1BRCBTIiwiZHJpdmVMaW5rIjoiIiwia29kZVZhbGlkYXNpIjoiVkxELUpFN0ZDSyIsImtldGVyYW5nYW4iOiJURVJEQUZUQVIgS1VTVUtBIn0seyJpZCI6MTc2NjQ3MzY4MTQzMywibmFtYSI6Ik1JU05BREkiLCJuaWsiOiIzNTEyMTIxNDA4ODEwMDAxIiwid2hhdHNhcHAiOiIwMDAwMDAwMCIsInByb2Zlc2kiOiJOZWxheWFuIFBlbnVoIFdha3R1Iiwic3RhdHVzIjoiQW5hayBCdWFoIEthcGFsIiwidGFodW5MYWhpciI6IjE5ODEiLCJ1c2lhIjoiNDQiLCJrZWNhbWF0YW4iOiJKYW5na2FyIiwiZGVzYSI6IkphbmdrYXIiLCJhbGF0VGFuZ2thcCI6IlBhbmNpbmcgVWx1ciIsIm5hbWFLYXBhbCI6Ii0iLCJqZW5pc0thcGFsIjoiLSIsImplbmlzSWthbiI6IkN1bWktY3VtaSwgS2FrYXAgTWVyYWgsIElrYW4gS3VyaXNpIiwidXNhaGFTYW1waW5nYW4iOiIiLCJ0YW5nZ2FsVmFsaWRhc2kiOiIyMDI1LTEyLTIzIiwidmFsaWRhdG9yIjoiTVVIQU1NQUQgUyIsImRyaXZlTGluayI6IiIsImtvZGVWYWxpZGFzaSI6IlZMRC1VMVI2TFUiLCJrZXRlcmFuZ2FuIjoiVEVSREFGVEFSIEtVU1VLQSJ9XQ==";
-
-
+window.SIMATA_BACKUP_ENCRYPTED = [
+  {
+    "id": "1766660489023",
+    "nama": "muhammad salam",
+    "nik": "3509131209880006",
+    "whatsapp": "085647709114",
+    "profesi": "Nelayan Penuh Waktu",
+    "status": "Pemilik Kapal",
+    "tahunLahir": 1988,
+    "usia": 37,
+    "kecamatan": "Kendit",
+    "desa": "Rajekwesi",
+    "alatTangkap": "Pukat Tarik",
+    "namaKapal": "cendhanu",
+    "jenisKapal": "Perahu Insang",
+    "jenisIkan": "Ikan Tongkol, Ikan Kembung, Ikan Selar, Ikan Tenggiri, Ikan Layang, Kakap Merah",
+    "usahaSampingan": "minimarket",
+    "tanggalValidasi": "2025-12-25",
+    "validator": "cha",
+    "driveLink": "",
+    "kodeValidasi": "VLD-GQX0N2",
+    "keterangan": ""
+  },
+  {
+    "id": 1762425289023,
+    "nama": "cinta",
+    "nik": "3509131209880000",
+    "whatsapp": "82324864999",
+    "profesi": "Nelayan Penuh Waktu",
+    "status": "Anak Buah Kapal",
+    "tahunLahir": 1987,
+    "usia": 38,
+    "kecamatan": "panarukan",
+    "desa": "kilensari",
+    "alatTangkap": "Pukat Tarik",
+    "namaKapal": "bunga",
+    "jenisKapal": "Perahu Insang",
+    "jenisIkan": "Ikan Tongkol, Ikan Kembung, Ikan Selar",
+    "usahaSampingan": "ternak",
+    "tanggalValidasi": 46015,
+    "validator": "arya",
+    "driveLink": "",
+    "kodeValidasi": "VLD-GEC0N2",
+    "keterangan": ""
+  }
+];
