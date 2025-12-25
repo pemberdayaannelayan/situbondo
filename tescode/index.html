@@ -21,8 +21,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    
-    <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
 </head>
 <body>
 
@@ -2474,6 +2472,7 @@
             
             migrateOldData();
             
+            // Cek data dari reload.js secara otomatis
             if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
                 console.log("✅ Reload Repository terdeteksi. Data siap digabungkan.");
             }
@@ -2867,9 +2866,22 @@
                 }
             });
 
-            // Event listeners untuk konversi data
-            document.getElementById('convertExcelToReloadBtn').addEventListener('click', convertExcelToReload);
-            document.getElementById('convertReloadToExcelBtn').addEventListener('click', convertReloadToExcel);
+            // Event listeners untuk konversi data (dari convert.js)
+            document.getElementById('convertExcelToReloadBtn').addEventListener('click', function() {
+                if (typeof window.convertExcelToReload === 'function') {
+                    window.convertExcelToReload();
+                } else {
+                    showNotification('Fitur konversi belum dimuat. Refresh halaman.', 'error');
+                }
+            });
+            
+            document.getElementById('convertReloadToExcelBtn').addEventListener('click', function() {
+                if (typeof window.convertReloadToExcel === 'function') {
+                    window.convertReloadToExcel();
+                } else {
+                    showNotification('Fitur konversi belum dimuat. Refresh halaman.', 'error');
+                }
+            });
 
             document.getElementById('printPdfBtn').addEventListener('click', printData);
             document.getElementById('exportExcelBtn').addEventListener('click', () => exportData('xlsx'));
@@ -3765,24 +3777,17 @@
                     
                     // Coba parse sebagai JSON atau JS
                     if(file.name.endsWith('.js')) {
-                        // Eksekusi kode JS untuk mendapatkan data
-                        const originalLog = console.log;
-                        let capturedData = null;
-                        console.log = function(data) {
-                            if(data && data.includes('SIMATA_BACKUP_ENCRYPTED')) {
-                                capturedData = data;
+                        // Gunakan fungsi extractDataFromReloadJs dari convert.js
+                        if (typeof window.extractDataFromReloadJs === 'function') {
+                            importedData = window.extractDataFromReloadJs(content);
+                        } else {
+                            // Fallback jika fungsi tidak tersedia
+                            const match = content.match(/window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*(\[.*?\])\s*;/s);
+                            if (match && match[1]) {
+                                importedData = JSON.parse(match[1]);
+                            } else {
+                                throw new Error('Format file reload.js tidak valid');
                             }
-                            originalLog.apply(console, arguments);
-                        };
-                        
-                        eval(content);
-                        console.log = originalLog;
-                        
-                        if(window.SIMATA_BACKUP_ENCRYPTED) {
-                            importedData = window.SIMATA_BACKUP_ENCRYPTED;
-                        } else if(capturedData) {
-                            const match = capturedData.match(/SIMATA_BACKUP_ENCRYPTED\s*=\s*(\[.*?\])/);
-                            if(match) importedData = JSON.parse(match[1]);
                         }
                     } else {
                         // Coba parse sebagai JSON langsung
@@ -3830,12 +3835,20 @@
         }
 
          function handleReloadRepo() {
-            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined') {
+            // Cek jika ada data dari reload.js
+            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
                 const reloadedData = window.SIMATA_BACKUP_ENCRYPTED;
                 if (Array.isArray(reloadedData) && reloadedData.length > 0) {
                     if (confirm(`Data eksternal terdeteksi (${reloadedData.length} record). Ingin menggabungkan dengan data lokal?`)) {
                         const currentIds = appData.map(d => d.id);
                         const newData = reloadedData.filter(d => !currentIds.includes(d.id));
+                        
+                        if (newData.length === 0) {
+                            showNotification('Tidak ada data baru yang ditemukan. Data sudah sinkron.', 'info');
+                            delete window.SIMATA_BACKUP_ENCRYPTED;
+                            return;
+                        }
+                        
                         const mergedData = [...appData, ...newData];
                         
                         appData = mergedData;
@@ -3856,54 +3869,76 @@
             showNotification('Tidak ada data eksternal yang terdeteksi.', 'info');
         }
 
-        function showNotification(message, type = 'info') {
-            const toastEl = document.querySelector('.notification-toast');
-            const toastTitle = document.getElementById('toastTitle');
-            const toastMessage = document.getElementById('toastMessage');
-            
-            if (!toastEl || !toastTitle || !toastMessage) return;
-            
-            let icon = 'fa-info-circle';
-            let title = 'Informasi';
-            let bgColor = '#0c2461';
-            
-            switch(type) {
-                case 'success':
-                    icon = 'fa-check-circle';
-                    title = 'Sukses';
-                    bgColor = '#2ecc71';
-                    break;
-                case 'error':
-                    icon = 'fa-exclamation-circle';
-                    title = 'Kesalahan';
-                    bgColor = '#e74c3c';
-                    break;
-                case 'warning':
-                    icon = 'fa-exclamation-triangle';
-                    title = 'Peringatan';
-                    bgColor = '#f39c12';
-                    break;
-                case 'info':
-                default:
-                    icon = 'fa-info-circle';
-                    title = 'Informasi';
-                    bgColor = '#0c2461';
-            }
-            
-            toastTitle.innerHTML = `<i class="fas ${icon} me-2"></i>${title}`;
-            toastMessage.textContent = message;
-            
-            const toast = new bootstrap.Toast(toastEl);
-            toast.show();
-            
-            setTimeout(() => {
-                const toastHeader = toastEl.querySelector('.toast-header');
-                if (toastHeader) {
-                    toastHeader.style.backgroundColor = bgColor;
-                    toastHeader.style.color = 'white';
-                }
-            }, 10);
+        // --- FUNGSI TAMBAHAN UNTUK KONVERSI DAN EKSPOR ---
+        function printData() {
+            showNotification('Fitur cetak PDF sedang dipersiapkan...', 'info');
         }
+
+        function exportData(format) {
+            if (format === 'xlsx') {
+                if (typeof XLSX === 'undefined') {
+                    showNotification('Library Excel tidak tersedia', 'error');
+                    return;
+                }
+                
+                // Buat worksheet dari data
+                const ws = XLSX.utils.json_to_sheet(appData.map(d => ({
+                    'Nama': d.nama,
+                    'NIK': d.nik,
+                    'WhatsApp': d.whatsapp,
+                    'Profesi': d.profesi,
+                    'Status': d.status,
+                    'Tahun Lahir': d.tahunLahir,
+                    'Usia': d.usia,
+                    'Kecamatan': d.kecamatan,
+                    'Desa': d.desa,
+                    'Alat Tangkap': d.alatTangkap,
+                    'Nama Kapal': d.namaKapal,
+                    'Jenis Kapal': d.jenisKapal,
+                    'Jenis Ikan': d.jenisIkan,
+                    'Usaha Sampingan': d.usahaSampingan,
+                    'Tanggal Validasi': d.tanggalValidasi,
+                    'Validator': d.validator,
+                    'Kode Validasi': d.kodeValidasi
+                })));
+                
+                // Buat workbook
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Data Nelayan");
+                
+                // Generate file
+                XLSX.writeFile(wb, `data_nelayan_${new Date().toISOString().slice(0,10)}.xlsx`);
+                showNotification(`Data berhasil diekspor ke Excel (${appData.length} record)`, 'success');
+            }
+        }
+
+        function sendDataToWhatsapp() {
+            // Backup data terlebih dahulu
+            backupData('reload.js');
+            
+            // Buka WhatsApp dengan nomor admin
+            const phoneNumber = '6287865614222';
+            const message = encodeURIComponent(`Halo Admin Dinas Perikanan Kabupaten Situbondo,\n\nSaya ingin melaporkan sinkronisasi data SIMATA. Berikut adalah file data terbaru.\n\n*Detail Laporan:*\n- Total Data: ${appData.length} record\n- Tanggal: ${new Date().toLocaleDateString('id-ID')}\n- Sistem: SIMATA v5.3\n\nFile terlampir.`);
+            window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+        }
+
+        // Ekspor fungsi-fungsi penting ke global scope
+        window.handleReloadRepo = handleReloadRepo;
+        window.checkAndMergeReloadData = checkAndMergeReloadData;
+        window.initializeMap = initializeMap;
+        window.renderMapMarkers = renderMapMarkers;
+        window.updateMapStatistics = updateMapStatistics;
+        window.switchMapView = switchMapView;
+        window.resetMapView = resetMapView;
+        window.zoomToAllMarkers = zoomToAllMarkers;
+        window.toggleCluster = toggleCluster;
+        window.viewDetail = viewDetail;
+        window.editData = editData;
+        window.deleteData = deleteData;
+        window.showNotification = showNotification;
+        window.generateSimataIDCard = generateSimataIDCard;
+
+        console.log('✅ SIMATA Sistem Pemetaan Nelayan v5.3 loaded successfully');
     </script>
 </body>
 </html>
