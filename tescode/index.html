@@ -2196,12 +2196,12 @@ body {
                         <p class="small text-primary fw-bold mb-2" id="currentDateDisplay"></p>
                         <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
                             <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-key text-success"></i></span>
-                            <input type="password" class="form-control bg-light border-0 fs-6" id="securityCode" placeholder="Masukkan kode keamanan" required>
+                            <input type="password" class="form-control bg-light border-0 fs-6" id="securityCode" placeholder="Masukkan kode keamanan (Format: YYYYMMDD)" required>
                             <button type="button" class="input-group-text bg-light border-0 password-toggle-btn" id="passwordToggle">
                                 <i class="fas fa-eye" id="passwordToggleIcon"></i>
                             </button>
                         </div>
-                        <small class="text-muted mt-2 d-block" id="passwordHint">Kode Keamanan Berubah Setiap Hari (Format: DDMMYYYY)</small>
+                        <small class="text-muted mt-2 d-block" id="passwordHint">Kode Keamanan Berubah Setiap Hari (Format: YYYYMMDD)</small>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton" style="background: var(--primary-gradient);">
                         BUKA DASHBOARD
@@ -3458,14 +3458,14 @@ const PROFESI_MAPPING = {
 let currentExcelData = null;
 let currentExcelFile = null;
 
-// --- FUNGSI GENERATE KODE KEAMANAN DINAMIS (PERIODE TERBALIK: DDMMYYYY) ---
+// --- FUNGSI GENERATE KODE KEAMANAN DINAMIS (PERIODE TERBALIK: YYYYMMDD) ---
 function generateSecurityCode() {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     
-    // PERBAIKAN: Format YYYYMMDD sesuai permintaan (20251225)
+    // FORMAT: YYYYMMDD (contoh: 20251225 untuk 25 Desember 2025)
     return `${year}${month}${day}`;
 }
 
@@ -3476,7 +3476,7 @@ function displayCurrentDate() {
     const dateString = now.toLocaleDateString('id-ID', options);
     document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
     
-    // PERBAIKAN: Perbaiki teks petunjuk format
+    // PERBAIKAN: Teks petunjuk format diperbaiki
     document.getElementById('passwordHint').innerHTML = `Kode keamanan berubah setiap hari berdasarkan tanggal (Format: YYYYMMDD).`;
 }
 
@@ -4642,16 +4642,20 @@ function toggleFAQ(id) {
 // ========================================
 
 function setupEventListeners() {
-    // Login form
+    // Login form - PERBAIKAN UTAMA: Tambahkan trim() dan perbaiki format kode
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('loginButton');
         const spinner = document.getElementById('loginSpinner');
-        const inputCode = document.getElementById('securityCode').value;
+        
+        // PERBAIKAN: Tambahkan trim() untuk menghapus spasi di awal dan akhir
+        const inputCode = document.getElementById('securityCode').value.trim();
         const correctCode = generateSecurityCode();
         
+        console.log('Input code:', inputCode, 'Correct code:', correctCode); // Untuk debugging
+        
         if (inputCode !== correctCode) {
-            showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
+            showNotification(`Kode keamanan salah! Format yang benar: ${correctCode} (YYYYMMDD)`, 'error');
             return;
         }
         
