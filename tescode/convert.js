@@ -2,7 +2,7 @@
  * SIMATA CONVERT DATA TOOL
  * Konversi data antara format Excel (.xlsx) dan reload.js
  * Developer: Dinas Perikanan Kabupaten Situbondo
- * Version: 1.0
+ * Version: 1.1 (Diperbaiki)
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -52,6 +52,11 @@ function convertExcelToReload() {
             
             // Validasi struktur data
             const validatedData = validateAndConvertExcelData(jsonData);
+            
+            if (validatedData.length === 0) {
+                showConvertStatus('Tidak ada data yang valid untuk dikonversi!', 'error');
+                return;
+            }
             
             // Membuat konten reload.js
             const reloadJsContent = `window.SIMATA_BACKUP_ENCRYPTED = ${JSON.stringify(validatedData, null, 2)};`;
@@ -207,37 +212,44 @@ function extractDataFromReloadJs(content) {
         const match = content.match(/window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*(\[.*?\])\s*;/s);
         
         if (match && match[1]) {
-            return JSON.parse(match[1]);
-        }
-        
-        // Method 2: Jika regex tidak berhasil, coba evaluasi kode
-        const originalContent = content;
-        const sandbox = document.createElement('div');
-        sandbox.style.display = 'none';
-        document.body.appendChild(sandbox);
-        
-        // Simpan original SIMATA_BACKUP_ENCRYPTED jika ada
-        const originalData = window.SIMATA_BACKUP_ENCRYPTED;
-        
-        try {
-            // Jalankan script dalam try-catch
-            const script = document.createElement('script');
-            script.textContent = originalContent;
-            sandbox.appendChild(script);
-            
-            if (window.SIMATA_BACKUP_ENCRYPTED) {
-                const data = window.SIMATA_BACKUP_ENCRYPTED;
-                // Reset ke original
-                window.SIMATA_BACKUP_ENCRYPTED = originalData;
-                sandbox.remove();
-                return data;
+            try {
+                return JSON.parse(match[1]);
+            } catch (e) {
+                console.warn('JSON parse failed, trying alternative method');
             }
-        } catch (e) {
-            console.warn('Script evaluation failed:', e);
         }
         
-        sandbox.remove();
-        window.SIMATA_BACKUP_ENCRYPTED = originalData;
+        // Method 2: Coba parse sebagai JSON langsung
+        try {
+            const jsonData = JSON.parse(content);
+            if (Array.isArray(jsonData)) return jsonData;
+            if (jsonData.data && Array.isArray(jsonData.data)) return jsonData.data;
+        } catch (e) {
+            console.warn('Direct JSON parse failed');
+        }
+        
+        // Method 3: Ekstrak menggunakan eval dengan sandboxing
+        try {
+            // Simpan original
+            const originalData = window.SIMATA_BACKUP_ENCRYPTED;
+            
+            // Buat sandbox
+            const sandbox = {};
+            const code = content + '; sandbox.result = window.SIMATA_BACKUP_ENCRYPTED;';
+            
+            // Gunakan Function constructor untuk isolasi
+            const extractFn = new Function('window', 'sandbox', code);
+            extractFn({ SIMATA_BACKUP_ENCRYPTED: null }, sandbox);
+            
+            if (sandbox.result && Array.isArray(sandbox.result)) {
+                window.SIMATA_BACKUP_ENCRYPTED = originalData;
+                return sandbox.result;
+            }
+            
+            window.SIMATA_BACKUP_ENCRYPTED = originalData;
+        } catch (e) {
+            console.warn('Sandboxed eval failed:', e);
+        }
         
         throw new Error('Format file reload.js tidak valid');
         
@@ -248,48 +260,98 @@ function extractDataFromReloadJs(content) {
 }
 
 /**
- * Validasi dan konversi data Excel ke format SIMATA
+ * Validasi dan konversi data Excel ke format SIMATA - DIPERBAIKI
  */
 function validateAndConvertExcelData(excelData) {
     const convertedData = [];
     const errors = [];
     
+    // Mapping kolom yang mungkin ada di Excel
+    const columnMapping = {
+        'Nama': 'nama',
+        'nama': 'nama',
+        'NIK': 'nik',
+        'nik': 'nik',
+        'WhatsApp': 'whatsapp',
+        'whatsapp': 'whatsapp',
+        'No HP': 'whatsapp',
+        'no_hp': 'whatsapp',
+        'Profesi': 'profesi',
+        'profesi': 'profesi',
+        'Status': 'status',
+        'status': 'status',
+        'Tahun Lahir': 'tahunLahir',
+        'tahun_lahir': 'tahunLahir',
+        'Usia': 'usia',
+        'usia': 'usia',
+        'Kecamatan': 'kecamatan',
+        'kecamatan': 'kecamatan',
+        'Desa': 'desa',
+        'desa': 'desa',
+        'Alat Tangkap': 'alatTangkap',
+        'alat_tangkap': 'alatTangkap',
+        'API': 'alatTangkap',
+        'Nama Kapal': 'namaKapal',
+        'nama_kapal': 'namaKapal',
+        'Jenis Kapal': 'jenisKapal',
+        'jenis_kapal': 'jenisKapal',
+        'Jenis Ikan': 'jenisIkan',
+        'jenis_ikan': 'jenisIkan',
+        'Usaha Sampingan': 'usahaSampingan',
+        'usaha_sampingan': 'usahaSampingan',
+        'Tanggal Validasi': 'tanggalValidasi',
+        'tanggal_validasi': 'tanggalValidasi',
+        'Validator': 'validator',
+        'validator': 'validator',
+        'Kode Validasi': 'kodeValidasi',
+        'kode_validasi': 'kodeValidasi',
+        'Link Drive': 'driveLink',
+        'drive_link': 'driveLink'
+    };
+    
     excelData.forEach((row, index) => {
         try {
+            // Normalisasi nama kolom
+            const normalizedRow = {};
+            Object.keys(row).forEach(key => {
+                const normalizedKey = columnMapping[key] || key.toLowerCase();
+                normalizedRow[normalizedKey] = row[key];
+            });
+            
             // Validasi field wajib
-            if (!row.nik || !row.nama) {
+            if (!normalizedRow.nik || !normalizedRow.nama) {
                 errors.push(`Baris ${index + 2}: NIK atau Nama kosong`);
                 return;
             }
             
-            // Konversi tipe data jika diperlukan
+            // Konversi tipe data
             const convertedRow = {
-                id: row.id || Date.now() + index,
-                nama: String(row.nama || ''),
-                nik: String(row.nik || ''),
-                whatsapp: String(row.whatsapp || row.telp || ''),
-                profesi: row.profesi || 'Nelayan Penuh Waktu',
-                status: row.status || 'Anak Buah Kapal',
-                tahunLahir: parseInt(row.tahunLahir) || new Date().getFullYear() - 30,
-                usia: parseInt(row.usia) || 30,
-                kecamatan: row.kecamatan || '',
-                desa: row.desa || '',
-                alatTangkap: row.alatTangkap || row.API || '',
-                namaKapal: row.namaKapal || '',
-                jenisKapal: row.jenisKapal || '',
-                jenisIkan: row.jenisIkan || row.ikan || '',
-                usahaSampingan: row.usahaSampingan || '',
-                tanggalValidasi: row.tanggalValidasi || new Date().toISOString().split('T')[0],
-                validator: row.validator || 'System',
-                driveLink: row.driveLink || '',
-                kodeValidasi: row.kodeValidasi || `VLD-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-                keterangan: row.keterangan || ''
+                id: normalizedRow.id || Date.now() + index,
+                nama: String(normalizedRow.nama || ''),
+                nik: String(normalizedRow.nik || ''),
+                whatsapp: String(normalizedRow.whatsapp || normalizedRow.no_hp || ''),
+                profesi: normalizedRow.profesi || 'Nelayan Penuh Waktu',
+                status: normalizedRow.status || 'Anak Buah Kapal',
+                tahunLahir: parseInt(normalizedRow.tahunLahir) || (normalizedRow.usia ? new Date().getFullYear() - parseInt(normalizedRow.usia) : new Date().getFullYear() - 30),
+                usia: parseInt(normalizedRow.usia) || (normalizedRow.tahunLahir ? new Date().getFullYear() - parseInt(normalizedRow.tahunLahir) : 30),
+                kecamatan: normalizedRow.kecamatan || '',
+                desa: normalizedRow.desa || '',
+                alatTangkap: normalizedRow.alatTangkap || normalizedRow.api || '',
+                namaKapal: normalizedRow.namaKapal || '',
+                jenisKapal: normalizedRow.jenisKapal || '',
+                jenisIkan: normalizedRow.jenisIkan || '',
+                usahaSampingan: normalizedRow.usahaSampingan || '',
+                tanggalValidasi: normalizedRow.tanggalValidasi || new Date().toISOString().split('T')[0],
+                validator: normalizedRow.validator || 'System',
+                driveLink: normalizedRow.driveLink || '',
+                kodeValidasi: normalizedRow.kodeValidasi || `VLD-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+                keterangan: normalizedRow.keterangan || ''
             };
             
-            // Hitung usia jika tahunLahir ada
-            if (row.tahunLahir && !row.usia) {
-                const currentYear = new Date().getFullYear();
-                convertedRow.usia = currentYear - parseInt(row.tahunLahir);
+            // Validasi NIK minimal 16 digit
+            if (convertedRow.nik.length < 16) {
+                errors.push(`Baris ${index + 2}: NIK kurang dari 16 digit`);
+                return;
             }
             
             convertedData.push(convertedRow);
@@ -361,6 +423,7 @@ function showConvertStatus(message, type = 'info') {
  * Mendapatkan ringkasan format file
  */
 function getFileFormatSummary(sampleData) {
+    if (!sampleData) return 'Tidak ada data';
     const fields = Object.keys(sampleData).slice(0, 5);
     return `${fields.join(', ')}... (Total: ${Object.keys(sampleData).length} field)`;
 }
@@ -387,7 +450,7 @@ function previewExcelData(data) {
         html += '<tr>';
         Object.values(row).forEach(val => {
             const displayVal = typeof val === 'string' && val.length > 20 ? val.substring(0, 20) + '...' : val;
-            html += `<td title="${val}">${displayVal}</td>`;
+            html += `<td title="${val}">${displayVal || '-'}</td>`;
         });
         html += '</tr>';
     });
@@ -426,5 +489,6 @@ window.convertReloadToExcel = convertReloadToExcel;
 window.previewExcelData = previewExcelData;
 window.copyToClipboard = copyToClipboard;
 window.clearConvertResult = clearConvertResult;
+window.extractDataFromReloadJs = extractDataFromReloadJs;
 
-console.log('✅ SIMATA Convert Data Tool v1.0 loaded successfully');
+console.log('✅ SIMATA Convert Data Tool v1.1 loaded successfully');
