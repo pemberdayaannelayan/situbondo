@@ -1090,7 +1090,7 @@
     
     <script>
         // ================================
-        // KODE UTAMA APLIKASI (DENGAN PENAMBAHAN VERIFIKASI)
+        // KODE UTAMA APLIKASI (VERSI PERBAIKAN)
         // ================================
 
         // --- DATA CONSTANTS ---
@@ -1211,25 +1211,6 @@
         let currentMarkers = [];
         let mapView = 'all';
         
-        const PROFESI_MAPPING = {
-            "Penuh Waktu": "Nelayan Penuh Waktu",
-            "Sambilan Utama": "Nelayan Sambilan Utama",
-            "Sambilan Tambahan": "Nelayan Sambilan Tambahan"
-        };
-        
-        function getProfesiLabel(profesi) {
-            return PROFESI_MAPPING[profesi] || profesi;
-        }
-        
-        function migrateOldData() {
-            appData.forEach(item => {
-                if (PROFESI_MAPPING[item.profesi]) {
-                    item.profesi = PROFESI_MAPPING[item.profesi];
-                }
-            });
-            saveData();
-        }
-        
         // --- FUNGSI GENERATE KODE KEAMANAN DINAMIS ---
         function generateSecurityCode() {
             const now = new Date();
@@ -1252,12 +1233,19 @@
 
         // --- FUNGSI UNTUK MENDAPATKAN KOORDINAT BERDASARKAN DESA ---
         function getCoordinatesForLocation(kecamatan, desa) {
-            if (typeof SIMATA_COORDINATES !== 'undefined' && SIMATA_COORDINATES.getCoordinatesForLocation) {
-                return SIMATA_COORDINATES.getCoordinatesForLocation(kecamatan, desa);
-            } else {
-                console.warn('SIMATA_COORDINATES tidak tersedia, menggunakan koordinat default');
-                return [-7.7068, 113.9142];
+            try {
+                if (typeof SIMATA_COORDINATES !== 'undefined' && SIMATA_COORDINATES.getCoordinatesForLocation) {
+                    const coords = SIMATA_COORDINATES.getCoordinatesForLocation(kecamatan, desa);
+                    if (coords && Array.isArray(coords) && coords.length === 2) {
+                        return coords;
+                    }
+                }
+            } catch (error) {
+                console.warn('Error accessing SIMATA_COORDINATES:', error);
             }
+            
+            // Default coordinates untuk Situbondo
+            return [-7.7068, 113.9142];
         }
 
         // --- FUNGSI UNTUK INISIALISASI PETA ---
@@ -1278,7 +1266,6 @@
             markers.addTo(map);
             
             renderMapMarkers();
-            
             updateMapStatistics();
         }
         
@@ -1389,10 +1376,7 @@
                 currentMarkers.push(marker);
             });
             
-            document.getElementById('map-total-points').textContent = appData.length;
-            document.getElementById('map-total-kecamatan').textContent = Object.keys(kecamatanCount).length;
-            document.getElementById('map-total-desa').textContent = Object.keys(desaCount).length;
-            document.getElementById('map-total-kapal').textContent = pemilikKapalCount;
+            updateMapStatistics();
         }
         
         // --- FUNGSI UNTUK UPDATE STATISTIK PETA ---
@@ -1468,37 +1452,79 @@
 
         // --- FITUR RELOAD DATA YANG DIPERBAIKI ---
         function checkAndMergeReloadData() {
-            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
-                const reloadedData = window.SIMATA_BACKUP_ENCRYPTED;
-                if (Array.isArray(reloadedData) && reloadedData.length > 0) {
-                    const currentIds = appData.map(d => d.id);
-                    const newData = reloadedData.filter(d => !currentIds.includes(d.id));
-                    
-                    if (newData.length > 0) {
-                        const mergedData = [...appData, ...newData];
-                        appData = mergedData;
-                        saveData();
+            try {
+                if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
+                    const reloadedData = window.SIMATA_BACKUP_ENCRYPTED;
+                    if (Array.isArray(reloadedData) && reloadedData.length > 0) {
+                        const currentIds = appData.map(d => d.id);
+                        const newData = reloadedData.filter(d => !currentIds.includes(d.id));
                         
-                        // Update tampilan
-                        updateDashboard();
-                        renderDataTable();
-                        if (map) {
-                            renderMapMarkers();
-                            updateMapStatistics();
+                        if (newData.length > 0) {
+                            const mergedData = [...appData, ...newData];
+                            appData = mergedData;
+                            saveData();
+                            
+                            // Update tampilan
+                            updateDashboard();
+                            renderDataTable();
+                            if (map) {
+                                renderMapMarkers();
+                                updateMapStatistics();
+                            }
+                            
+                            showNotification(`✅ Data dari reload.js berhasil digabungkan! ${newData.length} data baru ditambahkan. Total data: ${appData.length}`, 'success');
+                            
+                            // Hapus variabel global setelah digunakan
+                            delete window.SIMATA_BACKUP_ENCRYPTED;
+                            return true;
+                        } else {
+                            showNotification('ℹ️ Data dari reload.js sudah sinkron dengan data lokal.', 'info');
+                            return false;
                         }
-                        
-                        showNotification(`✅ Data dari reload.js berhasil digabungkan! ${newData.length} data baru ditambahkan. Total data: ${appData.length}`, 'success');
-                        
-                        // Hapus variabel global setelah digunakan
-                        delete window.SIMATA_BACKUP_ENCRYPTED;
-                        return true;
-                    } else {
-                        showNotification('ℹ️ Data dari reload.js sudah sinkron dengan data lokal.', 'info');
-                        return false;
                     }
                 }
+            } catch (error) {
+                console.error('Error in checkAndMergeReloadData:', error);
+                showNotification('Gagal menggabungkan data dari reload.js', 'error');
             }
             return false;
+        }
+
+        // --- FUNGSI UNTUK MEMUAT DATA DARI FILE reload.js ---
+        function loadReloadDataFromFile(fileContent) {
+            try {
+                // Coba parse data dari file reload.js
+                const match = fileContent.match(/window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*(\[.*?\])\s*;/s);
+                if (match && match[1]) {
+                    const data = JSON.parse(match[1]);
+                    return Array.isArray(data) ? data : [];
+                }
+                
+                // Coba evaluasi sebagai script
+                const originalData = window.SIMATA_BACKUP_ENCRYPTED;
+                try {
+                    eval(fileContent);
+                    if (window.SIMATA_BACKUP_ENCRYPTED && Array.isArray(window.SIMATA_BACKUP_ENCRYPTED)) {
+                        const data = window.SIMATA_BACKUP_ENCRYPTED;
+                        window.SIMATA_BACKUP_ENCRYPTED = originalData;
+                        return data;
+                    }
+                } catch (e) {
+                    console.warn('Evaluation failed:', e);
+                }
+                
+                // Coba parse sebagai JSON langsung
+                try {
+                    const jsonData = JSON.parse(fileContent);
+                    if (Array.isArray(jsonData)) return jsonData;
+                    if (jsonData.data && Array.isArray(jsonData.data)) return jsonData.data;
+                } catch (e) {
+                    console.warn('JSON parse failed:', e);
+                }
+            } catch (error) {
+                console.error('Error loading reload data:', error);
+            }
+            return [];
         }
 
         // --- INITIALIZATION ---
@@ -1546,13 +1572,6 @@
             loadData();
             loadSettings();
             
-            migrateOldData();
-            
-            // Cek data dari reload.js secara otomatis
-            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
-                console.log("✅ Reload Repository terdeteksi. Data siap digabungkan.");
-            }
-
             const kecSelect = document.getElementById('kecamatan');
             kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
             Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
@@ -1679,7 +1698,7 @@
             }
         }
 
-        // --- FUNGSI MASK DATA YANG DIPERBAIKI ---
+        // --- FUNGSI MASK DATA ---
         function maskData(data, force = false) {
             if (!data) return "-";
             if (data === '00000000') return "Tidak Ada";
@@ -1942,7 +1961,7 @@
                 }
             });
 
-            // Event listeners untuk konversi data (dari convert.js)
+            // Event listeners untuk konversi data
             document.getElementById('convertExcelToReloadBtn').addEventListener('click', function() {
                 if (typeof window.convertExcelToReload === 'function') {
                     window.convertExcelToReload();
@@ -1959,7 +1978,7 @@
                 }
             });
 
-            document.getElementById('printPdfBtn').addEventListener('click', printData);
+            document.getElementById('printPdfBtn').addEventListener('click', generatePdfReport);
             document.getElementById('exportExcelBtn').addEventListener('click', () => exportData('xlsx'));
             document.getElementById('sendWaBtn').addEventListener('click', sendDataToWhatsapp);
             document.getElementById('backupDataBtn').addEventListener('click', () => backupData());
@@ -2266,7 +2285,7 @@
             detailModal.show();
         }
 
-        // --- PDF GENERATION - IMPROVED ---
+        // --- PDF GENERATION - DIPERBAIKI ---
         function downloadSinglePdf(id) {
             const d = appData.find(item => item.id == id);
             if(!d) return;
@@ -2437,6 +2456,103 @@
                 document.getElementById('qr-right').innerHTML = "";
 
             }, 500);
+        }
+
+        // --- FUNGSI GENERATE PDF LAPORAN RESMI ---
+        function generatePdfReport() {
+            if (appData.length === 0) {
+                showNotification('Tidak ada data untuk dicetak', 'warning');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+                
+                // Header
+                doc.setFillColor(12, 36, 97);
+                doc.rect(10, 10, 277, 20, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text('LAPORAN RESMI DATA NELAYAN', 148.5, 20, { align: 'center' });
+                
+                doc.setFontSize(12);
+                doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', 148.5, 27, { align: 'center' });
+                
+                // Subtitle
+                doc.setTextColor(246, 185, 59);
+                doc.setFont('times', 'italic');
+                doc.text('"Situbondo Naik Kelas"', 148.5, 33, { align: 'center' });
+                
+                // Tanggal laporan
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 20, 45);
+                doc.text(`Total Data: ${appData.length} nelayan`, 250, 45, { align: 'right' });
+                
+                // Data untuk tabel
+                const tableData = appData.map((item, index) => [
+                    index + 1,
+                    item.nama,
+                    maskData(item.nik, true),
+                    maskData(item.whatsapp, true),
+                    item.profesi,
+                    item.status,
+                    item.usia,
+                    item.desa,
+                    item.kecamatan,
+                    item.alatTangkap,
+                    item.kodeValidasi || '-'
+                ]);
+                
+                // Buat tabel menggunakan autoTable
+                doc.autoTable({
+                    head: [['No', 'Nama', 'NIK', 'WhatsApp', 'Profesi', 'Status', 'Usia', 'Desa', 'Kecamatan', 'API', 'Kode Validasi']],
+                    body: tableData,
+                    startY: 50,
+                    headStyles: { 
+                        fillColor: [12, 36, 97],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    styles: { 
+                        fontSize: 8,
+                        cellPadding: 2
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 10 },
+                        1: { cellWidth: 30 },
+                        2: { cellWidth: 25 },
+                        3: { cellWidth: 20 },
+                        4: { cellWidth: 25 },
+                        5: { cellWidth: 20 },
+                        6: { cellWidth: 10 },
+                        7: { cellWidth: 25 },
+                        8: { cellWidth: 25 },
+                        9: { cellWidth: 25 },
+                        10: { cellWidth: 25 }
+                    },
+                    margin: { left: 10, right: 10 },
+                    pageBreak: 'auto'
+                });
+                
+                // Footer
+                const finalY = doc.lastAutoTable.finalY || 180;
+                doc.setFontSize(9);
+                doc.setTextColor(100);
+                doc.text(`Dokumen ini dicetak otomatis dari SIMATA v5.3 - ${new Date().toLocaleString('id-ID')}`, 148.5, finalY + 10, { align: 'center' });
+                
+                // Simpan file
+                doc.save(`laporan_nelayan_resmi_${new Date().toISOString().slice(0,10)}.pdf`);
+                showNotification('Laporan PDF berhasil diunduh', 'success');
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showNotification('Gagal membuat laporan PDF', 'error');
+            }
         }
 
         function updatePagination(total) {
@@ -2816,27 +2932,33 @@
         }
 
         // --- BACKUP & RESTORE FUNCTIONS ---
-        function backupData(filename = 'simata_backup.js') {
-            const backupData = {
-                timestamp: new Date().toISOString(),
-                version: '5.3',
-                data: appData
-            };
-            
-            const encrypted = btoa(JSON.stringify(backupData));
-            const content = `window.SIMATA_BACKUP_ENCRYPTED = ${JSON.stringify(appData)};`;
-            
-            const blob = new Blob([content], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showNotification(`Backup data berhasil (${appData.length} records)`, 'success');
+        function backupData(filename = 'reload.js') {
+            try {
+                const backupData = {
+                    timestamp: new Date().toISOString(),
+                    version: '5.3',
+                    data: appData
+                };
+                
+                const content = `window.SIMATA_BACKUP_ENCRYPTED = ${JSON.stringify(appData, null, 2)};`;
+                
+                const blob = new Blob([content], { type: 'text/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification(`Backup data berhasil (${appData.length} records)`, 'success');
+                return true;
+            } catch (error) {
+                console.error('Error in backupData:', error);
+                showNotification('Gagal membuat backup data', 'error');
+                return false;
+            }
         }
 
         function restoreData() {
@@ -2849,30 +2971,10 @@
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    let importedData;
+                    const importedData = loadReloadDataFromFile(content);
                     
-                    // Coba parse sebagai JSON atau JS
-                    if(file.name.endsWith('.js')) {
-                        // Gunakan fungsi extractDataFromReloadJs dari convert.js
-                        if (typeof window.extractDataFromReloadJs === 'function') {
-                            importedData = window.extractDataFromReloadJs(content);
-                        } else {
-                            // Fallback jika fungsi tidak tersedia
-                            const match = content.match(/window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*(\[.*?\])\s*;/s);
-                            if (match && match[1]) {
-                                importedData = JSON.parse(match[1]);
-                            } else {
-                                throw new Error('Format file reload.js tidak valid');
-                            }
-                        }
-                    } else {
-                        // Coba parse sebagai JSON langsung
-                        importedData = JSON.parse(content);
-                        if(importedData.data) importedData = importedData.data;
-                    }
-                    
-                    if(!Array.isArray(importedData)) {
-                        showNotification('Format file backup tidak valid', 'error');
+                    if(!Array.isArray(importedData) || importedData.length === 0) {
+                        showNotification('Format file backup tidak valid atau kosong', 'error');
                         return;
                     }
                     
@@ -2911,45 +3013,46 @@
         }
 
          function handleReloadRepo() {
-            // Cek jika ada data dari reload.js
-            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
-                const reloadedData = window.SIMATA_BACKUP_ENCRYPTED;
-                if (Array.isArray(reloadedData) && reloadedData.length > 0) {
-                    if (confirm(`Data eksternal terdeteksi (${reloadedData.length} record). Ingin menggabungkan dengan data lokal?`)) {
-                        const currentIds = appData.map(d => d.id);
-                        const newData = reloadedData.filter(d => !currentIds.includes(d.id));
-                        
-                        if (newData.length === 0) {
-                            showNotification('Tidak ada data baru yang ditemukan. Data sudah sinkron.', 'info');
+            try {
+                // Cek jika ada data dari reload.js
+                if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
+                    const reloadedData = window.SIMATA_BACKUP_ENCRYPTED;
+                    if (Array.isArray(reloadedData) && reloadedData.length > 0) {
+                        if (confirm(`Data eksternal terdeteksi (${reloadedData.length} record). Ingin menggabungkan dengan data lokal?`)) {
+                            const currentIds = appData.map(d => d.id);
+                            const newData = reloadedData.filter(d => !currentIds.includes(d.id));
+                            
+                            if (newData.length === 0) {
+                                showNotification('Tidak ada data baru yang ditemukan. Data sudah sinkron.', 'info');
+                                delete window.SIMATA_BACKUP_ENCRYPTED;
+                                return;
+                            }
+                            
+                            const mergedData = [...appData, ...newData];
+                            
+                            appData = mergedData;
+                            saveData();
+                            renderDataTable();
+                            updateDashboard();
+                            if (map) {
+                                renderMapMarkers();
+                                updateMapStatistics();
+                            }
+                            showNotification(`Sinkronisasi berhasil! ${newData.length} data baru ditambahkan. Total data: ${appData.length}`, 'success');
                             delete window.SIMATA_BACKUP_ENCRYPTED;
+                            checkGlobalDuplicates();
                             return;
                         }
-                        
-                        const mergedData = [...appData, ...newData];
-                        
-                        appData = mergedData;
-                        saveData();
-                        renderDataTable();
-                        updateDashboard();
-                        if (map) {
-                            renderMapMarkers();
-                            updateMapStatistics();
-                        }
-                        showNotification(`Sinkronisasi berhasil! ${newData.length} data baru ditambahkan. Total data: ${appData.length}`, 'success');
-                        delete window.SIMATA_BACKUP_ENCRYPTED;
-                        checkGlobalDuplicates();
-                        return;
                     }
                 }
+                showNotification('Tidak ada data eksternal yang terdeteksi.', 'info');
+            } catch (error) {
+                console.error('Error in handleReloadRepo:', error);
+                showNotification('Gagal melakukan sinkronisasi data', 'error');
             }
-            showNotification('Tidak ada data eksternal yang terdeteksi.', 'info');
         }
 
-        // --- FUNGSI VERIFIKASI KIN BARU - TELAH DIPERBAIKI (TOMBOL CETAK KIN DIHAPUS) ---
-
-        /**
-         * Fungsi untuk verifikasi KIN berdasarkan NIK atau kode validasi
-         */
+        // --- FUNGSI VERIFIKASI KIN ---
         function verifyKIN() {
             const verifyInput = document.getElementById('verifyInput').value.trim();
             const verifyLoading = document.getElementById('verifyLoading');
@@ -2993,9 +3096,6 @@
             }, 1500);
         }
 
-        /**
-         * Fungsi untuk menampilkan hasil verifikasi - TELAH DIPERBAIKI
-         */
         function showVerificationResult(nelayanData, isValid, input = '') {
             const verifyResultContainer = document.getElementById('verifyResultContainer');
             const breadcrumbItems = document.querySelectorAll('.verify-breadcrumb-item');
@@ -3084,9 +3184,6 @@
                     </div>
                 `;
                 
-                // Play success sound effect (opsional)
-                playSuccessSound();
-                
                 // Scroll ke hasil
                 verifyResultContainer.scrollIntoView({ behavior: 'smooth' });
                 
@@ -3141,9 +3238,6 @@
             verifyResultContainer.style.display = 'block';
         }
 
-        /**
-         * Fungsi untuk reset form verifikasi
-         */
         function resetVerification() {
             const verifyInput = document.getElementById('verifyInput');
             const verifyResultContainer = document.getElementById('verifyResultContainer');
@@ -3164,9 +3258,6 @@
             verifyInput.focus();
         }
 
-        /**
-         * Fungsi untuk toggle FAQ
-         */
         function toggleFAQ(id) {
             const answer = document.getElementById(`faqAnswer${id}`);
             const icon = document.querySelector(`#faqAnswer${id}`).parentElement.querySelector('i');
@@ -3182,37 +3273,6 @@
             }
         }
 
-        /**
-         * Fungsi untuk memainkan suara sukses (opsional)
-         */
-        function playSuccessSound() {
-            // Coba buat audio context untuk sound effect
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.5);
-            } catch (e) {
-                // Jika AudioContext tidak tersedia, abaikan
-                console.log('AudioContext tidak tersedia');
-            }
-        }
-
-        /**
-         * Fungsi untuk menangani hash routing
-         */
         function handleHashRouting() {
             const hash = window.location.hash;
             
@@ -3228,10 +3288,6 @@
         }
 
         // --- FUNGSI TAMBAHAN UNTUK KONVERSI DAN EKSPOR ---
-        function printData() {
-            showNotification('Fitur cetak PDF sedang dipersiapkan...', 'info');
-        }
-
         function exportData(format) {
             if (format === 'xlsx') {
                 if (typeof XLSX === 'undefined') {
@@ -3272,12 +3328,12 @@
 
         function sendDataToWhatsapp() {
             // Backup data terlebih dahulu
-            backupData('reload.js');
-            
-            // Buka WhatsApp dengan nomor admin
-            const phoneNumber = '6287865614222';
-            const message = encodeURIComponent(`Halo Admin Dinas Perikanan Kabupaten Situbondo,\n\nSaya ingin melaporkan sinkronisasi data SIMATA. Berikut adalah file data terbaru.\n\n*Detail Laporan:*\n- Total Data: ${appData.length} record\n- Tanggal: ${new Date().toLocaleDateString('id-ID')}\n- Sistem: SIMATA v5.3\n\nFile terlampir.`);
-            window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+            if (backupData('reload.js')) {
+                // Buka WhatsApp dengan nomor admin
+                const phoneNumber = '6287865614222';
+                const message = encodeURIComponent(`Halo Admin Dinas Perikanan Kabupaten Situbondo,\n\nSaya ingin melaporkan sinkronisasi data SIMATA. Berikut adalah file data terbaru.\n\n*Detail Laporan:*\n- Total Data: ${appData.length} record\n- Tanggal: ${new Date().toLocaleDateString('id-ID')}\n- Sistem: SIMATA v5.3\n\nFile terlampir.`);
+                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+            }
         }
 
         // Ekspor fungsi-fungsi penting ke global scope
@@ -3297,6 +3353,7 @@
         window.verifyKIN = verifyKIN;
         window.toggleFAQ = toggleFAQ;
         window.resetVerification = resetVerification;
+        window.generatePdfReport = generatePdfReport;
 
         console.log('✅ SIMATA Sistem Pemetaan Nelayan v5.3 loaded successfully');
     </script>
