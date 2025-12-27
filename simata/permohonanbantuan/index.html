@@ -22,6 +22,7 @@
     
     <!-- PDF Export Library -->
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@latest/dist/jspdf.plugin.autotable.js"></script>
     
     <style>
         :root {
@@ -224,6 +225,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .section-title {
@@ -469,6 +472,25 @@
             color: white;
         }
         
+        .btn-secondary-custom {
+            background: var(--light);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-secondary-custom:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
         /* Table Styling */
         .table-container {
             background: white;
@@ -485,6 +507,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .table-title {
@@ -574,6 +598,16 @@
             color: #155724;
         }
         
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -617,6 +651,8 @@
             padding: 20px 25px;
             background: #fafcff;
             border-top: 1px solid #eef5ff;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .pagination {
@@ -796,6 +832,53 @@
             padding: 12px 15px;
         }
         
+        /* Filter Section */
+        .filter-section {
+            background: #fafcff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #eef5ff;
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray);
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #e6f0ff;
+        }
+        
+        .empty-state h4 {
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+        
         /* Responsive Design */
         @media (max-width: 992px) {
             .app-wrapper {
@@ -864,6 +947,11 @@
             .btn-action {
                 width: 100%;
             }
+            
+            .pagination-container {
+                flex-direction: column;
+                align-items: center;
+            }
         }
         
         /* Loading Animation */
@@ -899,29 +987,6 @@
         
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
-        }
-        
-        /* Filter Section */
-        .filter-section {
-            background: #fafcff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #eef5ff;
-        }
-        
-        .filter-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        .filter-group label {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--gray);
-            margin-bottom: 5px;
-            display: block;
         }
         
         /* Success Animation */
@@ -990,6 +1055,23 @@
             border-top: 1px solid #eef5ff;
             margin-top: 30px;
         }
+        
+        /* Print Styles */
+        @media print {
+            .app-header, .nav-menu, .header-controls, .fab, .app-footer, .btn {
+                display: none !important;
+            }
+            
+            .app-wrapper {
+                box-shadow: none;
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .main-content {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1000,8 +1082,8 @@
 
     <!-- BARJAS Application Code -->
     <script>
-        // barjas.js - Sistem Bantuan Nelayan Kab. Situbondo - VERSION MODERN
-        // Versi 4.0 - Modern Design Edition
+        // barjas.js - Sistem Bantuan Nelayan Kab. Situbondo - VERSION FINAL
+        // Versi 5.0 - Complete Edition
         // Tanggal: 2024
         // Developer: Dinas Perikanan Kabupaten Situbondo
 
@@ -1018,7 +1100,7 @@
             const BARJAS_CONFIG = {
                 APP_NAME: 'SISTEM BANTUAN NELAYAN',
                 APP_SUBTITLE: 'Kabupaten Situbondo',
-                VERSION: '4.0',
+                VERSION: '5.0',
                 SECURITY_PIN: '17081945',
                 EXTRACT_CODE: '19450817',
                 WHATSAPP_ADMIN: '6287865614222',
@@ -1079,6 +1161,15 @@
                     "Buah",
                     "Meter",
                     "Roll"
+                ],
+                
+                // Status bantuan
+                STATUS_LIST: [
+                    "Menunggu",
+                    "Diproses",
+                    "Disetujui",
+                    "Ditolak",
+                    "Selesai"
                 ]
             };
 
@@ -1086,9 +1177,11 @@
             let barjasState = {
                 data: [],
                 settings: {
-                    itemsPerPage: 25,
+                    itemsPerPage: 10,
                     notifications: true,
                     privacyMode: true,
+                    autoSave: true,
+                    theme: 'light',
                     lastBackupDate: '-'
                 },
                 currentPage: 1,
@@ -1096,7 +1189,10 @@
                 activeFilters: {},
                 currentDetailId: null,
                 isInitialized: false,
-                lastSavedData: null
+                lastSavedData: null,
+                editingId: null,
+                searchQuery: '',
+                filteredData: null
             };
 
             // --- FUNGSI UTILITAS BARJAS ---
@@ -1110,6 +1206,24 @@
                             day: '2-digit', 
                             month: 'short', 
                             year: 'numeric' 
+                        });
+                    } catch (error) {
+                        console.error('Error formatting date:', error);
+                        return dateString;
+                    }
+                },
+
+                formatDateTime(dateString) {
+                    if (!dateString) return '-';
+                    try {
+                        const date = new Date(dateString);
+                        if (isNaN(date.getTime())) return dateString;
+                        return date.toLocaleDateString('id-ID', { 
+                            day: '2-digit', 
+                            month: 'short', 
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
                         });
                     } catch (error) {
                         console.error('Error formatting date:', error);
@@ -1191,6 +1305,15 @@
                     return /^\d{10,13}$/.test(wa);
                 },
 
+                generateRandomCode(length = 6) {
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                    let result = '';
+                    for (let i = 0; i < length; i++) {
+                        result += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    return 'BRJ-' + result;
+                },
+
                 confirmDialog(message, title = 'Konfirmasi') {
                     return new Promise((resolve) => {
                         const modalHTML = `
@@ -1234,6 +1357,243 @@
                         
                         modal.show();
                     });
+                },
+
+                showDetailModal(data) {
+                    const modalHTML = `
+                        <div class="modal fade" id="detailModal" tabindex="-1">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Detail Data Bantuan</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Nama Lengkap</div>
+                                                    <div class="detail-value">${data.nama || '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">NIK</div>
+                                                    <div class="detail-value">${BarjasUtils.formatPrivacy(data.nik)}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">WhatsApp</div>
+                                                    <div class="detail-value">${data.whatsapp ? (barjasState.settings.privacyMode ? '****' : data.whatsapp) : '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Kelompok Nelayan</div>
+                                                    <div class="detail-value">${data.namaKelompok || '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Jabatan</div>
+                                                    <div class="detail-value">${data.jabatan || '-'}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Kecamatan</div>
+                                                    <div class="detail-value">${data.kecamatan || '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Desa</div>
+                                                    <div class="detail-value">${data.desa || '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Alamat</div>
+                                                    <div class="detail-value">${data.alamat || '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Jenis Bantuan</div>
+                                                    <div class="detail-value">${data.jenisBantuan || '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Nama Bantuan</div>
+                                                    <div class="detail-value">${data.namaBantuan || '-'}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Jumlah Bantuan</div>
+                                                    <div class="detail-value">${BarjasUtils.formatNumber(data.jumlahBantuan || 0)} ${data.satuanBantuan || ''}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Tanggal Terima</div>
+                                                    <div class="detail-value">${BarjasUtils.formatDate(data.tanggalTerima)}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Tahun Anggaran</div>
+                                                    <div class="detail-value">${data.tahunAnggaran || '-'}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Nama Petugas</div>
+                                                    <div class="detail-value">${data.namaPetugas || '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Kode Validasi</div>
+                                                    <div class="detail-value">${data.kodeValidasi || '-'}</div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Status</div>
+                                                    <div class="detail-value">
+                                                        <span class="status-badge status-${data.status ? data.status.toLowerCase() : 'pending'}">
+                                                            ${data.status || 'Menunggu'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Tanggal Input</div>
+                                                    <div class="detail-value">${BarjasUtils.formatDateTime(data.tanggalInput)}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ${data.driveLink ? `
+                                        <div class="detail-item mt-3">
+                                            <div class="detail-label">Link Dokumen</div>
+                                            <div class="detail-value">
+                                                <a href="${data.driveLink}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-external-link-alt me-1"></i> Buka Dokumen
+                                                </a>
+                                            </div>
+                                        </div>` : ''}
+                                        ${data.keterangan ? `
+                                        <div class="detail-item mt-3">
+                                            <div class="detail-label">Keterangan</div>
+                                            <div class="detail-value">${data.keterangan}</div>
+                                        </div>` : ''}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                        ${data.whatsapp && data.whatsapp !== 'TIDAK ADA' ? `
+                                        <a href="https://wa.me/${data.whatsapp}" target="_blank" class="btn btn-success">
+                                            <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
+                                        </a>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const modalContainer = document.createElement('div');
+                    modalContainer.innerHTML = modalHTML;
+                    document.body.appendChild(modalContainer);
+                    
+                    const modalElement = document.getElementById('detailModal');
+                    const modal = new bootstrap.Modal(modalElement);
+                    
+                    modalElement.addEventListener('hidden.bs.modal', function() {
+                        if (modalContainer.parentNode) {
+                            document.body.removeChild(modalContainer);
+                        }
+                    });
+                    
+                    modal.show();
+                },
+
+                exportToExcel(data, filename = 'barjas-data') {
+                    try {
+                        // Format data untuk Excel
+                        const excelData = data.map(item => ({
+                            'Nama': item.nama,
+                            'NIK': barjasState.settings.privacyMode ? BarjasUtils.formatPrivacy(item.nik) : item.nik,
+                            'WhatsApp': item.whatsapp ? (barjasState.settings.privacyMode ? '****' : item.whatsapp) : '-',
+                            'Kelompok': item.namaKelompok || '-',
+                            'Jabatan': item.jabatan || '-',
+                            'Kecamatan': item.kecamatan || '-',
+                            'Desa': item.desa || '-',
+                            'Alamat': item.alamat || '-',
+                            'Jenis Bantuan': item.jenisBantuan || '-',
+                            'Nama Bantuan': item.namaBantuan || '-',
+                            'Jumlah': item.jumlahBantuan || 0,
+                            'Satuan': item.satuanBantuan || '-',
+                            'Tahun Anggaran': item.tahunAnggaran || '-',
+                            'Tanggal Terima': BarjasUtils.formatDate(item.tanggalTerima),
+                            'Petugas': item.namaPetugas || '-',
+                            'Kode Validasi': item.kodeValidasi || '-',
+                            'Status': item.status || 'Menunggu',
+                            'Keterangan': item.keterangan || '-'
+                        }));
+                        
+                        // Buat worksheet
+                        const ws = XLSX.utils.json_to_sheet(excelData);
+                        
+                        // Buat workbook
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, 'Data Bantuan');
+                        
+                        // Export ke file
+                        XLSX.writeFile(wb, `${filename}-${new Date().toISOString().split('T')[0]}.xlsx`);
+                        
+                        return true;
+                    } catch (error) {
+                        console.error('Error exporting to Excel:', error);
+                        BarjasUtils.showNotification('Gagal mengekspor ke Excel', 'error');
+                        return false;
+                    }
+                },
+
+                exportToPDF(data, filename = 'barjas-data') {
+                    try {
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF('p', 'pt', 'a4');
+                        
+                        // Judul
+                        doc.setFontSize(18);
+                        doc.setTextColor(0, 102, 204);
+                        doc.text('DATA BANTUAN NELAYAN', 40, 40);
+                        
+                        doc.setFontSize(12);
+                        doc.setTextColor(100, 100, 100);
+                        doc.text(`Kabupaten Situbondo - ${new Date().toLocaleDateString('id-ID')}`, 40, 60);
+                        
+                        // Data tabel
+                        const headers = [
+                            ['No', 'Nama', 'NIK', 'Kecamatan', 'Jenis Bantuan', 'Jumlah', 'Status']
+                        ];
+                        
+                        const tableData = data.map((item, index) => [
+                            index + 1,
+                            item.nama,
+                            barjasState.settings.privacyMode ? BarjasUtils.formatPrivacy(item.nik) : item.nik,
+                            item.kecamatan,
+                            item.jenisBantuan,
+                            `${BarjasUtils.formatNumber(item.jumlahBantuan)} ${item.satuanBantuan}`,
+                            item.status
+                        ]);
+                        
+                        doc.autoTable({
+                            head: headers,
+                            body: tableData,
+                            startY: 80,
+                            theme: 'striped',
+                            headStyles: { fillColor: [0, 102, 204] },
+                            margin: { left: 40, right: 40 }
+                        });
+                        
+                        // Footer
+                        const pageCount = doc.internal.getNumberOfPages();
+                        for (let i = 1; i <= pageCount; i++) {
+                            doc.setPage(i);
+                            doc.setFontSize(10);
+                            doc.text(`Halaman ${i} dari ${pageCount}`, doc.internal.pageSize.width - 100, doc.internal.pageSize.height - 30);
+                            doc.text(`BARJAS v${BARJAS_CONFIG.VERSION}`, 40, doc.internal.pageSize.height - 30);
+                        }
+                        
+                        // Simpan PDF
+                        doc.save(`${filename}-${new Date().toISOString().split('T')[0]}.pdf`);
+                        
+                        return true;
+                    } catch (error) {
+                        console.error('Error exporting to PDF:', error);
+                        BarjasUtils.showNotification('Gagal mengekspor ke PDF', 'error');
+                        return false;
+                    }
                 }
             };
 
@@ -1248,6 +1608,7 @@
                             lastUpdate: new Date().toISOString()
                         };
                         localStorage.setItem('barjas_app_data', JSON.stringify(dataToSave));
+                        barjasState.lastSavedData = new Date();
                         return true;
                     } catch (e) {
                         console.error('Gagal menyimpan data BARJAS:', e);
@@ -1298,6 +1659,74 @@
                         console.error('Gagal memuat pengaturan BARJAS:', e);
                         return false;
                     }
+                },
+
+                backupData() {
+                    try {
+                        const backup = {
+                            data: barjasState.data,
+                            settings: barjasState.settings,
+                            version: BARJAS_CONFIG.VERSION,
+                            backupDate: new Date().toISOString()
+                        };
+                        
+                        const dataStr = JSON.stringify(backup, null, 2);
+                        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                        
+                        const exportFileDefaultName = `barjas-backup-${new Date().toISOString().split('T')[0]}.json`;
+                        
+                        const linkElement = document.createElement('a');
+                        linkElement.setAttribute('href', dataUri);
+                        linkElement.setAttribute('download', exportFileDefaultName);
+                        linkElement.click();
+                        
+                        barjasState.settings.lastBackupDate = new Date().toISOString().split('T')[0];
+                        this.saveSettings();
+                        
+                        return true;
+                    } catch (e) {
+                        console.error('Gagal membuat backup:', e);
+                        BarjasUtils.showNotification('Gagal membuat backup data', 'error');
+                        return false;
+                    }
+                },
+
+                restoreData(file) {
+                    return new Promise((resolve, reject) => {
+                        try {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                try {
+                                    const backup = JSON.parse(e.target.result);
+                                    
+                                    if (backup.version) {
+                                        barjasState.data = backup.data || [];
+                                        if (backup.settings) {
+                                            barjasState.settings = { ...barjasState.settings, ...backup.settings };
+                                        }
+                                        
+                                        BarjasStorage.saveData();
+                                        BarjasStorage.saveSettings();
+                                        
+                                        BarjasUtils.showNotification('Data berhasil dipulihkan dari backup!', 'success');
+                                        resolve(true);
+                                    } else {
+                                        BarjasUtils.showNotification('File backup tidak valid', 'error');
+                                        reject(new Error('Invalid backup file'));
+                                    }
+                                } catch (parseError) {
+                                    console.error('Error parsing backup file:', parseError);
+                                    BarjasUtils.showNotification('Format file backup tidak valid', 'error');
+                                    reject(parseError);
+                                }
+                            };
+                            reader.readAsText(file);
+                        } catch (e) {
+                            console.error('Error restoring data:', e);
+                            BarjasUtils.showNotification('Gagal memulihkan data', 'error');
+                            reject(e);
+                        }
+                    });
                 }
             };
 
@@ -1509,6 +1938,7 @@
                     const kecamatanSet = new Set();
                     const desaSet = new Set();
                     const jenisSet = new Set();
+                    const totalJumlah = barjasState.data.reduce((sum, item) => sum + (parseInt(item.jumlahBantuan) || 0), 0);
                     
                     barjasState.data.forEach(item => {
                         if (item.kecamatan) kecamatanSet.add(item.kecamatan);
@@ -1541,8 +1971,8 @@
                         {
                             icon: 'gift',
                             iconClass: 'fas fa-gift',
-                            value: jenisSet.size,
-                            label: 'Jenis Bantuan',
+                            value: totalJumlah,
+                            label: 'Total Bantuan',
                             color: '#FF3B30'
                         }
                     ];
@@ -1570,7 +2000,7 @@
                 renderCharts() {
                     // Chart 1: Jenis Bantuan
                     const jenisCtx = document.getElementById('jenis-chart');
-                    if (jenisCtx) {
+                    if (jenisCtx && jenisCtx.getContext) {
                         const jenisCount = {};
                         barjasState.data.forEach(item => {
                             const jenis = item.jenisBantuan || 'Tidak Diketahui';
@@ -1581,7 +2011,12 @@
                         const data = Object.values(jenisCount);
                         const colors = this.generateColors(labels.length);
                         
-                        new Chart(jenisCtx, {
+                        // Hapus chart sebelumnya jika ada
+                        if (window.jenisChart instanceof Chart) {
+                            window.jenisChart.destroy();
+                        }
+                        
+                        window.jenisChart = new Chart(jenisCtx, {
                             type: 'doughnut',
                             data: {
                                 labels: labels,
@@ -1610,7 +2045,7 @@
                     
                     // Chart 2: Kecamatan
                     const kecamatanCtx = document.getElementById('kecamatan-chart');
-                    if (kecamatanCtx) {
+                    if (kecamatanCtx && kecamatanCtx.getContext) {
                         const kecamatanCount = {};
                         barjasState.data.forEach(item => {
                             const kecamatan = item.kecamatan || 'Tidak Diketahui';
@@ -1625,7 +2060,12 @@
                         const data = sorted.map(item => item[1]);
                         const colors = this.generateColors(labels.length, true);
                         
-                        new Chart(kecamatanCtx, {
+                        // Hapus chart sebelumnya jika ada
+                        if (window.kecamatanChart instanceof Chart) {
+                            window.kecamatanChart.destroy();
+                        }
+                        
+                        window.kecamatanChart = new Chart(kecamatanCtx, {
                             type: 'bar',
                             data: {
                                 labels: labels,
@@ -1680,16 +2120,18 @@
                     if (!container) return;
                     
                     const today = new Date().toISOString().split('T')[0];
+                    const isEditing = barjasState.editingId !== null;
+                    const editData = isEditing ? barjasState.data.find(item => item.id === barjasState.editingId) : null;
                     
                     container.innerHTML = `
                         <div class="section-header">
-                            <h2 class="section-title">Formulir Input Data Permohonan</h2>
+                            <h2 class="section-title">${isEditing ? 'Edit Data' : 'Formulir Input Data'} Permohonan</h2>
                             <div class="btn-group">
-                                <button class="btn btn-outline-secondary" onclick="BARJAS.resetForm()">
+                                <button class="btn btn-secondary-custom" onclick="BARJAS.resetForm()">
                                     <i class="fas fa-redo"></i> Reset
                                 </button>
                                 <button class="btn btn-primary-custom" onclick="BARJAS.submitForm()">
-                                    <i class="fas fa-save"></i> Simpan Data
+                                    <i class="fas fa-save"></i> ${isEditing ? 'Update Data' : 'Simpan Data'}
                                 </button>
                             </div>
                         </div>
@@ -1709,7 +2151,9 @@
                                                 <i class="fas fa-user-circle"></i>
                                                 Nama Lengkap
                                             </label>
-                                            <input type="text" class="form-control" id="input-nama" required placeholder="Nama lengkap pemohon">
+                                            <input type="text" class="form-control" id="input-nama" required 
+                                                placeholder="Nama lengkap pemohon"
+                                                value="${editData ? editData.nama : ''}">
                                         </div>
                                         
                                         <div class="col-md-6">
@@ -1717,7 +2161,10 @@
                                                 <i class="fas fa-id-card"></i>
                                                 NIK (16 Digit)
                                             </label>
-                                            <input type="text" class="form-control" id="input-nik" maxlength="16" required placeholder="3510110101010001" pattern="\\d{16}">
+                                            <input type="text" class="form-control" id="input-nik" maxlength="16" required 
+                                                placeholder="3510110101010001" pattern="\\d{16}"
+                                                value="${editData ? editData.nik : ''}"
+                                                ${isEditing ? 'readonly' : ''}>
                                         </div>
                                         
                                         <div class="col-md-6">
@@ -1726,7 +2173,9 @@
                                                 Nomor WhatsApp
                                             </label>
                                             <div class="input-group">
-                                                <input type="text" class="form-control" id="input-whatsapp" placeholder="6281234567890">
+                                                <input type="text" class="form-control" id="input-whatsapp" 
+                                                    placeholder="6281234567890"
+                                                    value="${editData ? editData.whatsapp : ''}">
                                                 <button type="button" class="btn btn-outline-secondary" onclick="BARJAS.toggleWhatsApp()">
                                                     <i class="fas fa-ban"></i> Tidak Ada
                                                 </button>
@@ -1739,7 +2188,9 @@
                                                 Kelompok Nelayan
                                             </label>
                                             <div class="input-group">
-                                                <input type="text" class="form-control" id="input-kelompok" placeholder="Nama kelompok (jika ada)">
+                                                <input type="text" class="form-control" id="input-kelompok" 
+                                                    placeholder="Nama kelompok (jika ada)"
+                                                    value="${editData ? editData.namaKelompok : ''}">
                                                 <button type="button" class="btn btn-outline-secondary" onclick="BARJAS.toggleKelompok()">
                                                     <i class="fas fa-user"></i> Individu
                                                 </button>
@@ -1771,7 +2222,8 @@
                                                 <i class="fas fa-calendar-day"></i>
                                                 Tanggal Permohonan
                                             </label>
-                                            <input type="date" class="form-control" id="input-tanggal" value="${today}" required max="${today}">
+                                            <input type="date" class="form-control" id="input-tanggal" 
+                                                value="${editData ? editData.tanggalTerima : today}" required max="${today}">
                                         </div>
                                     </div>
                                 </div>
@@ -1809,7 +2261,8 @@
                                                 <i class="fas fa-location-dot"></i>
                                                 Alamat Lengkap
                                             </label>
-                                            <textarea class="form-control" id="input-alamat" rows="2" placeholder="Alamat lengkap pemohon"></textarea>
+                                            <textarea class="form-control" id="input-alamat" rows="2" 
+                                                placeholder="Alamat lengkap pemohon">${editData ? editData.alamat : ''}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -1837,7 +2290,9 @@
                                                 <i class="fas fa-file-signature"></i>
                                                 Nama Bantuan
                                             </label>
-                                            <input type="text" class="form-control" id="input-nama-bantuan" required placeholder="Bibit Lele Sangkuriang">
+                                            <input type="text" class="form-control" id="input-nama-bantuan" required 
+                                                placeholder="Bibit Lele Sangkuriang"
+                                                value="${editData ? editData.namaBantuan : ''}">
                                         </div>
                                         
                                         <div class="col-md-6">
@@ -1845,7 +2300,8 @@
                                                 <i class="fas fa-calculator"></i>
                                                 Jumlah
                                             </label>
-                                            <input type="number" class="form-control" id="input-jumlah" required min="1" value="1">
+                                            <input type="number" class="form-control" id="input-jumlah" required min="1" 
+                                                value="${editData ? editData.jumlahBantuan : '1'}">
                                         </div>
                                         
                                         <div class="col-md-6">
@@ -1873,7 +2329,9 @@
                                                 <i class="fas fa-user-tie"></i>
                                                 Nama Petugas
                                             </label>
-                                            <input type="text" class="form-control" id="input-petugas" required placeholder="Nama petugas validasi">
+                                            <input type="text" class="form-control" id="input-petugas" required 
+                                                placeholder="Nama petugas validasi"
+                                                value="${editData ? editData.namaPetugas : ''}">
                                         </div>
                                         
                                         <div class="col-md-6">
@@ -1881,7 +2339,9 @@
                                                 <i class="fab fa-google-drive"></i>
                                                 Link Dokumen
                                             </label>
-                                            <input type="url" class="form-control" id="input-drive" placeholder="https://drive.google.com/...">
+                                            <input type="url" class="form-control" id="input-drive" 
+                                                placeholder="https://drive.google.com/..."
+                                                value="${editData ? editData.driveLink : ''}">
                                         </div>
                                         
                                         <div class="col-12">
@@ -1890,7 +2350,9 @@
                                                 Kode Validasi
                                             </label>
                                             <div class="input-group">
-                                                <input type="text" class="form-control bg-light" id="input-kode" readonly required placeholder="BRJ-XXXXXX">
+                                                <input type="text" class="form-control bg-light" id="input-kode" readonly required 
+                                                    placeholder="BRJ-XXXXXX"
+                                                    value="${editData ? editData.kodeValidasi : ''}">
                                                 <button type="button" class="btn btn-generate" onclick="BARJAS.generateKode()">
                                                     <i class="fas fa-key"></i> Generate
                                                 </button>
@@ -1903,17 +2365,22 @@
                                                 <i class="fas fa-sticky-note"></i>
                                                 Keterangan
                                             </label>
-                                            <textarea class="form-control" id="input-keterangan" rows="3" placeholder="Keterangan tambahan"></textarea>
+                                            <textarea class="form-control" id="input-keterangan" rows="3" 
+                                                placeholder="Keterangan tambahan">${editData ? editData.keterangan : ''}</textarea>
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="BARJAS.resetForm()">
+                                    ${isEditing ? `
+                                    <button type="button" class="btn btn-secondary-custom" onclick="BARJAS.cancelEdit()">
+                                        <i class="fas fa-times"></i> Batal Edit
+                                    </button>` : ''}
+                                    <button type="button" class="btn btn-secondary-custom" onclick="BARJAS.resetForm()">
                                         <i class="fas fa-redo"></i> Reset Form
                                     </button>
                                     <button type="button" class="btn btn-primary-custom" onclick="BARJAS.submitForm()">
-                                        <i class="fas fa-save"></i> Simpan Data
+                                        <i class="fas fa-save"></i> ${isEditing ? 'Update Data' : 'Simpan Data'}
                                     </button>
                                 </div>
                             </form>
@@ -1922,6 +2389,11 @@
                     
                     // Isi dropdown
                     this.fillFormDropdowns();
+                    
+                    // Jika edit mode, isi data
+                    if (isEditing && editData) {
+                        this.populateFormData(editData);
+                    }
                 },
                 
                 fillFormDropdowns() {
@@ -1970,6 +2442,66 @@
                     }
                 },
                 
+                populateFormData(data) {
+                    if (!data) return;
+                    
+                    // Set nilai form
+                    const fields = {
+                        'input-nama': data.nama,
+                        'input-nik': data.nik,
+                        'input-whatsapp': data.whatsapp || '',
+                        'input-kelompok': data.namaKelompok || '',
+                        'input-jabatan': data.jabatan || '',
+                        'input-tahun': data.tahunAnggaran || '',
+                        'input-tanggal': data.tanggalTerima || '',
+                        'input-kecamatan': data.kecamatan || '',
+                        'input-desa': data.desa || '',
+                        'input-alamat': data.alamat || '',
+                        'input-jenis': data.jenisBantuan || '',
+                        'input-nama-bantuan': data.namaBantuan || '',
+                        'input-jumlah': data.jumlahBantuan || 1,
+                        'input-satuan': data.satuanBantuan || '',
+                        'input-petugas': data.namaPetugas || '',
+                        'input-drive': data.driveLink || '',
+                        'input-kode': data.kodeValidasi || '',
+                        'input-keterangan': data.keterangan || ''
+                    };
+                    
+                    Object.keys(fields).forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.value = fields[id];
+                            
+                            // Trigger change event untuk dropdown
+                            if (element.tagName === 'SELECT') {
+                                element.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    });
+                    
+                    // Update desa dropdown
+                    if (data.kecamatan) {
+                        this.updateDesaDropdown();
+                        setTimeout(() => {
+                            const desaSelect = document.getElementById('input-desa');
+                            if (desaSelect && data.desa) {
+                                desaSelect.value = data.desa;
+                            }
+                        }, 100);
+                    }
+                    
+                    // Update satuan
+                    if (data.jenisBantuan) {
+                        this.updateSatuan();
+                        setTimeout(() => {
+                            const satuanSelect = document.getElementById('input-satuan');
+                            if (satuanSelect && data.satuanBantuan) {
+                                satuanSelect.value = data.satuanBantuan;
+                            }
+                        }, 100);
+                    }
+                },
+                
                 updateDesaDropdown() {
                     const kecSelect = document.getElementById('input-kecamatan');
                     const desaSelect = document.getElementById('input-desa');
@@ -2012,6 +2544,438 @@
                     if (mapping[jenis]) {
                         satuanSelect.value = mapping[jenis];
                     }
+                },
+                
+                renderDataTable() {
+                    const container = document.getElementById('data-tab');
+                    if (!container) return;
+                    
+                    // Filter data berdasarkan search query
+                    const filteredData = this.filterData();
+                    
+                    // Hitung total halaman
+                    const totalPages = Math.ceil(filteredData.length / barjasState.settings.itemsPerPage);
+                    const startIndex = (barjasState.currentPage - 1) * barjasState.settings.itemsPerPage;
+                    const endIndex = startIndex + barjasState.settings.itemsPerPage;
+                    const pageData = filteredData.slice(startIndex, endIndex);
+                    
+                    container.innerHTML = `
+                        <div class="section-header">
+                            <h2 class="section-title">Data Bantuan Nelayan</h2>
+                            <div class="btn-group">
+                                <button class="btn btn-primary-custom" onclick="BARJAS.refreshData()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Filter Section -->
+                        <div class="filter-section">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label class="form-label">Cari Data</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="search-input" 
+                                            placeholder="Cari berdasarkan nama, NIK, kecamatan, atau jenis bantuan..."
+                                            value="${barjasState.searchQuery || ''}">
+                                        <button class="btn btn-outline-primary" type="button" onclick="BARJAS.searchData()">
+                                            <i class="fas fa-search"></i> Cari
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Filter Status</label>
+                                    <select class="form-select" id="filter-status" onchange="BARJAS.filterData()">
+                                        <option value="">Semua Status</option>
+                                        ${BARJAS_CONFIG.STATUS_LIST.map(status => `
+                                            <option value="${status}" ${barjasState.activeFilters.status === status ? 'selected' : ''}>
+                                                ${status}
+                                            </option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Filter Kecamatan</label>
+                                    <select class="form-select" id="filter-kecamatan" onchange="BARJAS.filterData()">
+                                        <option value="">Semua Kecamatan</option>
+                                        ${Object.keys(BARJAS_CONFIG.KECAMATAN_DATA).sort().map(kec => `
+                                            <option value="${kec}" ${barjasState.activeFilters.kecamatan === kec ? 'selected' : ''}>
+                                                ${kec}
+                                            </option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Filter Tahun</label>
+                                    <select class="form-select" id="filter-tahun" onchange="BARJAS.filterData()">
+                                        <option value="">Semua Tahun</option>
+                                        ${[...new Set(barjasState.data.map(item => item.tahunAnggaran).filter(Boolean))].sort((a, b) => b - a).map(year => `
+                                            <option value="${year}" ${barjasState.activeFilters.tahunAnggaran === year ? 'selected' : ''}>
+                                                ${year}
+                                            </option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Table Container -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3 class="table-title">Daftar Penerima Bantuan</h3>
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" class="form-control" placeholder="Cari cepat..." 
+                                        value="${barjasState.searchQuery || ''}" onkeyup="BARJAS.searchData(this.value)">
+                                </div>
+                            </div>
+                            
+                            <div class="table-wrapper">
+                                ${filteredData.length === 0 ? `
+                                <div class="empty-state">
+                                    <i class="fas fa-database"></i>
+                                    <h4>Tidak ada data</h4>
+                                    <p>${barjasState.searchQuery ? 'Tidak ditemukan data yang sesuai dengan pencarian.' : 'Belum ada data bantuan yang tercatat. Silakan tambahkan data baru.'}</p>
+                                    ${!barjasState.searchQuery ? `
+                                    <button class="btn btn-primary-custom" onclick="BARJAS.switchTab('input')">
+                                        <i class="fas fa-plus"></i> Tambah Data Baru
+                                    </button>` : ''}
+                                </div>` : `
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="50">No</th>
+                                            <th>Nama</th>
+                                            <th>NIK</th>
+                                            <th>Kecamatan</th>
+                                            <th>Jenis Bantuan</th>
+                                            <th>Jumlah</th>
+                                            <th>Status</th>
+                                            <th width="150">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${pageData.map((item, index) => `
+                                            <tr>
+                                                <td>${startIndex + index + 1}</td>
+                                                <td>${item.nama || '-'}</td>
+                                                <td>${BarjasUtils.formatPrivacy(item.nik)}</td>
+                                                <td>${item.kecamatan || '-'}</td>
+                                                <td>${item.jenisBantuan || '-'}</td>
+                                                <td>${BarjasUtils.formatNumber(item.jumlahBantuan || 0)} ${item.satuanBantuan || ''}</td>
+                                                <td>
+                                                    <span class="status-badge status-${(item.status || 'Menunggu').toLowerCase()}">
+                                                        ${item.status || 'Menunggu'}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="btn-action btn-view" title="Lihat Detail" onclick="BARJAS.viewDetail(${item.id})">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn-action btn-edit" title="Edit Data" onclick="BARJAS.editData(${item.id})">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn-action btn-delete" title="Hapus Data" onclick="BARJAS.deleteData(${item.id})">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>`}
+                            </div>
+                            
+                            ${filteredData.length > 0 ? `
+                            <div class="pagination-container">
+                                <div class="showing-text">
+                                    Menampilkan ${startIndex + 1} - ${Math.min(endIndex, filteredData.length)} dari ${filteredData.length} data
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <li class="page-item ${barjasState.currentPage === 1 ? 'disabled' : ''}">
+                                            <a class="page-link" href="#" onclick="BARJAS.changePage(${barjasState.currentPage - 1})">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        ${Array.from({length: Math.min(5, totalPages)}, (_, i) => {
+                                            let pageNum;
+                                            if (totalPages <= 5) {
+                                                pageNum = i + 1;
+                                            } else if (barjasState.currentPage <= 3) {
+                                                pageNum = i + 1;
+                                            } else if (barjasState.currentPage >= totalPages - 2) {
+                                                pageNum = totalPages - 4 + i;
+                                            } else {
+                                                pageNum = barjasState.currentPage - 2 + i;
+                                            }
+                                            
+                                            return `
+                                                <li class="page-item ${barjasState.currentPage === pageNum ? 'active' : ''}">
+                                                    <a class="page-link" href="#" onclick="BARJAS.changePage(${pageNum})">${pageNum}</a>
+                                                </li>
+                                            `;
+                                        }).join('')}
+                                        <li class="page-item ${barjasState.currentPage === totalPages ? 'disabled' : ''}">
+                                            <a class="page-link" href="#" onclick="BARJAS.changePage(${barjasState.currentPage + 1})">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>` : ''}
+                        </div>
+                    `;
+                },
+                
+                filterData() {
+                    const statusFilter = document.getElementById('filter-status')?.value;
+                    const kecamatanFilter = document.getElementById('filter-kecamatan')?.value;
+                    const tahunFilter = document.getElementById('filter-tahun')?.value;
+                    
+                    // Simpan filter aktif
+                    barjasState.activeFilters = {
+                        status: statusFilter,
+                        kecamatan: kecamatanFilter,
+                        tahunAnggaran: tahunFilter
+                    };
+                    
+                    let filtered = [...barjasState.data];
+                    
+                    // Filter berdasarkan search query
+                    if (barjasState.searchQuery) {
+                        const query = barjasState.searchQuery.toLowerCase();
+                        filtered = filtered.filter(item => 
+                            (item.nama && item.nama.toLowerCase().includes(query)) ||
+                            (item.nik && item.nik.toLowerCase().includes(query)) ||
+                            (item.kecamatan && item.kecamatan.toLowerCase().includes(query)) ||
+                            (item.jenisBantuan && item.jenisBantuan.toLowerCase().includes(query)) ||
+                            (item.namaBantuan && item.namaBantuan.toLowerCase().includes(query))
+                        );
+                    }
+                    
+                    // Filter berdasarkan status
+                    if (statusFilter) {
+                        filtered = filtered.filter(item => item.status === statusFilter);
+                    }
+                    
+                    // Filter berdasarkan kecamatan
+                    if (kecamatanFilter) {
+                        filtered = filtered.filter(item => item.kecamatan === kecamatanFilter);
+                    }
+                    
+                    // Filter berdasarkan tahun
+                    if (tahunFilter) {
+                        filtered = filtered.filter(item => item.tahunAnggaran === tahunFilter);
+                    }
+                    
+                    barjasState.filteredData = filtered;
+                    return filtered;
+                },
+                
+                renderExport() {
+                    const container = document.getElementById('export-tab');
+                    if (!container) return;
+                    
+                    container.innerHTML = `
+                        <div class="section-header">
+                            <h2 class="section-title">Ekspor Data Bantuan</h2>
+                            <div class="btn-group">
+                                <button class="btn btn-primary-custom" onclick="BARJAS.refreshExport()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="export-grid">
+                            <div class="export-card">
+                                <div class="export-icon export-excel">
+                                    <i class="fas fa-file-excel"></i>
+                                </div>
+                                <h4>Ekspor ke Excel</h4>
+                                <p>Export data bantuan ke format Microsoft Excel (.xlsx) untuk analisis lebih lanjut atau pelaporan.</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-success" onclick="BARJAS.exportExcelAll()">
+                                        <i class="fas fa-download"></i> Export Semua Data
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="BARJAS.exportExcelFiltered()">
+                                        <i class="fas fa-filter"></i> Export Data Terfilter
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="export-card">
+                                <div class="export-icon export-pdf">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <h4>Ekspor ke PDF</h4>
+                                <p>Buat laporan PDF dari data bantuan dengan format yang rapi dan siap untuk dicetak.</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-danger" onclick="BARJAS.exportPDFAll()">
+                                        <i class="fas fa-download"></i> Export Semua Data
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="BARJAS.exportPDFFiltered()">
+                                        <i class="fas fa-filter"></i> Export Data Terfilter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card mt-4">
+                            <div class="setting-item">
+                                <div class="setting-title">Backup Data</div>
+                                <div class="setting-description">
+                                    Buat cadangan semua data sistem BARJAS ke file JSON. Berguna untuk migrasi atau pemulihan data.
+                                </div>
+                                <button class="btn btn-primary-custom" onclick="BARJAS.backupData()">
+                                    <i class="fas fa-database"></i> Buat Backup
+                                </button>
+                                <small class="d-block mt-2 text-muted">
+                                    Backup terakhir: ${barjasState.settings.lastBackupDate || 'Belum pernah'}
+                                </small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-title">Restore Data</div>
+                                <div class="setting-description">
+                                    Pulihkan data dari file backup sebelumnya. Harap hati-hati karena akan mengganti data yang ada.
+                                </div>
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="restore-file" accept=".json">
+                                    <button class="btn btn-warning" onclick="BARJAS.restoreData()">
+                                        <i class="fas fa-upload"></i> Restore Data
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-title">Reset Data</div>
+                                <div class="setting-description">
+                                    Hapus semua data dari sistem. Tindakan ini tidak dapat dibatalkan!
+                                </div>
+                                <button class="btn btn-danger" onclick="BARJAS.resetAllData()">
+                                    <i class="fas fa-trash"></i> Reset Semua Data
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                },
+                
+                renderSettings() {
+                    const container = document.getElementById('settings-tab');
+                    if (!container) return;
+                    
+                    container.innerHTML = `
+                        <div class="section-header">
+                            <h2 class="section-title">Pengaturan Sistem</h2>
+                            <div class="btn-group">
+                                <button class="btn btn-primary-custom" onclick="BARJAS.saveSettings()">
+                                    <i class="fas fa-save"></i> Simpan Pengaturan
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <div class="setting-item">
+                                <div class="setting-title">Tampilan</div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="setting-notifications" 
+                                                ${barjasState.settings.notifications ? 'checked' : ''}>
+                                            <label class="form-check-label" for="setting-notifications">
+                                                Notifikasi
+                                            </label>
+                                            <div class="setting-description">
+                                                Tampilkan notifikasi untuk aksi yang dilakukan
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="setting-privacy" 
+                                                ${barjasState.settings.privacyMode ? 'checked' : ''}>
+                                            <label class="form-check-label" for="setting-privacy">
+                                                Mode Privasi
+                                            </label>
+                                            <div class="setting-description">
+                                                Sembunyikan sebagian data sensitif seperti NIK dan nomor telepon
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="setting-autosave" 
+                                                ${barjasState.settings.autoSave ? 'checked' : ''}>
+                                            <label class="form-check-label" for="setting-autosave">
+                                                Auto-save
+                                            </label>
+                                            <div class="setting-description">
+                                                Simpan data secara otomatis setiap kali ada perubahan
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-title">Data Per Halaman</div>
+                                <div class="setting-description">
+                                    Jumlah data yang ditampilkan per halaman di tabel
+                                </div>
+                                <select class="form-select" id="setting-items-per-page" style="max-width: 200px;">
+                                    <option value="10" ${barjasState.settings.itemsPerPage === 10 ? 'selected' : ''}>10 data</option>
+                                    <option value="25" ${barjasState.settings.itemsPerPage === 25 ? 'selected' : ''}>25 data</option>
+                                    <option value="50" ${barjasState.settings.itemsPerPage === 50 ? 'selected' : ''}>50 data</option>
+                                    <option value="100" ${barjasState.settings.itemsPerPage === 100 ? 'selected' : ''}>100 data</option>
+                                </select>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-title">Informasi Sistem</div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Versi Aplikasi</div>
+                                            <div class="detail-value">${BARJAS_CONFIG.VERSION}</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Total Data</div>
+                                            <div class="detail-value">${barjasState.data.length} entri</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Ukuran Penyimpanan</div>
+                                            <div class="detail-value">${Math.round(JSON.stringify(barjasState.data).length / 1024)} KB</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Backup Terakhir</div>
+                                            <div class="detail-value">${barjasState.settings.lastBackupDate || 'Belum pernah'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-title">Tindakan Sistem</div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary" onclick="BARJAS.clearCache()">
+                                        <i class="fas fa-broom"></i> Bersihkan Cache
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="BARJAS.exportSettings()">
+                                        <i class="fas fa-download"></i> Export Pengaturan
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="BARJAS.showSystemInfo()">
+                                        <i class="fas fa-info-circle"></i> Info Sistem
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
             };
 
@@ -2031,6 +2995,8 @@
                     setTimeout(() => {
                         BarjasUtils.showNotification('Sistem BARJAS siap digunakan!', 'success');
                     }, 1000);
+                    
+                    barjasState.isInitialized = true;
                 },
                 
                 switchTab(tabName) {
@@ -2040,6 +3006,16 @@
                 refreshDashboard() {
                     BarjasRenderer.renderDashboard();
                     BarjasUtils.showNotification('Dashboard diperbarui', 'success');
+                },
+                
+                refreshData() {
+                    BarjasRenderer.renderDataTable();
+                    BarjasUtils.showNotification('Data diperbarui', 'success');
+                },
+                
+                refreshExport() {
+                    BarjasRenderer.renderExport();
+                    BarjasUtils.showNotification('Halaman ekspor diperbarui', 'success');
                 },
                 
                 toggleWhatsApp() {
@@ -2095,14 +3071,14 @@
                     
                     if (!nikInput || !kodeInput) return;
                     
-                    if (!BarjasUtils.validateNIK(nikInput.value)) {
+                    if (nikInput.value && !BarjasUtils.validateNIK(nikInput.value)) {
                         BarjasUtils.showNotification('NIK harus 16 digit angka!', 'error');
                         nikInput.focus();
                         return;
                     }
                     
-                    const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-                    kodeInput.value = 'BRJ-' + randomPart;
+                    const code = BarjasUtils.generateRandomCode();
+                    kodeInput.value = code;
                     
                     BarjasUtils.showNotification('Kode validasi berhasil digenerate', 'success');
                 },
@@ -2139,16 +3115,18 @@
                             return;
                         }
                         
-                        // Cek duplikasi NIK
-                        const existing = barjasState.data.find(item => item.nik === nik);
-                        if (existing) {
-                            BarjasUtils.showNotification('NIK sudah terdaftar dalam sistem!', 'error');
-                            return;
+                        // Cek duplikasi NIK (hanya untuk data baru)
+                        if (!barjasState.editingId) {
+                            const existing = barjasState.data.find(item => item.nik === nik);
+                            if (existing) {
+                                BarjasUtils.showNotification('NIK sudah terdaftar dalam sistem!', 'error');
+                                return;
+                            }
                         }
                         
                         // Kumpulkan data
                         const formData = {
-                            id: Date.now(),
+                            id: barjasState.editingId || Date.now(),
                             nama: document.getElementById('input-nama').value,
                             nik: nik,
                             whatsapp: document.getElementById('input-whatsapp').value === 'TIDAK ADA' ? '' : document.getElementById('input-whatsapp').value,
@@ -2167,19 +3145,29 @@
                             driveLink: document.getElementById('input-drive').value,
                             kodeValidasi: document.getElementById('input-kode').value,
                             keterangan: document.getElementById('input-keterangan').value,
-                            tanggalInput: new Date().toISOString().split('T')[0],
-                            status: 'Menunggu'
+                            tanggalInput: barjasState.editingId ? barjasState.data.find(item => item.id === barjasState.editingId)?.tanggalInput || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                            tanggalUpdate: new Date().toISOString(),
+                            status: barjasState.editingId ? barjasState.data.find(item => item.id === barjasState.editingId)?.status || 'Menunggu' : 'Menunggu'
                         };
                         
+                        if (barjasState.editingId) {
+                            // Update data yang ada
+                            const index = barjasState.data.findIndex(item => item.id === barjasState.editingId);
+                            if (index !== -1) {
+                                barjasState.data[index] = formData;
+                                BarjasUtils.showNotification('Data berhasil diperbarui!', 'success');
+                            }
+                        } else {
+                            // Tambah data baru
+                            barjasState.data.unshift(formData);
+                            BarjasUtils.showNotification('Data berhasil disimpan!', 'success');
+                        }
+                        
                         // Simpan data
-                        barjasState.data.unshift(formData);
                         BarjasStorage.saveData();
                         barjasState.lastSavedData = formData;
                         
-                        // Tampilkan sukses
-                        BarjasUtils.showNotification('Data berhasil disimpan!', 'success');
-                        
-                        // Reset form setelah 1 detik
+                        // Reset form dan kembali ke tab data
                         setTimeout(() => {
                             this.resetForm();
                             this.switchTab('data');
@@ -2194,6 +3182,9 @@
                 resetForm() {
                     const form = document.getElementById('barjas-form');
                     if (form) form.reset();
+                    
+                    // Reset state edit
+                    barjasState.editingId = null;
                     
                     // Reset dropdown desa
                     const desaSelect = document.getElementById('input-desa');
@@ -2216,7 +3207,296 @@
                         kodeInput.value = '';
                     }
                     
+                    // Reset toggle button
+                    const waBtn = document.querySelector('[onclick="BARJAS.toggleWhatsApp()"]');
+                    if (waBtn && waBtn.innerHTML.includes('Batal')) {
+                        this.toggleWhatsApp();
+                    }
+                    
+                    const kelompokBtn = document.querySelector('[onclick="BARJAS.toggleKelompok()"]');
+                    if (kelompokBtn && kelompokBtn.innerHTML.includes('Batal')) {
+                        this.toggleKelompok();
+                    }
+                    
+                    // Isi ulang dropdown
+                    BarjasRenderer.fillFormDropdowns();
+                    
                     BarjasUtils.showNotification('Form berhasil direset', 'info');
+                },
+                
+                cancelEdit() {
+                    barjasState.editingId = null;
+                    this.resetForm();
+                    BarjasUtils.showNotification('Edit dibatalkan', 'info');
+                },
+                
+                viewDetail(id) {
+                    const data = barjasState.data.find(item => item.id === id);
+                    if (data) {
+                        BarjasUtils.showDetailModal(data);
+                    }
+                },
+                
+                editData(id) {
+                    barjasState.editingId = id;
+                    BarjasRenderer.switchTab('input');
+                },
+                
+                async deleteData(id) {
+                    const confirmed = await BarjasUtils.confirmDialog(
+                        'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.',
+                        'Konfirmasi Hapus'
+                    );
+                    
+                    if (confirmed) {
+                        const index = barjasState.data.findIndex(item => item.id === id);
+                        if (index !== -1) {
+                            barjasState.data.splice(index, 1);
+                            BarjasStorage.saveData();
+                            BarjasRenderer.renderDataTable();
+                            BarjasUtils.showNotification('Data berhasil dihapus', 'success');
+                        }
+                    }
+                },
+                
+                searchData(query = null) {
+                    if (query !== null) {
+                        barjasState.searchQuery = query;
+                    } else {
+                        const searchInput = document.getElementById('search-input');
+                        if (searchInput) {
+                            barjasState.searchQuery = searchInput.value;
+                        }
+                    }
+                    
+                    barjasState.currentPage = 1;
+                    BarjasRenderer.renderDataTable();
+                },
+                
+                filterData() {
+                    BarjasRenderer.renderDataTable();
+                },
+                
+                changePage(page) {
+                    if (page < 1) return;
+                    
+                    const filteredData = BarjasRenderer.filterData();
+                    const totalPages = Math.ceil(filteredData.length / barjasState.settings.itemsPerPage);
+                    
+                    if (page > totalPages) return;
+                    
+                    barjasState.currentPage = page;
+                    BarjasRenderer.renderDataTable();
+                    
+                    // Scroll ke atas tabel
+                    const tableContainer = document.querySelector('.table-container');
+                    if (tableContainer) {
+                        tableContainer.scrollIntoView({ behavior: 'smooth' });
+                    }
+                },
+                
+                exportExcelAll() {
+                    if (barjasState.data.length === 0) {
+                        BarjasUtils.showNotification('Tidak ada data untuk diekspor', 'warning');
+                        return;
+                    }
+                    
+                    BarjasUtils.exportToExcel(barjasState.data, 'barjas-semua-data');
+                    BarjasUtils.showNotification('Data berhasil diekspor ke Excel', 'success');
+                },
+                
+                exportExcelFiltered() {
+                    const filteredData = BarjasRenderer.filterData();
+                    
+                    if (filteredData.length === 0) {
+                        BarjasUtils.showNotification('Tidak ada data terfilter untuk diekspor', 'warning');
+                        return;
+                    }
+                    
+                    BarjasUtils.exportToExcel(filteredData, 'barjas-data-terfilter');
+                    BarjasUtils.showNotification('Data terfilter berhasil diekspor ke Excel', 'success');
+                },
+                
+                exportPDFAll() {
+                    if (barjasState.data.length === 0) {
+                        BarjasUtils.showNotification('Tidak ada data untuk diekspor', 'warning');
+                        return;
+                    }
+                    
+                    BarjasUtils.exportToPDF(barjasState.data, 'barjas-semua-data');
+                    BarjasUtils.showNotification('Data berhasil diekspor ke PDF', 'success');
+                },
+                
+                exportPDFFiltered() {
+                    const filteredData = BarjasRenderer.filterData();
+                    
+                    if (filteredData.length === 0) {
+                        BarjasUtils.showNotification('Tidak ada data terfilter untuk diekspor', 'warning');
+                        return;
+                    }
+                    
+                    BarjasUtils.exportToPDF(filteredData, 'barjas-data-terfilter');
+                    BarjasUtils.showNotification('Data terfilter berhasil diekspor ke PDF', 'success');
+                },
+                
+                backupData() {
+                    BarjasStorage.backupData();
+                    BarjasUtils.showNotification('Backup data berhasil dibuat', 'success');
+                },
+                
+                async restoreData() {
+                    const fileInput = document.getElementById('restore-file');
+                    if (!fileInput || !fileInput.files.length) {
+                        BarjasUtils.showNotification('Pilih file backup terlebih dahulu', 'warning');
+                        return;
+                    }
+                    
+                    const confirmed = await BarjasUtils.confirmDialog(
+                        'Apakah Anda yakin ingin memulihkan data dari backup? Data saat ini akan diganti.',
+                        'Konfirmasi Restore'
+                    );
+                    
+                    if (confirmed) {
+                        try {
+                            await BarjasStorage.restoreData(fileInput.files[0]);
+                            BarjasRenderer.renderDashboard();
+                            BarjasRenderer.renderDataTable();
+                            BarjasRenderer.renderSettings();
+                        } catch (error) {
+                            console.error('Restore failed:', error);
+                        }
+                    }
+                    
+                    // Reset file input
+                    fileInput.value = '';
+                },
+                
+                async resetAllData() {
+                    const confirmed = await BarjasUtils.confirmDialog(
+                        'Apakah Anda YAKIN ingin menghapus SEMUA data? Tindakan ini TIDAK DAPAT DIBATALKAN!',
+                        'PERINGATAN: Reset Semua Data'
+                    );
+                    
+                    if (confirmed) {
+                        barjasState.data = [];
+                        barjasState.generatedCodes = {};
+                        barjasState.currentPage = 1;
+                        barjasState.searchQuery = '';
+                        barjasState.filteredData = null;
+                        barjasState.activeFilters = {};
+                        
+                        BarjasStorage.saveData();
+                        
+                        BarjasRenderer.renderDashboard();
+                        BarjasRenderer.renderDataTable();
+                        BarjasRenderer.renderExport();
+                        
+                        BarjasUtils.showNotification('Semua data telah direset', 'success');
+                    }
+                },
+                
+                saveSettings() {
+                    const notifications = document.getElementById('setting-notifications').checked;
+                    const privacyMode = document.getElementById('setting-privacy').checked;
+                    const autoSave = document.getElementById('setting-autosave').checked;
+                    const itemsPerPage = parseInt(document.getElementById('setting-items-per-page').value);
+                    
+                    barjasState.settings = {
+                        ...barjasState.settings,
+                        notifications,
+                        privacyMode,
+                        autoSave,
+                        itemsPerPage
+                    };
+                    
+                    BarjasStorage.saveSettings();
+                    BarjasUtils.showNotification('Pengaturan berhasil disimpan', 'success');
+                    
+                    // Refresh tampilan data jika diperlukan
+                    if (BarjasRenderer.filterData) {
+                        BarjasRenderer.renderDataTable();
+                    }
+                },
+                
+                clearCache() {
+                    localStorage.removeItem('barjas_app_data');
+                    localStorage.removeItem('barjas_settings');
+                    
+                    // Reload aplikasi
+                    location.reload();
+                },
+                
+                exportSettings() {
+                    const settingsStr = JSON.stringify(barjasState.settings, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(settingsStr);
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', `barjas-settings-${new Date().toISOString().split('T')[0]}.json`);
+                    linkElement.click();
+                    
+                    BarjasUtils.showNotification('Pengaturan berhasil diekspor', 'success');
+                },
+                
+                showSystemInfo() {
+                    const infoHTML = `
+                        <div class="modal fade" id="systemInfoModal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Informasi Sistem BARJAS</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Versi Aplikasi</div>
+                                            <div class="detail-value">${BARJAS_CONFIG.VERSION}</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Total Data Tersimpan</div>
+                                            <div class="detail-value">${barjasState.data.length} entri</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Ukuran Penyimpanan</div>
+                                            <div class="detail-value">${Math.round(JSON.stringify(barjasState.data).length / 1024)} KB</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Browser</div>
+                                            <div class="detail-value">${navigator.userAgent}</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Lokasi Penyimpanan</div>
+                                            <div class="detail-value">LocalStorage Browser</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Status</div>
+                                            <div class="detail-value">
+                                                <span class="badge bg-success">Aktif</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const modalContainer = document.createElement('div');
+                    modalContainer.innerHTML = infoHTML;
+                    document.body.appendChild(modalContainer);
+                    
+                    const modalElement = document.getElementById('systemInfoModal');
+                    const modal = new bootstrap.Modal(modalElement);
+                    
+                    modalElement.addEventListener('hidden.bs.modal', function() {
+                        if (modalContainer.parentNode) {
+                            document.body.removeChild(modalContainer);
+                        }
+                    });
+                    
+                    modal.show();
                 }
             };
 
@@ -2226,11 +3506,31 @@
                 init: () => BarjasApp.init(),
                 switchTab: (tab) => BarjasApp.switchTab(tab),
                 refreshDashboard: () => BarjasApp.refreshDashboard(),
+                refreshData: () => BarjasApp.refreshData(),
+                refreshExport: () => BarjasApp.refreshExport(),
                 toggleWhatsApp: () => BarjasApp.toggleWhatsApp(),
                 toggleKelompok: () => BarjasApp.toggleKelompok(),
                 generateKode: () => BarjasApp.generateKode(),
                 submitForm: () => BarjasApp.submitForm(),
                 resetForm: () => BarjasApp.resetForm(),
+                cancelEdit: () => BarjasApp.cancelEdit(),
+                viewDetail: (id) => BarjasApp.viewDetail(id),
+                editData: (id) => BarjasApp.editData(id),
+                deleteData: (id) => BarjasApp.deleteData(id),
+                searchData: (query) => BarjasApp.searchData(query),
+                filterData: () => BarjasApp.filterData(),
+                changePage: (page) => BarjasApp.changePage(page),
+                exportExcelAll: () => BarjasApp.exportExcelAll(),
+                exportExcelFiltered: () => BarjasApp.exportExcelFiltered(),
+                exportPDFAll: () => BarjasApp.exportPDFAll(),
+                exportPDFFiltered: () => BarjasApp.exportPDFFiltered(),
+                backupData: () => BarjasApp.backupData(),
+                restoreData: () => BarjasApp.restoreData(),
+                resetAllData: () => BarjasApp.resetAllData(),
+                saveSettings: () => BarjasApp.saveSettings(),
+                clearCache: () => BarjasApp.clearCache(),
+                exportSettings: () => BarjasApp.exportSettings(),
+                showSystemInfo: () => BarjasApp.showSystemInfo(),
                 
                 // Utility functions
                 showNotification: (msg, type) => BarjasUtils.showNotification(msg, type),
@@ -2239,7 +3539,8 @@
                 
                 // Data access
                 getData: () => [...barjasState.data],
-                getConfig: () => ({ ...BARJAS_CONFIG })
+                getConfig: () => ({ ...BARJAS_CONFIG }),
+                getSettings: () => ({ ...barjasState.settings })
             };
 
             // Auto-initialize on load
