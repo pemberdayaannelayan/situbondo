@@ -22,25 +22,7 @@
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
     <link rel="stylesheet" href="style.css">
     <script src="convert.js"></script>
-
-    <!-- External Libraries -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- External Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    
-    <!-- Leaflet for Maps -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- Barjas Application -->
-    <script src="barjas.js"></script>
 </head>
 <body>
 
@@ -1048,43 +1030,6 @@
         </div>
     </div>
 
-    <div id="appContent" style="display: none;">
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <i class="fas fa-bars"></i>
-    </button>
-    
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
-    <div class="app-container animate-fadeIn">
-        <div class="app-header">
-            <div class="app-logo">
-                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/garuda.png" 
-                     alt="Logo Garuda" class="logo-garuda">
-            </div>
-            <h1 class="app-title">SISTEM APLIKASI BANTUAN BARANG PINJAM PAKAI<br>BIDANG PEMBERDAYAAN NELAYAN</h1>
-            <p class="app-subtitle">Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
-            <div class="watermark">Professional Edition v2.2</div>
-        </div>
-        
-        <!-- Konten aplikasi lainnya sesuai dengan HTML asli -->
-        <!-- ... (salin bagian dari tab-content dan modal-modal) ... -->
-    </div>
-    
-    <!-- Smart Menu -->
-    <div class="smart-menu-container" id="smartMenu">
-        <!-- ... (salin smart menu dari HTML asli) ... -->
-    </div>
-    
-    <!-- Floating Action Button -->
-    <button class="floating-action-btn fab-common" id="fabBtn" title="Tambah Data Baru">
-        <i class="fas fa-plus"></i>
-    </button>
-</div>
-
-<!-- Modal-modal lainnya -->
-<!-- ... (salin modal dari HTML asli) ... -->
-
     <!-- Loading untuk ID Card -->
     <div class="idcard-loading" id="idcardLoading">
         <div class="idcard-loading-content">
@@ -1208,6 +1153,7 @@
 
         /**
          * Generate PDF untuk ID Card dengan LAYOUT BARU (ID di kiri bawah, QR di kanan bawah) - DIPERBAIKI
+         * PERUBAHAN: Menghapus data profesi dan mengganti dengan data kapal
          */
         async function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
             if (typeof jspdf === 'undefined' || !jspdf.jsPDF) {
@@ -1296,39 +1242,38 @@
             }
             doc.text(`Domisili: ${domisiliDisplay}`, leftX, currentY);
             
-            // Kolom Kanan: Data Profesi
+            // Kolom Kanan: Data Kapal (menggantikan Data Profesi)
             currentY = 16;
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(7);
             doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-            doc.text("DATA PROFESI", rightX, currentY);
+            doc.text("DATA KAPAL", rightX, currentY);
             currentY += 3.5;
             
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(6);
             doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
             
-            // Profesi dengan badge
-            let profesiColor = primaryColor;
-            if (nelayanData.profesi === "Nelayan Penuh Waktu") {
-                profesiColor = [12, 36, 97];
-            } else if (nelayanData.profesi === "Nelayan Sambilan Utama") {
-                profesiColor = [230, 126, 34];
-            } else if (nelayanData.profesi === "Nelayan Sambilan Tambahan") {
-                profesiColor = [39, 174, 96];
+            // Tampilkan data kapal hanya jika status pemilik kapal
+            if (nelayanData.status === "Pemilik Kapal") {
+                // Nama Kapal
+                let namaKapal = nelayanData.namaKapal || '-';
+                if (namaKapal.length > 25) {
+                    namaKapal = namaKapal.substring(0, 23) + '...';
+                }
+                doc.text(`Nama: ${namaKapal}`, rightX, currentY);
+                currentY += lineHeight;
+
+                // Jenis Kapal
+                let jenisKapal = nelayanData.jenisKapal || '-';
+                if (jenisKapal.length > 25) {
+                    jenisKapal = jenisKapal.substring(0, 23) + '...';
+                }
+                doc.text(`Jenis: ${jenisKapal}`, rightX, currentY);
+            } else {
+                doc.text("Tidak Tersedia", rightX, currentY);
+                currentY += lineHeight;
             }
-            
-            doc.setFillColor(profesiColor[0], profesiColor[1], profesiColor[2]);
-            doc.roundedRect(rightX, currentY - 2, 35, 4, 2, 2, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(5.5);
-            
-            let profesiDisplay = nelayanData.profesi.toUpperCase();
-            if (profesiDisplay.length > 25) {
-                profesiDisplay = profesiDisplay.substring(0, 23) + '...';
-            }
-            doc.text(profesiDisplay, rightX + 17.5, currentY, { align: 'center' });
             
             currentY += lineHeight;
             
@@ -1342,6 +1287,9 @@
             
             doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
             doc.roundedRect(rightX, currentY - 2, 35, 4, 2, 2, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(5.5);
             doc.text(nelayanData.status.toUpperCase(), rightX + 17.5, currentY, { align: 'center' });
             
             currentY += lineHeight;
@@ -1357,47 +1305,20 @@
             }
             doc.text(`Alat Tangkap: ${alatTangkap}`, rightX, currentY);
             
-            // 5. DATA KAPAL (jika pemilik kapal)
-            if (nelayanData.status === "Pemilik Kapal") {
-                currentY += lineHeight;
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(6);
-                doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-                doc.text("DATA KAPAL:", rightX, currentY);
-                
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(6);
-                doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
-                
-                currentY += 3.5;
-                let namaKapal = nelayanData.namaKapal || '-';
-                if (namaKapal.length > 25) {
-                    namaKapal = namaKapal.substring(0, 23) + '...';
-                }
-                doc.text(`Nama: ${namaKapal}`, rightX, currentY);
-                
-                currentY += 3.5;
-                let jenisKapal = nelayanData.jenisKapal || '-';
-                if (jenisKapal.length > 25) {
-                    jenisKapal = jenisKapal.substring(0, 23) + '...';
-                }
-                doc.text(`Jenis: ${jenisKapal}`, rightX, currentY);
-            }
-            
-            // 6. ID VALIDASI DI KIRI BAWAH (POSISI DIPERBAIKI)
+            // 5. ID VALIDASI DI KIRI BAWAH (POSISI DIPERBAIKI)
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
             doc.setTextColor(230, 126, 34); // Warna oranye
             const idNumber = nelayanData.kodeValidasi || `SIMATA-${nelayanData.nik.substring(12)}`;
             doc.text(`ID: ${idNumber}`, 5, 45);
             
-            // 7. TEKS "Kartu Identitas Resmi - Berlaku Selamanya" di bawah ID - DIPERBAIKI POSISI
+            // 6. TEKS "Kartu Identitas Resmi - Berlaku Selamanya" di bawah ID - DIPERBAIKI POSISI
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(5);
             doc.setTextColor(100, 100, 100);
             doc.text("Kartu Identitas Resmi - Berlaku Selamanya", 5, 47.5);
             
-            // 8. QR CODE DI KANAN BAWAH (POSISI BARU)
+            // 7. QR CODE DI KANAN BAWAH (POSISI BARU)
             if (qrContainer) {
                 const qrCanvas = qrContainer.querySelector('canvas');
                 if (qrCanvas) {
@@ -1426,12 +1347,12 @@
                 createFallbackQRCode(doc, 65, 35, 15, 15, 72.5, 52);
             }
             
-            // 9. BORDER KARTU
+            // 8. BORDER KARTU
             doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
             doc.setLineWidth(0.8);
             doc.roundedRect(1, 1, 83.6, 52, 3, 3);
             
-            // 10. SIMPAN FILE
+            // 9. SIMPAN FILE
             const fileName = `ID_CARD_${nelayanData.nama.replace(/\s+/g, '_').toUpperCase()}_${nelayanData.nik}.pdf`;
             
             setTimeout(() => {
@@ -1466,12 +1387,10 @@
 
         /**
          * Fungsi untuk menghasilkan preview ID Card dalam format HTML dengan LAYOUT BARU - DIPERBAIKI
+         * PERUBAHAN: Menghapus data profesi dan mengganti dengan data kapal
          */
         function previewIDCardHTML(nelayanData) {
-            let profesiClass = 'profesi-penuh';
-            if (nelayanData.profesi === "Nelayan Sambilan Utama") profesiClass = 'profesi-sambilan-utama';
-            else if (nelayanData.profesi === "Nelayan Sambilan Tambahan") profesiClass = 'profesi-sambilan-tambahan';
-            
+            // Hapus profesiClass karena tidak digunakan
             let statusClass = 'status-pemilik';
             if (nelayanData.status === "Anak Buah Kapal") statusClass = 'status-abk';
             
@@ -1492,18 +1411,8 @@
             
             const nikDisplay = nelayanData.nik;
             
-            // Cek apakah pemilik kapal untuk menampilkan info kapal
+            // Tentukan apakah pemilik kapal untuk menampilkan data kapal
             const isPemilikKapal = nelayanData.status === "Pemilik Kapal";
-            const kapalInfoHTML = isPemilikKapal ? `
-                <div class="id-card-improved-detail">
-                    <span class="id-card-improved-label">NAMA KAPAL:</span>
-                    <span class="id-card-improved-value">${nelayanData.namaKapal || '-'}</span>
-                </div>
-                <div class="id-card-improved-detail">
-                    <span class="id-card-improved-label">JENIS KAPAL:</span>
-                    <span class="id-card-improved-value">${nelayanData.jenisKapal || '-'}</span>
-                </div>
-            ` : '';
             
             return `
             <div class="id-card-container">
@@ -1531,9 +1440,11 @@
                                     <span class="id-card-improved-value">${domisiliDisplay}</span>
                                 </div>
                                 <div class="id-card-improved-detail">
-                                    <span class="id-card-improved-label">PROFESI:</span>
+                                    <span class="id-card-improved-label">KAPAL:</span>
                                     <span class="id-card-improved-value">
-                                        <span class="id-card-improved-badge ${profesiClass}">${nelayanData.profesi.toUpperCase()}</span>
+                                        ${isPemilikKapal ? 
+                                            `<div>${nelayanData.namaKapal || '-'}</div><div class="small">${nelayanData.jenisKapal || '-'}</div>` 
+                                            : 'Tidak Tersedia'}
                                     </span>
                                 </div>
                                 <div class="id-card-improved-detail">
@@ -1546,7 +1457,6 @@
                                     <span class="id-card-improved-label">ALAT TANGKAP:</span>
                                     <span class="id-card-improved-value">${alatTangkapDisplay}</span>
                                 </div>
-                                ${kapalInfoHTML}
                             </div>
                         </div>
                     </div>
