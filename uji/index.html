@@ -61,6 +61,38 @@
         .barjas-container .app-subtitle {
             display: none !important;
         }
+        
+        /* Styling untuk tombol Permohonan Bantuan */
+        #v-pills-barjas-tab {
+            transition: all 0.3s ease;
+        }
+        
+        #v-pills-barjas-tab:hover {
+            background: linear-gradient(90deg, #0a9396, #0a9396) !important;
+            color: white !important;
+        }
+        
+        /* Styling untuk tombol Reload Data */
+        #btn-reload-repo {
+            background-color: #f8f9fa;
+            color: #0c2461;
+            border-left: 3px solid #0c2461;
+            transition: all 0.3s ease;
+        }
+        
+        #btn-reload-repo:hover {
+            background: linear-gradient(90deg, #0c2461, #1e3799) !important;
+            color: white !important;
+        }
+        
+        .reload-spinner {
+            display: none;
+            margin-left: 5px;
+        }
+        
+        .reload-spinner.active {
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -220,12 +252,17 @@
                         <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button"><i class="fas fa-database"></i> Data Nelayan</button>
                         <button class="nav-link" id="v-pills-filter-tab" data-bs-toggle="pill" data-bs-target="#v-pills-filter" type="button"><i class="fas fa-filter"></i> Filter & Validasi</button>
                         <button class="nav-link" id="v-pills-verify-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verify" type="button"><i class="fas fa-check-circle"></i> Verifikasi KIN</button>
-                        <button class="nav-link" id="v-pills-barjas-tab" data-bs-toggle="pill" data-bs-target="#v-pills-barjas" type="button"><i class="fas fa-hands-helping barjas-tab-icon"></i> BARJAS</button>
                         <button class="nav-link" id="v-pills-print-tab" data-bs-toggle="pill" data-bs-target="#v-pills-print" type="button"><i class="fas fa-print"></i> Cetak Laporan</button>
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button"><i class="fas fa-file-export"></i> Ekspor Data</button>
                         <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button"><i class="fas fa-cloud-download-alt"></i> Backup & Restore</button>
                         <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button"><i class="fas fa-cog"></i> Pengaturan</button>
-                        <button class="nav-link" id="btn-reload-repo" type="button"><i class="fas fa-sync"></i> Reload Data</button>
+                        <!-- PERUBAHAN 1: Pindahkan tombol Permohonan Bantuan di atas Reload Data -->
+                        <button class="nav-link" id="v-pills-barjas-tab" data-bs-toggle="pill" data-bs-target="#v-pills-barjas" type="button"><i class="fas fa-hands-helping barjas-tab-icon"></i> Permohonan Bantuan</button>
+                        <!-- PERUBAHAN 2: Tombol Reload Data dengan spinner -->
+                        <button class="nav-link" id="btn-reload-repo" type="button">
+                            <i class="fas fa-sync"></i> Reload Data
+                            <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>
+                        </button>
                         <div class="mt-4 pt-3 border-top px-3">
                              <button class="nav-link text-danger w-100 justify-content-start bg-light" id="v-pills-logout-tab" type="button"><i class="fas fa-sign-out-alt"></i> Keluar</button>
                         </div>
@@ -1026,7 +1063,7 @@
                                     </div>
                                     <div class="col-6">
                                         <div class="detail-label">Jenis Kapal</div>
-                                        <div class="fw-bold"><span id="d_jenisKapal">-</span></div>
+                                        <div class="fw-bold"><span id="d_jenisKapal"> -</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -1235,6 +1272,79 @@
                 console.error('Gagal menginisialisasi BARJAS:', error);
                 showNotification('Gagal memuat sistem BARJAS', 'error');
             }
+        }
+
+        // --- FUNGSI RELOAD DATA YANG DIPERBAIKI ---
+        function handleReloadRepo() {
+            const reloadBtn = document.getElementById('btn-reload-repo');
+            const spinner = document.getElementById('reloadSpinner');
+            
+            // Tampilkan spinner dan nonaktifkan tombol
+            spinner.classList.add('active');
+            reloadBtn.disabled = true;
+            reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Memuat Data... <span class="spinner-border spinner-border-sm reload-spinner active" id="reloadSpinner"></span>';
+            
+            showNotification('Memulai sinkronisasi data dari server...', 'info');
+            
+            // Coba load ulang file reload.js
+            const script = document.createElement('script');
+            script.src = 'reload.js?t=' + new Date().getTime(); // Tambahkan timestamp untuk cache busting
+            script.onload = function() {
+                console.log('File reload.js berhasil dimuat ulang');
+                
+                // Beri waktu untuk pemrosesan
+                setTimeout(() => {
+                    if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
+                        try {
+                            const restoredData = JSON.parse(atob(window.SIMATA_BACKUP_ENCRYPTED));
+                            
+                            // Merge data lama dengan data baru
+                            const existingNik = new Set(appData.map(d => d.nik));
+                            const newData = restoredData.filter(d => !existingNik.has(d.nik));
+                            
+                            if (newData.length === 0) {
+                                showNotification('Tidak ada data baru untuk dimuat. Data sudah up-to-date.', 'info');
+                            } else {
+                                appData = [...appData, ...newData];
+                                saveData();
+                                renderDataTable();
+                                updateDashboard();
+                                if (typeof window.renderMapMarkers === 'function') {
+                                    window.renderMapMarkers();
+                                }
+                                if (typeof window.updateMapStatistics === 'function') {
+                                    window.updateMapStatistics();
+                                }
+                                
+                                showNotification(`Data berhasil disinkronisasi: ${newData.length} data baru ditambahkan`, 'success');
+                            }
+                            
+                        } catch (error) {
+                            console.error('Reload error:', error);
+                            showNotification('Gagal memuat data dari repository. Format data tidak valid.', 'error');
+                        }
+                    } else {
+                        showNotification('Tidak ada data repository yang tersedia untuk dimuat', 'warning');
+                    }
+                    
+                    // Reset tombol
+                    spinner.classList.remove('active');
+                    reloadBtn.disabled = false;
+                    reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+                }, 500);
+            };
+            
+            script.onerror = function() {
+                console.error('Gagal memuat file reload.js');
+                showNotification('Gagal memuat data dari server. Pastikan koneksi internet aktif.', 'error');
+                
+                // Reset tombol
+                spinner.classList.remove('active');
+                reloadBtn.disabled = false;
+                reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+            };
+            
+            document.head.appendChild(script);
         }
 
         // --- INITIALIZATION ---
@@ -1692,6 +1802,7 @@
                 document.getElementById('restoreDataBtn').disabled = !this.files.length;
             });
             document.getElementById('restoreDataBtn').addEventListener('click', restoreData);
+            // PERUBAHAN 3: Event listener untuk tombol Reload Data yang sudah diperbaiki
             document.getElementById('btn-reload-repo').addEventListener('click', handleReloadRepo);
             
             // Detail PDF
@@ -2702,42 +2813,6 @@
             reader.readAsText(file);
         }
 
-        function handleReloadRepo() {
-            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
-                try {
-                    const restoredData = JSON.parse(atob(window.SIMATA_BACKUP_ENCRYPTED));
-                    
-                    // Merge data lama dengan data baru
-                    const existingNik = new Set(appData.map(d => d.nik));
-                    const newData = restoredData.filter(d => !existingNik.has(d.nik));
-                    
-                    if (newData.length === 0) {
-                        showNotification('Tidak ada data baru untuk dimuat', 'info');
-                        return;
-                    }
-                    
-                    appData = [...appData, ...newData];
-                    saveData();
-                    renderDataTable();
-                    updateDashboard();
-                    if (typeof window.renderMapMarkers === 'function') {
-                        window.renderMapMarkers();
-                    }
-                    if (typeof window.updateMapStatistics === 'function') {
-                        window.updateMapStatistics();
-                    }
-                    
-                    showNotification(`Data berhasil disinkronisasi: ${newData.length} data baru ditambahkan`, 'success');
-                    
-                } catch (error) {
-                    console.error('Reload error:', error);
-                    showNotification('Gagal memuat data dari repository', 'error');
-                }
-            } else {
-                showNotification('Tidak ada data repository yang tersedia untuk dimuat', 'warning');
-            }
-        }
-
         // Fungsi untuk generate ID Card dengan error handling
         function safeGenerateIDCard(id) {
             const loadingEl = document.getElementById('idcardLoading');
@@ -2798,6 +2873,7 @@
 
         console.log('✅ SIMATA Application v5.3 initialized successfully');
         console.log('✅ BARJAS Integration Ready');
+        console.log('✅ Reload Data Function Improved');
     </script>
 </body>
 </html>
