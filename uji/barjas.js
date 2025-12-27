@@ -1,5 +1,5 @@
 // barjas.js - Sistem Bantuan Nelayan Kab. Situbondo - VERSI TERINTEGRASI
-// Versi 3.2 - Final Edition (Optimized for SIMATA)
+// Versi 3.3 - Fixed Edition (All Functions Working)
 // Tanggal: 2025
 // Developer: Dinas Perikanan Kabupaten Situbondo
 
@@ -448,7 +448,7 @@
     const BARJAS_CONFIG = {
         APP_NAME: 'SISTEM BANTUAN NELAYAN (BARJAS)',
         APP_SUBTITLE: 'Aplikasi Permohonan Bantuan Barang',
-        VERSION: '3.2',
+        VERSION: '3.3',
         SECURITY_PIN: '17081945',
         EXTRACT_CODE: '19450817',
         WHATSAPP_ADMIN: '6287865614222',
@@ -778,80 +778,6 @@
             }
         },
 
-        setupFormValidation() {
-            const form = document.getElementById('barjas-input-form');
-            if (!form) return;
-
-            // Validasi real-time
-            const validateField = (field) => {
-                if (field.hasAttribute('required') && !field.value.trim()) {
-                    field.classList.add('barjas-input-error');
-                    return false;
-                } else {
-                    field.classList.remove('barjas-input-error');
-                    return true;
-                }
-            };
-
-            // Tambahkan event listener untuk validasi real-time
-            const requiredFields = form.querySelectorAll('[required]');
-            requiredFields.forEach(field => {
-                field.addEventListener('blur', () => validateField(field));
-                field.addEventListener('input', () => {
-                    if (field.value.trim()) {
-                        field.classList.remove('barjas-input-error');
-                    }
-                });
-            });
-
-            // Validasi NIK khusus
-            const nikField = document.getElementById('barjas-nik');
-            if (nikField) {
-                nikField.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 16);
-                });
-            }
-
-            form.addEventListener('submit', (e) => this.handleSubmit(e));
-            form.addEventListener('reset', () => this.resetForm());
-        },
-
-        setupFormEvents() {
-            // Event untuk tombol tidak ada WhatsApp
-            const btnNoWA = document.getElementById('barjas-btn-no-wa');
-            if (btnNoWA) {
-                btnNoWA.addEventListener('click', () => this.setNoWhatsApp());
-            }
-
-            // Event untuk tombol bukan kelompok
-            const btnNonGroup = document.getElementById('barjas-btn-bukan-kelompok');
-            if (btnNonGroup) {
-                btnNonGroup.addEventListener('click', () => this.setBukanKelompok());
-            }
-
-            // Event untuk generate kode validasi
-            const btnGenerate = document.getElementById('barjas-generate-kode-btn');
-            if (btnGenerate) {
-                btnGenerate.addEventListener('click', () => this.generateKodeValidasi());
-            }
-
-            // Event untuk jenis bantuan -> satuan
-            const jenisBantuan = document.getElementById('barjas-jenis-bantuan');
-            if (jenisBantuan) {
-                jenisBantuan.addEventListener('change', () => this.updateSatuanBantuan());
-            }
-
-            // Event untuk NIK -> generate kode
-            const nikField = document.getElementById('barjas-nik');
-            if (nikField) {
-                nikField.addEventListener('blur', () => {
-                    if (nikField.value.length === 16) {
-                        this.autoGenerateKode();
-                    }
-                });
-            }
-        },
-
         updateDesaDropdown(kecamatan) {
             const desaSelect = document.getElementById('barjas-desa');
             if (!desaSelect) return;
@@ -969,6 +895,80 @@
             
             if (mapping[jenis]) {
                 satuanSelect.value = mapping[jenis];
+            }
+        },
+
+        setupFormValidation() {
+            const form = document.getElementById('barjas-input-form');
+            if (!form) return;
+
+            // Validasi real-time
+            const validateField = (field) => {
+                if (field.hasAttribute('required') && !field.value.trim()) {
+                    field.classList.add('barjas-input-error');
+                    return false;
+                } else {
+                    field.classList.remove('barjas-input-error');
+                    return true;
+                }
+            };
+
+            // Tambahkan event listener untuk validasi real-time
+            const requiredFields = form.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                field.addEventListener('blur', () => validateField(field));
+                field.addEventListener('input', () => {
+                    if (field.value.trim()) {
+                        field.classList.remove('barjas-input-error');
+                    }
+                });
+            });
+
+            // Validasi NIK khusus
+            const nikField = document.getElementById('barjas-nik');
+            if (nikField) {
+                nikField.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 16);
+                });
+            }
+
+            form.addEventListener('submit', (e) => this.handleSubmit(e));
+            form.addEventListener('reset', () => this.resetForm());
+        },
+
+        setupFormEvents() {
+            // Event untuk tombol tidak ada WhatsApp
+            const btnNoWA = document.getElementById('barjas-btn-no-wa');
+            if (btnNoWA) {
+                btnNoWA.addEventListener('click', () => this.setNoWhatsApp());
+            }
+
+            // Event untuk tombol bukan kelompok
+            const btnNonGroup = document.getElementById('barjas-btn-bukan-kelompok');
+            if (btnNonGroup) {
+                btnNonGroup.addEventListener('click', () => this.setBukanKelompok());
+            }
+
+            // Event untuk generate kode validasi
+            const btnGenerate = document.getElementById('barjas-generate-kode-btn');
+            if (btnGenerate) {
+                btnGenerate.addEventListener('click', () => this.generateKodeValidasi());
+            }
+
+            // Event untuk jenis bantuan -> satuan
+            const jenisBantuan = document.getElementById('barjas-jenis-bantuan');
+            if (jenisBantuan) {
+                jenisBantuan.addEventListener('change', () => this.updateSatuanBantuan());
+            }
+
+            // Event untuk NIK -> generate kode
+            const nikField = document.getElementById('barjas-nik');
+            if (nikField) {
+                nikField.addEventListener('blur', () => {
+                    if (nikField.value.length === 16) {
+                        this.autoGenerateKode();
+                    }
+                });
             }
         },
 
@@ -1410,7 +1410,7 @@
             // Previous button
             paginationHTML += `
                 <li class="page-item ${barjasState.currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="window.BARJAS.changePage(${barjasState.currentPage - 1})">
+                    <a class="page-link" href="#" onclick="window.BARJAS.changePage(${barjasState.currentPage - 1}); return false;">
                         <i class="fas fa-chevron-left"></i>
                     </a>
                 </li>
@@ -1428,7 +1428,7 @@
             for (let i = startPage; i <= endPage; i++) {
                 paginationHTML += `
                     <li class="page-item ${barjasState.currentPage === i ? 'active' : ''}">
-                        <a class="page-link" href="#" onclick="window.BARJAS.changePage(${i})">${i}</a>
+                        <a class="page-link" href="#" onclick="window.BARJAS.changePage(${i}); return false;">${i}</a>
                     </li>
                 `;
             }
@@ -1436,7 +1436,7 @@
             // Next button
             paginationHTML += `
                 <li class="page-item ${barjasState.currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="window.BARJAS.changePage(${barjasState.currentPage + 1})">
+                    <a class="page-link" href="#" onclick="window.BARJAS.changePage(${barjasState.currentPage + 1}); return false;">
                         <i class="fas fa-chevron-right"></i>
                     </a>
                 </li>
@@ -1759,6 +1759,12 @@
             }
             
             try {
+                // Check if XLSX is available
+                if (typeof XLSX === 'undefined') {
+                    BarjasUtils.showNotification('Library Excel tidak tersedia', 'error');
+                    return;
+                }
+                
                 const dataToExport = barjasState.data.map(item => ({
                     'Nama': item.nama,
                     'NIK': BarjasUtils.formatPrivacy(item.nik),
@@ -2082,6 +2088,7 @@
             
             // Setup event listeners
             this.setupEventListeners();
+            this.setupTabSwitching(); // Setup tab switching
             
             barjasState.isInitialized = true;
             BarjasUtils.showNotification('Sistem BARJAS siap digunakan', 'success');
@@ -2829,6 +2836,16 @@
             if (tableElement) {
                 tableElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
+        },
+
+        buatPermohonan() {
+            if (!barjasState.lastSavedData) {
+                BarjasUtils.showNotification('Tidak ada data yang disimpan untuk dibuat permohonan', 'error');
+                return;
+            }
+            
+            // Generate PDF
+            BarjasPermohonan.generatePermohonanPDF(barjasState.lastSavedData);
         }
     };
 
@@ -2840,6 +2857,7 @@
         editData: (id) => BarjasApp.editData(id),
         deleteData: (id) => BarjasApp.deleteData(id),
         changePage: (page) => BarjasApp.changePage(page),
+        buatPermohonan: () => BarjasApp.buatPermohonan(),
         
         // Fungsi utilitas
         showNotification: (message, type) => BarjasUtils.showNotification(message, type),
@@ -2852,15 +2870,6 @@
         
         // Konfigurasi
         config: BARJAS_CONFIG,
-        
-        // Fungsi permohonan
-        buatPermohonan: () => {
-            if (barjasState.lastSavedData) {
-                BarjasPermohonan.generatePermohonanPDF(barjasState.lastSavedData);
-            } else {
-                BarjasUtils.showNotification('Tidak ada data yang disimpan untuk dibuat permohonan', 'error');
-            }
-        },
         
         // Fungsi untuk refresh data
         refreshData: () => {
