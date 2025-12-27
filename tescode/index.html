@@ -457,8 +457,8 @@
     <!-- BARJAS Application Code -->
     <script>
         // barjas.js - Sistem Bantuan Nelayan Kab. Situbondo - VERSI TERINTEGRASI
-        // Versi 3.3 - Fixed Edition (All Functions Working)
-        // Tanggal: 2025
+        // Versi 3.4 - Fully Functional Edition
+        // Tanggal: 2024
         // Developer: Dinas Perikanan Kabupaten Situbondo
 
         (function() {
@@ -474,7 +474,7 @@
             const BARJAS_CONFIG = {
                 APP_NAME: 'SISTEM BANTUAN NELAYAN (BARJAS)',
                 APP_SUBTITLE: 'Aplikasi Permohonan Bantuan Barang',
-                VERSION: '3.3',
+                VERSION: '3.4',
                 SECURITY_PIN: '17081945',
                 EXTRACT_CODE: '19450817',
                 WHATSAPP_ADMIN: '6287865614222',
@@ -571,21 +571,25 @@
                 formatDate(dateString) {
                     if (!dateString) return '-';
                     try {
-                        return new Date(dateString).toLocaleDateString('id-ID', { 
+                        const date = new Date(dateString);
+                        if (isNaN(date.getTime())) return dateString;
+                        return date.toLocaleDateString('id-ID', { 
                             day: '2-digit', 
                             month: 'short', 
                             year: 'numeric' 
                         });
                     } catch (error) {
+                        console.error('Error formatting date:', error);
                         return dateString;
                     }
                 },
 
                 formatNumber(num) {
-                    if (isNaN(num) || num === undefined || num === null) return num;
+                    if (isNaN(num) || num === undefined || num === null) return '0';
                     try {
                         return new Intl.NumberFormat('id-ID').format(num);
                     } catch (error) {
+                        console.error('Error formatting number:', error);
                         return num;
                     }
                 },
@@ -601,45 +605,48 @@
                 showNotification(message, type = 'info') {
                     if (!barjasState.settings.notifications) return;
                     
-                    // Buat toast container jika belum ada
-                    let toastContainer = document.querySelector('.barjas-toast-container');
-                    if (!toastContainer) {
-                        toastContainer = document.createElement('div');
-                        toastContainer.className = 'barjas-toast-container position-fixed bottom-0 end-0 p-3';
-                        toastContainer.style.zIndex = '1100';
-                        document.body.appendChild(toastContainer);
-                    }
-                    
-                    const toastId = 'barjas-toast-' + Date.now();
-                    const toastHTML = `
-                        <div id="${toastId}" class="toast barjas-notification-toast" role="alert">
-                            <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'error' ? 'bg-danger text-white' : 'bg-primary text-white'}">
-                                <strong class="me-auto">${type === 'success' ? 'Berhasil!' : type === 'error' ? 'Error!' : 'Info'}</strong>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                            </div>
-                            <div class="toast-body">
-                                ${message}
-                            </div>
-                        </div>
-                    `;
-                    
-                    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-                    const toastElement = document.getElementById(toastId);
-                    
-                    // Gunakan Bootstrap Toast jika tersedia, jika tidak gunakan timeout
-                    if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
-                        const toast = new bootstrap.Toast(toastElement);
-                        toast.show();
+                    try {
+                        let toastContainer = document.querySelector('.barjas-toast-container');
+                        if (!toastContainer) {
+                            toastContainer = document.createElement('div');
+                            toastContainer.className = 'barjas-toast-container position-fixed bottom-0 end-0 p-3';
+                            toastContainer.style.zIndex = '1100';
+                            document.body.appendChild(toastContainer);
+                        }
                         
-                        toastElement.addEventListener('hidden.bs.toast', function() {
-                            this.remove();
-                        });
-                    } else {
-                        // Fallback jika Bootstrap tidak tersedia
-                        toastElement.style.display = 'block';
-                        setTimeout(() => {
-                            toastElement.remove();
-                        }, 3000);
+                        const toastId = 'barjas-toast-' + Date.now();
+                        const toastHTML = `
+                            <div id="${toastId}" class="toast barjas-notification-toast" role="alert">
+                                <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'error' ? 'bg-danger text-white' : 'bg-primary text-white'}">
+                                    <strong class="me-auto">${type === 'success' ? 'Berhasil!' : type === 'error' ? 'Error!' : 'Info'}</strong>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                                </div>
+                                <div class="toast-body">
+                                    ${message}
+                                </div>
+                            </div>
+                        `;
+                        
+                        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+                        const toastElement = document.getElementById(toastId);
+                        
+                        if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
+                            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+                            toast.show();
+                            
+                            toastElement.addEventListener('hidden.bs.toast', function() {
+                                this.remove();
+                            });
+                        } else {
+                            toastElement.style.display = 'block';
+                            setTimeout(() => {
+                                if (toastElement.parentNode) {
+                                    toastElement.remove();
+                                }
+                            }, 3000);
+                        }
+                    } catch (error) {
+                        console.error('Error showing notification:', error);
                     }
                 },
 
@@ -650,15 +657,26 @@
                         const a = document.createElement('a');
                         a.href = url;
                         a.download = filename;
+                        a.style.display = 'none';
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
+                        setTimeout(() => URL.revokeObjectURL(url), 100);
                         return true;
                     } catch (error) {
                         console.error('Gagal mengunduh file:', error);
+                        BarjasUtils.showNotification('Gagal mengunduh file', 'error');
                         return false;
                     }
+                },
+
+                validateNIK(nik) {
+                    return /^\d{16}$/.test(nik);
+                },
+
+                validateWhatsApp(wa) {
+                    if (!wa || wa === 'TIDAK ADA') return true;
+                    return /^\d{10,13}$/.test(wa);
                 }
             };
 
@@ -666,8 +684,13 @@
             const BarjasStorage = {
                 saveData() {
                     try {
-                        localStorage.setItem('barjas_app_data', JSON.stringify(barjasState.data));
-                        localStorage.setItem('barjas_generated_codes', JSON.stringify(barjasState.generatedCodes));
+                        const dataToSave = {
+                            data: barjasState.data,
+                            generatedCodes: barjasState.generatedCodes,
+                            version: BARJAS_CONFIG.VERSION,
+                            lastUpdate: new Date().toISOString()
+                        };
+                        localStorage.setItem('barjas_app_data', JSON.stringify(dataToSave));
                         return true;
                     } catch (e) {
                         console.error('Gagal menyimpan data BARJAS:', e);
@@ -679,10 +702,14 @@
                 loadData() {
                     try {
                         const savedData = localStorage.getItem('barjas_app_data');
-                        const savedCodes = localStorage.getItem('barjas_generated_codes');
-                        
-                        barjasState.data = savedData ? JSON.parse(savedData) : [];
-                        barjasState.generatedCodes = savedCodes ? JSON.parse(savedCodes) : {};
+                        if (savedData) {
+                            const parsed = JSON.parse(savedData);
+                            barjasState.data = parsed.data || [];
+                            barjasState.generatedCodes = parsed.generatedCodes || {};
+                        } else {
+                            barjasState.data = [];
+                            barjasState.generatedCodes = {};
+                        }
                         return true;
                     } catch (e) {
                         console.error('Gagal memuat data BARJAS:', e);
@@ -719,13 +746,46 @@
                 clearAll() {
                     try {
                         localStorage.removeItem('barjas_app_data');
-                        localStorage.removeItem('barjas_generated_codes');
                         localStorage.removeItem('barjas_settings');
                         barjasState.data = [];
                         barjasState.generatedCodes = {};
                         return true;
                     } catch (e) {
                         console.error('Gagal reset data BARJAS:', e);
+                        return false;
+                    }
+                },
+
+                exportBackup() {
+                    try {
+                        const backupData = {
+                            data: barjasState.data,
+                            settings: barjasState.settings,
+                            generatedCodes: barjasState.generatedCodes,
+                            version: BARJAS_CONFIG.VERSION,
+                            timestamp: new Date().toISOString()
+                        };
+                        return JSON.stringify(backupData, null, 2);
+                    } catch (e) {
+                        console.error('Gagal membuat backup:', e);
+                        return null;
+                    }
+                },
+
+                importBackup(backupString) {
+                    try {
+                        const backupData = JSON.parse(backupString);
+                        if (backupData && backupData.data) {
+                            barjasState.data = backupData.data;
+                            barjasState.settings = backupData.settings || barjasState.settings;
+                            barjasState.generatedCodes = backupData.generatedCodes || {};
+                            this.saveData();
+                            this.saveSettings();
+                            return true;
+                        }
+                        return false;
+                    } catch (e) {
+                        console.error('Gagal mengimpor backup:', e);
                         return false;
                     }
                 }
@@ -741,7 +801,9 @@
                     // Set tanggal default
                     const tanggalField = document.getElementById('barjas-tanggal-terima');
                     if (tanggalField) {
-                        tanggalField.value = new Date().toISOString().split('T')[0];
+                        const today = new Date();
+                        tanggalField.value = today.toISOString().split('T')[0];
+                        tanggalField.max = today.toISOString().split('T')[0];
                     }
                 },
 
@@ -754,8 +816,13 @@
                             kecamatanSelect.add(new Option(kec, kec));
                         });
                         
-                        // Tambahkan event listener
-                        kecamatanSelect.addEventListener('change', (e) => this.updateDesaDropdown(e.target.value));
+                        kecamatanSelect.addEventListener('change', (e) => {
+                            this.updateDesaDropdown(e.target.value);
+                            // Validasi saat perubahan
+                            if (e.target.value) {
+                                e.target.classList.remove('barjas-input-error');
+                            }
+                        });
                     }
 
                     // Isi dropdown desa
@@ -763,6 +830,11 @@
                     if (desaSelect) {
                         desaSelect.innerHTML = '<option value="">Pilih Desa</option>';
                         desaSelect.disabled = true;
+                        desaSelect.addEventListener('change', (e) => {
+                            if (e.target.value) {
+                                e.target.classList.remove('barjas-input-error');
+                            }
+                        });
                     }
 
                     // Isi dropdown tahun
@@ -804,7 +876,7 @@
                     }
                 },
 
-                updateDesaDropdown(kecamatan) {
+                updateDesaDropdown(kecamatan, selectedDesa = '') {
                     const desaSelect = document.getElementById('barjas-desa');
                     if (!desaSelect) return;
 
@@ -813,7 +885,11 @@
                     if (kecamatan && BARJAS_CONFIG.KECAMATAN_DATA[kecamatan]) {
                         desaSelect.disabled = false;
                         BARJAS_CONFIG.KECAMATAN_DATA[kecamatan].sort().forEach(desa => {
-                            desaSelect.add(new Option(desa, desa));
+                            const option = new Option(desa, desa);
+                            if (desa === selectedDesa) {
+                                option.selected = true;
+                            }
+                            desaSelect.add(option);
                         });
                     } else {
                         desaSelect.disabled = true;
@@ -871,8 +947,8 @@
                         return;
                     }
                     
-                    if (nikInput.value.length !== 16) {
-                        BarjasUtils.showNotification('NIK harus 16 digit terlebih dahulu!', 'error');
+                    if (!BarjasUtils.validateNIK(nikInput.value)) {
+                        BarjasUtils.showNotification('NIK harus 16 digit angka!', 'error');
                         nikInput.focus();
                         return;
                     }
@@ -889,8 +965,8 @@
                     
                     if (!kodeInput || !nikInput) return;
                     
-                    // Hanya generate jika kode belum ada
-                    if (!kodeInput.value.trim() && nikInput.value.length === 16) {
+                    // Hanya generate jika kode belum ada dan NIK valid
+                    if (!kodeInput.value.trim() && BarjasUtils.validateNIK(nikInput.value)) {
                         const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
                         kodeInput.value = 'BRJ-' + randomPart;
                         BarjasUtils.showNotification('Kode validasi otomatis digenerate dari NIK', 'info');
@@ -956,10 +1032,24 @@
                         nikField.addEventListener('input', (e) => {
                             e.target.value = e.target.value.replace(/\D/g, '').slice(0, 16);
                         });
+                        
+                        nikField.addEventListener('blur', () => {
+                            if (nikField.value && !BarjasUtils.validateNIK(nikField.value)) {
+                                nikField.classList.add('barjas-input-error');
+                                BarjasUtils.showNotification('NIK harus 16 digit angka', 'error');
+                            }
+                        });
+                    }
+
+                    // Validasi WhatsApp
+                    const waField = document.getElementById('barjas-whatsapp');
+                    if (waField) {
+                        waField.addEventListener('input', (e) => {
+                            e.target.value = e.target.value.replace(/\D/g, '');
+                        });
                     }
 
                     form.addEventListener('submit', (e) => this.handleSubmit(e));
-                    form.addEventListener('reset', () => this.resetForm());
                 },
 
                 setupFormEvents() {
@@ -991,10 +1081,16 @@
                     const nikField = document.getElementById('barjas-nik');
                     if (nikField) {
                         nikField.addEventListener('blur', () => {
-                            if (nikField.value.length === 16) {
+                            if (BarjasUtils.validateNIK(nikField.value)) {
                                 this.autoGenerateKode();
                             }
                         });
+                    }
+
+                    // Event untuk reset form
+                    const resetBtn = document.querySelector('button[type="reset"]');
+                    if (resetBtn) {
+                        resetBtn.addEventListener('click', () => this.resetForm());
                     }
                 },
 
@@ -1028,7 +1124,7 @@
                     } else {
                         // Add new data
                         formData.id = Date.now();
-                        barjasState.data.push(formData);
+                        barjasState.data.unshift(formData); // Tambah di awal agar terbaru muncul pertama
                         BarjasUtils.showNotification('Data berhasil disimpan!', 'success');
                         
                         // Save generated code
@@ -1052,12 +1148,12 @@
                     BarjasTableView.renderTable();
                     BarjasDashboard.updateDashboard();
                     
-                    // Reset form setelah submit
-                    setTimeout(() => {
-                        if (!editId) {
+                    // Reset form setelah submit (kecuali edit)
+                    if (!editId) {
+                        setTimeout(() => {
                             this.resetForm();
-                        }
-                    }, 500);
+                        }, 500);
+                    }
                 },
 
                 showPermohonanButton() {
@@ -1066,6 +1162,7 @@
                     
                     if (!permohonanButton) {
                         permohonanButton = document.createElement('button');
+                        permohonanButton.type = 'button';
                         permohonanButton.id = 'barjas-buat-permohonan-btn';
                         permohonanButton.className = 'btn barjas-permohonan-btn w-100 mt-4';
                         permohonanButton.innerHTML = '<i class="fas fa-file-pdf me-2"></i> Buat Permohonan (PDF)';
@@ -1095,7 +1192,7 @@
                         nama: document.getElementById('barjas-nama').value.trim(),
                         nik: document.getElementById('barjas-nik').value.trim(),
                         whatsapp: document.getElementById('barjas-whatsapp').value === 'TIDAK ADA' ? '' : document.getElementById('barjas-whatsapp').value.replace(/\D/g, ''),
-                        namaKelompok: document.getElementById('barjas-nama-kelompok').value.trim() || 'Individu',
+                        namaKelompok: document.getElementById('barjas-nama-kelompok').value === 'INDIVIDU' ? 'Individu' : document.getElementById('barjas-nama-kelompok').value.trim(),
                         jabatan: document.getElementById('barjas-jabatan').value,
                         tahunAnggaran: document.getElementById('barjas-tahun-anggaran').value,
                         kecamatan: document.getElementById('barjas-kecamatan').value,
@@ -1103,7 +1200,7 @@
                         alamat: document.getElementById('barjas-alamat').value.trim(),
                         jenisBantuan: document.getElementById('barjas-jenis-bantuan').value,
                         namaBantuan: document.getElementById('barjas-nama-bantuan').value.trim(),
-                        jumlahBantuan: document.getElementById('barjas-jumlah-bantuan').value,
+                        jumlahBantuan: parseInt(document.getElementById('barjas-jumlah-bantuan').value) || 0,
                         satuanBantuan: document.getElementById('barjas-satuan-bantuan').value,
                         tanggalTerima: document.getElementById('barjas-tanggal-terima').value,
                         namaPetugas: document.getElementById('barjas-nama-petugas').value.trim(),
@@ -1137,7 +1234,7 @@
                     
                     // Validasi NIK harus 16 digit
                     const nikField = document.getElementById('barjas-nik');
-                    if (nikField && nikField.value.length !== 16) {
+                    if (nikField && !BarjasUtils.validateNIK(nikField.value)) {
                         nikField.classList.add('barjas-input-error');
                         BarjasUtils.showNotification('NIK harus 16 digit angka!', 'error');
                         isValid = false;
@@ -1145,9 +1242,17 @@
                     
                     // Validasi WhatsApp jika diisi
                     const waField = document.getElementById('barjas-whatsapp');
-                    if (waField && waField.value !== 'TIDAK ADA' && waField.value.trim() && !waField.value.match(/^[0-9]{10,13}$/)) {
+                    if (waField && waField.value !== 'TIDAK ADA' && waField.value.trim() && !BarjasUtils.validateWhatsApp(waField.value)) {
                         waField.classList.add('barjas-input-error');
                         BarjasUtils.showNotification('Nomor WhatsApp harus 10-13 digit angka!', 'error');
+                        isValid = false;
+                    }
+                    
+                    // Validasi jumlah bantuan
+                    const jumlahField = document.getElementById('barjas-jumlah-bantuan');
+                    if (jumlahField && (isNaN(jumlahField.value) || parseInt(jumlahField.value) <= 0)) {
+                        jumlahField.classList.add('barjas-input-error');
+                        BarjasUtils.showNotification('Jumlah bantuan harus angka positif!', 'error');
                         isValid = false;
                     }
                     
@@ -1167,13 +1272,14 @@
                             desaSelect.disabled = true;
                         }
                         
-                        // Reset tanggal
+                        // Reset tanggal ke hari ini
                         const tanggalField = document.getElementById('barjas-tanggal-terima');
                         if (tanggalField) {
-                            tanggalField.value = new Date().toISOString().split('T')[0];
+                            const today = new Date();
+                            tanggalField.value = today.toISOString().split('T')[0];
                         }
                         
-                        // Reset tombol
+                        // Reset tombol WhatsApp
                         const btnNoWA = document.getElementById('barjas-btn-no-wa');
                         if (btnNoWA) {
                             btnNoWA.textContent = 'Tidak Ada WhatsApp';
@@ -1181,12 +1287,13 @@
                             btnNoWA.classList.add('btn-outline-secondary');
                         }
                         
+                        // Reset tombol kelompok
                         const btnNonGroup = document.getElementById('barjas-btn-bukan-kelompok');
                         if (btnNonGroup) {
                             btnNonGroup.textContent = 'Bukan Kelompok (Individu)';
                         }
                         
-                        // Reset kelompok
+                        // Reset kelompok dan jabatan
                         const kelompokInput = document.getElementById('barjas-nama-kelompok');
                         const jabatanSelect = document.getElementById('barjas-jabatan');
                         if (kelompokInput && jabatanSelect) {
@@ -1201,6 +1308,10 @@
                         if (kodeInput) {
                             kodeInput.value = '';
                         }
+                        
+                        // Hilangkan error class
+                        const errorFields = form.querySelectorAll('.barjas-input-error');
+                        errorFields.forEach(field => field.classList.remove('barjas-input-error'));
                     }
                     
                     // Sembunyikan tombol Buat Permohonan
@@ -1208,6 +1319,8 @@
                     if (permohonanButton) {
                         permohonanButton.style.display = 'none';
                     }
+                    
+                    BarjasUtils.showNotification('Form berhasil direset', 'info');
                 },
 
                 editData(id) {
@@ -1218,25 +1331,37 @@
                     }
                     
                     // Switch to input tab
-                    this.switchToTab('barjas-input');
+                    const inputTab = document.querySelector('.barjas-menu-link[data-target="barjas-input"]');
+                    if (inputTab) inputTab.click();
                     
                     // Tunggu sebentar untuk memastikan tab sudah aktif
                     setTimeout(() => {
                         // Isi form dengan data
                         document.getElementById('barjas-nama').value = data.nama || '';
                         document.getElementById('barjas-nik').value = data.nik || '';
-                        document.getElementById('barjas-whatsapp').value = data.whatsapp || '';
+                        
+                        // Handle WhatsApp
+                        const waInput = document.getElementById('barjas-whatsapp');
+                        const btnNoWA = document.getElementById('barjas-btn-no-wa');
+                        if (!data.whatsapp || data.whatsapp === '') {
+                            waInput.value = 'TIDAK ADA';
+                            waInput.setAttribute('readonly', true);
+                            if (btnNoWA) {
+                                btnNoWA.textContent = 'Batal';
+                                btnNoWA.classList.add('active', 'btn-secondary');
+                                btnNoWA.classList.remove('btn-outline-secondary');
+                            }
+                        } else {
+                            waInput.value = data.whatsapp || '';
+                        }
+                        
                         document.getElementById('barjas-nama-kelompok').value = data.namaKelompok || '';
                         document.getElementById('barjas-jabatan').value = data.jabatan || '';
                         document.getElementById('barjas-tahun-anggaran').value = data.tahunAnggaran || '';
                         document.getElementById('barjas-kecamatan').value = data.kecamatan || '';
                         
                         // Update dropdown desa
-                        this.updateDesaDropdown(data.kecamatan);
-                        
-                        setTimeout(() => {
-                            document.getElementById('barjas-desa').value = data.desa || '';
-                        }, 100);
+                        this.updateDesaDropdown(data.kecamatan, data.desa);
                         
                         document.getElementById('barjas-alamat').value = data.alamat || '';
                         document.getElementById('barjas-jenis-bantuan').value = data.jenisBantuan || '';
@@ -1249,21 +1374,7 @@
                         document.getElementById('barjas-kode-validasi').value = data.kodeValidasi || '';
                         document.getElementById('barjas-keterangan').value = data.keterangan || '';
                         
-                        // Set edit mode
-                        document.getElementById('barjas-input-form').setAttribute('data-edit-id', id);
-                        
-                        // Handle WhatsApp button state
-                        const waInput = document.getElementById('barjas-whatsapp');
-                        const btnNoWA = document.getElementById('barjas-btn-no-wa');
-                        if (data.whatsapp === '' || data.whatsapp === 'TIDAK ADA') {
-                            waInput.value = 'TIDAK ADA';
-                            waInput.setAttribute('readonly', true);
-                            btnNoWA.textContent = 'Batal';
-                            btnNoWA.classList.add('active', 'btn-secondary');
-                            btnNoWA.classList.remove('btn-outline-secondary');
-                        }
-                        
-                        // Handle kelompok state
+                        // Handle kelompok jika individu
                         if (data.namaKelompok === 'Individu') {
                             const kelompokInput = document.getElementById('barjas-nama-kelompok');
                             const jabatanSelect = document.getElementById('barjas-jabatan');
@@ -1275,6 +1386,9 @@
                             }
                         }
                         
+                        // Set edit mode
+                        document.getElementById('barjas-input-form').setAttribute('data-edit-id', id);
+                        
                         // Simpan data terakhir untuk permohonan
                         barjasState.lastSavedData = data;
                         
@@ -1283,24 +1397,6 @@
                         
                         BarjasUtils.showNotification('Mode edit diaktifkan', 'info');
                     }, 300);
-                },
-
-                switchToTab(tabId) {
-                    const menuLinks = document.querySelectorAll('.barjas-menu-link');
-                    const tabContents = document.querySelectorAll('.barjas-tab-content');
-                    
-                    // Update active menu link
-                    menuLinks.forEach(menu => menu.classList.remove('active'));
-                    const targetLink = document.querySelector(`.barjas-menu-link[data-target="${tabId}"]`);
-                    if (targetLink) targetLink.classList.add('active');
-                    
-                    // Show target tab content
-                    tabContents.forEach(tab => {
-                        tab.classList.remove('active');
-                        if (tab.id === tabId) {
-                            tab.classList.add('active');
-                        }
-                    });
                 }
             };
 
@@ -1330,17 +1426,19 @@
                     
                     // Pagination
                     const totalItems = filteredData.length;
-                    const startIndex = (barjasState.currentPage - 1) * barjasState.settings.itemsPerPage;
-                    const endIndex = startIndex + barjasState.settings.itemsPerPage;
+                    const itemsPerPage = barjasState.settings.itemsPerPage || 25;
+                    const startIndex = (barjasState.currentPage - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
                     const pageData = filteredData.slice(startIndex, endIndex);
                     
                     // Render table
                     if (pageData.length === 0) {
                         tableBody.innerHTML = `
                             <tr>
-                                <td colspan="9" class="text-center py-5 text-muted">
+                                <td colspan="8" class="text-center py-5 text-muted">
                                     <i class="fas fa-database fa-2x mb-3 d-block"></i>
                                     Tidak ada data ditemukan
+                                    ${searchTerm ? ` untuk pencarian "${searchTerm}"` : ''}
                                 </td>
                             </tr>
                         `;
@@ -1349,20 +1447,21 @@
                             <tr>
                                 <td class="text-center">${startIndex + index + 1}</td>
                                 <td>
-                                    <div class="fw-bold">${item.nama}</div>
+                                    <div class="fw-bold">${item.nama || '-'}</div>
                                     <small class="text-muted">${BarjasUtils.formatPrivacy(item.nik)}</small>
+                                    ${item.whatsapp ? `<br><small><i class="fab fa-whatsapp text-success"></i> ${BarjasUtils.formatPrivacy(item.whatsapp)}</small>` : ''}
                                 </td>
                                 <td>
-                                    <div>${item.desa}, ${item.kecamatan}</div>
-                                    <small class="text-muted">${item.namaKelompok}</small>
+                                    <div>${item.desa || '-'}, ${item.kecamatan || '-'}</div>
+                                    <small class="text-muted">${item.namaKelompok || 'Individu'}</small>
                                 </td>
-                                <td>${item.jenisBantuan}</td>
+                                <td>${item.jenisBantuan || '-'}</td>
                                 <td>
-                                    <div class="fw-bold">${item.namaBantuan}</div>
-                                    <small class="text-muted">${item.jumlahBantuan} ${item.satuanBantuan}</small>
+                                    <div class="fw-bold">${item.namaBantuan || '-'}</div>
+                                    <small class="text-muted">${BarjasUtils.formatNumber(item.jumlahBantuan)} ${item.satuanBantuan || ''}</small>
                                 </td>
                                 <td>${BarjasUtils.formatDate(item.tanggalTerima)}</td>
-                                <td>${item.namaPetugas}</td>
+                                <td>${item.namaPetugas || '-'}</td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
                                         <button class="btn btn-info text-white" onclick="window.BARJAS.showDetail(${item.id})" title="Detail">
@@ -1386,7 +1485,7 @@
                     // Update info text
                     const infoText = document.getElementById('barjas-table-info');
                     if (infoText) {
-                        infoText.textContent = `Menampilkan ${pageData.length} dari ${totalItems} data`;
+                        infoText.textContent = `Menampilkan ${Math.min(itemsPerPage, pageData.length)} dari ${totalItems} data`;
                     }
                 },
 
@@ -1424,7 +1523,8 @@
                     const paginationContainer = document.getElementById('barjas-pagination');
                     if (!paginationContainer) return;
                     
-                    const totalPages = Math.ceil(totalItems / barjasState.settings.itemsPerPage);
+                    const itemsPerPage = barjasState.settings.itemsPerPage || 25;
+                    const totalPages = Math.ceil(totalItems / itemsPerPage);
                     
                     if (totalPages <= 1) {
                         paginationContainer.innerHTML = '';
@@ -1482,6 +1582,7 @@
                         
                         kecamatanFilter.addEventListener('change', () => {
                             this.updateDesaFilter();
+                            barjasState.currentPage = 1;
                             this.renderTable();
                         });
                     }
@@ -1492,7 +1593,10 @@
                         desaFilter.innerHTML = '<option value="">Semua Desa</option>';
                         desaFilter.disabled = true;
                         
-                        desaFilter.addEventListener('change', () => this.renderTable());
+                        desaFilter.addEventListener('change', () => {
+                            barjasState.currentPage = 1;
+                            this.renderTable();
+                        });
                     }
                     
                     // Setup jenis filter
@@ -1503,7 +1607,10 @@
                             jenisFilter.add(new Option(jenis, jenis));
                         });
                         
-                        jenisFilter.addEventListener('change', () => this.renderTable());
+                        jenisFilter.addEventListener('change', () => {
+                            barjasState.currentPage = 1;
+                            this.renderTable();
+                        });
                     }
                     
                     // Setup tahun filter
@@ -1515,7 +1622,10 @@
                             tahunFilter.add(new Option(year.toString(), year.toString()));
                         }
                         
-                        tahunFilter.addEventListener('change', () => this.renderTable());
+                        tahunFilter.addEventListener('change', () => {
+                            barjasState.currentPage = 1;
+                            this.renderTable();
+                        });
                     }
                     
                     // Setup search
@@ -1594,9 +1704,19 @@
 
                 updateStats() {
                     const totalData = barjasState.data.length;
-                    const totalKecamatan = new Set(barjasState.data.map(item => item.kecamatan)).size;
-                    const totalDesa = new Set(barjasState.data.map(item => item.desa)).size;
-                    const totalJenisBantuan = new Set(barjasState.data.map(item => item.jenisBantuan)).size;
+                    const kecamatanSet = new Set();
+                    const desaSet = new Set();
+                    const jenisSet = new Set();
+                    
+                    barjasState.data.forEach(item => {
+                        if (item.kecamatan) kecamatanSet.add(item.kecamatan);
+                        if (item.desa) desaSet.add(item.desa);
+                        if (item.jenisBantuan) jenisSet.add(item.jenisBantuan);
+                    });
+                    
+                    const totalKecamatan = kecamatanSet.size;
+                    const totalDesa = desaSet.size;
+                    const totalJenisBantuan = jenisSet.size;
                     
                     // Update stat cards
                     const stats = {
@@ -1650,11 +1770,27 @@
                     // Hitung distribusi jenis bantuan
                     const jenisCount = {};
                     barjasState.data.forEach(item => {
-                        jenisCount[item.jenisBantuan] = (jenisCount[item.jenisBantuan] || 0) + 1;
+                        const jenis = item.jenisBantuan || 'Tidak Diketahui';
+                        jenisCount[jenis] = (jenisCount[jenis] || 0) + 1;
                     });
                     
                     const labels = Object.keys(jenisCount);
                     const data = Object.values(jenisCount);
+                    
+                    if (labels.length === 0) {
+                        // Tampilkan pesan jika tidak ada data
+                        if (window.barjasJenisChart) {
+                            window.barjasJenisChart.destroy();
+                        }
+                        ctx.parentElement.innerHTML = `
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                                <p>Tidak ada data untuk ditampilkan</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
                     const colors = this.generateColors(labels.length);
                     
                     // Destroy chart jika sudah ada
@@ -1675,19 +1811,24 @@
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false,
                             plugins: {
                                 legend: {
                                     position: 'bottom',
                                     labels: {
                                         padding: 20,
-                                        usePointStyle: true
+                                        usePointStyle: true,
+                                        font: {
+                                            size: 11
+                                        }
                                     }
                                 },
                                 title: {
                                     display: true,
                                     text: 'Distribusi Jenis Bantuan',
                                     font: {
-                                        size: 14
+                                        size: 14,
+                                        weight: 'bold'
                                     }
                                 }
                             }
@@ -1702,13 +1843,28 @@
                     // Hitung distribusi kecamatan
                     const kecamatanCount = {};
                     barjasState.data.forEach(item => {
-                        kecamatanCount[item.kecamatan] = (kecamatanCount[item.kecamatan] || 0) + 1;
+                        const kecamatan = item.kecamatan || 'Tidak Diketahui';
+                        kecamatanCount[kecamatan] = (kecamatanCount[kecamatan] || 0) + 1;
                     });
                     
                     // Ambil 10 kecamatan teratas
                     const sortedKecamatan = Object.entries(kecamatanCount)
                         .sort((a, b) => b[1] - a[1])
                         .slice(0, 10);
+                    
+                    if (sortedKecamatan.length === 0) {
+                        // Tampilkan pesan jika tidak ada data
+                        if (window.barjasKecamatanChart) {
+                            window.barjasKecamatanChart.destroy();
+                        }
+                        ctx.parentElement.innerHTML = `
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                                <p>Tidak ada data untuk ditampilkan</p>
+                            </div>
+                        `;
+                        return;
+                    }
                     
                     const labels = sortedKecamatan.map(item => item[0]);
                     const data = sortedKecamatan.map(item => item[1]);
@@ -1733,20 +1889,35 @@
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false,
                             scales: {
                                 y: {
                                     beginAtZero: true,
                                     ticks: {
                                         precision: 0
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Jumlah Penerima'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Kecamatan'
                                     }
                                 }
                             },
                             plugins: {
+                                legend: {
+                                    display: false
+                                },
                                 title: {
                                     display: true,
                                     text: 'Top 10 Kecamatan Penerima Bantuan',
                                     font: {
-                                        size: 14
+                                        size: 14,
+                                        weight: 'bold'
                                     }
                                 }
                             }
@@ -1792,30 +1963,40 @@
                         }
                         
                         const dataToExport = barjasState.data.map(item => ({
-                            'Nama': item.nama,
+                            'Nama': item.nama || '',
                             'NIK': BarjasUtils.formatPrivacy(item.nik),
                             'WhatsApp': item.whatsapp ? BarjasUtils.formatPrivacy(item.whatsapp) : 'TIDAK ADA',
-                            'Kelompok': item.namaKelompok,
-                            'Jabatan': item.jabatan,
-                            'Kecamatan': item.kecamatan,
-                            'Desa': item.desa,
-                            'Alamat': item.alamat,
-                            'Jenis Bantuan': item.jenisBantuan,
-                            'Nama Bantuan': item.namaBantuan,
-                            'Jumlah': item.jumlahBantuan,
-                            'Satuan': item.satuanBantuan,
-                            'Tanggal Permohonan': item.tanggalTerima,
-                            'Petugas': item.namaPetugas,
-                            'Kode Validasi': item.kodeValidasi,
-                            'Keterangan': item.keterangan,
-                            'Tahun Anggaran': item.tahunAnggaran,
-                            'Status': item.status || 'Menunggu'
+                            'Kelompok': item.namaKelompok || '',
+                            'Jabatan': item.jabatan || '',
+                            'Kecamatan': item.kecamatan || '',
+                            'Desa': item.desa || '',
+                            'Alamat': item.alamat || '',
+                            'Jenis Bantuan': item.jenisBantuan || '',
+                            'Nama Bantuan': item.namaBantuan || '',
+                            'Jumlah': item.jumlahBantuan || 0,
+                            'Satuan': item.satuanBantuan || '',
+                            'Tanggal Permohonan': item.tanggalTerima || '',
+                            'Petugas': item.namaPetugas || '',
+                            'Kode Validasi': item.kodeValidasi || '',
+                            'Keterangan': item.keterangan || '',
+                            'Tahun Anggaran': item.tahunAnggaran || '',
+                            'Status': item.status || 'Menunggu',
+                            'Tanggal Input': item.tanggalInput || ''
                         }));
                         
                         // Convert to worksheet
                         const ws = XLSX.utils.json_to_sheet(dataToExport);
                         const wb = XLSX.utils.book_new();
                         XLSX.utils.book_append_sheet(wb, ws, 'Data Bantuan Nelayan');
+                        
+                        // Auto-size columns
+                        const wscols = [
+                            {wch: 20}, {wch: 20}, {wch: 15}, {wch: 20}, {wch: 15},
+                            {wch: 15}, {wch: 15}, {wch: 30}, {wch: 15}, {wch: 20},
+                            {wch: 10}, {wch: 10}, {wch: 15}, {wch: 20}, {wch: 15},
+                            {wch: 30}, {wch: 10}, {wch: 10}, {wch: 15}
+                        ];
+                        ws['!cols'] = wscols;
                         
                         // Generate filename
                         const dateStr = new Date().toISOString().split('T')[0];
@@ -1826,7 +2007,7 @@
                         BarjasUtils.showNotification('Data berhasil diekspor ke Excel', 'success');
                     } catch (error) {
                         console.error('Error exporting to Excel:', error);
-                        BarjasUtils.showNotification('Gagal mengekspor ke Excel', 'error');
+                        BarjasUtils.showNotification('Gagal mengekspor ke Excel: ' + error.message, 'error');
                     }
                 },
 
@@ -1845,82 +2026,84 @@
                         
                         const doc = new jsPDF('p', 'mm', 'a4');
                         const pageWidth = doc.internal.pageSize.width;
+                        const margin = 10;
+                        let y = margin;
                         
                         // Header
                         doc.setFillColor(5, 95, 115);
-                        doc.rect(0, 0, pageWidth, 40, 'F');
+                        doc.rect(0, 0, pageWidth, 30, 'F');
                         doc.setTextColor(255, 255, 255);
-                        doc.setFontSize(18);
+                        doc.setFontSize(16);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('LAPORAN DATA BANTUAN NELAYAN', pageWidth / 2, 20, { align: 'center' });
-                        doc.setFontSize(12);
-                        doc.text('Dinas Perikanan Kabupaten Situbondo', pageWidth / 2, 28, { align: 'center' });
-                        doc.setFontSize(10);
-                        doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, pageWidth / 2, 35, { align: 'center' });
+                        doc.text('LAPORAN DATA BANTUAN NELAYAN', pageWidth / 2, 15, { align: 'center' });
+                        doc.setFontSize(11);
+                        doc.text('Dinas Perikanan Kabupaten Situbondo', pageWidth / 2, 22, { align: 'center' });
+                        doc.setFontSize(9);
+                        doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')} | Total Data: ${barjasState.data.length}`, 
+                                pageWidth / 2, 28, { align: 'center' });
                         
-                        // Table
-                        let y = 50;
-                        const rowHeight = 8;
-                        const headers = ['No', 'Nama', 'Desa/Kec', 'Jenis Bantuan', 'Jumlah', 'Tanggal', 'Petugas'];
-                        const colWidths = [10, 40, 35, 30, 20, 25, 30];
+                        y = 35;
                         
                         // Table header
+                        const headers = ['No', 'Nama', 'Desa/Kec', 'Jenis Bantuan', 'Jumlah', 'Tanggal', 'Petugas'];
+                        const colWidths = [10, 45, 35, 30, 20, 25, 35];
+                        
+                        // Draw table header
                         doc.setFillColor(230, 230, 230);
-                        doc.rect(10, y, pageWidth - 20, rowHeight, 'F');
+                        doc.rect(margin, y, pageWidth - 2*margin, 8, 'F');
                         doc.setTextColor(0, 0, 0);
                         doc.setFontSize(9);
                         doc.setFont('helvetica', 'bold');
                         
-                        let x = 10;
+                        let x = margin;
                         headers.forEach((header, i) => {
                             doc.text(header, x + 2, y + 5);
                             x += colWidths[i];
                         });
                         
-                        y += rowHeight;
+                        y += 8;
                         
                         // Table content
                         doc.setFont('helvetica', 'normal');
                         doc.setFontSize(8);
                         
-                        barjasState.data.slice(0, 20).forEach((item, index) => {
+                        barjasState.data.forEach((item, index) => {
                             if (y > 270) {
                                 doc.addPage();
-                                y = 20;
+                                y = margin;
                             }
                             
                             const rowData = [
                                 (index + 1).toString(),
-                                item.nama ? item.nama.substring(0, 20) : '-',
-                                `${item.desa ? item.desa.substring(0, 10) : '-'}/${item.kecamatan ? item.kecamatan.substring(0, 8) : '-'}`,
-                                item.jenisBantuan ? item.jenisBantuan.substring(0, 15) : '-',
+                                item.nama ? (item.nama.length > 20 ? item.nama.substring(0, 20) + '...' : item.nama) : '-',
+                                `${item.desa ? (item.desa.length > 8 ? item.desa.substring(0, 8) + '...' : item.desa) : '-'}/${
+                                    item.kecamatan ? (item.kecamatan.length > 8 ? item.kecamatan.substring(0, 8) + '...' : item.kecamatan) : '-'}`,
+                                item.jenisBantuan ? (item.jenisBantuan.length > 12 ? item.jenisBantuan.substring(0, 12) + '...' : item.jenisBantuan) : '-',
                                 `${item.jumlahBantuan || '-'} ${item.satuanBantuan ? item.satuanBantuan.substring(0, 3) : ''}`,
-                                item.tanggalTerima || '-',
-                                item.namaPetugas ? item.namaPetugas.substring(0, 15) : '-'
+                                item.tanggalTerima ? item.tanggalTerima.substring(0, 10) : '-',
+                                item.namaPetugas ? (item.namaPetugas.length > 12 ? item.namaPetugas.substring(0, 12) + '...' : item.namaPetugas) : '-'
                             ];
                             
-                            x = 10;
+                            // Alternating row color
+                            if (index % 2 === 0) {
+                                doc.setFillColor(250, 250, 250);
+                                doc.rect(margin, y, pageWidth - 2*margin, 8, 'F');
+                            }
+                            
+                            x = margin;
                             rowData.forEach((cell, i) => {
                                 doc.text(cell, x + 2, y + 5);
                                 x += colWidths[i];
                             });
                             
-                            y += rowHeight;
-                            
-                            // Alternating row color
-                            if (index % 2 === 0) {
-                                doc.setFillColor(250, 250, 250);
-                                doc.rect(10, y - rowHeight, pageWidth - 20, rowHeight, 'F');
-                            }
-                            
-                            doc.setTextColor(0, 0, 0);
+                            y += 8;
                         });
                         
                         // Footer
                         y = Math.max(y, 270);
                         doc.setFontSize(8);
                         doc.setTextColor(100, 100, 100);
-                        doc.text(`Total Data: ${barjasState.data.length} | Dicetak oleh: Sistem BARJAS v${BARJAS_CONFIG.VERSION}`, 
+                        doc.text(`Dicetak oleh: Sistem BARJAS v${BARJAS_CONFIG.VERSION}`, 
                                 pageWidth / 2, y + 10, { align: 'center' });
                         
                         // Save PDF
@@ -1928,7 +2111,7 @@
                         BarjasUtils.showNotification('Laporan PDF berhasil diunduh', 'success');
                     } catch (error) {
                         console.error('Error exporting to PDF:', error);
-                        BarjasUtils.showNotification('Gagal membuat PDF', 'error');
+                        BarjasUtils.showNotification('Gagal membuat PDF: ' + error.message, 'error');
                     }
                 }
             };
@@ -1950,79 +2133,78 @@
                         
                         const doc = new jsPDF('p', 'mm', 'a4');
                         const pageWidth = doc.internal.pageSize.width;
+                        const margin = 15;
+                        let y = margin;
                         
                         // Header
                         doc.setFillColor(5, 95, 115);
-                        doc.rect(0, 0, pageWidth, 40, 'F');
+                        doc.rect(0, 0, pageWidth, 35, 'F');
                         doc.setTextColor(255, 255, 255);
                         doc.setFontSize(16);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('FORMULIR PERMOHONAN BANTUAN NELAYAN', pageWidth / 2, 20, { align: 'center' });
+                        doc.text('FORMULIR PERMOHONAN BANTUAN NELAYAN', pageWidth / 2, 15, { align: 'center' });
                         doc.setFontSize(12);
-                        doc.text('Dinas Perikanan Kabupaten Situbondo', pageWidth / 2, 28, { align: 'center' });
+                        doc.text('Dinas Perikanan Kabupaten Situbondo', pageWidth / 2, 22, { align: 'center' });
                         doc.setFontSize(10);
-                        doc.text(`Nomor: ${data.kodeValidasi || 'BRJ-XXXXXX'}`, pageWidth / 2, 35, { align: 'center' });
+                        doc.text(`Nomor: ${data.kodeValidasi || 'BRJ-XXXXXX'}`, pageWidth / 2, 30, { align: 'center' });
+                        
+                        y = 45;
                         
                         // Content
-                        let y = 50;
-                        const lineHeight = 8;
-                        
-                        const addField = (label, value) => {
-                            if (y > 250) {
-                                doc.addPage();
-                                y = 20;
-                            }
-                            
+                        const addField = (label, value, yPos) => {
                             doc.setFont('helvetica', 'bold');
                             doc.setFontSize(10);
-                            doc.text(label, 20, y);
+                            doc.text(label, margin, yPos);
                             
                             doc.setFont('helvetica', 'normal');
-                            doc.text(`: ${value || '-'}`, 60, y);
+                            const text = value || '-';
+                            const lines = doc.splitTextToSize(text, pageWidth - margin - 50);
+                            doc.text(lines, margin + 40, yPos);
                             
-                            y += lineHeight;
+                            return yPos + (lines.length * 5) + 3;
                         };
                         
-                        addField('Nama Lengkap', data.nama);
-                        addField('NIK', data.nik);
-                        addField('WhatsApp', data.whatsapp || 'Tidak Ada');
-                        addField('Kelompok', data.namaKelompok);
-                        addField('Jabatan', data.jabatan);
-                        addField('Kecamatan', data.kecamatan);
-                        addField('Desa', data.desa);
-                        addField('Alamat', data.alamat);
-                        addField('Jenis Bantuan', data.jenisBantuan);
-                        addField('Nama Bantuan', data.namaBantuan);
-                        addField('Jumlah', `${data.jumlahBantuan} ${data.satuanBantuan}`);
-                        addField('Tanggal Permohonan', data.tanggalTerima);
-                        addField('Petugas Validasi', data.namaPetugas);
-                        addField('Keterangan', data.keterangan);
-                        addField('Tahun Anggaran', data.tahunAnggaran);
+                        y = addField('Nama Lengkap', data.nama, y);
+                        y = addField('NIK', data.nik, y);
+                        y = addField('WhatsApp', data.whatsapp || 'Tidak Ada', y);
+                        y = addField('Kelompok', data.namaKelompok, y);
+                        y = addField('Jabatan', data.jabatan, y);
+                        y = addField('Kecamatan', data.kecamatan, y);
+                        y = addField('Desa', data.desa, y);
+                        y = addField('Alamat', data.alamat, y);
+                        y = addField('Jenis Bantuan', data.jenisBantuan, y);
+                        y = addField('Nama Bantuan', data.namaBantuan, y);
+                        y = addField('Jumlah', `${BarjasUtils.formatNumber(data.jumlahBantuan)} ${data.satuanBantuan}`, y);
+                        y = addField('Tanggal Permohonan', data.tanggalTerima, y);
+                        y = addField('Petugas Validasi', data.namaPetugas, y);
+                        y = addField('Keterangan', data.keterangan, y);
+                        y = addField('Tahun Anggaran', data.tahunAnggaran, y);
                         
                         y += 10;
                         
                         // Footer dan tanda tangan
-                        const footerY = 200;
+                        const footerY = Math.max(y, 180);
                         doc.setFontSize(10);
-                        doc.text('Hormat kami,', 20, footerY);
-                        doc.text('Pemohon,', 20, footerY + 20);
-                        doc.text(`(${data.nama})`, 20, footerY + 40);
+                        doc.text('Hormat kami,', margin, footerY);
+                        doc.text('Pemohon,', margin, footerY + 20);
+                        doc.text(`(${data.nama})`, margin, footerY + 40);
                         
-                        doc.text('Mengetahui,', pageWidth - 60, footerY);
-                        doc.text('Petugas Dinas Perikanan,', pageWidth - 60, footerY + 20);
-                        doc.text(`(${data.namaPetugas})`, pageWidth - 60, footerY + 40);
+                        doc.text('Mengetahui,', pageWidth - margin - 50, footerY);
+                        doc.text('Petugas Dinas Perikanan,', pageWidth - margin - 50, footerY + 20);
+                        doc.text(`(${data.namaPetugas})`, pageWidth - margin - 50, footerY + 40);
                         
                         // Informasi WhatsApp
                         y = 270;
                         doc.setFontSize(9);
                         doc.setTextColor(100, 100, 100);
-                        doc.text(`Setelah mengunduh, silakan kirim formulir ini ke WhatsApp Admin: ${BARJAS_CONFIG.WHATSAPP_ADMIN}`, 
+                        doc.text('Setelah mengunduh, silakan kirim formulir ini ke WhatsApp Admin:', 
                                 pageWidth / 2, y, { align: 'center' });
+                        doc.text(BARJAS_CONFIG.WHATSAPP_ADMIN, pageWidth / 2, y + 5, { align: 'center' });
                         doc.text('Jangan lupa sertakan file scan proposal dan dokumen pendukung lainnya.', 
-                                pageWidth / 2, y + 5, { align: 'center' });
+                                pageWidth / 2, y + 12, { align: 'center' });
                         
                         // Save PDF
-                        const safeName = data.nama ? data.nama.replace(/[^a-zA-Z0-9]/g, '_') : 'Permohonan';
+                        const safeName = data.nama ? data.nama.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20) : 'Permohonan';
                         const filename = `Permohonan_Bantuan_${safeName}_${data.kodeValidasi || 'NOKODE'}.pdf`;
                         doc.save(filename);
                         
@@ -2031,7 +2213,7 @@
                         
                     } catch (error) {
                         console.error('Error generating PDF:', error);
-                        BarjasUtils.showNotification('Gagal membuat PDF permohonan', 'error');
+                        BarjasUtils.showNotification('Gagal membuat PDF permohonan: ' + error.message, 'error');
                     }
                 },
                 
@@ -2083,7 +2265,9 @@
                         
                         // Hapus modal setelah ditutup
                         modalElement.addEventListener('hidden.bs.modal', function() {
-                            document.body.removeChild(modalContainer);
+                            if (modalContainer.parentNode) {
+                                document.body.removeChild(modalContainer);
+                            }
                         });
                     }
                 }
@@ -2114,16 +2298,12 @@
                     
                     // Setup event listeners
                     this.setupEventListeners();
-                    this.setupTabSwitching(); // Setup tab switching
                     
                     barjasState.isInitialized = true;
                     BarjasUtils.showNotification('Sistem BARJAS siap digunakan', 'success');
                     
-                    // Auto-focus pada tab dashboard
-                    setTimeout(() => {
-                        const firstMenu = document.querySelector('.barjas-menu-link');
-                        if (firstMenu) firstMenu.click();
-                    }, 100);
+                    // Tampilkan data count
+                    console.log(`Data terload: ${barjasState.data.length} record`);
                 },
 
                 renderUI(containerId) {
@@ -2236,8 +2416,8 @@
                                                 <div class="barjas-card-header">
                                                     <i class="fas fa-chart-pie me-2"></i> Distribusi Jenis Bantuan
                                                 </div>
-                                                <div class="card-body">
-                                                    <canvas id="barjas-jenis-chart" height="250"></canvas>
+                                                <div class="card-body" style="height: 300px;">
+                                                    <canvas id="barjas-jenis-chart"></canvas>
                                                 </div>
                                             </div>
                                         </div>
@@ -2246,8 +2426,8 @@
                                                 <div class="barjas-card-header">
                                                     <i class="fas fa-chart-bar me-2"></i> Top 10 Kecamatan
                                                 </div>
-                                                <div class="card-body">
-                                                    <canvas id="barjas-kecamatan-chart" height="250"></canvas>
+                                                <div class="card-body" style="height: 300px;">
+                                                    <canvas id="barjas-kecamatan-chart"></canvas>
                                                 </div>
                                             </div>
                                         </div>
@@ -2277,7 +2457,7 @@
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="barjas-form-label">NIK (16 Digit) <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nik" maxlength="16" required>
+                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nik" maxlength="16" required placeholder="Contoh: 3510110101010001">
                                                     </div>
                                                 </div>
                                                 
@@ -2285,7 +2465,7 @@
                                                     <div class="col-md-6">
                                                         <label class="barjas-form-label">Nomor WhatsApp</label>
                                                         <div class="input-group">
-                                                            <input type="text" class="form-control barjas-form-control" id="barjas-whatsapp">
+                                                            <input type="text" class="form-control barjas-form-control" id="barjas-whatsapp" placeholder="Contoh: 6281234567890">
                                                             <button type="button" class="btn btn-outline-secondary" id="barjas-btn-no-wa">
                                                                 Tidak Ada WhatsApp
                                                             </button>
@@ -2338,7 +2518,7 @@
                                                 <div class="row mb-3">
                                                     <div class="col-md-12">
                                                         <label class="barjas-form-label">Alamat Lengkap</label>
-                                                        <textarea class="form-control barjas-form-control" id="barjas-alamat" rows="2"></textarea>
+                                                        <textarea class="form-control barjas-form-control" id="barjas-alamat" rows="2" placeholder="Alamat lengkap pemohon"></textarea>
                                                     </div>
                                                 </div>
                                                 
@@ -2352,14 +2532,14 @@
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="barjas-form-label">Nama Bantuan <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nama-bantuan" required>
+                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nama-bantuan" required placeholder="Contoh: Bibit Lele Sangkuriang">
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="barjas-form-label">Jumlah <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control barjas-form-control" id="barjas-jumlah-bantuan" required min="1">
+                                                        <input type="number" class="form-control barjas-form-control" id="barjas-jumlah-bantuan" required min="1" value="1">
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="barjas-form-label">Satuan <span class="text-danger">*</span></label>
@@ -2373,11 +2553,11 @@
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="barjas-form-label">Nama Petugas <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nama-petugas" required>
+                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nama-petugas" required placeholder="Nama petugas yang memvalidasi">
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="barjas-form-label">Link Dokumen (Google Drive)</label>
-                                                        <input type="url" class="form-control barjas-form-control" id="barjas-drive-link">
+                                                        <input type="url" class="form-control barjas-form-control" id="barjas-drive-link" placeholder="https://drive.google.com/...">
                                                     </div>
                                                 </div>
                                                 
@@ -2397,7 +2577,7 @@
                                                 <div class="row mb-3">
                                                     <div class="col-md-12">
                                                         <label class="barjas-form-label">Keterangan Tambahan</label>
-                                                        <textarea class="form-control barjas-form-control" id="barjas-keterangan" rows="3"></textarea>
+                                                        <textarea class="form-control barjas-form-control" id="barjas-keterangan" rows="3" placeholder="Keterangan tambahan mengenai permohonan"></textarea>
                                                     </div>
                                                 </div>
                                                 
@@ -2544,6 +2724,7 @@
                                                         <option value="25" selected>25 Baris</option>
                                                         <option value="50">50 Baris</option>
                                                         <option value="100">100 Baris</option>
+                                                        <option value="500">500 Baris</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6">
@@ -2568,6 +2749,23 @@
                                                     </div>
                                                     <small class="text-muted">
                                                         Mode ini akan menyensor 4 digit terakhir NIK dan nomor WhatsApp untuk keamanan data.
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row mb-4">
+                                                <div class="col-md-12">
+                                                    <label class="barjas-form-label">Backup & Restore Data</label>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-outline-primary" id="barjas-backup-btn">
+                                                            <i class="fas fa-download me-2"></i> Backup Data
+                                                        </button>
+                                                        <button class="btn btn-outline-info" id="barjas-restore-btn">
+                                                            <i class="fas fa-upload me-2"></i> Restore Data
+                                                        </button>
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        Backup data ke file JSON atau restore dari backup sebelumnya.
                                                     </small>
                                                 </div>
                                             </div>
@@ -2611,18 +2809,15 @@
                                 tab.classList.remove('active');
                                 if (tab.id === target) {
                                     tab.classList.add('active');
+                                    
+                                    // Refresh konten sesuai tab
+                                    if (target === 'barjas-data') {
+                                        BarjasTableView.renderTable();
+                                    } else if (target === 'barjas-dashboard') {
+                                        BarjasDashboard.updateDashboard();
+                                    }
                                 }
                             });
-                            
-                            // Jika tab data, refresh tabel
-                            if (target === 'barjas-data') {
-                                BarjasTableView.renderTable();
-                            }
-                            
-                            // Jika tab dashboard, refresh charts
-                            if (target === 'barjas-dashboard') {
-                                BarjasDashboard.updateDashboard();
-                            }
                         });
                     });
                 },
@@ -2650,6 +2845,18 @@
                         resetDataBtn.addEventListener('click', () => this.resetData());
                     }
                     
+                    // Backup & Restore
+                    const backupBtn = document.getElementById('barjas-backup-btn');
+                    if (backupBtn) {
+                        backupBtn.addEventListener('click', () => this.backupData());
+                    }
+                    
+                    const restoreBtn = document.getElementById('barjas-restore-btn');
+                    if (restoreBtn) {
+                        restoreBtn.addEventListener('click', () => this.restoreData());
+                    }
+                    
+                    // Settings controls
                     const itemsPerPageSelect = document.getElementById('barjas-items-per-page');
                     if (itemsPerPageSelect) {
                         itemsPerPageSelect.value = barjasState.settings.itemsPerPage;
@@ -2681,22 +2888,73 @@
                 saveSettings() {
                     if (BarjasStorage.saveSettings()) {
                         BarjasUtils.showNotification('Pengaturan berhasil disimpan', 'success');
+                    } else {
+                        BarjasUtils.showNotification('Gagal menyimpan pengaturan', 'error');
                     }
                 },
 
                 resetData() {
+                    if (barjasState.data.length === 0) {
+                        BarjasUtils.showNotification('Tidak ada data yang dapat direset', 'warning');
+                        return;
+                    }
+                    
                     if (confirm('Apakah Anda yakin ingin menghapus SEMUA data BARJAS? Tindakan ini tidak dapat dibatalkan!')) {
                         const pin = prompt('Masukkan PIN keamanan untuk konfirmasi:');
                         if (pin === BARJAS_CONFIG.SECURITY_PIN) {
                             if (BarjasStorage.clearAll()) {
                                 BarjasTableView.renderTable();
                                 BarjasDashboard.updateDashboard();
+                                BarjasFormHandler.resetForm();
                                 BarjasUtils.showNotification('Semua data berhasil direset', 'success');
                             }
                         } else {
                             BarjasUtils.showNotification('PIN salah! Data tidak direset', 'error');
                         }
                     }
+                },
+
+                backupData() {
+                    const backupContent = BarjasStorage.exportBackup();
+                    if (backupContent) {
+                        const date = new Date().toISOString().slice(0, 10);
+                        const filename = `barjas_backup_${date}.json`;
+                        BarjasUtils.downloadFile(backupContent, 'application/json', filename);
+                        BarjasUtils.showNotification('Backup data berhasil dibuat', 'success');
+                    } else {
+                        BarjasUtils.showNotification('Gagal membuat backup data', 'error');
+                    }
+                },
+
+                restoreData() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            try {
+                                const content = event.target.result;
+                                if (BarjasStorage.importBackup(content)) {
+                                    BarjasTableView.renderTable();
+                                    BarjasDashboard.updateDashboard();
+                                    BarjasUtils.showNotification('Data berhasil direstore', 'success');
+                                } else {
+                                    BarjasUtils.showNotification('Format backup tidak valid', 'error');
+                                }
+                            } catch (error) {
+                                console.error('Error restoring backup:', error);
+                                BarjasUtils.showNotification('Gagal merestore data: ' + error.message, 'error');
+                            }
+                        };
+                        reader.readAsText(file);
+                    };
+                    
+                    input.click();
                 },
 
                 showDetail(id) {
@@ -2738,7 +2996,7 @@
                                             <div class="col-md-6">
                                                 <div class="barjas-detail-modal-label">Kelompok & Jabatan</div>
                                                 <div class="barjas-detail-modal-value">
-                                                    ${data.namaKelompok || '-'} (${data.jabatan || '-'})
+                                                    ${data.namaKelompok || 'Individu'} (${data.jabatan || '-'})
                                                 </div>
                                             </div>
                                         </div>
@@ -2763,7 +3021,7 @@
                                                     <div class="fw-bold">${data.namaBantuan || '-'}</div>
                                                     <div class="small">
                                                         Jenis: ${data.jenisBantuan || '-'} | 
-                                                        Jumlah: ${data.jumlahBantuan || '-'} ${data.satuanBantuan || ''} | 
+                                                        Jumlah: ${BarjasUtils.formatNumber(data.jumlahBantuan)} ${data.satuanBantuan || ''} | 
                                                         Tahun: ${data.tahunAnggaran || '-'}
                                                     </div>
                                                 </div>
@@ -2805,7 +3063,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                        <button type="button" class="btn btn-primary" onclick="window.BARJAS.buatPermohonan()">
+                                        <button type="button" class="btn btn-primary" onclick="window.BARJAS.buatPermohonanFromDetail(${data.id})">
                                             <i class="fas fa-file-pdf me-2"></i> Buat Permohonan PDF
                                         </button>
                                     </div>
@@ -2827,7 +3085,9 @@
                         
                         // Hapus modal setelah ditutup
                         modalElement.addEventListener('hidden.bs.modal', function() {
-                            document.body.removeChild(modalContainer);
+                            if (modalContainer.parentNode) {
+                                document.body.removeChild(modalContainer);
+                            }
                         });
                     }
                 },
@@ -2851,7 +3111,8 @@
 
                 changePage(page) {
                     if (page < 1) return;
-                    const totalPages = Math.ceil(barjasState.data.length / barjasState.settings.itemsPerPage);
+                    const itemsPerPage = barjasState.settings.itemsPerPage || 25;
+                    const totalPages = Math.ceil(barjasState.data.length / itemsPerPage);
                     if (page > totalPages && totalPages > 0) return;
                     
                     barjasState.currentPage = page;
@@ -2872,6 +3133,21 @@
                     
                     // Generate PDF
                     BarjasPermohonan.generatePermohonanPDF(barjasState.lastSavedData);
+                },
+
+                buatPermohonanFromDetail(id) {
+                    const data = barjasState.data.find(item => item.id == id);
+                    if (!data) {
+                        BarjasUtils.showNotification('Data tidak ditemukan', 'error');
+                        return;
+                    }
+                    
+                    // Close modal first
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('barjasDetailModal'));
+                    if (modal) modal.hide();
+                    
+                    // Generate PDF
+                    BarjasPermohonan.generatePermohonanPDF(data);
                 }
             };
 
@@ -2884,6 +3160,7 @@
                 deleteData: (id) => BarjasApp.deleteData(id),
                 changePage: (page) => BarjasApp.changePage(page),
                 buatPermohonan: () => BarjasApp.buatPermohonan(),
+                buatPermohonanFromDetail: (id) => BarjasApp.buatPermohonanFromDetail(id),
                 
                 // Fungsi utilitas
                 showNotification: (message, type) => BarjasUtils.showNotification(message, type),
@@ -2907,13 +3184,21 @@
             console.log('✅ Sistem BARJAS v' + BARJAS_CONFIG.VERSION + ' loaded successfully');
             
             // Auto-initialize pada container yang ada
-            setTimeout(() => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    const barjasContainer = document.getElementById('barjas-container');
+                    if (barjasContainer && typeof BARJAS !== 'undefined') {
+                        console.log('Auto-initializing BARJAS in container...');
+                        BARJAS.init('barjas-container');
+                    }
+                });
+            } else {
                 const barjasContainer = document.getElementById('barjas-container');
                 if (barjasContainer && typeof BARJAS !== 'undefined') {
                     console.log('Auto-initializing BARJAS in container...');
                     BARJAS.init('barjas-container');
                 }
-            }, 100);
+            }
         })();
     </script>
 </body>
