@@ -16,7 +16,7 @@
     
     <!-- LOAD SEMUA JAVASCRIPT LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jsppdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -2215,7 +2215,7 @@
                 doc.setFontSize(7);
                 doc.text("Dinas Perikanan Kabupaten Situbondo", leftX + 35, footerY + 20, {align: 'center'});
                 doc.setTextColor(0, 0, 255);
-                doc.text("www.disnakansitubondo.com/simata", leftX + 35, footerY + 25, {align: 'center'});
+                doc.text("www.dinasperikanansitubondo.com/simata", leftX + 35, footerY + 25, {align: 'center'});
 
                 doc.setFontSize(10); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'normal');
                 const dateStr = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
@@ -2566,25 +2566,39 @@
         }
 
         // =====================================================
-        // PERBAIKAN: Fungsi printData() yang telah disempurnakan
+        // FUNGSI PRINT DATA YANG DISEMPURNAKAN - VERSI FINAL
         // =====================================================
         function printData() {
             const desaStats = {};
             appData.forEach(d => {
                 const desa = d.desa || "Tidak Diketahui";
                 if (!desaStats[desa]) {
-                    desaStats[desa] = { count: 0, owner: 0, abk: 0, penuhWaktu: 0, sambilanUtama: 0, sambilanTambahan: 0 };
+                    desaStats[desa] = { 
+                        count: 0, 
+                        owner: 0, 
+                        abk: 0, 
+                        penuhWaktu: 0, 
+                        sambilanUtama: 0, 
+                        sambilanTambahan: 0 
+                    };
                 }
                 desaStats[desa].count++;
-                if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; else desaStats[desa].abk++;
+                if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; 
+                else desaStats[desa].abk++;
+                
                 if(d.profesi === 'Nelayan Penuh Waktu') desaStats[desa].penuhWaktu++;
                 else if(d.profesi === 'Nelayan Sambilan Utama') desaStats[desa].sambilanUtama++;
                 else if(d.profesi === 'Nelayan Sambilan Tambahan') desaStats[desa].sambilanTambahan++;
             });
 
             const tableRows = Object.keys(desaStats).sort().map((desa, index) => [
-                index + 1, desa, desaStats[desa].count, desaStats[desa].owner,
-                desaStats[desa].abk, desaStats[desa].penuhWaktu, desaStats[desa].sambilanUtama,
+                index + 1, 
+                desa, 
+                desaStats[desa].count, 
+                desaStats[desa].owner,
+                desaStats[desa].abk, 
+                desaStats[desa].penuhWaktu, 
+                desaStats[desa].sambilanUtama,
                 desaStats[desa].sambilanTambahan
             ]);
 
@@ -2595,9 +2609,9 @@
             const signatureText = `SUGENG PURWO PRIYANTO, S.E, M.M\nKabid Pemberdayaan Nelayan\nNIP. 19761103 200903 1 001\nDinas Perikanan Kabupaten Situbondo\n${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}`;
             new QRCode(document.getElementById("qr-right"), { 
                 text: signatureText, 
-                width: 120, 
-                height: 120,
-                colorDark: "#0984e3", // Warna biru
+                width: 100, 
+                height: 100,
+                colorDark: "#0984e3", // Warna biru untuk QR code
                 colorLight: "#ffffff", 
                 correctLevel: QRCode.CorrectLevel.M
             });
@@ -2605,98 +2619,164 @@
             setTimeout(() => {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('l', 'mm', 'a4');
+                const pageWidth = doc.internal.pageSize.width;
+                const pageHeight = doc.internal.pageSize.height;
 
-                // Header dengan warna biru
-                doc.setFillColor(12, 36, 97);
-                doc.rect(0, 0, 297, 30, 'F');
+                // HEADER DENGAN 3 WARNA: BIRU, HIJAU, ORANGE
+                // Bagian biru
+                doc.setFillColor(12, 36, 97); // Biru tua
+                doc.rect(0, 0, pageWidth, 15, 'F');
                 
-                // Judul dalam header
+                // Bagian hijau
+                doc.setFillColor(39, 174, 96); // Hijau
+                doc.rect(0, 15, pageWidth, 10, 'F');
+                
+                // Bagian orange
+                doc.setFillColor(229, 142, 38); // Orange
+                doc.rect(0, 25, pageWidth, 8, 'F');
+                
+                // Judul utama dalam header
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(16); 
                 doc.setFont('helvetica', 'bold');
-                doc.text('SISTEM PEMETAAN DATA NELAYAN', 148.5, 12, { align: 'center' });
+                doc.text('SISTEM PEMETAAN DATA NELAYAN', pageWidth/2, 10, { align: 'center' });
+                
                 doc.setFontSize(14);
-                doc.text('DINAS PERIKANAN', 148.5, 20, { align: 'center' });
+                doc.text('DINAS PERIKANAN', pageWidth/2, 21, { align: 'center' });
+                
                 doc.setFontSize(12);
-                doc.text('KABUPATEN SITUBONDO', 148.5, 26, { align: 'center' });
+                doc.text('KABUPATEN SITUBONDO', pageWidth/2, 29, { align: 'center' });
 
                 // Subjudul
                 doc.setTextColor(0, 0, 0);
                 doc.setFont('helvetica', 'bold'); 
                 doc.setFontSize(14);
-                doc.text('LAPORAN REKAPITULASI DATA NELAYAN PER DESA', 148.5, 40, { align: 'center' });
+                doc.text('LAPORAN REKAPITULASI DATA NELAYAN PER DESA', pageWidth/2, 45, { align: 'center' });
+                
                 doc.setFontSize(10); 
                 doc.setFont('helvetica', 'normal');
-                doc.text(`Per Tanggal: ${new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'})}`, 148.5, 46, { align: 'center' });
+                doc.text(`Per Tanggal: ${new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'})}`, pageWidth/2, 52, { align: 'center' });
 
-                // Tabel data
+                // Tabel data dengan header warna biru
                 doc.autoTable({
-                    head: [['No', 'Desa / Kelurahan', 'Jml Nelayan', 'Pemilik Kapal', 'ABK', 'Nelayan Penuh Waktu', 'Nelayan Sambilan Utama', 'Nelayan Sambilan Tambahan']],
+                    head: [
+                        [
+                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                            {content: 'Desa / Kelurahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                            {content: 'Jml Nelayan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                            {content: 'Pemilik Kapal', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                            {content: 'ABK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                            {content: 'Nelayan Penuh Waktu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                            {content: 'Nelayan Sambilan Utama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                            {content: 'Nelayan Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}}
+                        ]
+                    ],
                     body: tableRows,
-                    startY: 50,
+                    startY: 60,
                     theme: 'grid',
                     headStyles: { 
                         fillColor: [12, 36, 97], 
                         textColor: [255, 255, 255], 
                         fontStyle: 'bold', 
-                        halign: 'center' 
+                        halign: 'center'
+                    },
+                    bodyStyles: {
+                        textColor: [0, 0, 0],
+                        fontSize: 9
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 245]
                     },
                     columnStyles: {
-                        0: { halign: 'center' },
-                        2: { halign: 'center' }, 
-                        3: { halign: 'center' }, 
-                        4: { halign: 'center' },
-                        5: { halign: 'center' }, 
-                        6: { halign: 'center' }, 
-                        7: { halign: 'center' }
-                    }
+                        0: { halign: 'center', cellWidth: 15 },
+                        1: { halign: 'left', cellWidth: 40 },
+                        2: { halign: 'center', cellWidth: 25 },
+                        3: { halign: 'center', cellWidth: 25 },
+                        4: { halign: 'center', cellWidth: 20 },
+                        5: { halign: 'center', cellWidth: 30 },
+                        6: { halign: 'center', cellWidth: 30 },
+                        7: { halign: 'center', cellWidth: 35 }
+                    },
+                    margin: { left: 10, right: 10 }
                 });
 
-                // Footer
-                const pageHeight = doc.internal.pageSize.height;
-                const pageWidth = doc.internal.pageSize.width;
+                // Footer dengan layout yang diperbaiki
                 const footerY = pageHeight - 50;
-
-                // Sisi kiri: Validasi
+                
+                // ========================
+                // BAGIAN KIRI: KOTAK VALIDASI
+                // ========================
+                const leftBoxX = 15;
+                const leftBoxY = footerY;
+                const leftBoxWidth = 80;
+                const leftBoxHeight = 35;
+                
+                // Gambar kotak dengan border
+                doc.setDrawColor(12, 36, 97); // Warna biru untuk border
+                doc.setLineWidth(0.5);
+                doc.rect(leftBoxX, leftBoxY, leftBoxWidth, leftBoxHeight);
+                
+                // Isi kotak validasi
+                doc.setFont('helvetica', 'bold');
                 doc.setFontSize(9);
-                doc.setTextColor(0, 0, 0);
-                doc.text('DOKUMEN REKAP INI TERVALIDASI', 30, footerY);
-                doc.text('OLEH SISTEM SATU DATA (SIMATA)', 30, footerY + 5);
-                doc.text('Dinas Perikanan Kabupaten Situbondo', 30, footerY + 10);
-                doc.setTextColor(0, 0, 255);
-                doc.text('www.disnakansitubondo.com/simata', 30, footerY + 15);
+                doc.setTextColor(12, 36, 97); // Warna biru
+                doc.text("DOKUMEN REKAP INI TERVALIDASI", leftBoxX + (leftBoxWidth/2), leftBoxY + 8, {align: 'center'});
+                doc.text("OLEH SISTEM SATU DATA (SIMATA)", leftBoxX + (leftBoxWidth/2), leftBoxY + 13, {align: 'center'});
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.text("Dinas Perikanan Kabupaten Situbondo", leftBoxX + (leftBoxWidth/2), leftBoxY + 20, {align: 'center'});
+                
+                doc.setFontSize(7);
+                doc.setTextColor(0, 0, 255); // Warna biru untuk link
+                doc.text("www.dinasperikanasitubondo.com/simata", leftBoxX + (leftBoxWidth/2), leftBoxY + 26, {align: 'center'});
 
-                // Sisi kanan: Tanggal dan tanda tangan
+                // ========================
+                // BAGIAN KANAN: TANDA TANGAN DAN QR CODE
+                // ========================
+                const rightBoxX = pageWidth - 90;
+                const rightBoxY = footerY;
+                
+                // Tanggal dan jabatan
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
                 doc.setTextColor(0, 0, 0);
-                doc.text(`Situbondo, ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}`, pageWidth - 70, footerY);
-                doc.text('Kepala Bidang Pemberdayaan Nelayan', pageWidth - 70, footerY + 5);
+                doc.text(`Situbondo, ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}`, rightBoxX + 40, rightBoxY + 5, {align: 'center'});
+                doc.text('Kepala Bidang Pemberdayaan Nelayan', rightBoxX + 40, rightBoxY + 12, {align: 'center'});
 
-                // Tambahkan QR Code di sebelah kanan
+                // QR Code di pojok kanan
                 const qrRightCanvas = document.querySelector('#qr-right canvas');
                 if(qrRightCanvas) {
                     const imgRight = qrRightCanvas.toDataURL("image/png");
-                    // Letakkan QR Code di sisi kanan, sejajar dengan teks tanda tangan
-                    doc.addImage(imgRight, 'PNG', pageWidth - 50, footerY - 5, 40, 40);
+                    doc.addImage(imgRight, 'PNG', rightBoxX + 25, rightBoxY + 15, 30, 30);
                 }
 
                 // Nama dan NIP di bawah QR Code
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(10);
-                doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', pageWidth - 70, footerY + 25);
+                doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', rightBoxX + 40, rightBoxY + 50, {align: 'center'});
                 doc.setFont('helvetica', 'normal');
-                doc.text('NIP. 19761103 200903 1 001', pageWidth - 70, footerY + 30);
+                doc.text('NIP. 19761103 200903 1 001', rightBoxX + 40, rightBoxY + 55, {align: 'center'});
 
-                // Halaman
+                // Footer nomor halaman
                 const totalPages = doc.getNumberOfPages();
                 for (let i = 1; i <= totalPages; i++) {
                     doc.setPage(i);
                     doc.setFontSize(8);
                     doc.setTextColor(100);
                     doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                    
+                    // Tambahkan garis pemisah di atas footer
+                    doc.setDrawColor(200, 200, 200);
+                    doc.setLineWidth(0.3);
+                    doc.line(15, pageHeight - 15, pageWidth - 15, pageHeight - 15);
                 }
 
+                // Simpan file PDF
                 doc.save(`Laporan_Nelayan_${appSettings.appSubtitle.slice(0,10)}_${Date.now()}.pdf`);
                 document.getElementById('qr-right').innerHTML = "";
+                
+                showNotification('Laporan PDF berhasil dibuat dan diunduh', 'success');
             }, 500);
         }
 
@@ -2895,7 +2975,7 @@
         console.log('✅ SIMATA Application v5.3 initialized successfully');
         console.log('✅ BARJAS Integration via URL: https://www.dinasperikanansitubondo.com/simata/permohonanbantuan');
         console.log('✅ Reload Data Function Improved');
-        console.log('✅ Print PDF Report Function Fixed and Enhanced');
+        console.log('✅ Print PDF Report Function Fixed and Enhanced with 3-color design');
     </script>
 </body>
 </html>
