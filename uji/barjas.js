@@ -1,5 +1,5 @@
 // barjas.js - Sistem Bantuan Nelayan Kab. Situbondo - VERSI TERINTEGRASI
-// Versi 3.0 - Integrated Edition (Optimized for SIMATA)
+// Versi 3.1 - Integrated Edition (Optimized for SIMATA)
 // Tanggal: 2025
 // Developer: Dinas Perikanan Kabupaten Situbondo
 
@@ -36,12 +36,11 @@
             z-index: 10;
         }
         
-        /* Header BARJAS */
+        /* Header BARJAS dengan Menu Bar */
         .barjas-header {
             background: linear-gradient(120deg, #003049 0%, #005f73 40%, #0a9396 70%, #ca6702 100%);
             color: white;
-            padding: 35px 20px;
-            text-align: center;
+            padding: 20px 20px 0 20px;
             position: relative;
             overflow: hidden;
             border-bottom: 4px solid #ee9b00;
@@ -57,7 +56,7 @@
         
         .barjas-logo {
             font-size: 3.5rem;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             position: relative;
             z-index: 1;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
@@ -85,51 +84,83 @@
         
         .barjas-subtitle {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.95;
             position: relative;
             z-index: 1;
             font-weight: 500;
             letter-spacing: 0.5px;
-            margin-top: 10px;
+            margin-top: 5px;
             color: #ffecd1;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            display: inline-block;
-            padding-top: 10px;
         }
         
-        /* Navigation BARJAS */
-        .barjas-sidebar {
-            background-color: #f8f9fa !important;
-            border-right: 1px solid #e9ecef;
+        /* Menu Bar Horizontal */
+        .barjas-menu-bar {
+            display: flex;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px 10px 0 0;
+            padding: 0;
+            margin-top: 15px;
+            overflow-x: auto;
         }
 
-        .barjas-nav-pills .barjas-nav-link {
-            border-radius: 10px;
-            margin-bottom: 8px;
-            padding: 14px 20px;
+        .barjas-menu-pills {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .barjas-menu-pills .barjas-menu-link {
+            border-radius: 10px 10px 0 0;
+            margin: 0;
+            padding: 12px 20px;
             font-weight: 600;
-            color: #555;
+            color: white;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            font-size: 0.95rem;
-            border-left: 4px solid transparent;
+            font-size: 0.9rem;
+            border-bottom: 4px solid transparent;
             text-decoration: none;
             cursor: pointer;
+            background-color: transparent;
+            white-space: nowrap;
         }
         
-        .barjas-nav-pills .barjas-nav-link:hover {
-            background-color: #e3f2fd;
+        .barjas-menu-pills .barjas-menu-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffecd1;
+        }
+        
+        .barjas-menu-pills .barjas-menu-link.active {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-bottom: 4px solid #ee9b00;
             color: #005f73;
-            transform: translateX(5px);
         }
-        
-        .barjas-nav-pills .barjas-nav-link.active {
-            background: linear-gradient(90deg, #005f73, #0a9396);
-            border-left: 4px solid #ee9b00;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-            transform: translateX(5px);
+
+        /* Tombol Buat Permohonan */
+        .barjas-permohonan-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-weight: bold;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .barjas-permohonan-btn:hover {
+            background: linear-gradient(135deg, #218838, #1e9e8a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
             color: white;
         }
 
@@ -341,6 +372,17 @@
             text-decoration: none; 
         }
         
+        /* Tab Content */
+        .barjas-tab-content {
+            display: none;
+            padding: 20px;
+            animation: barjas-fadeIn 0.5s ease;
+        }
+        
+        .barjas-tab-content.active {
+            display: block;
+        }
+        
         /* Responsive BARJAS */
         @media (max-width: 991.98px) {
             .barjas-app-wrapper { 
@@ -348,35 +390,35 @@
                 border-radius: 0; 
             }
             
-            .barjas-sidebar { 
-                position: fixed; 
-                left: -300px; 
-                top: 0; 
-                bottom: 0; 
-                z-index: 1050; 
-                width: 280px; 
-                transition: left 0.3s ease; 
-                overflow-y: auto; 
-                padding-top: 60px; 
-                background: white; 
+            .barjas-menu-pills {
+                flex-direction: column;
             }
             
-            .barjas-sidebar.mobile-show { 
-                left: 0; 
+            .barjas-menu-pills .barjas-menu-link {
+                border-radius: 10px;
+                margin-bottom: 5px;
+                border-bottom: none;
+                border-left: 4px solid transparent;
+                padding: 10px 15px;
+            }
+            
+            .barjas-menu-pills .barjas-menu-link.active {
+                border-left: 4px solid #ee9b00;
+                border-bottom: none;
             }
             
             .barjas-title { 
-                font-size: 1.1rem; 
+                font-size: 1.3rem; 
                 line-height: 1.2; 
             }
             
             .barjas-logo { 
-                font-size: 2rem; 
+                font-size: 2.5rem; 
                 margin-bottom: 5px; 
             }
             
             .barjas-header { 
-                padding: 60px 15px 25px 15px; 
+                padding: 40px 15px 15px 15px; 
             }
             
             .barjas-table-responsive { 
@@ -405,10 +447,11 @@
     // --- KONSTANTA DAN KONFIGURASI BARJAS ---
     const BARJAS_CONFIG = {
         APP_NAME: 'SISTEM BANTUAN NELAYAN (BARJAS)',
-        APP_SUBTITLE: 'Dinas Perikanan Kabupaten Situbondo',
-        VERSION: '3.0',
+        APP_SUBTITLE: 'Aplikasi Permohonan Bantuan Nelayan',
+        VERSION: '3.1',
         SECURITY_PIN: '17081945',
         EXTRACT_CODE: '19450817',
+        WHATSAPP_ADMIN: '6287865614222',
         
         // Warna tema
         COLORS: {
@@ -490,7 +533,8 @@
         generatedCodes: {},
         activeFilters: {},
         currentDetailId: null,
-        isInitialized: false
+        isInitialized: false,
+        lastSavedData: null // untuk menyimpan data terakhir untuk permohonan
     };
 
     // --- FUNGSI UTILITAS BARJAS ---
@@ -868,9 +912,42 @@
             }
             
             BarjasStorage.saveData();
-            this.resetForm();
+            
+            // Simpan data terakhir untuk permohonan
+            barjasState.lastSavedData = formData;
+            
+            // Tampilkan tombol Buat Permohonan
+            this.showPermohonanButton();
+            
             BarjasTableView.renderTable();
             BarjasDashboard.updateDashboard();
+        },
+
+        showPermohonanButton() {
+            const formContainer = document.querySelector('#barjas-input .card-body');
+            let permohonanButton = document.getElementById('barjas-buat-permohonan-btn');
+            
+            if (!permohonanButton) {
+                permohonanButton = document.createElement('button');
+                permohonanButton.id = 'barjas-buat-permohonan-btn';
+                permohonanButton.className = 'btn barjas-permohonan-btn w-100 mt-4';
+                permohonanButton.innerHTML = '<i class="fas fa-file-pdf me-2"></i> Buat Permohonan (PDF)';
+                permohonanButton.addEventListener('click', () => this.buatPermohonan());
+                formContainer.appendChild(permohonanButton);
+            }
+            
+            permohonanButton.style.display = 'block';
+            BarjasUtils.showNotification('Data berhasil disimpan! Klik "Buat Permohonan" untuk membuat dokumen permohonan.', 'success');
+        },
+
+        buatPermohonan() {
+            if (!barjasState.lastSavedData) {
+                BarjasUtils.showNotification('Tidak ada data yang disimpan untuk dibuat permohonan', 'error');
+                return;
+            }
+            
+            // Generate PDF
+            BarjasPermohonan.generatePermohonanPDF(barjasState.lastSavedData);
         },
 
         collectFormData() {
@@ -977,6 +1054,12 @@
                     kodeInput.value = '';
                 }
             }
+            
+            // Sembunyikan tombol Buat Permohonan
+            const permohonanButton = document.getElementById('barjas-buat-permohonan-btn');
+            if (permohonanButton) {
+                permohonanButton.style.display = 'none';
+            }
         },
 
         editData(id) {
@@ -1012,8 +1095,14 @@
             // Set edit mode
             document.getElementById('barjas-input-form').setAttribute('data-edit-id', id);
             
+            // Simpan data terakhir untuk permohonan
+            barjasState.lastSavedData = data;
+            
+            // Tampilkan tombol Buat Permohonan
+            this.showPermohonanButton();
+            
             // Switch to input tab
-            const inputTab = document.getElementById('v-pills-barjas-input-tab');
+            const inputTab = document.querySelector('[data-target="barjas-input"]');
             if (inputTab) inputTab.click();
             
             BarjasUtils.showNotification('Mode edit diaktifkan', 'info');
@@ -1614,6 +1703,146 @@
         }
     };
 
+    // --- PERMOHONAN HANDLER ---
+    const BarjasPermohonan = {
+        generatePermohonanPDF(data) {
+            if (!data) {
+                BarjasUtils.showNotification('Tidak ada data untuk dibuat permohonan', 'error');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.width;
+            
+            // Header
+            doc.setFillColor(5, 95, 115);
+            doc.rect(0, 0, pageWidth, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('FORMULIR PERMOHONAN BANTUAN NELAYAN', pageWidth / 2, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text('Dinas Perikanan Kabupaten Situbondo', pageWidth / 2, 28, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text(`Nomor: ${data.kodeValidasi || 'BRJ-XXXXXX'}`, pageWidth / 2, 35, { align: 'center' });
+            
+            // Content
+            let y = 50;
+            const lineHeight = 8;
+            
+            const addField = (label, value) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(10);
+                doc.text(label, 20, y);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.text(`: ${value || '-'}`, 60, y);
+                
+                y += lineHeight;
+            };
+            
+            addField('Nama Lengkap', data.nama);
+            addField('NIK', data.nik);
+            addField('WhatsApp', data.whatsapp || 'Tidak Ada');
+            addField('Kelompok', data.namaKelompok);
+            addField('Jabatan', data.jabatan);
+            addField('Kecamatan', data.kecamatan);
+            addField('Desa', data.desa);
+            addField('Alamat', data.alamat);
+            addField('Jenis Bantuan', data.jenisBantuan);
+            addField('Nama Bantuan', data.namaBantuan);
+            addField('Jumlah', `${data.jumlahBantuan} ${data.satuanBantuan}`);
+            addField('Tanggal Permohonan', data.tanggalTerima);
+            addField('Petugas Validasi', data.namaPetugas);
+            addField('Keterangan', data.keterangan);
+            
+            y += 10;
+            
+            // Footer dan tanda tangan
+            const footerY = 200;
+            doc.setFontSize(10);
+            doc.text('Hormat kami,', 20, footerY);
+            doc.text('Pemohon,', 20, footerY + 20);
+            doc.text(`(${data.nama})`, 20, footerY + 40);
+            
+            doc.text('Mengetahui,', pageWidth - 60, footerY);
+            doc.text('Petugas Dinas Perikanan,', pageWidth - 60, footerY + 20);
+            doc.text(`(${data.namaPetugas})`, pageWidth - 60, footerY + 40);
+            
+            // Informasi WhatsApp
+            y = 270;
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Setelah mengunduh, silakan kirim formulir ini ke WhatsApp Admin: ${BARJAS_CONFIG.WHATSAPP_ADMIN}`, 
+                    pageWidth / 2, y, { align: 'center' });
+            doc.text('Jangan lupa sertakan file scan proposal dan dokumen pendukung lainnya.', 
+                    pageWidth / 2, y + 5, { align: 'center' });
+            
+            // Save PDF
+            const filename = `Permohonan_Bantuan_${data.nama.replace(/\s/g, '_')}_${data.kodeValidasi}.pdf`;
+            doc.save(filename);
+            
+            // Tampilkan notifikasi untuk mengirim ke WhatsApp
+            this.showWhatsAppNotification(data, filename);
+        },
+        
+        showWhatsAppNotification(data, filename) {
+            const message = `Yth. Admin Dinas Perikanan Kabupaten Situbondo,\n\nSaya mengajukan permohonan bantuan nelayan dengan detail sebagai berikut:\n\nNama: ${data.nama}\nNIK: ${data.nik}\nJenis Bantuan: ${data.jenisBantuan}\nNama Bantuan: ${data.namaBantuan}\nJumlah: ${data.jumlahBantuan} ${data.satuanBantuan}\nKode Validasi: ${data.kodeValidasi}\n\nSaya telah melampirkan formulir permohonan dalam format PDF. Silakan diperiksa.\n\nTerima kasih.`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${BARJAS_CONFIG.WHATSAPP_ADMIN}?text=${encodedMessage}`;
+            
+            // Tampilkan modal notifikasi
+            const modalHTML = `
+                <div class="modal fade" id="barjasPermohonanModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content barjas-modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-check-circle me-2"></i>Permohonan Berhasil Dibuat
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Formulir permohonan bantuan telah berhasil diunduh dengan nama file: <strong>${filename}</strong></p>
+                                <p>Silakan kirim formulir ini ke WhatsApp Admin Dinas Perikanan untuk proses selanjutnya.</p>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Jangan lupa untuk melampirkan file scan proposal dan dokumen pendukung lainnya.
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <a href="${whatsappUrl}" target="_blank" class="btn btn-success">
+                                    <i class="fab fa-whatsapp me-2"></i> Kirim ke WhatsApp Admin
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Tambahkan modal ke DOM
+            const modalContainer = document.createElement('div');
+            modalContainer.innerHTML = modalHTML;
+            document.body.appendChild(modalContainer);
+            
+            // Tampilkan modal
+            const modal = new bootstrap.Modal(document.getElementById('barjasPermohonanModal'));
+            modal.show();
+            
+            // Hapus modal setelah ditutup
+            modalContainer.addEventListener('hidden.bs.modal', function() {
+                document.body.removeChild(modalContainer);
+            });
+        }
+    };
+
     // --- MAIN BARJAS APPLICATION ---
     const BarjasApp = {
         init(containerId) {
@@ -1654,449 +1883,450 @@
             container.className = 'barjas-container';
             container.innerHTML = `
                 <div class="barjas-app-wrapper animate-fadeIn">
-                    <!-- Header -->
+                    <!-- Header dengan Menu Bar -->
                     <div class="barjas-header">
                         <div class="barjas-logo">
                             <i class="fas fa-hand-holding-usd"></i>
                         </div>
                         <h1 class="barjas-title">${BARJAS_CONFIG.APP_NAME}</h1>
                         <p class="barjas-subtitle">${BARJAS_CONFIG.APP_SUBTITLE}</p>
+                        
+                        <!-- Menu Bar Horizontal -->
+                        <nav class="barjas-menu-bar">
+                            <ul class="barjas-menu-pills">
+                                <li>
+                                    <button class="barjas-menu-link active" data-target="barjas-dashboard">
+                                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="barjas-menu-link" data-target="barjas-input">
+                                        <i class="fas fa-edit me-2"></i> Input Data
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="barjas-menu-link" data-target="barjas-data">
+                                        <i class="fas fa-database me-2"></i> Data Bantuan
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="barjas-menu-link" data-target="barjas-export">
+                                        <i class="fas fa-file-export me-2"></i> Ekspor Data
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="barjas-menu-link" data-target="barjas-settings">
+                                        <i class="fas fa-cog me-2"></i> Pengaturan
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                        
                         <div class="barjas-watermark">v${BARJAS_CONFIG.VERSION}</div>
                     </div>
                     
-                    <div class="row g-0 flex-grow-1">
-                        <!-- Sidebar -->
-                        <div class="col-md-3 col-lg-2 barjas-sidebar py-4" id="barjas-sidebar-menu">
-                            <div class="px-3 mb-3 text-muted small fw-bold text-uppercase">Menu BARJAS</div>
-                            <div class="nav flex-column barjas-nav-pills" id="barjas-nav-tabs">
-                                <button class="barjas-nav-link active" id="v-pills-barjas-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-barjas-dashboard">
-                                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                                </button>
-                                <button class="barjas-nav-link" id="v-pills-barjas-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-barjas-input">
-                                    <i class="fas fa-edit me-2"></i> Input Data
-                                </button>
-                                <button class="barjas-nav-link" id="v-pills-barjas-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-barjas-data">
-                                    <i class="fas fa-database me-2"></i> Data Bantuan
-                                </button>
-                                <button class="barjas-nav-link" id="v-pills-barjas-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-barjas-export">
-                                    <i class="fas fa-file-export me-2"></i> Ekspor Data
-                                </button>
-                                <button class="barjas-nav-link" id="v-pills-barjas-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-barjas-settings">
-                                    <i class="fas fa-cog me-2"></i> Pengaturan
-                                </button>
-                                <div class="mt-4 pt-3 border-top px-3">
-                                    <button class="barjas-nav-link text-danger w-100 justify-content-start bg-light" id="barjas-logout-btn">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Kembali ke SIMATA
-                                    </button>
+                    <!-- Main Content -->
+                    <div class="p-4">
+                        <!-- Dashboard Tab -->
+                        <div class="barjas-tab-content active" id="barjas-dashboard">
+                            <h3 class="barjas-section-title">Dashboard Bantuan Nelayan</h3>
+                            
+                            <!-- Stats Cards -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6 col-lg-3">
+                                    <div class="barjas-stats-box p-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-muted small">Total Data</span>
+                                            <i class="fas fa-database text-primary fa-2x"></i>
+                                        </div>
+                                        <h2 class="barjas-stats-number mb-0" id="barjas-total-data">0</h2>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="barjas-stats-box p-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-muted small">Kecamatan</span>
+                                            <i class="fas fa-map-marked-alt text-success fa-2x"></i>
+                                        </div>
+                                        <h2 class="barjas-stats-number mb-0" id="barjas-total-kecamatan">0</h2>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="barjas-stats-box p-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-muted small">Desa</span>
+                                            <i class="fas fa-map-marker-alt text-warning fa-2x"></i>
+                                        </div>
+                                        <h2 class="barjas-stats-number mb-0" id="barjas-total-desa">0</h2>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="barjas-stats-box p-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-muted small">Jenis Bantuan</span>
+                                            <i class="fas fa-gift text-danger fa-2x"></i>
+                                        </div>
+                                        <h2 class="barjas-stats-number mb-0" id="barjas-total-jenis">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Summary Info -->
+                            <div class="barjas-card p-3 mb-4">
+                                <div id="barjas-summary-info"></div>
+                            </div>
+                            
+                            <!-- Charts -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="barjas-card">
+                                        <div class="barjas-card-header">
+                                            <i class="fas fa-chart-pie me-2"></i> Distribusi Jenis Bantuan
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="barjas-jenis-chart" height="250"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="barjas-card">
+                                        <div class="barjas-card-header">
+                                            <i class="fas fa-chart-bar me-2"></i> Top 10 Kecamatan
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="barjas-kecamatan-chart" height="250"></canvas>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Main Content -->
-                        <div class="col-md-9 col-lg-10 p-4 d-flex flex-column bg-white">
-                            <div class="tab-content" id="barjas-tab-content">
-                                <!-- Dashboard Tab -->
-                                <div class="tab-pane fade show active" id="v-pills-barjas-dashboard">
-                                    <h3 class="barjas-section-title">Dashboard Bantuan Nelayan</h3>
-                                    
-                                    <!-- Stats Cards -->
-                                    <div class="row g-3 mb-4">
-                                        <div class="col-6 col-lg-3">
-                                            <div class="barjas-stats-box p-3">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <span class="text-muted small">Total Data</span>
-                                                    <i class="fas fa-database text-primary fa-2x"></i>
-                                                </div>
-                                                <h2 class="barjas-stats-number mb-0" id="barjas-total-data">0</h2>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-lg-3">
-                                            <div class="barjas-stats-box p-3">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <span class="text-muted small">Kecamatan</span>
-                                                    <i class="fas fa-map-marked-alt text-success fa-2x"></i>
-                                                </div>
-                                                <h2 class="barjas-stats-number mb-0" id="barjas-total-kecamatan">0</h2>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-lg-3">
-                                            <div class="barjas-stats-box p-3">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <span class="text-muted small">Desa</span>
-                                                    <i class="fas fa-map-marker-alt text-warning fa-2x"></i>
-                                                </div>
-                                                <h2 class="barjas-stats-number mb-0" id="barjas-total-desa">0</h2>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-lg-3">
-                                            <div class="barjas-stats-box p-3">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <span class="text-muted small">Jenis Bantuan</span>
-                                                    <i class="fas fa-gift text-danger fa-2x"></i>
-                                                </div>
-                                                <h2 class="barjas-stats-number mb-0" id="barjas-total-jenis">0</h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Summary Info -->
-                                    <div class="barjas-card p-3 mb-4">
-                                        <div id="barjas-summary-info"></div>
-                                    </div>
-                                    
-                                    <!-- Charts -->
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <div class="barjas-card">
-                                                <div class="barjas-card-header">
-                                                    <i class="fas fa-chart-pie me-2"></i> Distribusi Jenis Bantuan
-                                                </div>
-                                                <div class="card-body">
-                                                    <canvas id="barjas-jenis-chart" height="250"></canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="barjas-card">
-                                                <div class="barjas-card-header">
-                                                    <i class="fas fa-chart-bar me-2"></i> Top 10 Kecamatan
-                                                </div>
-                                                <div class="card-body">
-                                                    <canvas id="barjas-kecamatan-chart" height="250"></canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <!-- Input Data Tab -->
+                        <div class="barjas-tab-content" id="barjas-input">
+                            <h3 class="barjas-section-title">Formulir Input Data Permohonan</h3>
+                            <div class="barjas-card">
+                                <div class="barjas-card-header">
+                                    <i class="fas fa-file-alt me-2"></i> Entri Data Permohonan Baru
                                 </div>
-                                
-                                <!-- Input Data Tab -->
-                                <div class="tab-pane fade" id="v-pills-barjas-input">
-                                    <h3 class="barjas-section-title">Formulir Input Data Bantuan</h3>
-                                    <div class="barjas-card">
-                                        <div class="barjas-card-header">
-                                            <i class="fas fa-file-alt me-2"></i> Entri Data Baru
+                                <div class="card-body p-4">
+                                    <form id="barjas-input-form" novalidate>
+                                        <div class="alert alert-info small mb-4">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Semua kolom bertanda <span class="text-danger">*</span> wajib diisi. Setelah data disimpan, klik tombol "Buat Permohonan" untuk membuat dokumen PDF.
                                         </div>
-                                        <div class="card-body p-4">
-                                            <form id="barjas-input-form" novalidate>
-                                                <div class="alert alert-info small mb-4">
-                                                    <i class="fas fa-info-circle me-2"></i>
-                                                    Semua kolom bertanda <span class="text-danger">*</span> wajib diisi
-                                                </div>
-                                                
-                                                <!-- Data Penerima -->
-                                                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">DATA PENERIMA BANTUAN</h6>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nama" required>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">NIK (16 Digit) <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nik" maxlength="16" required>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Nomor WhatsApp</label>
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control barjas-form-control" id="barjas-whatsapp">
-                                                            <button type="button" class="btn btn-outline-secondary" id="barjas-btn-no-wa">
-                                                                Tidak Ada WhatsApp
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Kelompok Nelayan</label>
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control barjas-form-control" id="barjas-nama-kelompok" placeholder="Nama kelompok (jika ada)">
-                                                            <button type="button" class="btn btn-outline-secondary" id="barjas-btn-bukan-kelompok">
-                                                                Bukan Kelompok (Individu)
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="row mb-3">
-                                                    <div class="col-md-4">
-                                                        <label class="barjas-form-label">Jabatan dalam Kelompok</label>
-                                                        <select class="form-select barjas-form-select" id="barjas-jabatan">
-                                                            <option value="">Pilih Jabatan...</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="barjas-form-label">Tahun Anggaran <span class="text-danger">*</span></label>
-                                                        <select class="form-select barjas-form-select" id="barjas-tahun-anggaran" required>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="barjas-form-label">Tanggal Terima <span class="text-danger">*</span></label>
-                                                        <input type="date" class="form-control barjas-form-control" id="barjas-tanggal-terima" required>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Data Lokasi -->
-                                                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">DATA LOKASI</h6>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Kecamatan <span class="text-danger">*</span></label>
-                                                        <select class="form-select barjas-form-select" id="barjas-kecamatan" required>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Desa/Kelurahan <span class="text-danger">*</span></label>
-                                                        <select class="form-select barjas-form-select" id="barjas-desa" required disabled>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <label class="barjas-form-label">Alamat Lengkap</label>
-                                                        <textarea class="form-control barjas-form-control" id="barjas-alamat" rows="2"></textarea>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Data Bantuan -->
-                                                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">DATA BANTUAN</h6>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Jenis Bantuan <span class="text-danger">*</span></label>
-                                                        <select class="form-select barjas-form-select" id="barjas-jenis-bantuan" required>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Nama Bantuan <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nama-bantuan" required>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Jumlah <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control barjas-form-control" id="barjas-jumlah-bantuan" required>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Satuan <span class="text-danger">*</span></label>
-                                                        <select class="form-select barjas-form-select" id="barjas-satuan-bantuan" required>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Data Validasi -->
-                                                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">DATA VALIDASI</h6>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Nama Petugas <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control barjas-form-control" id="barjas-nama-petugas" required>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label class="barjas-form-label">Link Dokumen (Google Drive)</label>
-                                                        <input type="url" class="form-control barjas-form-control" id="barjas-drive-link">
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <label class="barjas-form-label">Kode Validasi <span class="text-danger">*</span></label>
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control barjas-form-control bg-light" id="barjas-kode-validasi" readonly required>
-                                                            <button type="button" class="btn btn-warning barjas-btn" id="barjas-generate-kode-btn">
-                                                                <i class="fas fa-key me-2"></i> Generate Kode
-                                                            </button>
-                                                        </div>
-                                                        <small class="text-muted">Generate kode validasi setelah mengisi NIK</small>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <label class="barjas-form-label">Keterangan Tambahan</label>
-                                                        <textarea class="form-control barjas-form-control" id="barjas-keterangan" rows="3"></textarea>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Action Buttons -->
-                                                <div class="d-flex justify-content-end border-top pt-3">
-                                                    <button type="reset" class="btn btn-light me-3">
-                                                        <i class="fas fa-redo me-2"></i> Reset Form
-                                                    </button>
-                                                    <button type="submit" class="btn btn-primary barjas-btn">
-                                                        <i class="fas fa-save me-2"></i> Simpan Data
+                                        
+                                        <!-- Data Pemohon -->
+                                        <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">DATA PEMOHON BANTUAN</h6>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control barjas-form-control" id="barjas-nama" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">NIK (16 Digit) <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control barjas-form-control" id="barjas-nik" maxlength="16" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Nomor WhatsApp</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control barjas-form-control" id="barjas-whatsapp">
+                                                    <button type="button" class="btn btn-outline-secondary" id="barjas-btn-no-wa">
+                                                        Tidak Ada WhatsApp
                                                     </button>
                                                 </div>
-                                            </form>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Kelompok Nelayan</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control barjas-form-control" id="barjas-nama-kelompok" placeholder="Nama kelompok (jika ada)">
+                                                    <button type="button" class="btn btn-outline-secondary" id="barjas-btn-bukan-kelompok">
+                                                        Bukan Kelompok (Individu)
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="barjas-form-label">Jabatan dalam Kelompok</label>
+                                                <select class="form-select barjas-form-select" id="barjas-jabatan">
+                                                    <option value="">Pilih Jabatan...</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="barjas-form-label">Tahun Anggaran <span class="text-danger">*</span></label>
+                                                <select class="form-select barjas-form-select" id="barjas-tahun-anggaran" required>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="barjas-form-label">Tanggal Permohonan <span class="text-danger">*</span></label>
+                                                <input type="date" class="form-control barjas-form-control" id="barjas-tanggal-terima" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Data Lokasi -->
+                                        <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">DATA LOKASI</h6>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Kecamatan <span class="text-danger">*</span></label>
+                                                <select class="form-select barjas-form-select" id="barjas-kecamatan" required>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Desa/Kelurahan <span class="text-danger">*</span></label>
+                                                <select class="form-select barjas-form-select" id="barjas-desa" required disabled>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <label class="barjas-form-label">Alamat Lengkap</label>
+                                                <textarea class="form-control barjas-form-control" id="barjas-alamat" rows="2"></textarea>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Data Permohonan Bantuan -->
+                                        <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">DATA PERMOHONAN BANTUAN</h6>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Jenis Bantuan <span class="text-danger">*</span></label>
+                                                <select class="form-select barjas-form-select" id="barjas-jenis-bantuan" required>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Nama Bantuan <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control barjas-form-control" id="barjas-nama-bantuan" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Jumlah <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control barjas-form-control" id="barjas-jumlah-bantuan" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Satuan <span class="text-danger">*</span></label>
+                                                <select class="form-select barjas-form-select" id="barjas-satuan-bantuan" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Data Validasi -->
+                                        <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">DATA VALIDASI</h6>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Nama Petugas <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control barjas-form-control" id="barjas-nama-petugas" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="barjas-form-label">Link Dokumen (Google Drive)</label>
+                                                <input type="url" class="form-control barjas-form-control" id="barjas-drive-link">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <label class="barjas-form-label">Kode Validasi <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control barjas-form-control bg-light" id="barjas-kode-validasi" readonly required>
+                                                    <button type="button" class="btn btn-warning barjas-btn" id="barjas-generate-kode-btn">
+                                                        <i class="fas fa-key me-2"></i> Generate Kode
+                                                    </button>
+                                                </div>
+                                                <small class="text-muted">Generate kode validasi setelah mengisi NIK</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <label class="barjas-form-label">Keterangan Tambahan</label>
+                                                <textarea class="form-control barjas-form-control" id="barjas-keterangan" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Action Buttons -->
+                                        <div class="d-flex justify-content-end border-top pt-3">
+                                            <button type="reset" class="btn btn-light me-3">
+                                                <i class="fas fa-redo me-2"></i> Reset Form
+                                            </button>
+                                            <button type="submit" class="btn btn-primary barjas-btn">
+                                                <i class="fas fa-save me-2"></i> Simpan Data
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-                                
-                                <!-- Data Tab -->
-                                <div class="tab-pane fade" id="v-pills-barjas-data">
-                                    <h3 class="barjas-section-title">Database Bantuan Nelayan</h3>
-                                    <div class="barjas-card">
-                                        <div class="barjas-card-header">
-                                            <div class="row align-items-center">
-                                                <div class="col-md-6">
-                                                    <h6 class="mb-0"><i class="fas fa-list me-2"></i>Data Terdaftar</h6>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control barjas-form-control" id="barjas-search-data" placeholder="Cari data...">
-                                                        <button class="btn btn-outline-secondary" type="button" id="barjas-clear-filter-btn">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <!-- Filter Row -->
-                                            <div class="row mb-3">
-                                                <div class="col-md-3">
-                                                    <label class="barjas-form-label small">Kecamatan</label>
-                                                    <select class="form-select form-select-sm barjas-form-select" id="barjas-filter-kecamatan">
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="barjas-form-label small">Desa</label>
-                                                    <select class="form-select form-select-sm barjas-form-select" id="barjas-filter-desa" disabled>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="barjas-form-label small">Jenis Bantuan</label>
-                                                    <select class="form-select form-select-sm barjas-form-select" id="barjas-filter-jenis">
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="barjas-form-label small">Tahun</label>
-                                                    <select class="form-select form-select-sm barjas-form-select" id="barjas-filter-tahun">
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Table -->
-                                            <div class="table-responsive">
-                                                <table class="table barjas-data-table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th width="50">No</th>
-                                                            <th>Nama & Identitas</th>
-                                                            <th>Lokasi & Kelompok</th>
-                                                            <th>Jenis Bantuan</th>
-                                                            <th>Detail Bantuan</th>
-                                                            <th>Tanggal</th>
-                                                            <th>Petugas</th>
-                                                            <th width="120" class="text-center">Aksi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="barjas-data-table-body">
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            
-                                            <!-- Pagination -->
-                                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                                <div class="text-muted small" id="barjas-table-info">
-                                                    Menampilkan 0 dari 0 data
-                                                </div>
-                                                <nav>
-                                                    <ul class="pagination pagination-sm mb-0" id="barjas-pagination">
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Export Tab -->
-                                <div class="tab-pane fade" id="v-pills-barjas-export">
-                                    <h3 class="barjas-section-title">Ekspor & Laporan</h3>
-                                    <div class="row g-4">
+                            </div>
+                        </div>
+                        
+                        <!-- Data Tab -->
+                        <div class="barjas-tab-content" id="barjas-data">
+                            <h3 class="barjas-section-title">Database Permohonan Bantuan</h3>
+                            <div class="barjas-card">
+                                <div class="barjas-card-header">
+                                    <div class="row align-items-center">
                                         <div class="col-md-6">
-                                            <div class="barjas-card text-center h-100 p-4">
-                                                <div class="mb-3">
-                                                    <i class="fas fa-file-excel fa-4x text-success"></i>
-                                                </div>
-                                                <h5>Ekspor ke Excel</h5>
-                                                <p class="text-muted small mb-4">
-                                                    Ekspor seluruh data bantuan nelayan ke format Excel untuk analisis lebih lanjut.
-                                                </p>
-                                                <button class="btn btn-success barjas-btn w-100" id="barjas-export-excel-btn">
-                                                    <i class="fas fa-download me-2"></i> Download Excel
-                                                </button>
-                                            </div>
+                                            <h6 class="mb-0"><i class="fas fa-list me-2"></i>Data Permohonan Terdaftar</h6>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="barjas-card text-center h-100 p-4">
-                                                <div class="mb-3">
-                                                    <i class="fas fa-file-pdf fa-4x text-danger"></i>
-                                                </div>
-                                                <h5>Cetak Laporan PDF</h5>
-                                                <p class="text-muted small mb-4">
-                                                    Cetak laporan ringkasan data bantuan nelayan dalam format PDF resmi.
-                                                </p>
-                                                <button class="btn btn-danger barjas-btn w-100" id="barjas-export-pdf-btn">
-                                                    <i class="fas fa-print me-2"></i> Cetak Laporan
+                                            <div class="input-group">
+                                                <input type="text" class="form-control barjas-form-control" id="barjas-search-data" placeholder="Cari data...">
+                                                <button class="btn btn-outline-secondary" type="button" id="barjas-clear-filter-btn">
+                                                    <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <!-- Settings Tab -->
-                                <div class="tab-pane fade" id="v-pills-barjas-settings">
-                                    <h3 class="barjas-section-title">Pengaturan Sistem</h3>
-                                    <div class="barjas-card">
-                                        <div class="barjas-card-header">
-                                            <i class="fas fa-cog me-2"></i> Konfigurasi Aplikasi
+                                <div class="card-body">
+                                    <!-- Filter Row -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label class="barjas-form-label small">Kecamatan</label>
+                                            <select class="form-select form-select-sm barjas-form-select" id="barjas-filter-kecamatan">
+                                            </select>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="row mb-4">
-                                                <div class="col-md-6">
-                                                    <label class="barjas-form-label">Tampilkan Data per Halaman</label>
-                                                    <select class="form-select barjas-form-select" id="barjas-items-per-page">
-                                                        <option value="10">10 Baris</option>
-                                                        <option value="25" selected>25 Baris</option>
-                                                        <option value="50">50 Baris</option>
-                                                        <option value="100">100 Baris</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="barjas-form-label">Mode Notifikasi</label>
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox" id="barjas-notifications-toggle" checked>
-                                                        <label class="form-check-label" for="barjas-notifications-toggle">
-                                                            Aktifkan Notifikasi
-                                                        </label>
-                                                    </div>
-                                                </div>
+                                        <div class="col-md-3">
+                                            <label class="barjas-form-label small">Desa</label>
+                                            <select class="form-select form-select-sm barjas-form-select" id="barjas-filter-desa" disabled>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="barjas-form-label small">Jenis Bantuan</label>
+                                            <select class="form-select form-select-sm barjas-form-select" id="barjas-filter-jenis">
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="barjas-form-label small">Tahun</label>
+                                            <select class="form-select form-select-sm barjas-form-select" id="barjas-filter-tahun">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Table -->
+                                    <div class="table-responsive">
+                                        <table class="table barjas-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th width="50">No</th>
+                                                    <th>Nama & Identitas</th>
+                                                    <th>Lokasi & Kelompok</th>
+                                                    <th>Jenis Bantuan</th>
+                                                    <th>Detail Permohonan</th>
+                                                    <th>Tanggal</th>
+                                                    <th>Petugas</th>
+                                                    <th width="120" class="text-center">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="barjas-data-table-body">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <!-- Pagination -->
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div class="text-muted small" id="barjas-table-info">
+                                            Menampilkan 0 dari 0 data
+                                        </div>
+                                        <nav>
+                                            <ul class="pagination pagination-sm mb-0" id="barjas-pagination">
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Export Tab -->
+                        <div class="barjas-tab-content" id="barjas-export">
+                            <h3 class="barjas-section-title">Ekspor & Laporan</h3>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="barjas-card text-center h-100 p-4">
+                                        <div class="mb-3">
+                                            <i class="fas fa-file-excel fa-4x text-success"></i>
+                                        </div>
+                                        <h5>Ekspor ke Excel</h5>
+                                        <p class="text-muted small mb-4">
+                                            Ekspor seluruh data permohonan bantuan nelayan ke format Excel untuk analisis lebih lanjut.
+                                        </p>
+                                        <button class="btn btn-success barjas-btn w-100" id="barjas-export-excel-btn">
+                                            <i class="fas fa-download me-2"></i> Download Excel
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="barjas-card text-center h-100 p-4">
+                                        <div class="mb-3">
+                                            <i class="fas fa-file-pdf fa-4x text-danger"></i>
+                                        </div>
+                                        <h5>Cetak Laporan PDF</h5>
+                                        <p class="text-muted small mb-4">
+                                            Cetak laporan ringkasan data permohonan bantuan nelayan dalam format PDF resmi.
+                                        </p>
+                                        <button class="btn btn-danger barjas-btn w-100" id="barjas-export-pdf-btn">
+                                            <i class="fas fa-print me-2"></i> Cetak Laporan
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Settings Tab -->
+                        <div class="barjas-tab-content" id="barjas-settings">
+                            <h3 class="barjas-section-title">Pengaturan Sistem</h3>
+                            <div class="barjas-card">
+                                <div class="barjas-card-header">
+                                    <i class="fas fa-cog me-2"></i> Konfigurasi Aplikasi
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label class="barjas-form-label">Tampilkan Data per Halaman</label>
+                                            <select class="form-select barjas-form-select" id="barjas-items-per-page">
+                                                <option value="10">10 Baris</option>
+                                                <option value="25" selected>25 Baris</option>
+                                                <option value="50">50 Baris</option>
+                                                <option value="100">100 Baris</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="barjas-form-label">Mode Notifikasi</label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="barjas-notifications-toggle" checked>
+                                                <label class="form-check-label" for="barjas-notifications-toggle">
+                                                    Aktifkan Notifikasi
+                                                </label>
                                             </div>
-                                            
-                                            <div class="row mb-4">
-                                                <div class="col-md-12">
-                                                    <label class="barjas-form-label">Mode Privasi (Sensor Data)</label>
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox" id="barjas-privacy-toggle">
-                                                        <label class="form-check-label" for="barjas-privacy-toggle">
-                                                            Aktifkan Sensor Data Pribadi
-                                                        </label>
-                                                    </div>
-                                                    <small class="text-muted">
-                                                        Mode ini akan menyensor 4 digit terakhir NIK dan nomor WhatsApp untuk keamanan data.
-                                                    </small>
-                                                </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-4">
+                                        <div class="col-md-12">
+                                            <label class="barjas-form-label">Mode Privasi (Sensor Data)</label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="barjas-privacy-toggle">
+                                                <label class="form-check-label" for="barjas-privacy-toggle">
+                                                    Aktifkan Sensor Data Pribadi
+                                                </label>
                                             </div>
-                                            
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <button class="btn btn-primary barjas-btn me-2" id="barjas-save-settings-btn">
-                                                        <i class="fas fa-save me-2"></i> Simpan Pengaturan
-                                                    </button>
-                                                    <button class="btn btn-outline-danger" id="barjas-reset-data-btn">
-                                                        <i class="fas fa-trash me-2"></i> Reset Semua Data
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            <small class="text-muted">
+                                                Mode ini akan menyensor 4 digit terakhir NIK dan nomor WhatsApp untuk keamanan data.
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary barjas-btn me-2" id="barjas-save-settings-btn">
+                                                <i class="fas fa-save me-2"></i> Simpan Pengaturan
+                                            </button>
+                                            <button class="btn btn-outline-danger" id="barjas-reset-data-btn">
+                                                <i class="fas fa-trash me-2"></i> Reset Semua Data
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -2106,13 +2336,29 @@
                 </div>
             `;
             
-            // Inisialisasi Bootstrap tabs untuk BARJAS
-            const triggerTabList = container.querySelectorAll('#barjas-nav-tabs button');
-            triggerTabList.forEach(triggerEl => {
-                const tabTrigger = new bootstrap.Tab(triggerEl);
-                triggerEl.addEventListener('click', event => {
-                    event.preventDefault();
-                    tabTrigger.show();
+            // Setup tab switching
+            this.setupTabSwitching();
+        },
+
+        setupTabSwitching() {
+            const menuLinks = document.querySelectorAll('.barjas-menu-link');
+            const tabContents = document.querySelectorAll('.barjas-tab-content');
+            
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const target = link.getAttribute('data-target');
+                    
+                    // Update active menu link
+                    menuLinks.forEach(menu => menu.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Show target tab content
+                    tabContents.forEach(tab => {
+                        tab.classList.remove('active');
+                        if (tab.id === target) {
+                            tab.classList.add('active');
+                        }
+                    });
                 });
             });
         },
@@ -2165,12 +2411,6 @@
                     BarjasTableView.renderTable();
                 });
             }
-            
-            // Logout button (kembali ke SIMATA)
-            const logoutBtn = document.getElementById('barjas-logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => this.goBackToSIMATA());
-            }
         },
 
         saveSettings() {
@@ -2192,16 +2432,6 @@
             }
         },
 
-        goBackToSIMATA() {
-            if (confirm('Kembali ke sistem SIMATA utama?')) {
-                // Switch ke tab dashboard SIMATA
-                const simataDashboardTab = document.getElementById('v-pills-dashboard-tab');
-                if (simataDashboardTab) {
-                    simataDashboardTab.click();
-                }
-            }
-        },
-
         showDetail(id) {
             const data = barjasState.data.find(item => item.id == id);
             if (!data) {
@@ -2215,7 +2445,7 @@
                         <div class="modal-content barjas-modal-content">
                             <div class="modal-header bg-primary text-white">
                                 <h5 class="modal-title">
-                                    <i class="fas fa-id-card me-2"></i>Detail Data Bantuan
+                                    <i class="fas fa-id-card me-2"></i>Detail Data Permohonan
                                 </h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
@@ -2261,7 +2491,7 @@
                                 
                                 <div class="row mb-3">
                                     <div class="col-md-12">
-                                        <div class="barjas-detail-modal-label">Detail Bantuan</div>
+                                        <div class="barjas-detail-modal-label">Detail Permohonan Bantuan</div>
                                         <div class="barjas-detail-modal-value bg-warning bg-opacity-10">
                                             <div class="fw-bold">${data.namaBantuan}</div>
                                             <div class="small">
@@ -2275,7 +2505,7 @@
                                 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <div class="barjas-detail-modal-label">Tanggal Terima</div>
+                                        <div class="barjas-detail-modal-label">Tanggal Permohonan</div>
                                         <div class="barjas-detail-modal-value">${BarjasUtils.formatDate(data.tanggalTerima)}</div>
                                     </div>
                                     <div class="col-md-6">
@@ -2375,10 +2605,19 @@
         getSettings: () => ({ ...barjasState.settings }),
         
         // Konfigurasi
-        config: BARJAS_CONFIG
+        config: BARJAS_CONFIG,
+        
+        // Fungsi permohonan
+        buatPermohonan: () => {
+            if (barjasState.lastSavedData) {
+                BarjasPermohonan.generatePermohonanPDF(barjasState.lastSavedData);
+            } else {
+                BarjasUtils.showNotification('Tidak ada data yang disimpan untuk dibuat permohonan', 'error');
+            }
+        }
     };
 
-    console.log('✅ Sistem BARJAS v3.0 loaded successfully');
+    console.log('✅ Sistem BARJAS v3.1 loaded successfully');
 })();
 
 // Auto-initialize jika ada container dengan id 'barjas-container'
