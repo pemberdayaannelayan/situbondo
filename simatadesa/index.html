@@ -193,6 +193,84 @@
             margin-top: 5px;
             display: none;
         }
+        
+        /* PERBAIKAN UNTUK VERIFIKASI KIN */
+        .verify-result-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 2px solid #28a745;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .verify-result-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 2px solid #dc3545;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .verify-result-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .verify-result-icon {
+            font-size: 50px;
+            margin-right: 15px;
+        }
+        
+        .verify-result-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .verify-result-details {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .verify-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .verify-detail-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 200px;
+        }
+        
+        .verify-detail-value {
+            font-weight: 500;
+            color: #0c2461;
+            text-align: right;
+            flex: 1;
+        }
+        
+        .verify-action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -945,7 +1023,7 @@
                                                     <i class="fas fa-check-circle me-2"></i> VERIFIKASI SEKARANG
                                                 </button>
                                                 
-                                                <div class="verify-loading" id="verifyLoading">
+                                                <div class="verify-loading" id="verifyLoading" style="display: none;">
                                                     <div class="verify-loading-spinner"></div>
                                                     <p class="fw-bold text-primary">Memproses verifikasi...</p>
                                                 </div>
@@ -959,7 +1037,7 @@
                                         <div class="verify-faq mt-5">
                                             <h5 class="verify-faq-title">Pertanyaan Umum (FAQ)</h5>
                                             <div class="verify-faq-item">
-                                                <div class="verify-faq-question" onclick="window.toggleFAQ && window.toggleFAQ(1)">
+                                                <div class="verify-faq-question" onclick="toggleFAQ(1)">
                                                     <span>Apa itu KIN (Kartu Identitas Nelayan)?</span>
                                                     <i class="fas fa-chevron-down"></i>
                                                 </div>
@@ -968,7 +1046,7 @@
                                                 </div>
                                             </div>
                                             <div class="verify-faq-item">
-                                                <div class="verify-faq-question" onclick="window.toggleFAQ && window.toggleFAQ(2)">
+                                                <div class="verify-faq-question" onclick="toggleFAQ(2)">
                                                     <span>Bagaimana cara mendapatkan KIN?</span>
                                                     <i class="fas fa-chevron-down"></i>
                                                 </div>
@@ -977,7 +1055,7 @@
                                                 </div>
                                             </div>
                                             <div class="verify-faq-item">
-                                                <div class="verify-faq-question" onclick="window.toggleFAQ && window.toggleFAQ(3)">
+                                                <div class="verify-faq-question" onclick="toggleFAQ(3)">
                                                     <span>Apa manfaat memiliki KIN?</span>
                                                     <i class="fas fa-chevron-down"></i>
                                                 </div>
@@ -1412,7 +1490,7 @@
         
         function speakCaptcha() {
             if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUttery(currentCaptcha.split('').join(' '));
+                const utterance = new SpeechSynthesisUtterance(currentCaptcha.split('').join(' '));
                 utterance.lang = 'id-ID';
                 utterance.rate = 0.8;
                 utterance.pitch = 1;
@@ -1441,6 +1519,201 @@
             if (lower.includes('cumi')) return 'fa-ghost'; 
             if (lower.includes('kepiting')) return 'fa-spider'; 
             return 'fa-fish';
+        }
+
+        // =====================================================
+        // FUNGSI VERIFIKASI KIN YANG DIPERBAIKI
+        // =====================================================
+        function verifyKIN() {
+            const input = document.getElementById('verifyInput').value.trim();
+            const loadingEl = document.getElementById('verifyLoading');
+            const resultContainer = document.getElementById('verifyResultContainer');
+            
+            if (!input) {
+                showNotification('Masukkan NIK atau Kode Validasi terlebih dahulu', 'warning');
+                return;
+            }
+            
+            // Tampilkan loading
+            loadingEl.style.display = 'block';
+            resultContainer.innerHTML = '';
+            
+            // Beri sedikit delay untuk efek UI
+            setTimeout(() => {
+                try {
+                    let foundData = null;
+                    
+                    // Cari berdasarkan NIK (16 digit angka)
+                    if (/^\d{16}$/.test(input)) {
+                        foundData = appData.find(item => item.nik === input);
+                    }
+                    // Cari berdasarkan kode validasi (format: VLD-XXXXXX)
+                    else if (input.toUpperCase().startsWith('VLD-')) {
+                        const kodeValidasi = input.toUpperCase();
+                        foundData = appData.find(item => item.kodeValidasi && item.kodeValidasi.toUpperCase() === kodeValidasi);
+                    }
+                    // Cari dengan pencarian fleksibel
+                    else {
+                        // Coba cari dengan input apa adanya
+                        foundData = appData.find(item => 
+                            item.nik === input || 
+                            (item.kodeValidasi && item.kodeValidasi.toUpperCase() === input.toUpperCase())
+                        );
+                    }
+                    
+                    loadingEl.style.display = 'none';
+                    
+                    if (foundData) {
+                        // Tampilkan hasil sukses
+                        displayVerificationResult(foundData, true);
+                        showNotification('Verifikasi berhasil! Data ditemukan.', 'success');
+                    } else {
+                        // Tampilkan hasil gagal
+                        displayVerificationResult(null, false, input);
+                        showNotification('Data tidak ditemukan. Periksa kembali NIK atau Kode Validasi.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error in verifyKIN:', error);
+                    loadingEl.style.display = 'none';
+                    resultContainer.innerHTML = `
+                        <div class="verify-result-error">
+                            <div class="verify-result-header">
+                                <i class="fas fa-exclamation-circle verify-result-icon text-danger"></i>
+                                <h4 class="verify-result-title text-danger">Gagal Verifikasi</h4>
+                            </div>
+                            <div class="verify-result-details">
+                                <p>Terjadi kesalahan sistem saat melakukan verifikasi:</p>
+                                <p class="text-muted small">${error.message}</p>
+                                <p>Silakan coba lagi atau hubungi administrator.</p>
+                            </div>
+                        </div>
+                    `;
+                    showNotification('Terjadi kesalahan saat verifikasi', 'error');
+                }
+            }, 1000);
+        }
+        
+        function displayVerificationResult(data, isSuccess, searchInput = '') {
+            const resultContainer = document.getElementById('verifyResultContainer');
+            
+            if (isSuccess && data) {
+                // Format data untuk tampilan
+                const statusBadgeClass = data.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary';
+                const profesiBadgeClass = data.profesi === 'Nelayan Penuh Waktu' ? 'badge-profesi-penuh' : 
+                                          data.profesi === 'Nelayan Sambilan Utama' ? 'badge-profesi-sambilan-utama' : 
+                                          data.profesi === 'Nelayan Sambilan Tambahan' ? 'badge-profesi-sambilan-tambahan' : 'bg-secondary';
+                
+                resultContainer.innerHTML = `
+                    <div class="verify-result-success">
+                        <div class="verify-result-header">
+                            <i class="fas fa-check-circle verify-result-icon text-success"></i>
+                            <h4 class="verify-result-title text-success">VERIFIKASI BERHASIL</h4>
+                        </div>
+                        <p class="text-center mb-4"><strong>Kartu Identitas Nelayan (KIN) SAH dan TERDAFTAR</strong></p>
+                        
+                        <div class="verify-result-details">
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Nama Lengkap:</div>
+                                <div class="verify-detail-value">${data.nama}</div>
+                            </div>
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">NIK:</div>
+                                <div class="verify-detail-value">${data.nik}</div>
+                            </div>
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Profesi:</div>
+                                <div class="verify-detail-value"><span class="badge ${profesiBadgeClass}">${data.profesi}</span></div>
+                            </div>
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Status:</div>
+                                <div class="verify-detail-value"><span class="badge ${statusBadgeClass}">${data.status}</span></div>
+                            </div>
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Domisili:</div>
+                                <div class="verify-detail-value">${data.desa}, ${data.kecamatan}</div>
+                            </div>
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Alat Tangkap (API):</div>
+                                <div class="verify-detail-value">${data.alatTangkap}</div>
+                            </div>
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Kode Validasi:</div>
+                                <div class="verify-detail-value font-monospace">${data.kodeValidasi || '-'}</div>
+                            </div>
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Tanggal Validasi:</div>
+                                <div class="verify-detail-value">${data.tanggalValidasi}</div>
+                            </div>
+                            ${data.status === 'Pemilik Kapal' ? `
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Nama Kapal:</div>
+                                <div class="verify-detail-value">${data.namaKapal || '-'}</div>
+                            </div>
+                            <div class="verify-detail-row">
+                                <div class="verify-detail-label">Jenis Kapal:</div>
+                                <div class="verify-detail-value">${data.jenisKapal || '-'}</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="verify-action-buttons">
+                            <button class="btn btn-primary" onclick="viewDetail('${data.id}')">
+                                <i class="fas fa-eye me-2"></i> Lihat Detail Lengkap
+                            </button>
+                            <button class="btn btn-success" onclick="safeGenerateIDCard('${data.id}')">
+                                <i class="fas fa-id-card me-2"></i> Cetak ID Card
+                            </button>
+                        </div>
+                        
+                        <div class="mt-4 text-center small text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Data ini telah divalidasi oleh: <strong>${data.validator}</strong>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultContainer.innerHTML = `
+                    <div class="verify-result-error">
+                        <div class="verify-result-header">
+                            <i class="fas fa-times-circle verify-result-icon text-danger"></i>
+                            <h4 class="verify-result-title text-danger">VERIFIKASI GAGAL</h4>
+                        </div>
+                        <div class="verify-result-details">
+                            <p><strong>Data tidak ditemukan dalam sistem SIMATA.</strong></p>
+                            <p class="mb-2">Pencarian untuk: <code>${searchInput}</code></p>
+                            <p class="small text-muted mb-0">Kemungkinan penyebab:</p>
+                            <ul class="small text-muted">
+                                <li>NIK atau Kode Validasi salah</li>
+                                <li>Data belum terdaftar dalam sistem</li>
+                                <li>Data telah dihapus atau diarsipkan</li>
+                                <li>Kesalahan penulisan input</li>
+                            </ul>
+                            <div class="mt-3">
+                                <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('verifyInput').value = ''; document.getElementById('verifyInput').focus();">
+                                    <i class="fas fa-redo me-1"></i> Coba Lagi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Scroll ke hasil verifikasi
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function toggleFAQ(index) {
+            const answer = document.getElementById(`faqAnswer${index}`);
+            const question = answer.previousElementSibling;
+            const icon = question.querySelector('i');
+            
+            if (answer.style.display === 'block') {
+                answer.style.display = 'none';
+                icon.className = 'fas fa-chevron-down';
+            } else {
+                answer.style.display = 'block';
+                icon.className = 'fas fa-chevron-up';
+            }
         }
 
         // --- FUNGSI RELOAD DATA YANG DIPERBAIKI ---
@@ -1960,22 +2233,16 @@
             });
             document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
 
-            // Verifikasi KIN
+            // Verifikasi KIN - Diperbaiki
             if (document.getElementById('verifyButton')) {
-                document.getElementById('verifyButton').addEventListener('click', function() {
-                    if (typeof window.verifyKIN === 'function') {
-                        window.verifyKIN();
-                    }
-                });
+                document.getElementById('verifyButton').addEventListener('click', verifyKIN);
             }
             
             if (document.getElementById('verifyInput')) {
                 document.getElementById('verifyInput').addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        if (typeof window.verifyKIN === 'function') {
-                            window.verifyKIN();
-                        }
+                        verifyKIN();
                     }
                 });
             }
@@ -3277,6 +3544,8 @@
         window.safeGenerateIDCard = safeGenerateIDCard;
         window.showNotification = showNotification;
         window.printData = printData;
+        window.verifyKIN = verifyKIN;
+        window.toggleFAQ = toggleFAQ;
         window.getCoordinatesForLocation = function(kecamatan, desa) {
             if (typeof window.getCoordinatesForLocation === 'function') {
                 return window.getCoordinatesForLocation(kecamatan, desa);
@@ -3287,6 +3556,7 @@
         console.log('✅ SIMATA Application v5.3 initialized successfully');
         console.log('✅ Security system changed from period-based to CAPTCHA');
         console.log('✅ CAPTCHA security system active');
+        console.log('✅ Verifikasi KIN system fixed and ready');
     </script>
 </body>
 </html>
