@@ -5,1296 +5,193 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>SIMATA - SISTEM PEMETAAN NELAYAN</title>
     
+    <!-- LOAD SEMUA CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Leaflet CSS untuk peta -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="style.css">
     
+    <!-- LOAD SEMUA JAVASCRIPT LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     
-    <!-- Load reload.js jika ada di server -->
+    <!-- LOAD FILE JAVASCRIPT YANG DIPISAHKAN -->
+    <script src="koordinatpeta.js"></script>
+    <script src="idcard.js"></script>
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
-
+    <script src="convert.js"></script>
+    
     <style>
-        :root {
-            /* Palette: DEEP OCEAN PROFESSIONAL THEME */
-            --primary-color: #0c2461; 
-            --primary-gradient: linear-gradient(135deg, #0c2461 0%, #1e3799 100%); 
-            --secondary-color: #4a69bd; 
-            --accent-color: #f6b93b; 
-            --orange-signature: #e67e22; 
-            
-            --sidebar-active: #eaf0f9; 
-            --bg-body: #f1f2f6;
-            --shadow-soft: 0 10px 30px rgba(12, 36, 97, 0.15);
-            
-            --success-color: #2ecc71;
-            --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-
-            /* LOGIN PALETTE */
-            --login-bg: linear-gradient(135deg, #d1f2eb 0%, #ffeaa7 50%, #74b9ff 100%);
-            --simata-text: #0c2461;
+        /* Styling untuk tombol Reload Data */
+        #btn-reload-repo {
+            background-color: #f8f9fa;
+            color: #0c2461;
+            border-left: 3px solid #0c2461;
+            transition: all 0.3s ease;
         }
         
-        body {
-            background-color: var(--bg-body);
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            color: #2d3436;
-            overflow-x: hidden;
+        #btn-reload-repo:hover {
+            background: linear-gradient(90deg, #0c2461, #1e3799) !important;
+            color: white !important;
+        }
+        
+        .reload-spinner {
+            display: none;
+            margin-left: 5px;
+        }
+        
+        .reload-spinner.active {
+            display: inline-block;
+        }
+        
+        /* PERBAIKAN TAMBAHAN UNTUK PDF */
+        .pdf-table-container {
+            display: none;
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+        
+        /* Style untuk halaman PDF */
+        .pdf-header-img {
+            display: block;
+            margin: 0 auto;
+            max-width: 80px;
+        }
+        
+        /* CAPTCHA Styles */
+        .captcha-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .captcha-display {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            border: 2px dashed #0c2461;
+            color: #0c2461;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .captcha-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .captcha-line {
+            position: absolute;
+            background: rgba(0,0,0,0.1);
+        }
+        
+        .captcha-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .captcha-refresh-btn {
+            background: #0c2461;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
             font-size: 14px;
         }
         
-        /* Custom Badge Colors */
-        .badge-profesi-penuh { background-color: #0c2461 !important; color: white; }
-        .badge-profesi-sambilan-utama { background-color: #e58e26 !important; color: white; }
-        .badge-profesi-sambilan-tambahan { background-color: #27ae60 !important; color: white; }
-        
-        /* Tooltip untuk informasi API dan Kapal */
-        .info-tooltip {
-            cursor: help;
-            border-bottom: 1px dotted #0984e3;
-            color: #0984e3;
-        }
-        .api-info-box {
-            background: #f8f9fa;
-            border-left: 4px solid #0984e3;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-        .kapal-info-box {
-            background: #eaf0f9;
-            border-left: 4px solid #4a69bd;
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
-        /* Profesi Info Box */
-        .profesi-info-box {
-            background: #f0f7ff;
-            border: 1px solid #cce5ff;
-            border-radius: 8px;
-            padding: 12px;
-            margin: 8px 0;
-            font-size: 0.85rem;
-        }
-        .profesi-info-title {
-            font-weight: 600;
-            color: #0c2461;
-            margin-bottom: 4px;
-        }
-        .profesi-info-desc {
-            color: #555;
-            line-height: 1.4;
-        }
-
-        /* --- LOGIN REDESIGN - DIPERBAIKI --- */
-        .login-overlay {
-            background: var(--login-bg);
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            z-index: 2000;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            overflow-y: auto;
-            padding: 20px;
-            box-sizing: border-box;
+        .captcha-refresh-btn:hover {
+            background: #1e3799;
+            transform: rotate(15deg);
         }
         
-        .circles { 
-            position: fixed;
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            margin: 0; 
-            padding: 0; 
-            z-index: 0; 
-        }
-        
-        .circles li { 
-            position: absolute; 
-            display: block; 
-            list-style: none; 
-            width: 20px; 
-            height: 20px; 
-            background: rgba(255, 255, 255, 0.4); 
-            animation: animate 25s linear infinite; 
-            bottom: -150px; 
-            border-radius: 50%; 
-        }
-        
-        .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
-        .circles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
-        .circles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
-        .circles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
-        .circles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
-        .circles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
-        .circles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
-        .circles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
-        .circles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
-        .circles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
-        
-        @keyframes animate { 
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; } 
-            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; } 
-        }
-        
-        .login-card {
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(10px);
-            width: 90%; 
-            max-width: 480px; 
-            border-radius: 30px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.15); 
-            overflow: hidden; 
-            z-index: 10; 
-            position: relative;
-            animation: slideUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
-            border: 1px solid rgba(255,255,255,0.8);
-            margin: 20px auto;
-            min-height: auto;
-        }
-        
-        .login-header-new { 
-            background: transparent; 
-            padding: 30px 20px 10px 20px;
-            text-align: center; 
-            color: var(--simata-text); 
-        }
-        
-        .simata-logo-container { 
-            margin-bottom: 15px;
-            position: relative; 
-            display: inline-block; 
-        }
-        
-        .simata-icon-box { 
-            width: 140px;
-            height: 140px;
-            background: transparent; 
-            border-radius: 0; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: #0984e3; 
-            box-shadow: none;
-            border: none;
-            overflow: hidden;
-        }
-        
-        .simata-icon-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
-        .simata-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 2.8rem;
-            letter-spacing: 1.5px;
-            background: -webkit-linear-gradient(#0c2461, #0984e3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0;
-            line-height: 1;
-        }
-        
-        .simata-subtitle { 
-            font-family: 'Montserrat', sans-serif; 
-            font-weight: 600; 
-            letter-spacing: 0.8px;
-            font-size: 0.85rem;
-            color: #636e72; 
-            margin-top: 5px; 
-        }
-        
-        .simata-slogan { 
-            font-family: 'Dancing Script', cursive; 
-            font-size: 1.8rem;
-            color: #e67e22; 
-            margin-top: 8px;
-            text-shadow: 1px 1px 0px rgba(255,255,255,1); 
-            font-weight: 700; 
-        }
-
-        /* --- HEADER DESIGN --- */
-        .app-header { 
-            background: linear-gradient(120deg, #0a3d62, #3c6382), url('https://images.unsplash.com/photo-1503756234508-e32369269deb?q=80&w=2000&auto=format&fit=crop');
-            background-blend-mode: multiply;
-            background-size: cover;
-            background-position: center;
-            color: white; 
-            padding: 15px 20px 30px 20px;
-            text-align: center; 
-            position: relative; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
-            border-bottom: 5px solid var(--accent-color);
-            overflow: hidden; 
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        /* LOGO HEADER - UKURAN FULL & BESAR */
-        .app-logo-icon { 
-            background: transparent; 
-            width: 180px;
-            height: 180px;
-            border-radius: 0;
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            margin-bottom: 15px; 
-            box-shadow: none;
-            border: none; 
-            transition: transform 0.3s;
-            overflow: hidden;
-            position: relative;
-            z-index: 10;
-        }
-        .app-logo-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            max-width: 100%;
-            max-height: 100%;
-        }
-        .app-logo-icon:hover { transform: scale(1.05); }
-        
-        .app-title { 
-            font-family: 'Montserrat', sans-serif; 
-            font-size: 1.8rem; 
-            font-weight: 800; 
-            margin: 0; 
-            letter-spacing: 1px; 
-            color: #fff; 
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-            text-transform: uppercase; 
-        }
-        .app-subtitle { 
-            font-size: 1.1rem; 
-            color: #fff; 
-            margin-top: 5px; 
-            font-weight: 600; 
-            letter-spacing: 1.5px; 
-            text-transform: uppercase;
-            background-color: rgba(12, 36, 97, 0.7);
-            padding: 5px 15px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        .app-slogan { 
-            font-family: 'Dancing Script', cursive; 
-            font-size: 2rem; 
-            color: var(--orange-signature); 
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.5); 
-            margin-top: 10px; 
-            font-weight: 700; 
-            transform: rotate(-2deg); 
-            display: inline-block; 
-        }
-        .app-origin {
-            font-size: 0.85rem;
-            color: #dfe6e9;
-            margin-top: 8px;
-            letter-spacing: 0.5px;
-            font-weight: 500;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            padding-top: 8px;
-            width: 80%;
-        }
-        
-        .app-container { max-width: 1600px; margin: 20px auto; background: white; box-shadow: var(--shadow-soft); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; min-height: 90vh; }
-
-        /* Sidebar */
-        .nav-pills { padding: 10px; }
-        .nav-pills .nav-link { border-radius: 8px; margin: 4px 0; padding: 12px 16px; font-weight: 600; color: #636e72; transition: all 0.2s ease; font-size: 0.9rem; display: flex; align-items: center; width: 100%; text-align: left; }
-        .nav-pills .nav-link i { width: 24px; text-align: center; margin-right: 12px !important; font-size: 1.1em; }
-        .nav-pills .nav-link:hover { background-color: #dfe6e9; color: var(--primary-color); transform: translateX(3px); }
-        .nav-pills .nav-link.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(12, 36, 97, 0.2); }
-        .nav-pills .nav-link.active i { color: white; }
-
-        /* Chart */
-        .chart-container-fixed { position: relative; height: 300px; width: 100%; }
-        .section-title { font-family: 'Montserrat', sans-serif; margin: 10px 0 20px 0; font-weight: 700; color: #0c2461; font-size: 1.3rem; display: flex; align-items: center; }
-        .section-title::before { content: ''; display: inline-block; width: 6px; height: 24px; background: var(--accent-color); margin-right: 10px; border-radius: 10px; }
-
-        /* TABLE DESIGN - REPAIRED */
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid #f1f2f6; margin-bottom: 20px; }
-        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .data-table thead th { background: #dfe6e9 !important; color: #2d3436; font-weight: 800; border-bottom: 3px solid var(--primary-color); padding: 12px 10px; vertical-align: middle; white-space: nowrap; font-size: 0.85rem; }
-        .data-table tbody td { padding: 12px 10px; vertical-align: top; border-bottom: 1px solid #f1f2f6; font-size: 0.85rem; }
-        .data-table tbody tr:hover td { background-color: #eaf0f9; cursor: pointer; }
-        
-        /* Fixed Column Widths & Spacing */
-        .col-id-cell { min-width: 250px; max-width: 300px; white-space: normal; word-wrap: break-word; } 
-        .col-contact-cell { min-width: 160px; white-space: nowrap; }
-        .col-status-cell { min-width: 140px; white-space: nowrap; }
-        .col-action { width: 130px; min-width: 130px; text-align: center; background: #fff; z-index: 5; }
-        
-        /* Sticky Right Column with better shadow and border */
-        .sticky-col-right { position: sticky; right: 0; box-shadow: -4px 0 10px rgba(0,0,0,0.05); background-color: #fff; border-left: 1px solid #f1f2f6; }
-        .text-truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; line-height: 1.4; }
-
-        /* Modal & FAB */
-        .modal-header-custom { background: var(--primary-gradient); color: white; border-bottom: none; }
-        .detail-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #b2bec3; margin-bottom: 2px; }
-        .detail-value { font-size: 1rem; font-weight: 600; color: #2d3436; margin-bottom: 10px; border-bottom: 1px solid #dfe6e9; padding-bottom: 5px; }
-
-        .fab-container { position: fixed; bottom: 30px; right: 30px; z-index: 999; display: flex; flex-direction: column-reverse; gap: 10px; align-items: center; }
-        .fab-main { width: 60px; height: 60px; border-radius: 50%; background: var(--accent-color); color: #0c2461; border: none; box-shadow: 0 10px 25px rgba(246, 185, 59, 0.4); font-size: 1.4rem; cursor: pointer; transition: transform 0.3s; }
-        .fab-main:hover { transform: scale(1.1) rotate(90deg); background: #e58e26; color: white; }
-        .fab-item { width: 45px; height: 45px; border-radius: 50%; background: white; color: var(--primary-color); border: 2px solid var(--primary-color); display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); opacity: 0; transform: translateY(20px); transition: all 0.3s; pointer-events: none; font-size: 1rem;}
-        .fab-container.open .fab-item { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        .fab-item:hover { background: var(--primary-color); color: white; }
-
-        /* Warning & Footer */
-        .sticky-warning { position: fixed; top: 20px; right: 20px; z-index: 1080; background: white; border-left: 5px solid var(--danger-color); box-shadow: 0 10px 40px rgba(0,0,0,0.15); padding: 15px; border-radius: 8px; width: 90%; max-width: 320px; display: none; animation: slideInLeft 0.5s; }
-        
-        .main-footer { background: #0c2461; border-top: 4px solid var(--accent-color); padding: 20px 0 10px 0; margin-top: auto; text-align: center; color: white; position: relative; }
-        .footer-brand { font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; color: #fff; font-size: 1rem; }
-        .footer-text { font-size: 0.8rem; color: #dfe6e9; margin-bottom: 10px; }
-        .footer-links a { color: var(--accent-color); text-decoration: none; font-weight: 500; transition: color 0.3s; font-size: 0.8rem; }
-        .footer-links a:hover { color: #fff; text-decoration: underline; }
-        .footer-divider { margin: 0 5px; color: rgba(255,255,255,0.3); }
-
-        /* Welcome Notification Modal - IMPROVED */
-        .welcome-modal-content { border: none; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        .welcome-header { background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%); color: white; padding: 20px; text-align: center; border-bottom: 5px solid var(--accent-color); }
-        .welcome-body { padding: 30px 20px; text-align: center; background: #fff; }
-        .welcome-btn-reload { background: var(--success-color); color: white; font-weight: bold; padding: 10px 20px; border-radius: 50px; border: none; box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3); transition: all 0.3s; width: 100%; max-width: 250px; }
-        .welcome-btn-reload:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(46, 204, 113, 0.4); background: #27ae60; color: white; }
-
-        /* NEW: Login Success Modal - PERBAIKAN UKURAN */
-        .login-success-modal .modal-dialog {
-            max-width: 500px;
-            width: 90%;
-            margin: 1.75rem auto;
-        }
-        
-        .login-success-modal .modal-content {
-            border: none;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 30px 60px rgba(12, 36, 97, 0.3);
-            border: 2px solid rgba(246, 185, 59, 0.5);
-            max-height: 95vh;
-            overflow-y: auto;
-        }
-        
-        .login-success-modal .modal-header {
-            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+        .captcha-audio-btn {
+            background: #27ae60;
             color: white;
-            padding: 25px;
-            text-align: center;
-            border-bottom: 5px solid var(--accent-color);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
         }
         
-        .login-success-modal .modal-body {
-            padding: 30px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            max-height: 60vh;
-            overflow-y: auto;
+        .captcha-audio-btn:hover {
+            background: #2ecc71;
         }
         
-        .login-success-icon {
-            font-size: 3.5rem;
-            background: linear-gradient(135deg, #0c2461, #0984e3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            animation: pulse 2s infinite;
+        .captcha-input-group {
+            margin-top: 15px;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .welcome-message {
-            font-size: 1rem;
-            color: #2d3436;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-        
-        .welcome-highlight {
-            color: #0c2461;
-            font-weight: 600;
-            background: linear-gradient(135deg, #eaf0f9 0%, #ffffff 100%);
-            padding: 8px 12px;
-            border-radius: 8px;
-            display: block;
-            margin: 8px 0;
-            border-left: 4px solid var(--accent-color);
-            font-size: 0.95rem;
-        }
-
-        /* Hidden Div for QR Code Generation */
-        #qr-code-generator { position: absolute; top: -9999px; left: -9999px; }
-
-        @keyframes slideInLeft { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .animate-fadeIn { animation: slideUp 0.6s ease-out; }
-
-        /* STYLE UNTUK PETA */
-        #map-container {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border: 1px solid #e0e6f0;
-            margin-top: 20px;
-            position: relative;
-        }
-        
-        #map {
-            height: 500px;
-            width: 100%;
-            border-radius: 12px;
-            z-index: 1;
-        }
-        
-        .map-controls {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-            background: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-width: 200px;
-        }
-        
-        .map-legend {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
+        .captcha-input-group .form-control {
             border-radius: 8px;
             padding: 12px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-            font-size: 0.8rem;
-            max-width: 220px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        
-        .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            margin-right: 8px;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .map-statistics {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .stat-box {
-            flex: 1;
-            min-width: 120px;
+            font-size: 16px;
+            letter-spacing: 2px;
             text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            background: #f8f9fa;
-            border-left: 4px solid var(--primary-color);
+            font-weight: bold;
         }
         
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0c2461;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            color: #6c757d;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        
-        .leaflet-popup-content {
-            min-width: 200px;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .leaflet-popup-content h4 {
-            color: #0c2461;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            border-bottom: 2px solid #f6b93b;
-            padding-bottom: 5px;
-        }
-        
-        .popup-detail {
-            margin: 5px 0;
-            font-size: 0.85rem;
-        }
-        
-        .popup-label {
-            font-weight: 600;
-            color: #4a69bd;
-        }
-        
-        .popup-value {
-            color: #2d3436;
-        }
-        
-        /* Custom marker icons */
-        .marker-penuh {
-            background-color: #0c2461;
-            border-color: #0c2461;
-        }
-        
-        .marker-sambilan-utama {
-            background-color: #e58e26;
-            border-color: #e58e26;
-        }
-        
-        .marker-sambilan-tambahan {
-            background-color: #27ae60;
-            border-color: #27ae60;
-        }
-        
-        .marker-pemilik {
-            background-color: #0984e3;
-            border-color: #0984e3;
-        }
-        
-        .marker-abk {
-            background-color: #a55eea;
-            border-color: #a55eea;
-        }
-        
-        /* PERBAIKAN RESPONSIVE MOBILE - SEMUA MENJADI CENTER & SMALL */
-        @media (max-width: 991.98px) {
-            /* Container utama */
-            body {
-                font-size: 13px;
-                zoom: 1;
-                -webkit-text-size-adjust: 100%;
-            }
-            
-            .app-container { 
-                margin: 0; 
-                border-radius: 0; 
-                border: none; 
-                min-height: 100vh; 
-                width: 100%;
-                max-width: 100%;
-            }
-            
-            /* Header app */
-            .app-header {
-                padding: 15px 10px 20px 10px;
-                min-height: 150px;
-            }
-            
-            .app-logo-icon {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .app-title {
-                font-size: 1.4rem;
-                text-align: center;
-            }
-            
-            .app-subtitle {
-                font-size: 0.9rem;
-                padding: 4px 10px;
-                text-align: center;
-            }
-            
-            .app-slogan {
-                font-size: 1.5rem;
-                text-align: center;
-            }
-            
-            .app-origin {
-                font-size: 0.75rem;
-                text-align: center;
-            }
-            
-            /* Sidebar mobile */
-            .col-md-3.col-lg-2 { 
-                position: fixed; 
-                top: 0; 
-                left: -280px; 
-                width: 260px; 
-                height: 100vh; 
-                z-index: 1050; 
-                background: white; 
-                transition: left 0.3s ease; 
-                box-shadow: 5px 0 15px rgba(0,0,0,0.1); 
-                display: block; 
-                overflow-y: auto; 
-            }
-            
-            .mobile-show { left: 0 !important; }
-            
-            .mobile-menu-btn { 
-                display: block; 
-                position: fixed; 
-                top: 15px; 
-                left: 15px; 
-                z-index: 1060; 
-                background: var(--accent-color); 
-                color: #0c2461; 
-                padding: 8px 12px; 
-                border-radius: 6px; 
-                border: none; 
-                box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
-                font-size: 0.8rem;
-            }
-            
-            .sidebar-overlay { 
-                display: none; 
-                position: fixed; 
-                top: 0; 
-                left: 0; 
-                width: 100%; 
-                height: 100%; 
-                background: rgba(0,0,0,0.5); 
-                z-index: 1040; 
-            }
-            
-            .sidebar-overlay.active { display: block; }
-            
-            /* Menu pills */
-            .nav-pills .nav-link {
-                padding: 10px 12px;
-                font-size: 0.85rem;
-                justify-content: center;
-                text-align: center;
-            }
-            
-            .nav-pills .nav-link i {
-                margin-right: 8px !important;
-            }
-            
-            /* Konten utama */
-            .col-md-9.col-lg-10 {
-                width: 100%;
-                padding: 0;
-            }
-            
-            .p-3.p-lg-5 {
-                padding: 15px !important;
-            }
-            
-            /* Dashboard cards */
-            .dashboard-row .col-6 {
-                width: 50%;
-                padding: 5px;
-                margin-bottom: 10px;
-            }
-            
-            .card {
-                margin-bottom: 10px;
-            }
-            
-            .card-body {
-                padding: 12px;
-            }
-            
-            /* Section title */
-            .section-title {
-                font-size: 1.1rem;
-                justify-content: center;
-                text-align: center;
-            }
-            
-            /* Table responsive */
-            .table-responsive {
-                font-size: 0.8rem;
-            }
-            
-            .data-table thead th {
-                padding: 8px 5px;
-                font-size: 0.8rem;
-            }
-            
-            .data-table tbody td {
-                padding: 8px 5px;
-                font-size: 0.8rem;
-            }
-            
-            .col-id-cell, .col-contact-cell, .col-status-cell {
-                min-width: 120px;
-            }
-            
-            /* Form input */
-            .form-control, .form-select {
-                font-size: 0.9rem;
-                padding: 8px 12px;
-            }
-            
-            .btn {
-                padding: 8px 16px;
-                font-size: 0.9rem;
-            }
-            
-            /* Peta */
-            #map {
-                height: 350px;
-            }
-            
-            .map-controls {
-                top: 10px;
-                right: 10px;
-                padding: 8px;
-                max-width: 150px;
-            }
-            
-            .map-legend {
-                bottom: 10px;
-                right: 10px;
-                padding: 8px;
-                max-width: 160px;
-                font-size: 0.7rem;
-            }
-            
-            .map-statistics {
-                padding: 10px;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .stat-box {
-                width: 100%;
-                margin-bottom: 8px;
-            }
-            
-            /* Modal */
-            .modal-dialog {
-                margin: 10px;
-            }
-            
-            .modal-content {
-                border-radius: 15px;
-            }
-            
-            /* Login card */
-            .login-card {
-                width: 95%;
-                max-width: 95%;
-                margin: 10px auto;
-                padding: 0;
-            }
-            
-            .simata-icon-box {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .simata-title {
-                font-size: 2rem;
-            }
-            
-            .simata-slogan {
-                font-size: 1.4rem;
-            }
-            
-            /* Form login input */
-            .input-group-lg {
-                font-size: 0.9rem;
-            }
-            
-            .input-group-lg .form-control {
-                font-size: 0.9rem;
-                padding: 10px 15px;
-            }
-            
-            /* FAB Menu */
-            .fab-container {
-                bottom: 20px;
-                right: 20px;
-            }
-            
-            .fab-main {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-            
-            .fab-item {
-                width: 40px;
-                height: 40px;
-                font-size: 0.9rem;
-            }
-            
-            /* Footer */
-            .main-footer {
-                padding: 15px 0 5px 0;
-            }
-            
-            .footer-brand {
-                font-size: 0.9rem;
-            }
-            
-            .footer-text {
-                font-size: 0.75rem;
-            }
-            
-            /* Tab pada peta */
-            .map-tabs {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .map-tab {
-                padding: 8px 15px;
-                font-size: 0.85rem;
-                text-align: center;
-                width: 100%;
-            }
-            
-            /* Sticky warning */
-            .sticky-warning {
-                top: 15px;
-                right: 15px;
-                padding: 12px;
-                max-width: 280px;
-            }
-            
-            /* Checkbox dan radio button */
-            .form-check-input {
-                width: 1.1em;
-                height: 1.1em;
-            }
-            
-            .form-check-label {
-                font-size: 0.9rem;
-            }
-            
-            /* Badges */
-            .badge {
-                font-size: 0.75rem;
-                padding: 4px 8px;
-            }
-            
-            /* Button groups */
-            .btn-group .btn-sm {
-                padding: 4px 8px;
-                font-size: 0.8rem;
-            }
-            
-            /* Pagination */
-            .pagination {
-                font-size: 0.8rem;
-            }
-            
-            .page-link {
-                padding: 5px 10px;
-            }
-            
-            /* Toast notification */
-            .toast-container {
-                bottom: 10px;
-                right: 10px;
-                padding: 10px;
-            }
-            
-            /* Login success modal */
-            .login-success-modal .modal-dialog {
-                margin: 5px;
-                width: calc(100% - 10px);
-            }
-            
-            .login-success-modal .modal-body {
-                padding: 15px;
-                max-height: 70vh;
-            }
-            
-            /* Input form fish checkbox */
-            .fish-option-box {
-                margin: 3px 5px 3px 0;
-                padding: 4px 8px;
-                font-size: 0.85rem;
-            }
-            
-            /* Form row margin */
-            .row.mb-3 {
-                margin-bottom: 15px !important;
-            }
-            
-            /* Center text in mobile */
-            .text-center-mobile {
-                text-align: center !important;
-            }
-            
-            /* Center align all buttons in mobile */
-            .btn {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            /* Center table cells */
-            .table td, .table th {
-                text-align: center;
-            }
-            
-            /* Center form elements */
-            .form-label {
-                text-align: center;
-                display: block;
-                width: 100%;
-            }
-            
-            /* Center cards content */
-            .card-body {
-                text-align: center;
-            }
-            
-            /* Center modal content */
-            .modal-body {
-                text-align: center;
-            }
-            
-            /* Center tabs */
-            .nav-tabs {
-                justify-content: center;
-            }
-            
-            /* Center dashboard stats */
-            .dashboard-row .col-6 {
-                display: flex;
-                justify-content: center;
-            }
-            
-            /* Center chart containers */
-            .chart-container-fixed {
-                margin: 0 auto;
-            }
-        }
-        
-        /* Mobile kecil (lebar kurang dari 576px) */
-        @media (max-width: 575.98px) {
-            .app-title {
-                font-size: 1.2rem;
-            }
-            
-            .app-subtitle {
-                font-size: 0.8rem;
-            }
-            
-            .app-slogan {
-                font-size: 1.2rem;
-            }
-            
-            .dashboard-row .col-6 {
-                width: 100%;
-            }
-            
-            .map-tabs {
-                width: 100%;
-            }
-            
-            .map-tab {
-                font-size: 0.75rem;
-                padding: 6px 10px;
-            }
-            
-            .btn {
-                width: 100%;
-                margin-bottom: 5px;
-            }
-            
-            .btn-group {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .input-group {
-                width: 100%;
-            }
-            
-            .table-responsive {
-                font-size: 0.75rem;
-            }
-        }
-        
-        @media (min-width: 992px) { 
-            .mobile-menu-btn, .sidebar-overlay { display: none; } 
-            
-            /* Responsive untuk modal login success di desktop */
-            .login-success-modal .modal-dialog {
-                max-width: 500px;
-            }
-            
-            /* Login responsif untuk desktop tinggi kecil */
-            .login-card {
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-        }
-
-        /* Password Toggle Style */
-        .password-toggle-btn {
-            background: transparent;
+        .captcha-input-group .input-group-text {
+            background: #0c2461;
+            color: white;
             border: none;
-            color: #636e72;
-            cursor: pointer;
-            padding: 0 10px;
-        }
-        .password-toggle-btn:hover {
-            color: var(--primary-color);
         }
         
-        /* Fish checkbox styling */
-        .fish-option-box {
-            display: inline-block;
-            margin: 5px 10px 5px 0;
-            padding: 5px 10px;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .fish-option-box:hover {
-            background: #e9ecef;
-            border-color: #adb5bd;
-        }
-        .fish-option-box input[type="checkbox"] {
-            margin-right: 5px;
+        .captcha-hint {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
         }
         
-        /* Tab untuk peta */
-        .map-tabs {
-            display: flex;
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 15px;
-        }
-        
-        .map-tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #6c757d;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-        
-        .map-tab.active {
-            color: #0c2461;
-            border-bottom: 3px solid #0c2461;
-        }
-        
-        .map-tab:hover {
-            color: #0c2461;
-        }
-        
-        .map-tab-content {
+        .captcha-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
             display: none;
         }
         
-        .map-tab-content.active {
-            display: block;
-        }
-        
-        /* Fix untuk form login pada desktop */
-        @media (max-height: 700px) {
-            .login-card {
-                margin-top: 20px;
-                margin-bottom: 20px;
-            }
-            
-            .login-header-new {
-                padding: 20px 20px 5px 20px;
-            }
-            
-            .simata-icon-box {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .simata-title {
-                font-size: 2.2rem;
-            }
-            
-            .simata-slogan {
-                font-size: 1.5rem;
-            }
-        }
-        
-        /* Scrollbar styling untuk login card */
-        .login-card::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .login-card::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        .login-card::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 10px;
-        }
-        
-        .login-card::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-        
-        /* PERBAIKAN TAMBAHAN UNTUK CENTER SEMUA ELEMEN DI MOBILE */
-        @media (max-width: 991.98px) {
-            /* Center semua teks */
-            h1, h2, h3, h4, h5, h6, p, span, div, label {
-                text-align: center !important;
-            }
-            
-            /* Center semua form controls */
-            .form-control, .form-select, .input-group {
-                margin-left: auto;
-                margin-right: auto;
-                text-align: center;
-            }
-            
-            /* Center semua buttons */
-            .btn, .btn-group {
-                display: flex;
-                justify-content: center;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            
-            /* Center cards */
-            .card {
-                margin-left: auto;
-                margin-right: auto;
-            }
-            
-            /* Center table */
-            .table {
-                margin-left: auto;
-                margin-right: auto;
-            }
-            
-            /* Center modal */
-            .modal-dialog {
-                margin: 10px auto;
-            }
-            
-            /* Center nav pills */
-            .nav-pills {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            /* Center dashboard cards */
-            .dashboard-row {
-                display: flex;
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            
-            /* Center charts */
-            canvas {
-                margin: 0 auto;
-                display: block;
-            }
-            
-            /* Center footer */
-            .main-footer .container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            /* Center login form */
-            #loginForm {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            /* Center input form */
-            #inputForm .row {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            /* Center filter form */
-            #v-pills-filter .card-body .row {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-        
-        /* PERBAIKAN TAMBAHAN: Style untuk periode tanggal validasi yang terkunci */
-        .tanggal-validasi-container {
-            position: relative;
-        }
-        
-        .tanggal-validasi-container .form-control:read-only {
-            background-color: #f8f9fa;
-            cursor: not-allowed;
-            border-color: #ced4da;
-            color: #6c757d;
-        }
-        
-        .tanggal-validasi-container .period-info {
-            font-size: 0.75rem;
-            color: #6c757d;
-            margin-top: 3px;
-            display: block;
-        }
-        
-        .tanggal-validasi-container .lock-icon {
-            position: absolute;
-            right: 12px;
-            top: 38px;
-            color: #6c757d;
-            pointer-events: none;
+        .captcha-success {
+            color: #28a745;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
         }
     </style>
 </head>
@@ -1303,6 +200,9 @@
     <div id="qr-code-generator">
         <div id="qr-right"></div> 
     </div>
+    
+    <!-- Container untuk tabel PDF (hidden) -->
+    <div class="pdf-table-container" id="pdfTableContainer"></div>
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -1324,16 +224,52 @@
             <div class="p-4 p-md-5 pt-2">
                 <form id="loginForm">
                     <div class="mb-4 text-center">
-                        <p class="small text-muted mb-3">Masukkan kode keamanan untuk mengakses sistem.</p>
-                        <p class="small text-primary fw-bold mb-2" id="currentDateDisplay"></p>
-                        <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
-                            <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-key text-success"></i></span>
-                            <input type="password" class="form-control bg-light border-0 fs-6" id="securityCode" placeholder="Masukkan kode keamanan" required>
-                            <button type="button" class="input-group-text bg-light border-0 password-toggle-btn" id="passwordToggle">
-                                <i class="fas fa-eye" id="passwordToggleIcon"></i>
-                            </button>
+                        <p class="small text-muted mb-3">Verifikasi CAPTCHA untuk mengakses sistem.</p>
+                        
+                        <!-- CAPTCHA Container -->
+                        <div class="captcha-container">
+                            <div class="captcha-display" id="captchaDisplay">
+                                <!-- CAPTCHA akan di-generate oleh JavaScript -->
+                            </div>
+                            
+                            <div class="captcha-controls">
+                                <button type="button" class="captcha-refresh-btn" id="refreshCaptcha">
+                                    <i class="fas fa-redo-alt me-1"></i> Refresh CAPTCHA
+                                </button>
+                                <button type="button" class="captcha-audio-btn" id="audioCaptcha">
+                                    <i class="fas fa-volume-up me-1"></i> Audio CAPTCHA
+                                </button>
+                            </div>
+                            
+                            <div class="captcha-input-group">
+                                <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
+                                    <span class="input-group-text bg-light border-0 ps-4">
+                                        <i class="fas fa-shield-alt text-success"></i>
+                                    </span>
+                                    <input type="text" class="form-control bg-light border-0 fs-6" 
+                                           id="captchaInput" 
+                                           placeholder="Masukkan kode CAPTCHA di atas" 
+                                           required 
+                                           maxlength="6"
+                                           autocomplete="off">
+                                    <button type="button" class="input-group-text bg-light border-0" id="showCaptchaHint">
+                                        <i class="fas fa-question-circle"></i>
+                                    </button>
+                                </div>
+                                <div class="captcha-hint">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Masukkan 6 karakter yang terlihat di atas (huruf besar)
+                                </div>
+                                <div class="captcha-error" id="captchaError">
+                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                    Kode CAPTCHA salah! Silakan coba lagi.
+                                </div>
+                                <div class="captcha-success" id="captchaSuccess">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    CAPTCHA benar! Memproses login...
+                                </div>
+                            </div>
                         </div>
-                        <small class="text-muted mt-2 d-block" id="passwordHint">Kode Keamanan Berubah Setiap Hari</small>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton" style="background: var(--primary-gradient);">
                         BUKA DASHBOARD
@@ -1347,16 +283,18 @@
         </div>
     </div>
     
-    <!-- Modal Notifikasi Login Berhasil - TELAH DIPERBAIKI UKURANNYA -->
+    <!-- Modal Notifikasi Login Berhasil -->
     <div class="modal fade login-success-modal" id="loginSuccessModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <i class="fas fa-check-circle fa-3x mb-3 text-warning"></i>
-                    <h4 class="fw-bold mb-0">Akses Diotorisasi</h4>
+                    <div class="w-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="fas fa-check-circle fa-3x mb-3 text-warning"></i>
+                        <h4 class="fw-bold mb-0 text-center">Akses Diotorisasi</h4>
+                    </div>
                 </div>
                 <div class="modal-body">
-                    <div class="login-success-icon">
+                    <div class="login-success-icon d-flex justify-content-center">
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <h5 class="fw-bold text-center mb-4" style="color: #0c2461;">SELAMAT DATANG DI SIMATA</h5>
@@ -1377,7 +315,7 @@
                         </div>
                     </div>
                     
-                    <p class="text-muted small mt-4">
+                    <p class="text-muted small mt-4 text-center">
                         <i class="fas fa-info-circle me-2"></i>
                         Sistem ini menggunakan teknologi keamanan dinamis untuk melindungi data sensitif
                     </p>
@@ -1433,14 +371,14 @@
         <div class="app-container animate-fadeIn">
             <div class="app-header">
                 <div class="app-logo-icon">
-                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" alt="Logo Kabupaten Situbondo" style="width: 100%; height: 100%; object-fit: contain;">
+                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logoku2.png" alt="Logo SIMATA" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <h1 class="app-title">SISTEM PEMETAAN DATA NELAYAN</h1>
-                <p class="app-subtitle" id="dynamicSubtitle">PEMERINTAH DESA</p>
+                <p class="app-subtitle" id="dynamicSubtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</p>
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.1 (Encrypted)</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.3 (Fitur Verifikasi KIN)</span>
                 </div>
             </div>
             
@@ -1452,11 +390,16 @@
                         <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button"><i class="fas fa-edit"></i> Input Data</button>
                         <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button"><i class="fas fa-database"></i> Data Nelayan</button>
                         <button class="nav-link" id="v-pills-filter-tab" data-bs-toggle="pill" data-bs-target="#v-pills-filter" type="button"><i class="fas fa-filter"></i> Filter & Validasi</button>
+                        <button class="nav-link" id="v-pills-verify-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verify" type="button"><i class="fas fa-check-circle"></i> Verifikasi KIN</button>
                         <button class="nav-link" id="v-pills-print-tab" data-bs-toggle="pill" data-bs-target="#v-pills-print" type="button"><i class="fas fa-print"></i> Cetak Laporan</button>
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button"><i class="fas fa-file-export"></i> Ekspor Data</button>
                         <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button"><i class="fas fa-cloud-download-alt"></i> Backup & Restore</button>
                         <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button"><i class="fas fa-cog"></i> Pengaturan</button>
-                        <button class="nav-link" id="btn-reload-repo" type="button"><i class="fas fa-sync"></i> Reload Data</button>
+                        <!-- Tombol Reload Data dengan spinner -->
+                        <button class="nav-link" id="btn-reload-repo" type="button">
+                            <i class="fas fa-sync"></i> Reload Data
+                            <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>
+                        </button>
                         <div class="mt-4 pt-3 border-top px-3">
                              <button class="nav-link text-danger w-100 justify-content-start bg-light" id="v-pills-logout-tab" type="button"><i class="fas fa-sign-out-alt"></i> Keluar</button>
                         </div>
@@ -1503,17 +446,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-lg-3">
-                                        <div class="card border-0 shadow-sm h-100">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <span class="text-muted small fw-bold text-uppercase">Avg Usia</span>
-                                                    <i class="fas fa-user-clock text-secondary opacity-25 fa-2x"></i>
-                                                </div>
-                                                <h2 class="fw-bold text-dark mb-0" id="rataUsia">0</h2>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                     <!-- TAMBAHAN FITUR RINGKASAN EKSEKUTIF -->
                                     <div class="col-6 col-lg-3">
                                         <div class="card border-0 shadow-sm h-100">
@@ -1564,7 +497,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- FITUR PETA BARU -->
+                                <!-- FITUR PETA BARU DENGAN TOMBOL CLOSE -->
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <div class="card shadow-sm border-0">
@@ -1573,9 +506,9 @@
                                                     <i class="fas fa-map-marked-alt me-2 text-primary"></i> Peta Sebaran Nelayan Kabupaten Situbondo
                                                 </div>
                                                 <div class="map-tabs">
-                                                    <div class="map-tab active" onclick="switchMapView('all')">Semua Data</div>
-                                                    <div class="map-tab" onclick="switchMapView('profesi')">Berdasarkan Profesi</div>
-                                                    <div class="map-tab" onclick="switchMapView('kecamatan')">Berdasarkan Kecamatan</div>
+                                                    <div class="map-tab active" onclick="window.switchMapView && window.switchMapView('all')">Semua Data</div>
+                                                    <div class="map-tab" onclick="window.switchMapView && window.switchMapView('profesi')">Berdasarkan Profesi</div>
+                                                    <div class="map-tab" onclick="window.switchMapView && window.switchMapView('kecamatan')">Berdasarkan Kecamatan</div>
                                                 </div>
                                             </div>
                                             <div class="card-body p-0">
@@ -1599,20 +532,33 @@
                                                 </div>
                                                 <div id="map-container">
                                                     <div id="map"></div>
+                                                    <!-- Map Controls dengan tombol close -->
                                                     <div class="map-controls">
-                                                        <button class="btn btn-sm btn-primary w-100 mb-2" onclick="resetMapView()">
+                                                        <div class="map-controls-header">
+                                                            <div class="map-controls-title">Kontrol Peta</div>
+                                                            <button class="map-controls-close" title="Tutup" onclick="this.parentElement.parentElement.style.display='none'">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-primary w-100 mb-2" onclick="window.resetMapView && window.resetMapView()">
                                                             <i class="fas fa-sync-alt me-1"></i> Reset Peta
                                                         </button>
-                                                        <button class="btn btn-sm btn-info w-100 mb-2" onclick="zoomToAllMarkers()">
+                                                        <button class="btn btn-sm btn-info w-100 mb-2" onclick="window.zoomToAllMarkers && window.zoomToAllMarkers()">
                                                             <i class="fas fa-search-location me-1"></i> Zoom Semua
                                                         </button>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="showCluster" checked onchange="toggleCluster()">
+                                                            <input class="form-check-input" type="checkbox" id="showCluster" checked onchange="window.toggleCluster && window.toggleCluster()">
                                                             <label class="form-check-label small" for="showCluster">Grup Marker</label>
                                                         </div>
                                                     </div>
+                                                    <!-- Map Legend dengan tombol close -->
                                                     <div class="map-legend">
-                                                        <h6 class="fw-bold mb-2">Legenda</h6>
+                                                        <div class="map-legend-header">
+                                                            <div class="map-legend-title">Legenda</div>
+                                                            <button class="map-legend-close" title="Tutup" onclick="this.parentElement.parentElement.style.display='none'">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
                                                         <div class="legend-item">
                                                             <div class="legend-color" style="background-color: #0c2461;"></div>
                                                             <span>Nelayan Penuh Waktu</span>
@@ -1655,7 +601,7 @@
                                                     <input type="text" class="form-control" id="nama" required placeholder="Sesuai KTP">
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="nik" class="form-label">NIK (Nomor Induk Kependudukan) <span class="text-danger">*</span></label>
+                                                    <label for="nik" class="form-label">NIK (Nomori Induk Kependudukan) <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="nik" required maxlength="16" placeholder="16 Digit Angka">
                                                 </div>
                                             </div>
@@ -1715,7 +661,7 @@
                                                 </div>
                                             </div>
 
-                                            <!-- ALAT PENANGKAPAN IKAN (API) - Dipindah ke menu utama -->
+                                            <!-- ALAT PENANGKAPAN IKAN (API) -->
                                             <div class="row mb-3">
                                                 <div class="col-md-12">
                                                     <label class="form-label fw-bold">Alat Penangkapan Ikan (API) <span class="text-danger">*</span></label>
@@ -1776,17 +722,17 @@
                                                 </div>
                                             </div>
                                             
-                                            <!-- PERBAIKAN: Periode tanggal validasi yang terkunci -->
+                                            <!-- PERIODE TANGGAL VALIDASI OTOMATIS DAN TERKUNCI -->
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
-                                                    <div class="tanggal-validasi-container">
-                                                        <label for="tanggalValidasi" class="form-label">Tanggal Validasi <span class="text-danger">*</span></label>
-                                                        <div class="position-relative">
-                                                            <input type="date" class="form-control" id="tanggalValidasi" required readonly>
-                                                            <i class="fas fa-lock lock-icon"></i>
-                                                        </div>
-                                                        <small class="period-info">Periode validasi terkunci pada tanggal saat ini</small>
+                                                    <label for="tanggalValidasi" class="form-label">Tanggal Validasi <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input type="date" class="form-control" id="tanggalValidasi" required readonly style="background-color: #f8f9fa;">
+                                                        <span class="input-group-text bg-light">
+                                                            <i class="fas fa-calendar-check text-primary" title="Tanggal validasi terkunci secara otomatis"></i>
+                                                        </span>
                                                     </div>
+                                                    <small class="text-muted mt-1">Tanggal validasi terkunci otomatis sesuai periode saat ini</small>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label for="validator" class="form-label">Petugas Validator <span class="text-danger">*</span></label>
@@ -1896,7 +842,7 @@
                                                     <option value="">Semua</option>
                                                     <option value="Anak Buah Kapal">Anak Buah Kapal</option>
                                                     <option value="Pemilik Kapal">Pemilik Kapal</option>
-                                                </select>
+                                                    </select>
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label small fw-bold">Jenis Kapal</label>
@@ -1960,6 +906,88 @@
                                          </div>
                                      </div>
                                  </div>
+                            </div>
+
+                            <!-- TAB VERIFIKASI KIN -->
+                            <div class="tab-pane fade" id="v-pills-verify">
+                                <h3 class="section-title">Verifikasi Kartu Identitas Nelayan (KIN)</h3>
+                                
+                                <div class="card verify-card mb-4">
+                                    <div class="verify-header">
+                                        <i class="fas fa-id-card fa-3x mb-3 text-warning"></i>
+                                        <h4 class="fw-bold mb-2">VERIFIKASI KARTU IDENTITAS NELAYAN</h4>
+                                        <p class="mb-0 opacity-75">Sistem Validasi Resmi Dinas Perikanan Kabupaten Situbondo</p>
+                                    </div>
+                                    <div class="verify-body">
+                                        <div class="verify-breadcrumb">
+                                            <div class="verify-breadcrumb-item active">
+                                                <i class="fas fa-search me-1"></i> Cari Data
+                                            </div>
+                                            <div class="verify-breadcrumb-item">
+                                                <i class="fas fa-check-circle me-1"></i> Hasil Verifikasi
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-8">
+                                                <div class="mb-4 text-center">
+                                                    <p class="text-muted">Masukkan <strong>NIK (16 digit)</strong> atau <strong>Kode Validasi</strong> untuk memverifikasi keabsahan Kartu Identitas Nelayan (KIN)</p>
+                                                </div>
+                                                
+                                                <div class="verify-input-group mb-4">
+                                                    <input type="text" class="form-control" id="verifyInput" placeholder="Masukkan NIK atau Kode Validasi (contoh: VLD-XXXXXX)" required>
+                                                    <div class="verify-input-icon">
+                                                        <i class="fas fa-search"></i>
+                                                    </div>
+                                                </div>
+                                                
+                                                <button type="button" class="verify-btn mb-4" id="verifyButton">
+                                                    <i class="fas fa-check-circle me-2"></i> VERIFIKASI SEKARANG
+                                                </button>
+                                                
+                                                <div class="verify-loading" id="verifyLoading">
+                                                    <div class="verify-loading-spinner"></div>
+                                                    <p class="fw-bold text-primary">Memproses verifikasi...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="verify-result-container" id="verifyResultContainer">
+                                            <!-- Hasil verifikasi akan ditampilkan di sini -->
+                                        </div>
+                                        
+                                        <div class="verify-faq mt-5">
+                                            <h5 class="verify-faq-title">Pertanyaan Umum (FAQ)</h5>
+                                            <div class="verify-faq-item">
+                                                <div class="verify-faq-question" onclick="window.toggleFAQ && window.toggleFAQ(1)">
+                                                    <span>Apa itu KIN (Kartu Identitas Nelayan)?</span>
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </div>
+                                                <div class="verify-faq-answer" id="faqAnswer1">
+                                                    KIN adalah kartu identitas resmi yang diterbitkan oleh Dinas Perikanan Kabupaten Situbondo sebagai bukti sah pendaftaran nelayan dalam Sistem Satu Data Nelayan (SIMATA).
+                                                </div>
+                                            </div>
+                                            <div class="verify-faq-item">
+                                                <div class="verify-faq-question" onclick="window.toggleFAQ && window.toggleFAQ(2)">
+                                                    <span>Bagaimana cara mendapatkan KIN?</span>
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </div>
+                                                <div class="verify-faq-answer" id="faqAnswer2">
+                                                    KIN diterbitkan secara otomatis setelah data nelayan terdaftar dan tervalidasi dalam sistem SIMATA. Nelayan dapat mencetak KIN melalui menu ID Card di sistem.
+                                                </div>
+                                            </div>
+                                            <div class="verify-faq-item">
+                                                <div class="verify-faq-question" onclick="window.toggleFAQ && window.toggleFAQ(3)">
+                                                    <span>Apa manfaat memiliki KIN?</span>
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </div>
+                                                <div class="verify-faq-answer" id="faqAnswer3">
+                                                    KIN memberikan manfaat sebagai identitas resmi nelayan, memudahkan akses program bantuan pemerintah, sertifikasi, dan pelayanan perikanan lainnya.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="tab-pane fade" id="v-pills-print">
@@ -2033,7 +1061,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Nama Instansi (Dapat Disesuaikan)</label>
-                                                <input type="text" class="form-control" id="appSubtitle" placeholder="Masukkan nama instansi/desa">
+                                                <input type="text" class="form-control" id="appSubtitle" value="PEMDES KABUPATEN SITUBONDO" placeholder="Masukkan nama instansi/desa">
                                                 <small class="text-muted">Nama instansi akan muncul di header aplikasi</small>
                                             </div>
                                         </div>
@@ -2078,7 +1106,7 @@
                                     </form>
                                 </div>
                                 
-                                <div class="card p-4 border-0 shadow-sm border-start border-4 border-danger">
+                                <div class="card p-4 border-0 shadow-sm border-left border-4 border-danger">
                                     <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-user-shield me-2"></i>Privasi & Keamanan Data</h6>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
@@ -2133,8 +1161,8 @@
                                         <h6 class="text-primary fw-bold mb-3">IDENTITAS PRIBADI</h6>
                                         <div class="detail-label">Nama Lengkap</div>
                                         <div class="detail-value" id="d_nama">-</div>
-                                        <div class="detail-label">NIK (Nomor Induk Kependudukan)</div>
-                                        <div class="detail-value font-monospace" id="d_nik">-</div>
+                                        <div class="detail-label">NIK (Nomori Induk Kependudukan)</div>
+                                        <div class="detail-value font-monospace" id="d_nik">  </div>
                                         <div class="detail-label">Usia / Tahun Lahir</div>
                                         <div class="detail-value" id="d_usia">-</div>
                                         <div class="detail-label">Kontak (WhatsApp/Telp)</div>
@@ -2158,23 +1186,23 @@
                         </div>
 
                         <div class="card border-0 shadow-sm mb-3" id="d_kapal_card" style="display:none;">
-                            <div class="card-body bg-white border-start border-4 border-info">
+                            <div class="card-body bg-white border-left border-4 border-info">
                                 <h6 class="text-info fw-bold mb-3"><i class="fas fa-ship me-2"></i>DATA KAPAL DIMILIKI</h6>
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="detail-label">Nama Kapal</div>
-                                        <div class="fw-bold" id="d_namaKapal">-</div>
+                                        <div class="fw-bold" id="d_namaKapal">.</div>
                                     </div>
                                     <div class="col-6">
                                         <div class="detail-label">Jenis Kapal</div>
-                                        <div class="fw-bold"><span id="d_jenisKapal">-</span></div>
+                                        <div class="fw-bold"><span id="d_jenisKapal"> -</span></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="card border-0 shadow-sm mb-3">
-                            <div class="card-body bg-white border-start border-4 border-success">
+                            <div class="card-body bg-white border-left border-4 border-success">
                                 <h6 class="text-success fw-bold mb-3"><i class="fas fa-fish me-2"></i>JENIS IKAN TANGKAPAN</h6>
                                 <div id="d_ikan"></div>
                             </div>
@@ -2213,141 +1241,24 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Leaflet JS untuk peta -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-    
+    <!-- Loading untuk ID Card -->
+    <div class="idcard-loading" id="idcardLoading">
+        <div class="idcard-loading-content">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h6>Membuat ID Card...</h6>
+            <p class="small text-muted">Harap tunggu sebentar</p>
+        </div>
+    </div>
+
+    <!-- KODE UTAMA APLIKASI (DIPISAHKAN TETAPI LENGKAP) -->
     <script>
-        // --- DATA CONSTANTS - TELAH DIPERBAIKI SESUAI DATA YANG DIBERIKAN ---
-        const SITUBONDO_DATA = {
-            "Arjasa": [
-                "Arjasa", "Bayeman", "Curah Tatal", "Jatisari", "Kayumas", "Kedungdowo", "Ketowan", "Lamongan"
-            ],
-            "Asembagus": [
-                "Asembagus", "Awar-awar", "Bantal", "Gudang", "Kedunglo", "Kertosari", "Mojosari", "Parante", "Trigonco", "Wringin Anom"
-            ],
-            "Banyuglugur": [
-                "Banyuglugur", "Kalianget", "Kalisari", "Lubawang", "Selobanteng", "Telempong", "Tepos"
-            ],
-            "Banyuputih": [
-                "Banyuputih", "Sumberanyar", "Sumberejo", "Sumberwaru", "Wonorejo"
-            ],
-            "Besuki": [
-                "Besuki", "Blimbing", "Bloro", "Demung", "Jetis", "Kalimas", "Langkap", "Pesisir", "Sumberejo", "Widoropayung"
-            ],
-            "Bungatan": [
-                "Bletok", "Bungatan", "Mlandingan Wetan", "Pasir Putih", "Patemon", "Selowogo", "Sumbertengah"
-            ],
-            "Jangkar": [
-                "Agel", "Curah Kalak", "Gadingan", "Jangkar", "Kumbangsari", "Palangan", "Pesanggrahan", "Sopet"
-            ],
-            "Jatibanteng": [
-                "Curahsuri", "Jatibanteng", "Kembangsari", "Pategalan", "Patemon", "Semambung", "Sumberanyar", "Wringinanom"
-            ],
-            "Kapongan": [
-                "Curah Cottok Gebangan", "Kandang", "Kapongan", "Kesambi Rampak", "Landangan", "Peleyan", "Pokaan", "Seletreng", "Wonokoyo"
-            ],
-            "Kendit": [
-                "Balung", "Bugeman", "Kendit", "Klatakan", "Kukusan", "Rajekwesi", "Tambak Ukir"
-            ],
-            "Mangaran": [
-                "Mangaran", "Semiring", "Tanjung Glugur", "Tanjung Kamal", "Tanjung Pecinan", "Trebungan"
-            ],
-            "Mlandingan": [
-                "Alas Bayur", "Campoan", "Mlandingan Kulon", "Selomukti", "Sumberanyar", "Sumber Pinang", "Trebungan"
-            ],
-            "Panarukan": [
-                "Alasmalang", "Duwet", "Gelung", "Kilensari", "Paowan", "Peleyan", "Sumberkolak", "Wringinanom"
-            ],
-            "Panji": [
-                "Ardirejo", "Mimbaan", // Kelurahan
-                "Battal", "Curah Jeru", "Juglangan", "Kayu Putih", "Klampokan", "Panji Kidul", "Panji Lor", "Sliwung", "Tenggir", "Tokelan"
-            ],
-            "Situbondo": [
-                "Dawuhan", "Patokan", // Kelurahan
-                "Kalibagor", "Kotakan", "Olean", "Talkandang"
-            ],
-            "Suboh": [
-                "Buduan", "Cemara", "Dawuan", "Gunung Malang", "Gunung Putri", "Ketah", "Mojodungkol", "Suboh"
-            ],
-            "Sumbermalang": [
-                "Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"
-            ]
-        };
-
-        // DATA KOORDINAT DESA/KELURAHAN
-        const COORDINATES_DATA = {
-            // Kecamatan Panarukan
-            "Panarukan, Alasmalang": [-7.6970, 113.7687],
-            "Panarukan, Duwet": [-7.6977, 113.7882],
-            "Panarukan, Gelung": [-7.7134, 113.8028],
-            "Panarukan, Kilensari": [-7.6843, 113.7656],
-            "Panarukan, Paowan": [-7.7298, 113.7800],
-            "Panarukan, Peleyan": [-7.6950, 113.8071],
-            "Panarukan, Sumberkolak": [-7.7118, 113.7618],
-            "Panarukan, Wringinanom": [-7.7061, 113.8256],
-            
-            // Kecamatan Panji
-            "Panji, Battal": [-7.7099, 113.6780],
-            "Panji, Curah Jeru": [-7.6941, 113.6958],
-            "Panji, Juglangan": [-7.6946, 113.6653],
-            "Panji, Kayu Putih": [-7.7025, 113.6737],
-            "Panji, Klampokan": [-7.7272, 113.6482],
-            "Panji, Panji Kidul": [-7.7126, 113.7038],
-            "Panji, Panji Lor": [-7.7019, 113.7059],
-            "Panji, Sliwung": [-7.7188, 113.6806],
-            "Panji, Tenggir": [-7.7163, 113.6579],
-            "Panji, Tokelan": [-7.7320, 113.6703],
-            "Panji, Ardirejo": [-7.7155, 113.6944],
-            "Panji, Mimbaan": [-7.7091, 113.6952],
-            
-            // Kecamatan Situbondo
-            "Situbondo, Kalibagor": [-7.7082, 114.0061],
-            "Situbondo, Kotakan": [-7.6814, 114.0225],
-            "Situbondo, Olean": [-7.6819, 114.0367],
-            "Situbondo, Talkandang": [-7.6681, 114.0475],
-            "Situbondo, Dawuhan": [-7.6926, 113.9937],
-            "Situbondo, Patokan": [-7.6729, 113.9771],
-            
-            // Kecamatan Suboh
-            "Suboh, Buduan": [-7.8523, 113.7659],
-            "Suboh, Cemara": [-7.8267, 113.7425],
-            "Suboh, Dawuan": [-7.8398, 113.7719],
-            "Suboh, Gunung Malang": [-7.8708, 113.7489],
-            "Suboh, Gunung Putri": [-7.8647, 113.7325],
-            "Suboh, Ketah": [-7.8614, 113.7894],
-            "Suboh, Mojodungkol": [-7.8360, 113.7829],
-            "Suboh, Suboh": [-7.8475, 113.7580],
-            
-            // Kecamatan Sumbermalang
-            "Sumbermalang, Alastengah": [-7.8771, 113.8437],
-            "Sumbermalang, Baderan": [-7.8318, 113.8214],
-            "Sumbermalang, Kalirejo": [-7.8203, 113.8525],
-            "Sumbermalang, Plalangan": [-7.8630, 113.8629],
-            "Sumbermalang, Sumberargo": [-7.8405, 113.8077],
-            "Sumbermalang, Taman": [-7.8482, 113.8374],
-            "Sumbermalang, Tamankursi": [-7.8641, 113.8256],
-            "Sumbermalang, Tamansari": [-7.8618, 113.8125],
-            "Sumbermalang, Tlogosari": [-7.8816, 113.8243]
-        };
-
-        // Koordinat default untuk wilayah yang tidak ada dalam data
-        const DEFAULT_COORDINATES = {
-            "Arjasa": [-7.7825, 113.7900],
-            "Asembagus": [-7.7533, 114.2500],
-            "Banyuglugur": [-7.8000, 113.8667],
-            "Banyuputih": [-7.7167, 114.0833],
-            "Besuki": [-7.7333, 113.7000],
-            "Bungatan": [-7.6500, 113.8833],
-            "Jangkar": [-7.7667, 114.1667],
-            "Jatibanteng": [-7.8000, 113.9333],
-            "Kapongan": [-7.6833, 114.0667],
-            "Kendit": [-7.7167, 113.9167],
-            "Mangaran": [-7.6667, 114.0500],
-            "Mlandingan": [-7.6667, 113.8667]
-        };
-
+        // =====================================================
+        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL LENGKAP
+        // =====================================================
+        
+        // Data yang tetap di index.html
         const FISH_TYPES = [
             "Lainnya", 
             "Ikan Tongkol", "Ikan Kembung", "Ikan Selar", "Ikan Tenggiri", "Ikan Layang", 
@@ -2355,7 +1266,6 @@
             "Ikan Layur", "Ikan Mangla", "Ikan Kurisi", "Ikan Cakalang", "Ikan Kerapu", "Ikan Lemuru"
         ];
 
-        // Informasi untuk API dan Jenis Kapal
         const API_INFO = {
             "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis seperti tuna dan cakalang.",
             "Pukat Tarik": "Jaring yang ditarik oleh kapal untuk menangkap ikan di permukaan atau pertengahan air. Cocok untuk ikan pelagis kecil seperti teri dan lemuru.",
@@ -2377,21 +1287,20 @@
             "Lainnya": "Jenis kapal lain yang tidak termasuk dalam kategori di atas."
         };
 
-        // Informasi Profesi Nelayan
         const PROFESI_INFO = {
-            "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain. Menghabiskan sebagian besar waktu untuk aktivitas penangkapan ikan.",
-            "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan. Biasanya memiliki pekerjaan lain tetapi tetap aktif menangkap ikan secara rutin.",
-            "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan. Aktivitas penangkapan ikan tidak rutin dan lebih bersifat insidental."
+            "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain.",
+            "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan.",
+            "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan."
         };
 
         // --- GLOBAL VARIABLES ---
         let appData = [];
         let appSettings = {
             appName: 'SISTEM PEMETAAN DATA NELAYAN',
-            appSubtitle: 'PEMERINTAH DESA',
+            appSubtitle: 'DINAS PERIKANAN KABUPATEN SITUBONDO',
             itemsPerPage: 10,
             privacyMode: true,
-            securityCodeSensor: '987654321' // Kode keamanan sensor default
+            securityCodeSensor: '88888888'
         };
         let currentPage = 1;
         let duplicateCheckInterval = null;
@@ -2400,30 +1309,26 @@
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
         const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
         
-        // Variabel untuk peta
-        let map = null;
-        let markers = L.markerClusterGroup({
-            showCoverageOnHover: false,
-            maxClusterRadius: 50,
-            spiderfyOnMaxZoom: true,
-            disableClusteringAtZoom: 15
-        });
-        let currentMarkers = [];
-        let mapView = 'all';
+        // CAPTCHA Variables
+        let currentCaptcha = '';
+        let captchaAttempts = 0;
+        const maxCaptchaAttempts = 5;
         
-        // Mapping untuk tampilan profesi (untuk kompatibilitas data lama)
         const PROFESI_MAPPING = {
             "Penuh Waktu": "Nelayan Penuh Waktu",
             "Sambilan Utama": "Nelayan Sambilan Utama",
             "Sambilan Tambahan": "Nelayan Sambilan Tambahan"
         };
         
-        // Fungsi untuk mendapatkan label profesi yang benar
+        // Ekspos variabel ke window untuk akses dari file lain
+        window.appData = appData;
+        window.appSettings = appSettings;
+        
+        // --- FUNGSI UTAMA ---
         function getProfesiLabel(profesi) {
             return PROFESI_MAPPING[profesi] || profesi;
         }
         
-        // Fungsi untuk migrasi data lama ke format baru
         function migrateOldData() {
             appData.forEach(item => {
                 if (PROFESI_MAPPING[item.profesi]) {
@@ -2433,252 +1338,182 @@
             saveData();
         }
         
-        // --- FUNGSI GENERATE KODE KEAMANAN DINAMIS (UNTUK LOGIN) ---
-        function generateSecurityCode() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
+        // =====================================================
+        // FUNGSI CAPTCHA - MENGANTI SISTEM KODE PERIODE
+        // =====================================================
+        function generateCaptcha() {
+            const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Hilangkan karakter yang membingungkan
+            let captcha = '';
             
-            // Format: YYYYMMDD (8 digit)
-            return `${year}${month}${day}`;
-        }
-        
-        // --- FUNGSI UNTUK MENAMPILKAN TANGGAL SEKARANG ---
-        function displayCurrentDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('id-ID', options);
-            document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-            
-            document.getElementById('passwordHint').innerHTML = `Kode keamanan berubah setiap hari berdasarkan tanggal.`;
-        }
-
-        // --- FUNGSI UNTUK MENDAPATKAN KOORDINAT BERDASARKAN DESA ---
-        function getCoordinatesForLocation(kecamatan, desa) {
-            const key = `${kecamatan}, ${desa}`;
-            
-            if (COORDINATES_DATA[key]) {
-                return COORDINATES_DATA[key];
+            // Generate 6 karakter acak
+            for (let i = 0; i < 6; i++) {
+                captcha += characters.charAt(Math.floor(Math.random() * characters.length));
             }
             
-            if (DEFAULT_COORDINATES[kecamatan]) {
-                return DEFAULT_COORDINATES[kecamatan];
+            currentCaptcha = captcha;
+            captchaAttempts = 0;
+            
+            // Tampilkan CAPTCHA dengan efek visual
+            const captchaDisplay = document.getElementById('captchaDisplay');
+            captchaDisplay.innerHTML = '';
+            
+            // Tambahkan efek visual untuk setiap karakter
+            for (let i = 0; i < captcha.length; i++) {
+                const charSpan = document.createElement('span');
+                charSpan.textContent = captcha.charAt(i);
+                charSpan.style.display = 'inline-block';
+                charSpan.style.transform = `rotate(${Math.random() * 10 - 5}deg)`;
+                charSpan.style.margin = '0 3px';
+                charSpan.style.color = getRandomColor();
+                captchaDisplay.appendChild(charSpan);
             }
             
-            return [-7.7068, 113.9142];
-        }
-
-        // --- FUNGSI UNTUK INISIALISASI PETA ---
-        function initializeMap() {
-            if (map) {
-                map.remove();
-                markers.clearLayers();
-                currentMarkers = [];
-            }
+            // Tambahkan garis-garis acak sebagai gangguan visual
+            addDistortionLines(captchaDisplay);
             
-            map = L.map('map').setView([-7.7068, 113.9142], 11);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                maxZoom: 18
-            }).addTo(map);
-            
-            markers.addTo(map);
-            
-            renderMapMarkers();
-            
-            updateMapStatistics();
+            return captcha;
         }
         
-        // --- FUNGSI UNTUK RENDER MARKER PADA PETA ---
-        function renderMapMarkers() {
-            if (!map || !markers) return;
-            
-            markers.clearLayers();
-            currentMarkers = [];
-            
-            const kecamatanCount = {};
-            const desaCount = {};
-            let pemilikKapalCount = 0;
-            
-            appData.forEach((nelayan, index) => {
-                kecamatanCount[nelayan.kecamatan] = (kecamatanCount[nelayan.kecamatan] || 0) + 1;
-                desaCount[nelayan.desa] = (desaCount[nelayan.desa] || 0) + 1;
-                if (nelayan.status === 'Pemilik Kapal') pemilikKapalCount++;
-                
-                const coordinates = getCoordinatesForLocation(nelayan.kecamatan, nelayan.desa);
-                
-                let markerColor = '#0c2461';
-                let markerClass = 'marker-penuh';
-                
-                if (nelayan.profesi === 'Nelayan Sambilan Utama') {
-                    markerColor = '#e58e26';
-                    markerClass = 'marker-sambilan-utama';
-                } else if (nelayan.profesi === 'Nelayan Sambilan Tambahan') {
-                    markerColor = '#27ae60';
-                    markerClass = 'marker-sambilan-tambahan';
-                }
-                
-                let iconClass = 'fa-user';
-                if (nelayan.status === 'Pemilik Kapal') {
-                    markerColor = '#0984e3';
-                    markerClass = 'marker-pemilik';
-                    iconClass = 'fa-ship';
-                } else if (nelayan.status === 'Anak Buah Kapal') {
-                    markerColor = '#a55eea';
-                    markerClass = 'marker-abk';
-                    iconClass = 'fa-users';
-                }
-                
-                const customIcon = L.divIcon({
-                    html: `<div class="marker-icon ${markerClass}" style="
-                        background-color: ${markerColor};
-                        width: 30px;
-                        height: 30px;
-                        border-radius: 50%;
-                        border: 3px solid white;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: white;
-                        font-size: 14px;
-                    ">
-                        <i class="fas ${iconClass}"></i>
-                    </div>`,
-                    className: 'custom-marker',
-                    iconSize: [30, 30],
-                    iconAnchor: [15, 15],
-                    popupAnchor: [0, -15]
-                });
-                
-                const popupContent = `
-                    <div class="leaflet-popup-content">
-                        <h4>${nelayan.nama}</h4>
-                        <div class="popup-detail">
-                            <span class="popup-label">NIK:</span>
-                            <span class="popup-value">${maskData(nelayan.nik)}</span>
-                        </div>
-                        <div class="popup-detail">
-                            <span class="popup-label">Usia:</span>
-                            <span class="popup-value">${nelayan.usia} Tahun</span>
-                        </div>
-                        <div class="popup-detail">
-                            <span class="popup-label">Profesi:</span>
-                            <span class="popup-value">${nelayan.profesi}</span>
-                        </div>
-                        <div class="popup-detail">
-                            <span class="popup-label">Status:</span>
-                            <span class="popup-value">${nelayan.status}</span>
-                        </div>
-                        <div class="popup-detail">
-                            <span class="popup-label">Domisili:</span>
-                            <span class="popup-value">${nelayan.desa}, ${nelayan.kecamatan}</span>
-                        </div>
-                        <div class="popup-detail">
-                            <span class="popup-label">Alat Tangkap:</span>
-                            <span class="popup-value">${nelayan.alatTangkap}</span>
-                        </div>
-                        <div class="popup-detail">
-                            <button class="btn btn-sm btn-primary w-100 mt-2" onclick="viewDetail('${nelayan.id}')">
-                                <i class="fas fa-info-circle me-1"></i> Lihat Detail
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                const marker = L.marker(coordinates, { icon: customIcon })
-                    .bindPopup(popupContent)
-                    .on('click', function() {
-                        this.openPopup();
-                    });
-                
-                markers.addLayer(marker);
-                currentMarkers.push(marker);
-            });
-            
-            document.getElementById('map-total-points').textContent = appData.length;
-            document.getElementById('map-total-kecamatan').textContent = Object.keys(kecamatanCount).length;
-            document.getElementById('map-total-desa').textContent = Object.keys(desaCount).length;
-            document.getElementById('map-total-kapal').textContent = pemilikKapalCount;
+        function getRandomColor() {
+            const colors = ['#0c2461', '#e58e26', '#27ae60', '#0984e3', '#a55eea', '#e74c3c'];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
         
-        // --- FUNGSI UNTUK UPDATE STATISTIK PETA ---
-        function updateMapStatistics() {
-            if (appData.length === 0) return;
+        function addDistortionLines(container) {
+            // Hapus garis lama
+            const oldLines = container.querySelectorAll('.captcha-line');
+            oldLines.forEach(line => line.remove());
             
-            const kecamatanCount = {};
-            const desaCount = {};
-            let pemilikKapalCount = 0;
+            // Tambahkan 3-5 garis acak sebagai gangguan visual
+            const lineCount = Math.floor(Math.random() * 3) + 3;
             
-            appData.forEach(nelayan => {
-                kecamatanCount[nelayan.kecamatan] = (kecamatanCount[nelayan.kecamatan] || 0) + 1;
-                desaCount[nelayan.desa] = (desaCount[nelayan.desa] || 0) + 1;
-                if (nelayan.status === 'Pemilik Kapal') pemilikKapalCount++;
-            });
-            
-            document.getElementById('map-total-points').textContent = appData.length;
-            document.getElementById('map-total-kecamatan').textContent = Object.keys(kecamatanCount).length;
-            document.getElementById('map-total-desa').textContent = Object.keys(desaCount).length;
-            document.getElementById('map-total-kapal').textContent = pemilikKapalCount;
-        }
-        
-        // --- FUNGSI UNTUK SWITCH VIEW PETA ---
-        function switchMapView(view) {
-            mapView = view;
-            
-            document.querySelectorAll('.map-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            renderMapMarkers();
-            
-            let viewName = 'Semua Data';
-            if (view === 'profesi') viewName = 'Berdasarkan Profesi';
-            else if (view === 'kecamatan') viewName = 'Berdasarkan Kecamatan';
-            
-            showNotification(`Peta ditampilkan dengan view: ${viewName}`, 'info');
-        }
-        
-        // --- FUNGSI UNTUK RESET VIEW PETA ---
-        function resetMapView() {
-            if (map) {
-                map.setView([-7.7068, 113.9142], 11);
-                showNotification('Peta direset ke view awal', 'info');
+            for (let i = 0; i < lineCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'captcha-line';
+                line.style.position = 'absolute';
+                line.style.width = `${Math.random() * 100 + 50}px`;
+                line.style.height = '2px';
+                line.style.backgroundColor = `rgba(0, 0, 0, ${Math.random() * 0.3 + 0.1})`;
+                line.style.top = `${Math.random() * 100}%`;
+                line.style.left = `${Math.random() * 100}%`;
+                line.style.transform = `rotate(${Math.random() * 180}deg)`;
+                container.appendChild(line);
             }
         }
         
-        // --- FUNGSI UNTUK ZOOM KE SEMUA MARKER ---
-        function zoomToAllMarkers() {
-            if (map && currentMarkers.length > 0) {
-                const group = L.featureGroup(currentMarkers);
-                map.fitBounds(group.getBounds().pad(0.1));
-                showNotification('Zoom ke semua marker', 'info');
-            }
+        function validateCaptcha(input) {
+            // Normalisasi input: hapus spasi, ubah ke uppercase
+            const normalizedInput = input.trim().toUpperCase();
+            const normalizedCaptcha = currentCaptcha.toUpperCase();
+            
+            // Validasi sederhana
+            return normalizedInput === normalizedCaptcha;
         }
         
-        // --- FUNGSI UNTUK TOGGLE CLUSTER MARKER ---
-        function toggleCluster() {
-            const showCluster = document.getElementById('showCluster').checked;
-            
-            if (showCluster) {
-                markers.addTo(map);
-                showNotification('Mode grup marker diaktifkan', 'info');
+        function speakCaptcha() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUttery(currentCaptcha.split('').join(' '));
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                window.speechSynthesis.speak(utterance);
             } else {
-                map.removeLayer(markers);
-                currentMarkers.forEach(marker => {
-                    marker.addTo(map);
-                });
-                showNotification('Mode grup marker dinonaktifkan', 'info');
+                showNotification('Browser tidak mendukung text-to-speech', 'warning');
             }
         }
+        
+        function maskData(data, force = false) {
+            if (!data) return "-";
+            if (data === '00000000') return "Tidak Ada";
+            if (!appSettings.privacyMode && !force) return data.toString();
+            
+            let str = data.toString();
+            if (str.length <= 4) return str;
+            
+            const maskedLength = Math.min(4, str.length);
+            const visiblePart = str.slice(0, -maskedLength);
+            const maskedPart = '*'.repeat(maskedLength);
+            return visiblePart + maskedPart;
+        }
 
-        // --- FUNGSI UNTUK MENGATUR TANGGAL VALIDASI OTOMATIS ---
-        function setTodayDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('tanggalValidasi').value = today;
+        function getFishIconClass(fishName) {
+            const lower = fishName.toLowerCase();
+            if (lower.includes('cumi')) return 'fa-ghost'; 
+            if (lower.includes('kepiting')) return 'fa-spider'; 
+            return 'fa-fish';
+        }
+
+        // --- FUNGSI RELOAD DATA YANG DIPERBAIKI ---
+        function handleReloadRepo() {
+            const reloadBtn = document.getElementById('btn-reload-repo');
+            const spinner = document.getElementById('reloadSpinner');
+            
+            // Tampilkan spinner dan nonaktifkan tombol
+            spinner.classList.add('active');
+            reloadBtn.disabled = true;
+            reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Memuat Data... <span class="spinner-border spinner-border-sm reload-spinner active" id="reloadSpinner"></span>';
+            
+            showNotification('Memulai sinkronisasi data dari server...', 'info');
+            
+            // Coba load ulang file reload.js
+            const script = document.createElement('script');
+            script.src = 'reload.js?t=' + new Date().getTime(); // Tambahkan timestamp untuk cache busting
+            script.onload = function() {
+                console.log('File reload.js berhasil dimuat ulang');
+                
+                // Beri waktu untuk pemrosesan
+                setTimeout(() => {
+                    if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
+                        try {
+                            const restoredData = JSON.parse(atob(window.SIMATA_BACKUP_ENCRYPTED));
+                            
+                            // Merge data lama dengan data baru
+                            const existingNik = new Set(appData.map(d => d.nik));
+                            const newData = restoredData.filter(d => !existingNik.has(d.nik));
+                            
+                            if (newData.length === 0) {
+                                showNotification('Tidak ada data baru untuk dimuat. Data sudah up-to-date.', 'info');
+                            } else {
+                                appData = [...appData, ...newData];
+                                saveData();
+                                renderDataTable();
+                                updateDashboard();
+                                if (typeof window.renderMapMarkers === 'function') {
+                                    window.renderMapMarkers();
+                                }
+                                if (typeof window.updateMapStatistics === 'function') {
+                                    window.updateMapStatistics();
+                                }
+                                
+                                showNotification(`Data berhasil disinkronisasi: ${newData.length} data baru ditambahkan`, 'success');
+                            }
+                            
+                        } catch (error) {
+                            console.error('Reload error:', error);
+                            showNotification('Gagal memuat data dari repository. Format data tidak valid.', 'error');
+                        }
+                    } else {
+                        showNotification('Tidak ada data repository yang tersedia untuk dimuat', 'warning');
+                    }
+                    
+                    // Reset tombol
+                    spinner.classList.remove('active');
+                    reloadBtn.disabled = false;
+                    reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+                }, 500);
+            };
+            
+            script.onerror = function() {
+                console.error('Gagal memuat file reload.js');
+                showNotification('Gagal memuat data dari server. Pastikan koneksi internet aktif.', 'error');
+                
+                // Reset tombol
+                spinner.classList.remove('active');
+                reloadBtn.disabled = false;
+                reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+            };
+            
+            document.head.appendChild(script);
         }
 
         // --- INITIALIZATION ---
@@ -2688,10 +1523,11 @@
                 setupEventListeners();
                 initFishOptions();
                 
-                displayCurrentDate();
+                // Generate CAPTCHA pertama kali
+                generateCaptcha();
                 
-                // Set tanggal hari ini untuk tanggal validasi
-                setTodayDate();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('tanggalValidasi').value = today;
                 
                 const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
                 if (isSessionActive) {
@@ -2701,12 +1537,18 @@
                     updateDashboard();
                     renderDataTable();
                     setTimeout(() => {
-                        initializeMap();
+                        if (typeof window.initializeMap === 'function') {
+                            window.initializeMap();
+                        }
                     }, 500);
                 } else {
                     setTimeout(() => {
                         document.getElementById('loginModal').style.display = 'flex';
                     }, 100);
+                }
+
+                if (typeof window.handleHashRouting === 'function') {
+                    window.handleHashRouting();
                 }
 
             } catch (error) {
@@ -2718,20 +1560,22 @@
         function initializeApp() {
             loadData();
             loadSettings();
-            
-            // Migrasi data lama ke format baru
             migrateOldData();
             
             if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
-                 console.log("Reload Repository detected. Ready to merge/sync.");
+                console.log("Reload Repository detected. Ready to merge/sync.");
             }
 
             const kecSelect = document.getElementById('kecamatan');
             kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
-            Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
+            if (typeof window.SITUBONDO_DATA !== 'undefined') {
+                Object.keys(window.SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
+            }
             
             const allDesas = new Set();
-            Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
+            if (typeof window.SITUBONDO_DATA !== 'undefined') {
+                Object.values(window.SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
+            }
             const filterDesaSelect = document.getElementById('filterDesa');
             filterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
             [...allDesas].sort().forEach(d => filterDesaSelect.add(new Option(d, d)));
@@ -2742,9 +1586,7 @@
             
             updateAppIdentity();
             updatePrivacyUI();
-            
             startDuplicateChecker();
-            
             setupInfoTooltips();
             setupProfesiInfo();
         }
@@ -2824,11 +1666,9 @@
 
         function updateAppIdentity() {
             appSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
-            
             document.querySelector('.app-title').textContent = appSettings.appName;
             document.getElementById('dynamicSubtitle').textContent = appSettings.appSubtitle;
             document.getElementById('itemsPerPageSelect').value = appSettings.itemsPerPage;
-            
             document.getElementById('appName').value = appSettings.appName;
             document.getElementById('appSubtitle').value = appSettings.appSubtitle;
         }
@@ -2852,88 +1692,93 @@
             }
         }
 
-        // --- FUNGSI MASK DATA YANG DIPERBAIKI ---
-        function maskData(data, force = false) {
-            if (!data) return "-";
-            if (data === '00000000') return "Tidak Ada";
-            if (!appSettings.privacyMode && !force) return data.toString();
-            
-            let str = data.toString();
-            if (str.length <= 4) return str;
-            
-            // Sensor 4 digit terakhir
-            const maskedLength = Math.min(4, str.length);
-            const visiblePart = str.slice(0, -maskedLength);
-            const maskedPart = '*'.repeat(maskedLength);
-            
-            return visiblePart + maskedPart;
-        }
-
-        function getFishIconClass(fishName) {
-            const lower = fishName.toLowerCase();
-            if (lower.includes('cumi')) return 'fa-ghost'; 
-            if (lower.includes('kepiting')) return 'fa-spider'; 
-            return 'fa-fish';
-        }
-
         // --- EVENT LISTENERS ---
         function setupEventListeners() {
-            const passwordToggle = document.getElementById('passwordToggle');
-            if (passwordToggle) {
-                passwordToggle.addEventListener('click', function() {
-                    const passwordInput = document.getElementById('securityCode');
-                    const icon = document.getElementById('passwordToggleIcon');
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        icon.classList.remove('fa-eye');
-                        icon.classList.add('fa-eye-slash');
-                        this.title = "Sembunyikan kode";
-                    } else {
-                        passwordInput.type = 'password';
-                        icon.classList.remove('fa-eye-slash');
-                        icon.classList.add('fa-eye');
-                        this.title = "Lihat kode";
-                    }
-                });
-            }
-
+            // Refresh CAPTCHA Button
+            document.getElementById('refreshCaptcha').addEventListener('click', function() {
+                generateCaptcha();
+                document.getElementById('captchaInput').value = '';
+                document.getElementById('captchaError').style.display = 'none';
+                document.getElementById('captchaSuccess').style.display = 'none';
+                showNotification('CAPTCHA diperbarui!', 'info');
+            });
+            
+            // Audio CAPTCHA Button
+            document.getElementById('audioCaptcha').addEventListener('click', function() {
+                speakCaptcha();
+            });
+            
+            // Show CAPTCHA Hint
+            document.getElementById('showCaptchaHint').addEventListener('click', function() {
+                showNotification('CAPTCHA harus dimasukkan persis seperti yang terlihat di atas (huruf besar).', 'info');
+            });
+            
+            // Clear CAPTCHA error when user starts typing
+            document.getElementById('captchaInput').addEventListener('input', function() {
+                document.getElementById('captchaError').style.display = 'none';
+                document.getElementById('captchaSuccess').style.display = 'none';
+            });
+            
+            // Login Form dengan CAPTCHA
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const btn = document.getElementById('loginButton');
                 const spinner = document.getElementById('loginSpinner');
-                const inputCode = document.getElementById('securityCode').value;
-                const correctCode = generateSecurityCode();
+                const captchaInput = document.getElementById('captchaInput').value;
                 
-                if (inputCode !== correctCode) {
-                    showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
+                // Validasi CAPTCHA
+                if (!validateCaptcha(captchaInput)) {
+                    captchaAttempts++;
+                    
+                    // Tampilkan pesan error
+                    document.getElementById('captchaError').style.display = 'block';
+                    document.getElementById('captchaInput').classList.add('is-invalid');
+                    
+                    // Jika terlalu banyak percobaan, generate CAPTCHA baru
+                    if (captchaAttempts >= maxCaptchaAttempts) {
+                        showNotification('Terlalu banyak percobaan gagal. CAPTCHA akan diperbarui.', 'warning');
+                        generateCaptcha();
+                        captchaAttempts = 0;
+                        document.getElementById('captchaInput').value = '';
+                    } else {
+                        showNotification(`CAPTCHA salah! Percobaan ${captchaAttempts} dari ${maxCaptchaAttempts}.`, 'error');
+                    }
                     return;
                 }
                 
+                // CAPTCHA benar, lanjutkan login
                 btn.disabled = true;
                 spinner.classList.remove('d-none');
+                document.getElementById('captchaSuccess').style.display = 'block';
                 btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
                 
                 setTimeout(() => {
                     sessionStorage.setItem('simata_session', 'active');
-
                     document.getElementById('loginModal').style.display = 'none';
                     document.getElementById('appContent').style.display = 'block';
-                    
                     initializeCharts();
                     updateDashboard();
                     renderDataTable();
                     setTimeout(() => {
-                        initializeMap();
+                        if (typeof window.initializeMap === 'function') {
+                            window.initializeMap();
+                        }
                     }, 500);
-                    
                     loginSuccessModal.show();
-                    
                     btn.disabled = false;
                     spinner.classList.add('d-none');
                     btn.innerHTML = 'BUKA DASHBOARD';
+                    
+                    // Reset CAPTCHA untuk sesi berikutnya
+                    generateCaptcha();
+                    document.getElementById('captchaInput').value = '';
+                    document.getElementById('captchaError').style.display = 'none';
+                    document.getElementById('captchaSuccess').style.display = 'none';
+                    document.getElementById('captchaInput').classList.remove('is-invalid');
                 }, 1200);
             });
 
+            // Continue to Dashboard
             document.getElementById('btnContinueDashboard').addEventListener('click', function() {
                 loginSuccessModal.hide();
                 setTimeout(() => {
@@ -2941,11 +1786,13 @@
                 }, 300);
             });
 
+            // Welcome Modal Reload
             document.getElementById('btnWelcomeReload').addEventListener('click', function() {
                 welcomeModal.hide();
                 handleReloadRepo();
             });
 
+            // No WhatsApp Button
             document.getElementById('btnNoWA').addEventListener('click', function() {
                 const input = document.getElementById('whatsapp');
                 if (input.hasAttribute('readonly')) {
@@ -2965,13 +1812,12 @@
                 }
             });
 
-            // PERBAIKAN: Sensor data menggunakan kode keamanan sensor
+            // Privacy Toggle
             document.getElementById('privacyToggle').addEventListener('click', function(e) {
                 e.preventDefault();
                 const currentStatus = appSettings.privacyMode;
                 
                 if (currentStatus === true) {
-                    // Menonaktifkan sensor - memerlukan kode keamanan sensor
                     const code = prompt("MASUKKAN KODE KEAMANAN SENSOR untuk menonaktifkan sensor:");
                     if (code === appSettings.securityCodeSensor) {
                         appSettings.privacyMode = false;
@@ -2984,31 +1830,32 @@
                         this.checked = true;
                     }
                 } else {
-                    // Mengaktifkan sensor - tidak perlu kode
                     appSettings.privacyMode = true;
                     saveSettings(); 
                     updatePrivacyUI(); 
-                        renderDataTable();
-                        showNotification('Sensor Data diaktifkan.', 'success');
+                    renderDataTable();
+                    showNotification('Sensor Data diaktifkan.', 'success');
                 }
             });
 
+            // Kecamatan Change
             document.getElementById('kecamatan').addEventListener('change', function() {
                 const selectedKec = this.value;
                 const desaSelect = document.getElementById('desa');
                 desaSelect.innerHTML = `<option value="">Pilih Desa / Kelurahan</option>`;
-                if (selectedKec && SITUBONDO_DATA[selectedKec]) {
+                if (selectedKec && window.SITUBONDO_DATA && window.SITUBONDO_DATA[selectedKec]) {
                     desaSelect.disabled = false;
-                    SITUBONDO_DATA[selectedKec].sort().forEach(desa => desaSelect.add(new Option(desa, desa)));
+                    window.SITUBONDO_DATA[selectedKec].sort().forEach(desa => desaSelect.add(new Option(desa, desa)));
                 } else {
                     desaSelect.disabled = true;
                     desaSelect.innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
                 }
             });
 
+            // Form Submit
             document.getElementById('inputForm').addEventListener('submit', handleFormSubmit);
             
-            // PERBAIKAN: Event reset form dengan mengatur tanggal validasi ke hari ini
+            // Form Reset
             document.getElementById('inputForm').addEventListener('reset', () => {
                 setTimeout(() => {
                     document.getElementById('ownerFields').style.display = 'none';
@@ -3031,11 +1878,12 @@
                     document.getElementById('kapalInfo').style.display = 'none';
                     document.getElementById('profesiHelp').innerHTML = '';
                     
-                    // PERBAIKAN PENTING: Set tanggal validasi ke hari ini saat reset
-                    setTodayDate();
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('tanggalValidasi').value = today;
                 }, 100);
             });
             
+            // Status Nelayan Change
             document.getElementById('statusNelayan').addEventListener('change', function() {
                 const isOwner = this.value === 'Pemilik Kapal';
                 const ownerFields = document.getElementById('ownerFields');
@@ -3047,6 +1895,7 @@
                 }
             });
 
+            // Tahun Lahir Input
             document.getElementById('tahunLahir').addEventListener('input', function() {
                 const year = parseInt(this.value);
                 const currentYear = new Date().getFullYear();
@@ -3055,6 +1904,7 @@
                 }
             });
 
+            // Generate Kode Button
             document.getElementById('generateKodeBtn').addEventListener('click', function() {
                 const nik = document.getElementById('nik').value;
                 const kodeInput = document.getElementById('kodeValidasi');
@@ -3070,6 +1920,7 @@
                 showNotification('Kode Validasi berhasil dibuat dan terkunci.', 'success');
             });
 
+            // Mobile Menu
             const overlay = document.getElementById('sidebarOverlay');
             const sidebar = document.getElementById('sidebarMenu');
             document.getElementById('mobileMenuBtn').addEventListener('click', () => {
@@ -3089,6 +1940,7 @@
                 });
             });
             
+            // Logout
             document.getElementById('v-pills-logout-tab').addEventListener('click', () => {
                 if(confirm('Apakah Anda yakin ingin keluar? Sistem akan mengunduh data (reload.js) secara otomatis.')) {
                     sessionStorage.removeItem('simata_session');
@@ -3097,6 +1949,7 @@
                 }
             });
 
+            // Search and Filter
             document.getElementById('searchData').addEventListener('input', renderDataTable);
             document.getElementById('applyFilterBtn').addEventListener('click', renderFilterTable);
             document.getElementById('btnCekGanda').addEventListener('click', showDuplicateDataInFilter);
@@ -3107,6 +1960,27 @@
             });
             document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
 
+            // Verifikasi KIN
+            if (document.getElementById('verifyButton')) {
+                document.getElementById('verifyButton').addEventListener('click', function() {
+                    if (typeof window.verifyKIN === 'function') {
+                        window.verifyKIN();
+                    }
+                });
+            }
+            
+            if (document.getElementById('verifyInput')) {
+                document.getElementById('verifyInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (typeof window.verifyKIN === 'function') {
+                            window.verifyKIN();
+                        }
+                    }
+                });
+            }
+
+            // Print and Export
             document.getElementById('printPdfBtn').addEventListener('click', printData);
             document.getElementById('exportExcelBtn').addEventListener('click', () => exportData('xlsx'));
             document.getElementById('exportReloadJsBtn').addEventListener('click', () => backupData('reload.js'));
@@ -3116,12 +1990,15 @@
                 document.getElementById('restoreDataBtn').disabled = !this.files.length;
             });
             document.getElementById('restoreDataBtn').addEventListener('click', restoreData);
+            // Event listener untuk tombol Reload Data yang sudah diperbaiki
             document.getElementById('btn-reload-repo').addEventListener('click', handleReloadRepo);
             
+            // Detail PDF
             document.getElementById('btnDownloadDetailPdf').addEventListener('click', () => {
                 downloadSinglePdf(currentDetailId);
             });
 
+            // Settings Form
             document.getElementById('settingsForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 appSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
@@ -3133,10 +2010,9 @@
                 showNotification('Pengaturan tersimpan! Nama instansi berhasil diperbarui.', 'success');
             });
 
-            // Form untuk mengubah kode keamanan sensor
+            // Sensor Code Form
             document.getElementById('sensorCodeForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
                 const currentCode = document.getElementById('currentSensorCode').value;
                 const newCode = document.getElementById('newSensorCode').value;
                 const confirmCode = document.getElementById('confirmSensorCode').value;
@@ -3158,11 +2034,9 @@
                 
                 appSettings.securityCodeSensor = newCode;
                 saveSettings();
-                
                 document.getElementById('currentSensorCode').value = '';
                 document.getElementById('newSensorCode').value = '';
                 document.getElementById('confirmSensorCode').value = '';
-                
                 showNotification('Kode keamanan sensor berhasil diperbarui!', 'success');
             });
 
@@ -3183,18 +2057,30 @@
                     fabMain.style.transform = "rotate(0deg)";
                 }
             });
-            const shortcuts = {'fabInput': 'v-pills-input-tab', 'fabFilter': 'v-pills-filter-tab', 'fabExport': 'v-pills-export-tab', 'fabBackup': 'v-pills-backup-tab', 'fabSettings': 'v-pills-settings-tab'};
+            
+            const shortcuts = {
+                'fabInput': 'v-pills-input-tab', 
+                'fabFilter': 'v-pills-filter-tab', 
+                'fabExport': 'v-pills-export-tab', 
+                'fabBackup': 'v-pills-backup-tab', 
+                'fabSettings': 'v-pills-settings-tab'
+            };
+            
             for (const [id, tabId] of Object.entries(shortcuts)) {
                 document.getElementById(id).addEventListener('click', (e) => {
-                    e.preventDefault(); document.getElementById(tabId).click(); container.classList.remove('open');
+                    e.preventDefault(); 
+                    document.getElementById(tabId).click(); 
+                    container.classList.remove('open');
                 });
             }
+            
             document.getElementById('fabReload').addEventListener('click', (e) => {
-                e.preventDefault(); handleReloadRepo();
+                e.preventDefault(); 
+                handleReloadRepo();
             });
         }
 
-        // --- CORE LOGIC ---
+        // --- CORE LOGIC FUNCTIONS ---
         function handleFormSubmit(e) {
             e.preventDefault();
             const form = document.getElementById('inputForm');
@@ -3268,15 +2154,14 @@
 
             saveData();
             form.reset();
-            
-            // Set tanggal validasi ke hari ini setelah reset form
-            setTodayDate();
-            
             document.getElementById('ownerFields').style.display = 'none';
             document.getElementById('desa').innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
             document.getElementById('desa').disabled = true;
             document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('jenisIkanLainnya').style.display = 'none';
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggalValidasi').value = today;
             
             document.getElementById('apiInfo').style.display = 'none';
             document.getElementById('kapalInfo').style.display = 'none';
@@ -3284,9 +2169,11 @@
 
             updateDashboard(); 
             renderDataTable();
-            if (map) {
-                renderMapMarkers();
-                updateMapStatistics();
+            if (typeof window.renderMapMarkers === 'function') {
+                window.renderMapMarkers();
+            }
+            if (typeof window.updateMapStatistics === 'function') {
+                window.updateMapStatistics();
             }
             document.getElementById('v-pills-data-tab').click();
             checkGlobalDuplicates();
@@ -3348,7 +2235,14 @@
                     <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
                     <td class="col-status-cell">${kapalInfo}</td>
                     <td style="white-space:nowrap;"><span class="badge bg-info text-white">${d.alatTangkap}</span></td>
-                    <td class="col-action sticky-col-right"><div class="btn-group shadow-sm" role="group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
+                    <td class="col-action sticky-col-right">
+                        <div class="btn-group shadow-sm" role="group">
+                            <button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="btn btn-sm btn-idcard" onclick="safeGenerateIDCard('${d.id}')" title="Cetak ID Card"><i class="fas fa-id-card"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
                 </tr>`;
                 tableBody.appendChild(document.createElement('tbody')).innerHTML = row;
             });
@@ -3400,7 +2294,6 @@
             detailModal.show();
         }
 
-        // --- PDF GENERATION - IMPROVED ---
         function downloadSinglePdf(id) {
             const d = appData.find(item => item.id == id);
             if(!d) return;
@@ -3428,7 +2321,7 @@
                 doc.setFontSize(14); doc.setFont('helvetica', 'bold');
                 doc.text(appSettings.appName.toUpperCase(), 105, 22, { align: 'center' });
                 doc.setFontSize(16);
-                doc.text('PEMERINTAH DESA', 105, 29, { align: 'center' });
+                doc.text('DINAS PERIKANAN', 105, 29, { align: 'center' });
                 doc.setTextColor(246, 185, 59);
                 doc.setFont('times', 'italic'); doc.setFontSize(12);
                 doc.text('"Situbondo Naik Kelas"', 105, 37, { align: 'center' });
@@ -3536,7 +2429,7 @@
                 doc.setFontSize(7);
                 doc.text("Dinas Perikanan Kabupaten Situbondo", leftX + 35, footerY + 20, {align: 'center'});
                 doc.setTextColor(0, 0, 255);
-                doc.text("www.disnakansitubondo.com/simata", leftX + 35, footerY + 25, {align: 'center'});
+                doc.text("www.dinasperikanansitubondo.com/simata", leftX + 35, footerY + 25, {align: 'center'});
 
                 doc.setFontSize(10); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'normal');
                 const dateStr = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
@@ -3554,7 +2447,7 @@
                 const nameY = footerY + 38; 
                 doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', sigCenterX, nameY, {align: 'center'});
                 doc.setFont('helvetica', 'normal');
-                doc.text('NIP. 19761103 200903 1 002', sigCenterX, nameY + 5, {align: 'center'});
+                doc.text('NIP. 19761103 200903 1 001', sigCenterX, nameY + 5, {align: 'center'});
 
                 doc.setFontSize(7); doc.setTextColor(150);
                 doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Ref ID: ${d.kodeValidasi || '-'}`, 105, 285, {align:'center'});
@@ -3588,7 +2481,6 @@
             if(checked) btn.classList.remove('d-none'); else btn.classList.add('d-none');
         }
 
-        // PERBAIKAN: bulkDeleteData menggunakan kode keamanan sensor
         function bulkDeleteData() {
             const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
             if(checkedBoxes.length === 0) return;
@@ -3598,9 +2490,11 @@
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
                 saveData(); renderDataTable(); updateDashboard();
-                if (map) {
-                    renderMapMarkers();
-                    updateMapStatistics();
+                if (typeof window.renderMapMarkers === 'function') {
+                    window.renderMapMarkers();
+                }
+                if (typeof window.updateMapStatistics === 'function') {
+                    window.updateMapStatistics();
                 }
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 document.getElementById('selectAllCheckbox').checked = false;
@@ -3681,16 +2575,17 @@
             window.scrollTo(0,0);
         }
 
-        // PERBAIKAN: deleteData menggunakan kode keamanan sensor
         function deleteData(id) {
             const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk menghapus data:");
             if(userCode === appSettings.securityCodeSensor) {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
                     saveData(); renderDataTable(); updateDashboard();
-                    if (map) {
-                        renderMapMarkers();
-                        updateMapStatistics();
+                    if (typeof window.renderMapMarkers === 'function') {
+                        window.renderMapMarkers();
+                    }
+                    if (typeof window.updateMapStatistics === 'function') {
+                        window.updateMapStatistics();
                     }
                     showNotification('Data berhasil dihapus', 'success');
                     checkGlobalDuplicates();
@@ -3739,7 +2634,7 @@
                     <td><span class="badge ${d.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">${d.status}</span></td>
                     <td><span class="badge bg-warning text-dark">${d.alatTangkap}</span></td>
                     <td><span class="badge ${profesiBadge}">${d.profesi}</span></td>
-                    <td><div class="btn-group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
+                    <td><div class="btn-group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-idcard" onclick="safeGenerateIDCard('${d.id}')" title="ID Card"><i class="fas fa-id-card"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
                 </tr>`;
             });
             showNotification(`Filter berhasil: ${filtered.length} data ditemukan`, 'success');
@@ -3808,8 +2703,6 @@
             const penuhWaktuCount = appData.filter(d => d.profesi === 'Nelayan Penuh Waktu').length;
             document.getElementById('totalPenuhWaktu').textContent = penuhWaktuCount;
             document.getElementById('totalPemilik').textContent = appData.filter(d => d.status === 'Pemilik Kapal').length;
-            const avgAge = appData.length ? Math.round(appData.reduce((acc, c) => acc + (parseInt(c.usia)||0), 0) / appData.length) : 0;
-            document.getElementById('rataUsia').textContent = avgAge + " Thn";
             
             const sambilanUtamaCount = appData.filter(d => d.profesi === 'Nelayan Sambilan Utama').length;
             document.getElementById('totalSambilanUtama').textContent = sambilanUtamaCount;
@@ -3840,7 +2733,9 @@
             window.kapalChart.update();
         }
 
-        function saveData() { localStorage.setItem('nelayanData', JSON.stringify(appData)); }
+        function saveData() { 
+            localStorage.setItem('nelayanData', JSON.stringify(appData)); 
+        }
         
         function saveSettings() { 
             appSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
@@ -3857,9 +2752,8 @@
             if(s) {
                 const loadedSettings = JSON.parse(s);
                 loadedSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
-                // Pastikan securityCodeSensor ada
                 if (!loadedSettings.securityCodeSensor) {
-                    loadedSettings.securityCodeSensor = '987654321';
+                    loadedSettings.securityCodeSensor = '88888888';
                 }
                 Object.assign(appSettings, loadedSettings);
             }
@@ -3885,305 +2779,514 @@
             window.open(url, '_blank');
         }
 
-        // --- PRINT RECAPITULATION (Recap PDF) ---
+        // =====================================================
+        // PERBAIKAN FITUR PRINT DATA - HEADER DIPERBAIKI (HURUF S DIHAPUS)
+        // =====================================================
         function printData() {
+            if (appData.length === 0) {
+                showNotification('Tidak ada data untuk dicetak!', 'error');
+                return;
+            }
+
+            // Hitung statistik per desa
             const desaStats = {};
             appData.forEach(d => {
                 const desa = d.desa || "Tidak Diketahui";
                 if (!desaStats[desa]) {
-                    desaStats[desa] = { count: 0, owner: 0, abk: 0, penuhWaktu: 0, sambilanUtama: 0, sambilanTambahan: 0 };
+                    desaStats[desa] = { 
+                        count: 0, 
+                        owner: 0, 
+                        abk: 0, 
+                        penuhWaktu: 0, 
+                        sambilanUtama: 0, 
+                        sambilanTambahan: 0 
+                    };
                 }
                 desaStats[desa].count++;
-                if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; else desaStats[desa].abk++;
+                if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; 
+                else desaStats[desa].abk++;
+                
                 if(d.profesi === 'Nelayan Penuh Waktu') desaStats[desa].penuhWaktu++;
                 else if(d.profesi === 'Nelayan Sambilan Utama') desaStats[desa].sambilanUtama++;
                 else if(d.profesi === 'Nelayan Sambilan Tambahan') desaStats[desa].sambilanTambahan++;
             });
 
+            // Siapkan data untuk tabel
             const tableRows = Object.keys(desaStats).sort().map((desa, index) => [
-                index + 1, desa, desaStats[desa].count, desaStats[desa].owner,
-                desaStats[desa].abk, desaStats[desa].penuhWaktu, desaStats[desa].sambilanUtama,
+                index + 1, 
+                desa, 
+                desaStats[desa].count, 
+                desaStats[desa].owner,
+                desaStats[desa].abk, 
+                desaStats[desa].penuhWaktu, 
+                desaStats[desa].sambilanUtama,
                 desaStats[desa].sambilanTambahan
             ]);
 
-            const totalNelayan = appData.length;
-            const totalPenuhWaktu = appData.filter(d => d.profesi === 'Nelayan Penuh Waktu').length;
-            const totalSambilanUtama = appData.filter(d => d.profesi === 'Nelayan Sambilan Utama').length;
-            const totalSambilanTambahan = appData.filter(d => d.profesi === 'Nelayan Sambilan Tambahan').length;
-            
+            // Hitung total
+            const totalCount = tableRows.reduce((sum, row) => sum + row[2], 0);
+            const totalOwner = tableRows.reduce((sum, row) => sum + row[3], 0);
+            const totalAbk = tableRows.reduce((sum, row) => sum + row[4], 0);
+            const totalPenuhWaktu = tableRows.reduce((sum, row) => sum + row[5], 0);
+            const totalSambilanUtama = tableRows.reduce((sum, row) => sum + row[6], 0);
+            const totalSambilanTambahan = tableRows.reduce((sum, row) => sum + row[7], 0);
+
+            // Tambahkan baris total
+            tableRows.push([
+                "",
+                "TOTAL KESELURUHAN",
+                totalCount,
+                totalOwner,
+                totalAbk,
+                totalPenuhWaktu,
+                totalSambilanUtama,
+                totalSambilanTambahan
+            ]);
+
+            // Generate kode unik untuk setiap cetakan
+            const printId = 'SIMATA-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+            // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
             document.getElementById('qr-right').innerHTML = "";
-            const signText = `DOKUMEN REKAPITULASI RESMI\nDINAS PERIKANAN KAB. SITUBONDO\nInstansi: ${appSettings.appSubtitle}\nTotal Data: ${totalNelayan}\nTimestamp: ${new Date().toISOString()}`;
-            new QRCode(document.getElementById("qr-right"), { 
-                text: signText, width: 256, height: 256,
-                colorDark: "#0984e3", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
-            });
+            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nNIP: 19761103 200903 1 001\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
+            
+            try {
+                new QRCode(document.getElementById("qr-right"), { 
+                    text: signatureText, 
+                    width: 120, 
+                    height: 120,
+                    colorDark: "#4a69bd", // Biru muda
+                    colorLight: "#ffffff", 
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (error) {
+                console.error("Error generating QR code:", error);
+            }
 
             setTimeout(() => {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('l', 'mm', 'a4');
+                try {
+                    const { jsPDF } = window.jspdf;
+                    
+                    if (typeof jsPDF.API.autoTable !== 'function') {
+                        showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
+                        return;
+                    }
 
-                doc.setFillColor(12, 36, 97);
-                doc.rect(0, 0, 297, 40, 'F');
-                
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(16); doc.setFont('helvetica', 'bold');
-                doc.text(appSettings.appName.toUpperCase(), 148.5, 12, { align: 'center' });
-                doc.setFontSize(18);
-                doc.text('PEMERINTAH DESA', 148.5, 20, { align: 'center' });
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(12);
-                doc.text(appSettings.appSubtitle, 148.5, 28, { align: 'center' });
-                doc.setFont('times', 'italic'); doc.setFontSize(11); doc.setTextColor(246, 185, 59);
-                doc.text('"Situbondo Naik Kelas - Sistem Satu Data Kelautan & Perikanan"', 148.5, 35, { align: 'center' });
+                    const doc = new jsPDF('l', 'mm', 'a4');
+                    const pageWidth = doc.internal.pageSize.width;
+                    const pageHeight = doc.internal.pageSize.height;
 
-                doc.setTextColor(0, 0, 0);
-                doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
-                doc.text(`LAPORAN REKAPITULASI DATA NELAYAN PER DESA`, 148.5, 50, { align: 'center' });
-                doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-                doc.text(`Per Tanggal: ${new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'})}`, 148.5, 55, { align: 'center' });
+                    // ============================================
+                    // HEADER YANG DIPERBAIKI - TANPA HURUF S DAN KOTAK PUTIH
+                    // ============================================
+                    doc.setFillColor(12, 36, 97);
+                    doc.rect(10, 10, pageWidth - 20, 28, 'F');
+                    
+                    // Judul utama - TANPA LOGO S DAN TANPA GARIS VERTIKAL
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('SISTEM INFORMASI PEMETAAN NELAYAN (SIMATA)', pageWidth/2, 20, { align: 'center' });
+                    
+                    // Subjudul
+                    doc.setFontSize(12);
+                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
 
-                doc.autoTable({
-                    head: [['No', 'Desa / Kelurahan', 'Jml Nelayan', 'Pemilik Kapal', 'ABK', 'Nelayan Penuh Waktu', 'Nelayan Sambilan Utama', 'Nelayan Sambilan Tambahan']],
-                    body: tableRows,
-                    startY: 60,
-                    theme: 'grid',
-                    headStyles: { fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
-                    columnStyles: {
-                        0: { halign: 'center' },
-                        2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' },
-                        5: { halign: 'center' }, 6: { halign: 'center' }, 7: { halign: 'center' }
-                    },
-                    foot: [['', 'TOTAL KESELURUHAN', totalNelayan, '', '', totalPenuhWaktu, totalSambilanUtama, totalSambilanTambahan]],
-                    footStyles: { fillColor: [246, 185, 59], textColor: [0, 0, 0], fontStyle: 'bold' }
-                });
+                    // Slogan dengan warna oranye
+                    doc.setTextColor(246, 185, 59);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setFontSize(10);
+                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
 
-                let finalY = doc.lastAutoTable.finalY + 10;
-                if (finalY > 150) { doc.addPage(); finalY = 20; }
+                    // Garis bawah header dengan warna aksen
+                    doc.setDrawColor(246, 185, 59);
+                    doc.setLineWidth(1.5);
+                    doc.line(20, 38, pageWidth - 20, 38);
 
-                const footerY = finalY + 10;
-                const sigCenterX = 230; 
-                const leftX = 20;
+                    // ============================================
+                    // JUDUL LAPORAN
+                    // ============================================
+                    doc.setTextColor(12, 36, 97);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(18);
+                    doc.text('LAPORAN REKAPITULASI DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
+                    doc.setFontSize(14);
+                    doc.text('PER DESA / KELURAHAN', pageWidth/2, 54, { align: 'center' });
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    const now = new Date();
+                    const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
+                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 60, { align: 'center' });
 
-                doc.setDrawColor(150);
-                doc.setLineWidth(0.5);
-                doc.rect(leftX, footerY, 70, 30);
-                
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(8);
-                doc.setTextColor(100);
-                doc.text("DOKUMEN REKAP INI TERVALIDASI", leftX + 35, footerY + 6, {align: 'center'});
-                doc.text("OLEH SISTEM SATU DATA (SIMATA)", leftX + 35, footerY + 10, {align: 'center'});
-                
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(7);
-                doc.text("Dinas Perikanan Kabupaten Situbondo", leftX + 35, footerY + 20, {align: 'center'});
-                doc.setTextColor(0, 0, 255);
-                doc.text("www.disnakansitubondo.com/simata", leftX + 35, footerY + 25, {align: 'center'});
+                    // ============================================
+                    // TABEL DATA - PERBAIKAN UTAMA: RAPI DI TENGAH
+                    // ============================================
+                    const tableWidth = pageWidth - 40; // Lebar tabel lebih kecil untuk margin
+                    const tableStartX = (pageWidth - tableWidth) / 2; // Posisi tengah
 
-                doc.setFontSize(10); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'normal');
-                doc.text(`Situbondo, ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}`, sigCenterX, footerY, {align: 'center'});
-                doc.text('Kepala Bidang Pemberdayaan Nelayan', sigCenterX, footerY + 5, {align: 'center'});
-                
-                const qrRightCanvas = document.querySelector('#qr-right canvas');
-                if(qrRightCanvas) {
-                    const imgRight = qrRightCanvas.toDataURL("image/png");
-                    doc.addImage(imgRight, 'PNG', sigCenterX - 12.5, footerY + 8, 25, 25);
-                }
+                    doc.autoTable({
+                        head: [[
+                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
+                            {content: 'Desa / Kelurahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 60}},
+                            {content: 'Jumlah Nelayan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'Pemilik Kapal', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'ABK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
+                            {content: 'Penuh Waktu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'Sambilan Utama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}}
+                        ]],
+                        body: tableRows,
+                        startY: 65,
+                        theme: 'grid',
+                        tableWidth: tableWidth,
+                        margin: { left: tableStartX, right: tableStartX },
+                        headStyles: { 
+                            fillColor: [12, 36, 97],
+                            textColor: [255, 255, 255], 
+                            fontStyle: 'bold', 
+                            halign: 'center',
+                            fontSize: 9,
+                            cellPadding: 4,
+                            lineWidth: 0.5,
+                            lineColor: [255, 255, 255]
+                        },
+                        bodyStyles: {
+                            textColor: [0, 0, 0],
+                            fontSize: 9,
+                            fillColor: [255, 255, 255],
+                            cellPadding: 4,
+                            lineWidth: 0.1,
+                            lineColor: [200, 200, 200]
+                        },
+                        alternateRowStyles: {
+                            fillColor: [245, 245, 245]
+                        },
+                        styles: {
+                            overflow: 'linebreak',
+                            cellPadding: 4,
+                            fontSize: 9,
+                            valign: 'middle',
+                            halign: 'center'
+                        },
+                        columnStyles: {
+                            0: {cellWidth: 20, halign: 'center'},
+                            1: {cellWidth: 60, halign: 'left'},
+                            2: {cellWidth: 30, halign: 'center'},
+                            3: {cellWidth: 30, halign: 'center'},
+                            4: {cellWidth: 25, halign: 'center'},
+                            5: {cellWidth: 30, halign: 'center'},
+                            6: {cellWidth: 30, halign: 'center'},
+                            7: {cellWidth: 35, halign: 'center'}
+                        },
+                        willDrawCell: function(data) {
+                            // Baris total dengan warna kuning
+                            if (data.row.index === tableRows.length - 1) {
+                                data.cell.styles.fillColor = [255, 235, 59];
+                                data.cell.styles.textColor = [0, 0, 0];
+                                data.cell.styles.fontStyle = 'bold';
+                                data.cell.styles.lineWidth = 0.5;
+                                data.cell.styles.lineColor = [12, 36, 97];
+                            }
+                        }
+                    });
 
-                doc.setFont('helvetica', 'bold');
-                doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', sigCenterX, footerY + 38, {align: 'center'});
-                doc.setFont('helvetica', 'normal');
-                doc.text('NIP. 19761103 200903 1 002', sigCenterX, footerY + 43, {align: 'center'});
-
-                const totalPages = doc.getNumberOfPages();
-                for (let i = 1; i <= totalPages; i++) {
-                    doc.setPage(i);
+                    // ============================================
+                    // FOOTER DENGAN LAYOUT YANG DIPERBAIKI
+                    // ============================================
+                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
+                    const footerY = Math.min(finalY + 15, pageHeight - 50);
+                    
+                    // Garis pemisah
+                    doc.setDrawColor(200, 200, 200);
+                    doc.setLineWidth(0.3);
+                    doc.line(20, footerY, pageWidth - 20, footerY);
+                    
+                    // Bagian kiri: Validasi elektronik
+                    doc.setFont('helvetica', 'bold');
                     doc.setFontSize(8);
-                    doc.setTextColor(100);
-                    doc.text(`Halaman ${i} dari ${totalPages} - Rekapitulasi Resmi`, 148.5, 205, { align: 'center' });
+                    doc.setTextColor(12, 36, 97);
+                    
+                    const leftX = 25;
+                    const leftY = footerY + 8;
+                    
+                    doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
+                    doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
+                    doc.text("SISTEM SATU DATA NELAYAN (SIMATA)", leftX, leftY + 8);
+                    
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(7);
+                    doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
+                    doc.setTextColor(230, 126, 34);
+                    doc.text("www.dinasperikanansitubondo.com/simata", leftX, leftY + 18);
+                    
+                    // Bagian kanan: Tanda tangan dan QR Code
+                    const rightX = pageWidth - 85;
+                    const rightY = footerY + 5;
+                    
+                    // Tanggal
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 0, 0);
+                    const currentDate = new Date();
+                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+                    doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
+                    
+                    // Jabatan
+                    doc.text('Kepala Bidang Pemberdayaan Nelayan', rightX + 32, rightY + 6, {align: 'center'});
+                    
+                    // QR Code dengan warna biru muda
+                    const qrRightCanvas = document.querySelector('#qr-right canvas');
+                    if(qrRightCanvas) {
+                        try {
+                            const imgRight = qrRightCanvas.toDataURL("image/png");
+                            // QR code 25x25 mm
+                            doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
+                        } catch (error) {
+                            console.error("Error adding QR code image:", error);
+                        }
+                    }
+                    
+                    // Garis tanda tangan
+                    doc.setDrawColor(0, 0, 0);
+                    doc.setLineWidth(0.5);
+                    doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
+                    
+                    // Nama dan NIP
+                    const nameY = rightY + 45;
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(9);
+                    doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', rightX + 32, nameY, {align: 'center'});
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(8);
+                    doc.text('NIP. 19761103 200903 1 001', rightX + 32, nameY + 5, {align: 'center'});
+
+                    // ============================================
+                    // FOOTER DENGAN KODE UNIK
+                    // ============================================
+                    const totalPages = doc.getNumberOfPages();
+                    for (let i = 1; i <= totalPages; i++) {
+                        doc.setPage(i);
+                        doc.setFontSize(8);
+                        doc.setTextColor(100);
+                        doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
+                        
+                        // Informasi sistem di footer dengan kode unik
+                        doc.setFontSize(7);
+                        const printTime = new Date().toLocaleString('id-ID');
+                        doc.text(`Dicetak dari SIMATA v5.3 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
+                    }
+
+                    // Simpan file PDF
+                    const fileName = `Laporan_Nelayan_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
+                    doc.save(fileName);
+                    document.getElementById('qr-right').innerHTML = "";
+                    
+                    showNotification('Laporan PDF berhasil dibuat dan diunduh', 'success');
+                    
+                } catch (error) {
+                    console.error("Error generating PDF:", error);
+                    showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
                 }
-
-                doc.save(`Laporan_Rekapitulasi_Nelayan_${Date.now()}.pdf`);
-                document.getElementById('qr-right').innerHTML = ""; 
-
             }, 800);
         }
 
-        // --- BACKUP & RESTORE ENCRYPTED ---
-        function backupData(filename = null) {
-            if(appData.length === 0) return showNotification('Tidak ada data untuk dibackup', 'warning');
+        function backupData(filename = 'backup_simata.js') {
+            const encryptedData = btoa(JSON.stringify(appData));
+            const backupContent = `window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
-            const jsonStr = JSON.stringify(appData);
-            const encryptedData = btoa(unescape(encodeURIComponent(jsonStr)));
-
-            const dateStr = new Date().toLocaleString('id-ID');
-            
-            const content = `/* PETUNJUK PENGGUNAAN RELOAD REPO:
-    1. Ini adalah file backup otomatis dari Aplikasi.
-    2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
-    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
-    
-    APP NAME : ${appSettings.appName}
-    INSTANSI : ${appSettings.appSubtitle}
-    TANGGAL  : ${dateStr}
-*/
-
-
-window.SIMATA_BACKUP_ENCRYPTED = "${encryptedData}";`;
-            
-            const blob = new Blob([content], { type: 'text/javascript' });
+            const blob = new Blob([backupContent], { type: 'text/javascript' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = filename || `reload.js`;
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showNotification('Database terenkripsi (reload.js) berhasil diunduh.', 'success');
+            
+            showNotification(`Backup berhasil: ${filename}`, 'success');
         }
 
         function restoreData() {
-            const input = document.getElementById('restoreFileInput');
-            if(!input.files.length) return;
+            const fileInput = document.getElementById('restoreFileInput');
+            if (!fileInput.files.length) return;
             
-            const file = input.files[0];
+            const file = fileInput.files[0];
             const reader = new FileReader();
             
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    let newData = [];
-                    let isEncrypted = false;
-
-                    if (content.includes('window.SIMATA_BACKUP_ENCRYPTED')) {
-                        const regex = /window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/;
-                        const match = content.match(regex);
-                        if (match && match[1]) {
-                            const encrypted = match[1];
-                            const decrypted = decodeURIComponent(escape(window.atob(encrypted)));
-                            newData = JSON.parse(decrypted);
-                            isEncrypted = true;
+                    
+                    // Coba ekstrak data dari file JS
+                    let encryptedData = '';
+                    if (content.includes('SIMATA_BACKUP_ENCRYPTED')) {
+                        const match = content.match(/window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*'([^']+)'/);
+                        if (match) encryptedData = match[1];
+                    } else if (content.startsWith('window.SIMATA_BACKUP_ENCRYPTED')) {
+                        const match = content.match(/='([^']+)'/);
+                        if (match) encryptedData = match[1];
+                    } else {
+                        // Coba parse sebagai JSON langsung
+                        try {
+                            const jsonData = JSON.parse(content);
+                            appData = [...appData, ...jsonData];
+                            saveData();
+                            renderDataTable();
+                            updateDashboard();
+                            if (typeof window.renderMapMarkers === 'function') {
+                                window.renderMapMarkers();
+                            }
+                            if (typeof window.updateMapStatistics === 'function') {
+                                window.updateMapStatistics();
+                            }
+                            showNotification('Restore berhasil (format JSON langsung)', 'success');
+                            fileInput.value = '';
+                            document.getElementById('restoreDataBtn').disabled = true;
+                            return;
+                        } catch (jsonError) {
+                            throw new Error('Format file tidak dikenali');
                         }
-                    } 
-                    else {
-                        let jsonStr = content;
-                        if(content.includes('=')) {
-                            jsonStr = content.substring(content.indexOf('=') + 1);
-                            jsonStr = jsonStr.split(';')[0]; 
-                        }
-                        newData = JSON.parse(jsonStr);
                     }
                     
-                    if(!Array.isArray(newData)) throw new Error("Format data tidak valid");
-
-                    let addedCount = 0;
-                    newData.forEach(newItem => {
-                        const existingIndex = appData.findIndex(d => d.nik === newItem.nik);
-                        if(existingIndex <= -1) {
-                            appData.push(newItem);
-                            addedCount++;
-                        }
-                    });
-
+                    if (!encryptedData) throw new Error('Data terenkripsi tidak ditemukan');
+                    
+                    const restoredData = JSON.parse(atob(encryptedData));
+                    
+                    // Merge data lama dengan data baru (smart restore)
+                    const existingNik = new Set(appData.map(d => d.nik));
+                    const newData = restoredData.filter(d => !existingNik.has(d.nik));
+                    
+                    if (newData.length === 0) {
+                        showNotification('Tidak ada data baru untuk di-restore', 'warning');
+                        return;
+                    }
+                    
+                    appData = [...appData, ...newData];
                     saveData();
                     renderDataTable();
                     updateDashboard();
-                    if (map) {
-                        renderMapMarkers();
-                        updateMapStatistics();
+                    if (typeof window.renderMapMarkers === 'function') {
+                        window.renderMapMarkers();
                     }
-                    checkGlobalDuplicates();
+                    if (typeof window.updateMapStatistics === 'function') {
+                        window.updateMapStatistics();
+                    }
                     
-                    const msgType = isEncrypted ? 'Database Terenkripsi' : 'Database Lama';
-                    showNotification(`Restore Sukses (${msgType}): ${addedCount} data baru ditambahkan.`, 'success');
-                    input.value = ''; 
+                    showNotification(`Restore berhasil: ${newData.length} data baru ditambahkan`, 'success');
+                    fileInput.value = '';
                     document.getElementById('restoreDataBtn').disabled = true;
                     
-                } catch(err) {
-                    console.error(err);
-                    showNotification('Gagal memproses file. Pastikan file adalah reload.js yang valid.', 'error');
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification(`Gagal restore: ${error.message}`, 'error');
                 }
             };
+            
+            reader.onerror = function() {
+                showNotification('Gagal membaca file', 'error');
+            };
+            
             reader.readAsText(file);
         }
 
-        function handleReloadRepo() {
-            const btn = document.getElementById('btn-reload-repo');
-            const icon = btn.querySelector('i');
-            icon.classList.add('fa-spin');
+        // Fungsi untuk generate ID Card dengan error handling
+        function safeGenerateIDCard(id) {
+            const loadingEl = document.getElementById('idcardLoading');
             
-            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
-                try {
-                    const encrypted = window.SIMATA_BACKUP_ENCRYPTED;
-                    const decrypted = decodeURIComponent(escape(window.atob(encrypted)));
-                    const newData = JSON.parse(decrypted);
-
-                    if(Array.isArray(newData)) {
-                        let count = 0;
-                        newData.forEach(newItem => {
-                            if (!appData.some(d => d.nik === newItem.nik)) {
-                                appData.push(newItem);
-                                count++;
-                            }
-                        });
-                        saveData();
-                        if (map) {
-                            renderMapMarkers();
-                            updateMapStatistics();
+            try {
+                const d = appData.find(item => item.id == id);
+                if(!d) {
+                    showNotification('Data nelayan tidak ditemukan!', 'error');
+                    return;
+                }
+                
+                loadingEl.classList.add('active');
+                
+                if (typeof window.generateSimataIDCard === 'function') {
+                    setTimeout(() => {
+                        try {
+                            window.generateSimataIDCard(d);
+                        } catch (error) {
+                            console.error('Error in generateSimataIDCard:', error);
+                            showNotification('Gagal membuat ID Card. Silakan coba lagi.', 'error');
+                        } finally {
+                            loadingEl.classList.remove('active');
                         }
-                        showNotification(`Sinkronisasi Berhasil: ${count} data baru dimuat dari Server.`, 'success');
-                        setTimeout(() => location.reload(), 1500);
-                        return;
-                    }
-                } catch (e) {
-                    console.error("Decrypt error", e);
-                }
-            }
-
-            setTimeout(() => {
-                icon.classList.remove('fa-spin');
-                if (typeof window.SIMATA_BACKUP_ENCRYPTED === 'undefined') {
-                    showNotification('File reload.js belum terdeteksi di server hosting.', 'warning');
+                    }, 100);
                 } else {
-                    window.location.reload(); 
+                    showNotification('Fitur ID Card sedang dimuat...', 'info');
+                    setTimeout(() => {
+                        if (typeof window.generateSimataIDCard === 'function') {
+                            window.generateSimataIDCard(d);
+                        } else {
+                            downloadSinglePdf(id);
+                            showNotification('ID Card tidak tersedia, mengunduh PDF detail sebagai ganti.', 'warning');
+                        }
+                        loadingEl.classList.remove('active');
+                    }, 1000);
                 }
-            }, 1000);
+            } catch (error) {
+                console.error('Error in safeGenerateIDCard:', error);
+                showNotification('Gagal membuat ID Card, coba lagi!', 'error');
+                loadingEl.classList.remove('active');
+            }
         }
 
-        // --- UTILITIES ---
         function showNotification(message, type = 'info') {
             const toastEl = document.querySelector('.notification-toast');
-            const toastBody = document.getElementById('toastMessage');
             const toastTitle = document.getElementById('toastTitle');
-            const bsToast = new bootstrap.Toast(toastEl);
+            const toastMessage = document.getElementById('toastMessage');
             
-            toastBody.textContent = message;
+            let title = 'Notifikasi';
+            let bgClass = 'bg-primary';
             
-            if(type === 'success') {
-                toastEl.classList.remove('bg-danger', 'bg-warning', 'text-white');
-                toastEl.classList.add('bg-success', 'text-white');
-                toastTitle.className = 'me-auto text-white';
-                toastTitle.innerHTML = '<i class="fas fa-check-circle me-2"></i>Berhasil';
-            } else if(type === 'error') {
-                toastEl.classList.remove('bg-success', 'bg-warning', 'text-white');
-                toastEl.classList.add('bg-danger', 'text-white');
-                toastTitle.className = 'me-auto text-white';
-                toastTitle.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Gagal';
-            } else if(type === 'warning') {
-                toastEl.classList.remove('bg-success', 'bg-danger', 'text-white');
-                toastEl.classList.add('bg-warning', 'text-dark');
-                toastTitle.className = 'me-auto text-dark';
-                toastTitle.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Peringatan';
-            } else {
-                toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'text-white');
-                toastTitle.className = 'me-auto';
-                toastTitle.textContent = 'Notifikasi';
+            switch(type) {
+                case 'success':
+                    title = 'Sukses!';
+                    bgClass = 'bg-success';
+                    break;
+                case 'error':
+                    title = 'Error!';
+                    bgClass = 'bg-danger';
+                    break;
+                case 'warning':
+                    title = 'Peringatan!';
+                    bgClass = 'bg-warning';
+                    break;
+                case 'info':
+                default:
+                    title = 'Informasi';
+                    bgClass = 'bg-primary';
+                    break;
             }
             
-            bsToast.show();
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
         }
 
+        // Ekspos fungsi-fungsi penting ke window agar bisa diakses dari file lain
+        window.maskData = maskData;
+        window.viewDetail = viewDetail;
+        window.editData = editData;
+        window.deleteData = deleteData;
+        window.safeGenerateIDCard = safeGenerateIDCard;
+        window.showNotification = showNotification;
+        window.printData = printData;
+        window.getCoordinatesForLocation = function(kecamatan, desa) {
+            if (typeof window.getCoordinatesForLocation === 'function') {
+                return window.getCoordinatesForLocation(kecamatan, desa);
+            }
+            return [-7.7068, 113.9142]; // Default fallback
+        };
+
+        console.log('✅ SIMATA Application v5.3 initialized successfully');
+        console.log('✅ Security system changed from period-based to CAPTCHA');
+        console.log('✅ CAPTCHA security system active');
     </script>
 </body>
 </html>
