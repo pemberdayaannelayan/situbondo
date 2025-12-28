@@ -2508,7 +2508,7 @@
         }
 
         // =====================================================
-        // PERBAIKAN FITUR VERIFIKASI KIN - VERSI DIPERBAIKI
+        // PERBAIKAN FITUR VERIFIKASI KIN - VERSI DIPERBAIKI TANPA BUG
         // =====================================================
         function verifyKIN() {
             const input = document.getElementById('verifyInput').value.trim();
@@ -2526,29 +2526,29 @@
             // Show loading
             loading.style.display = 'flex';
             
-            // Delay untuk simulasi proses (bisa dihapus di produksi)
+            // Cari data
+            let found = null;
+            
+            // Cari berdasarkan NIK (16 digit)
+            if (input.match(/^\d{16}$/)) {
+                found = appData.find(item => item.nik === input);
+            } 
+            // Cari berdasarkan Kode Validasi (format: VLD-XXXXXX)
+            else if (input.match(/^VLD-[A-Z0-9]{6}$/i)) {
+                const upperInput = input.toUpperCase();
+                found = appData.find(item => {
+                    // Pastikan kodeValidasi ada dan bandingkan
+                    return item.kodeValidasi && item.kodeValidasi.toUpperCase() === upperInput;
+                });
+            }
+            
+            // Simulasi loading
             setTimeout(() => {
-                let found = null;
-                
-                // Validasi input dan pencarian data
-                if (input.match(/^\d{16}$/)) {
-                    // Input adalah NIK (16 digit)
-                    found = appData.find(item => item.nik === input);
-                } else if (input.match(/^VLD-[A-Z0-9]{6}$/i)) {
-                    // Input adalah Kode Validasi (case insensitive)
-                    const upperInput = input.toUpperCase();
-                    found = appData.find(item => item.kodeValidasi && item.kodeValidasi.toUpperCase() === upperInput);
-                } else {
-                    loading.style.display = 'none';
-                    showNotification('Format tidak valid! Masukkan NIK 16 digit atau Kode Validasi (contoh: VLD-ABCDEF)', 'error');
-                    return;
-                }
-                
                 loading.style.display = 'none';
                 
                 if (found) {
-                    // Generate HTML untuk hasil verifikasi sukses
-                    let profesiColor = 'badge bg-primary';
+                    // Tampilkan hasil verifikasi berhasil
+                    let profesiColor = 'bg-primary';
                     if(found.profesi === 'Nelayan Penuh Waktu') profesiColor = 'badge-profesi-penuh';
                     else if(found.profesi === 'Nelayan Sambilan Utama') profesiColor = 'badge-profesi-sambilan-utama';
                     else if(found.profesi === 'Nelayan Sambilan Tambahan') profesiColor = 'badge-profesi-sambilan-tambahan';
@@ -2623,8 +2623,13 @@
                         </div>
                     `;
                     resultContainer.innerHTML = resultHTML;
+                    
+                    // Update breadcrumb
+                    document.querySelectorAll('.verify-breadcrumb-item')[1].classList.add('active');
+                    
+                    showNotification('Verifikasi berhasil! Data KIN valid.', 'success');
                 } else {
-                    // Generate HTML untuk hasil verifikasi gagal
+                    // Tampilkan hasil verifikasi gagal
                     const resultHTML = `
                         <div class="verify-result error animate__animated animate__shakeX">
                             <div class="verify-result-icon">
@@ -2651,12 +2656,10 @@
                         </div>
                     `;
                     resultContainer.innerHTML = resultHTML;
+                    
+                    showNotification('Verifikasi gagal! Data tidak ditemukan.', 'error');
                 }
-                
-                // Update breadcrumb
-                document.querySelectorAll('.verify-breadcrumb-item')[1].classList.add('active');
-                
-            }, 500);
+            }, 800);
         }
 
         function toggleFAQ(index) {
