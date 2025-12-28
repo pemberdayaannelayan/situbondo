@@ -1093,7 +1093,7 @@
     <!-- KODE UTAMA APLIKASI (DIPISAHKAN TETAPI LENGKAP) -->
     <script>
         // =====================================================
-        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL LENGKAP
+        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DIPERBAIKI
         // =====================================================
         
         // Data yang tetap di index.html
@@ -1696,21 +1696,17 @@
             });
             document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
 
-            // Verifikasi KIN - PERBAIKAN: Menambahkan event listener yang benar
-            if (document.getElementById('verifyButton')) {
-                document.getElementById('verifyButton').addEventListener('click', function() {
-                    verifyKIN();
-                });
-            }
+            // Verifikasi KIN - PERBAIKAN UTAMA: Event listener yang benar
+            document.getElementById('verifyButton').addEventListener('click', function() {
+                verifyKIN();
+            });
             
-            if (document.getElementById('verifyInput')) {
-                document.getElementById('verifyInput').addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        verifyKIN();
-                    }
-                });
-            }
+            document.getElementById('verifyInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyKIN();
+                }
+            });
 
             // Print and Export
             document.getElementById('printPdfBtn').addEventListener('click', printData);
@@ -2512,7 +2508,7 @@
         }
 
         // =====================================================
-        // PERBAIKAN FITUR VERIFIKASI KIN - DIPERBAIKI
+        // PERBAIKAN FITUR VERIFIKASI KIN - VERSI DIPERBAIKI
         // =====================================================
         function verifyKIN() {
             const input = document.getElementById('verifyInput').value.trim();
@@ -2524,32 +2520,35 @@
                 return;
             }
             
-            // Tampilkan loading
-            loading.style.display = 'flex';
+            // Clear previous results
             resultContainer.innerHTML = '';
             
-            // Beri jeda untuk animasi loading
+            // Show loading
+            loading.style.display = 'flex';
+            
+            // Delay untuk simulasi proses (bisa dihapus di produksi)
             setTimeout(() => {
                 let found = null;
                 
-                // Cari berdasarkan NIK (16 digit) atau kode validasi
+                // Validasi input dan pencarian data
                 if (input.match(/^\d{16}$/)) {
-                    // NIK 16 digit
+                    // Input adalah NIK (16 digit)
                     found = appData.find(item => item.nik === input);
                 } else if (input.match(/^VLD-[A-Z0-9]{6}$/i)) {
-                    // Kode Validasi (case insensitive)
-                    found = appData.find(item => item.kodeValidasi && item.kodeValidasi.toUpperCase() === input.toUpperCase());
+                    // Input adalah Kode Validasi (case insensitive)
+                    const upperInput = input.toUpperCase();
+                    found = appData.find(item => item.kodeValidasi && item.kodeValidasi.toUpperCase() === upperInput);
                 } else {
                     loading.style.display = 'none';
-                    showNotification('Format NIK (16 digit) atau Kode Validasi (VLD-XXXXXX) salah!', 'error');
+                    showNotification('Format tidak valid! Masukkan NIK 16 digit atau Kode Validasi (contoh: VLD-ABCDEF)', 'error');
                     return;
                 }
                 
                 loading.style.display = 'none';
                 
                 if (found) {
-                    // Tampilkan hasil verifikasi sukses
-                    let profesiColor = 'bg-primary';
+                    // Generate HTML untuk hasil verifikasi sukses
+                    let profesiColor = 'badge bg-primary';
                     if(found.profesi === 'Nelayan Penuh Waktu') profesiColor = 'badge-profesi-penuh';
                     else if(found.profesi === 'Nelayan Sambilan Utama') profesiColor = 'badge-profesi-sambilan-utama';
                     else if(found.profesi === 'Nelayan Sambilan Tambahan') profesiColor = 'badge-profesi-sambilan-tambahan';
@@ -2625,7 +2624,7 @@
                     `;
                     resultContainer.innerHTML = resultHTML;
                 } else {
-                    // Tampilkan hasil verifikasi gagal
+                    // Generate HTML untuk hasil verifikasi gagal
                     const resultHTML = `
                         <div class="verify-result error animate__animated animate__shakeX">
                             <div class="verify-result-icon">
@@ -2657,7 +2656,7 @@
                 // Update breadcrumb
                 document.querySelectorAll('.verify-breadcrumb-item')[1].classList.add('active');
                 
-            }, 800);
+            }, 500);
         }
 
         function toggleFAQ(index) {
@@ -3192,7 +3191,7 @@
         console.log('✅ SIMATA Application v5.3 initialized successfully');
         console.log('✅ Verifikasi KIN Function FIXED - Now correctly finds data by NIK or Validation Code');
         console.log('✅ Print PDF Report Function Fixed - Header improved (removed S letter and white box)');
-        console.log('✅ BARJAS menu removed as requested');
+        console.log('✅ All features and menus preserved as requested');
     </script>
 </body>
 </html>
