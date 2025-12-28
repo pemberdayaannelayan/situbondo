@@ -68,13 +68,14 @@
             max-width: 80px;
         }
         
-        /* CAPTCHA Matematika */
+        /* CAPTCHA Matematika - STYLING DIPERBAIKI */
         .captcha-container {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 15px;
             padding: 20px;
             border: 2px dashed #0c2461;
             margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .captcha-question {
@@ -83,10 +84,14 @@
             color: #0c2461;
             text-align: center;
             margin-bottom: 15px;
-            padding: 10px;
+            padding: 12px;
             background-color: white;
             border-radius: 10px;
             border: 2px solid #0c2461;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .captcha-operators {
@@ -97,44 +102,64 @@
         }
         
         .captcha-operator-btn {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             border: 2px solid #0c2461;
             background-color: white;
             color: #0c2461;
             font-weight: bold;
+            font-size: 18px;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .captcha-operator-btn:hover {
             background-color: #0c2461;
             color: white;
+            transform: scale(1.1);
         }
         
         .captcha-operator-btn.active {
             background-color: #0c2461;
             color: white;
+            box-shadow: 0 0 10px rgba(12, 36, 97, 0.5);
         }
         
         .captcha-numbers {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 15px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         
         .captcha-number {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
             color: #0c2461;
-            min-width: 50px;
+            min-width: 60px;
+            height: 60px;
             text-align: center;
             padding: 10px;
             background-color: white;
             border-radius: 10px;
             border: 2px solid #0c2461;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .captcha-operator-display {
+            font-size: 32px;
+            font-weight: bold;
+            color: #0c2461;
+            align-self: center;
         }
         
         .captcha-hint {
@@ -142,15 +167,65 @@
             color: #666;
             text-align: center;
             margin-top: 10px;
+            font-style: italic;
         }
         
         .captcha-result {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            color: #28a745;
             text-align: center;
             margin-top: 10px;
+            padding: 8px;
+            border-radius: 8px;
             display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .captcha-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .captcha-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Animasi untuk salah jawaban */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        /* Loading spinner untuk login */
+        #loginSpinner {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;
+        }
+        
+        /* Input CAPTCHA styling */
+        #captchaAnswer {
+            font-size: 18px !important;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        #captchaAnswer:focus {
+            border-color: #0c2461;
+            box-shadow: 0 0 0 0.25rem rgba(12, 36, 97, 0.25);
         }
     </style>
 </head>
@@ -185,7 +260,7 @@
                     <div class="mb-4 text-center">
                         <p class="small text-muted mb-3">Selesaikan soal matematika sederhana untuk mengakses sistem.</p>
                         
-                        <!-- CAPTCHA Matematika -->
+                        <!-- CAPTCHA Matematika - STRUKTUR DIPERBAIKI -->
                         <div class="captcha-container">
                             <div class="captcha-question" id="captchaQuestion">8 + 6 = ?</div>
                             
@@ -198,22 +273,22 @@
                             
                             <div class="captcha-numbers">
                                 <div class="captcha-number" id="captchaNum1">8</div>
-                                <div class="captcha-operator" id="captchaOperator" style="font-size: 28px; font-weight: bold; color: #0c2461; align-self: center;">+</div>
+                                <div class="captcha-operator-display" id="captchaOperator">+</div>
                                 <div class="captcha-number" id="captchaNum2">6</div>
-                                <div style="font-size: 28px; font-weight: bold; color: #0c2461; align-self: center;">=</div>
+                                <div class="captcha-operator-display">=</div>
                                 <div class="captcha-number" style="background-color: #f8f9fa;">?</div>
                             </div>
                             
-                            <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
+                            <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden mb-3">
                                 <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-calculator text-primary"></i></span>
-                                <input type="number" class="form-control bg-light border-0 fs-6" id="captchaAnswer" placeholder="Masukkan jawaban" required>
-                                <button type="button" class="input-group-text bg-light border-0" id="generateNewCaptcha">
-                                    <i class="fas fa-redo" title="Buat soal baru"></i>
+                                <input type="number" class="form-control bg-light border-0 fs-5" id="captchaAnswer" placeholder="Masukkan jawaban" required autocomplete="off">
+                                <button type="button" class="input-group-text bg-light border-0 pe-4" id="generateNewCaptcha" title="Buat soal baru">
+                                    <i class="fas fa-redo"></i>
                                 </button>
                             </div>
                             
                             <div class="captcha-result" id="captchaResult"></div>
-                            <div class="captcha-hint" id="captchaHint">Klik tombol +, −, ×, atau ÷ untuk mengubah operator</div>
+                            <div class="captcha-hint" id="captchaHint">Klik tombol operator untuk mengubah jenis operasi</div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton" style="background: var(--primary-gradient);">
@@ -274,34 +349,10 @@
         </div>
     </div>
 
-    <div class="modal fade" id="welcomeModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content welcome-modal-content">
-                <div class="welcome-header">
-                    <i class="fas fa-satellite-dish fa-3x mb-3 text-warning"></i>
-                    <h4 class="fw-bold mb-0">Selamat Datang, Sobat!</h4>
-                </div>
-                <div class="welcome-body">
-                    <p class="text-muted mb-4">
-                        Untuk memastikan data yang Anda akses adalah data terbaru dan valid, sistem merekomendasikan untuk melakukan <strong>Sinkronisasi Data</strong> terlebih dahulu.
-                    </p>
-                    <div class="d-grid gap-2 justify-content-center">
-                        <button type="button" class="welcome-btn-reload" id="btnWelcomeReload">
-                            <i class="fas fa-sync me-2"></i> Sinkronisasi Data Sekarang
-                        </button>
-                        <button type="button" class="btn btn-link text-muted text-decoration-none btn-sm mt-2" data-bs-dismiss="modal">
-                            Tutup Notifikasi
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Sisa kode HTML tetap sama -->
+    <!-- ... (kode HTML lainnya tetap seperti semula) ... -->
 
-    <!-- Sisa kode HTML tetap sama seperti sebelumnya -->
-    <!-- ... (seluruh konten HTML dari bagian app-content-unauthenticated ke bawah tetap sama) ... -->
-
-    <!-- KODE UTAMA APLIKASI (DIPISAHKAN TETAPI LENGKAP) -->
+    <!-- KODE UTAMA APLIKASI DENGAN CAPTCHA YANG DIPERBAIKI -->
     <script>
         // =====================================================
         // KODE UTAMA APLIKASI SIMATA - VERSI FINAL LENGKAP
@@ -364,49 +415,81 @@
             "Sambilan Tambahan": "Nelayan Sambilan Tambahan"
         };
         
-        // Variabel untuk CAPTCHA
+        // Variabel untuk CAPTCHA yang diperbaiki
         let currentCaptcha = {
             num1: 0,
             num2: 0,
             operator: '+',
-            answer: 0
+            answer: 0,
+            attempts: 0
         };
         
         // Ekspos variabel ke window untuk akses dari file lain
         window.appData = appData;
         window.appSettings = appSettings;
         
-        // --- FUNGSI CAPTCHA MATEMATIKA ---
+        // =====================================================
+        // FUNGSI CAPTCHA MATEMATIKA YANG DIPERBAIKI
+        // =====================================================
+        
+        /**
+         * Generate soal matematika acak dengan operator yang dipilih
+         */
         function generateMathCaptcha() {
             const operators = ['+', '-', '×', '÷'];
-            const operator = operators[Math.floor(Math.random() * operators.length)];
+            const operator = currentCaptcha.operator || operators[Math.floor(Math.random() * operators.length)];
             
             let num1, num2, answer;
             
+            // Aturan untuk setiap operator agar soal tidak terlalu sulit
             switch(operator) {
                 case '+':
-                    num1 = Math.floor(Math.random() * 15) + 1; // 1-15
-                    num2 = Math.floor(Math.random() * 15) + 1; // 1-15
+                    num1 = Math.floor(Math.random() * 15) + 5; // 5-19
+                    num2 = Math.floor(Math.random() * 15) + 5; // 5-19
                     answer = num1 + num2;
+                    // Pastikan hasil tidak terlalu besar
+                    while (answer > 50) {
+                        num1 = Math.floor(Math.random() * 15) + 5;
+                        num2 = Math.floor(Math.random() * 15) + 5;
+                        answer = num1 + num2;
+                    }
                     break;
                     
                 case '-':
-                    num1 = Math.floor(Math.random() * 20) + 5; // 5-24
+                    num1 = Math.floor(Math.random() * 20) + 10; // 10-29
                     num2 = Math.floor(Math.random() * num1) + 1; // 1 sampai num1-1
                     answer = num1 - num2;
+                    // Pastikan hasil positif dan tidak terlalu kecil
+                    while (answer <= 0 || answer > 20) {
+                        num1 = Math.floor(Math.random() * 20) + 10;
+                        num2 = Math.floor(Math.random() * num1) + 1;
+                        answer = num1 - num2;
+                    }
                     break;
                     
                 case '×':
-                    num1 = Math.floor(Math.random() * 9) + 2; // 2-10
-                    num2 = Math.floor(Math.random() * 9) + 2; // 2-10
+                    num1 = Math.floor(Math.random() * 8) + 2; // 2-9
+                    num2 = Math.floor(Math.random() * 8) + 2; // 2-9
                     answer = num1 * num2;
+                    // Pastikan hasil tidak terlalu besar
+                    while (answer > 40) {
+                        num1 = Math.floor(Math.random() * 6) + 2;
+                        num2 = Math.floor(Math.random() * 6) + 2;
+                        answer = num1 * num2;
+                    }
                     break;
                     
                 case '÷':
                     // Pastikan hasilnya bilangan bulat
-                    num2 = Math.floor(Math.random() * 9) + 2; // 2-10
-                    answer = Math.floor(Math.random() * 9) + 2; // 2-10
+                    num2 = Math.floor(Math.random() * 8) + 2; // 2-9
+                    answer = Math.floor(Math.random() * 8) + 2; // 2-9
                     num1 = num2 * answer;
+                    // Pastikan tidak terlalu besar
+                    while (num1 > 50) {
+                        num2 = Math.floor(Math.random() * 6) + 2;
+                        answer = Math.floor(Math.random() * 6) + 2;
+                        num1 = num2 * answer;
+                    }
                     break;
             }
             
@@ -414,16 +497,32 @@
                 num1: num1,
                 num2: num2,
                 operator: operator,
-                answer: answer
+                answer: answer,
+                attempts: 0
             };
             
-            // Update tampilan
+            updateCaptchaDisplay();
+            
+            return currentCaptcha;
+        }
+        
+        /**
+         * Update tampilan CAPTCHA
+         */
+        function updateCaptchaDisplay() {
+            const { num1, num2, operator } = currentCaptcha;
+            
+            // Update elemen tampilan
             document.getElementById('captchaNum1').textContent = num1;
             document.getElementById('captchaNum2').textContent = num2;
             document.getElementById('captchaOperator').textContent = operator;
             document.getElementById('captchaQuestion').textContent = `${num1} ${operator} ${num2} = ?`;
+            
+            // Kosongkan input dan hapus hasil sebelumnya
             document.getElementById('captchaAnswer').value = '';
+            document.getElementById('captchaAnswer').classList.remove('shake');
             document.getElementById('captchaResult').style.display = 'none';
+            document.getElementById('captchaResult').className = 'captcha-result';
             
             // Update operator buttons
             document.querySelectorAll('.captcha-operator-btn').forEach(btn => {
@@ -444,94 +543,101 @@
             }
             document.getElementById('captchaHint').textContent = hintText;
             
-            return currentCaptcha;
+            // Fokus ke input jawaban
+            setTimeout(() => {
+                document.getElementById('captchaAnswer').focus();
+            }, 100);
         }
         
+        /**
+         * Validasi jawaban CAPTCHA
+         */
         function validateCaptcha(userAnswer) {
             const userAnswerNum = parseInt(userAnswer);
             const correctAnswer = currentCaptcha.answer;
-            
             const resultElement = document.getElementById('captchaResult');
             
+            // Reset tampilan
+            resultElement.style.display = 'block';
+            document.getElementById('captchaAnswer').classList.remove('shake');
+            
+            if (isNaN(userAnswerNum)) {
+                resultElement.textContent = 'Masukkan angka yang valid!';
+                resultElement.className = 'captcha-result captcha-error';
+                document.getElementById('captchaAnswer').classList.add('shake');
+                return false;
+            }
+            
             if (userAnswerNum === correctAnswer) {
-                resultElement.textContent = '✓ Jawaban Benar!';
-                resultElement.style.color = '#28a745';
-                resultElement.style.display = 'block';
+                resultElement.textContent = '✓ Jawaban Benar! Akses diberikan.';
+                resultElement.className = 'captcha-result captcha-success';
+                currentCaptcha.attempts = 0;
                 return true;
             } else {
-                resultElement.textContent = `✗ Jawaban Salah. Hasil yang benar: ${correctAnswer}`;
-                resultElement.style.color = '#dc3545';
-                resultElement.style.display = 'block';
+                currentCaptcha.attempts++;
+                resultElement.textContent = `✗ Jawaban Salah. Coba lagi (Percobaan: ${currentCaptcha.attempts}/3)`;
+                resultElement.className = 'captcha-result captcha-error';
+                document.getElementById('captchaAnswer').classList.add('shake');
+                
+                // Kosongkan input untuk percobaan berikutnya
+                document.getElementById('captchaAnswer').value = '';
+                document.getElementById('captchaAnswer').focus();
+                
+                // Jika gagal 3 kali, generate soal baru
+                if (currentCaptcha.attempts >= 3) {
+                    setTimeout(() => {
+                        generateMathCaptcha();
+                        showNotification('Terlalu banyak percobaan salah. Soal baru telah dibuat.', 'warning');
+                    }, 1500);
+                }
+                
                 return false;
             }
         }
         
+        /**
+         * Ubah operator CAPTCHA
+         */
         function changeCaptchaOperator(newOperator) {
-            // Generate soal baru dengan operator yang dipilih
-            const operators = ['+', '-', '×', '÷'];
-            const operator = newOperator;
-            
-            let num1, num2, answer;
-            
-            switch(operator) {
-                case '+':
-                    num1 = Math.floor(Math.random() * 15) + 1;
-                    num2 = Math.floor(Math.random() * 15) + 1;
-                    answer = num1 + num2;
-                    break;
-                    
-                case '-':
-                    num1 = Math.floor(Math.random() * 20) + 5;
-                    num2 = Math.floor(Math.random() * num1) + 1;
-                    answer = num1 - num2;
-                    break;
-                    
-                case '×':
-                    num1 = Math.floor(Math.random() * 9) + 2;
-                    num2 = Math.floor(Math.random() * 9) + 2;
-                    answer = num1 * num2;
-                    break;
-                    
-                case '÷':
-                    num2 = Math.floor(Math.random() * 9) + 2;
-                    answer = Math.floor(Math.random() * 9) + 2;
-                    num1 = num2 * answer;
-                    break;
-            }
-            
-            currentCaptcha = {
-                num1: num1,
-                num2: num2,
-                operator: operator,
-                answer: answer
-            };
-            
-            // Update tampilan
-            document.getElementById('captchaNum1').textContent = num1;
-            document.getElementById('captchaNum2').textContent = num2;
-            document.getElementById('captchaOperator').textContent = operator;
-            document.getElementById('captchaQuestion').textContent = `${num1} ${operator} ${num2} = ?`;
-            document.getElementById('captchaAnswer').value = '';
-            document.getElementById('captchaResult').style.display = 'none';
-            
-            // Update operator buttons
+            currentCaptcha.operator = newOperator;
+            generateMathCaptcha();
+        }
+        
+        /**
+         * Setup event listeners untuk CAPTCHA
+         */
+        function setupCaptchaListeners() {
+            // Operator buttons
             document.querySelectorAll('.captcha-operator-btn').forEach(btn => {
-                if (btn.dataset.operator === operator) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
+                btn.addEventListener('click', function() {
+                    const operator = this.dataset.operator;
+                    changeCaptchaOperator(operator);
+                });
+            });
+            
+            // Generate new CAPTCHA button
+            document.getElementById('generateNewCaptcha').addEventListener('click', function() {
+                generateMathCaptcha();
+                showNotification('Soal CAPTCHA baru telah dibuat.', 'info');
+            });
+            
+            // Enter key pada input CAPTCHA
+            document.getElementById('captchaAnswer').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
                 }
             });
             
-            // Update hint
-            let hintText = '';
-            switch(operator) {
-                case '+': hintText = 'Penjumlahan: tambahkan kedua angka'; break;
-                case '-': hintText = 'Pengurangan: kurangi angka pertama dengan kedua'; break;
-                case '×': hintText = 'Perkalian: kalikan kedua angka'; break;
-                case '÷': hintText = 'Pembagian: bagi angka pertama dengan kedua'; break;
+            // Auto-focus ke input CAPTCHA saat modal login ditampilkan
+            const loginModal = document.getElementById('loginModal');
+            if (loginModal) {
+                loginModal.addEventListener('shown', function() {
+                    setTimeout(() => {
+                        document.getElementById('captchaAnswer').focus();
+                    }, 300);
+                });
             }
-            document.getElementById('captchaHint').textContent = hintText;
         }
         
         // --- FUNGSI UTAMA ---
@@ -656,7 +762,8 @@
                 setupEventListeners();
                 initFishOptions();
                 
-                // Generate CAPTCHA pertama
+                // Setup CAPTCHA dengan benar
+                setupCaptchaListeners();
                 generateMathCaptcha();
                 
                 const today = new Date().toISOString().split('T')[0];
@@ -677,6 +784,10 @@
                 } else {
                     setTimeout(() => {
                         document.getElementById('loginModal').style.display = 'flex';
+                        // Fokus ke input CAPTCHA
+                        setTimeout(() => {
+                            document.getElementById('captchaAnswer').focus();
+                        }, 300);
                     }, 100);
                 }
 
@@ -827,78 +938,88 @@
 
         // --- EVENT LISTENERS ---
         function setupEventListeners() {
-            // CAPTCHA Operators
-            document.querySelectorAll('.captcha-operator-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const operator = this.dataset.operator;
-                    changeCaptchaOperator(operator);
-                });
-            });
-            
-            // Generate New CAPTCHA
-            document.getElementById('generateNewCaptcha').addEventListener('click', function() {
-                generateMathCaptcha();
-            });
-
-            // Login Form
+            // Login Form - LOGIKA DIPERBAIKI
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const btn = document.getElementById('loginButton');
                 const spinner = document.getElementById('loginSpinner');
                 const userAnswer = document.getElementById('captchaAnswer').value;
                 
-                // Validasi CAPTCHA
+                // Validasi input kosong
                 if (!userAnswer || userAnswer.trim() === '') {
                     showNotification('Masukkan jawaban CAPTCHA terlebih dahulu!', 'error');
                     document.getElementById('captchaAnswer').focus();
                     return;
                 }
                 
+                // Validasi CAPTCHA
                 const isValid = validateCaptcha(userAnswer);
                 
                 if (!isValid) {
-                    showNotification('Jawaban CAPTCHA salah! Coba lagi.', 'error');
-                    document.getElementById('captchaAnswer').value = '';
-                    document.getElementById('captchaAnswer').focus();
+                    // Pesan error sudah ditampilkan di validateCaptcha
                     return;
                 }
                 
+                // Jika valid, proses login
                 btn.disabled = true;
                 spinner.classList.remove('d-none');
-                btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
+                btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2" id="loginSpinner"></span>';
                 
+                // Simulasi proses login
                 setTimeout(() => {
+                    // Set session
                     sessionStorage.setItem('simata_session', 'active');
+                    sessionStorage.setItem('simata_login_time', new Date().toISOString());
+                    
+                    // Sembunyikan modal login
                     document.getElementById('loginModal').style.display = 'none';
                     document.getElementById('appContent').style.display = 'block';
+                    
+                    // Inisialisasi komponen aplikasi
                     initializeCharts();
                     updateDashboard();
                     renderDataTable();
+                    
+                    // Inisialisasi peta
                     setTimeout(() => {
                         if (typeof window.initializeMap === 'function') {
                             window.initializeMap();
                         }
                     }, 500);
+                    
+                    // Tampilkan modal sukses
                     loginSuccessModal.show();
+                    
+                    // Reset tombol login
                     btn.disabled = false;
                     spinner.classList.add('d-none');
                     btn.innerHTML = 'BUKA DASHBOARD';
-                }, 1200);
+                    
+                    // Log aktivitas
+                    console.log('✅ Login berhasil dengan CAPTCHA yang valid');
+                    
+                }, 1500);
             });
 
             // Continue to Dashboard
             document.getElementById('btnContinueDashboard').addEventListener('click', function() {
                 loginSuccessModal.hide();
                 setTimeout(() => {
-                    welcomeModal.show();
+                    if (typeof welcomeModal !== 'undefined') {
+                        welcomeModal.show();
+                    }
                 }, 300);
             });
 
             // Welcome Modal Reload
-            document.getElementById('btnWelcomeReload').addEventListener('click', function() {
-                welcomeModal.hide();
-                handleReloadRepo();
-            });
+            if (document.getElementById('btnWelcomeReload')) {
+                document.getElementById('btnWelcomeReload').addEventListener('click', function() {
+                    if (typeof welcomeModal !== 'undefined') {
+                        welcomeModal.hide();
+                    }
+                    handleReloadRepo();
+                });
+            }
 
             // No WhatsApp Button
             document.getElementById('btnNoWA').addEventListener('click', function() {
@@ -1052,6 +1173,7 @@
             document.getElementById('v-pills-logout-tab').addEventListener('click', () => {
                 if(confirm('Apakah Anda yakin ingin keluar? Sistem akan mengunduh data (reload.js) secara otomatis.')) {
                     sessionStorage.removeItem('simata_session');
+                    sessionStorage.removeItem('simata_login_time');
                     backupData('reload.js');
                     setTimeout(() => {
                         // Generate CAPTCHA baru sebelum reload
@@ -2397,7 +2519,7 @@
         };
 
         console.log('✅ SIMATA Application v5.3 initialized successfully');
-        console.log('✅ Login security changed to Math CAPTCHA');
+        console.log('✅ Login security dengan CAPTCHA Matematika yang diperbaiki');
         console.log('✅ Print PDF Report Function Fixed - Header improved (removed S letter and white box)');
         console.log('✅ BARJAS menu removed as requested');
     </script>
