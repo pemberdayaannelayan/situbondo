@@ -1696,12 +1696,10 @@
             });
             document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
 
-            // Verifikasi KIN
+            // Verifikasi KIN - PERBAIKAN: Menambahkan event listener yang benar
             if (document.getElementById('verifyButton')) {
                 document.getElementById('verifyButton').addEventListener('click', function() {
-                    if (typeof window.verifyKIN === 'function') {
-                        window.verifyKIN();
-                    }
+                    verifyKIN();
                 });
             }
             
@@ -1709,9 +1707,7 @@
                 document.getElementById('verifyInput').addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        if (typeof window.verifyKIN === 'function') {
-                            window.verifyKIN();
-                        }
+                        verifyKIN();
                     }
                 });
             }
@@ -2516,6 +2512,175 @@
         }
 
         // =====================================================
+        // PERBAIKAN FITUR VERIFIKASI KIN - DIPERBAIKI
+        // =====================================================
+        function verifyKIN() {
+            const input = document.getElementById('verifyInput').value.trim();
+            const loading = document.getElementById('verifyLoading');
+            const resultContainer = document.getElementById('verifyResultContainer');
+            
+            if (!input) {
+                showNotification('Masukkan NIK atau Kode Validasi terlebih dahulu!', 'error');
+                return;
+            }
+            
+            // Tampilkan loading
+            loading.style.display = 'flex';
+            resultContainer.innerHTML = '';
+            
+            // Beri jeda untuk animasi loading
+            setTimeout(() => {
+                let found = null;
+                
+                // Cari berdasarkan NIK (16 digit) atau kode validasi
+                if (input.match(/^\d{16}$/)) {
+                    // NIK 16 digit
+                    found = appData.find(item => item.nik === input);
+                } else if (input.match(/^VLD-[A-Z0-9]{6}$/i)) {
+                    // Kode Validasi (case insensitive)
+                    found = appData.find(item => item.kodeValidasi && item.kodeValidasi.toUpperCase() === input.toUpperCase());
+                } else {
+                    loading.style.display = 'none';
+                    showNotification('Format NIK (16 digit) atau Kode Validasi (VLD-XXXXXX) salah!', 'error');
+                    return;
+                }
+                
+                loading.style.display = 'none';
+                
+                if (found) {
+                    // Tampilkan hasil verifikasi sukses
+                    let profesiColor = 'bg-primary';
+                    if(found.profesi === 'Nelayan Penuh Waktu') profesiColor = 'badge-profesi-penuh';
+                    else if(found.profesi === 'Nelayan Sambilan Utama') profesiColor = 'badge-profesi-sambilan-utama';
+                    else if(found.profesi === 'Nelayan Sambilan Tambahan') profesiColor = 'badge-profesi-sambilan-tambahan';
+                    
+                    const resultHTML = `
+                        <div class="verify-result success animate__animated animate__fadeIn">
+                            <div class="verify-result-icon">
+                                <i class="fas fa-check-circle fa-4x text-success"></i>
+                            </div>
+                            <h5 class="verify-result-title text-success mb-3">KARTU IDENTITAS NELAYAN (KIN) VALID</h5>
+                            <div class="verify-result-details bg-light p-4 rounded-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="verify-result-item mb-3">
+                                            <span class="verify-result-label fw-bold">Nama Lengkap</span>
+                                            <span class="verify-result-value fs-5">${found.nama}</span>
+                                        </div>
+                                        <div class="verify-result-item mb-3">
+                                            <span class="verify-result-label fw-bold">NIK</span>
+                                            <span class="verify-result-value font-monospace">${found.nik}</span>
+                                        </div>
+                                        <div class="verify-result-item mb-3">
+                                            <span class="verify-result-label fw-bold">Kode Validasi</span>
+                                            <span class="verify-result-value badge bg-warning text-dark fs-6">${found.kodeValidasi || 'Tidak ada'}</span>
+                                        </div>
+                                        <div class="verify-result-item mb-3">
+                                            <span class="verify-result-label fw-bold">Domisili</span>
+                                            <span class="verify-result-value"><i class="fas fa-map-marker-alt me-1 text-primary"></i>${found.desa}, ${found.kecamatan}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="verify-result-item mb-3">
+                                            <span class="verify-result-label fw-bold">Profesi</span>
+                                            <span class="verify-result-value"><span class="badge ${profesiColor} fs-6">${found.profesi}</span></span>
+                                        </div>
+                                        <div class="verify-result-item mb-3">
+                                            <span class="verify-result-label fw-bold">Status</span>
+                                            <span class="verify-result-value"><span class="badge ${found.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">${found.status}</span></span>
+                                        </div>
+                                        <div class="verify-result-item mb-3">
+                                            <span class="verify-result-label fw-bold">Alat Tangkap</span>
+                                            <span class="verify-result-value badge bg-warning text-dark">${found.alatTangkap}</span>
+                                        </div>
+                                        <div class="verify-result-item mb-3">
+                                            <span class="verify-result-label fw-bold">Tanggal Validasi</span>
+                                            <span class="verify-result-value"><i class="fas fa-calendar-check me-1 text-success"></i>${found.tanggalValidasi}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                ${found.status === 'Pemilik Kapal' && found.namaKapal !== '-' ? `
+                                <div class="mt-3 pt-3 border-top">
+                                    <div class="verify-result-item">
+                                        <span class="verify-result-label fw-bold">Data Kapal</span>
+                                        <span class="verify-result-value">${found.namaKapal} (${found.jenisKapal})</span>
+                                    </div>
+                                </div>` : ''}
+                            </div>
+                            <div class="verify-result-actions mt-4 d-flex justify-content-center gap-3">
+                                <button class="btn btn-primary px-4" onclick="safeGenerateIDCard('${found.id}')">
+                                    <i class="fas fa-id-card me-2"></i>Cetak KIN
+                                </button>
+                                <button class="btn btn-success px-4" onclick="downloadSinglePdf('${found.id}')">
+                                    <i class="fas fa-file-pdf me-2"></i>Unduh PDF
+                                </button>
+                                <button class="btn btn-info px-4" onclick="viewDetail('${found.id}')">
+                                    <i class="fas fa-eye me-2"></i>Lihat Detail
+                                </button>
+                            </div>
+                            <div class="mt-4 text-center text-muted small">
+                                <i class="fas fa-info-circle me-1"></i>Data valid dan terdaftar dalam Sistem Satu Data Nelayan (SIMATA)
+                            </div>
+                        </div>
+                    `;
+                    resultContainer.innerHTML = resultHTML;
+                } else {
+                    // Tampilkan hasil verifikasi gagal
+                    const resultHTML = `
+                        <div class="verify-result error animate__animated animate__shakeX">
+                            <div class="verify-result-icon">
+                                <i class="fas fa-times-circle fa-4x text-danger"></i>
+                            </div>
+                            <h5 class="verify-result-title text-danger mb-3">KARTU IDENTITAS NELAYAN (KIN) TIDAK VALID</h5>
+                            <p class="verify-result-message text-center">
+                                Data tidak ditemukan dalam sistem SIMATA. Pastikan NIK atau Kode Validasi yang dimasukkan benar.
+                            </p>
+                            <div class="mt-4">
+                                <h6 class="fw-bold mb-2">Kemungkinan penyebab:</h6>
+                                <ul class="text-start">
+                                    <li>Data belum terdaftar dalam sistem</li>
+                                    <li>NIK atau Kode Validasi salah ketik</li>
+                                    <li>Data telah dihapus dari sistem</li>
+                                    <li>Belum melakukan sinkronisasi data terbaru</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4">
+                                <button class="btn btn-warning" onclick="document.getElementById('v-pills-input-tab').click()">
+                                    <i class="fas fa-plus me-2"></i>Daftarkan Data Baru
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    resultContainer.innerHTML = resultHTML;
+                }
+                
+                // Update breadcrumb
+                document.querySelectorAll('.verify-breadcrumb-item')[1].classList.add('active');
+                
+            }, 800);
+        }
+
+        function toggleFAQ(index) {
+            const answer = document.getElementById('faqAnswer' + index);
+            const allAnswers = document.querySelectorAll('.verify-faq-answer');
+            const allQuestions = document.querySelectorAll('.verify-faq-question i');
+            
+            // Toggle answer yang diklik
+            if (answer.style.display === 'block') {
+                answer.style.display = 'none';
+                allQuestions[index-1].className = 'fas fa-chevron-down';
+            } else {
+                // Tutup semua FAQ yang terbuka
+                allAnswers.forEach((ans, i) => {
+                    ans.style.display = 'none';
+                    allQuestions[i].className = 'fas fa-chevron-down';
+                });
+                answer.style.display = 'block';
+                allQuestions[index-1].className = 'fas fa-chevron-up';
+            }
+        }
+
+        // =====================================================
         // PERBAIKAN FITUR PRINT DATA - HEADER DIPERBAIKI (HURUF S DIHAPUS)
         // =====================================================
         function printData() {
@@ -3019,8 +3184,13 @@
             }
             return [-7.7068, 113.9142]; // Default fallback
         };
+        
+        // Ekspos fungsi verifikasi KIN yang sudah diperbaiki
+        window.verifyKIN = verifyKIN;
+        window.toggleFAQ = toggleFAQ;
 
         console.log('✅ SIMATA Application v5.3 initialized successfully');
+        console.log('✅ Verifikasi KIN Function FIXED - Now correctly finds data by NIK or Validation Code');
         console.log('✅ Print PDF Report Function Fixed - Header improved (removed S letter and white box)');
         console.log('✅ BARJAS menu removed as requested');
     </script>
