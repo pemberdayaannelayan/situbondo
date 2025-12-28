@@ -1011,7 +1011,9 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="detail-label">Nama Kapal</div>
-                                        <div class="fw-bold" id="d_namaKapal">-</div>
+                                        <div class="fw-bold" id="d_namaKapal">.
+
+                                        </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="detail-label">Jenis Kapal</div>
@@ -2498,7 +2500,7 @@
         }
 
         // =====================================================
-        // FUNGSI PRINT DATA YANG DISEMPURNAKAN - VERSI FINAL DIPERBAIKI
+        // PERBAIKAN FITUR PRINT DATA - TABEL RAPI DI TENGAH
         // =====================================================
         function printData() {
             if (appData.length === 0) {
@@ -2529,7 +2531,7 @@
                 else if(d.profesi === 'Nelayan Sambilan Tambahan') desaStats[desa].sambilanTambahan++;
             });
 
-            // Siapkan data untuk tabel dengan lebar kolom yang diperbaiki
+            // Siapkan data untuk tabel
             const tableRows = Object.keys(desaStats).sort().map((desa, index) => [
                 index + 1, 
                 desa, 
@@ -2564,7 +2566,7 @@
             // Generate kode unik untuk setiap cetakan
             const printId = 'SIMATA-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
 
-            // Generate QR Code untuk tanda tangan
+            // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
             document.getElementById('qr-right').innerHTML = "";
             const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nNIP: 19761103 200903 1 001\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
             
@@ -2573,7 +2575,7 @@
                     text: signatureText, 
                     width: 120, 
                     height: 120,
-                    colorDark: "#4a69bd",
+                    colorDark: "#4a69bd", // Biru muda
                     colorLight: "#ffffff", 
                     correctLevel: QRCode.CorrectLevel.M
                 });
@@ -2593,43 +2595,46 @@
                     const doc = new jsPDF('l', 'mm', 'a4');
                     const pageWidth = doc.internal.pageSize.width;
                     const pageHeight = doc.internal.pageSize.height;
-                    const margin = 15;
-                    const tableWidth = pageWidth - (2 * margin);
 
                     // ============================================
                     // HEADER YANG DIPERBAIKI
                     // ============================================
                     doc.setFillColor(12, 36, 97);
-                    doc.rect(margin, margin, tableWidth, 25, 'F');
+                    doc.rect(10, 10, pageWidth - 20, 25, 'F');
                     
                     // Logo (simbol) kiri
                     doc.setFillColor(255, 255, 255);
-                    doc.roundedRect(margin + 5, margin + 3, 20, 20, 3, 3, 'F');
+                    doc.roundedRect(15, 13, 20, 20, 3, 3, 'F');
                     doc.setTextColor(12, 36, 97);
                     doc.setFontSize(16);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('S', margin + 15, margin + 14);
+                    doc.text('S', 25, 24);
+                    
+                    // Garis vertikal pemisah
+                    doc.setDrawColor(255, 255, 255, 0.5);
+                    doc.setLineWidth(0.5);
+                    doc.line(40, 13, 40, 32);
                     
                     // Judul utama
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(16);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('SISTEM PEMETAAN DATA NELAYAN', pageWidth/2, margin + 10, { align: 'center' });
+                    doc.text('SISTEM PEMETAAN DATA NELAYAN', pageWidth/2, 20, { align: 'center' });
                     
                     // Subjudul
                     doc.setFontSize(11);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, margin + 16, { align: 'center' });
+                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
 
-                    // Slogan
+                    // Slogan dengan warna oranye
                     doc.setTextColor(246, 185, 59);
                     doc.setFont('helvetica', 'italic');
                     doc.setFontSize(9);
-                    doc.text('"Situbondo Naik Kelas - Sistem Satu Data Kelautan & Perikanan"', pageWidth/2, margin + 21, { align: 'center' });
+                    doc.text('"Situbondo Naik Kelas - Sistem Satu Data Kelautan & Perikanan"', pageWidth/2, 31, { align: 'center' });
 
-                    // Garis bawah header
+                    // Garis bawah header dengan warna aksen
                     doc.setDrawColor(246, 185, 59);
                     doc.setLineWidth(1.5);
-                    doc.line(margin, margin + 27, pageWidth - margin, margin + 27);
+                    doc.line(20, 35, pageWidth - 20, 35);
 
                     // ============================================
                     // JUDUL LAPORAN
@@ -2637,40 +2642,43 @@
                     doc.setTextColor(12, 36, 97);
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(18);
-                    doc.text('LAPORAN REKAPITULASI DATA NELAYAN PER DESA', pageWidth/2, margin + 40, { align: 'center' });
+                    doc.text('LAPORAN REKAPITULASI DATA NELAYAN PER DESA', pageWidth/2, 45, { align: 'center' });
                     
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'normal');
                     const now = new Date();
                     const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Per Tanggal: ${dateString}`, pageWidth/2, margin + 47, { align: 'center' });
+                    doc.text(`Per Tanggal: ${dateString}`, pageWidth/2, 52, { align: 'center' });
 
                     // ============================================
-                    // TABEL DATA DENGAN LEBAR YANG DISESUAIKAN
+                    // TABEL DATA - PERBAIKAN UTAMA: RAPI DI TENGAH
                     // ============================================
+                    const tableWidth = pageWidth - 30; // Lebar tabel
+                    const tableStartX = (pageWidth - tableWidth) / 2; // Posisi tengah
+
                     doc.autoTable({
                         head: [[
-                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
-                            {content: 'Desa / Kelurahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 50}},
+                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
+                            {content: 'Desa / Kelurahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 55}},
                             {content: 'Jml Nelayan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
                             {content: 'Pemilik Kapal', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
                             {content: 'ABK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
                             {content: 'Penuh Waktu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
                             {content: 'Sambilan Utama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                            {content: 'Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
+                            {content: 'Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 28}}
                         ]],
                         body: tableRows,
-                        startY: margin + 53,
+                        startY: 58,
                         theme: 'grid',
                         tableWidth: tableWidth,
-                        margin: { left: margin, right: margin },
+                        margin: { left: tableStartX, right: tableStartX },
                         headStyles: { 
                             fillColor: [12, 36, 97],
                             textColor: [255, 255, 255], 
                             fontStyle: 'bold', 
                             halign: 'center',
                             fontSize: 9,
-                            cellPadding: 4,
+                            cellPadding: 3,
                             lineWidth: 0.5,
                             lineColor: [255, 255, 255]
                         },
@@ -2692,14 +2700,14 @@
                             valign: 'middle'
                         },
                         columnStyles: {
-                            0: {cellWidth: 20, halign: 'center'},
-                            1: {cellWidth: 50, halign: 'left'},
+                            0: {cellWidth: 15, halign: 'center'},
+                            1: {cellWidth: 55, halign: 'left'},
                             2: {cellWidth: 25, halign: 'center'},
                             3: {cellWidth: 25, halign: 'center'},
                             4: {cellWidth: 20, halign: 'center'},
                             5: {cellWidth: 25, halign: 'center'},
                             6: {cellWidth: 25, halign: 'center'},
-                            7: {cellWidth: 30, halign: 'center'}
+                            7: {cellWidth: 28, halign: 'center'}
                         },
                         willDrawCell: function(data) {
                             // Baris total dengan warna kuning
@@ -2710,33 +2718,26 @@
                                 data.cell.styles.lineWidth = 0.5;
                                 data.cell.styles.lineColor = [12, 36, 97];
                             }
-                        },
-                        didDrawPage: function(data) {
-                            // Gambar garis di bawah tabel yang sejajar dengan header
-                            const finalY = data.cursor.y;
-                            doc.setDrawColor(12, 36, 97);
-                            doc.setLineWidth(0.5);
-                            doc.line(margin, finalY, pageWidth - margin, finalY);
                         }
                     });
 
                     // ============================================
                     // FOOTER DENGAN LAYOUT YANG DIPERBAIKI
                     // ============================================
-                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : margin + 150;
+                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
                     const footerY = Math.min(finalY + 10, pageHeight - 50);
                     
-                    // Garis pemisah footer
+                    // Garis pemisah
                     doc.setDrawColor(200, 200, 200);
                     doc.setLineWidth(0.3);
-                    doc.line(margin + 5, footerY, pageWidth - (margin + 5), footerY);
+                    doc.line(15, footerY, pageWidth - 15, footerY);
                     
                     // Bagian kiri: Validasi elektronik
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(8);
                     doc.setTextColor(12, 36, 97);
                     
-                    const leftX = margin + 10;
+                    const leftX = 20;
                     const leftY = footerY + 8;
                     
                     doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
@@ -2764,11 +2765,12 @@
                     // Jabatan
                     doc.text('Kepala Bidang Pemberdayaan Nelayan', rightX + 32, rightY + 6, {align: 'center'});
                     
-                    // QR Code
+                    // QR Code dengan warna biru muda
                     const qrRightCanvas = document.querySelector('#qr-right canvas');
                     if(qrRightCanvas) {
                         try {
                             const imgRight = qrRightCanvas.toDataURL("image/png");
+                            // QR code 25x25 mm
                             doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
                         } catch (error) {
                             console.error("Error adding QR code image:", error);
@@ -3013,9 +3015,8 @@
         };
 
         console.log('✅ SIMATA Application v5.3 initialized successfully');
-        console.log('✅ Print PDF Report Function Fixed and Enhanced - Layout improved, margins balanced, signature spacing fixed');
+        console.log('✅ Print PDF Report Function Fixed - Table centered and layout improved');
         console.log('✅ BARJAS menu removed as requested');
     </script>
 </body>
 </html>
-[file content end]
