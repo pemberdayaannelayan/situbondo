@@ -306,7 +306,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.4</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.5</span>
                 </div>
             </div>
             
@@ -1251,10 +1251,10 @@
         </div>
     </div>
 
-    <!-- KODE UTAMA APLIKASI DENGAN FITUR PETA DAN VERIFIKASI KIN -->
+    <!-- KODE UTAMA APLIKASI DENGAN FITUR PETA YANG DIPERBAIKI -->
     <script>
         // =====================================================
-        // DATA KOORDINAT DAN FUNGSI PETA - DISATUKAN DENGAN INDEX.HTML
+        // DATA KOORDINAT DAN FUNGSI PETA - DIPERBAIKI DAN DISEMPURNAKAN
         // =====================================================
         
         // Data wilayah Situbondo (LENGKAP)
@@ -1278,7 +1278,7 @@
             "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
         };
 
-        // Data koordinat spesifik lengkap untuk semua desa
+        // Data koordinat spesifik lengkap untuk semua desa - DIPERBAIKI
         const COORDINATES_DATA = {
             // Arjasa
             "Arjasa, Arjasa": [-7.7825, 113.7900],
@@ -1463,18 +1463,29 @@
             "Kapongan": [-7.6833, 114.0667],
             "Kendit": [-7.7167, 113.9167],
             "Mangaran": [-7.6667, 114.0500],
-            "Mlandingan": [-7.6667, 113.8667]
+            "Mlandingan": [-7.6667, 113.8667],
+            "Panarukan": [-7.6970, 113.7687],
+            "Panji": [-7.7155, 113.6944],
+            "Situbondo": [-7.6926, 113.9937],
+            "Suboh": [-7.8475, 113.7580],
+            "Sumbermalang": [-7.8482, 113.8374]
         };
 
-        // Variabel global untuk peta
+        // Variabel global untuk peta - DIPERBAIKI
         let map = null;
         let markers = null;
         let currentMarkers = [];
         let mapView = 'all';
+        let isMapInitialized = false;
 
         // --- FUNGSI UNTUK MENDAPATKAN KOORDINAT BERDASARKAN DESA ---
         function getCoordinatesForLocation(kecamatan, desa) {
-            const key = `${kecamatan}, ${desa}`;
+            if (!kecamatan || !desa) {
+                console.warn('Kecamatan atau desa tidak ditemukan', kecamatan, desa);
+                return [-7.7068, 113.9142];
+            }
+            
+            const key = `${kecamatan.trim()}, ${desa.trim()}`;
             
             // Cari koordinat spesifik
             if (COORDINATES_DATA[key]) {
@@ -1482,32 +1493,38 @@
             }
             
             // Jika tidak ditemukan, gunakan koordinat default kecamatan
-            if (DEFAULT_COORDINATES[kecamatan]) {
-                return DEFAULT_COORDINATES[kecamatan];
+            if (DEFAULT_COORDINATES[kecamatan.trim()]) {
+                console.log(`Koordinat untuk ${key} tidak ditemukan, menggunakan koordinat default kecamatan`);
+                return DEFAULT_COORDINATES[kecamatan.trim()];
             }
             
             // Default fallback: pusat Situbondo
+            console.log(`Koordinat untuk ${key} tidak ditemukan, menggunakan koordinat default Situbondo`);
             return [-7.7068, 113.9142];
         }
 
-        // --- FUNGSI UNTUK INISIALISASI PETA ---
+        // --- FUNGSI UNTUK INISIALISASI PETA --- DIPERBAIKI
         function initializeMap() {
             console.log('🔄 Inisialisasi peta...');
             
+            // Hapus peta lama jika ada
             if (map) {
                 try {
                     map.remove();
                 } catch (e) {
                     console.log('Peta sudah dihapus');
                 }
+                map = null;
             }
             
+            // Hapus marker cluster lama jika ada
             if (markers) {
                 try {
                     markers.clearLayers();
                 } catch (e) {
                     console.log('Marker cluster sudah dihapus');
                 }
+                markers = null;
             }
             
             currentMarkers = [];
@@ -1518,51 +1535,62 @@
                     const mapContainer = document.getElementById('map');
                     if (!mapContainer) {
                         console.error('❌ Elemen map tidak ditemukan');
+                        setTimeout(initializeMap, 500); // Coba lagi nanti
                         return;
                     }
                     
+                    // Bersihkan container map
+                    mapContainer.innerHTML = '';
+                    
+                    // Inisialisasi peta dengan view yang lebih luas
                     map = L.map('map', {
                         preferCanvas: true,
                         zoomControl: true,
-                        scrollWheelZoom: true
+                        scrollWheelZoom: true,
+                        doubleClickZoom: true
                     }).setView([-7.7068, 113.9142], 11);
                     
-                    // Tambahkan tile layer
+                    // Tambahkan tile layer dengan atribusi
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                         maxZoom: 19,
                         minZoom: 9
                     }).addTo(map);
                     
-                    // Inisialisasi marker cluster
+                    // Inisialisasi marker cluster dengan pengaturan yang lebih baik
                     markers = L.markerClusterGroup({
                         showCoverageOnHover: false,
                         maxClusterRadius: 50,
                         spiderfyOnMaxZoom: true,
                         disableClusteringAtZoom: 16,
-                        chunkedLoading: true
+                        chunkedLoading: true,
+                        animate: true
                     });
                     
                     markers.addTo(map);
+                    
+                    isMapInitialized = true;
                     
                     // Render marker setelah peta siap
                     setTimeout(() => {
                         renderMapMarkers();
                         updateMapStatistics();
                         console.log('✅ Peta berhasil diinisialisasi');
-                    }, 500);
+                    }, 300);
                     
                 } catch (error) {
                     console.error('❌ Error inisialisasi peta:', error);
+                    // Coba lagi dalam 1 detik
+                    setTimeout(initializeMap, 1000);
                 }
             }, 100);
         }
 
-        // --- FUNGSI UNTUK RENDER MARKER PADA PETA ---
+        // --- FUNGSI UNTUK RENDER MARKER PADA PETA --- DIPERBAIKI
         function renderMapMarkers() {
             console.log('🔄 Rendering marker peta...');
             
-            if (!map || !markers) {
+            if (!map || !markers || !isMapInitialized) {
                 console.warn('❌ Peta atau markers belum diinisialisasi');
                 return;
             }
@@ -1575,10 +1603,10 @@
             const appData = window.appData || [];
             
             if (!appData || appData.length === 0) {
-                console.log('ℹ️ Tidak ada data nelayan untuk ditampilkan');
+                console.log('ℹ️ Tidak ada data nelayan untuk ditampilkan di peta');
                 // Tampilkan pesan di peta
                 const infoDiv = L.DomUtil.create('div', 'leaflet-control-attribution');
-                infoDiv.innerHTML = '<div style="background: white; padding: 5px; border-radius: 3px; font-size: 12px;">Tidak ada data nelayan untuk ditampilkan</div>';
+                infoDiv.innerHTML = '<div style="background: white; padding: 5px; border-radius: 3px; font-size: 12px; border: 1px solid #ddd;">Tidak ada data nelayan untuk ditampilkan</div>';
                 L.control.attribution({position: 'bottomleft'}).addTo(map);
                 return;
             }
@@ -1628,38 +1656,69 @@
                     iconClass = 'fa-users';
                 }
                 
-                // Buat custom icon
+                // Buat custom icon dengan styling yang lebih baik
                 const customIcon = L.divIcon({
                     html: `
                         <div class="marker-icon ${markerClass}" 
-                             style="background-color: ${markerColor}; width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                             style="background-color: ${markerColor}; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; cursor: pointer;">
                             <i class="fas ${iconClass}"></i>
                         </div>
                     `,
                     className: 'custom-marker',
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 16],
-                    popupAnchor: [0, -16]
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18],
+                    popupAnchor: [0, -18]
                 });
                 
-                // Buat konten popup
+                // Buat konten popup yang lebih informatif
                 const maskData = window.maskData || function(data) { return data; };
                 const displayNik = maskData(nelayan.nik);
+                const displayWa = nelayan.whatsapp === '00000000' ? 'Tidak ada' : maskData(nelayan.whatsapp);
                 
                 const popupContent = `
-                    <div class="leaflet-popup-content" style="min-width: 280px; max-width: 320px; padding: 10px;">
-                        <h5 style="margin: 0 0 10px 0; color: #0c2461; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px;">${nelayan.nama}</h5>
-                        <div style="font-size: 13px; color: #333;">
-                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-id-card me-1"></i> NIK:</strong> ${displayNik}</div>
-                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-user me-1"></i> Usia:</strong> ${nelayan.usia} Tahun</div>
-                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-briefcase me-1"></i> Profesi:</strong> ${nelayan.profesi}</div>
-                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-user-tag me-1"></i> Status:</strong> ${nelayan.status}</div>
-                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-map-marker-alt me-1"></i> Domisili:</strong> ${nelayan.desa}, ${nelayan.kecamatan}</div>
-                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-fish me-1"></i> API:</strong> ${nelayan.alatTangkap}</div>
-                            ${nelayan.status === 'Pemilik Kapal' ? `<div style="margin-bottom: 8px;"><strong><i class="fas fa-ship me-1"></i> Kapal:</strong> ${nelayan.namaKapal || '-'} (${nelayan.jenisKapal || '-'})</div>` : ''}
-                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-key me-1"></i> Kode Validasi:</strong> ${nelayan.kodeValidasi || '-'}</div>
+                    <div class="leaflet-popup-content" style="min-width: 280px; max-width: 320px; padding: 15px; font-family: 'Inter', sans-serif;">
+                        <h5 style="margin: 0 0 12px 0; color: #0c2461; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; font-weight: 600;">
+                            <i class="fas fa-user me-1"></i>${nelayan.nama}
+                        </h5>
+                        <div style="font-size: 13px; color: #333; line-height: 1.6;">
+                            <div style="margin-bottom: 8px;">
+                                <strong><i class="fas fa-id-card me-1"></i> NIK:</strong> 
+                                <span class="font-monospace" style="font-size: 12px;">${displayNik}</span>
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong><i class="fas fa-user-clock me-1"></i> Usia:</strong> ${nelayan.usia} Tahun
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong><i class="fas fa-briefcase me-1"></i> Profesi:</strong> 
+                                <span class="badge" style="background-color: ${markerColor}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px;">
+                                    ${nelayan.profesi}
+                                </span>
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong><i class="fas fa-user-tag me-1"></i> Status:</strong> ${nelayan.status}
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong><i class="fas fa-map-marker-alt me-1"></i> Domisili:</strong> ${nelayan.desa}, ${nelayan.kecamatan}
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong><i class="fas fa-fish me-1"></i> API:</strong> ${nelayan.alatTangkap}
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong><i class="fas fa-phone me-1"></i> Kontak:</strong> ${displayWa}
+                            </div>
+                            ${nelayan.status === 'Pemilik Kapal' && nelayan.namaKapal ? 
+                                `<div style="margin-bottom: 8px;">
+                                    <strong><i class="fas fa-ship me-1"></i> Kapal:</strong> ${nelayan.namaKapal} (${nelayan.jenisKapal || '-'})
+                                </div>` : ''}
+                            ${nelayan.kodeValidasi ? 
+                                `<div style="margin-bottom: 12px;">
+                                    <strong><i class="fas fa-key me-1"></i> Kode Validasi:</strong> 
+                                    <span class="font-monospace" style="font-size: 11px; background: #f0f0f0; padding: 2px 4px; border-radius: 3px;">
+                                        ${nelayan.kodeValidasi}
+                                    </span>
+                                </div>` : ''}
                             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
-                                <button class="btn btn-sm btn-primary w-100" onclick="window.viewDetail && window.viewDetail('${nelayan.id}'); if (window.detailModal) { window.detailModal.hide(); }">
+                                <button class="btn btn-sm btn-primary w-100" onclick="window.viewDetail && window.viewDetail('${nelayan.id}'); if (window.detailModal) { window.detailModal.hide(); }" style="font-size: 12px; padding: 5px 10px;">
                                     <i class="fas fa-info-circle me-1"></i> Lihat Detail Lengkap
                                 </button>
                             </div>
@@ -1667,16 +1726,19 @@
                     </div>
                 `;
                 
-                // Buat marker
+                // Buat marker dengan event handling yang lebih baik
                 try {
-                    const marker = L.marker(coordinates, { icon: customIcon })
-                        .bindPopup(popupContent)
-                        .on('click', function() {
-                            this.openPopup();
-                        })
-                        .on('mouseover', function() {
-                            this.openPopup();
-                        });
+                    const marker = L.marker(coordinates, { 
+                        icon: customIcon,
+                        title: `${nelayan.nama} - ${nelayan.profesi}`
+                    })
+                    .bindPopup(popupContent)
+                    .on('click', function() {
+                        this.openPopup();
+                    })
+                    .on('mouseover', function() {
+                        this.openPopup();
+                    });
                     
                     markers.addLayer(marker);
                     currentMarkers.push(marker);
@@ -1686,34 +1748,39 @@
             });
             
             // Update statistik peta
-            if (document.getElementById('map-total-points')) {
-                document.getElementById('map-total-points').textContent = appData.length;
-                document.getElementById('map-total-kecamatan').textContent = Object.keys(kecamatanCount).length;
-                document.getElementById('map-total-desa').textContent = Object.keys(desaCount).length;
-                document.getElementById('map-total-kapal').textContent = pemilikKapalCount;
-            }
+            updateMapStatistics();
             
             // Fit bounds jika ada marker
             if (currentMarkers.length > 0) {
-                const group = L.featureGroup(currentMarkers);
-                map.fitBounds(group.getBounds().pad(0.1));
+                try {
+                    const group = L.featureGroup(currentMarkers);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                } catch (error) {
+                    console.error('Error fitting bounds:', error);
+                }
             }
             
             console.log(`✅ Berhasil render ${currentMarkers.length} marker`);
         }
 
-        // --- FUNGSI UNTUK UPDATE STATISTIK PETA ---
+        // --- FUNGSI UNTUK UPDATE STATISTIK PETA --- DIPERBAIKI
         function updateMapStatistics() {
             const appData = window.appData || [];
-            if (appData.length === 0) return;
+            if (appData.length === 0) {
+                document.getElementById('map-total-points').textContent = '0';
+                document.getElementById('map-total-kecamatan').textContent = '0';
+                document.getElementById('map-total-desa').textContent = '0';
+                document.getElementById('map-total-kapal').textContent = '0';
+                return;
+            }
             
             const kecamatanCount = {};
             const desaCount = {};
             let pemilikKapalCount = 0;
             
             appData.forEach(nelayan => {
-                kecamatanCount[nelayan.kecamatan] = (kecamatanCount[nelayan.kecamatan] || 0) + 1;
-                desaCount[nelayan.desa] = (desaCount[nelayan.desa] || 0) + 1;
+                if (nelayan.kecamatan) kecamatanCount[nelayan.kecamatan] = (kecamatanCount[nelayan.kecamatan] || 0) + 1;
+                if (nelayan.desa) desaCount[nelayan.desa] = (desaCount[nelayan.desa] || 0) + 1;
                 if (nelayan.status === 'Pemilik Kapal') pemilikKapalCount++;
             });
             
@@ -1758,7 +1825,7 @@
 
         // --- FUNGSI UNTUK RESET VIEW PETA ---
         function resetMapView() {
-            if (map) {
+            if (map && isMapInitialized) {
                 map.setView([-7.7068, 113.9142], 11);
                 if (window.showNotification) {
                     window.showNotification('Peta direset ke view awal', 'info');
@@ -1768,11 +1835,15 @@
 
         // --- FUNGSI UNTUK ZOOM KE SEMUA MARKER ---
         function zoomToAllMarkers() {
-            if (map && currentMarkers.length > 0) {
-                const group = L.featureGroup(currentMarkers);
-                map.fitBounds(group.getBounds().pad(0.1));
-                if (window.showNotification) {
-                    window.showNotification('Zoom ke semua marker', 'info');
+            if (map && isMapInitialized && currentMarkers.length > 0) {
+                try {
+                    const group = L.featureGroup(currentMarkers);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                    if (window.showNotification) {
+                        window.showNotification('Zoom ke semua marker', 'info');
+                    }
+                } catch (error) {
+                    console.error('Error zooming to markers:', error);
                 }
             } else {
                 if (window.showNotification) {
@@ -1784,14 +1855,16 @@
         // --- FUNGSI UNTUK TOGGLE CLUSTER MARKER ---
         function toggleCluster() {
             const showCluster = document.getElementById('showCluster');
-            if (!showCluster || !map) return;
+            if (!showCluster || !map || !isMapInitialized) return;
             
             if (showCluster.checked) {
                 // Mode cluster aktif
-                map.removeLayer(markers);
-                markers.clearLayers();
-                markers.addTo(map);
-                renderMapMarkers();
+                if (markers) {
+                    map.removeLayer(markers);
+                    markers.clearLayers();
+                    markers.addTo(map);
+                    renderMapMarkers();
+                }
                 if (window.showNotification) {
                     window.showNotification('Mode grup marker diaktifkan', 'info');
                 }
@@ -1807,14 +1880,20 @@
             }
         }
 
-        // --- FUNGSI UNTUK REFRESH PETA ---
+        // --- FUNGSI UNTUK REFRESH PETA --- DIPERBAIKI
         function refreshMap() {
             console.log('🔄 Refresh peta...');
-            if (map && markers) {
+            if (map && markers && isMapInitialized) {
                 renderMapMarkers();
                 updateMapStatistics();
                 if (window.showNotification) {
                     window.showNotification('Peta berhasil direfresh', 'success');
+                }
+            } else {
+                // Jika peta belum diinisialisasi, inisialisasi ulang
+                initializeMap();
+                if (window.showNotification) {
+                    window.showNotification('Peta diinisialisasi ulang', 'info');
                 }
             }
         }
@@ -2269,11 +2348,8 @@
                                 renderDataTable();
                                 updateDashboard();
                                 // Perbaikan: Panggil fungsi renderMapMarkers langsung
-                                if (typeof renderMapMarkers === 'function') {
+                                if (isMapInitialized) {
                                     renderMapMarkers();
-                                }
-                                if (typeof updateMapStatistics === 'function') {
-                                    updateMapStatistics();
                                 }
                                 
                                 showNotification(`Data berhasil disinkronisasi: ${newData.length} data baru ditambahkan`, 'success');
@@ -2307,7 +2383,7 @@
             document.head.appendChild(script);
         }
 
-        // --- INITIALIZATION ---
+        // --- INITIALIZATION --- DIPERBAIKI
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 initializeApp();
@@ -2326,10 +2402,10 @@
                     initializeCharts();
                     updateDashboard();
                     renderDataTable();
+                    // Perbaikan: Inisialisasi peta dengan delay yang cukup
                     setTimeout(() => {
-                        // Perbaikan: Inisialisasi peta setelah login
                         initializeMap();
-                    }, 500);
+                    }, 1000);
                 } else {
                     setTimeout(() => {
                         document.getElementById('loginModal').style.display = 'flex';
@@ -2527,10 +2603,10 @@
                     initializeCharts();
                     updateDashboard();
                     renderDataTable();
+                    // Perbaikan: Inisialisasi peta dengan delay yang cukup
                     setTimeout(() => {
-                        // Perbaikan: Inisialisasi peta setelah login
                         initializeMap();
-                    }, 500);
+                    }, 1000);
                     loginSuccessModal.show();
                     btn.disabled = false;
                     spinner.classList.add('d-none');
@@ -2925,12 +3001,9 @@
 
             updateDashboard(); 
             renderDataTable();
-            // PERBAIKAN: Panggil fungsi renderMapMarkers langsung setelah data berubah
-            if (typeof renderMapMarkers === 'function') {
+            // PERBAIKAN: Update peta setelah data berubah
+            if (isMapInitialized) {
                 renderMapMarkers();
-            }
-            if (typeof updateMapStatistics === 'function') {
-                updateMapStatistics();
             }
             document.getElementById('v-pills-data-tab').click();
             checkGlobalDuplicates();
@@ -3247,11 +3320,8 @@
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
                 saveData(); renderDataTable(); updateDashboard();
-                if (typeof renderMapMarkers === 'function') {
+                if (isMapInitialized) {
                     renderMapMarkers();
-                }
-                if (typeof updateMapStatistics === 'function') {
-                    updateMapStatistics();
                 }
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 document.getElementById('selectAllCheckbox').checked = false;
@@ -3338,11 +3408,8 @@
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
                     saveData(); renderDataTable(); updateDashboard();
-                    if (typeof renderMapMarkers === 'function') {
+                    if (isMapInitialized) {
                         renderMapMarkers();
-                    }
-                    if (typeof updateMapStatistics === 'function') {
-                        updateMapStatistics();
                     }
                     showNotification('Data berhasil dihapus', 'success');
                     checkGlobalDuplicates();
@@ -3818,7 +3885,7 @@
                         // Informasi sistem di footer dengan kode unik
                         doc.setFontSize(7);
                         const printTime = new Date().toLocaleString('id-ID');
-                        doc.text(`Dicetak dari SIMATA v5.4 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
+                        doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
                     }
 
                     // Simpan file PDF
@@ -3879,11 +3946,8 @@
                             saveData();
                             renderDataTable();
                             updateDashboard();
-                            if (typeof renderMapMarkers === 'function') {
+                            if (isMapInitialized) {
                                 renderMapMarkers();
-                            }
-                            if (typeof updateMapStatistics === 'function') {
-                                updateMapStatistics();
                             }
                             showNotification('Restore berhasil (format JSON langsung)', 'success');
                             fileInput.value = '';
@@ -3911,11 +3975,8 @@
                     saveData();
                     renderDataTable();
                     updateDashboard();
-                    if (typeof renderMapMarkers === 'function') {
+                    if (isMapInitialized) {
                         renderMapMarkers();
-                    }
-                    if (typeof updateMapStatistics === 'function') {
-                        updateMapStatistics();
                     }
                     
                     showNotification(`Restore berhasil: ${newData.length} data baru ditambahkan`, 'success');
@@ -4036,8 +4097,8 @@
         window.resetVerifyForm = resetVerifyForm;
         window.scanQRCode = scanQRCode;
 
-        console.log('✅ SIMATA Application v5.4 initialized successfully');
-        console.log('✅ Fitur Peta telah diperbaiki dan disempurnakan');
+        console.log('✅ SIMATA Application v5.5 initialized successfully');
+        console.log('✅ Fitur Peta telah diperbaiki dan disempurnakan - Versi Final');
         console.log('✅ Fitur Verifikasi KIN telah ditambahkan');
         console.log('✅ Semua menu dan fitur lain tetap utuh dan berfungsi');
     </script>
