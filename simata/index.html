@@ -116,25 +116,11 @@
             letter-spacing: 1px;
         }
         
-        /* Perbaikan untuk peta - DIPERBAIKI */
+        /* Perbaikan untuk peta */
         #map {
-            height: 600px !important;
+            height: 500px !important;
             width: 100% !important;
             z-index: 1;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        
-        .leaflet-popup-content-wrapper {
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .leaflet-popup-content {
-            min-width: 300px !important;
-            max-width: 350px !important;
-            font-family: 'Inter', sans-serif;
-            padding: 5px;
         }
         
         .marker-icon {
@@ -163,50 +149,13 @@
             background-color: #a55eea !important;
         }
         
+        .leaflet-popup-content {
+            min-width: 280px !important;
+            max-width: 320px !important;
+        }
+        
         .map-controls, .map-legend {
             z-index: 1000;
-        }
-        
-        /* Perbaikan untuk popup peta */
-        .popup-header {
-            background: linear-gradient(90deg, #0c2461, #1e3799);
-            color: white;
-            padding: 10px 15px;
-            margin: -5px -5px 10px -5px;
-            border-radius: 8px 8px 0 0;
-            font-weight: 600;
-        }
-        
-        .popup-field {
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .popup-field:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        
-        .popup-label {
-            font-weight: 600;
-            color: #555;
-            font-size: 12px;
-            margin-bottom: 2px;
-        }
-        
-        .popup-value {
-            color: #333;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-        
-        .popup-badge {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-right: 5px;
-            display: inline-block;
         }
     </style>
 </head>
@@ -357,7 +306,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.6</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.4</span>
                 </div>
             </div>
             
@@ -476,7 +425,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- FITUR PETA BARU DENGAN TOMBOL CLOSE - DIPERBAIKI -->
+                                <!-- FITUR PETA BARU DENGAN TOMBOL CLOSE -->
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <div class="card shadow-sm border-0">
@@ -1302,10 +1251,10 @@
         </div>
     </div>
 
-    <!-- KODE UTAMA APLIKASI DENGAN FITUR PETA DAN PDF YANG DIPERBAIKI -->
+    <!-- KODE UTAMA APLIKASI DENGAN FITUR PETA DAN VERIFIKASI KIN -->
     <script>
         // =====================================================
-        // DATA KOORDINAT DAN FUNGSI PETA - DIPERBAIKI SECARA MENYELURUH
+        // DATA KOORDINAT DAN FUNGSI PETA - DISATUKAN DENGAN INDEX.HTML
         // =====================================================
         
         // Data wilayah Situbondo (LENGKAP)
@@ -1329,7 +1278,7 @@
             "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
         };
 
-        // Data koordinat spesifik lengkap untuk semua desa - DIPERBAIKI
+        // Data koordinat spesifik lengkap untuk semua desa
         const COORDINATES_DATA = {
             // Arjasa
             "Arjasa, Arjasa": [-7.7825, 113.7900],
@@ -1514,29 +1463,18 @@
             "Kapongan": [-7.6833, 114.0667],
             "Kendit": [-7.7167, 113.9167],
             "Mangaran": [-7.6667, 114.0500],
-            "Mlandingan": [-7.6667, 113.8667],
-            "Panarukan": [-7.6970, 113.7687],
-            "Panji": [-7.7155, 113.6944],
-            "Situbondo": [-7.6926, 113.9937],
-            "Suboh": [-7.8475, 113.7580],
-            "Sumbermalang": [-7.8482, 113.8374]
+            "Mlandingan": [-7.6667, 113.8667]
         };
 
-        // Variabel global untuk peta - DIPERBAIKI
+        // Variabel global untuk peta
         let map = null;
         let markers = null;
         let currentMarkers = [];
         let mapView = 'all';
-        let isMapInitialized = false;
 
         // --- FUNGSI UNTUK MENDAPATKAN KOORDINAT BERDASARKAN DESA ---
         function getCoordinatesForLocation(kecamatan, desa) {
-            if (!kecamatan || !desa) {
-                console.warn('Kecamatan atau desa tidak ditemukan', kecamatan, desa);
-                return [-7.7068, 113.9142];
-            }
-            
-            const key = `${kecamatan.trim()}, ${desa.trim()}`;
+            const key = `${kecamatan}, ${desa}`;
             
             // Cari koordinat spesifik
             if (COORDINATES_DATA[key]) {
@@ -1544,38 +1482,32 @@
             }
             
             // Jika tidak ditemukan, gunakan koordinat default kecamatan
-            if (DEFAULT_COORDINATES[kecamatan.trim()]) {
-                console.log(`Koordinat untuk ${key} tidak ditemukan, menggunakan koordinat default kecamatan`);
-                return DEFAULT_COORDINATES[kecamatan.trim()];
+            if (DEFAULT_COORDINATES[kecamatan]) {
+                return DEFAULT_COORDINATES[kecamatan];
             }
             
             // Default fallback: pusat Situbondo
-            console.log(`Koordinat untuk ${key} tidak ditemukan, menggunakan koordinat default Situbondo`);
             return [-7.7068, 113.9142];
         }
 
-        // --- FUNGSI UNTUK INISIALISASI PETA --- DIPERBAIKI SECARA MENYELURUH
+        // --- FUNGSI UNTUK INISIALISASI PETA ---
         function initializeMap() {
             console.log('🔄 Inisialisasi peta...');
             
-            // Hapus peta lama jika ada
             if (map) {
                 try {
                     map.remove();
                 } catch (e) {
                     console.log('Peta sudah dihapus');
                 }
-                map = null;
             }
             
-            // Hapus marker cluster lama jika ada
             if (markers) {
                 try {
                     markers.clearLayers();
                 } catch (e) {
                     console.log('Marker cluster sudah dihapus');
                 }
-                markers = null;
             }
             
             currentMarkers = [];
@@ -1586,80 +1518,51 @@
                     const mapContainer = document.getElementById('map');
                     if (!mapContainer) {
                         console.error('❌ Elemen map tidak ditemukan');
-                        setTimeout(initializeMap, 500);
                         return;
                     }
                     
-                    // Bersihkan container map
-                    mapContainer.innerHTML = '';
-                    
-                    // Inisialisasi peta dengan view yang lebih luas
                     map = L.map('map', {
                         preferCanvas: true,
                         zoomControl: true,
-                        scrollWheelZoom: true,
-                        doubleClickZoom: true,
-                        dragging: true,
-                        attributionControl: true
+                        scrollWheelZoom: true
                     }).setView([-7.7068, 113.9142], 11);
                     
-                    // Tambahkan tile layer dengan atribusi
+                    // Tambahkan tile layer
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                         maxZoom: 19,
                         minZoom: 9
                     }).addTo(map);
                     
-                    // Tambahkan layer untuk kontrol skala
-                    L.control.scale().addTo(map);
-                    
-                    // Inisialisasi marker cluster dengan pengaturan yang lebih baik
+                    // Inisialisasi marker cluster
                     markers = L.markerClusterGroup({
                         showCoverageOnHover: false,
                         maxClusterRadius: 50,
                         spiderfyOnMaxZoom: true,
                         disableClusteringAtZoom: 16,
-                        chunkedLoading: true,
-                        animate: true,
-                        iconCreateFunction: function(cluster) {
-                            const count = cluster.getChildCount();
-                            let size = 40;
-                            if (count < 10) size = 40;
-                            else if (count < 50) size = 45;
-                            else size = 50;
-                            
-                            return L.divIcon({
-                                html: `<div style="background-color: #0c2461; color: white; width: ${size}px; height: ${size}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">${count}</div>`,
-                                className: 'custom-cluster',
-                                iconSize: [size, size],
-                                iconAnchor: [size/2, size/2]
-                            });
-                        }
+                        chunkedLoading: true
                     });
                     
                     markers.addTo(map);
-                    
-                    isMapInitialized = true;
                     
                     // Render marker setelah peta siap
                     setTimeout(() => {
                         renderMapMarkers();
                         updateMapStatistics();
                         console.log('✅ Peta berhasil diinisialisasi');
-                    }, 300);
+                    }, 500);
                     
                 } catch (error) {
                     console.error('❌ Error inisialisasi peta:', error);
-                    setTimeout(initializeMap, 1000);
                 }
             }, 100);
         }
 
-        // --- FUNGSI UNTUK RENDER MARKER PADA PETA --- DIPERBAIKI SECARA MENYELURUH
+        // --- FUNGSI UNTUK RENDER MARKER PADA PETA ---
         function renderMapMarkers() {
             console.log('🔄 Rendering marker peta...');
             
-            if (!map || !markers || !isMapInitialized) {
+            if (!map || !markers) {
                 console.warn('❌ Peta atau markers belum diinisialisasi');
                 return;
             }
@@ -1672,10 +1575,10 @@
             const appData = window.appData || [];
             
             if (!appData || appData.length === 0) {
-                console.log('ℹ️ Tidak ada data nelayan untuk ditampilkan di peta');
+                console.log('ℹ️ Tidak ada data nelayan untuk ditampilkan');
                 // Tampilkan pesan di peta
                 const infoDiv = L.DomUtil.create('div', 'leaflet-control-attribution');
-                infoDiv.innerHTML = '<div style="background: white; padding: 5px; border-radius: 3px; font-size: 12px; border: 1px solid #ddd;">Tidak ada data nelayan untuk ditampilkan</div>';
+                infoDiv.innerHTML = '<div style="background: white; padding: 5px; border-radius: 3px; font-size: 12px;">Tidak ada data nelayan untuk ditampilkan</div>';
                 L.control.attribution({position: 'bottomleft'}).addTo(map);
                 return;
             }
@@ -1706,235 +1609,119 @@
                 let markerColor = '#0c2461'; // Default: Penuh Waktu
                 let markerClass = 'marker-penuh';
                 let iconClass = 'fa-user';
-                let markerTitle = 'Nelayan Penuh Waktu';
                 
                 if (nelayan.profesi === 'Nelayan Sambilan Utama') {
                     markerColor = '#e58e26';
                     markerClass = 'marker-sambilan-utama';
-                    markerTitle = 'Nelayan Sambilan Utama';
                 } else if (nelayan.profesi === 'Nelayan Sambilan Tambahan') {
                     markerColor = '#27ae60';
                     markerClass = 'marker-sambilan-tambahan';
-                    markerTitle = 'Nelayan Sambilan Tambahan';
                 }
                 
                 if (nelayan.status === 'Pemilik Kapal') {
                     markerColor = '#0984e3';
                     markerClass = 'marker-pemilik';
                     iconClass = 'fa-ship';
-                    markerTitle = 'Pemilik Kapal';
                 } else if (nelayan.status === 'Anak Buah Kapal') {
                     markerColor = '#a55eea';
                     markerClass = 'marker-abk';
                     iconClass = 'fa-users';
-                    markerTitle = 'Anak Buah Kapal';
                 }
                 
-                // Buat custom icon dengan styling yang lebih baik
+                // Buat custom icon
                 const customIcon = L.divIcon({
                     html: `
                         <div class="marker-icon ${markerClass}" 
-                             style="background-color: ${markerColor}; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; cursor: pointer; transition: transform 0.2s;"
-                             title="${nelayan.nama} - ${markerTitle}">
+                             style="background-color: ${markerColor}; width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
                             <i class="fas ${iconClass}"></i>
                         </div>
                     `,
                     className: 'custom-marker',
-                    iconSize: [36, 36],
-                    iconAnchor: [18, 18],
-                    popupAnchor: [0, -18]
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16],
+                    popupAnchor: [0, -16]
                 });
                 
-                // Format data untuk popup dengan informasi lengkap
+                // Buat konten popup
                 const maskData = window.maskData || function(data) { return data; };
                 const displayNik = maskData(nelayan.nik);
-                const displayWa = nelayan.whatsapp === '00000000' ? 'Tidak ada' : maskData(nelayan.whatsapp);
                 
-                // Buat konten popup yang lebih informatif dan rapi
                 const popupContent = `
-                    <div style="min-width: 280px; max-width: 320px; font-family: 'Inter', sans-serif;">
-                        <div class="popup-header">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <i class="fas ${iconClass}"></i>
-                                <div>
-                                    <h5 style="margin: 0; font-size: 16px; font-weight: 600;">${nelayan.nama}</h5>
-                                    <small style="opacity: 0.9; font-size: 12px;">${markerTitle}</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div style="padding: 15px;">
-                            <div class="popup-field">
-                                <div class="popup-label">IDENTITAS</div>
-                                <div class="popup-value">
-                                    <div><strong>NIK:</strong> <span class="font-monospace">${displayNik}</span></div>
-                                    <div><strong>Usia:</strong> ${nelayan.usia} Tahun (Lahir: ${nelayan.tahunLahir})</div>
-                                </div>
-                            </div>
-                            
-                            <div class="popup-field">
-                                <div class="popup-label">LOKASI</div>
-                                <div class="popup-value">
-                                    <div><i class="fas fa-map-marker-alt me-1"></i> ${nelayan.desa}, ${nelayan.kecamatan}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="popup-field">
-                                <div class="popup-label">PROFESI & STATUS</div>
-                                <div class="popup-value">
-                                    <span class="popup-badge" style="background-color: ${markerColor}; color: white;">${nelayan.profesi}</span>
-                                    <span class="popup-badge" style="background-color: ${nelayan.status === 'Pemilik Kapal' ? '#0984e3' : '#a55eea'}; color: white;">${nelayan.status}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="popup-field">
-                                <div class="popup-label">ALAT TANGKAP (API)</div>
-                                <div class="popup-value">
-                                    <span class="popup-badge" style="background-color: #17a2b8; color: white;">${nelayan.alatTangkap}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="popup-field">
-                                <div class="popup-label">KONTAK</div>
-                                <div class="popup-value">
-                                    <i class="fas fa-phone me-1"></i> ${displayWa}
-                                </div>
-                            </div>
-                            
-                            ${nelayan.status === 'Pemilik Kapal' && nelayan.namaKapal ? `
-                            <div class="popup-field">
-                                <div class="popup-label">KAPAL</div>
-                                <div class="popup-value">
-                                    <i class="fas fa-ship me-1"></i> ${nelayan.namaKapal}
-                                    ${nelayan.jenisKapal ? `<br><small>Jenis: ${nelayan.jenisKapal}</small>` : ''}
-                                </div>
-                            </div>
-                            ` : ''}
-                            
-                            ${nelayan.kodeValidasi ? `
-                            <div class="popup-field">
-                                <div class="popup-label">KODE VALIDASI</div>
-                                <div class="popup-value">
-                                    <span class="font-monospace" style="font-size: 11px; background: #f0f0f0; padding: 3px 6px; border-radius: 3px; display: inline-block;">${nelayan.kodeValidasi}</span>
-                                </div>
-                            </div>
-                            ` : ''}
-                            
-                            <div class="popup-field">
-                                <div class="popup-label">JENIS IKAN</div>
-                                <div class="popup-value">
-                                    ${nelayan.jenisIkan ? nelayan.jenisIkan.split(', ').map(fish => 
-                                        `<span class="popup-badge" style="background-color: #6c757d; color: white; margin: 2px;">${fish}</span>`
-                                    ).join('') : 'Tidak ada data'}
-                                </div>
-                            </div>
-                            
-                            ${nelayan.usahaSampingan && nelayan.usahaSampingan !== '-' ? `
-                            <div class="popup-field">
-                                <div class="popup-label">USAHA SAMPINGAN</div>
-                                <div class="popup-value">
-                                    ${nelayan.usahaSampingan}
-                                </div>
-                            </div>
-                            ` : ''}
-                            
+                    <div class="leaflet-popup-content" style="min-width: 280px; max-width: 320px; padding: 10px;">
+                        <h5 style="margin: 0 0 10px 0; color: #0c2461; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px;">${nelayan.nama}</h5>
+                        <div style="font-size: 13px; color: #333;">
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-id-card me-1"></i> NIK:</strong> ${displayNik}</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-user me-1"></i> Usia:</strong> ${nelayan.usia} Tahun</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-briefcase me-1"></i> Profesi:</strong> ${nelayan.profesi}</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-user-tag me-1"></i> Status:</strong> ${nelayan.status}</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-map-marker-alt me-1"></i> Domisili:</strong> ${nelayan.desa}, ${nelayan.kecamatan}</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-fish me-1"></i> API:</strong> ${nelayan.alatTangkap}</div>
+                            ${nelayan.status === 'Pemilik Kapal' ? `<div style="margin-bottom: 8px;"><strong><i class="fas fa-ship me-1"></i> Kapal:</strong> ${nelayan.namaKapal || '-'} (${nelayan.jenisKapal || '-'})</div>` : ''}
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-key me-1"></i> Kode Validasi:</strong> ${nelayan.kodeValidasi || '-'}</div>
                             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-sm btn-primary" onclick="window.viewDetail('${nelayan.id}'); if (window.detailModal) { window.detailModal.show(); }" style="flex: 1; font-size: 12px; padding: 5px 10px;">
-                                        <i class="fas fa-info-circle me-1"></i> Detail Lengkap
-                                    </button>
-                                    <button class="btn btn-sm btn-success" onclick="window.safeGenerateIDCard('${nelayan.id}')" style="flex: 1; font-size: 12px; padding: 5px 10px;">
-                                        <i class="fas fa-id-card me-1"></i> ID Card
-                                    </button>
-                                </div>
+                                <button class="btn btn-sm btn-primary w-100" onclick="window.viewDetail && window.viewDetail('${nelayan.id}'); if (window.detailModal) { window.detailModal.hide(); }">
+                                    <i class="fas fa-info-circle me-1"></i> Lihat Detail Lengkap
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
                 
-                // Buat marker dengan event handling yang lebih baik
+                // Buat marker
                 try {
-                    const marker = L.marker(coordinates, { 
-                        icon: customIcon,
-                        title: `${nelayan.nama} - ${markerTitle}`,
-                        alt: `Marker untuk ${nelayan.nama}`
-                    })
-                    .bindPopup(popupContent, {
-                        maxWidth: 350,
-                        minWidth: 280,
-                        className: 'custom-popup'
-                    })
-                    .on('click', function(e) {
-                        this.openPopup();
-                        // Highlight marker saat diklik
-                        const icon = this.getElement();
-                        if (icon) {
-                            icon.style.transform = 'scale(1.1)';
-                            setTimeout(() => {
-                                icon.style.transform = 'scale(1)';
-                            }, 300);
-                        }
-                    })
-                    .on('mouseover', function() {
-                        this.openPopup();
-                    })
-                    .on('mouseout', function() {
-                        // Jangan tutup popup saat mouseout, biarkan user bisa interaksi
-                    });
+                    const marker = L.marker(coordinates, { icon: customIcon })
+                        .bindPopup(popupContent)
+                        .on('click', function() {
+                            this.openPopup();
+                        })
+                        .on('mouseover', function() {
+                            this.openPopup();
+                        });
                     
                     markers.addLayer(marker);
-                    currentMarkers.push({
-                        marker: marker,
-                        data: nelayan,
-                        coordinates: coordinates
-                    });
+                    currentMarkers.push(marker);
                 } catch (error) {
                     console.error(`❌ Error membuat marker untuk ${nelayan.nama}:`, error);
                 }
             });
             
             // Update statistik peta
-            updateMapStatistics();
+            if (document.getElementById('map-total-points')) {
+                document.getElementById('map-total-points').textContent = appData.length;
+                document.getElementById('map-total-kecamatan').textContent = Object.keys(kecamatanCount).length;
+                document.getElementById('map-total-desa').textContent = Object.keys(desaCount).length;
+                document.getElementById('map-total-kapal').textContent = pemilikKapalCount;
+            }
             
             // Fit bounds jika ada marker
             if (currentMarkers.length > 0) {
-                try {
-                    const markerGroup = L.featureGroup(currentMarkers.map(item => item.marker));
-                    map.fitBounds(markerGroup.getBounds().pad(0.1));
-                } catch (error) {
-                    console.error('Error fitting bounds:', error);
-                }
+                const group = L.featureGroup(currentMarkers);
+                map.fitBounds(group.getBounds().pad(0.1));
             }
             
             console.log(`✅ Berhasil render ${currentMarkers.length} marker`);
         }
 
-        // --- FUNGSI UNTUK UPDATE STATISTIK PETA --- DIPERBAIKI
+        // --- FUNGSI UNTUK UPDATE STATISTIK PETA ---
         function updateMapStatistics() {
             const appData = window.appData || [];
-            if (appData.length === 0) {
-                document.getElementById('map-total-points').textContent = '0';
-                document.getElementById('map-total-kecamatan').textContent = '0';
-                document.getElementById('map-total-desa').textContent = '0';
-                document.getElementById('map-total-kapal').textContent = '0';
-                return;
-            }
+            if (appData.length === 0) return;
             
-            const kecamatanCount = new Set();
-            const desaCount = new Set();
+            const kecamatanCount = {};
+            const desaCount = {};
             let pemilikKapalCount = 0;
             
             appData.forEach(nelayan => {
-                if (nelayan.kecamatan) kecamatanCount.add(nelayan.kecamatan);
-                if (nelayan.desa) desaCount.add(nelayan.desa);
+                kecamatanCount[nelayan.kecamatan] = (kecamatanCount[nelayan.kecamatan] || 0) + 1;
+                desaCount[nelayan.desa] = (desaCount[nelayan.desa] || 0) + 1;
                 if (nelayan.status === 'Pemilik Kapal') pemilikKapalCount++;
             });
             
             if (document.getElementById('map-total-points')) {
-                document.getElementById('map-total-points').textContent = appData.length.toLocaleString();
-                document.getElementById('map-total-kecamatan').textContent = kecamatanCount.size.toLocaleString();
-                document.getElementById('map-total-desa').textContent = desaCount.size.toLocaleString();
-                document.getElementById('map-total-kapal').textContent = pemilikKapalCount.toLocaleString();
+                document.getElementById('map-total-points').textContent = appData.length;
+                document.getElementById('map-total-kecamatan').textContent = Object.keys(kecamatanCount).length;
+                document.getElementById('map-total-desa').textContent = Object.keys(desaCount).length;
+                document.getElementById('map-total-kapal').textContent = pemilikKapalCount;
             }
         }
 
@@ -1957,7 +1744,7 @@
             }
             
             // Filter marker berdasarkan view
-            filterMarkersByView();
+            renderMapMarkers();
             
             // Tampilkan notifikasi
             let viewName = 'Semua Data';
@@ -1969,39 +1756,9 @@
             }
         }
 
-        // --- FUNGSI UNTUK FILTER MARKER BERDASARKAN VIEW ---
-        function filterMarkersByView() {
-            if (!map || !markers || !isMapInitialized || !currentMarkers.length) {
-                return;
-            }
-            
-            markers.clearLayers();
-            
-            // Filter marker berdasarkan view
-            let filteredMarkers = currentMarkers;
-            
-            if (mapView === 'profesi') {
-                // Group by profesi, tapi untuk sekarang tampilkan semua
-                // Bisa dikembangkan untuk highlight berdasarkan profesi
-                console.log('View by profesi - menampilkan semua marker');
-            } else if (mapView === 'kecamatan') {
-                // Group by kecamatan, tapi untuk sekarang tampilkan semua
-                // Bisa dikembangkan untuk highlight berdasarkan kecamatan
-                console.log('View by kecamatan - menampilkan semua marker');
-            }
-            
-            // Tambahkan marker yang sudah difilter
-            filteredMarkers.forEach(item => {
-                markers.addLayer(item.marker);
-            });
-            
-            // Update statistik untuk view yang aktif
-            updateMapStatistics();
-        }
-
         // --- FUNGSI UNTUK RESET VIEW PETA ---
         function resetMapView() {
-            if (map && isMapInitialized) {
+            if (map) {
                 map.setView([-7.7068, 113.9142], 11);
                 if (window.showNotification) {
                     window.showNotification('Peta direset ke view awal', 'info');
@@ -2011,15 +1768,11 @@
 
         // --- FUNGSI UNTUK ZOOM KE SEMUA MARKER ---
         function zoomToAllMarkers() {
-            if (map && isMapInitialized && currentMarkers.length > 0) {
-                try {
-                    const markerGroup = L.featureGroup(currentMarkers.map(item => item.marker));
-                    map.fitBounds(markerGroup.getBounds().pad(0.1));
-                    if (window.showNotification) {
-                        window.showNotification('Zoom ke semua marker', 'info');
-                    }
-                } catch (error) {
-                    console.error('Error zooming to markers:', error);
+            if (map && currentMarkers.length > 0) {
+                const group = L.featureGroup(currentMarkers);
+                map.fitBounds(group.getBounds().pad(0.1));
+                if (window.showNotification) {
+                    window.showNotification('Zoom ke semua marker', 'info');
                 }
             } else {
                 if (window.showNotification) {
@@ -2031,24 +1784,22 @@
         // --- FUNGSI UNTUK TOGGLE CLUSTER MARKER ---
         function toggleCluster() {
             const showCluster = document.getElementById('showCluster');
-            if (!showCluster || !map || !isMapInitialized) return;
+            if (!showCluster || !map) return;
             
             if (showCluster.checked) {
                 // Mode cluster aktif
-                if (markers) {
-                    map.removeLayer(markers);
-                    markers.clearLayers();
-                    markers.addTo(map);
-                    renderMapMarkers();
-                }
+                map.removeLayer(markers);
+                markers.clearLayers();
+                markers.addTo(map);
+                renderMapMarkers();
                 if (window.showNotification) {
                     window.showNotification('Mode grup marker diaktifkan', 'info');
                 }
             } else {
                 // Mode cluster nonaktif
                 map.removeLayer(markers);
-                currentMarkers.forEach(item => {
-                    item.marker.addTo(map);
+                currentMarkers.forEach(marker => {
+                    marker.addTo(map);
                 });
                 if (window.showNotification) {
                     window.showNotification('Mode grup marker dinonaktifkan', 'info');
@@ -2056,28 +1807,23 @@
             }
         }
 
-        // --- FUNGSI UNTUK REFRESH PETA --- DIPERBAIKI
+        // --- FUNGSI UNTUK REFRESH PETA ---
         function refreshMap() {
             console.log('🔄 Refresh peta...');
-            if (map && markers && isMapInitialized) {
+            if (map && markers) {
                 renderMapMarkers();
                 updateMapStatistics();
                 if (window.showNotification) {
-                    window.showNotification('Peta berhasil direfresh dengan data terbaru', 'success');
-                }
-            } else {
-                // Jika peta belum diinisialisasi, inisialisasi ulang
-                initializeMap();
-                if (window.showNotification) {
-                    window.showNotification('Peta diinisialisasi ulang', 'info');
+                    window.showNotification('Peta berhasil direfresh', 'success');
                 }
             }
         }
 
         // =====================================================
-        // PERBAIKAN FUNGSI CETAK LAPORAN PDF - DIPERBAIKI SECARA MENYELURUH
+        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DIPERBAIKI
         // =====================================================
         
+        // Data yang tetap di index.html
         const FISH_TYPES = [
             "Lainnya", 
             "Ikan Tongkol", "Ikan Kembung", "Ikan Selar", "Ikan Tenggiri", "Ikan Layang", 
@@ -2466,6 +2212,7 @@
         function scanQRCode() {
             qrScannerModal.show();
             
+            // Informasi bahwa fitur QR scanner memerlukan implementasi lebih lanjut
             setTimeout(() => {
                 showNotification('Fitur QR Scanner sedang dalam pengembangan. Untuk sekarang, gunakan input manual.', 'info');
             }, 500);
@@ -2475,6 +2222,7 @@
             showNotification('Fitur QR Scanner akan segera hadir di versi mendatang.', 'info');
             qrScannerModal.hide();
             
+            // Simulasi scan QR Code untuk demo
             setTimeout(() => {
                 const demoCodes = appData.filter(d => d.kodeValidasi).map(d => d.kodeValidasi);
                 if (demoCodes.length > 0) {
@@ -2499,10 +2247,11 @@
             
             // Coba load ulang file reload.js
             const script = document.createElement('script');
-            script.src = 'reload.js?t=' + new Date().getTime();
+            script.src = 'reload.js?t=' + new Date().getTime(); // Tambahkan timestamp untuk cache busting
             script.onload = function() {
                 console.log('File reload.js berhasil dimuat ulang');
                 
+                // Beri waktu untuk pemrosesan
                 setTimeout(() => {
                     if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
                         try {
@@ -2519,9 +2268,12 @@
                                 saveData();
                                 renderDataTable();
                                 updateDashboard();
-                                // Update peta dengan data baru
-                                if (isMapInitialized) {
+                                // Perbaikan: Panggil fungsi renderMapMarkers langsung
+                                if (typeof renderMapMarkers === 'function') {
                                     renderMapMarkers();
+                                }
+                                if (typeof updateMapStatistics === 'function') {
+                                    updateMapStatistics();
                                 }
                                 
                                 showNotification(`Data berhasil disinkronisasi: ${newData.length} data baru ditambahkan`, 'success');
@@ -2555,7 +2307,7 @@
             document.head.appendChild(script);
         }
 
-        // --- INITIALIZATION --- DIPERBAIKI
+        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 initializeApp();
@@ -2574,10 +2326,10 @@
                     initializeCharts();
                     updateDashboard();
                     renderDataTable();
-                    // Inisialisasi peta dengan delay yang cukup
                     setTimeout(() => {
+                        // Perbaikan: Inisialisasi peta setelah login
                         initializeMap();
-                    }, 1000);
+                    }, 500);
                 } else {
                     setTimeout(() => {
                         document.getElementById('loginModal').style.display = 'flex';
@@ -2775,10 +2527,10 @@
                     initializeCharts();
                     updateDashboard();
                     renderDataTable();
-                    // Inisialisasi peta dengan delay yang cukup
                     setTimeout(() => {
+                        // Perbaikan: Inisialisasi peta setelah login
                         initializeMap();
-                    }, 1000);
+                    }, 500);
                     loginSuccessModal.show();
                     btn.disabled = false;
                     spinner.classList.add('d-none');
@@ -2993,6 +2745,7 @@
                 document.getElementById('restoreDataBtn').disabled = !this.files.length;
             });
             document.getElementById('restoreDataBtn').addEventListener('click', restoreData);
+            // Event listener untuk tombol Reload Data yang sudah diperbaiki
             document.getElementById('btn-reload-repo').addEventListener('click', handleReloadRepo);
             
             // Detail PDF
@@ -3172,9 +2925,12 @@
 
             updateDashboard(); 
             renderDataTable();
-            // Update peta setelah data berubah
-            if (isMapInitialized) {
+            // PERBAIKAN: Panggil fungsi renderMapMarkers langsung setelah data berubah
+            if (typeof renderMapMarkers === 'function') {
                 renderMapMarkers();
+            }
+            if (typeof updateMapStatistics === 'function') {
+                updateMapStatistics();
             }
             document.getElementById('v-pills-data-tab').click();
             checkGlobalDuplicates();
@@ -3491,8 +3247,11 @@
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
                 saveData(); renderDataTable(); updateDashboard();
-                if (isMapInitialized) {
+                if (typeof renderMapMarkers === 'function') {
                     renderMapMarkers();
+                }
+                if (typeof updateMapStatistics === 'function') {
+                    updateMapStatistics();
                 }
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 document.getElementById('selectAllCheckbox').checked = false;
@@ -3579,8 +3338,11 @@
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
                     saveData(); renderDataTable(); updateDashboard();
-                    if (isMapInitialized) {
+                    if (typeof renderMapMarkers === 'function') {
                         renderMapMarkers();
+                    }
+                    if (typeof updateMapStatistics === 'function') {
+                        updateMapStatistics();
                     }
                     showNotification('Data berhasil dihapus', 'success');
                     checkGlobalDuplicates();
@@ -3774,26 +3536,80 @@
             window.open(url, '_blank');
         }
 
-        // =====================================================
-        // FUNGSI CETAK LAPORAN PDF YANG DIPERBAIKI SECARA MENYELURUH
-        // =====================================================
         function printData() {
             if (appData.length === 0) {
                 showNotification('Tidak ada data untuk dicetak!', 'error');
                 return;
             }
 
-            // Generate QR Code untuk tanda tangan
-            document.getElementById('qr-right').innerHTML = "";
+            // Hitung statistik per desa
+            const desaStats = {};
+            appData.forEach(d => {
+                const desa = d.desa || "Tidak Diketahui";
+                if (!desaStats[desa]) {
+                    desaStats[desa] = { 
+                        count: 0, 
+                        owner: 0, 
+                        abk: 0, 
+                        penuhWaktu: 0, 
+                        sambilanUtama: 0, 
+                        sambilanTambahan: 0 
+                    };
+                }
+                desaStats[desa].count++;
+                if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; 
+                else desaStats[desa].abk++;
+                
+                if(d.profesi === 'Nelayan Penuh Waktu') desaStats[desa].penuhWaktu++;
+                else if(d.profesi === 'Nelayan Sambilan Utama') desaStats[desa].sambilanUtama++;
+                else if(d.profesi === 'Nelayan Sambilan Tambahan') desaStats[desa].sambilanTambahan++;
+            });
+
+            // Siapkan data untuk tabel
+            const tableRows = Object.keys(desaStats).sort().map((desa, index) => [
+                index + 1, 
+                desa, 
+                desaStats[desa].count, 
+                desaStats[desa].owner,
+                desaStats[desa].abk, 
+                desaStats[desa].penuhWaktu, 
+                desaStats[desa].sambilanUtama,
+                desaStats[desa].sambilanTambahan
+            ]);
+
+            // Hitung total
+            const totalCount = tableRows.reduce((sum, row) => sum + row[2], 0);
+            const totalOwner = tableRows.reduce((sum, row) => sum + row[3], 0);
+            const totalAbk = tableRows.reduce((sum, row) => sum + row[4], 0);
+            const totalPenuhWaktu = tableRows.reduce((sum, row) => sum + row[5], 0);
+            const totalSambilanUtama = tableRows.reduce((sum, row) => sum + row[6], 0);
+            const totalSambilanTambahan = tableRows.reduce((sum, row) => sum + row[7], 0);
+
+            // Tambahkan baris total
+            tableRows.push([
+                "",
+                "TOTAL KESELURUHAN",
+                totalCount,
+                totalOwner,
+                totalAbk,
+                totalPenuhWaktu,
+                totalSambilanUtama,
+                totalSambilanTambahan
+            ]);
+
+            // Generate kode unik untuk setiap cetakan
             const printId = 'SIMATA-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            const signatureText = `LAPORAN RESMI SIMATA\nDinas Perikanan Kabupaten Situbondo\nID Dokumen: ${printId}\nTanggal Cetak: ${new Date().toLocaleDateString('id-ID')}\nTotal Data: ${appData.length} nelayan`;
+
+            // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
+            document.getElementById('qr-right').innerHTML = "";
+            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nNIP: 19761103 200903 1 001\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
             
             try {
                 new QRCode(document.getElementById("qr-right"), { 
                     text: signatureText, 
                     width: 120, 
                     height: 120,
-                    colorDark: "#0c2461",
+                    colorDark: "#4a69bd", // Biru muda
                     colorLight: "#ffffff", 
                     correctLevel: QRCode.CorrectLevel.M
                 });
@@ -3801,7 +3617,6 @@
                 console.error("Error generating QR code:", error);
             }
 
-            // Tunggu QR Code selesai dibuat
             setTimeout(() => {
                 try {
                     const { jsPDF } = window.jspdf;
@@ -3811,151 +3626,69 @@
                         return;
                     }
 
-                    // Buat dokumen PDF dengan orientasi landscape
                     const doc = new jsPDF('l', 'mm', 'a4');
                     const pageWidth = doc.internal.pageSize.width;
                     const pageHeight = doc.internal.pageSize.height;
 
-                    // ===== HEADER YANG RAPI =====
-                    // Background header biru
+                    // Header
                     doc.setFillColor(12, 36, 97);
-                    doc.rect(0, 0, pageWidth, 35, 'F');
-                    
-                    // Logo atau ikon
-                    doc.setFillColor(255, 255, 255);
-                    doc.circle(25, 18, 12, 'F');
-                    doc.setFontSize(20);
-                    doc.setTextColor(12, 36, 97);
-                    doc.text('S', 25, 22, { align: 'center' });
+                    doc.rect(10, 10, pageWidth - 20, 28, 'F');
                     
                     // Judul utama
                     doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(16);
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
-                    doc.text('SISTEM INFORMASI PEMETAAN NELAYAN (SIMATA)', pageWidth/2, 15, { align: 'center' });
+                    doc.text('SISTEM INFORMASI PEMETAAN NELAYAN (SIMATA)', pageWidth/2, 20, { align: 'center' });
                     
                     // Subjudul
-                    doc.setFontSize(14);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 22, { align: 'center' });
-                    
-                    // Slogan
+                    doc.setFontSize(12);
+                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
+
+                    // Slogan dengan warna oranye
                     doc.setTextColor(246, 185, 59);
                     doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(11);
-                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 28, { align: 'center' });
-                    
-                    // ===== JUDUL LAPORAN =====
+                    doc.setFontSize(10);
+                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
+
+                    // Garis bawah header dengan warna aksen
+                    doc.setDrawColor(246, 185, 59);
+                    doc.setLineWidth(1.5);
+                    doc.line(20, 38, pageWidth - 20, 38);
+
+                    // Judul Laporan
                     doc.setTextColor(12, 36, 97);
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(20);
-                    doc.text('LAPORAN REKAPITULASI DATA NELAYAN', pageWidth/2, 45, { align: 'center' });
+                    doc.setFontSize(18);
+                    doc.text('LAPORAN REKAPITULASI DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
+                    doc.setFontSize(14);
+                    doc.text('PER DESA / KELURAHAN', pageWidth/2, 54, { align: 'center' });
                     
-                    doc.setFontSize(16);
-                    doc.text('KABUPATEN SITUBONDO', pageWidth/2, 52, { align: 'center' });
-                    
-                    // Informasi cetak
-                    doc.setFont('helvetica', 'normal');
                     doc.setFontSize(10);
-                    doc.setTextColor(100, 100, 100);
+                    doc.setFont('helvetica', 'normal');
                     const now = new Date();
-                    const dateString = now.toLocaleDateString('id-ID', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    doc.text(`Dicetak: ${dateString}`, pageWidth/2, 58, { align: 'center' });
-                    doc.text(`Total Data: ${appData.length} Nelayan`, pageWidth/2, 62, { align: 'center' });
-                    
-                    // ===== TABEL UTAMA =====
-                    // Siapkan data untuk tabel
-                    const tableData = [];
-                    
-                    // Hitung statistik per kecamatan
-                    const kecamatanStats = {};
-                    appData.forEach(d => {
-                        const kec = d.kecamatan || "Tidak Diketahui";
-                        if (!kecamatanStats[kec]) {
-                            kecamatanStats[kec] = { 
-                                total: 0,
-                                desa: new Set(),
-                                penuhWaktu: 0,
-                                sambilanUtama: 0,
-                                sambilanTambahan: 0,
-                                pemilikKapal: 0,
-                                abk: 0
-                            };
-                        }
-                        kecamatanStats[kec].total++;
-                        kecamatanStats[kec].desa.add(d.desa);
-                        
-                        // Hitung berdasarkan profesi
-                        if(d.profesi === 'Nelayan Penuh Waktu') kecamatanStats[kec].penuhWaktu++;
-                        else if(d.profesi === 'Nelayan Sambilan Utama') kecamatanStats[kec].sambilanUtama++;
-                        else if(d.profesi === 'Nelayan Sambilan Tambahan') kecamatanStats[kec].sambilanTambahan++;
-                        
-                        // Hitung berdasarkan status
-                        if(d.status === 'Pemilik Kapal') kecamatanStats[kec].pemilikKapal++;
-                        else kecamatanStats[kec].abk++;
-                    });
-                    
-                    // Konversi ke array untuk tabel
-                    Object.keys(kecamatanStats).sort().forEach((kec, index) => {
-                        const stats = kecamatanStats[kec];
-                        tableData.push([
-                            index + 1,
-                            kec,
-                            stats.desa.size,
-                            stats.total,
-                            stats.penuhWaktu,
-                            stats.sambilanUtama,
-                            stats.sambilanTambahan,
-                            stats.pemilikKapal,
-                            stats.abk
-                        ]);
-                    });
-                    
-                    // Hitung total
-                    const totalDesa = Object.values(kecamatanStats).reduce((sum, stats) => sum + stats.desa.size, 0);
-                    const totalNelayan = Object.values(kecamatanStats).reduce((sum, stats) => sum + stats.total, 0);
-                    const totalPenuhWaktu = Object.values(kecamatanStats).reduce((sum, stats) => sum + stats.penuhWaktu, 0);
-                    const totalSambilanUtama = Object.values(kecamatanStats).reduce((sum, stats) => sum + stats.sambilanUtama, 0);
-                    const totalSambilanTambahan = Object.values(kecamatanStats).reduce((sum, stats) => sum + stats.sambilanTambahan, 0);
-                    const totalPemilikKapal = Object.values(kecamatanStats).reduce((sum, stats) => sum + stats.pemilikKapal, 0);
-                    const totalAbk = Object.values(kecamatanStats).reduce((sum, stats) => sum + stats.abk, 0);
-                    
-                    // Tambahkan baris total
-                    tableData.push([
-                        "",
-                        "TOTAL",
-                        totalDesa,
-                        totalNelayan,
-                        totalPenuhWaktu,
-                        totalSambilanUtama,
-                        totalSambilanTambahan,
-                        totalPemilikKapal,
-                        totalAbk
-                    ]);
-                    
-                    // Buat tabel dengan autoTable
+                    const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
+                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 60, { align: 'center' });
+
+                    // Tabel Data
+                    const tableWidth = pageWidth - 40;
+                    const tableStartX = (pageWidth - tableWidth) / 2;
+
                     doc.autoTable({
                         head: [[
-                            {content: 'NO', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
-                            {content: 'KECAMATAN', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
-                            {content: 'DESA', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
-                            {content: 'TOTAL', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                            {content: 'PENUH WAKTU', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'SAM. UTAMA', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'SAM. TAMBAHAN', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'PEMILIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                            {content: 'ABK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}}
+                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
+                            {content: 'Desa / Kelurahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 60}},
+                            {content: 'Jumlah Nelayan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'Pemilik Kapal', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'ABK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
+                            {content: 'Penuh Waktu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'Sambilan Utama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}}
                         ]],
-                        body: tableData,
-                        startY: 70,
+                        body: tableRows,
+                        startY: 65,
                         theme: 'grid',
-                        margin: { left: 15, right: 15 },
+                        tableWidth: tableWidth,
+                        margin: { left: tableStartX, right: tableStartX },
                         headStyles: { 
                             fillColor: [12, 36, 97],
                             textColor: [255, 255, 255], 
@@ -3985,19 +3718,18 @@
                             halign: 'center'
                         },
                         columnStyles: {
-                            0: {cellWidth: 15, halign: 'center'},
-                            1: {cellWidth: 45, halign: 'left'},
-                            2: {cellWidth: 20, halign: 'center'},
-                            3: {cellWidth: 25, halign: 'center'},
-                            4: {cellWidth: 30, halign: 'center'},
+                            0: {cellWidth: 20, halign: 'center'},
+                            1: {cellWidth: 60, halign: 'left'},
+                            2: {cellWidth: 30, halign: 'center'},
+                            3: {cellWidth: 30, halign: 'center'},
+                            4: {cellWidth: 25, halign: 'center'},
                             5: {cellWidth: 30, halign: 'center'},
                             6: {cellWidth: 30, halign: 'center'},
-                            7: {cellWidth: 25, halign: 'center'},
-                            8: {cellWidth: 25, halign: 'center'}
+                            7: {cellWidth: 35, halign: 'center'}
                         },
                         willDrawCell: function(data) {
                             // Baris total dengan warna kuning
-                            if (data.row.index === tableData.length - 1) {
+                            if (data.row.index === tableRows.length - 1) {
                                 data.cell.styles.fillColor = [255, 235, 59];
                                 data.cell.styles.textColor = [0, 0, 0];
                                 data.cell.styles.fontStyle = 'bold';
@@ -4007,7 +3739,7 @@
                         }
                     });
 
-                    // ===== FOOTER DAN TANDA TANGAN =====
+                    // Footer
                     const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
                     const footerY = Math.min(finalY + 15, pageHeight - 50);
                     
@@ -4016,23 +3748,23 @@
                     doc.setLineWidth(0.3);
                     doc.line(20, footerY, pageWidth - 20, footerY);
                     
-                    // Bagian kiri: Informasi dokumen
+                    // Bagian kiri: Validasi elektronik
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(9);
+                    doc.setFontSize(8);
                     doc.setTextColor(12, 36, 97);
                     
                     const leftX = 25;
                     const leftY = footerY + 8;
                     
                     doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
-                    doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 5);
-                    doc.text("SISTEM SATU DATA NELAYAN (SIMATA)", leftX, leftY + 10);
+                    doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
+                    doc.text("SISTEM SATU DATA NELAYAN (SIMATA)", leftX, leftY + 8);
                     
                     doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8);
-                    doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 17);
+                    doc.setFontSize(7);
+                    doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
                     doc.setTextColor(230, 126, 34);
-                    doc.text("www.dinasperikanansitubondo.com/simata", leftX, leftY + 22);
+                    doc.text("www.dinasperikanansitubondo.com/simata", leftX, leftY + 18);
                     
                     // Bagian kanan: Tanda tangan dan QR Code
                     const rightX = pageWidth - 85;
@@ -4049,11 +3781,12 @@
                     // Jabatan
                     doc.text('Kepala Bidang Pemberdayaan Nelayan', rightX + 32, rightY + 6, {align: 'center'});
                     
-                    // QR Code
+                    // QR Code dengan warna biru muda
                     const qrRightCanvas = document.querySelector('#qr-right canvas');
                     if(qrRightCanvas) {
                         try {
                             const imgRight = qrRightCanvas.toDataURL("image/png");
+                            // QR code 25x25 mm
                             doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
                         } catch (error) {
                             console.error("Error adding QR code image:", error);
@@ -4068,30 +3801,28 @@
                     // Nama dan NIP
                     const nameY = rightY + 45;
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(10);
+                    doc.setFontSize(9);
                     doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', rightX + 32, nameY, {align: 'center'});
                     doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
+                    doc.setFontSize(8);
                     doc.text('NIP. 19761103 200903 1 001', rightX + 32, nameY + 5, {align: 'center'});
 
-                    // ===== FOOTER HALAMAN =====
+                    // Footer dengan kode unik
                     const totalPages = doc.getNumberOfPages();
                     for (let i = 1; i <= totalPages; i++) {
                         doc.setPage(i);
-                        
-                        // Nomor halaman
                         doc.setFontSize(8);
                         doc.setTextColor(100);
-                        doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                        doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
                         
-                        // Informasi sistem di footer
+                        // Informasi sistem di footer dengan kode unik
                         doc.setFontSize(7);
                         const printTime = new Date().toLocaleString('id-ID');
-                        doc.text(`SIMATA v5.6 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
+                        doc.text(`Dicetak dari SIMATA v5.4 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
                     }
 
                     // Simpan file PDF
-                    const fileName = `Laporan_Nelayan_Situbondo_${Date.now()}.pdf`;
+                    const fileName = `Laporan_Nelayan_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
                     doc.save(fileName);
                     document.getElementById('qr-right').innerHTML = "";
                     
@@ -4148,8 +3879,11 @@
                             saveData();
                             renderDataTable();
                             updateDashboard();
-                            if (isMapInitialized) {
+                            if (typeof renderMapMarkers === 'function') {
                                 renderMapMarkers();
+                            }
+                            if (typeof updateMapStatistics === 'function') {
+                                updateMapStatistics();
                             }
                             showNotification('Restore berhasil (format JSON langsung)', 'success');
                             fileInput.value = '';
@@ -4177,8 +3911,11 @@
                     saveData();
                     renderDataTable();
                     updateDashboard();
-                    if (isMapInitialized) {
+                    if (typeof renderMapMarkers === 'function') {
                         renderMapMarkers();
+                    }
+                    if (typeof updateMapStatistics === 'function') {
+                        updateMapStatistics();
                     }
                     
                     showNotification(`Restore berhasil: ${newData.length} data baru ditambahkan`, 'success');
@@ -4299,9 +4036,9 @@
         window.resetVerifyForm = resetVerifyForm;
         window.scanQRCode = scanQRCode;
 
-        console.log('✅ SIMATA Application v5.6 initialized successfully');
-        console.log('✅ Fitur Peta telah diperbaiki dan disempurnakan - Versi Final');
-        console.log('✅ Fitur Cetak Laporan PDF telah diperbaiki - Versi Profesional');
+        console.log('✅ SIMATA Application v5.4 initialized successfully');
+        console.log('✅ Fitur Peta telah diperbaiki dan disempurnakan');
+        console.log('✅ Fitur Verifikasi KIN telah ditambahkan');
         console.log('✅ Semua menu dan fitur lain tetap utuh dan berfungsi');
     </script>
 </body>
