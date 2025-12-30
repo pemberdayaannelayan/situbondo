@@ -2,7 +2,7 @@
  * SIMATA CONVERT DATA TOOL - VERSI DISEMPURNAKAN
  * Konversi data antara format Excel (.xlsx) dan reload.js dengan fitur Impor Data Cepat
  * Developer: Dinas Perikanan Kabupaten Situbondo
- * Version: 2.0 - Fitur Impor Data Cerdas
+ * Version: 2.1 - Fitur Impor Data Cerdas dengan Validasi Lengkap
  */
 
 // CSS untuk konverter
@@ -306,7 +306,7 @@ const converterCSS = `
     background: white;
     border-radius: 15px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -336,7 +336,7 @@ const converterCSS = `
 
 .confirm-stats {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin: 20px 0;
 }
@@ -346,6 +346,7 @@ const converterCSS = `
     padding: 15px;
     border-radius: 8px;
     text-align: center;
+    border: 1px solid #e9ecef;
 }
 
 .stat-value {
@@ -407,6 +408,12 @@ const converterCSS = `
     }
     
     .confirm-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .confirm-stats {
         grid-template-columns: 1fr;
     }
 }
@@ -438,6 +445,42 @@ const converterCSS = `
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Badge untuk status data */
+.data-status-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    margin-left: 5px;
+}
+
+.badge-lengkap {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.badge-tidak-lengkap {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.badge-ganda {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Alert khusus */
+.alert-data-tidak-lengkap {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+}
+
+.alert-data-ganda {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
 }
 `;
 
@@ -591,7 +634,11 @@ function createImportDataTab() {
                     
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        Data dengan NIK yang sudah ada akan ditimpa. Data baru akan ditambahkan.
+                        <strong>Perhatian:</strong><br>
+                        1. Data dengan NIK yang sudah ada akan ditimpa<br>
+                        2. Data baru akan ditambahkan ke sistem<br>
+                        3. Data tidak lengkap akan ditandai dan bisa dilengkapi via menu Edit Data<br>
+                        4. Data ganda akan ditandai dan harus diperbaiki
                     </div>
                 </div>
                 <div class="confirm-footer">
@@ -747,6 +794,9 @@ function convertExcelToReload() {
             const reloadJsContent = `window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             // Tampilkan hasil
+            const incompleteCount = validatedData.filter(d => !d.isComplete).length;
+            const duplicateNiks = getDuplicateNiks(validatedData);
+            
             resultContent.innerHTML = `
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle me-2"></i>
@@ -754,10 +804,28 @@ function convertExcelToReload() {
                     <div class="mt-2">
                         <div><strong>File Input:</strong> ${file.name}</div>
                         <div><strong>Total Data:</strong> ${validatedData.length} records</div>
-                        <div><strong>Format:</strong> SIMATA v5.3</div>
+                        <div><strong>Data Lengkap:</strong> ${validatedData.length - incompleteCount} records</div>
+                        <div><strong>Data Tidak Lengkap:</strong> ${incompleteCount} records</div>
+                        <div><strong>Potensi Duplikasi:</strong> ${duplicateNiks.size} NIK</div>
                         <div><strong>Waktu:</strong> ${new Date().toLocaleTimeString('id-ID')}</div>
                     </div>
                 </div>
+                
+                ${incompleteCount > 0 ? `
+                <div class="alert alert-data-tidak-lengkap">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Data Tidak Lengkap Ditemukan:</strong> ${incompleteCount} data memerlukan pelengkapan.
+                    Data ini akan tetap diimpor tetapi ditandai khusus di database.
+                </div>
+                ` : ''}
+                
+                ${duplicateNiks.size > 0 ? `
+                <div class="alert alert-data-ganda">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Potensi Data Ganda:</strong> ${duplicateNiks.size} NIK memiliki data ganda.
+                    Harap periksa dan hapus duplikasi setelah impor.
+                </div>
+                ` : ''}
                 
                 <div class="data-preview">
                     <h5><i class="fas fa-table me-2"></i>Preview Data (5 baris pertama):</h5>
@@ -770,6 +838,7 @@ function convertExcelToReload() {
                                     <th>NIK</th>
                                     <th>Profesi</th>
                                     <th>Status</th>
+                                    <th>Kelengkapan</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -780,6 +849,16 @@ function convertExcelToReload() {
                                         <td>${item.nik ? item.nik.substring(0, 8) + '****' : '-'}</td>
                                         <td><span class="badge ${getProfesiBadgeClass(item.profesi)}">${item.profesi || '-'}</span></td>
                                         <td>${item.status || '-'}</td>
+                                        <td>
+                                            ${item.isComplete ? 
+                                                '<span class="data-status-badge badge-lengkap">Lengkap</span>' : 
+                                                '<span class="data-status-badge badge-tidak-lengkap">Tidak Lengkap</span>'
+                                            }
+                                            ${duplicateNiks.has(item.nik) ? 
+                                                '<span class="data-status-badge badge-ganda">Ganda</span>' : 
+                                                ''
+                                            }
+                                        </td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -793,6 +872,7 @@ function convertExcelToReload() {
                         <li>Diunggah ke repository GitHub untuk sinkronisasi</li>
                         <li>Direstore melalui menu <strong>Backup & Restore</strong></li>
                         <li>Digunakan untuk memperbarui data di sistem lain</li>
+                        <li>Diimpor melalui <strong>Impor Data Cepat</strong> di tab ini</li>
                     </ol>
                 </div>
                 
@@ -857,6 +937,24 @@ function downloadTemplate() {
                 'tanggalValidasi': 'CONTOH: 2025-01-15',
                 'validator': 'CONTOH: Petugas Lapangan',
                 'keterangan': 'CONTOH: Data lengkap'
+            },
+            {
+                'nama': 'CONTOH: Budi Santoso',
+                'nik': '3501010101010002',
+                'whatsapp': '081234567891',
+                'profesi': 'Nelayan Sambilan Utama',
+                'status': 'Anak Buah Kapal',
+                'tahunLahir': '1990',
+                'kecamatan': 'Panarukan',
+                'desa': 'Kilensari',
+                'alatTangkap': 'Pancing',
+                'namaKapal': '',
+                'jenisKapal': '',
+                'jenisIkan': 'Ikan Tongkol',
+                'usahaSampingan': '',
+                'tanggalValidasi': '2025-01-15',
+                'validator': 'Petugas Lapangan',
+                'keterangan': ''
             }
         ];
         
@@ -866,17 +964,40 @@ function downloadTemplate() {
         
         // Tambahkan sheet petunjuk
         const instructions = [
-            ['PANDUAN PENGISIAN TEMPLATE EXCEL'],
+            ['PANDUAN PENGISIAN TEMPLATE EXCEL UNTUK IMPOR DATA SIMATA'],
             [''],
-            ['1. Kolom wajib diisi:', 'nama, nik, whatsapp, profesi, status, tahunLahir, kecamatan, desa, alatTangkap'],
-            ['2. Kolom opsional:', 'namaKapal, jenisKapal, jenisIkan, usahaSampingan, tanggalValidasi, validator, keterangan'],
-            ['3. Format tanggal:', 'YYYY-MM-DD (contoh: 2025-01-15)'],
-            ['4. Pilihan profesi:', 'Nelayan Penuh Waktu, Nelayan Sambilan Utama, Nelayan Sambilan Tambahan'],
-            ['5. Pilihan status:', 'Pemilik Kapal, Anak Buah Kapal'],
-            ['6. NIK harus 16 digit angka'],
-            ['7. Jenis ikan pisahkan dengan koma'],
+            ['KOLOM WAJIB (harus diisi):', ''],
+            ['1. nama', 'Nama lengkap sesuai KTP'],
+            ['2. nik', '16 digit NIK (contoh: 3501010101010001)'],
+            ['3. whatsapp', 'Nomor handphone aktif (contoh: 081234567890)'],
+            ['4. profesi', 'Pilihan: Nelayan Penuh Waktu, Nelayan Sambilan Utama, Nelayan Sambilan Tambahan'],
+            ['5. status', 'Pilihan: Pemilik Kapal, Anak Buah Kapal'],
+            ['6. tahunLahir', 'Tahun lahir (contoh: 1985)'],
+            ['7. kecamatan', 'Nama kecamatan (sesuai daftar)'],
+            ['8. desa', 'Nama desa/kelurahan (sesuai daftar)'],
+            ['9. alatTangkap', 'Alat Penangkapan Ikan (contoh: Pukat Cincin, Pancing, dll)'],
+            ['10. jenisIkan', 'Jenis ikan yang ditangkap, pisahkan dengan koma (contoh: Ikan Tongkol, Ikan Kembung)'],
             [''],
-            ['CATATAN:', 'Hapus baris contoh sebelum mengisi data asli']
+            ['KOLOM OPSIONAL (bisa dikosongkan):', ''],
+            ['11. namaKapal', 'Nama kapal (hanya untuk Pemilik Kapal)'],
+            ['12. jenisKapal', 'Jenis kapal (contoh: Perahu Jukung, Perahu Mayang, dll)'],
+            ['13. usahaSampingan', 'Usaha sampingan (contoh: Warung, Ternak)'],
+            ['14. tanggalValidasi', 'Format: YYYY-MM-DD (contoh: 2025-01-15)'],
+            ['15. validator', 'Nama petugas validator'],
+            ['16. keterangan', 'Keterangan tambahan'],
+            [''],
+            ['CATATAN PENTING:', ''],
+            ['- Hapus baris contoh (baris 1 dan 2) sebelum mengisi data asli'],
+            ['- Data yang tidak lengkap tetap bisa diimpor, tetapi akan ditandai khusus'],
+            ['- NIK ganda akan ditimpa dengan data terbaru'],
+            ['- Pastikan format tanggal sesuai YYYY-MM-DD'],
+            ['- NIK harus 16 digit angka'],
+            ['- Kolom profesi dan status harus sesuai pilihan yang tersedia'],
+            [''],
+            ['SETELAH PENGISIAN:', ''],
+            ['1. Simpan file Excel'],
+            ['2. Kembali ke tab Impor Data'],
+            ['3. Gunakan fitur "Impor Data Cepat" untuk memasukkan data ke sistem']
         ];
         
         const instructionSheet = XLSX.utils.aoa_to_sheet(instructions);
@@ -947,6 +1068,13 @@ function showImportConfirmation(data) {
     const penuhWaktu = data.filter(d => d.profesi === 'Nelayan Penuh Waktu').length;
     const sambilanUtama = data.filter(d => d.profesi === 'Nelayan Sambilan Utama').length;
     const sambilanTambahan = data.filter(d => d.profesi === 'Nelayan Sambilan Tambahan').length;
+    const abk = data.filter(d => d.status === 'Anak Buah Kapal').length;
+    
+    // Hitung data tidak lengkap
+    const incompleteData = data.filter(d => !d.isComplete).length;
+    
+    // Hitung duplikasi NIK dalam data yang akan diimpor
+    const duplicateInImport = getDuplicateNiks(data).size;
     
     stats.innerHTML = `
         <div class="stat-box">
@@ -958,12 +1086,24 @@ function showImportConfirmation(data) {
             <div class="stat-label">Pemilik Kapal</div>
         </div>
         <div class="stat-box">
+            <div class="stat-value">${abk}</div>
+            <div class="stat-label">Anak Buah Kapal</div>
+        </div>
+        <div class="stat-box">
             <div class="stat-value">${penuhWaktu}</div>
             <div class="stat-label">Penuh Waktu</div>
         </div>
         <div class="stat-box">
             <div class="stat-value">${sambilanUtama + sambilanTambahan}</div>
             <div class="stat-label">Sambilan</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">${incompleteData}</div>
+            <div class="stat-label">Tidak Lengkap</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">${duplicateInImport}</div>
+            <div class="stat-label">Duplikasi NIK</div>
         </div>
     `;
     
@@ -998,13 +1138,20 @@ function processImport() {
         // Cek duplikasi berdasarkan NIK
         const existingNiks = new Set(existingData.map(d => d.nik));
         const duplicateNiks = new Set();
+        const updatedData = [];
         
         // Filter data baru, timpa jika NIK sudah ada
         const mergedData = [...existingData];
         let added = 0;
         let updated = 0;
+        let incompleteCount = 0;
         
         newData.forEach(newItem => {
+            // Hitung data tidak lengkap
+            if (!newItem.isComplete) {
+                incompleteCount++;
+            }
+            
             const existingIndex = mergedData.findIndex(d => d.nik === newItem.nik);
             
             if (existingIndex >= 0) {
@@ -1012,15 +1159,20 @@ function processImport() {
                 mergedData[existingIndex] = {
                     ...mergedData[existingIndex],
                     ...newItem,
-                    id: mergedData[existingIndex].id // Pertahankan ID yang ada
+                    id: mergedData[existingIndex].id, // Pertahankan ID yang ada
+                    updatedAt: new Date().toISOString(),
+                    updatedBy: 'System Import'
                 };
                 updated++;
                 duplicateNiks.add(newItem.nik);
+                updatedData.push(newItem);
             } else {
                 // Tambah data baru
                 mergedData.push({
                     ...newItem,
-                    id: Date.now() + Math.random() // Generate ID baru
+                    id: Date.now() + Math.random(), // Generate ID baru
+                    createdAt: new Date().toISOString(),
+                    createdBy: 'System Import'
                 });
                 added++;
             }
@@ -1051,23 +1203,42 @@ function processImport() {
                     <div><strong>Data Diperbarui:</strong> ${updated} records diperbarui</div>
                     <div><strong>Total Data Sistem:</strong> ${mergedData.length} records</div>
                     <div><strong>Duplikasi Ditemukan:</strong> ${duplicateNiks.size} NIK</div>
+                    <div><strong>Data Tidak Lengkap:</strong> ${incompleteCount} records</div>
                 </div>
             </div>
             
-            <div class="alert ${duplicateNiks.size > 0 ? 'alert-warning' : 'alert-info'}">
-                <i class="fas fa-info-circle me-2"></i>
-                ${duplicateNiks.size > 0 
-                    ? `Data dengan NIK yang sudah ada (${duplicateNiks.size} records) telah diperbarui.` 
-                    : 'Semua data berhasil ditambahkan tanpa duplikasi.'}
+            ${incompleteCount > 0 ? `
+            <div class="alert alert-data-tidak-lengkap">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Data Tidak Lengkap:</strong> ${incompleteCount} data memerlukan pelengkapan.
+                <ul class="mt-2 mb-1">
+                    <li>Data yang tidak lengkap akan ditandai dengan <span class="badge bg-warning">warna kuning</span> di tabel</li>
+                    <li>Lengkapi data melalui menu <strong>Edit Data</strong></li>
+                    <li>Sistem akan terus mengingatkan hingga data lengkap</li>
+                </ul>
             </div>
+            ` : ''}
+            
+            ${duplicateNiks.size > 0 ? `
+            <div class="alert alert-data-ganda">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>Data Ganda Ditemukan:</strong> ${duplicateNiks.size} NIK memiliki data ganda.
+                <ul class="mt-2 mb-1">
+                    <li>Data ganda akan ditandai dengan <span class="badge bg-danger">warna merah</span> di tabel</li>
+                    <li>Periksa dan hapus duplikasi melalui menu <strong>Filter & Validasi</strong> → <strong>Cek Data Ganda</strong></li>
+                    <li>Hapus atau edit salah satu data ganda</li>
+                </ul>
+            </div>
+            ` : ''}
             
             <div class="mt-3">
                 <p><strong>Langkah selanjutnya:</strong></p>
                 <ol style="padding-left: 20px;">
                     <li>Periksa data di menu <strong>Data Nelayan</strong></li>
-                    <li>Lengkapi data yang masih kosong melalui menu <strong>Edit Data</strong></li>
-                    <li>Validasi data melalui menu <strong>Filter & Validasi</strong></li>
+                    ${incompleteCount > 0 ? '<li>Lengkapi data yang masih kosong melalui menu <strong>Edit Data</strong></li>' : ''}
                     ${duplicateNiks.size > 0 ? '<li>Cek data duplikasi di menu <strong>Filter & Validasi</strong> → <strong>Cek Data Ganda</strong></li>' : ''}
+                    <li>Validasi data melalui menu <strong>Filter & Validasi</strong></li>
+                    <li>Cetak ID Card untuk data yang sudah lengkap</li>
                 </ol>
             </div>
             
@@ -1075,20 +1246,51 @@ function processImport() {
                 <button class="converter-btn converter-btn-primary" onclick="goToDataTab()">
                     <i class="fas fa-database me-2"></i>Lihat Data Nelayan
                 </button>
-                <button class="converter-btn converter-btn-secondary" onclick="goToFilterTab()">
+                ${incompleteCount > 0 ? `
+                <button class="converter-btn converter-btn-warning" onclick="showIncompleteData()">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Lihat Data Tidak Lengkap
+                </button>
+                ` : ''}
+                ${duplicateNiks.size > 0 ? `
+                <button class="converter-btn converter-btn-danger" onclick="goToFilterTab()">
                     <i class="fas fa-filter me-2"></i>Cek Data Ganda
                 </button>
+                ` : ''}
             </div>
         `;
         
         result.classList.add('active');
         loading.classList.remove('active');
         
+        // Simpan notifikasi untuk data tidak lengkap
+        if (incompleteCount > 0) {
+            localStorage.setItem('simata_incomplete_data', 'true');
+            localStorage.setItem('simata_incomplete_count', incompleteCount.toString());
+        }
+        
+        // Simpan notifikasi untuk data ganda
+        if (duplicateNiks.size > 0) {
+            localStorage.setItem('simata_duplicate_data', 'true');
+            localStorage.setItem('simata_duplicate_count', duplicateNiks.size.toString());
+        }
+        
         showConverterStatus(`✅ ${added + updated} data berhasil diimpor ke sistem`, 'success');
         
         // Reset form
         document.getElementById('importFileInput').value = '';
         document.getElementById('importExcelBtn').disabled = true;
+        
+        // Tampilkan notifikasi global
+        setTimeout(() => {
+            if (typeof window.showNotification === 'function') {
+                if (incompleteCount > 0) {
+                    window.showNotification(`⚠️ ${incompleteCount} data tidak lengkap. Harap lengkapi melalui menu Edit Data.`, 'warning');
+                }
+                if (duplicateNiks.size > 0) {
+                    window.showNotification(`⚠️ ${duplicateNiks.size} data duplikasi ditemukan. Harap periksa di menu Filter & Validasi.`, 'error');
+                }
+            }
+        }, 1000);
         
     } catch (error) {
         console.error('Process import error:', error);
@@ -1103,11 +1305,17 @@ function processImport() {
 function validateAndConvertExcelData(excelData) {
     const convertedData = [];
     const errors = [];
+    const warnings = [];
+    
+    // Kolom wajib untuk data lengkap
+    const requiredFields = ['nama', 'nik', 'whatsapp', 'profesi', 'status', 'tahunLahir', 'kecamatan', 'desa', 'alatTangkap'];
     
     excelData.forEach((row, index) => {
         try {
-            // Skip jika row kosong
-            if (!row.nik && !row.nama) {
+            // Skip jika row kosong atau baris contoh
+            if ((!row.nik && !row.nama) || 
+                (row.nik && row.nik.toString().includes('CONTOH')) ||
+                (row.nama && row.nama.toString().includes('CONTOH'))) {
                 return;
             }
             
@@ -1119,33 +1327,77 @@ function validateAndConvertExcelData(excelData) {
             const currentYear = new Date().getFullYear();
             const usia = currentYear - tahunLahir;
             
+            // Validasi NIK
+            const nik = String(row.nik || '').trim();
+            if (nik && nik.length !== 16 && !isNaN(nik)) {
+                warnings.push(`Baris ${index + 2}: NIK ${nik} harus 16 digit`);
+            }
+            
+            // Validasi WhatsApp
+            const whatsapp = String(row.whatsapp || row['no hp'] || row.telp || '').trim();
+            
+            // Validasi profesi
+            const validProfesi = ['Nelayan Penuh Waktu', 'Nelayan Sambilan Utama', 'Nelayan Sambilan Tambahan'];
+            const profesi = row.profesi || 'Nelayan Penuh Waktu';
+            if (!validProfesi.includes(profesi)) {
+                warnings.push(`Baris ${index + 2}: Profesi "${profesi}" tidak valid, diubah menjadi "Nelayan Penuh Waktu"`);
+            }
+            
+            // Validasi status
+            const validStatus = ['Pemilik Kapal', 'Anak Buah Kapal'];
+            const status = row.status || 'Anak Buah Kapal';
+            if (!validStatus.includes(status)) {
+                warnings.push(`Baris ${index + 2}: Status "${status}" tidak valid, diubah menjadi "Anak Buah Kapal"`);
+            }
+            
             // Default values
             const convertedRow = {
                 id: id,
-                nama: String(row.nama || ''),
-                nik: String(row.nik || ''),
-                whatsapp: String(row.whatsapp || row['no hp'] || row.telp || '00000000'),
-                profesi: row.profesi || 'Nelayan Penuh Waktu',
-                status: row.status || 'Anak Buah Kapal',
+                nama: String(row.nama || '').trim(),
+                nik: nik,
+                whatsapp: whatsapp || '00000000',
+                profesi: validProfesi.includes(profesi) ? profesi : 'Nelayan Penuh Waktu',
+                status: validStatus.includes(status) ? status : 'Anak Buah Kapal',
                 tahunLahir: tahunLahir,
                 usia: usia,
-                kecamatan: row.kecamatan || '',
-                desa: row.desa || '',
-                alatTangkap: row.alatTangkap || row.API || 'Pancing',
-                namaKapal: row.namaKapal || '',
-                jenisKapal: row.jenisKapal || '',
-                jenisIkan: row.jenisIkan || row.ikan || '',
-                usahaSampingan: row.usahaSampingan || '',
+                kecamatan: String(row.kecamatan || '').trim(),
+                desa: String(row.desa || '').trim(),
+                alatTangkap: String(row.alatTangkap || row.API || 'Pancing').trim(),
+                namaKapal: String(row.namaKapal || '').trim(),
+                jenisKapal: String(row.jenisKapal || '').trim(),
+                jenisIkan: String(row.jenisIkan || row.ikan || '').trim(),
+                usahaSampingan: String(row.usahaSampingan || '').trim(),
                 tanggalValidasi: row.tanggalValidasi || new Date().toISOString().split('T')[0],
-                validator: row.validator || 'System Import',
-                driveLink: row.driveLink || '',
+                validator: String(row.validator || 'System Import').trim(),
+                driveLink: String(row.driveLink || '').trim(),
                 kodeValidasi: row.kodeValidasi || `IMP-${Date.now().toString(36).toUpperCase()}`,
-                keterangan: row.keterangan || `Diimpor pada ${new Date().toLocaleString('id-ID')}`
+                keterangan: String(row.keterangan || `Diimpor pada ${new Date().toLocaleString('id-ID')}`).trim(),
+                importDate: new Date().toISOString()
             };
             
-            // Validasi NIK
-            if (convertedRow.nik.length !== 16 && convertedRow.nik !== 'CONTOH: 3501010101010001') {
-                errors.push(`Baris ${index + 2}: NIK ${convertedRow.nik} harus 16 digit`);
+            // Cek kolom wajib untuk kelengkapan data
+            const missingFields = [];
+            requiredFields.forEach(field => {
+                const value = convertedRow[field];
+                if (!value || value.toString().trim() === '' || 
+                    (field === 'whatsapp' && value === '00000000') ||
+                    (field === 'tahunLahir' && (value < 1900 || value > currentYear))) {
+                    missingFields.push(field);
+                }
+            });
+            
+            // Cek jenis ikan (wajib minimal satu)
+            if (!convertedRow.jenisIkan || convertedRow.jenisIkan.trim() === '') {
+                missingFields.push('jenisIkan');
+            }
+            
+            // Tandai kelengkapan data
+            convertedRow.missingFields = missingFields;
+            convertedRow.isComplete = missingFields.length === 0;
+            
+            // Tambahkan pesan warning jika ada field yang tidak lengkap
+            if (missingFields.length > 0) {
+                convertedRow.keterangan += ` | Data tidak lengkap: ${missingFields.join(', ')}`;
             }
             
             convertedData.push(convertedRow);
@@ -1159,11 +1411,34 @@ function validateAndConvertExcelData(excelData) {
         throw new Error(`Validasi gagal: ${errors.slice(0, 3).join(', ')}...`);
     }
     
+    if (warnings.length > 0) {
+        console.warn('Peringatan validasi:', warnings);
+    }
+    
     if (errors.length > 0) {
-        console.warn('Peringatan validasi:', errors);
+        console.error('Errors validasi:', errors);
     }
     
     return convertedData;
+}
+
+/**
+ * Get duplicate NIKs from data
+ */
+function getDuplicateNiks(data) {
+    const nikCounts = {};
+    const duplicateNiks = new Set();
+    
+    data.forEach(d => {
+        if (d.nik) {
+            nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1;
+            if (nikCounts[d.nik] > 1) {
+                duplicateNiks.add(d.nik);
+            }
+        }
+    });
+    
+    return duplicateNiks;
 }
 
 /**
@@ -1279,6 +1554,29 @@ function goToFilterTab() {
 }
 
 /**
+ * Show incomplete data
+ */
+function showIncompleteData() {
+    const dataTab = document.getElementById('v-pills-data-tab');
+    if (dataTab) {
+        dataTab.click();
+        
+        // Set filter untuk menampilkan data tidak lengkap
+        setTimeout(() => {
+            const searchInput = document.getElementById('searchData');
+            if (searchInput) {
+                searchInput.value = '[TIDAK LENGKAP]';
+                searchInput.dispatchEvent(new Event('input'));
+                
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification('Menampilkan data yang tidak lengkap. Data ditandai dengan warna kuning.', 'info');
+                }
+            }
+        }, 300);
+    }
+}
+
+/**
  * Get badge class untuk profesi
  */
 function getProfesiBadgeClass(profesi) {
@@ -1308,6 +1606,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeConfirmModal = closeConfirmModal;
     window.handleExcelFileSelect = handleExcelFileSelect;
     window.handleImportFileSelect = handleImportFileSelect;
+    window.showIncompleteData = showIncompleteData;
     
-    console.log('✅ SIMATA Convert Data Tool v2.0 loaded successfully');
+    console.log('✅ SIMATA Convert Data Tool v2.1 loaded successfully');
 });
