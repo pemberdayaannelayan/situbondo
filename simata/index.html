@@ -27,6 +27,7 @@
     <!-- LOAD FILE JAVASCRIPT YANG DIPISAHKAN -->
     <script src="idcard.js"></script>
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
+    <script src="convert.js"></script>
     
     <style>
         /* Styling untuk tombol Reload Data */
@@ -113,6 +114,48 @@
             font-family: monospace;
             font-size: 1.1rem;
             letter-spacing: 1px;
+        }
+        
+        /* Perbaikan untuk peta */
+        #map {
+            height: 500px !important;
+            width: 100% !important;
+            z-index: 1;
+        }
+        
+        .marker-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        .marker-penuh {
+            background-color: #0c2461 !important;
+        }
+        
+        .marker-sambilan-utama {
+            background-color: #e58e26 !important;
+        }
+        
+        .marker-sambilan-tambahan {
+            background-color: #27ae60 !important;
+        }
+        
+        .marker-pemilik {
+            background-color: #0984e3 !important;
+        }
+        
+        .marker-abk {
+            background-color: #a55eea !important;
+        }
+        
+        .leaflet-popup-content {
+            min-width: 280px !important;
+            max-width: 320px !important;
+        }
+        
+        .map-controls, .map-legend {
+            z-index: 1000;
         }
     </style>
 </head>
@@ -250,18 +293,6 @@
         </div>
     </div>
 
-    <div class="sticky-warning" id="incompleteWarning" style="background-color:#fff3cd; border-left:5px solid #ffc107; display:none;">
-        <div class="d-flex align-items-start">
-            <div class="me-3 text-warning"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-            <div>
-                <h6 class="fw-bold text-warning mb-1">PERHATIAN: Data Tidak Lengkap!</h6>
-                <p class="small text-muted mb-2">Sistem mendeteksi adanya data nelayan yang belum lengkap. Harap segera dilengkapi.</p>
-                <button class="btn btn-sm btn-outline-warning" onclick="showIncompleteData()">Lihat Data Tidak Lengkap</button>
-                <button class="btn btn-sm btn-link text-muted text-decoration-none ms-2" onclick="document.getElementById('incompleteWarning').style.display='none'">Tutup</button>
-            </div>
-        </div>
-    </div>
-
     <div class="app-content-unauthenticated" id="appContent" style="display:none;">
         <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
         
@@ -291,7 +322,6 @@
                         <button class="nav-link" id="v-pills-print-tab" data-bs-toggle="pill" data-bs-target="#v-pills-print" type="button"><i class="fas fa-print"></i> Cetak Laporan</button>
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button"><i class="fas fa-file-export"></i> Ekspor Data</button>
                         <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button"><i class="fas fa-cloud-download-alt"></i> Backup & Restore</button>
-                        <button class="nav-link" id="v-pills-import-tab" data-bs-toggle="pill" data-bs-target="#v-pills-import" type="button"><i class="fas fa-file-import"></i> Impor Data</button>
                         <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button"><i class="fas fa-cog"></i> Pengaturan</button>
                         <!-- Tombol Reload Data dengan spinner -->
                         <button class="nav-link" id="btn-reload-repo" type="button">
@@ -391,6 +421,98 @@
                                         <div class="card h-100 shadow-sm border-0">
                                             <div class="card-header bg-white fw-bold py-3"><i class="fas fa-chart-bar me-2 text-primary"></i> Statistik Kepemilikan Kapal</div>
                                             <div class="card-body"><div class="chart-container-fixed"><canvas id="kapalChart"></canvas></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- FITUR PETA BARU DENGAN TOMBOL CLOSE -->
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <div class="card shadow-sm border-0">
+                                            <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-map-marked-alt me-2 text-primary"></i> Peta Sebaran Nelayan Kabupaten Situbondo
+                                                </div>
+                                                <div class="map-tabs">
+                                                    <div class="map-tab active" onclick="switchMapView('all')">Semua Data</div>
+                                                    <div class="map-tab" onclick="switchMapView('profesi')">Berdasarkan Profesi</div>
+                                                    <div class="map-tab" onclick="switchMapView('kecamatan')">Berdasarkan Kecamatan</div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <div class="map-statistics">
+                                                    <div class="stat-box">
+                                                        <div class="stat-value" id="map-total-points">0</div>
+                                                        <div class="stat-label">Total Titik</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="stat-value" id="map-total-kecamatan">0</div>
+                                                        <div class="stat-label">Kecamatan</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="stat-value" id="map-total-desa">0</div>
+                                                        <div class="stat-label">Desa</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="stat-value" id="map-total-kapal">0</div>
+                                                        <div class="stat-label">Pemilik Kapal</div>
+                                                    </div>
+                                                </div>
+                                                <div id="map-container">
+                                                    <div id="map"></div>
+                                                    <!-- Map Controls dengan tombol close -->
+                                                    <div class="map-controls">
+                                                        <div class="map-controls-header">
+                                                            <div class="map-controls-title">Kontrol Peta</div>
+                                                            <button class="map-controls-close" title="Tutup" onclick="this.parentElement.parentElement.style.display='none'">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-primary w-100 mb-2" onclick="resetMapView()">
+                                                            <i class="fas fa-sync-alt me-1"></i> Reset Peta
+                                                        </button>
+                                                        <button class="btn btn-sm btn-info w-100 mb-2" onclick="zoomToAllMarkers()">
+                                                            <i class="fas fa-search-location me-1"></i> Zoom Semua
+                                                        </button>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="showCluster" checked onchange="toggleCluster()">
+                                                            <label class="form-check-label small" for="showCluster">Grup Marker</label>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-warning w-100 mt-2" onclick="refreshMap()">
+                                                            <i class="fas fa-redo me-1"></i> Refresh Peta
+                                                        </button>
+                                                    </div>
+                                                    <!-- Map Legend dengan tombol close -->
+                                                    <div class="map-legend">
+                                                        <div class="map-legend-header">
+                                                            <div class="map-legend-title">Legenda</div>
+                                                            <button class="map-legend-close" title="Tutup" onclick="this.parentElement.parentElement.style.display='none'">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="legend-item">
+                                                            <div class="legend-color" style="background-color: #0c2461;"></div>
+                                                            <span>Nelayan Penuh Waktu</span>
+                                                        </div>
+                                                        <div class="legend-item">
+                                                            <div class="legend-color" style="background-color: #e58e26;"></div>
+                                                            <span>Nelayan Sambilan Utama</span>
+                                                        </div>
+                                                        <div class="legend-item">
+                                                            <div class="legend-color" style="background-color: #27ae60;"></div>
+                                                            <span>Nelayan Sambilan Tambahan</span>
+                                                        </div>
+                                                        <div class="legend-item">
+                                                            <div class="legend-color" style="background-color: #0984e3;"></div>
+                                                            <span>Pemilik Kapal</span>
+                                                        </div>
+                                                        <div class="legend-item">
+                                                            <div class="legend-color" style="background-color: #a55eea;"></div>
+                                                            <span>Anak Buah Kapal</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -622,7 +744,6 @@
                                         <div class="p-2 small text-muted fst-italic text-end border-top">
                                             <span id="sensorStatusText" class="badge bg-secondary me-2">Sensor: ON</span>
                                             <i class="fas fa-info-circle text-danger me-1"></i> Baris <span class="badge bg-danger">Merah</span> = duplikasi NIK.
-                                            <i class="fas fa-info-circle text-warning me-1 ms-2"></i> Baris <span class="badge bg-warning">Kuning</span> = data tidak lengkap.
                                         </div>
                                     </div>
                                 </div>
@@ -899,124 +1020,6 @@
                                 </div>
                             </div>
 
-                            <!-- TAB IMPOR DATA BARU -->
-                            <div class="tab-pane fade" id="v-pills-import">
-                                <h3 class="section-title">Impor Data Cerdas</h3>
-                                <div class="converter-container">
-                                    <div class="converter-header">
-                                        <h2><i class="fas fa-exchange-alt me-2"></i>Konverter & Impor Data SIMATA</h2>
-                                        <p>Konversi data Excel ke format sistem dan impor data secara cepat</p>
-                                    </div>
-                                    
-                                    <div class="converter-cards">
-                                        <div class="converter-card">
-                                            <h3><i class="fas fa-file-excel"></i> Excel ke Reload.js</h3>
-                                            <p>Konversi file Excel hasil download dari menu Ekspor menjadi file <code>reload.js</code> yang bisa diupload ke GitHub atau direstore.</p>
-                                            
-                                            <div class="upload-area" id="excelUploadArea" onclick="document.getElementById('excelFileInput').click()">
-                                                <i class="fas fa-cloud-upload-alt"></i>
-                                                <p><strong>Klik untuk memilih file Excel</strong></p>
-                                                <p>Format: .xlsx, .xls</p>
-                                                <small>File Excel hasil download dari menu Ekspor Data</small>
-                                            </div>
-                                            
-                                            <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display:none" onchange="handleExcelFileSelect(event)">
-                                            
-                                            <div class="converter-buttons">
-                                                <button class="converter-btn converter-btn-primary" onclick="convertExcelToReload()" id="convertExcelBtn" disabled>
-                                                    <i class="fas fa-sync-alt"></i> Konversi ke reload.js
-                                                </button>
-                                                <button class="converter-btn converter-btn-secondary" onclick="clearConverter()">
-                                                    <i class="fas fa-times"></i> Reset
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="converter-card">
-                                            <h3><i class="fas fa-database"></i> Impor Data Cepat</h3>
-                                            <p>Impor data Excel langsung ke sistem. Data yang kosong dapat dilengkapi melalui menu Edit Data.</p>
-                                            
-                                            <div class="upload-area" id="importUploadArea" onclick="document.getElementById('importFileInput').click()">
-                                                <i class="fas fa-file-import"></i>
-                                                <p><strong>Klik untuk memilih file Excel</strong></p>
-                                                <p>Format: .xlsx, .xls</p>
-                                                <small>Template Excel dengan kolom sesuai format SIMATA</small>
-                                            </div>
-                                            
-                                            <input type="file" id="importFileInput" accept=".xlsx,.xls" style="display:none" onchange="handleImportFileSelect(event)">
-                                            
-                                            <div class="converter-buttons">
-                                                <button class="converter-btn converter-btn-success" onclick="importExcelToSystem()" id="importExcelBtn" disabled>
-                                                    <i class="fas fa-upload"></i> Impor ke Sistem
-                                                </button>
-                                                <button class="converter-btn converter-btn-secondary" onclick="downloadTemplate()">
-                                                    <i class="fas fa-download"></i> Download Template
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="converter-loading" id="converterLoading">
-                                        <div class="spinner"></div>
-                                        <h4>Memproses data...</h4>
-                                        <p>Harap tunggu sebentar</p>
-                                    </div>
-                                    
-                                    <div class="converter-result" id="converterResult">
-                                        <div class="result-header">
-                                            <h4><i class="fas fa-check-circle text-success"></i> Hasil Konversi</h4>
-                                            <button class="btn btn-sm btn-outline-secondary" onclick="closeResult()">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                        <div class="result-content" id="resultContent">
-                                            <!-- Konten hasil akan dimuat di sini -->
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="converter-status info" id="converterStatus">
-                                        <i class="fas fa-info-circle"></i>
-                                        <span>Belum ada file yang dipilih</span>
-                                    </div>
-                                    
-                                    <div class="converter-footer">
-                                        <p><i class="fas fa-lightbulb me-2"></i> Tips: Pastikan struktur kolom Excel sesuai dengan template untuk hasil terbaik</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Modal konfirmasi impor -->
-                                <div class="confirm-modal" id="confirmModal">
-                                    <div class="confirm-content">
-                                        <div class="confirm-header">
-                                            <h3><i class="fas fa-check-circle"></i> Konfirmasi Impor Data</h3>
-                                            <button class="btn btn-sm btn-light" onclick="closeConfirmModal()">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                        <div class="confirm-body">
-                                            <p>Anda akan mengimpor data berikut ke sistem SIMATA:</p>
-                                            
-                                            <div class="confirm-stats" id="confirmStats">
-                                                <!-- Statistik akan dimuat di sini -->
-                                            </div>
-                                            
-                                            <div class="alert alert-warning">
-                                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                                <strong>Perhatian:</strong><br>
-                                                1. Data dengan NIK yang sudah ada akan ditimpa<br>
-                                                2. Data baru akan ditambahkan ke sistem<br>
-                                                3. Data tidak lengkap akan ditandai dan bisa dilengkapi via menu Edit Data<br>
-                                                4. Data ganda akan ditandai dan harus diperbaiki
-                                            </div>
-                                        </div>
-                                        <div class="confirm-footer">
-                                            <button class="confirm-btn secondary" onclick="closeConfirmModal()">Batal</button>
-                                            <button class="confirm-btn primary" onclick="processImport()">Impor Data</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="tab-pane fade" id="v-pills-settings">
                                 <h3 class="section-title">Pengaturan Sistem</h3>
                                 <div class="card p-4 border-0 shadow-sm mb-4">
@@ -1222,7 +1225,6 @@
             <a href="#" class="fab-item" id="fabVerify" title="Verifikasi"><i class="fas fa-check-circle"></i></a>
             <a href="#" class="fab-item" id="fabExport" title="Ekspor"><i class="fas fa-file-export"></i></a>
             <a href="#" class="fab-item" id="fabBackup" title="Backup"><i class="fas fa-cloud-download-alt"></i></a>
-            <a href="#" class="fab-item" id="fabImport" title="Impor Data"><i class="fas fa-file-import"></i></a>
             <a href="#" class="fab-item" id="fabSettings" title="Pengaturan"><i class="fas fa-cog"></i></a>
             <a href="#" class="fab-item" id="fabReload" title="Reload Repo"><i class="fas fa-sync"></i></a>
         </div>
@@ -1249,10 +1251,576 @@
         </div>
     </div>
 
-    <!-- KODE UTAMA APLIKASI SIMATA DENGAN PERBAIKAN -->
+    <!-- KODE UTAMA APLIKASI DENGAN FITUR PETA DAN VERIFIKASI KIN -->
     <script>
         // =====================================================
-        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DENGAN PERBAIKAN
+        // DATA KOORDINAT DAN FUNGSI PETA - DISATUKAN DENGAN INDEX.HTML
+        // =====================================================
+        
+        // Data wilayah Situbondo (LENGKAP)
+        const SITUBONDO_DATA = {
+            "Arjasa": ["Arjasa", "Bayeman", "Curah Tatal", "Jatisari", "Kayumas", "Kedungdowo", "Ketowan", "Lamongan"],
+            "Asembagus": ["Asembagus", "Awar-awar", "Bantal", "Gudang", "Kedunglo", "Kertosari", "Mojosari", "Parante", "Trigonco", "Wringin Anom"],
+            "Banyuglugur": ["Banyuglugur", "Kalianget", "Kalisari", "Lubawang", "Selobanteng", "Telempong", "Tepos"],
+            "Banyuputih": ["Banyuputih", "Sumberanyar", "Sumberejo", "Sumberwaru", "Wonorejo"],
+            "Besuki": ["Besuki", "Blimbing", "Bloro", "Demung", "Jetis", "Kalimas", "Langkap", "Pesisir", "Sumberejo", "Widoropayung"],
+            "Bungatan": ["Bletok", "Bungatan", "Mlandingan Wetan", "Pasir Putih", "Patemon", "Selowogo", "Sumbertengah"],
+            "Jangkar": ["Agel", "Curah Kalak", "Gadingan", "Jangkar", "Kumbangsari", "Palangan", "Pesanggrahan", "Sopet"],
+            "Jatibanteng": ["Curahsuri", "Jatibanteng", "Kembangsari", "Pategalan", "Patemon", "Semambung", "Sumberanyar", "Wringinanom"],
+            "Kapongan": ["Curah Cottok Gebangan", "Kandang", "Kapongan", "Kesambi Rampak", "Landangan", "Peleyan", "Pokaan", "Seletreng", "Wonokoyo"],
+            "Kendit": ["Balung", "Bugeman", "Kendit", "Klatakan", "Kukusan", "Rajekwesi", "Tambak Ukir"],
+            "Mangaran": ["Mangaran", "Semiring", "Tanjung Glugur", "Tanjung Kamal", "Tanjung Pecinan", "Trebungan"],
+            "Mlandingan": ["Alas Bayur", "Campoan", "Mlandingan Kulon", "Selomukti", "Sumberanyar", "Sumber Pinang", "Trebungan"],
+            "Panarukan": ["Alasmalang", "Duwet", "Gelung", "Kilensari", "Paowan", "Peleyan", "Sumberkolak", "Wringinanom"],
+            "Panji": ["Ardirejo", "Mimbaan", "Battal", "Curah Jeru", "Juglangan", "Kayu Putih", "Klampokan", "Panji Kidul", "Panji Lor", "Sliwung", "Tenggir", "Tokelan"],
+            "Situbondo": ["Dawuhan", "Patokan", "Kalibagor", "Kotakan", "Olean", "Talkandang"],
+            "Suboh": ["Buduan", "Cemara", "Dawuan", "Gunung Malang", "Gunung Putri", "Ketah", "Mojodungkol", "Suboh"],
+            "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
+        };
+
+        // Data koordinat spesifik lengkap untuk semua desa
+        const COORDINATES_DATA = {
+            // Arjasa
+            "Arjasa, Arjasa": [-7.7825, 113.7900],
+            "Arjasa, Bayeman": [-7.7722, 113.8123],
+            "Arjasa, Curah Tatal": [-7.7921, 113.8024],
+            "Arjasa, Jatisari": [-7.7754, 113.7856],
+            "Arjasa, Kayumas": [-7.7658, 113.7987],
+            "Arjasa, Kedungdowo": [-7.7812, 113.8156],
+            "Arjasa, Ketowan": [-7.7955, 113.7921],
+            "Arjasa, Lamongan": [-7.8032, 113.8054],
+            
+            // Asembagus
+            "Asembagus, Asembagus": [-7.7533, 114.2500],
+            "Asembagus, Awar-awar": [-7.7689, 114.2367],
+            "Asembagus, Bantal": [-7.7421, 114.2412],
+            "Asembagus, Gudang": [-7.7315, 114.2556],
+            "Asembagus, Kedunglo": [-7.7254, 114.2298],
+            "Asembagus, Kertosari": [-7.7612, 114.2214],
+            "Asembagus, Mojosari": [-7.7398, 114.2189],
+            "Asembagus, Parante": [-7.7521, 114.2334],
+            "Asembagus, Trigonco": [-7.7445, 114.2456],
+            "Asembagus, Wringin Anom": [-7.7367, 114.2289],
+            
+            // Banyuglugur
+            "Banyuglugur, Banyuglugur": [-7.8000, 113.8667],
+            "Banyuglugur, Kalianget": [-7.8123, 113.8545],
+            "Banyuglugur, Kalisari": [-7.7987, 113.8790],
+            "Banyuglugur, Lubawang": [-7.8156, 113.8712],
+            "Banyuglugur, Selobanteng": [-7.8254, 113.8614],
+            "Banyuglugur, Telempong": [-7.8112, 113.8456],
+            "Banyuglugur, Tepos": [-7.8045, 113.8321],
+            
+            // Banyuputih
+            "Banyuputih, Banyuputih": [-7.7167, 114.0833],
+            "Banyuputih, Sumberanyar": [-7.7289, 114.0912],
+            "Banyuputih, Sumberejo": [-7.7123, 114.0754],
+            "Banyuputih, Sumberwaru": [-7.7056, 114.0987],
+            "Banyuputih, Wonorejo": [-7.7245, 114.0689],
+            
+            // Besuki
+            "Besuki, Besuki": [-7.7333, 113.7000],
+            "Besuki, Blimbing": [-7.7256, 113.7123],
+            "Besuki, Bloro": [-7.7412, 113.6954],
+            "Besuki, Demung": [-7.7189, 113.6887],
+            "Besuki, Jetis": [-7.7521, 113.7056],
+            "Besuki, Kalimas": [-7.7367, 113.7189],
+            "Besuki, Langkap": [-7.7456, 113.7321],
+            "Besuki, Pesisir": [-7.7123, 113.7254],
+            "Besuki, Sumberejo": [-7.7298, 113.7412],
+            "Besuki, Widoropayung": [-7.7045, 113.7387],
+            
+            // Bungatan
+            "Bungatan, Bletok": [-7.6500, 113.8833],
+            "Bungatan, Bungatan": [-7.6612, 113.8754],
+            "Bungatan, Mlandingan Wetan": [-7.6456, 113.8912],
+            "Bungatan, Pasir Putih": [-7.6321, 113.9056],
+            "Bungatan, Patemon": [-7.6754, 113.8987],
+            "Bungatan, Selowogo": [-7.6589, 113.9123],
+            "Bungatan, Sumbertengah": [-7.6414, 113.9256],
+            
+            // Jangkar
+            "Jangkar, Agel": [-7.7667, 114.1667],
+            "Jangkar, Curah Kalak": [-7.7754, 114.1521],
+            "Jangkar, Gadingan": [-7.7889, 114.1687],
+            "Jangkar, Jangkar": [-7.7912, 114.1756],
+            "Jangkar, Kumbangsari": [-7.7687, 114.1423],
+            "Jangkar, Palangan": [-7.7521, 114.1589],
+            "Jangkar, Pesanggrahan": [-7.7414, 114.1656],
+            "Jangkar, Sopet": [-7.7345, 114.1721],
+            
+            // Jatibanteng
+            "Jatibanteng, Curahsuri": [-7.8000, 113.9333],
+            "Jatibanteng, Jatibanteng": [-7.8123, 113.9456],
+            "Jatibanteng, Kembangsari": [-7.7987, 113.9254],
+            "Jatibanteng, Pategalan": [-7.8156, 113.9123],
+            "Jatibanteng, Patemon": [-7.7912, 113.9589],
+            "Jatibanteng, Semambung": [-7.8254, 113.9312],
+            "Jatibanteng, Sumberanyar": [-7.8045, 113.9687],
+            "Jatibanteng, Wringinanom": [-7.8367, 113.9456],
+            
+            // Kapongan
+            "Kapongan, Curah Cottok Gebangan": [-7.6833, 114.0667],
+            "Kapongan, Kandang": [-7.6721, 114.0589],
+            "Kapongan, Kapongan": [-7.6956, 114.0723],
+            "Kapongan, Kesambi Rampak": [-7.6887, 114.0456],
+            "Kapongan, Landangan": [-7.7123, 114.0612],
+            "Kapongan, Peleyan": [-7.7045, 114.0789],
+            "Kapongan, Pokaan": [-7.6754, 114.0912],
+            "Kapongan, Seletreng": [-7.6912, 114.1056],
+            "Kapongan, Wonokoyo": [-7.6589, 114.0721],
+            
+            // Kendit
+            "Kendit, Balung": [-7.7167, 113.9167],
+            "Kendit, Bugeman": [-7.7056, 113.9289],
+            "Kendit, Kendit": [-7.7321, 113.9054],
+            "Kendit, Klatakan": [-7.7245, 113.9412],
+            "Kendit, Kukusan": [-7.7123, 113.9587],
+            "Kendit, Rajekwesi": [-7.6912, 113.9356],
+            "Kendit, Tambak Ukir": [-7.6754, 113.9123],
+            
+            // Mangaran
+            "Mangaran, Mangaran": [-7.6667, 114.0500],
+            "Mangaran, Semiring": [-7.6521, 114.0612],
+            "Mangaran, Tanjung Glugur": [-7.6789, 114.0456],
+            "Mangaran, Tanjung Kamal": [-7.6645, 114.0723],
+            "Mangaran, Tanjung Pecinan": [-7.6912, 114.0589],
+            "Mangaran, Trebungan": [-7.7045, 114.0312],
+            
+            // Mlandingan
+            "Mlandingan, Alas Bayur": [-7.6667, 113.8667],
+            "Mlandingan, Campoan": [-7.6521, 113.8789],
+            "Mlandingan, Mlandingan Kulon": [-7.6789, 113.8456],
+            "Mlandingan, Selomukti": [-7.6912, 113.9123],
+            "Mlandingan, Sumberanyar": [-7.7045, 113.8954],
+            "Mlandingan, Sumber Pinang": [-7.7254, 113.8821],
+            "Mlandingan, Trebungan": [-7.6589, 113.9312],
+            
+            // Panarukan
+            "Panarukan, Alasmalang": [-7.6970, 113.7687],
+            "Panarukan, Duwet": [-7.6977, 113.7882],
+            "Panarukan, Gelung": [-7.7134, 113.8028],
+            "Panarukan, Kilensari": [-7.6843, 113.7656],
+            "Panarukan, Paowan": [-7.7298, 113.7800],
+            "Panarukan, Peleyan": [-7.6950, 113.8071],
+            "Panarukan, Sumberkolak": [-7.7118, 113.7618],
+            "Panarukan, Wringinanom": [-7.7061, 113.8256],
+            
+            // Panji
+            "Panji, Ardirejo": [-7.7155, 113.6944],
+            "Panji, Mimbaan": [-7.7091, 113.6952],
+            "Panji, Battal": [-7.7099, 113.6780],
+            "Panji, Curah Jeru": [-7.6941, 113.6958],
+            "Panji, Juglangan": [-7.6946, 113.6653],
+            "Panji, Kayu Putih": [-7.7025, 113.6737],
+            "Panji, Klampokan": [-7.7272, 113.6482],
+            "Panji, Panji Kidul": [-7.7126, 113.7038],
+            "Panji, Panji Lor": [-7.7019, 113.7059],
+            "Panji, Sliwung": [-7.7188, 113.6806],
+            "Panji, Tenggir": [-7.7163, 113.6579],
+            "Panji, Tokelan": [-7.7320, 113.6703],
+            
+            // Situbondo
+            "Situbondo, Dawuhan": [-7.6926, 113.9937],
+            "Situbondo, Patokan": [-7.6729, 113.9771],
+            "Situbondo, Kalibagor": [-7.7082, 114.0061],
+            "Situbondo, Kotakan": [-7.6814, 114.0225],
+            "Situbondo, Olean": [-7.6819, 114.0367],
+            "Situbondo, Talkandang": [-7.6681, 114.0475],
+            
+            // Suboh
+            "Suboh, Buduan": [-7.8523, 113.7659],
+            "Suboh, Cemara": [-7.8267, 113.7425],
+            "Suboh, Dawuan": [-7.8398, 113.7719],
+            "Suboh, Gunung Malang": [-7.8708, 113.7489],
+            "Suboh, Gunung Putri": [-7.8647, 113.7325],
+            "Suboh, Ketah": [-7.8614, 113.7894],
+            "Suboh, Mojodungkol": [-7.8360, 113.7829],
+            "Suboh, Suboh": [-7.8475, 113.7580],
+            
+            // Sumbermalang
+            "Sumbermalang, Alastengah": [-7.8771, 113.8437],
+            "Sumbermalang, Baderan": [-7.8318, 113.8214],
+            "Sumbermalang, Kalirejo": [-7.8203, 113.8525],
+            "Sumbermalang, Plalangan": [-7.8630, 113.8629],
+            "Sumbermalang, Sumberargo": [-7.8405, 113.8077],
+            "Sumbermalang, Taman": [-7.8482, 113.8374],
+            "Sumbermalang, Tamankursi": [-7.8641, 113.8256],
+            "Sumbermalang, Tamansari": [-7.8618, 113.8125],
+            "Sumbermalang, Tlogosari": [-7.8816, 113.8243]
+        };
+
+        // Data koordinat default untuk kecamatan yang belum lengkap
+        const DEFAULT_COORDINATES = {
+            "Arjasa": [-7.7825, 113.7900],
+            "Asembagus": [-7.7533, 114.2500],
+            "Banyuglugur": [-7.8000, 113.8667],
+            "Banyuputih": [-7.7167, 114.0833],
+            "Besuki": [-7.7333, 113.7000],
+            "Bungatan": [-7.6500, 113.8833],
+            "Jangkar": [-7.7667, 114.1667],
+            "Jatibanteng": [-7.8000, 113.9333],
+            "Kapongan": [-7.6833, 114.0667],
+            "Kendit": [-7.7167, 113.9167],
+            "Mangaran": [-7.6667, 114.0500],
+            "Mlandingan": [-7.6667, 113.8667]
+        };
+
+        // Variabel global untuk peta
+        let map = null;
+        let markers = null;
+        let currentMarkers = [];
+        let mapView = 'all';
+
+        // --- FUNGSI UNTUK MENDAPATKAN KOORDINAT BERDASARKAN DESA ---
+        function getCoordinatesForLocation(kecamatan, desa) {
+            const key = `${kecamatan}, ${desa}`;
+            
+            // Cari koordinat spesifik
+            if (COORDINATES_DATA[key]) {
+                return COORDINATES_DATA[key];
+            }
+            
+            // Jika tidak ditemukan, gunakan koordinat default kecamatan
+            if (DEFAULT_COORDINATES[kecamatan]) {
+                return DEFAULT_COORDINATES[kecamatan];
+            }
+            
+            // Default fallback: pusat Situbondo
+            return [-7.7068, 113.9142];
+        }
+
+        // --- FUNGSI UNTUK INISIALISASI PETA ---
+        function initializeMap() {
+            console.log('🔄 Inisialisasi peta...');
+            
+            if (map) {
+                try {
+                    map.remove();
+                } catch (e) {
+                    console.log('Peta sudah dihapus');
+                }
+            }
+            
+            if (markers) {
+                try {
+                    markers.clearLayers();
+                } catch (e) {
+                    console.log('Marker cluster sudah dihapus');
+                }
+            }
+            
+            currentMarkers = [];
+            
+            // Tunggu elemen map tersedia
+            setTimeout(() => {
+                try {
+                    const mapContainer = document.getElementById('map');
+                    if (!mapContainer) {
+                        console.error('❌ Elemen map tidak ditemukan');
+                        return;
+                    }
+                    
+                    map = L.map('map', {
+                        preferCanvas: true,
+                        zoomControl: true,
+                        scrollWheelZoom: true
+                    }).setView([-7.7068, 113.9142], 11);
+                    
+                    // Tambahkan tile layer
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        maxZoom: 19,
+                        minZoom: 9
+                    }).addTo(map);
+                    
+                    // Inisialisasi marker cluster
+                    markers = L.markerClusterGroup({
+                        showCoverageOnHover: false,
+                        maxClusterRadius: 50,
+                        spiderfyOnMaxZoom: true,
+                        disableClusteringAtZoom: 16,
+                        chunkedLoading: true
+                    });
+                    
+                    markers.addTo(map);
+                    
+                    // Render marker setelah peta siap
+                    setTimeout(() => {
+                        renderMapMarkers();
+                        updateMapStatistics();
+                        console.log('✅ Peta berhasil diinisialisasi');
+                    }, 500);
+                    
+                } catch (error) {
+                    console.error('❌ Error inisialisasi peta:', error);
+                }
+            }, 100);
+        }
+
+        // --- FUNGSI UNTUK RENDER MARKER PADA PETA ---
+        function renderMapMarkers() {
+            console.log('🔄 Rendering marker peta...');
+            
+            if (!map || !markers) {
+                console.warn('❌ Peta atau markers belum diinisialisasi');
+                return;
+            }
+            
+            // Clear existing markers
+            markers.clearLayers();
+            currentMarkers = [];
+            
+            // Dapatkan data dari appData global
+            const appData = window.appData || [];
+            
+            if (!appData || appData.length === 0) {
+                console.log('ℹ️ Tidak ada data nelayan untuk ditampilkan');
+                // Tampilkan pesan di peta
+                const infoDiv = L.DomUtil.create('div', 'leaflet-control-attribution');
+                infoDiv.innerHTML = '<div style="background: white; padding: 5px; border-radius: 3px; font-size: 12px;">Tidak ada data nelayan untuk ditampilkan</div>';
+                L.control.attribution({position: 'bottomleft'}).addTo(map);
+                return;
+            }
+            
+            console.log(`📍 Akan render ${appData.length} marker`);
+            
+            const kecamatanCount = {};
+            const desaCount = {};
+            let pemilikKapalCount = 0;
+            
+            // Render setiap nelayan
+            appData.forEach((nelayan, index) => {
+                // Hitung statistik
+                kecamatanCount[nelayan.kecamatan] = (kecamatanCount[nelayan.kecamatan] || 0) + 1;
+                desaCount[nelayan.desa] = (desaCount[nelayan.desa] || 0) + 1;
+                if (nelayan.status === 'Pemilik Kapal') pemilikKapalCount++;
+                
+                // Dapatkan koordinat
+                let coordinates;
+                try {
+                    coordinates = getCoordinatesForLocation(nelayan.kecamatan, nelayan.desa);
+                } catch (error) {
+                    console.warn(`⚠️ Koordinat tidak ditemukan untuk ${nelayan.kecamatan}, ${nelayan.desa}`);
+                    coordinates = [-7.7068, 113.9142]; // Default
+                }
+                
+                // Tentukan warna dan ikon berdasarkan profesi/status
+                let markerColor = '#0c2461'; // Default: Penuh Waktu
+                let markerClass = 'marker-penuh';
+                let iconClass = 'fa-user';
+                
+                if (nelayan.profesi === 'Nelayan Sambilan Utama') {
+                    markerColor = '#e58e26';
+                    markerClass = 'marker-sambilan-utama';
+                } else if (nelayan.profesi === 'Nelayan Sambilan Tambahan') {
+                    markerColor = '#27ae60';
+                    markerClass = 'marker-sambilan-tambahan';
+                }
+                
+                if (nelayan.status === 'Pemilik Kapal') {
+                    markerColor = '#0984e3';
+                    markerClass = 'marker-pemilik';
+                    iconClass = 'fa-ship';
+                } else if (nelayan.status === 'Anak Buah Kapal') {
+                    markerColor = '#a55eea';
+                    markerClass = 'marker-abk';
+                    iconClass = 'fa-users';
+                }
+                
+                // Buat custom icon
+                const customIcon = L.divIcon({
+                    html: `
+                        <div class="marker-icon ${markerClass}" 
+                             style="background-color: ${markerColor}; width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                    `,
+                    className: 'custom-marker',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16],
+                    popupAnchor: [0, -16]
+                });
+                
+                // Buat konten popup
+                const maskData = window.maskData || function(data) { return data; };
+                const displayNik = maskData(nelayan.nik);
+                
+                const popupContent = `
+                    <div class="leaflet-popup-content" style="min-width: 280px; max-width: 320px; padding: 10px;">
+                        <h5 style="margin: 0 0 10px 0; color: #0c2461; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px;">${nelayan.nama}</h5>
+                        <div style="font-size: 13px; color: #333;">
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-id-card me-1"></i> NIK:</strong> ${displayNik}</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-user me-1"></i> Usia:</strong> ${nelayan.usia} Tahun</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-briefcase me-1"></i> Profesi:</strong> ${nelayan.profesi}</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-user-tag me-1"></i> Status:</strong> ${nelayan.status}</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-map-marker-alt me-1"></i> Domisili:</strong> ${nelayan.desa}, ${nelayan.kecamatan}</div>
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-fish me-1"></i> API:</strong> ${nelayan.alatTangkap}</div>
+                            ${nelayan.status === 'Pemilik Kapal' ? `<div style="margin-bottom: 8px;"><strong><i class="fas fa-ship me-1"></i> Kapal:</strong> ${nelayan.namaKapal || '-'} (${nelayan.jenisKapal || '-'})</div>` : ''}
+                            <div style="margin-bottom: 8px;"><strong><i class="fas fa-key me-1"></i> Kode Validasi:</strong> ${nelayan.kodeValidasi || '-'}</div>
+                            <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+                                <button class="btn btn-sm btn-primary w-100" onclick="window.viewDetail && window.viewDetail('${nelayan.id}'); if (window.detailModal) { window.detailModal.hide(); }">
+                                    <i class="fas fa-info-circle me-1"></i> Lihat Detail Lengkap
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Buat marker
+                try {
+                    const marker = L.marker(coordinates, { icon: customIcon })
+                        .bindPopup(popupContent)
+                        .on('click', function() {
+                            this.openPopup();
+                        })
+                        .on('mouseover', function() {
+                            this.openPopup();
+                        });
+                    
+                    markers.addLayer(marker);
+                    currentMarkers.push(marker);
+                } catch (error) {
+                    console.error(`❌ Error membuat marker untuk ${nelayan.nama}:`, error);
+                }
+            });
+            
+            // Update statistik peta
+            if (document.getElementById('map-total-points')) {
+                document.getElementById('map-total-points').textContent = appData.length;
+                document.getElementById('map-total-kecamatan').textContent = Object.keys(kecamatanCount).length;
+                document.getElementById('map-total-desa').textContent = Object.keys(desaCount).length;
+                document.getElementById('map-total-kapal').textContent = pemilikKapalCount;
+            }
+            
+            // Fit bounds jika ada marker
+            if (currentMarkers.length > 0) {
+                const group = L.featureGroup(currentMarkers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+            
+            console.log(`✅ Berhasil render ${currentMarkers.length} marker`);
+        }
+
+        // --- FUNGSI UNTUK UPDATE STATISTIK PETA ---
+        function updateMapStatistics() {
+            const appData = window.appData || [];
+            if (appData.length === 0) return;
+            
+            const kecamatanCount = {};
+            const desaCount = {};
+            let pemilikKapalCount = 0;
+            
+            appData.forEach(nelayan => {
+                kecamatanCount[nelayan.kecamatan] = (kecamatanCount[nelayan.kecamatan] || 0) + 1;
+                desaCount[nelayan.desa] = (desaCount[nelayan.desa] || 0) + 1;
+                if (nelayan.status === 'Pemilik Kapal') pemilikKapalCount++;
+            });
+            
+            if (document.getElementById('map-total-points')) {
+                document.getElementById('map-total-points').textContent = appData.length;
+                document.getElementById('map-total-kecamatan').textContent = Object.keys(kecamatanCount).length;
+                document.getElementById('map-total-desa').textContent = Object.keys(desaCount).length;
+                document.getElementById('map-total-kapal').textContent = pemilikKapalCount;
+            }
+        }
+
+        // --- FUNGSI UNTUK SWITCH VIEW PETA ---
+        function switchMapView(view) {
+            mapView = view;
+            
+            // Update active tab
+            document.querySelectorAll('.map-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Cari tab yang sesuai dengan view
+            const tabs = document.querySelectorAll('.map-tab');
+            for (let tab of tabs) {
+                if (tab.textContent.includes(view === 'all' ? 'Semua' : view === 'profesi' ? 'Profesi' : 'Kecamatan')) {
+                    tab.classList.add('active');
+                    break;
+                }
+            }
+            
+            // Filter marker berdasarkan view
+            renderMapMarkers();
+            
+            // Tampilkan notifikasi
+            let viewName = 'Semua Data';
+            if (view === 'profesi') viewName = 'Berdasarkan Profesi';
+            else if (view === 'kecamatan') viewName = 'Berdasarkan Kecamatan';
+            
+            if (window.showNotification) {
+                window.showNotification(`Peta ditampilkan dengan view: ${viewName}`, 'info');
+            }
+        }
+
+        // --- FUNGSI UNTUK RESET VIEW PETA ---
+        function resetMapView() {
+            if (map) {
+                map.setView([-7.7068, 113.9142], 11);
+                if (window.showNotification) {
+                    window.showNotification('Peta direset ke view awal', 'info');
+                }
+            }
+        }
+
+        // --- FUNGSI UNTUK ZOOM KE SEMUA MARKER ---
+        function zoomToAllMarkers() {
+            if (map && currentMarkers.length > 0) {
+                const group = L.featureGroup(currentMarkers);
+                map.fitBounds(group.getBounds().pad(0.1));
+                if (window.showNotification) {
+                    window.showNotification('Zoom ke semua marker', 'info');
+                }
+            } else {
+                if (window.showNotification) {
+                    window.showNotification('Tidak ada marker untuk di-zoom', 'warning');
+                }
+            }
+        }
+
+        // --- FUNGSI UNTUK TOGGLE CLUSTER MARKER ---
+        function toggleCluster() {
+            const showCluster = document.getElementById('showCluster');
+            if (!showCluster || !map) return;
+            
+            if (showCluster.checked) {
+                // Mode cluster aktif
+                map.removeLayer(markers);
+                markers.clearLayers();
+                markers.addTo(map);
+                renderMapMarkers();
+                if (window.showNotification) {
+                    window.showNotification('Mode grup marker diaktifkan', 'info');
+                }
+            } else {
+                // Mode cluster nonaktif
+                map.removeLayer(markers);
+                currentMarkers.forEach(marker => {
+                    marker.addTo(map);
+                });
+                if (window.showNotification) {
+                    window.showNotification('Mode grup marker dinonaktifkan', 'info');
+                }
+            }
+        }
+
+        // --- FUNGSI UNTUK REFRESH PETA ---
+        function refreshMap() {
+            console.log('🔄 Refresh peta...');
+            if (map && markers) {
+                renderMapMarkers();
+                updateMapStatistics();
+                if (window.showNotification) {
+                    window.showNotification('Peta berhasil direfresh', 'success');
+                }
+            }
+        }
+
+        // =====================================================
+        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DIPERBAIKI
         // =====================================================
         
         // Data yang tetap di index.html
@@ -1328,11 +1896,6 @@
                 if (PROFESI_MAPPING[item.profesi]) {
                     item.profesi = PROFESI_MAPPING[item.profesi];
                 }
-                // Tambahkan properti isComplete jika belum ada
-                if (item.isComplete === undefined) {
-                    item.isComplete = checkDataCompleteness(item).isComplete;
-                    item.missingFields = checkDataCompleteness(item).missingFields;
-                }
             });
             saveData();
         }
@@ -1372,26 +1935,6 @@
             if (lower.includes('cumi')) return 'fa-ghost'; 
             if (lower.includes('kepiting')) return 'fa-spider'; 
             return 'fa-fish';
-        }
-
-        // Fungsi untuk mengecek kelengkapan data
-        function checkDataCompleteness(data) {
-            const requiredFields = ['nama', 'nik', 'whatsapp', 'profesi', 'status', 'tahunLahir', 'kecamatan', 'desa', 'alatTangkap', 'jenisIkan'];
-            const missingFields = [];
-            
-            requiredFields.forEach(field => {
-                const value = data[field];
-                if (!value || value.toString().trim() === '' || 
-                    (field === 'whatsapp' && value === '00000000') ||
-                    (field === 'tahunLahir' && (parseInt(value) < 1900 || parseInt(value) > new Date().getFullYear()))) {
-                    missingFields.push(field);
-                }
-            });
-            
-            return {
-                isComplete: missingFields.length === 0,
-                missingFields: missingFields
-            };
         }
 
         // --- FUNGSI VERIFIKASI KIN ---
@@ -1725,6 +2268,13 @@
                                 saveData();
                                 renderDataTable();
                                 updateDashboard();
+                                // Perbaikan: Panggil fungsi renderMapMarkers langsung
+                                if (typeof renderMapMarkers === 'function') {
+                                    renderMapMarkers();
+                                }
+                                if (typeof updateMapStatistics === 'function') {
+                                    updateMapStatistics();
+                                }
                                 
                                 showNotification(`Data berhasil disinkronisasi: ${newData.length} data baru ditambahkan`, 'success');
                             }
@@ -1776,13 +2326,18 @@
                     initializeCharts();
                     updateDashboard();
                     renderDataTable();
-                    
-                    // Cek notifikasi data tidak lengkap
-                    checkIncompleteDataNotification();
+                    setTimeout(() => {
+                        // Perbaikan: Inisialisasi peta setelah login
+                        initializeMap();
+                    }, 500);
                 } else {
                     setTimeout(() => {
                         document.getElementById('loginModal').style.display = 'flex';
                     }, 100);
+                }
+
+                if (typeof window.handleHashRouting === 'function') {
+                    window.handleHashRouting();
                 }
 
             } catch (error) {
@@ -1802,32 +2357,14 @@
 
             const kecSelect = document.getElementById('kecamatan');
             kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
-            
-            // Data wilayah Situbondo (sederhana untuk form input saja)
-            const SITUBONDO_DATA = {
-                "Arjasa": ["Arjasa", "Bayeman", "Curah Tatal", "Jatisari", "Kayumas", "Kedungdowo", "Ketowan", "Lamongan"],
-                "Asembagus": ["Asembagus", "Awar-awar", "Bantal", "Gudang", "Kedunglo", "Kertosari", "Mojosari", "Parante", "Trigonco", "Wringin Anom"],
-                "Banyuglugur": ["Banyuglugur", "Kalianget", "Kalisari", "Lubawang", "Selobanteng", "Telempong", "Tepos"],
-                "Banyuputih": ["Banyuputih", "Sumberanyar", "Sumberejo", "Sumberwaru", "Wonorejo"],
-                "Besuki": ["Besuki", "Blimbing", "Bloro", "Demung", "Jetis", "Kalimas", "Langkap", "Pesisir", "Sumberejo", "Widoropayung"],
-                "Bungatan": ["Bletok", "Bungatan", "Mlandingan Wetan", "Pasir Putih", "Patemon", "Selowogo", "Sumbertengah"],
-                "Jangkar": ["Agel", "Curah Kalak", "Gadingan", "Jangkar", "Kumbangsari", "Palangan", "Pesanggrahan", "Sopet"],
-                "Jatibanteng": ["Curahsuri", "Jatibanteng", "Kembangsari", "Pategalan", "Patemon", "Semambung", "Sumberanyar", "Wringinanom"],
-                "Kapongan": ["Curah Cottok Gebangan", "Kandang", "Kapongan", "Kesambi Rampak", "Landangan", "Peleyan", "Pokaan", "Seletreng", "Wonokoyo"],
-                "Kendit": ["Balung", "Bugeman", "Kendit", "Klatakan", "Kukusan", "Rajekwesi", "Tambak Ukir"],
-                "Mangaran": ["Mangaran", "Semiring", "Tanjung Glugur", "Tanjung Kamal", "Tanjung Pecinan", "Trebungan"],
-                "Mlandingan": ["Alas Bayur", "Campoan", "Mlandingan Kulon", "Selomukti", "Sumberanyar", "Sumber Pinang", "Trebungan"],
-                "Panarukan": ["Alasmalang", "Duwet", "Gelung", "Kilensari", "Paowan", "Peleyan", "Sumberkolak", "Wringinanom"],
-                "Panji": ["Ardirejo", "Mimbaan", "Battal", "Curah Jeru", "Juglangan", "Kayu Putih", "Klampokan", "Panji Kidul", "Panji Lor", "Sliwung", "Tenggir", "Tokelan"],
-                "Situbondo": ["Dawuhan", "Patokan", "Kalibagor", "Kotakan", "Olean", "Talkandang"],
-                "Suboh": ["Buduan", "Cemara", "Dawuan", "Gunung Malang", "Gunung Putri", "Ketah", "Mojodungkol", "Suboh"],
-                "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
-            };
-            
-            Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
+            if (typeof SITUBONDO_DATA !== 'undefined') {
+                Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
+            }
             
             const allDesas = new Set();
-            Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
+            if (typeof SITUBONDO_DATA !== 'undefined') {
+                Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
+            }
             const filterDesaSelect = document.getElementById('filterDesa');
             filterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
             [...allDesas].sort().forEach(d => filterDesaSelect.add(new Option(d, d)));
@@ -1990,6 +2527,10 @@
                     initializeCharts();
                     updateDashboard();
                     renderDataTable();
+                    setTimeout(() => {
+                        // Perbaikan: Inisialisasi peta setelah login
+                        initializeMap();
+                    }, 500);
                     loginSuccessModal.show();
                     btn.disabled = false;
                     spinner.classList.add('d-none');
@@ -2062,32 +2603,9 @@
                 const selectedKec = this.value;
                 const desaSelect = document.getElementById('desa');
                 desaSelect.innerHTML = `<option value="">Pilih Desa / Kelurahan</option>`;
-                if (selectedKec) {
-                    // Data wilayah Situbondo sederhana
-                    const SITUBONDO_DATA = {
-                        "Arjasa": ["Arjasa", "Bayeman", "Curah Tatal", "Jatisari", "Kayumas", "Kedungdowo", "Ketowan", "Lamongan"],
-                        "Asembagus": ["Asembagus", "Awar-awar", "Bantal", "Gudang", "Kedunglo", "Kertosari", "Mojosari", "Parante", "Trigonco", "Wringin Anom"],
-                        "Banyuglugur": ["Banyuglugur", "Kalianget", "Kalisari", "Lubawang", "Selobanteng", "Telempong", "Tepos"],
-                        "Banyuputih": ["Banyuputih", "Sumberanyar", "Sumberejo", "Sumberwaru", "Wonorejo"],
-                        "Besuki": ["Besuki", "Blimbing", "Bloro", "Demung", "Jetis", "Kalimas", "Langkap", "Pesisir", "Sumberejo", "Widoropayung"],
-                        "Bungatan": ["Bletok", "Bungatan", "Mlandingan Wetan", "Pasir Putih", "Patemon", "Selowogo", "Sumbertengah"],
-                        "Jangkar": ["Agel", "Curah Kalak", "Gadingan", "Jangkar", "Kumbangsari", "Palangan", "Pesanggrahan", "Sopet"],
-                        "Jatibanteng": ["Curahsuri", "Jatibanteng", "Kembangsari", "Pategalan", "Patemon", "Semambung", "Sumberanyar", "Wringinanom"],
-                        "Kapongan": ["Curah Cottok Gebangan", "Kandang", "Kapongan", "Kesambi Rampak", "Landangan", "Peleyan", "Pokaan", "Seletreng", "Wonokoyo"],
-                        "Kendit": ["Balung", "Bugeman", "Kendit", "Klatakan", "Kukusan", "Rajekwesi", "Tambak Ukir"],
-                        "Mangaran": ["Mangaran", "Semiring", "Tanjung Glugur", "Tanjung Kamal", "Tanjung Pecinan", "Trebungan"],
-                        "Mlandingan": ["Alas Bayur", "Campoan", "Mlandingan Kulon", "Selomukti", "Sumberanyar", "Sumber Pinang", "Trebungan"],
-                        "Panarukan": ["Alasmalang", "Duwet", "Gelung", "Kilensari", "Paowan", "Peleyan", "Sumberkolak", "Wringinanom"],
-                        "Panji": ["Ardirejo", "Mimbaan", "Battal", "Curah Jeru", "Juglangan", "Kayu Putih", "Klampokan", "Panji Kidul", "Panji Lor", "Sliwung", "Tenggir", "Tokelan"],
-                        "Situbondo": ["Dawuhan", "Patokan", "Kalibagor", "Kotakan", "Olean", "Talkandang"],
-                        "Suboh": ["Buduan", "Cemara", "Dawuan", "Gunung Malang", "Gunung Putri", "Ketah", "Mojodungkol", "Suboh"],
-                        "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
-                    };
-                    
-                    if (SITUBONDO_DATA && SITUBONDO_DATA[selectedKec]) {
-                        desaSelect.disabled = false;
-                        SITUBONDO_DATA[selectedKec].sort().forEach(desa => desaSelect.add(new Option(desa, desa)));
-                    }
+                if (selectedKec && SITUBONDO_DATA && SITUBONDO_DATA[selectedKec]) {
+                    desaSelect.disabled = false;
+                    SITUBONDO_DATA[selectedKec].sort().forEach(desa => desaSelect.add(new Option(desa, desa)));
                 } else {
                     desaSelect.disabled = true;
                     desaSelect.innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
@@ -2217,9 +2735,9 @@
             });
             document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
 
-            // Print and Export - PERBAIKAN EKSPOR EXCEL
+            // Print and Export
             document.getElementById('printPdfBtn').addEventListener('click', printData);
-            document.getElementById('exportExcelBtn').addEventListener('click', exportDataFixed);
+            document.getElementById('exportExcelBtn').addEventListener('click', () => exportData('xlsx'));
             document.getElementById('exportReloadJsBtn').addEventListener('click', () => backupData('reload.js'));
             document.getElementById('sendWaBtn').addEventListener('click', sendDataToWhatsapp);
             document.getElementById('backupDataBtn').addEventListener('click', () => backupData());
@@ -2301,7 +2819,6 @@
                 'fabVerify': 'v-pills-verify-tab',
                 'fabExport': 'v-pills-export-tab', 
                 'fabBackup': 'v-pills-backup-tab', 
-                'fabImport': 'v-pills-import-tab',
                 'fabSettings': 'v-pills-settings-tab'
             };
             
@@ -2381,11 +2898,6 @@
                 keterangan: document.getElementById('keterangan').value
             };
 
-            // Cek kelengkapan data
-            const completeness = checkDataCompleteness(formData);
-            formData.isComplete = completeness.isComplete;
-            formData.missingFields = completeness.missingFields;
-
             if (editId) {
                 const index = appData.findIndex(item => item.id == editId);
                 appData[index] = formData;
@@ -2413,9 +2925,15 @@
 
             updateDashboard(); 
             renderDataTable();
+            // PERBAIKAN: Panggil fungsi renderMapMarkers langsung setelah data berubah
+            if (typeof renderMapMarkers === 'function') {
+                renderMapMarkers();
+            }
+            if (typeof updateMapStatistics === 'function') {
+                updateMapStatistics();
+            }
             document.getElementById('v-pills-data-tab').click();
             checkGlobalDuplicates();
-            checkIncompleteDataNotification();
         }
 
         function renderDataTable() {
@@ -2439,8 +2957,7 @@
             pageData.forEach((d, i) => {
                 const kapalInfo = d.status === 'Pemilik Kapal' ? `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : '-';
                 const isDuplicate = nikCounts[d.nik] > 1;
-                const isIncomplete = !d.isComplete;
-                const rowClass = isDuplicate ? 'table-danger' : (isIncomplete ? 'table-warning' : '');
+                const rowClass = isDuplicate ? 'table-danger' : '';
                 
                 let badgeClass = 'bg-secondary';
                 if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
@@ -2463,17 +2980,11 @@
                     }
                 }
 
-                // Tambahkan badge untuk data tidak lengkap
-                let incompleteBadge = '';
-                if (isIncomplete) {
-                    incompleteBadge = `<span class="badge bg-warning text-dark ms-1" title="Data tidak lengkap">!</span>`;
-                }
-
                 const row = `<tr class="${rowClass}">
                     <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
                     <td class="text-center">${start + i + 1}</td>
                     <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
-                        <div class="fw-bold text-dark text-wrap">${d.nama} ${incompleteBadge}</div>
+                        <div class="fw-bold text-dark text-wrap">${d.nama}</div>
                         <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
                         <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
                     </td>
@@ -2736,10 +3247,15 @@
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
                 saveData(); renderDataTable(); updateDashboard();
+                if (typeof renderMapMarkers === 'function') {
+                    renderMapMarkers();
+                }
+                if (typeof updateMapStatistics === 'function') {
+                    updateMapStatistics();
+                }
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 document.getElementById('selectAllCheckbox').checked = false;
                 checkGlobalDuplicates();
-                checkIncompleteDataNotification();
             } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
         }
 
@@ -2822,9 +3338,14 @@
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
                     saveData(); renderDataTable(); updateDashboard();
+                    if (typeof renderMapMarkers === 'function') {
+                        renderMapMarkers();
+                    }
+                    if (typeof updateMapStatistics === 'function') {
+                        updateMapStatistics();
+                    }
                     showNotification('Data berhasil dihapus', 'success');
                     checkGlobalDuplicates();
-                    checkIncompleteDataNotification();
                 }
             } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
         }
@@ -2908,41 +3429,6 @@
                 if (counts[d.nik] > 1) { hasDuplicate = true; break; }
             }
             document.getElementById('duplicateWarning').style.display = hasDuplicate ? 'block' : 'none';
-        }
-
-        // Fungsi untuk mengecek data tidak lengkap
-        function checkIncompleteDataNotification() {
-            const incompleteData = appData.filter(d => !d.isComplete);
-            const incompleteWarning = document.getElementById('incompleteWarning');
-            
-            if (incompleteData.length > 0) {
-                incompleteWarning.style.display = 'block';
-                // Simpan ke localStorage untuk notifikasi
-                localStorage.setItem('simata_incomplete_data', 'true');
-                localStorage.setItem('simata_incomplete_count', incompleteData.length.toString());
-            } else {
-                incompleteWarning.style.display = 'none';
-                localStorage.removeItem('simata_incomplete_data');
-                localStorage.removeItem('simata_incomplete_count');
-            }
-        }
-
-        function showIncompleteData() {
-            const dataTab = document.getElementById('v-pills-data-tab');
-            if (dataTab) {
-                dataTab.click();
-                
-                // Set filter untuk menampilkan data tidak lengkap
-                setTimeout(() => {
-                    const searchInput = document.getElementById('searchData');
-                    if (searchInput) {
-                        searchInput.value = '[TIDAK LENGKAP]';
-                        searchInput.dispatchEvent(new Event('input'));
-                        
-                        showNotification('Menampilkan data yang tidak lengkap. Data ditandai dengan warna kuning.', 'info');
-                    }
-                }, 300);
-            }
         }
 
         function initializeCharts() {
@@ -3030,121 +3516,17 @@
             }
         }
 
-        // PERBAIKAN FUNGSI EKSPOR EXCEL
-        function exportDataFixed() {
-            if(appData.length === 0) {
-                showNotification('Tidak ada data untuk diekspor', 'error');
-                return;
-            }
-            
-            try {
-                // Siapkan data untuk ekspor
-                const dataToExport = appData.map(d => {
-                    const row = {
-                        'ID': d.id,
-                        'Nama Lengkap': d.nama,
-                        'NIK': d.nik,
-                        'WhatsApp': d.whatsapp,
-                        'Profesi': d.profesi,
-                        'Status': d.status,
-                        'Tahun Lahir': d.tahunLahir,
-                        'Usia': d.usia,
-                        'Kecamatan': d.kecamatan,
-                        'Desa': d.desa,
-                        'Alat Tangkap (API)': d.alatTangkap,
-                        'Nama Kapal': d.namaKapal || '',
-                        'Jenis Kapal': d.jenisKapal || '',
-                        'Jenis Ikan': d.jenisIkan,
-                        'Usaha Sampingan': d.usahaSampingan || '',
-                        'Tanggal Validasi': d.tanggalValidasi,
-                        'Validator': d.validator,
-                        'Link Drive': d.driveLink || '',
-                        'Kode Validasi': d.kodeValidasi || '',
-                        'Keterangan': d.keterangan || '',
-                        'Data Lengkap': d.isComplete ? 'Ya' : 'Tidak',
-                        'Field yang Kosong': d.missingFields ? d.missingFields.join(', ') : ''
-                    };
-                    
-                    // Terapkan sensor jika privacy mode aktif
-                    if (appSettings.privacyMode) {
-                        row['NIK'] = maskData(d.nik);
-                        row['WhatsApp'] = maskData(d.whatsapp);
-                    }
-                    
-                    return row;
-                });
-
-                // Buat worksheet
-                const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-                
-                // Atur lebar kolom
-                const wscols = [
-                    {wch: 10}, // ID
-                    {wch: 25}, // Nama
-                    {wch: 20}, // NIK
-                    {wch: 15}, // WhatsApp
-                    {wch: 20}, // Profesi
-                    {wch: 15}, // Status
-                    {wch: 12}, // Tahun Lahir
-                    {wch: 8},  // Usia
-                    {wch: 15}, // Kecamatan
-                    {wch: 15}, // Desa
-                    {wch: 20}, // Alat Tangkap
-                    {wch: 20}, // Nama Kapal
-                    {wch: 15}, // Jenis Kapal
-                    {wch: 30}, // Jenis Ikan
-                    {wch: 20}, // Usaha Sampingan
-                    {wch: 15}, // Tanggal Validasi
-                    {wch: 20}, // Validator
-                    {wch: 30}, // Link Drive
-                    {wch: 15}, // Kode Validasi
-                    {wch: 30}, // Keterangan
-                    {wch: 12}, // Data Lengkap
-                    {wch: 30}  // Field yang Kosong
-                ];
-                worksheet['!cols'] = wscols;
-                
-                // Buat workbook
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Data Nelayan");
-                
-                // Tambahkan sheet petunjuk
-                const instructions = [
-                    ['PANDUAN PENGGUNAAN FILE EXCEL INI'],
-                    [''],
-                    ['File ini berisi data nelayan yang dapat digunakan untuk:'],
-                    ['1. Backup data'],
-                    ['2. Import data ke sistem lain'],
-                    ['3. Analisis data offline'],
-                    [''],
-                    ['KOLOM-KOLOM PENTING:'],
-                    ['- NIK: Digunakan sebagai identifikasi unik'],
-                    ['- WhatsApp: Untuk kontak dan notifikasi'],
-                    ['- Profesi: Nelayan Penuh Waktu/Sambilan Utama/Sambilan Tambahan'],
-                    ['- Status: Pemilik Kapal/Anak Buah Kapal'],
-                    ['- Kode Validasi: Untuk verifikasi data'],
-                    [''],
-                    ['CATATAN:'],
-                    ['- Data dengan NIK sama akan ditimpa saat import'],
-                    ['- Pastikan format tanggal: YYYY-MM-DD'],
-                    ['- Data yang tidak lengkap dapat dilengkapi via menu Edit Data']
-                ];
-                
-                const instructionSheet = XLSX.utils.aoa_to_sheet(instructions);
-                XLSX.utils.book_append_sheet(workbook, instructionSheet, "Petunjuk");
-                
-                // Generate nama file
-                const timestamp = new Date().toISOString().slice(0,19).replace(/[:]/g,'-');
-                const fileName = `Data_Nelayan_${appSettings.appSubtitle.replace(/\s+/g,'_')}_${timestamp}.xlsx`;
-                
-                // Ekspor file
-                XLSX.writeFile(workbook, fileName);
-                
-                showNotification(`File Excel berhasil diekspor: ${fileName}`, 'success');
-                
-            } catch (error) {
-                console.error('Error exporting Excel:', error);
-                showNotification('Gagal mengekspor data Excel. Silakan coba lagi.', 'error');
+        function exportData(type) {
+            if(appData.length === 0) return showNotification('Tidak ada data', 'error');
+            const dataToExport = appData.map(d => ({
+                ...d, nik: maskData(d.nik), whatsapp: maskData(d.whatsapp)
+            }));
+            const finalData = dataToExport.map(d => ({ ...d, NIK: `'${d.nik}`, WhatsApp: `'${d.whatsapp}` }));
+            if(type === 'xlsx') {
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(finalData), "Data Nelayan");
+                XLSX.writeFile(wb, `Nelayan_${appSettings.appSubtitle.slice(0,10)}_${Date.now()}.xlsx`);
+                showNotification('Ekspor Excel berhasil.', 'success');
             }
         }
 
@@ -3493,30 +3875,16 @@
                         // Coba parse sebagai JSON langsung
                         try {
                             const jsonData = JSON.parse(content);
-                            // Tambahkan properti isComplete jika belum ada
-                            jsonData.forEach(item => {
-                                if (item.isComplete === undefined) {
-                                    const completeness = checkDataCompleteness(item);
-                                    item.isComplete = completeness.isComplete;
-                                    item.missingFields = completeness.missingFields;
-                                }
-                            });
-                            
-                            // Merge data
-                            const existingNik = new Set(appData.map(d => d.nik));
-                            const newData = jsonData.filter(d => !existingNik.has(d.nik));
-                            
-                            if (newData.length === 0) {
-                                showNotification('Tidak ada data baru untuk di-restore', 'warning');
-                                return;
-                            }
-                            
-                            appData = [...appData, ...newData];
+                            appData = [...appData, ...jsonData];
                             saveData();
                             renderDataTable();
                             updateDashboard();
-                            checkIncompleteDataNotification();
-                            
+                            if (typeof renderMapMarkers === 'function') {
+                                renderMapMarkers();
+                            }
+                            if (typeof updateMapStatistics === 'function') {
+                                updateMapStatistics();
+                            }
                             showNotification('Restore berhasil (format JSON langsung)', 'success');
                             fileInput.value = '';
                             document.getElementById('restoreDataBtn').disabled = true;
@@ -3529,15 +3897,6 @@
                     if (!encryptedData) throw new Error('Data terenkripsi tidak ditemukan');
                     
                     const restoredData = JSON.parse(atob(encryptedData));
-                    
-                    // Tambahkan properti isComplete jika belum ada
-                    restoredData.forEach(item => {
-                        if (item.isComplete === undefined) {
-                            const completeness = checkDataCompleteness(item);
-                            item.isComplete = completeness.isComplete;
-                            item.missingFields = completeness.missingFields;
-                        }
-                    });
                     
                     // Merge data lama dengan data baru (smart restore)
                     const existingNik = new Set(appData.map(d => d.nik));
@@ -3552,7 +3911,12 @@
                     saveData();
                     renderDataTable();
                     updateDashboard();
-                    checkIncompleteDataNotification();
+                    if (typeof renderMapMarkers === 'function') {
+                        renderMapMarkers();
+                    }
+                    if (typeof updateMapStatistics === 'function') {
+                        updateMapStatistics();
+                    }
                     
                     showNotification(`Restore berhasil: ${newData.length} data baru ditambahkan`, 'success');
                     fileInput.value = '';
@@ -3657,1470 +4021,25 @@
         window.safeGenerateIDCard = safeGenerateIDCard;
         window.showNotification = showNotification;
         window.printData = printData;
+        window.getCoordinatesForLocation = getCoordinatesForLocation;
+        window.initializeMap = initializeMap;
+        window.renderMapMarkers = renderMapMarkers;
+        window.updateMapStatistics = updateMapStatistics;
+        window.switchMapView = switchMapView;
+        window.resetMapView = resetMapView;
+        window.zoomToAllMarkers = zoomToAllMarkers;
+        window.toggleCluster = toggleCluster;
+        window.refreshMap = refreshMap;
         window.verifyKIN = verifyKIN;
         window.verifyKINAndShow = verifyKINAndShow;
         window.showAllKIN = showAllKIN;
         window.resetVerifyForm = resetVerifyForm;
         window.scanQRCode = scanQRCode;
-        window.showIncompleteData = showIncompleteData;
-        window.exportDataFixed = exportDataFixed;
 
-        console.log('✅ SIMATA Application v5.4 initialized successfully dengan perbaikan ekspor Excel');
-        console.log('✅ Fitur Impor Data Cerdas telah ditambahkan');
+        console.log('✅ SIMATA Application v5.4 initialized successfully');
+        console.log('✅ Fitur Peta telah diperbaiki dan disempurnakan');
+        console.log('✅ Fitur Verifikasi KIN telah ditambahkan');
         console.log('✅ Semua menu dan fitur lain tetap utuh dan berfungsi');
     </script>
-
-    <!-- KODE CONVERT.JS YANG DISISIPKAN -->
-    <script>
-        // =====================================================
-        // SIMATA CONVERT DATA TOOL - VERSI DISEMPURNAKAN
-        // Konversi data antara format Excel (.xlsx) dan reload.js dengan fitur Impor Data Cepat
-        // Developer: Dinas Perikanan Kabupaten Situbondo
-        // Version: 2.1 - Fitur Impor Data Cerdas dengan Validasi Lengkap
-        // =====================================================
-
-        // CSS untuk konverter
-        const converterCSS = `
-        /* CSS untuk Konverter Data */
-        .converter-container {
-            font-family: 'Inter', sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .converter-header {
-            background: linear-gradient(135deg, #0c2461 0%, #4a69bd 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(12, 36, 97, 0.2);
-        }
-
-        .converter-header h2 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .converter-header p {
-            margin: 10px 0 0;
-            opacity: 0.9;
-            font-size: 15px;
-        }
-
-        .converter-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .converter-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e9ecef;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .converter-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-        }
-
-        .converter-card h3 {
-            color: #0c2461;
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f6b93b;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .converter-card h3 i {
-            font-size: 22px;
-            color: #4a69bd;
-        }
-
-        .upload-area {
-            border: 2px dashed #4a69bd;
-            border-radius: 10px;
-            padding: 40px 20px;
-            text-align: center;
-            background: #f8f9fa;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .upload-area:hover {
-            background: #e9ecef;
-            border-color: #0c2461;
-        }
-
-        .upload-area i {
-            font-size: 50px;
-            color: #4a69bd;
-            margin-bottom: 15px;
-        }
-
-        .upload-area p {
-            margin: 10px 0;
-            color: #495057;
-        }
-
-        .upload-area small {
-            color: #6c757d;
-            font-size: 13px;
-        }
-
-        .converter-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-        }
-
-        .converter-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .converter-btn-primary {
-            background: linear-gradient(135deg, #0c2461 0%, #4a69bd 100%);
-            color: white;
-        }
-
-        .converter-btn-primary:hover {
-            background: linear-gradient(135deg, #091c4a 0%, #3a56a8 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(12, 36, 97, 0.2);
-        }
-
-        .converter-btn-secondary {
-            background: #f8f9fa;
-            color: #495057;
-            border: 1px solid #dee2e6;
-        }
-
-        .converter-btn-secondary:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
-        }
-
-        .converter-btn-success {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-        }
-
-        .converter-btn-success:hover {
-            background: linear-gradient(135deg, #219653 0%, #27ae60 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
-        }
-
-        .converter-result {
-            margin-top: 30px;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e9ecef;
-            display: none;
-        }
-
-        .converter-result.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .result-header h4 {
-            margin: 0;
-            color: #0c2461;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .result-content {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .data-preview {
-            margin-top: 20px;
-        }
-
-        .data-preview h5 {
-            color: #495057;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .preview-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        .preview-table th {
-            background: #f8f9fa;
-            padding: 10px;
-            text-align: left;
-            font-weight: 600;
-            color: #495057;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .preview-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e9ecef;
-            color: #6c757d;
-        }
-
-        .preview-table tr:hover {
-            background: #f8f9fa;
-        }
-
-        .converter-status {
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .converter-status.info {
-            background: #e8f4fd;
-            color: #0c2461;
-            border-left: 4px solid #0c2461;
-        }
-
-        .converter-status.success {
-            background: #e8f6f3;
-            color: #27ae60;
-            border-left: 4px solid #27ae60;
-        }
-
-        .converter-status.error {
-            background: #fde8e8;
-            color: #e74c3c;
-            border-left: 4px solid #e74c3c;
-        }
-
-        .converter-status.warning {
-            background: #fef5e7;
-            color: #f39c12;
-            border-left: 4px solid #f39c12;
-        }
-
-        .converter-footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-            text-align: center;
-            color: #6c757d;
-            font-size: 13px;
-        }
-
-        /* Modal konfirmasi impor */
-        .confirm-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .confirm-modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .confirm-content {
-            background: white;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .confirm-header {
-            background: linear-gradient(135deg, #0c2461 0%, #4a69bd 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px 15px 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .confirm-header h3 {
-            margin: 0;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .confirm-body {
-            padding: 25px;
-        }
-
-        .confirm-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .stat-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #e9ecef;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #0c2461;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .confirm-footer {
-            padding: 20px;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        .confirm-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .confirm-btn.primary {
-            background: #0c2461;
-            color: white;
-        }
-
-        .confirm-btn.primary:hover {
-            background: #091c4a;
-        }
-
-        .confirm-btn.secondary {
-            background: #f8f9fa;
-            color: #495057;
-            border: 1px solid #dee2e6;
-        }
-
-        .confirm-btn.secondary:hover {
-            background: #e9ecef;
-        }
-
-        /* Responsif */
-        @media (max-width: 768px) {
-            .converter-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .converter-buttons {
-                flex-direction: column;
-            }
-            
-            .confirm-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .confirm-stats {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Loading spinner */
-        .converter-loading {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .converter-loading.active {
-            display: flex;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #0c2461;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Badge untuk status data */
-        .data-status-badge {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 10px;
-            margin-left: 5px;
-        }
-
-        .badge-lengkap {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .badge-tidak-lengkap {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-ganda {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        /* Alert khusus */
-        .alert-data-tidak-lengkap {
-            background-color: #fff3cd;
-            border-color: #ffeaa7;
-            color: #856404;
-        }
-
-        .alert-data-ganda {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
-        `;
-
-        // Fungsi utama untuk menginisialisasi konverter
-        function initConverter() {
-            // Tambahkan CSS ke head
-            const styleElement = document.createElement('style');
-            styleElement.textContent = converterCSS;
-            document.head.appendChild(styleElement);
-            
-            console.log('✅ SIMATA Converter initialized');
-        }
-
-        /**
-         * Handle pemilihan file Excel
-         */
-        function handleExcelFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const status = document.getElementById('converterStatus');
-            const convertBtn = document.getElementById('convertExcelBtn');
-            
-            if (file.name.match(/\.(xlsx|xls)$/i)) {
-                status.className = 'converter-status success';
-                status.innerHTML = `<i class="fas fa-check-circle"></i> File dipilih: <strong>${file.name}</strong> (${(file.size / 1024).toFixed(2)} KB)`;
-                convertBtn.disabled = false;
-                
-                // Preview data jika file kecil
-                if (file.size < 1024 * 1024) { // < 1MB
-                    previewExcelData(file);
-                }
-            } else {
-                status.className = 'converter-status error';
-                status.innerHTML = `<i class="fas fa-times-circle"></i> Format file tidak didukung. Harap pilih file Excel (.xlsx atau .xls)`;
-                convertBtn.disabled = true;
-            }
-        }
-
-        /**
-         * Handle pemilihan file untuk impor
-         */
-        function handleImportFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const status = document.getElementById('converterStatus');
-            const importBtn = document.getElementById('importExcelBtn');
-            
-            if (file.name.match(/\.(xlsx|xls)$/i)) {
-                status.className = 'converter-status success';
-                status.innerHTML = `<i class="fas fa-check-circle"></i> File untuk impor: <strong>${file.name}</strong>`;
-                importBtn.disabled = false;
-                
-                // Tampilkan preview data
-                previewImportData(file);
-            } else {
-                status.className = 'converter-status error';
-                status.innerHTML = `<i class="fas fa-times-circle"></i> Format file tidak didukung`;
-                importBtn.disabled = true;
-            }
-        }
-
-        /**
-         * Preview data Excel untuk konversi
-         */
-        function previewExcelData(file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-                    
-                    // Ambil 5 baris pertama untuk preview
-                    const previewRows = jsonData.slice(0, 6);
-                    
-                    const status = document.getElementById('converterStatus');
-                    status.innerHTML += `<br><small><i class="fas fa-eye me-1"></i> Preview: ${previewRows.length - 1} baris data ditemukan</small>`;
-                    
-                } catch (error) {
-                    console.error('Error previewing Excel:', error);
-                }
-            };
-            
-            reader.readAsArrayBuffer(file);
-        }
-
-        /**
-         * Preview data untuk impor
-         */
-        function previewImportData(file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-                    
-                    const status = document.getElementById('converterStatus');
-                    status.innerHTML += `<br><small><i class="fas fa-database me-1"></i> Data terdeteksi: ${jsonData.length} records</small>`;
-                    
-                } catch (error) {
-                    console.error('Error previewing import data:', error);
-                }
-            };
-            
-            reader.readAsArrayBuffer(file);
-        }
-
-        /**
-         * Konversi Excel ke reload.js
-         */
-        function convertExcelToReload() {
-            const fileInput = document.getElementById('excelFileInput');
-            const loading = document.getElementById('converterLoading');
-            const result = document.getElementById('converterResult');
-            const resultContent = document.getElementById('resultContent');
-            
-            if (!fileInput.files.length) {
-                showConverterStatus('Pilih file Excel terlebih dahulu!', 'error');
-                return;
-            }
-            
-            const file = fileInput.files[0];
-            loading.classList.add('active');
-            
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                    
-                    if (jsonData.length === 0) {
-                        throw new Error('File Excel tidak berisi data');
-                    }
-                    
-                    // Validasi dan konversi data
-                    const validatedData = validateAndConvertExcelData(jsonData);
-                    
-                    // Buat konten reload.js
-                    const encryptedData = btoa(JSON.stringify(validatedData));
-                    const reloadJsContent = `window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
-                    
-                    // Tampilkan hasil
-                    const incompleteCount = validatedData.filter(d => !d.isComplete).length;
-                    const duplicateNiks = getDuplicateNiks(validatedData);
-                    
-                    resultContent.innerHTML = `
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <strong>Konversi Berhasil!</strong><br>
-                            <div class="mt-2">
-                                <div><strong>File Input:</strong> ${file.name}</div>
-                                <div><strong>Total Data:</strong> ${validatedData.length} records</div>
-                                <div><strong>Data Lengkap:</strong> ${validatedData.length - incompleteCount} records</div>
-                                <div><strong>Data Tidak Lengkap:</strong> ${incompleteCount} records</div>
-                                <div><strong>Potensi Duplikasi:</strong> ${duplicateNiks.size} NIK</div>
-                                <div><strong>Waktu:</strong> ${new Date().toLocaleTimeString('id-ID')}</div>
-                            </div>
-                        </div>
-                        
-                        ${incompleteCount > 0 ? `
-                        <div class="alert alert-data-tidak-lengkap">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Data Tidak Lengkap Ditemukan:</strong> ${incompleteCount} data memerlukan pelengkapan.
-                            Data ini akan tetap diimpor tetapi ditandai khusus di database.
-                        </div>
-                        ` : ''}
-                        
-                        ${duplicateNiks.size > 0 ? `
-                        <div class="alert alert-data-ganda">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            <strong>Potensi Data Ganda:</strong> ${duplicateNiks.size} NIK memiliki data ganda.
-                            Harap periksa dan hapus duplikasi setelah impor.
-                        </div>
-                        ` : ''}
-                        
-                        <div class="data-preview">
-                            <h5><i class="fas fa-table me-2"></i>Preview Data (5 baris pertama):</h5>
-                            <div class="table-responsive">
-                                <table class="preview-table">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Nama</th>
-                                            <th>NIK</th>
-                                            <th>Profesi</th>
-                                            <th>Status</th>
-                                            <th>Kelengkapan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${validatedData.slice(0, 5).map((item, index) => `
-                                            <tr>
-                                                <td>${index + 1}</td>
-                                                <td>${item.nama || '-'}</td>
-                                                <td>${item.nik ? item.nik.substring(0, 8) + '****' : '-'}</td>
-                                                <td><span class="badge ${getProfesiBadgeClass(item.profesi)}">${item.profesi || '-'}</span></td>
-                                                <td>${item.status || '-'}</td>
-                                                <td>
-                                                    ${item.isComplete ? 
-                                                        '<span class="data-status-badge badge-lengkap">Lengkap</span>' : 
-                                                        '<span class="data-status-badge badge-tidak-lengkap">Tidak Lengkap</span>'
-                                                    }
-                                                    ${duplicateNiks.has(item.nik) ? 
-                                                        '<span class="data-status-badge badge-ganda">Ganda</span>' : 
-                                                        ''
-                                                    }
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4">
-                            <p><strong>File <code>reload.js</code> siap untuk:</strong></p>
-                            <ol class="mt-2" style="padding-left: 20px;">
-                                <li>Diunggah ke repository GitHub untuk sinkronisasi</li>
-                                <li>Direstore melalui menu <strong>Backup & Restore</strong></li>
-                                <li>Digunakan untuk memperbarui data di sistem lain</li>
-                                <li>Diimpor melalui <strong>Impor Data Cepat</strong> di tab ini</li>
-                            </ol>
-                        </div>
-                        
-                        <div class="d-grid gap-2 mt-4">
-                            <button class="converter-btn converter-btn-primary" onclick="downloadReloadJs('${reloadJsContent.replace(/'/g, "\\'")}')">
-                                <i class="fas fa-download me-2"></i>Download reload.js
-                            </button>
-                            <button class="converter-btn converter-btn-secondary" onclick="copyToClipboard('${reloadJsContent.replace(/'/g, "\\'")}')">
-                                <i class="fas fa-copy me-2"></i>Salin ke Clipboard
-                            </button>
-                        </div>
-                    `;
-                    
-                    result.classList.add('active');
-                    loading.classList.remove('active');
-                    showConverterStatus(`✅ ${validatedData.length} data berhasil dikonversi ke format reload.js`, 'success');
-                    
-                } catch (error) {
-                    console.error('Konversi error:', error);
-                    resultContent.innerHTML = `
-                        <div class="alert alert-danger">
-                            <i class="fas fa-times-circle me-2"></i>
-                            <strong>Konversi Gagal!</strong><br>
-                            ${error.message}
-                        </div>
-                    `;
-                    result.classList.add('active');
-                    loading.classList.remove('active');
-                    showConverterStatus(`❌ ${error.message}`, 'error');
-                }
-            };
-            
-            reader.onerror = function() {
-                loading.classList.remove('active');
-                showConverterStatus('Gagal membaca file Excel', 'error');
-            };
-            
-            reader.readAsArrayBuffer(file);
-        }
-
-        /**
-         * Download template Excel
-         */
-        function downloadTemplate() {
-            try {
-                // Buat template Excel
-                const templateData = [
-                    {
-                        'nama': 'CONTOH: Ahmad Susanto',
-                        'nik': 'CONTOH: 3501010101010001',
-                        'whatsapp': 'CONTOH: 081234567890',
-                        'profesi': 'CONTOH: Nelayan Penuh Waktu',
-                        'status': 'CONTOH: Pemilik Kapal',
-                        'tahunLahir': 'CONTOH: 1985',
-                        'kecamatan': 'CONTOH: Panarukan',
-                        'desa': 'CONTOH: Kilensari',
-                        'alatTangkap': 'CONTOH: Pukat Cincin',
-                        'namaKapal': 'CONTOH: Jaya Abadi 01',
-                        'jenisKapal': 'CONTOH: Perahu Jukung',
-                        'jenisIkan': 'CONTOH: Ikan Tongkol, Ikan Kembung',
-                        'usahaSampingan': 'CONTOH: Warung Kelontong',
-                        'tanggalValidasi': 'CONTOH: 2025-01-15',
-                        'validator': 'CONTOH: Petugas Lapangan',
-                        'keterangan': 'CONTOH: Data lengkap'
-                    },
-                    {
-                        'nama': 'CONTOH: Budi Santoso',
-                        'nik': '3501010101010002',
-                        'whatsapp': '081234567891',
-                        'profesi': 'Nelayan Sambilan Utama',
-                        'status': 'Anak Buah Kapal',
-                        'tahunLahir': '1990',
-                        'kecamatan': 'Panarukan',
-                        'desa': 'Kilensari',
-                        'alatTangkap': 'Pancing',
-                        'namaKapal': '',
-                        'jenisKapal': '',
-                        'jenisIkan': 'Ikan Tongkol',
-                        'usahaSampingan': '',
-                        'tanggalValidasi': '2025-01-15',
-                        'validator': 'Petugas Lapangan',
-                        'keterangan': ''
-                    }
-                ];
-                
-                const worksheet = XLSX.utils.json_to_sheet(templateData);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
-                
-                // Tambahkan sheet petunjuk
-                const instructions = [
-                    ['PANDUAN PENGISIAN TEMPLATE EXCEL UNTUK IMPOR DATA SIMATA'],
-                    [''],
-                    ['KOLOM WAJIB (harus diisi):', ''],
-                    ['1. nama', 'Nama lengkap sesuai KTP'],
-                    ['2. nik', '16 digit NIK (contoh: 3501010101010001)'],
-                    ['3. whatsapp', 'Nomor handphone aktif (contoh: 081234567890)'],
-                    ['4. profesi', 'Pilihan: Nelayan Penuh Waktu, Nelayan Sambilan Utama, Nelayan Sambilan Tambahan'],
-                    ['5. status', 'Pilihan: Pemilik Kapal, Anak Buah Kapal'],
-                    ['6. tahunLahir', 'Tahun lahir (contoh: 1985)'],
-                    ['7. kecamatan', 'Nama kecamatan (sesuai daftar)'],
-                    ['8. desa', 'Nama desa/kelurahan (sesuai daftar)'],
-                    ['9. alatTangkap', 'Alat Penangkapan Ikan (contoh: Pukat Cincin, Pancing, dll)'],
-                    ['10. jenisIkan', 'Jenis ikan yang ditangkap, pisahkan dengan koma (contoh: Ikan Tongkol, Ikan Kembung)'],
-                    [''],
-                    ['KOLOM OPSIONAL (bisa dikosongkan):', ''],
-                    ['11. namaKapal', 'Nama kapal (hanya untuk Pemilik Kapal)'],
-                    ['12. jenisKapal', 'Jenis kapal (contoh: Perahu Jukung, Perahu Mayang, dll)'],
-                    ['13. usahaSampingan', 'Usaha sampingan (contoh: Warung, Ternak)'],
-                    ['14. tanggalValidasi', 'Format: YYYY-MM-DD (contoh: 2025-01-15)'],
-                    ['15. validator', 'Nama petugas validator'],
-                    ['16. keterangan', 'Keterangan tambahan'],
-                    [''],
-                    ['CATATAN PENTING:', ''],
-                    ['- Hapus baris contoh (baris 1 dan 2) sebelum mengisi data asli'],
-                    ['- Data yang tidak lengkap tetap bisa diimpor, tetapi akan ditandai khusus'],
-                    ['- NIK ganda akan ditimpa dengan data terbaru'],
-                    ['- Pastikan format tanggal sesuai YYYY-MM-DD'],
-                    ['- NIK harus 16 digit angka'],
-                    ['- Kolom profesi dan status harus sesuai pilihan yang tersedia'],
-                    [''],
-                    ['SETELAH PENGISIAN:', ''],
-                    ['1. Simpan file Excel'],
-                    ['2. Kembali ke tab Impor Data'],
-                    ['3. Gunakan fitur "Impor Data Cepat" untuk memasukkan data ke sistem']
-                ];
-                
-                const instructionSheet = XLSX.utils.aoa_to_sheet(instructions);
-                XLSX.utils.book_append_sheet(workbook, instructionSheet, "Petunjuk");
-                
-                // Generate file
-                XLSX.writeFile(workbook, 'Template_Impor_Data_SIMATA.xlsx');
-                
-                showConverterStatus('✅ Template Excel berhasil didownload', 'success');
-                
-            } catch (error) {
-                console.error('Error creating template:', error);
-                showConverterStatus('❌ Gagal membuat template', 'error');
-            }
-        }
-
-        /**
-         * Impor Excel ke sistem
-         */
-        function importExcelToSystem() {
-            const fileInput = document.getElementById('importFileInput');
-            
-            if (!fileInput.files.length) {
-                showConverterStatus('Pilih file Excel terlebih dahulu!', 'error');
-                return;
-            }
-            
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                    
-                    if (jsonData.length === 0) {
-                        throw new Error('File Excel tidak berisi data');
-                    }
-                    
-                    // Validasi dan konversi data
-                    const validatedData = validateAndConvertExcelData(jsonData);
-                    
-                    // Tampilkan modal konfirmasi
-                    showImportConfirmation(validatedData);
-                    
-                } catch (error) {
-                    console.error('Import error:', error);
-                    showConverterStatus(`❌ ${error.message}`, 'error');
-                }
-            };
-            
-            reader.readAsArrayBuffer(file);
-        }
-
-        /**
-         * Tampilkan modal konfirmasi impor
-         */
-        function showImportConfirmation(data) {
-            const modal = document.getElementById('confirmModal');
-            const stats = document.getElementById('confirmStats');
-            
-            // Hitung statistik
-            const totalData = data.length;
-            const pemilikKapal = data.filter(d => d.status === 'Pemilik Kapal').length;
-            const penuhWaktu = data.filter(d => d.profesi === 'Nelayan Penuh Waktu').length;
-            const sambilanUtama = data.filter(d => d.profesi === 'Nelayan Sambilan Utama').length;
-            const sambilanTambahan = data.filter(d => d.profesi === 'Nelayan Sambilan Tambahan').length;
-            const abk = data.filter(d => d.status === 'Anak Buah Kapal').length;
-            
-            // Hitung data tidak lengkap
-            const incompleteData = data.filter(d => !d.isComplete).length;
-            
-            // Hitung duplikasi NIK dalam data yang akan diimpor
-            const duplicateInImport = getDuplicateNiks(data).size;
-            
-            stats.innerHTML = `
-                <div class="stat-box">
-                    <div class="stat-value">${totalData}</div>
-                    <div class="stat-label">Total Data</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${pemilikKapal}</div>
-                    <div class="stat-label">Pemilik Kapal</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${abk}</div>
-                    <div class="stat-label">Anak Buah Kapal</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${penuhWaktu}</div>
-                    <div class="stat-label">Penuh Waktu</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${sambilanUtama + sambilanTambahan}</div>
-                    <div class="stat-label">Sambilan</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${incompleteData}</div>
-                    <div class="stat-label">Tidak Lengkap</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${duplicateInImport}</div>
-                    <div class="stat-label">Duplikasi NIK</div>
-                </div>
-            `;
-            
-            // Simpan data untuk diproses nanti
-            window.importData = data;
-            
-            modal.classList.add('active');
-        }
-
-        /**
-         * Proses impor data ke sistem
-         */
-        function processImport() {
-            const modal = document.getElementById('confirmModal');
-            const loading = document.getElementById('converterLoading');
-            
-            if (!window.importData || window.importData.length === 0) {
-                showConverterStatus('Tidak ada data untuk diimpor', 'error');
-                return;
-            }
-            
-            modal.classList.remove('active');
-            loading.classList.add('active');
-            
-            try {
-                // Dapatkan appData dari localStorage (sama seperti di index.html)
-                const existingData = JSON.parse(localStorage.getItem('nelayanData') || '[]');
-                
-                // Data yang akan diimpor
-                const newData = window.importData;
-                
-                // Cek duplikasi berdasarkan NIK
-                const existingNiks = new Set(existingData.map(d => d.nik));
-                const duplicateNiks = new Set();
-                const updatedData = [];
-                
-                // Filter data baru, timpa jika NIK sudah ada
-                const mergedData = [...existingData];
-                let added = 0;
-                let updated = 0;
-                let incompleteCount = 0;
-                
-                newData.forEach(newItem => {
-                    // Hitung data tidak lengkap
-                    if (!newItem.isComplete) {
-                        incompleteCount++;
-                    }
-                    
-                    const existingIndex = mergedData.findIndex(d => d.nik === newItem.nik);
-                    
-                    if (existingIndex >= 0) {
-                        // Timpa data yang sudah ada
-                        mergedData[existingIndex] = {
-                            ...mergedData[existingIndex],
-                            ...newItem,
-                            id: mergedData[existingIndex].id, // Pertahankan ID yang ada
-                            updatedAt: new Date().toISOString(),
-                            updatedBy: 'System Import'
-                        };
-                        updated++;
-                        duplicateNiks.add(newItem.nik);
-                        updatedData.push(newItem);
-                    } else {
-                        // Tambah data baru
-                        mergedData.push({
-                            ...newItem,
-                            id: Date.now() + Math.random(), // Generate ID baru
-                            createdAt: new Date().toISOString(),
-                            createdBy: 'System Import'
-                        });
-                        added++;
-                    }
-                });
-                
-                // Simpan ke localStorage
-                localStorage.setItem('nelayanData', JSON.stringify(mergedData));
-                
-                // Update appData global
-                window.appData = mergedData;
-                
-                // Update UI di index.html jika fungsi tersedia
-                if (typeof window.renderDataTable === 'function') {
-                    window.renderDataTable();
-                }
-                
-                if (typeof window.updateDashboard === 'function') {
-                    window.updateDashboard();
-                }
-                
-                // Tampilkan hasil
-                const result = document.getElementById('converterResult');
-                const resultContent = document.getElementById('resultContent');
-                
-                resultContent.innerHTML = `
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <strong>Impor Data Berhasil!</strong><br>
-                        <div class="mt-2">
-                            <div><strong>Data Baru:</strong> ${added} records ditambahkan</div>
-                            <div><strong>Data Diperbarui:</strong> ${updated} records diperbarui</div>
-                            <div><strong>Total Data Sistem:</strong> ${mergedData.length} records</div>
-                            <div><strong>Duplikasi Ditemukan:</strong> ${duplicateNiks.size} NIK</div>
-                            <div><strong>Data Tidak Lengkap:</strong> ${incompleteCount} records</div>
-                        </div>
-                    </div>
-                    
-                    ${incompleteCount > 0 ? `
-                    <div class="alert alert-data-tidak-lengkap">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Data Tidak Lengkap:</strong> ${incompleteCount} data memerlukan pelengkapan.
-                        <ul class="mt-2 mb-1">
-                            <li>Data yang tidak lengkap akan ditandai dengan <span class="badge bg-warning">warna kuning</span> di tabel</li>
-                            <li>Lengkapi data melalui menu <strong>Edit Data</strong></li>
-                            <li>Sistem akan terus mengingatkan hingga data lengkap</li>
-                        </ul>
-                    </div>
-                    ` : ''}
-                    
-                    ${duplicateNiks.size > 0 ? `
-                    <div class="alert alert-data-ganda">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <strong>Data Ganda Ditemukan:</strong> ${duplicateNiks.size} NIK memiliki data ganda.
-                        <ul class="mt-2 mb-1">
-                            <li>Data ganda akan ditandai dengan <span class="badge bg-danger">warna merah</span> di tabel</li>
-                            <li>Periksa dan hapus duplikasi melalui menu <strong>Filter & Validasi</strong> → <strong>Cek Data Ganda</strong></li>
-                            <li>Hapus atau edit salah satu data ganda</li>
-                        </ul>
-                    </div>
-                    ` : ''}
-                    
-                    <div class="mt-3">
-                        <p><strong>Langkah selanjutnya:</strong></p>
-                        <ol style="padding-left: 20px;">
-                            <li>Periksa data di menu <strong>Data Nelayan</strong></li>
-                            ${incompleteCount > 0 ? '<li>Lengkapi data yang masih kosong melalui menu <strong>Edit Data</strong></li>' : ''}
-                            ${duplicateNiks.size > 0 ? '<li>Cek data duplikasi di menu <strong>Filter & Validasi</strong> → <strong>Cek Data Ganda</strong></li>' : ''}
-                            <li>Validasi data melalui menu <strong>Filter & Validasi</strong></li>
-                            <li>Cetak ID Card untuk data yang sudah lengkap</li>
-                        </ol>
-                    </div>
-                    
-                    <div class="d-grid gap-2 mt-4">
-                        <button class="converter-btn converter-btn-primary" onclick="goToDataTab()">
-                            <i class="fas fa-database me-2"></i>Lihat Data Nelayan
-                        </button>
-                        ${incompleteCount > 0 ? `
-                        <button class="converter-btn converter-btn-warning" onclick="showIncompleteData()">
-                            <i class="fas fa-exclamation-triangle me-2"></i>Lihat Data Tidak Lengkap
-                        </button>
-                        ` : ''}
-                        ${duplicateNiks.size > 0 ? `
-                        <button class="converter-btn converter-btn-danger" onclick="goToFilterTab()">
-                            <i class="fas fa-filter me-2"></i>Cek Data Ganda
-                        </button>
-                        ` : ''}
-                    </div>
-                `;
-                
-                result.classList.add('active');
-                loading.classList.remove('active');
-                
-                // Simpan notifikasi untuk data tidak lengkap
-                if (incompleteCount > 0) {
-                    localStorage.setItem('simata_incomplete_data', 'true');
-                    localStorage.setItem('simata_incomplete_count', incompleteCount.toString());
-                    
-                    // Tampilkan notifikasi di halaman utama
-                    if (typeof window.checkIncompleteDataNotification === 'function') {
-                        window.checkIncompleteDataNotification();
-                    }
-                }
-                
-                // Simpan notifikasi untuk data ganda
-                if (duplicateNiks.size > 0) {
-                    localStorage.setItem('simata_duplicate_data', 'true');
-                    localStorage.setItem('simata_duplicate_count', duplicateNiks.size.toString());
-                    
-                    // Tampilkan notifikasi duplikasi
-                    document.getElementById('duplicateWarning').style.display = 'block';
-                }
-                
-                showConverterStatus(`✅ ${added + updated} data berhasil diimpor ke sistem`, 'success');
-                
-                // Reset form
-                document.getElementById('importFileInput').value = '';
-                document.getElementById('importExcelBtn').disabled = true;
-                
-                // Tampilkan notifikasi global
-                setTimeout(() => {
-                    if (typeof window.showNotification === 'function') {
-                        if (incompleteCount > 0) {
-                            window.showNotification(`⚠️ ${incompleteCount} data tidak lengkap. Harap lengkapi melalui menu Edit Data.`, 'warning');
-                        }
-                        if (duplicateNiks.size > 0) {
-                            window.showNotification(`⚠️ ${duplicateNiks.size} data duplikasi ditemukan. Harap periksa di menu Filter & Validasi.`, 'error');
-                        }
-                    }
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Process import error:', error);
-                loading.classList.remove('active');
-                showConverterStatus(`❌ Gagal mengimpor data: ${error.message}`, 'error');
-            }
-        }
-
-        /**
-         * Validasi dan konversi data Excel
-         */
-        function validateAndConvertExcelData(excelData) {
-            const convertedData = [];
-            const errors = [];
-            const warnings = [];
-            
-            // Kolom wajib untuk data lengkap
-            const requiredFields = ['nama', 'nik', 'whatsapp', 'profesi', 'status', 'tahunLahir', 'kecamatan', 'desa', 'alatTangkap', 'jenisIkan'];
-            
-            excelData.forEach((row, index) => {
-                try {
-                    // Skip jika row kosong atau baris contoh
-                    if ((!row.nik && !row.nama) || 
-                        (row.nik && row.nik.toString().includes('CONTOH')) ||
-                        (row.nama && row.nama.toString().includes('CONTOH'))) {
-                        return;
-                    }
-                    
-                    // Generate ID jika tidak ada
-                    const id = row.id || Date.now() + index + Math.random();
-                    
-                    // Hitung usia dari tahun lahir
-                    const tahunLahir = parseInt(row.tahunLahir) || 1980;
-                    const currentYear = new Date().getFullYear();
-                    const usia = currentYear - tahunLahir;
-                    
-                    // Validasi NIK
-                    const nik = String(row.nik || '').trim();
-                    if (nik && nik.length !== 16 && !isNaN(nik)) {
-                        warnings.push(`Baris ${index + 2}: NIK ${nik} harus 16 digit`);
-                    }
-                    
-                    // Validasi WhatsApp
-                    const whatsapp = String(row.whatsapp || row['no hp'] || row.telp || '').trim();
-                    
-                    // Validasi profesi
-                    const validProfesi = ['Nelayan Penuh Waktu', 'Nelayan Sambilan Utama', 'Nelayan Sambilan Tambahan'];
-                    const profesi = row.profesi || 'Nelayan Penuh Waktu';
-                    if (!validProfesi.includes(profesi)) {
-                        warnings.push(`Baris ${index + 2}: Profesi "${profesi}" tidak valid, diubah menjadi "Nelayan Penuh Waktu"`);
-                    }
-                    
-                    // Validasi status
-                    const validStatus = ['Pemilik Kapal', 'Anak Buah Kapal'];
-                    const status = row.status || 'Anak Buah Kapal';
-                    if (!validStatus.includes(status)) {
-                        warnings.push(`Baris ${index + 2}: Status "${status}" tidak valid, diubah menjadi "Anak Buah Kapal"`);
-                    }
-                    
-                    // Default values
-                    const convertedRow = {
-                        id: id,
-                        nama: String(row.nama || '').trim(),
-                        nik: nik,
-                        whatsapp: whatsapp || '00000000',
-                        profesi: validProfesi.includes(profesi) ? profesi : 'Nelayan Penuh Waktu',
-                        status: validStatus.includes(status) ? status : 'Anak Buah Kapal',
-                        tahunLahir: tahunLahir,
-                        usia: usia,
-                        kecamatan: String(row.kecamatan || '').trim(),
-                        desa: String(row.desa || '').trim(),
-                        alatTangkap: String(row.alatTangkap || row.API || 'Pancing').trim(),
-                        namaKapal: String(row.namaKapal || '').trim(),
-                        jenisKapal: String(row.jenisKapal || '').trim(),
-                        jenisIkan: String(row.jenisIkan || row.ikan || '').trim(),
-                        usahaSampingan: String(row.usahaSampingan || '').trim(),
-                        tanggalValidasi: row.tanggalValidasi || new Date().toISOString().split('T')[0],
-                        validator: String(row.validator || 'System Import').trim(),
-                        driveLink: String(row.driveLink || '').trim(),
-                        kodeValidasi: row.kodeValidasi || `IMP-${Date.now().toString(36).toUpperCase()}`,
-                        keterangan: String(row.keterangan || `Diimpor pada ${new Date().toLocaleString('id-ID')}`).trim(),
-                        importDate: new Date().toISOString()
-                    };
-                    
-                    // Cek kolom wajib untuk kelengkapan data
-                    const missingFields = [];
-                    requiredFields.forEach(field => {
-                        const value = convertedRow[field];
-                        if (!value || value.toString().trim() === '' || 
-                            (field === 'whatsapp' && value === '00000000') ||
-                            (field === 'tahunLahir' && (value < 1900 || value > currentYear))) {
-                            missingFields.push(field);
-                        }
-                    });
-                    
-                    // Cek jenis ikan (wajib minimal satu)
-                    if (!convertedRow.jenisIkan || convertedRow.jenisIkan.trim() === '') {
-                        missingFields.push('jenisIkan');
-                    }
-                    
-                    // Tandai kelengkapan data
-                    convertedRow.missingFields = missingFields;
-                    convertedRow.isComplete = missingFields.length === 0;
-                    
-                    // Tambahkan pesan warning jika ada field yang tidak lengkap
-                    if (missingFields.length > 0) {
-                        convertedRow.keterangan += ` | Data tidak lengkap: ${missingFields.join(', ')}`;
-                    }
-                    
-                    convertedData.push(convertedRow);
-                    
-                } catch (error) {
-                    errors.push(`Baris ${index + 2}: ${error.message}`);
-                }
-            });
-            
-            if (errors.length > 0 && convertedData.length === 0) {
-                throw new Error(`Validasi gagal: ${errors.slice(0, 3).join(', ')}...`);
-            }
-            
-            if (warnings.length > 0) {
-                console.warn('Peringatan validasi:', warnings);
-            }
-            
-            if (errors.length > 0) {
-                console.error('Errors validasi:', errors);
-            }
-            
-            return convertedData;
-        }
-
-        /**
-         * Get duplicate NIKs from data
-         */
-        function getDuplicateNiks(data) {
-            const nikCounts = {};
-            const duplicateNiks = new Set();
-            
-            data.forEach(d => {
-                if (d.nik) {
-                    nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1;
-                    if (nikCounts[d.nik] > 1) {
-                        duplicateNiks.add(d.nik);
-                    }
-                }
-            });
-            
-            return duplicateNiks;
-        }
-
-        /**
-         * Download file reload.js
-         */
-        function downloadReloadJs(content) {
-            try {
-                const blob = new Blob([content], { type: 'application/javascript' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `reload_${Date.now()}.js`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showConverterStatus('✅ File reload.js berhasil didownload', 'success');
-                
-            } catch (error) {
-                console.error('Download error:', error);
-                showConverterStatus('❌ Gagal mendownload file', 'error');
-            }
-        }
-
-        /**
-         * Copy ke clipboard
-         */
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showConverterStatus('✅ Teks berhasil disalin ke clipboard', 'success');
-            }).catch(err => {
-                showConverterStatus('❌ Gagal menyalin ke clipboard', 'error');
-            });
-        }
-
-        /**
-         * Clear konverter
-         */
-        function clearConverter() {
-            document.getElementById('excelFileInput').value = '';
-            document.getElementById('importFileInput').value = '';
-            document.getElementById('convertExcelBtn').disabled = true;
-            document.getElementById('importExcelBtn').disabled = true;
-            document.getElementById('converterResult').classList.remove('active');
-            
-            showConverterStatus('<i class="fas fa-info-circle"></i> Konverter siap digunakan', 'info');
-        }
-
-        /**
-         * Close hasil
-         */
-        function closeResult() {
-            document.getElementById('converterResult').classList.remove('active');
-        }
-
-        /**
-         * Close modal konfirmasi
-         */
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.remove('active');
-            delete window.importData;
-        }
-
-        /**
-         * Show status konverter
-         */
-        function showConverterStatus(message, type = 'info') {
-            const status = document.getElementById('converterStatus');
-            let icon = 'info-circle';
-            
-            switch(type) {
-                case 'success':
-                    icon = 'check-circle';
-                    break;
-                case 'error':
-                    icon = 'times-circle';
-                    break;
-                case 'warning':
-                    icon = 'exclamation-triangle';
-                    break;
-            }
-            
-            status.className = `converter-status ${type}`;
-            status.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
-        }
-
-        /**
-         * Navigasi ke tab Data
-         */
-        function goToDataTab() {
-            const dataTab = document.getElementById('v-pills-data-tab');
-            if (dataTab) {
-                dataTab.click();
-            }
-        }
-
-        /**
-         * Navigasi ke tab Filter
-         */
-        function goToFilterTab() {
-            const filterTab = document.getElementById('v-pills-filter-tab');
-            if (filterTab) {
-                filterTab.click();
-                // Trigger cek data ganda setelah 500ms
-                setTimeout(() => {
-                    const cekGandaBtn = document.getElementById('btnCekGanda');
-                    if (cekGandaBtn) {
-                        cekGandaBtn.click();
-                    }
-                }, 500);
-            }
-        }
-
-        /**
-         * Show incomplete data
-         */
-        function showIncompleteData() {
-            if (typeof window.showIncompleteData === 'function') {
-                window.showIncompleteData();
-            }
-        }
-
-        /**
-         * Get badge class untuk profesi
-         */
-        function getProfesiBadgeClass(profesi) {
-            switch(profesi) {
-                case 'Nelayan Penuh Waktu':
-                    return 'badge-profesi-penuh';
-                case 'Nelayan Sambilan Utama':
-                    return 'badge-profesi-sambilan-utama';
-                case 'Nelayan Sambilan Tambahan':
-                    return 'badge-profesi-sambilan-tambahan';
-                default:
-                    return 'bg-secondary';
-            }
-        }
-
-        // Inisialisasi konverter saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', function() {
-            initConverter();
-            
-            // Ekspor fungsi ke global scope
-            window.convertExcelToReload = convertExcelToReload;
-            window.importExcelToSystem = importExcelToSystem;
-            window.downloadTemplate = downloadTemplate;
-            window.clearConverter = clearConverter;
-            window.processImport = processImport;
-            window.closeConfirmModal = closeConfirmModal;
-            window.handleExcelFileSelect = handleExcelFileSelect;
-            window.handleImportFileSelect = handleImportFileSelect;
-            
-            console.log('✅ SIMATA Convert Data Tool v2.1 loaded successfully');
-        });
-
-    </script>
-
 </body>
 </html>
