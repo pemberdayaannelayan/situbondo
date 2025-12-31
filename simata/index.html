@@ -2233,6 +2233,62 @@
             }, 1000);
         }
 
+        // --- FUNGSI BACKUP DATA YANG DIPERBAIKI ---
+        function backupData(filename = 'reload.js') {
+            try {
+                const encryptedData = btoa(JSON.stringify(appData));
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('id-ID');
+                const timeStr = now.toLocaleTimeString('id-ID');
+                
+                const backupContent = `/* PETUNJUK PENGGUNAAN RELOAD REPO:
+    1. Ini adalah file backup otomatis dari Aplikasi.
+    2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
+    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
+    
+    APP NAME : SISTEM PEMETAAN DATA NELAYAN (bertujuan agar tau sumber aplikasinya)
+    INSTANSI : DINAS PERIKANAN KABUPATEN SITUBONDO (bertujuan agar tau asal reload.js ini berasal dari instansi mana)
+    TANGGAL  : ${dateStr}, ${timeStr} (bertujuan agar tau periode downloadnya)
+*/
+
+window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
+                
+                const blob = new Blob([backupContent], { type: 'text/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification(`Backup berhasil: ${filename}`, 'success');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Gagal membuat backup. Silakan coba lagi.', 'error');
+            }
+        }
+
+        // --- FUNGSI MERGE DATA UNTUK MENGHINDARI DUPLIKASI ---
+        function mergeData(existingData, newData) {
+            // Buat map untuk data yang sudah ada dengan NIK sebagai key
+            const dataMap = new Map();
+            
+            // Tambahkan data yang sudah ada ke map
+            existingData.forEach(item => {
+                dataMap.set(item.nik, item);
+            });
+            
+            // Tambahkan atau timpa data baru (data baru akan menimpa data lama dengan NIK yang sama)
+            newData.forEach(item => {
+                dataMap.set(item.nik, item);
+            });
+            
+            // Kembalikan sebagai array
+            return Array.from(dataMap.values());
+        }
+
         // --- FUNGSI RELOAD DATA YANG DIPERBAIKI ---
         function handleReloadRepo() {
             const reloadBtn = document.getElementById('btn-reload-repo');
@@ -2257,27 +2313,43 @@
                         try {
                             const restoredData = JSON.parse(atob(window.SIMATA_BACKUP_ENCRYPTED));
                             
-                            // Merge data lama dengan data baru
-                            const existingNik = new Set(appData.map(d => d.nik));
-                            const newData = restoredData.filter(d => !existingNik.has(d.nik));
+                            // Merge data lama dengan data baru (data baru menimpa data lama dengan NIK yang sama)
+                            const existingData = appData;
+                            const mergedData = mergeData(existingData, restoredData);
                             
-                            if (newData.length === 0) {
-                                showNotification('Tidak ada data baru untuk dimuat. Data sudah up-to-date.', 'info');
-                            } else {
-                                appData = [...appData, ...newData];
-                                saveData();
-                                renderDataTable();
-                                updateDashboard();
-                                // Perbaikan: Panggil fungsi renderMapMarkers langsung
-                                if (typeof renderMapMarkers === 'function') {
-                                    renderMapMarkers();
-                                }
-                                if (typeof updateMapStatistics === 'function') {
-                                    updateMapStatistics();
-                                }
-                                
-                                showNotification(`Data berhasil disinkronisasi: ${newData.length} data baru ditambahkan`, 'success');
+                            // Hitung perubahan
+                            const newCount = restoredData.length;
+                            const existingCount = existingData.length;
+                            const mergedCount = mergedData.length;
+                            const replacedCount = existingCount + newCount - mergedCount;
+                            const addedCount = mergedCount - existingCount;
+                            
+                            // Update data aplikasi
+                            appData = mergedData;
+                            saveData();
+                            renderDataTable();
+                            updateDashboard();
+                            // Perbaikan: Panggil fungsi renderMapMarkers langsung
+                            if (typeof renderMapMarkers === 'function') {
+                                renderMapMarkers();
                             }
+                            if (typeof updateMapStatistics === 'function') {
+                                updateMapStatistics();
+                            }
+                            
+                            // Tampilkan notifikasi yang informatif
+                            let message = '';
+                            if (replacedCount > 0 && addedCount > 0) {
+                                message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
+                            } else if (replacedCount > 0) {
+                                message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui`;
+                            } else if (addedCount > 0) {
+                                message = `Data berhasil disinkronisasi: ${addedCount} data baru ditambahkan`;
+                            } else {
+                                message = 'Data sudah up-to-date. Tidak ada perubahan.';
+                            }
+                            
+                            showNotification(message, 'success');
                             
                         } catch (error) {
                             console.error('Reload error:', error);
@@ -2305,6 +2377,129 @@
             };
             
             document.head.appendChild(script);
+        }
+
+        // --- FUNGSI RESTORE DATA YANG DIPERBAIKI ---
+        function restoreData() {
+            const fileInput = document.getElementById('restoreFileInput');
+            if (!fileInput.files.length) return;
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    
+                    // Coba ekstrak data dari file JS
+                    let encryptedData = '';
+                    if (content.includes('SIMATA_BACKUP_ENCRYPTED')) {
+                        const match = content.match(/window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*'([^']+)'/);
+                        if (match) encryptedData = match[1];
+                    } else if (content.startsWith('window.SIMATA_BACKUP_ENCRYPTED')) {
+                        const match = content.match(/='([^']+)'/);
+                        if (match) encryptedData = match[1];
+                    } else {
+                        // Coba parse sebagai JSON langsung
+                        try {
+                            const restoredData = JSON.parse(content);
+                            // Merge data lama dengan data baru
+                            const existingData = appData;
+                            const mergedData = mergeData(existingData, restoredData);
+                            
+                            const newCount = restoredData.length;
+                            const existingCount = existingData.length;
+                            const mergedCount = mergedData.length;
+                            const replacedCount = existingCount + newCount - mergedCount;
+                            const addedCount = mergedCount - existingCount;
+                            
+                            appData = mergedData;
+                            saveData();
+                            renderDataTable();
+                            updateDashboard();
+                            if (typeof renderMapMarkers === 'function') {
+                                renderMapMarkers();
+                            }
+                            if (typeof updateMapStatistics === 'function') {
+                                updateMapStatistics();
+                            }
+                            
+                            let message = '';
+                            if (replacedCount > 0 && addedCount > 0) {
+                                message = `Restore berhasil: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
+                            } else if (replacedCount > 0) {
+                                message = `Restore berhasil: ${replacedCount} data diperbarui`;
+                            } else if (addedCount > 0) {
+                                message = `Restore berhasil: ${addedCount} data baru ditambahkan`;
+                            } else {
+                                message = 'Tidak ada data baru untuk di-restore';
+                            }
+                            
+                            showNotification(message, 'success');
+                            fileInput.value = '';
+                            document.getElementById('restoreDataBtn').disabled = true;
+                            return;
+                        } catch (jsonError) {
+                            throw new Error('Format file tidak dikenali');
+                        }
+                    }
+                    
+                    if (!encryptedData) throw new Error('Data terenkripsi tidak ditemukan');
+                    
+                    const restoredData = JSON.parse(atob(encryptedData));
+                    
+                    // Merge data lama dengan data baru
+                    const existingData = appData;
+                    const mergedData = mergeData(existingData, restoredData);
+                    
+                    const newCount = restoredData.length;
+                    const existingCount = existingData.length;
+                    const mergedCount = mergedData.length;
+                    const replacedCount = existingCount + newCount - mergedCount;
+                    const addedCount = mergedCount - existingCount;
+                    
+                    if (newCount === 0) {
+                        showNotification('Tidak ada data baru untuk di-restore', 'warning');
+                        return;
+                    }
+                    
+                    appData = mergedData;
+                    saveData();
+                    renderDataTable();
+                    updateDashboard();
+                    if (typeof renderMapMarkers === 'function') {
+                        renderMapMarkers();
+                    }
+                    if (typeof updateMapStatistics === 'function') {
+                        updateMapStatistics();
+                    }
+                    
+                    let message = '';
+                    if (replacedCount > 0 && addedCount > 0) {
+                        message = `Restore berhasil: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
+                    } else if (replacedCount > 0) {
+                        message = `Restore berhasil: ${replacedCount} data diperbarui`;
+                    } else if (addedCount > 0) {
+                        message = `Restore berhasil: ${addedCount} data baru ditambahkan`;
+                    } else {
+                        message = 'Tidak ada data baru untuk di-restore';
+                    }
+                    
+                    showNotification(message, 'success');
+                    fileInput.value = '';
+                    document.getElementById('restoreDataBtn').disabled = true;
+                    
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification(`Gagal restore: ${error.message}`, 'error');
+                }
+            };
+            
+            reader.onerror = function() {
+                showNotification('Gagal membaca file', 'error');
+            };
+            
+            reader.readAsText(file);
         }
 
         // --- INITIALIZATION ---
@@ -3835,106 +4030,6 @@
             }, 800);
         }
 
-        function backupData(filename = 'backup_simata.js') {
-            const encryptedData = btoa(JSON.stringify(appData));
-            const backupContent = `window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
-            
-            const blob = new Blob([backupContent], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showNotification(`Backup berhasil: ${filename}`, 'success');
-        }
-
-        function restoreData() {
-            const fileInput = document.getElementById('restoreFileInput');
-            if (!fileInput.files.length) return;
-            
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    const content = e.target.result;
-                    
-                    // Coba ekstrak data dari file JS
-                    let encryptedData = '';
-                    if (content.includes('SIMATA_BACKUP_ENCRYPTED')) {
-                        const match = content.match(/window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*'([^']+)'/);
-                        if (match) encryptedData = match[1];
-                    } else if (content.startsWith('window.SIMATA_BACKUP_ENCRYPTED')) {
-                        const match = content.match(/='([^']+)'/);
-                        if (match) encryptedData = match[1];
-                    } else {
-                        // Coba parse sebagai JSON langsung
-                        try {
-                            const jsonData = JSON.parse(content);
-                            appData = [...appData, ...jsonData];
-                            saveData();
-                            renderDataTable();
-                            updateDashboard();
-                            if (typeof renderMapMarkers === 'function') {
-                                renderMapMarkers();
-                            }
-                            if (typeof updateMapStatistics === 'function') {
-                                updateMapStatistics();
-                            }
-                            showNotification('Restore berhasil (format JSON langsung)', 'success');
-                            fileInput.value = '';
-                            document.getElementById('restoreDataBtn').disabled = true;
-                            return;
-                        } catch (jsonError) {
-                            throw new Error('Format file tidak dikenali');
-                        }
-                    }
-                    
-                    if (!encryptedData) throw new Error('Data terenkripsi tidak ditemukan');
-                    
-                    const restoredData = JSON.parse(atob(encryptedData));
-                    
-                    // Merge data lama dengan data baru (smart restore)
-                    const existingNik = new Set(appData.map(d => d.nik));
-                    const newData = restoredData.filter(d => !existingNik.has(d.nik));
-                    
-                    if (newData.length === 0) {
-                        showNotification('Tidak ada data baru untuk di-restore', 'warning');
-                        return;
-                    }
-                    
-                    appData = [...appData, ...newData];
-                    saveData();
-                    renderDataTable();
-                    updateDashboard();
-                    if (typeof renderMapMarkers === 'function') {
-                        renderMapMarkers();
-                    }
-                    if (typeof updateMapStatistics === 'function') {
-                        updateMapStatistics();
-                    }
-                    
-                    showNotification(`Restore berhasil: ${newData.length} data baru ditambahkan`, 'success');
-                    fileInput.value = '';
-                    document.getElementById('restoreDataBtn').disabled = true;
-                    
-                } catch (error) {
-                    console.error('Restore error:', error);
-                    showNotification(`Gagal restore: ${error.message}`, 'error');
-                }
-            };
-            
-            reader.onerror = function() {
-                showNotification('Gagal membaca file', 'error');
-            };
-            
-            reader.readAsText(file);
-        }
-
         // Fungsi untuk generate ID Card dengan error handling
         function safeGenerateIDCard(id) {
             const loadingEl = document.getElementById('idcardLoading');
@@ -4035,10 +4130,14 @@
         window.showAllKIN = showAllKIN;
         window.resetVerifyForm = resetVerifyForm;
         window.scanQRCode = scanQRCode;
+        window.mergeData = mergeData;
+        window.backupData = backupData;
+        window.restoreData = restoreData;
 
         console.log('✅ SIMATA Application v5.4 initialized successfully');
         console.log('✅ Fitur Peta telah diperbaiki dan disempurnakan');
         console.log('✅ Fitur Verifikasi KIN telah ditambahkan');
+        console.log('✅ Fitur Backup/Restore telah diperbaiki untuk menghindari duplikasi');
         console.log('✅ Semua menu dan fitur lain tetap utuh dan berfungsi');
     </script>
 </body>
