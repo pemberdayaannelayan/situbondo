@@ -275,7 +275,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.5</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.4</span>
                 </div>
             </div>
             
@@ -1249,10 +1249,10 @@
         </div>
     </div>
 
-    <!-- KODE UTAMA APLIKASI SIMATA DENGAN PERBAIKAN FITUR DUPLIKASI NIK -->
+    <!-- KODE UTAMA APLIKASI SIMATA DENGAN PERBAIKAN -->
     <script>
         // =====================================================
-        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DENGAN PERBAIKAN DUPLIKASI NIK
+        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DENGAN PERBAIKAN
         // =====================================================
         
         // Data yang tetap di index.html
@@ -1394,168 +1394,7 @@
             };
         }
 
-        // ============================================
-        // PERBAIKAN FUNGSI DUPLIKASI NIK
-        // ============================================
-        
-        /**
-         * Fungsi untuk mendapatkan semua NIK duplikat dalam data
-         * @returns {Object} Objek dengan NIK sebagai key dan jumlah duplikasi sebagai value
-         */
-        function getDuplicateNikMap() {
-            const nikMap = {};
-            const duplicates = {};
-            
-            appData.forEach(item => {
-                const nik = String(item.nik || '').trim();
-                if (nik && nik.length === 16) {
-                    nikMap[nik] = (nikMap[nik] || 0) + 1;
-                    if (nikMap[nik] > 1) {
-                        duplicates[nik] = nikMap[nik];
-                    }
-                }
-            });
-            
-            return duplicates;
-        }
-        
-        /**
-         * Fungsi untuk mengecek apakah NIK sudah ada dalam data
-         * @param {string} nik - NIK yang akan dicek
-         * @param {number} excludeId - ID data yang dikecualikan (untuk edit)
-         * @returns {boolean} true jika NIK sudah ada
-         */
-        function isNikDuplicate(nik, excludeId = null) {
-            if (!nik || nik.length !== 16) return false;
-            
-            const found = appData.find(item => {
-                if (excludeId && item.id == excludeId) return false;
-                return String(item.nik).trim() === String(nik).trim();
-            });
-            
-            return !!found;
-        }
-        
-        /**
-         * Fungsi untuk mendapatkan semua data dengan NIK duplikat
-         * @returns {Array} Array data dengan NIK duplikat
-         */
-        function getDuplicateData() {
-            const duplicateMap = getDuplicateNikMap();
-            const duplicateNiks = Object.keys(duplicateMap);
-            
-            if (duplicateNiks.length === 0) return [];
-            
-            return appData.filter(item => {
-                return duplicateNiks.includes(String(item.nik).trim());
-            }).sort((a, b) => String(a.nik).localeCompare(String(b.nik)));
-        }
-        
-        /**
-         * Fungsi untuk menampilkan data duplikat di tab Filter
-         */
-        function showDuplicateDataInFilter() {
-            const duplicateData = getDuplicateData();
-            const tbody = document.getElementById('filterTableBody');
-            tbody.innerHTML = '';
-            
-            if (duplicateData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-success">
-                            <i class="fas fa-check-circle me-2"></i>Hebat! Tidak ditemukan data NIK ganda.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Kelompokkan berdasarkan NIK
-            const groupedByNik = {};
-            duplicateData.forEach(d => {
-                const nik = String(d.nik).trim();
-                if (!groupedByNik[nik]) {
-                    groupedByNik[nik] = [];
-                }
-                groupedByNik[nik].push(d);
-            });
-            
-            // Tampilkan data
-            let rowIndex = 1;
-            Object.keys(groupedByNik).forEach(nik => {
-                const group = groupedByNik[nik];
-                group.forEach((d, idx) => {
-                    const displayNik = maskData(d.nik);
-                    tbody.innerHTML += `
-                        <tr class="table-danger">
-                            <td>${rowIndex++}</td>
-                            <td class="fw-bold text-danger font-monospace">${displayNik}</td>
-                            <td>
-                                <strong>${d.nama}</strong>
-                                <br>
-                                <small class="text-muted">${d.desa}, ${d.kecamatan}</small>
-                                ${idx === 0 ? '<span class="badge bg-danger ms-2">' + group.length + ' duplikat</span>' : ''}
-                            </td>
-                            <td>
-                                <span class="badge ${d.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">
-                                    ${d.status}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-warning text-dark">${d.alatTangkap}</span>
-                            </td>
-                            <td>
-                                <span class="badge ${d.profesi === 'Nelayan Penuh Waktu' ? 'badge-profesi-penuh' : 
-                                                    d.profesi === 'Nelayan Sambilan Utama' ? 'badge-profesi-sambilan-utama' : 
-                                                    'badge-profesi-sambilan-tambahan'}">
-                                    ${d.profesi}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-sm btn-warning" onclick="editData('${d.id}')" title="Edit">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-info" onclick="viewDetail('${d.id}')" title="Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-            });
-            
-            showNotification(`Ditemukan ${duplicateData.length} data dengan NIK duplikat`, 'error');
-        }
-        
-        /**
-         * Fungsi untuk mengecek duplikasi global dan menampilkan peringatan
-         */
-        function checkGlobalDuplicates() {
-            const duplicates = getDuplicateNikMap();
-            const hasDuplicates = Object.keys(duplicates).length > 0;
-            
-            document.getElementById('duplicateWarning').style.display = hasDuplicates ? 'block' : 'none';
-            
-            // Tampilkan jumlah duplikasi di notifikasi
-            if (hasDuplicates) {
-                const totalDuplicates = Object.values(duplicates).reduce((a, b) => a + b, 0);
-                const uniqueDuplicates = Object.keys(duplicates).length;
-                document.querySelector('#duplicateWarning .small.text-muted').innerHTML = 
-                    `Sistem mendeteksi ${uniqueDuplicates} NIK ganda dengan total ${totalDuplicates} data duplikat.`;
-            }
-            
-            return hasDuplicates;
-        }
-        
-        // ============================================
-        // FUNGSI VERIFIKASI KIN
-        // ============================================
-        
+        // --- FUNGSI VERIFIKASI KIN ---
         function verifyKIN(input) {
             if (!input || input.trim() === '') {
                 return { success: false, message: "Masukkan Kode Validasi (KIN) atau NIK untuk verifikasi" };
@@ -1876,8 +1715,8 @@
                             const restoredData = JSON.parse(atob(window.SIMATA_BACKUP_ENCRYPTED));
                             
                             // Merge data lama dengan data baru
-                            const existingNik = new Set(appData.map(d => String(d.nik).trim()));
-                            const newData = restoredData.filter(d => !existingNik.has(String(d.nik).trim()));
+                            const existingNik = new Set(appData.map(d => d.nik));
+                            const newData = restoredData.filter(d => !existingNik.has(d.nik));
                             
                             if (newData.length === 0) {
                                 showNotification('Tidak ada data baru untuk dimuat. Data sudah up-to-date.', 'info');
@@ -2255,7 +2094,7 @@
                 }
             });
 
-            // Form Submit - PERBAIKAN: Validasi duplikasi NIK
+            // Form Submit
             document.getElementById('inputForm').addEventListener('submit', handleFormSubmit);
             
             // Form Reset
@@ -2513,12 +2352,9 @@
             if(selectedFish.length === 0) return showNotification('Pilih minimal satu jenis ikan!', 'error');
 
             const editId = form.getAttribute('data-edit-id');
-            
-            // PERBAIKAN: Validasi duplikasi NIK dengan fungsi yang lebih baik
-            const isDuplicate = isNikDuplicate(nik, editId);
-            if (isDuplicate) {
-                showNotification('GAGAL: NIK sudah terdaftar dalam sistem!', 'error');
-                return;
+            const duplicateCheck = appData.find(d => d.nik === nik);
+            if (duplicateCheck && (!editId || duplicateCheck.id != editId)) {
+                return showNotification('GAGAL: NIK sudah terdaftar dalam sistem!', 'error');
             }
 
             const isOwner = document.getElementById('statusNelayan').value === 'Pemilik Kapal';
@@ -2578,7 +2414,7 @@
             updateDashboard(); 
             renderDataTable();
             document.getElementById('v-pills-data-tab').click();
-            checkGlobalDuplicates(); // PERBAIKAN: Cek duplikasi setelah menyimpan
+            checkGlobalDuplicates();
             checkIncompleteDataNotification();
         }
 
@@ -2586,10 +2422,9 @@
             const tableBody = document.getElementById('dataTableBody');
             const search = document.getElementById('searchData').value.toLowerCase();
             let filtered = appData.filter(d => JSON.stringify(d).toLowerCase().includes(search));
-            
-            // PERBAIKAN: Gunakan fungsi getDuplicateNikMap untuk mendeteksi duplikasi
-            const duplicateMap = getDuplicateNikMap();
-            
+            const nikCounts = {};
+            appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
+
             const totalItems = filtered.length;
             const start = (currentPage - 1) * appSettings.itemsPerPage;
             const pageData = filtered.slice(start, start + appSettings.itemsPerPage);
@@ -2603,7 +2438,7 @@
 
             pageData.forEach((d, i) => {
                 const kapalInfo = d.status === 'Pemilik Kapal' ? `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : '-';
-                const isDuplicate = duplicateMap[String(d.nik).trim()] > 1;
+                const isDuplicate = nikCounts[d.nik] > 1;
                 const isIncomplete = !d.isComplete;
                 const rowClass = isDuplicate ? 'table-danger' : (isIncomplete ? 'table-warning' : '');
                 
@@ -2634,18 +2469,12 @@
                     incompleteBadge = `<span class="badge bg-warning text-dark ms-1" title="Data tidak lengkap">!</span>`;
                 }
 
-                // Tambahkan badge untuk data duplikat
-                let duplicateBadge = '';
-                if (isDuplicate) {
-                    duplicateBadge = `<span class="badge bg-danger ms-1" title="NIK duplikat">${duplicateMap[String(d.nik).trim()]}x</span>`;
-                }
-
                 const row = `<tr class="${rowClass}">
                     <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
                     <td class="text-center">${start + i + 1}</td>
                     <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
-                        <div class="fw-bold text-dark text-wrap">${d.nama} ${incompleteBadge} ${duplicateBadge}</div>
-                        <div class="small font-monospace text-muted">${displayNik}</div>
+                        <div class="fw-bold text-dark text-wrap">${d.nama} ${incompleteBadge}</div>
+                        <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
                         <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
                     </td>
                     <td class="col-contact-cell">${contactDisplay}</td>
@@ -3047,9 +2876,38 @@
             showNotification(`Filter berhasil: ${filtered.length} data ditemukan`, 'success');
         }
 
+        function showDuplicateDataInFilter() {
+            const counts = {};
+            appData.forEach(d => counts[d.nik] = (counts[d.nik] || 0) + 1);
+            const filtered = appData.filter(d => counts[d.nik] > 1);
+            const tbody = document.getElementById('filterTableBody');
+            tbody.innerHTML = '';
+            
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-success"><i class="fas fa-check-circle me-2"></i>Hebat! Tidak ditemukan data NIK ganda.</td></tr>`;
+                return;
+            }
+            filtered.sort((a,b) => a.nik.localeCompare(b.nik));
+            filtered.forEach((d, i) => {
+                const displayNik = maskData(d.nik);
+                tbody.innerHTML += `<tr class="table-danger"><td>${i+1}</td><td class="fw-bold text-danger">${displayNik}</td><td><strong>${d.nama}</strong><br><small>${d.desa}</small></td><td>${d.status}</td><td>${d.alatTangkap}</td><td>${d.profesi}</td><td><div class="btn-group"><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            });
+            showNotification(`PERINGATAN: Ditemukan ${filtered.length} baris data ganda!`, 'error');
+        }
+
         function startDuplicateChecker() {
             checkGlobalDuplicates();
             duplicateCheckInterval = setInterval(checkGlobalDuplicates, 15000);
+        }
+
+        function checkGlobalDuplicates() {
+            const counts = {};
+            let hasDuplicate = false;
+            for (const d of appData) {
+                counts[d.nik] = (counts[d.nik] || 0) + 1;
+                if (counts[d.nik] > 1) { hasDuplicate = true; break; }
+            }
+            document.getElementById('duplicateWarning').style.display = hasDuplicate ? 'block' : 'none';
         }
 
         // Fungsi untuk mengecek data tidak lengkap
@@ -3578,7 +3436,7 @@
                         // Informasi sistem di footer dengan kode unik
                         doc.setFontSize(7);
                         const printTime = new Date().toLocaleString('id-ID');
-                        doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
+                        doc.text(`Dicetak dari SIMATA v5.4 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
                     }
 
                     // Simpan file PDF
@@ -3644,9 +3502,9 @@
                                 }
                             });
                             
-                            // Merge data dengan cek duplikasi
-                            const existingNik = new Set(appData.map(d => String(d.nik).trim()));
-                            const newData = jsonData.filter(d => !existingNik.has(String(d.nik).trim()));
+                            // Merge data
+                            const existingNik = new Set(appData.map(d => d.nik));
+                            const newData = jsonData.filter(d => !existingNik.has(d.nik));
                             
                             if (newData.length === 0) {
                                 showNotification('Tidak ada data baru untuk di-restore', 'warning');
@@ -3657,7 +3515,6 @@
                             saveData();
                             renderDataTable();
                             updateDashboard();
-                            checkGlobalDuplicates(); // PERBAIKAN: Cek duplikasi setelah restore
                             checkIncompleteDataNotification();
                             
                             showNotification('Restore berhasil (format JSON langsung)', 'success');
@@ -3682,9 +3539,9 @@
                         }
                     });
                     
-                    // Merge data lama dengan data baru (smart restore) dengan cek duplikasi
-                    const existingNik = new Set(appData.map(d => String(d.nik).trim()));
-                    const newData = restoredData.filter(d => !existingNik.has(String(d.nik).trim()));
+                    // Merge data lama dengan data baru (smart restore)
+                    const existingNik = new Set(appData.map(d => d.nik));
+                    const newData = restoredData.filter(d => !existingNik.has(d.nik));
                     
                     if (newData.length === 0) {
                         showNotification('Tidak ada data baru untuk di-restore', 'warning');
@@ -3695,7 +3552,6 @@
                     saveData();
                     renderDataTable();
                     updateDashboard();
-                    checkGlobalDuplicates(); // PERBAIKAN: Cek duplikasi setelah restore
                     checkIncompleteDataNotification();
                     
                     showNotification(`Restore berhasil: ${newData.length} data baru ditambahkan`, 'success');
@@ -3808,14 +3664,8 @@
         window.scanQRCode = scanQRCode;
         window.showIncompleteData = showIncompleteData;
         window.exportDataFixed = exportDataFixed;
-        
-        // Ekspos fungsi duplikasi untuk testing dan debugging
-        window.getDuplicateNikMap = getDuplicateNikMap;
-        window.isNikDuplicate = isNikDuplicate;
-        window.getDuplicateData = getDuplicateData;
-        window.showDuplicateDataInFilter = showDuplicateDataInFilter;
 
-        console.log('✅ SIMATA Application v5.5 initialized successfully dengan perbaikan fitur duplikasi NIK');
+        console.log('✅ SIMATA Application v5.4 initialized successfully dengan perbaikan ekspor Excel');
         console.log('✅ Fitur Impor Data Cerdas telah ditambahkan');
         console.log('✅ Semua menu dan fitur lain tetap utuh dan berfungsi');
     </script>
@@ -4800,7 +4650,7 @@
                 const newData = window.importData;
                 
                 // Cek duplikasi berdasarkan NIK
-                const existingNiks = new Set(existingData.map(d => String(d.nik).trim()));
+                const existingNiks = new Set(existingData.map(d => d.nik));
                 const duplicateNiks = new Set();
                 const updatedData = [];
                 
@@ -4816,8 +4666,7 @@
                         incompleteCount++;
                     }
                     
-                    const nik = String(newItem.nik).trim();
-                    const existingIndex = mergedData.findIndex(d => String(d.nik).trim() === nik);
+                    const existingIndex = mergedData.findIndex(d => d.nik === newItem.nik);
                     
                     if (existingIndex >= 0) {
                         // Timpa data yang sudah ada
@@ -4829,7 +4678,7 @@
                             updatedBy: 'System Import'
                         };
                         updated++;
-                        duplicateNiks.add(nik);
+                        duplicateNiks.add(newItem.nik);
                         updatedData.push(newItem);
                     } else {
                         // Tambah data baru
@@ -4856,10 +4705,6 @@
                 
                 if (typeof window.updateDashboard === 'function') {
                     window.updateDashboard();
-                }
-                
-                if (typeof window.checkGlobalDuplicates === 'function') {
-                    window.checkGlobalDuplicates();
                 }
                 
                 // Tampilkan hasil
@@ -4943,6 +4788,15 @@
                     if (typeof window.checkIncompleteDataNotification === 'function') {
                         window.checkIncompleteDataNotification();
                     }
+                }
+                
+                // Simpan notifikasi untuk data ganda
+                if (duplicateNiks.size > 0) {
+                    localStorage.setItem('simata_duplicate_data', 'true');
+                    localStorage.setItem('simata_duplicate_count', duplicateNiks.size.toString());
+                    
+                    // Tampilkan notifikasi duplikasi
+                    document.getElementById('duplicateWarning').style.display = 'block';
                 }
                 
                 showConverterStatus(`✅ ${added + updated} data berhasil diimpor ke sistem`, 'success');
@@ -5101,11 +4955,10 @@
             const duplicateNiks = new Set();
             
             data.forEach(d => {
-                const nik = String(d.nik || '').trim();
-                if (nik && nik.length === 16) {
-                    nikCounts[nik] = (nikCounts[nik] || 0) + 1;
-                    if (nikCounts[nik] > 1) {
-                        duplicateNiks.add(nik);
+                if (d.nik) {
+                    nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1;
+                    if (nikCounts[d.nik] > 1) {
+                        duplicateNiks.add(d.nik);
                     }
                 }
             });
