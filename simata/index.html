@@ -238,12 +238,12 @@
         </div>
     </div>
 
-    <div class="sticky-warning" id="duplicateWarning" style="display:none;">
+    <div class="sticky-warning" id="duplicateWarning">
         <div class="d-flex align-items-start">
             <div class="me-3 text-danger"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
             <div>
                 <h6 class="fw-bold text-danger mb-1">PERHATIAN: Data Ganda!</h6>
-                <p class="small text-muted mb-2" id="duplicateWarningText">Sistem mendeteksi adanya NIK ganda yang belum diperbaiki.</p>
+                <p class="small text-muted mb-2">Sistem mendeteksi adanya NIK ganda yang belum diperbaiki.</p>
                 <button class="btn btn-sm btn-outline-danger" onclick="document.getElementById('v-pills-filter-tab').click(); setTimeout(() => document.getElementById('btnCekGanda').click(), 200);">Periksa Sekarang</button>
                 <button class="btn btn-sm btn-link text-muted text-decoration-none ms-2" onclick="document.getElementById('duplicateWarning').style.display='none'">Tutup</button>
             </div>
@@ -1395,7 +1395,7 @@
         }
 
         // ============================================
-        // PERBAIKAN FUNGSI DUPLIKASI NIK - VERSI DIPERBAIKI
+        // PERBAIKAN FUNGSI DUPLIKASI NIK
         // ============================================
         
         /**
@@ -1408,8 +1408,7 @@
             
             appData.forEach(item => {
                 const nik = String(item.nik || '').trim();
-                // PERBAIKAN: Hanya proses NIK yang valid (16 digit)
-                if (nik && nik.length === 16 && !isNaN(nik)) {
+                if (nik && nik.length === 16) {
                     nikMap[nik] = (nikMap[nik] || 0) + 1;
                     if (nikMap[nik] > 1) {
                         duplicates[nik] = nikMap[nik];
@@ -1427,14 +1426,11 @@
          * @returns {boolean} true jika NIK sudah ada
          */
         function isNikDuplicate(nik, excludeId = null) {
-            // PERBAIKAN: Validasi NIK harus 16 digit dan angka
-            if (!nik || nik.length !== 16 || isNaN(nik)) return false;
+            if (!nik || nik.length !== 16) return false;
             
             const found = appData.find(item => {
                 if (excludeId && item.id == excludeId) return false;
-                const itemNik = String(item.nik || '').trim();
-                // PERBAIKAN: Validasi NIK item juga harus 16 digit
-                return itemNik.length === 16 && itemNik === String(nik).trim();
+                return String(item.nik).trim() === String(nik).trim();
             });
             
             return !!found;
@@ -1451,8 +1447,7 @@
             if (duplicateNiks.length === 0) return [];
             
             return appData.filter(item => {
-                const nik = String(item.nik || '').trim();
-                return duplicateNiks.includes(nik);
+                return duplicateNiks.includes(String(item.nik).trim());
             }).sort((a, b) => String(a.nik).localeCompare(String(b.nik)));
         }
         
@@ -1544,20 +1539,14 @@
             const duplicates = getDuplicateNikMap();
             const hasDuplicates = Object.keys(duplicates).length > 0;
             
-            const duplicateWarning = document.getElementById('duplicateWarning');
-            if (duplicateWarning) {
-                duplicateWarning.style.display = hasDuplicates ? 'block' : 'none';
-            }
+            document.getElementById('duplicateWarning').style.display = hasDuplicates ? 'block' : 'none';
             
             // Tampilkan jumlah duplikasi di notifikasi
             if (hasDuplicates) {
                 const totalDuplicates = Object.values(duplicates).reduce((a, b) => a + b, 0);
                 const uniqueDuplicates = Object.keys(duplicates).length;
-                const warningText = document.getElementById('duplicateWarningText');
-                if (warningText) {
-                    warningText.innerHTML = 
-                        `Sistem mendeteksi ${uniqueDuplicates} NIK ganda dengan total ${totalDuplicates} data duplikat.`;
-                }
+                document.querySelector('#duplicateWarning .small.text-muted').innerHTML = 
+                    `Sistem mendeteksi ${uniqueDuplicates} NIK ganda dengan total ${totalDuplicates} data duplikat.`;
             }
             
             return hasDuplicates;
@@ -1586,7 +1575,7 @@
             }
             
             // Cari berdasarkan NIK
-            const byNIK = appData.find(d => String(d.nik) === cleanInput);
+            const byNIK = appData.find(d => d.nik === cleanInput);
             if (byNIK) {
                 return { 
                     success: true, 
@@ -1897,7 +1886,6 @@
                                 saveData();
                                 renderDataTable();
                                 updateDashboard();
-                                checkGlobalDuplicates(); // PERBAIKAN: Cek duplikasi setelah reload
                                 
                                 showNotification(`Data berhasil disinkronisasi: ${newData.length} data baru ditambahkan`, 'success');
                             }
@@ -2510,7 +2498,7 @@
 
             const nik = document.getElementById('nik').value;
             const whatsapp = document.getElementById('whatsapp').value;
-            if(nik.length !== 16 || isNaN(nik)) return showNotification('NIK harus 16 digit angka', 'error');
+            if(nik.length !== 16) return showNotification('NIK harus 16 digit', 'error');
             if(!whatsapp.match(/^\d+$/)) return showNotification('WhatsApp hanya angka', 'error');
 
             let selectedFish = [];
@@ -2918,13 +2906,11 @@
             if(userCode === appSettings.securityCodeSensor) {
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
-                saveData(); 
-                renderDataTable(); 
-                updateDashboard();
-                checkGlobalDuplicates(); // PERBAIKAN: Cek duplikasi setelah hapus
-                checkIncompleteDataNotification();
+                saveData(); renderDataTable(); updateDashboard();
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 document.getElementById('selectAllCheckbox').checked = false;
+                checkGlobalDuplicates();
+                checkIncompleteDataNotification();
             } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
         }
 
@@ -3006,12 +2992,10 @@
             if(userCode === appSettings.securityCodeSensor) {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
-                    saveData(); 
-                    renderDataTable(); 
-                    updateDashboard();
-                    checkGlobalDuplicates(); // PERBAIKAN: Cek duplikasi setelah hapus
-                    checkIncompleteDataNotification();
+                    saveData(); renderDataTable(); updateDashboard();
                     showNotification('Data berhasil dihapus', 'success');
+                    checkGlobalDuplicates();
+                    checkIncompleteDataNotification();
                 }
             } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
         }
@@ -4644,7 +4628,7 @@
                 
                 // Tambahkan sheet petunjuk
                 const instructions = [
-                    ['PANDUAN PENGISIAN TEMPLATE EXCEL UNTIK IMPOR DATA SIMATA'],
+                    ['PANDUAN PENGISIAN TEMPLATE EXCEL UNTUK IMPOR DATA SIMATA'],
                     [''],
                     ['KOLOM WAJIB (harus diisi):', ''],
                     ['1. nama', 'Nama lengkap sesuai KTP'],
@@ -5118,7 +5102,7 @@
             
             data.forEach(d => {
                 const nik = String(d.nik || '').trim();
-                if (nik && nik.length === 16 && !isNaN(nik)) {
+                if (nik && nik.length === 16) {
                     nikCounts[nik] = (nikCounts[nik] || 0) + 1;
                     if (nikCounts[nik] > 1) {
                         duplicateNiks.add(nik);
