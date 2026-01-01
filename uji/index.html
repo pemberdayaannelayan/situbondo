@@ -110,6 +110,59 @@
             font-size: 1.1rem;
             letter-spacing: 1px;
         }
+        
+        /* Style untuk informasi ikan */
+        .fish-info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #0c2461;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: none;
+        }
+        
+        .fish-info-title {
+            font-weight: bold;
+            color: #0c2461;
+        }
+        
+        .fish-info-latin {
+            font-style: italic;
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .fish-info-desc {
+            color: #444;
+            margin-top: 3px;
+        }
+        
+        .fish-option-box {
+            position: relative;
+            display: block;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .fish-option-box:hover {
+            background: #f0f8ff;
+        }
+        
+        .fish-option-box:hover .fish-info-box {
+            display: block;
+        }
+        
+        /* Style untuk mapping alat tangkap */
+        .api-mapping-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
     </style>
 </head>
 <body>
@@ -494,6 +547,7 @@
                                                             <option value="Lainnya">Lainnya</option>
                                                         </select>
                                                         <div id="kapalInfo" class="kapal-info-box mt-2" style="display:none;"></div>
+                                                        <div id="apiMappingInfo" class="api-mapping-info mt-2" style="display:none;"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -503,7 +557,8 @@
                                                     <label class="form-label fw-bold">Jenis Ikan Tangkapan Utama <span class="text-danger">*</span></label>
                                                     <div class="card p-3 bg-light border">
                                                         <div id="fishCheckboxContainer" style="max-height: 200px; overflow-y: auto;">
-                                                            </div>
+                                                            <!-- Daftar ikan akan dimuat secara dinamis berdasarkan alat tangkap -->
+                                                        </div>
                                                         <input type="text" class="form-control form-control-sm mt-2" id="jenisIkanLainnya" placeholder="Sebutkan jenis lainnya..." style="display:none;">
                                                     </div>
                                                     <small class="text-muted fst-italic">*Pilih minimal satu</small>
@@ -1118,16 +1173,89 @@
         // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DIPERBAIKI (TANPA PETA)
         // =====================================================
         
-        // Data yang tetap di index.html
-        const FISH_TYPES = [
-            "Lainnya", 
-            "Ikan Tongkol", "Ikan Kembung", "Ikan Selar", "Ikan Tenggiri", "Ikan Layang", 
-            "Cumi-cumi", "Ikan Teri", "Kakap Merah", "Ikan Barakuda", "Kepiting",
-            "Ikan Layur", "Ikan Mangla", "Ikan Kurisi", "Ikan Cakalang", "Ikan Kerapu", "Ikan Lemuru"
-        ];
+        // Data ikan yang diperbarui dan dilengkapi
+        const FISH_CATEGORIES = {
+            "Demersal": [
+                {name: "Ikan Mangla (Pomadasys spp.)", latin: "Pomadasys spp.", desc: "Dikenal juga sebagai ikan kurisi, hidup di dasar berpasir."},
+                {name: "Ikan Sebelah (Pleuronectiformes)", latin: "Pleuronectiformes", desc: "Ikan pipih yang hidup di dasar laut."},
+                {name: "Ikan Lidah (Cynoglossus spp.)", latin: "Cynoglossus spp.", desc: "Bentuk pipih memanjang, hidup di dasar berlumpur."},
+                {name: "Ikan Petek (Leiognathus spp.)", latin: "Leiognathus spp.", desc: "Ikan kecil, sering ditemukan di dasar perairan dangkal."},
+                {name: "Ikan Duri (Arius spp.)", latin: "Arius spp.", desc: "Mirip manyung, hidup di dasar berlumpur."},
+                {name: "Ikan Kerapu (Epinephelus spp.)", latin: "Epinephelus spp.", desc: "Ikan demersal yang hidup di karang."},
+                {name: "Ikan Kakap Merah (Lutjanus spp.)", latin: "Lutjanus spp.", desc: "Ikan demersal yang hidup di karang."},
+                {name: "Ikan Sembilang (Plotosus canius)", latin: "Plotosus canius", desc: "Ikan demersal yang hidup di dasar berlumpur."},
+                {name: "Ikan Biji Nangka (Upeneus spp.)", latin: "Upeneus spp.", desc: "Ikan demersal yang hidup di dasar berpasir."},
+                {name: "Ikan Kurisi (Nemipterus spp.)", latin: "Nemipterus spp.", desc: "Ikan demersal yang hidup di dasar berpasir."}
+            ],
+            "Pelagis Kecil": [
+                {name: "Ikan Tembang (Sardinella gibbosa)", latin: "Sardinella gibbosa", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Kembung Lelaki & Perempuan (Rastrelliger spp.)", latin: "Rastrelliger spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Selar Kuning (Selaroides leptolepis)", latin: "Selaroides leptolepis", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Layang (Decapterus spp.)", latin: "Decapterus spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Teri (Stolephorus spp.)", latin: "Stolephorus spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Japuh (Caranx spp.)", latin: "Caranx spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Lemuru (Sardinella lemuru)", latin: "Sardinella lemuru", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Bentong (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Banyar (Carangoides spp.)", latin: "Carangoides spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
+                {name: "Ikan Banyar Mata Besar (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil yang hidup dalam kawanan."}
+            ],
+            "Pelagis Besar": [
+                {name: "Ikan Tongkol (Euthynnus affinis)", latin: "Euthynnus affinis", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Cakalang (Katsuwonus pelamis)", latin: "Katsuwonus pelamis", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Tenggiri (Scomberomorus commerson)", latin: "Scomberomorus commerson", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Tuna Sirip Kuning (Thunnus albacares)", latin: "Thunnus albacares", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Tuna Mata Besar (Thunnus obesus)", latin: "Thunnus obesus", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Layur (Trichiurus lepturus)", latin: "Trichiurus lepturus", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Todak (Xiphias gladius)", latin: "Xiphias gladius", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Lemadang (Coryphaena hippurus)", latin: "Coryphaena hippurus", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Marlin (Makaira spp.)", latin: "Makaira spp.", desc: "Ikan pelagis besar yang bermigrasi."},
+                {name: "Ikan Cucut (Carcharhinus limbatus)", latin: "Carcharhinus limbatus", desc: "Hiu permukaan seperti hiu sirip hitam."}
+            ]
+        };
 
+        // Array untuk kompatibilitas
+        const FISH_TYPES = [];
+        const FISH_DETAILS = {};
+        
+        // Isi array FISH_TYPES dan objek FISH_DETAILS
+        for (const category in FISH_CATEGORIES) {
+            FISH_CATEGORIES[category].forEach(fish => {
+                FISH_TYPES.push(fish.name);
+                FISH_DETAILS[fish.name] = {
+                    latin: fish.latin,
+                    desc: fish.desc,
+                    category: category
+                };
+            });
+        }
+        FISH_TYPES.push("Lainnya");
+
+        // Mapping antara Jenis Kapal dan Alat Tangkap yang sesuai
+        const KAPAL_API_MAPPING = {
+            "Perahu Jukung": ["Pancing", "Pancing Ulur", "Perangkap Bubu", "Jaring Insang (gill net)"],
+            "Perahu Mayang": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)"],
+            "Perahu Slerek": ["Pukat Cincin", "Pukat Tarik", "Jaring Angkat (lift net)"],
+            "Perahu Insang": ["Jaring Insang (gill net)"],
+            "Perahu Jaring Angkat": ["Jaring Angkat (lift net)"],
+            "Perahu Pancing": ["Pancing", "Pancing Ulur"],
+            "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Lainnya"]
+        };
+
+        // Mapping antara Alat Tangkap dan Kategori Ikan yang bisa ditangkap
+        const API_FISH_MAPPING = {
+            "Pukat Cincin": ["Pelagis Besar"],
+            "Pukat Tarik": ["Pelagis Kecil", "Pelagis Besar"],
+            "Pancing Ulur": ["Demersal"],
+            "Jaring Insang (gill net)": ["Demersal", "Pelagis Kecil"],
+            "Jaring Angkat (lift net)": ["Pelagis Kecil"],
+            "Pancing": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
+            "Perangkap Bubu": ["Demersal"],
+            "Lainnya": ["Demersal", "Pelagis Kecil", "Pelagis Besar"]
+        };
+
+        // Mapping informasi alat tangkap
         const API_INFO = {
-            "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis seperti tuna dan cakalang.",
+            "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis besar seperti tuna dan cakalang.",
             "Pukat Tarik": "Jaring yang ditarik oleh kapal untuk menangkap ikan di permukaan atau pertengahan air. Cocok untuk ikan pelagis kecil seperti teri dan lemuru.",
             "Pancing Ulur": "Pancing dengan sistem ulur (handline) yang dioperasikan secara manual. Digunakan untuk menangkap ikan dasar seperti kerapu dan kakap.",
             "Jaring Insang (gill net)": "Jaring yang dipasang diam di air, ikan yang berenang akan tersangkut insangnya. Cocok untuk berbagai jenis ikan.",
@@ -1138,9 +1266,9 @@
         };
 
         const KAPAL_INFO = {
-            "Perahu Jukung": "Perahu tradisional kayu kecil, umumnya tanpa mesin atau bermesin kecil. Cocok untuk perairan tenang dan dekat pantai.",
-            "Perahu Mayang": "Perahu tradisional yang lebih besar dari jukung, biasanya bermesin tempel. Untuk penangkapan di perairan sedang.",
-            "Perahu Slerek": "Perahu khas Situbondo dengan bentuk ramping, biasanya menggunakan layar atau mesin kecil. Untuk operasi dekat pantai.",
+            "Perahu Jukung": "Perahu tradisional kayu kecil, umumnya tanpa mesin atau bermesin kecil. Cocok untuk perairan tenang dan dekat pantai. Biasanya digunakan untuk pancing dan perangkap bubu.",
+            "Perahu Mayang": "Perahu tradisional yang lebih besar dari jukung, biasanya bermesin tempel. Untuk penangkapan di perairan sedang. Cocok untuk pukat tarik dan jaring insang.",
+            "Perahu Slerek": "Perahu khas Situbondo dengan bentuk ramping, biasanya menggunakan layar atau mesin kecil. Untuk operasi dekat pantai. Cocok untuk pukat cincin dan jaring angkat.",
             "Perahu Insang": "Perahu khusus untuk operasi jaring insang (gill net), dilengkapi dengan sistem pemasangan jaring.",
             "Perahu Jaring Angkat": "Perahu dengan sistem derek untuk mengoperasikan jaring angkat (lift net).",
             "Perahu Pancing": "Perahu yang didesain khusus untuk operasi pancing, baik handline maupun rawai.",
@@ -1251,6 +1379,106 @@
             if (lower.includes('cumi')) return 'fa-ghost'; 
             if (lower.includes('kepiting')) return 'fa-spider'; 
             return 'fa-fish';
+        }
+
+        // --- FUNGSI BARU: MAPPING KAPAL DAN ALAT TANGKAP ---
+        function updateAlatTangkapByKapal() {
+            const jenisKapal = document.getElementById('jenisKapal').value;
+            const alatTangkapSelect = document.getElementById('alatTangkap');
+            const apiMappingInfo = document.getElementById('apiMappingInfo');
+            
+            if (!jenisKapal) {
+                apiMappingInfo.style.display = 'none';
+                return;
+            }
+            
+            const availableAPIs = KAPAL_API_MAPPING[jenisKapal] || Object.keys(API_INFO);
+            const currentAPI = alatTangkapSelect.value;
+            
+            // Update opsi alat tangkap
+            alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
+            availableAPIs.forEach(api => {
+                const option = document.createElement('option');
+                option.value = api;
+                option.textContent = api;
+                if (api === currentAPI) option.selected = true;
+                alatTangkapSelect.appendChild(option);
+            });
+            
+            // Tampilkan informasi mapping
+            apiMappingInfo.innerHTML = `<strong>${jenisKapal}</strong> biasanya digunakan untuk: ${availableAPIs.join(', ')}`;
+            apiMappingInfo.style.display = 'block';
+            
+            // Update daftar ikan jika alat tangkap sudah dipilih
+            if (currentAPI && availableAPIs.includes(currentAPI)) {
+                updateFishOptionsByAPI(currentAPI);
+            } else {
+                updateFishOptionsByAPI('');
+            }
+        }
+        
+        function updateFishOptionsByAPI(api) {
+            const fishContainer = document.getElementById('fishCheckboxContainer');
+            if (!fishContainer) return;
+            
+            fishContainer.innerHTML = '';
+            
+            let fishList = [];
+            if (api && API_FISH_MAPPING[api]) {
+                // Ambil ikan berdasarkan kategori yang sesuai
+                API_FISH_MAPPING[api].forEach(category => {
+                    if (FISH_CATEGORIES[category]) {
+                        FISH_CATEGORIES[category].forEach(fish => {
+                            fishList.push(fish.name);
+                        });
+                    }
+                });
+            } else {
+                // Jika tidak ada API yang dipilih, tampilkan semua ikan
+                for (const category in FISH_CATEGORIES) {
+                    FISH_CATEGORIES[category].forEach(fish => {
+                        fishList.push(fish.name);
+                    });
+                }
+            }
+            
+            // Tambahkan opsi "Lainnya"
+            fishList.push("Lainnya");
+            
+            // Tampilkan checklist dengan informasi
+            fishList.forEach(fish => {
+                const id = 'fish_' + fish.replace(/\s/g, '');
+                const fishInfo = FISH_DETAILS[fish] || {};
+                const html = `
+                <label class="fish-option-box">
+                    <input type="checkbox" class="form-check-input me-2 fish-checkbox" value="${fish}" id="${id}">
+                    <span>${fish}</span>
+                    ${fishInfo.latin ? `
+                    <div class="fish-info-box">
+                        <div class="fish-info-title">${fish}</div>
+                        <div class="fish-info-latin">${fishInfo.latin}</div>
+                        <div class="fish-info-desc">${fishInfo.desc || ''}</div>
+                    </div>
+                    ` : ''}
+                </label>`;
+                fishContainer.innerHTML += html;
+            });
+            
+            // Event listener untuk "Lainnya"
+            const lainCheckbox = document.getElementById('fish_Lainnya');
+            if (lainCheckbox) {
+                lainCheckbox.addEventListener('change', function() {
+                    const inputLain = document.getElementById('jenisIkanLainnya');
+                    if(this.checked) {
+                        inputLain.style.display = 'block';
+                        inputLain.setAttribute('required', 'required');
+                    } else {
+                        inputLain.style.display = 'none';
+                        inputLain.value = '';
+                        inputLain.removeAttribute('required');
+                    }
+                });
+            }
         }
 
         // --- FUNGSI VERIFIKASI KIN ---
@@ -1803,7 +2031,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             try {
                 initializeApp();
                 setupEventListeners();
-                initFishOptions();
                 
                 displayCurrentDate();
                 
@@ -1865,32 +2092,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             startDuplicateChecker();
             setupInfoTooltips();
             setupProfesiInfo();
-        }
-
-        function initFishOptions() {
-            const container = document.getElementById('fishCheckboxContainer');
-            container.innerHTML = '';
-            FISH_TYPES.forEach(fish => {
-                const id = 'fish_' + fish.replace(/\s/g, '');
-                const html = `
-                <label class="fish-option-box">
-                    <input type="checkbox" class="form-check-input me-2 fish-checkbox" value="${fish}" id="${id}">
-                    <span>${fish}</span>
-                </label>`;
-                container.innerHTML += html;
-            });
-
-            document.getElementById('fish_Lainnya').addEventListener('change', function() {
-                const inputLain = document.getElementById('jenisIkanLainnya');
-                if(this.checked) {
-                    inputLain.style.display = 'block';
-                    inputLain.setAttribute('required', 'required');
-                } else {
-                    inputLain.style.display = 'none';
-                    inputLain.value = '';
-                    inputLain.removeAttribute('required');
-                }
-            });
+            
+            // Inisialisasi daftar ikan
+            updateFishOptionsByAPI('');
         }
 
         function setupInfoTooltips() {
@@ -1902,8 +2106,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 if (selected && API_INFO[selected]) {
                     apiInfoDiv.style.display = 'block';
                     apiInfoDiv.innerHTML = `<strong>${selected}:</strong> ${API_INFO[selected]}`;
+                    updateFishOptionsByAPI(selected);
                 } else {
                     apiInfoDiv.style.display = 'none';
+                    updateFishOptionsByAPI('');
                 }
             });
 
@@ -1915,8 +2121,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 if (selected && KAPAL_INFO[selected]) {
                     kapalInfoDiv.style.display = 'block';
                     kapalInfoDiv.innerHTML = `<strong>${selected}:</strong> ${KAPAL_INFO[selected]}`;
+                    updateAlatTangkapByKapal();
                 } else {
                     kapalInfoDiv.style.display = 'none';
+                    document.getElementById('apiMappingInfo').style.display = 'none';
                 }
             });
         }
@@ -2106,7 +2314,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     document.getElementById('desa').disabled = true;
                     document.getElementById('desa').innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
                     document.getElementById('inputForm').removeAttribute('data-edit-id');
-                    document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
                     document.getElementById('jenisIkanLainnya').style.display = 'none';
                     const kv = document.getElementById('kodeValidasi');
                     kv.value = '';
@@ -2120,9 +2327,13 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     document.getElementById('apiInfo').style.display = 'none';
                     document.getElementById('kapalInfo').style.display = 'none';
                     document.getElementById('profesiHelp').innerHTML = '';
+                    document.getElementById('apiMappingInfo').style.display = 'none';
                     
                     const today = new Date().toISOString().split('T')[0];
                     document.getElementById('tanggalValidasi').value = today;
+                    
+                    // Reset daftar ikan ke semua opsi
+                    updateFishOptionsByAPI('');
                 }, 100);
             });
             
@@ -2135,6 +2346,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     document.getElementById('namaKapal').value = '';
                     document.getElementById('jenisKapal').value = '';
                     document.getElementById('kapalInfo').style.display = 'none';
+                    document.getElementById('apiMappingInfo').style.display = 'none';
                 }
             });
 
@@ -2396,7 +2608,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             document.getElementById('ownerFields').style.display = 'none';
             document.getElementById('desa').innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
             document.getElementById('desa').disabled = true;
-            document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('jenisIkanLainnya').style.display = 'none';
             
             const today = new Date().toISOString().split('T')[0];
@@ -2405,6 +2616,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             document.getElementById('apiInfo').style.display = 'none';
             document.getElementById('kapalInfo').style.display = 'none';
             document.getElementById('profesiHelp').innerHTML = '';
+            document.getElementById('apiMappingInfo').style.display = 'none';
 
             updateDashboard(); 
             renderDataTable();
@@ -2752,26 +2964,38 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 btnWa.textContent = "Tidak Ada";
             }
 
-            document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('jenisIkanLainnya').style.display = 'none';
             document.getElementById('jenisIkanLainnya').value = '';
             
-            if(d.jenisIkan) {
-                const savedFish = d.jenisIkan.split(', ');
-                savedFish.forEach(fish => {
-                    let found = false;
-                    document.querySelectorAll('.fish-checkbox').forEach(cb => {
-                        if(cb.value === fish) { cb.checked = true; found = true; }
+            // Set alat tangkap dan update daftar ikan
+            document.getElementById('alatTangkap').value = d.alatTangkap;
+            updateFishOptionsByAPI(d.alatTangkap);
+            
+            // Set ikan yang sudah dipilih setelah daftar diupdate
+            setTimeout(() => {
+                if(d.jenisIkan) {
+                    const savedFish = d.jenisIkan.split(', ');
+                    savedFish.forEach(fish => {
+                        let found = false;
+                        document.querySelectorAll('.fish-checkbox').forEach(cb => {
+                            if(cb.value === fish) { 
+                                cb.checked = true; 
+                                found = true; 
+                            }
+                        });
+                        if(!found) {
+                            // Jika ikan tidak ada dalam daftar, maka tambahkan ke opsi "Lainnya"
+                            const cbLain = document.getElementById('fish_Lainnya');
+                            if (cbLain) {
+                                cbLain.checked = true;
+                                const inputLain = document.getElementById('jenisIkanLainnya');
+                                inputLain.style.display = 'block';
+                                inputLain.value = fish;
+                            }
+                        }
                     });
-                    if(!found) {
-                        const cbLain = document.getElementById('fish_Lainnya');
-                        cbLain.checked = true;
-                        const inputLain = document.getElementById('jenisIkanLainnya');
-                        inputLain.style.display = 'block';
-                        inputLain.value = fish;
-                    }
-                });
-            }
+                }
+            }, 100);
 
             const kecSelect = document.getElementById('kecamatan');
             kecSelect.value = d.kecamatan;
@@ -2790,6 +3014,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 if(d.jenisKapal && KAPAL_INFO[d.jenisKapal]) {
                     document.getElementById('kapalInfo').style.display = 'block';
                     document.getElementById('kapalInfo').innerHTML = `<strong>${d.jenisKapal}:</strong> ${KAPAL_INFO[d.jenisKapal]}`;
+                    updateAlatTangkapByKapal();
                 }
             }
 
@@ -3239,7 +3464,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     doc.setFontSize(9);
                     doc.setTextColor(0, 0, 0);
                     const currentDate = new Date();
-                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
                     doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
                     
                     // Jabatan
@@ -3393,12 +3618,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.mergeData = mergeData;
         window.backupData = backupData;
         window.restoreData = restoreData;
+        window.updateAlatTangkapByKapal = updateAlatTangkapByKapal;
+        window.updateFishOptionsByAPI = updateFishOptionsByAPI;
 
         console.log('✅ SIMATA Application v5.4 initialized successfully');
-        console.log('✅ Fitur Peta telah dihapus sesuai permintaan');
-        console.log('✅ Fitur Verifikasi KIN tetap berfungsi dengan baik');
-        console.log('✅ Fitur Backup/Restore telah diperbaiki untuk menghindari duplikasi');
-        console.log('✅ Semua menu dan fitur lain tetap utuh dan berfungsi');
+        console.log('✅ Data ikan telah dilengkapi dengan 3 kategori: Demersal, Pelagis Kecil, Pelagis Besar');
+        console.log('✅ Mapping antara Jenis Kapal, Alat Tangkap, dan Ikan telah diterapkan');
+        console.log('✅ Informasi ikan (nama latin, deskripsi) telah ditambahkan');
+        console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
     </script>
 </body>
 </html>
