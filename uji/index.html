@@ -188,6 +188,10 @@
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button"><i class="fas fa-file-export"></i> Ekspor Data</button>
                         <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button"><i class="fas fa-cloud-download-alt"></i> Backup & Restore</button>
                         <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button"><i class="fas fa-cog"></i> Pengaturan</button>
+                        <!-- Tombol Refresh Halaman -->
+                        <button class="nav-link" id="btn-refresh-page" type="button">
+                            <i class="fas fa-redo"></i> Refresh Halaman
+                        </button>
                         <!-- Tombol Reload Data dengan spinner -->
                         <button class="nav-link" id="btn-reload-repo" type="button">
                             <i class="fas fa-sync"></i> Reload Data
@@ -2030,6 +2034,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             return filtered;
         }
 
+        // --- FUNGSI BARU: GET CURRENT PAGE DATA ---
+        function getCurrentPageData() {
+            const filteredData = getFilteredData();
+            const start = (currentPage - 1) * appSettings.itemsPerPage;
+            const end = start + appSettings.itemsPerPage;
+            return filteredData.slice(start, end);
+        }
+
         // --- FUNGSI RENDER DATA TABLE YANG DISEMPURNAKAN ---
         function renderDataTable() {
             const tableBody = document.getElementById('dataTableBody');
@@ -2586,18 +2598,24 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             }, 800);
         }
 
-        // --- FUNGSI BARU: GENERATE PDF TABEL DATA NELAYAN ---
+        // --- FUNGSI BARU: GENERATE PDF TABEL DATA NELAYAN YANG DISEMPURNAKAN ---
         function generateTablePdf() {
-            const filteredData = getFilteredData();
+            // Dapatkan data untuk halaman saat ini (sesuai dengan jumlah baris per halaman)
+            const pageData = getCurrentPageData();
             
-            if (filteredData.length === 0) {
-                showNotification('Tidak ada data untuk dicetak!', 'error');
+            if (pageData.length === 0) {
+                showNotification('Tidak ada data untuk dicetak pada halaman ini!', 'error');
                 return;
             }
             
-            // Siapkan data untuk tabel
-            const tableRows = filteredData.map((d, index) => [
-                index + 1, 
+            // Dapatkan semua data terfilter untuk informasi total halaman
+            const filteredData = getFilteredData();
+            const totalFilteredPages = Math.max(1, Math.ceil(filteredData.length / appSettings.itemsPerPage));
+            
+            // Siapkan data untuk tabel (TANPA kolom tanggal validasi)
+            const startNumber = (currentPage - 1) * appSettings.itemsPerPage + 1;
+            const tableRows = pageData.map((d, index) => [
+                startNumber + index, // No berurutan
                 d.nama,
                 d.whatsapp === '00000000' || !d.whatsapp ? '-' : d.whatsapp,
                 d.nik,
@@ -2605,7 +2623,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 d.kecamatan,
                 d.status,
                 d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
-                d.tanggalValidasi,
                 d.kodeValidasi || '-',
                 d.keterangan || ''
             ]);
@@ -2668,11 +2685,15 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     doc.setLineWidth(1.5);
                     doc.line(20, 38, pageWidth - 20, 38);
 
-                    // Judul Laporan dengan informasi filter
+                    // Judul Laporan dengan informasi filter dan halaman
                     doc.setTextColor(12, 36, 97);
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(18);
                     doc.text('TABEL DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
+                    
+                    // Informasi halaman
+                    doc.setFontSize(14);
+                    doc.text(`HALAMAN ${currentPage} DARI ${totalFilteredPages}`, pageWidth/2, 54, { align: 'center' });
                     
                     // Informasi filter yang aktif
                     let filterInfo = "Semua Data";
@@ -2693,38 +2714,37 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'normal');
-                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
+                    doc.text(filterInfo, pageWidth/2, 60, { align: 'center' });
                     
                     doc.setFontSize(14);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('DETAIL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
+                    doc.text('DETAIL DATA NELAYAN', pageWidth/2, 66, { align: 'center' });
                     
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'normal');
                     const now = new Date();
                     const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 72, { align: 'center' });
 
-                    // Tabel Data dengan kolom sesuai permintaan
+                    // Tabel Data dengan kolom yang lebih rapi (tanpa tanggal validasi)
                     const tableWidth = pageWidth - 40;
                     const tableStartX = (pageWidth - tableWidth) / 2;
 
                     doc.autoTable({
                         head: [[
                             {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
-                            {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
+                            {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
                             {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
                             {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
-                            {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                            {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
                             {content: 'Status', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Tanggal Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Keterangan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}}
+                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                            {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
+                            {content: 'Keterangan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}}
                         ]],
                         body: tableRows,
-                        startY: 72,
+                        startY: 78,
                         theme: 'grid',
                         tableWidth: tableWidth,
                         margin: { left: tableStartX, right: tableStartX },
@@ -2758,16 +2778,15 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         },
                         columnStyles: {
                             0: {cellWidth: 15, halign: 'center'},
-                            1: {cellWidth: 40, halign: 'left'},
+                            1: {cellWidth: 45, halign: 'left'},
                             2: {cellWidth: 30, halign: 'center'},
                             3: {cellWidth: 40, halign: 'center'},
-                            4: {cellWidth: 30, halign: 'center'},
-                            5: {cellWidth: 30, halign: 'center'},
+                            4: {cellWidth: 35, halign: 'center'},
+                            5: {cellWidth: 35, halign: 'center'},
                             6: {cellWidth: 25, halign: 'center'},
-                            7: {cellWidth: 30, halign: 'center'},
-                            8: {cellWidth: 30, halign: 'center'},
-                            9: {cellWidth: 35, halign: 'center'},
-                            10: {cellWidth: 40, halign: 'left'}
+                            7: {cellWidth: 35, halign: 'center'},
+                            8: {cellWidth: 40, halign: 'center'},
+                            9: {cellWidth: 45, halign: 'left'}
                         }
                     });
 
@@ -2851,15 +2870,15 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         doc.setFontSize(7);
                         const printTime = new Date().toLocaleString('id-ID');
                         doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
-                        doc.text(`Total Data Tabel: ${filteredData.length} records`, pageWidth / 2, pageHeight - 2, { align: 'center' });
+                        doc.text(`Data Halaman ${currentPage}/${totalFilteredPages} (${pageData.length} baris) | Baris per halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, pageHeight - 2, { align: 'center' });
                     }
 
                     // Simpan file PDF
-                    const fileName = `Tabel_Data_Nelayan_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
+                    const fileName = `Tabel_Data_Nelayan_Halaman_${currentPage}_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
                     doc.save(fileName);
                     document.getElementById('qr-right').innerHTML = "";
                     
-                    showNotification(`Tabel PDF data nelayan berhasil dibuat (${filteredData.length} data)`, 'success');
+                    showNotification(`Tabel PDF data nelayan halaman ${currentPage} berhasil dibuat (${pageData.length} data)`, 'success');
                     
                 } catch (error) {
                     console.error("Error generating table PDF:", error);
@@ -3312,6 +3331,11 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 document.getElementById('restoreDataBtn').disabled = !this.files.length;
             });
             document.getElementById('restoreDataBtn').addEventListener('click', restoreData);
+            
+            // Event listener untuk tombol Refresh Halaman
+            document.getElementById('btn-refresh-page').addEventListener('click', function() {
+                location.reload();
+            });
             
             // Event listener untuk tombol Reload Data yang sudah diperbaiki
             document.getElementById('btn-reload-repo').addEventListener('click', handleReloadRepo);
@@ -4367,11 +4391,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.generateFilteredPdf = generateFilteredPdf;
         window.generateTablePdf = generateTablePdf; // Fungsi baru diekspos
         window.getFilteredData = getFilteredData;
+        window.getCurrentPageData = getCurrentPageData; // Fungsi baru diekspos
 
         console.log('✅ SIMATA Application v5.5 initialized successfully');
         console.log('✅ Fitur Filter & Validasi Data telah dipindahkan ke menu Database Nelayan');
         console.log('✅ Fitur Unduh PDF Terfilter telah ditambahkan ke menu Database Nelayan');
-        console.log('✅ Fitur Unduh PDF Tabel Data telah ditambahkan ke menu Database Nelayan');
+        console.log('✅ Fitur Unduh PDF Tabel Data telah disempurnakan dengan kolom yang lebih rapi');
+        console.log('✅ PDF Tabel Data sekarang hanya mencetak data sesuai jumlah baris per halaman');
+        console.log('✅ Tombol Refresh Halaman telah ditambahkan di sidebar');
         console.log('✅ Verifikasi KIN telah disempurnakan dengan tampilan responsif');
         console.log('✅ Pagination telah disempurnakan dengan navigasi yang lebih baik');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
