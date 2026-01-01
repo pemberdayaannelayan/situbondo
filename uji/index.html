@@ -88,95 +88,46 @@
             }
         }
         
-        /* Style untuk verifikasi KIN */
+        /* Style untuk verifikasi KIN - DIPERBAIKI */
         .verify-card {
             border-left: 4px solid #0c2461;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(12, 36, 97, 0.15);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .verify-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(12, 36, 97, 0.2);
         }
         
         .verify-success {
             border-left: 4px solid #28a745 !important;
+            background: linear-gradient(to right, #f8fff9, #ffffff);
         }
         
         .verify-error {
             border-left: 4px solid #dc3545 !important;
+            background: linear-gradient(to right, #fff8f8, #ffffff);
         }
         
         .verify-warning {
             border-left: 4px solid #ffc107 !important;
+            background: linear-gradient(to right, #fffdf0, #ffffff);
         }
         
         .kin-badge {
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             font-size: 1.1rem;
             letter-spacing: 1px;
+            background: linear-gradient(135deg, #0c2461, #1e3799);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(12, 36, 97, 0.2);
         }
         
-        /* Style untuk informasi ikan */
-        .fish-info-box {
-            background: #f8f9fa;
-            border-left: 4px solid #0c2461;
-            padding: 10px;
-            margin-top: 5px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            display: none;
-        }
-        
-        .fish-info-title {
-            font-weight: bold;
-            color: #0c2461;
-        }
-        
-        .fish-info-latin {
-            font-style: italic;
-            color: #666;
-            font-size: 0.8rem;
-        }
-        
-        .fish-info-desc {
-            color: #444;
-            margin-top: 3px;
-        }
-        
-        .fish-option-box {
-            position: relative;
-            display: block;
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-        }
-        
-        .fish-option-box:hover {
-            background: #f0f8ff;
-        }
-        
-        .fish-option-box:hover .fish-info-box {
-            display: block;
-        }
-        
-        /* Style untuk mapping alat tangkap */
-        .api-mapping-info {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 10px;
-            margin-top: 5px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-        
-        /* Perbaikan Pagination */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        
-        .pagination-info {
-            font-size: 0.85rem;
-            color: #666;
-            margin-right: 1rem;
-            align-self: center;
-        }
     </style>
 </head>
 <body>
@@ -553,7 +504,11 @@
                                             
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
-                                                    <label class="form-label fw-bold">Jenis Ikan Tangkapan Utama <span class="text-danger">*</span></label>
+                                                    <label class="form-label fw-bold">Jenis Ikan Tangkapan Utama <span class="text-danger">*</span>
+                                                        <button type="button" class="fish-info-btn" onclick="showFishInfoModal()" title="Lihat Referensi Jenis Ikan">
+                                                            <i class="fas fa-info"></i>
+                                                        </button>
+                                                    </label>
                                                     <div class="card p-3 bg-light border">
                                                         <div id="fishCheckboxContainer" style="max-height: 200px; overflow-y: auto;">
                                                             <!-- Daftar ikan akan dimuat secara dinamis berdasarkan alat tangkap -->
@@ -758,36 +713,32 @@
                                  </div>
                             </div>
 
-                            <!-- TAB VERIFIKASI KIN BARU -->
+                            <!-- TAB VERIFIKASI KIN BARU - DIREVISI -->
                             <div class="tab-pane fade" id="v-pills-verify">
                                 <h3 class="section-title">Verifikasi KIN (Kode Identifikasi Nelayan)</h3>
                                 
                                 <div class="row mb-4">
                                     <div class="col-md-8 mx-auto">
                                         <div class="card verify-card shadow-sm">
-                                            <div class="card-body p-4">
-                                                <div class="text-center mb-4">
-                                                    <i class="fas fa-qrcode fa-3x text-primary mb-3"></i>
-                                                    <h5 class="fw-bold">Verifikasi Data Nelayan</h5>
-                                                    <p class="text-muted">Masukkan Kode Validasi (KIN) atau NIK untuk memverifikasi keabsahan data nelayan</p>
+                                            <div class="verify-header">
+                                                <div class="verify-icon-container">
+                                                    <i class="fas fa-id-card"></i>
                                                 </div>
-                                                
+                                                <h4 class="fw-bold mb-2">Verifikasi Data Nelayan</h4>
+                                                <p class="mb-0 opacity-75">Masukkan Kode Validasi (KIN) atau NIK untuk memverifikasi keabsahan data nelayan</p>
+                                            </div>
+                                            <div class="card-body p-4">
                                                 <div class="row mb-4">
-                                                    <div class="col-md-8">
-                                                        <div class="input-group input-group-lg">
-                                                            <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
-                                                            <input type="text" class="form-control" id="verifyInput" placeholder="Masukkan Kode Validasi (contoh: VLD-ABC123) atau NIK 16 digit">
-                                                            <button class="btn btn-primary" type="button" id="verifyBtn">Verifikasi</button>
+                                                    <div class="col-md-12">
+                                                        <div class="input-group verify-input-group">
+                                                            <span class="input-group-text bg-primary text-white border-0"><i class="fas fa-search"></i></span>
+                                                            <input type="text" class="form-control border-0 py-3" id="verifyInput" placeholder="Masukkan Kode Validasi (contoh: VLD-ABC123) atau NIK 16 digit">
+                                                            <button class="btn btn-primary px-4 fw-bold border-0" type="button" id="verifyBtn">Verifikasi</button>
                                                         </div>
-                                                        <div class="form-text mt-2">
+                                                        <div class="form-text mt-3 text-center">
                                                             <i class="fas fa-info-circle text-primary me-1"></i>
                                                             Kode Validasi (KIN) dapat ditemukan di ID Card atau kolom "Kode Validasi" pada data nelayan
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <button class="btn btn-outline-primary w-100 h-100" onclick="scanQRCode()">
-                                                            <i class="fas fa-camera me-2"></i> Scan QR Code
-                                                        </button>
                                                     </div>
                                                 </div>
                                                 
@@ -816,31 +767,31 @@
                                     <div class="col-md-12">
                                         <div class="card shadow-sm border-0 mb-4" id="verifyResultCard" style="display: none;">
                                             <div class="card-body p-0">
-                                                <div class="verify-result-header p-4" id="verifyResultHeader">
+                                                <div class="verify-result-header" id="verifyResultHeader">
                                                     <div class="d-flex align-items-center">
                                                         <div class="me-3" id="verifyResultIcon"></div>
                                                         <div>
                                                             <h5 class="fw-bold mb-1" id="verifyResultTitle"></h5>
-                                                            <p class="mb-0" id="verifyResultSubtitle"></p>
+                                                            <p class="mb-0 opacity-75" id="verifyResultSubtitle"></p>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 
-                                                <div class="p-4" id="verifyResultBody">
+                                                <div class="verify-result-content" id="verifyResultBody">
                                                     <div class="row" id="verifyResultContent"></div>
-                                                    
-                                                    <div class="mt-4" id="verifyResultActions">
-                                                        <div class="d-flex gap-2 justify-content-end">
-                                                            <button class="btn btn-outline-secondary" onclick="resetVerifyForm()">
-                                                                <i class="fas fa-redo me-2"></i>Cari Lagi
-                                                            </button>
-                                                            <button class="btn btn-primary" id="verifyDetailBtn" style="display: none;">
-                                                                <i class="fas fa-eye me-2"></i>Lihat Detail Lengkap
-                                                            </button>
-                                                            <button class="btn btn-success" id="verifyIdCardBtn" style="display: none;">
-                                                                <i class="fas fa-id-card me-2"></i>Cetak ID Card
-                                                            </button>
-                                                        </div>
+                                                </div>
+                                                
+                                                <div class="verify-actions" id="verifyResultActions">
+                                                    <div class="d-flex gap-2 flex-wrap justify-content-center">
+                                                        <button class="btn btn-outline-secondary px-4" onclick="resetVerifyForm()">
+                                                            <i class="fas fa-redo me-2"></i>Cari Lagi
+                                                        </button>
+                                                        <button class="btn btn-primary px-4" id="verifyDetailBtn" style="display: none;">
+                                                            <i class="fas fa-eye me-2"></i>Lihat Detail Lengkap
+                                                        </button>
+                                                        <button class="btn btn-success px-4" id="verifyIdCardBtn" style="display: none;">
+                                                            <i class="fas fa-id-card me-2"></i>Cetak ID Card
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -848,9 +799,9 @@
                                         
                                         <!-- DAFTAR SEMUA KIN -->
                                         <div class="card shadow-sm border-0" id="allKinCard" style="display: none;">
-                                            <div class="card-header bg-white fw-bold py-3">
-                                                <i class="fas fa-list-check me-2"></i>Daftar Semua Kode Validasi (KIN) Terdaftar
-                                                <span class="badge bg-primary ms-2" id="totalKinCount">0</span>
+                                            <div class="verify-result-header">
+                                                <i class="fas fa-list-check me-2"></i> Daftar Semua Kode Validasi (KIN) Terdaftar
+                                                <span class="badge bg-warning ms-2" id="totalKinCount">0</span>
                                             </div>
                                             <div class="card-body p-0">
                                                 <div class="table-responsive">
@@ -1111,27 +1062,48 @@
             </div>
         </div>
 
-        <!-- Modal QR Code Scanner -->
-        <div class="modal fade" id="qrScannerModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
+        <!-- Modal Info Jenis Ikan -->
+        <div class="modal fade" id="fishInfoModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><i class="fas fa-camera me-2"></i>Scan QR Code</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold"><i class="fas fa-fish me-2"></i>Referensi Jenis Ikan Tangkapan</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body text-center">
-                        <div id="qr-scanner-container" style="width: 100%; height: 300px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                            <i class="fas fa-qrcode fa-5x text-muted"></i>
-                        </div>
-                        <p class="text-muted">Arahkan kamera ke QR Code pada ID Card untuk memindai kode validasi</p>
+                    <div class="modal-body">
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
-                            Fitur ini memerlukan akses kamera. Pastikan browser Anda mengizinkan akses kamera.
+                            Berikut adalah referensi visual jenis ikan tangkapan yang umum ditemukan di perairan Situbondo.
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <h6 class="fw-bold text-primary">Gambar Referensi 1</h6>
+                                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simata/info%20jenis%20ikan%20tangkapan%201.jpg" 
+                                     alt="Referensi Jenis Ikan 1" class="fish-modal-img img-fluid">
+                                <p class="small text-muted mt-2">Ilustrasi berbagai jenis ikan tangkapan yang umum ditemui.</p>
+                            </div>
+                            <div class="col-md-12 mb-4">
+                                <h6 class="fw-bold text-primary">Gambar Referensi 2</h6>
+                                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simata/info%20jenis%20ikan%20tangkapan%202.jpg" 
+                                     alt="Referensi Jenis Ikan 2" class="fish-modal-img img-fluid">
+                                <p class="small text-muted mt-2">Klasifikasi dan ciri-ciri ikan tangkapan utama.</p>
+                            </div>
+                            <div class="col-md-12">
+                                <h6 class="fw-bold text-primary">Gambar Referensi 3</h6>
+                                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simata/info%20jenis%20ikan%20tangkapan%203.jpg" 
+                                     alt="Referensi Jenis Ikan 3" class="fish-modal-img img-fluid">
+                                <p class="small text-muted mt-2">Panduan identifikasi ikan tangkapan berdasarkan alat tangkap.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning mt-4">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>Tips:</strong> Gunakan referensi ini untuk memastikan ketepatan pemilihan jenis ikan tangkapan utama dalam pendataan nelayan.
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-primary" onclick="startQRScanner()">Mulai Scan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </div>
             </div>
@@ -1176,7 +1148,7 @@
         // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DIPERBAIKI
         // =====================================================
         
-        // Data ikan yang diperbarui dan dilengkapi
+        // Data ikan yang diperbarui dan dilengkapi - DITAMBAHKAN IKAN TOGEK
         const FISH_CATEGORIES = {
             "Demersal": [
                 {name: "Ikan Mangla (Pomadasys spp.)", latin: "Pomadasys spp.", desc: "Ikan demersal yang hidup di dasar berpasir, sering ditemukan di perairan tropis. Dagingnya putih dan gurih."},
@@ -1188,7 +1160,8 @@
                 {name: "Ikan Kakap Merah (Lutjanus spp.)", latin: "Lutjanus spp.", desc: "Ikan demersal berwarna merah, hidup di karang. Salah satu ikan komersial penting."},
                 {name: "Ikan Sembilang (Plotosus canius)", latin: "Plotosus canius", desc: "Ikan demersal bertubuh panjang, hidup di dasar berlumpur. Memiliki bisa pada duri siripnya."},
                 {name: "Ikan Biji Nangka (Upeneus spp.)", latin: "Upeneus spp.", desc: "Ikan demersal kecil dengan sungut di mulut. Hidup di dasar berpasir."},
-                {name: "Ikan Kurisi (Nemipterus spp.)", latin: "Nemipterus spp.", desc: "Ikan demersal dengan ekor bercabang, hidup di dasar berpasir. Warna tubuh merah muda."}
+                {name: "Ikan Kurisi (Nemipterus spp.)", latin: "Nemipterus spp.", desc: "Ikan demersal dengan ekor bercabang, hidup di dasar berpasir. Warna tubuh merah muda."},
+                {name: "Ikan Togek / Mendut (Star Triggerfish)", latin: "Abalistes stellaris", desc: "Ikan demersal dengan tubuh pipih dan sirip punggung yang khas. Hidup di dasar berpasir atau berlumpur, sering ditemukan di perairan tropis. Dikenal dengan pola bintang di tubuhnya."}
             ],
             "Pelagis Kecil": [
                 {name: "Ikan Tembang (Sardinella gibbosa)", latin: "Sardinella gibbosa", desc: "Ikan pelagis kecil yang hidup dalam kawanan besar. Tubuh ramping, sering diawetkan."},
@@ -1324,7 +1297,7 @@
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
         const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
-        const qrScannerModal = new bootstrap.Modal(document.getElementById('qrScannerModal'));
+        const fishInfoModal = new bootstrap.Modal(document.getElementById('fishInfoModal'));
         
         const PROFESI_MAPPING = {
             "Penuh Waktu": "Nelayan Penuh Waktu",
@@ -1384,6 +1357,7 @@
             const lower = fishName.toLowerCase();
             if (lower.includes('cumi')) return 'fa-ghost'; 
             if (lower.includes('kepiting')) return 'fa-spider'; 
+            if (lower.includes('togek') || lower.includes('mendut')) return 'fa-star'; 
             return 'fa-fish';
         }
 
@@ -1576,7 +1550,7 @@
                         <div class="verify-result-item">
                             <div class="verify-result-label">Kode Validasi (KIN)</div>
                             <div class="verify-result-value">
-                                <span class="badge kin-badge bg-primary">${data.kodeValidasi || 'Tidak Ada'}</span>
+                                <span class="kin-badge">${data.kodeValidasi || 'Tidak Ada'}</span>
                             </div>
                         </div>
                         <div class="verify-result-item">
@@ -1701,7 +1675,7 @@
                         <tr>
                             <td>${index + 1}</td>
                             <td>
-                                <span class="badge kin-badge bg-primary">${d.kodeValidasi}</span>
+                                <span class="kin-badge">${d.kodeValidasi}</span>
                             </td>
                             <td>
                                 <div class="fw-bold">${d.nama}</div>
@@ -1758,28 +1732,9 @@
             document.getElementById('allKinCard').style.display = 'none';
         }
 
-        function scanQRCode() {
-            qrScannerModal.show();
-            
-            // Informasi bahwa fitur QR scanner memerlukan implementasi lebih lanjut
-            setTimeout(() => {
-                showNotification('Fitur QR Scanner sedang dalam pengembangan. Untuk sekarang, gunakan input manual.', 'info');
-            }, 500);
-        }
-
-        function startQRScanner() {
-            showNotification('Fitur QR Scanner akan segera hadir di versi mendatang.', 'info');
-            qrScannerModal.hide();
-            
-            // Simulasi scan QR Code untuk demo
-            setTimeout(() => {
-                const demoCodes = appData.filter(d => d.kodeValidasi).map(d => d.kodeValidasi);
-                if (demoCodes.length > 0) {
-                    const randomCode = demoCodes[Math.floor(Math.random() * demoCodes.length)];
-                    document.getElementById('verifyInput').value = randomCode;
-                    verifyKINAndShow(randomCode);
-                }
-            }, 1000);
+        // Fungsi untuk menampilkan modal info ikan
+        function showFishInfoModal() {
+            fishInfoModal.show();
         }
 
         // --- FUNGSI BACKUP DATA YANG DIPERBAIKI ---
@@ -3722,7 +3677,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.verifyKINAndShow = verifyKINAndShow;
         window.showAllKIN = showAllKIN;
         window.resetVerifyForm = resetVerifyForm;
-        window.scanQRCode = scanQRCode;
+        window.showFishInfoModal = showFishInfoModal;
         window.mergeData = mergeData;
         window.backupData = backupData;
         window.restoreData = restoreData;
@@ -3732,9 +3687,13 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
 
         console.log('✅ SIMATA Application v5.4 initialized successfully');
         console.log('✅ Data ikan telah dilengkapi dengan 3 kategori: Demersal, Pelagis Kecil, Pelagis Besar');
+        console.log('✅ Ikan Togek/Mendut telah ditambahkan ke kategori Demersal');
         console.log('✅ Perahu Pukat Tarik telah ditambahkan ke sistem');
         console.log('✅ Mapping antara Jenis Kapal, Alat Tangkap, dan Ikan telah diperbarui dan disinkronkan');
         console.log('✅ Pagination tabel telah diperbaiki untuk menangani data tanpa batas');
+        console.log('✅ Tampilan Verifikasi KIN telah disempurnakan');
+        console.log('✅ Fitur Scan QR Code telah dihapus dari Verifikasi KIN');
+        console.log('✅ Tombol info referensi jenis ikan telah ditambahkan di formulir');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
     </script>
 </body>
