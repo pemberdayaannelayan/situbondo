@@ -163,6 +163,20 @@
             border-radius: 4px;
             font-size: 0.85rem;
         }
+        
+        /* Perbaikan Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .pagination-info {
+            font-size: 0.85rem;
+            color: #666;
+            margin-right: 1rem;
+            align-self: center;
+        }
     </style>
 </head>
 <body>
@@ -513,14 +527,6 @@
                                                     <div class="card p-3 bg-light border">
                                                         <select class="form-select" id="alatTangkap" required>
                                                             <option value="">Pilih Alat Penangkapan Ikan...</option>
-                                                            <option value="Pukat Cincin">Pukat Cincin</option>
-                                                            <option value="Pukat Tarik">Pukat Tarik</option>
-                                                            <option value="Pancing Ulur">Pancing Ulur</option>
-                                                            <option value="Jaring Insang (gill net)">Jaring Insang (gill net)</option>
-                                                            <option value="Jaring Angkat (lift net)">Jaring Angkat (lift net)</option>
-                                                            <option value="Pancing">Pancing</option>
-                                                            <option value="Perangkap Bubu">Perangkap Bubu</option>
-                                                            <option value="Lainnya">Lainnya</option>
                                                         </select>
                                                         <div id="apiInfo" class="api-info-box mt-2" style="display:none;"></div>
                                                     </div>
@@ -538,13 +544,6 @@
                                                         <label class="form-label">Jenis Kapal</label>
                                                         <select class="form-select" id="jenisKapal">
                                                             <option value="">Pilih Jenis...</option>
-                                                            <option value="Perahu Jukung">Perahu Jukung</option>
-                                                            <option value="Perahu Mayang">Perahu Mayang</option>
-                                                            <option value="Perahu Slerek">Perahu Slerek</option>
-                                                            <option value="Perahu Insang">Perahu Insang</option>
-                                                            <option value="Perahu Jaring Angkat">Perahu Jaring Angkat</option>
-                                                            <option value="Perahu Pancing">Perahu Pancing</option>
-                                                            <option value="Lainnya">Lainnya</option>
                                                         </select>
                                                         <div id="kapalInfo" class="kapal-info-box mt-2" style="display:none;"></div>
                                                         <div id="apiMappingInfo" class="api-mapping-info mt-2" style="display:none;"></div>
@@ -655,7 +654,10 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light flex-wrap gap-2">
                                             <div class="text-muted small" id="tableInfo">Menampilkan 0 data</div>
-                                            <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+                                            <div class="pagination-container">
+                                                <span class="pagination-info" id="paginationInfo">Halaman 1</span>
+                                                <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+                                            </div>
                                         </div>
                                         <div class="p-2 small text-muted fst-italic text-end border-top">
                                             <span id="sensorStatusText" class="badge bg-secondary me-2">Sensor: ON</span>
@@ -701,6 +703,7 @@
                                                     <option value="Perahu Insang">Perahu Insang</option>
                                                     <option value="Perahu Jaring Angkat">Perahu Jaring Angkat</option>
                                                     <option value="Perahu Pancing">Perahu Pancing</option>
+                                                    <option value="Perahu Pukat Tarik">Perahu Pukat Tarik</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-3">
@@ -1170,46 +1173,46 @@
     <!-- KODE UTAMA APLIKASI TANPA FITUR PETA -->
     <script>
         // =====================================================
-        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DIPERBAIKI (TANPA PETA)
+        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DIPERBAIKI
         // =====================================================
         
         // Data ikan yang diperbarui dan dilengkapi
         const FISH_CATEGORIES = {
             "Demersal": [
-                {name: "Ikan Mangla (Pomadasys spp.)", latin: "Pomadasys spp.", desc: "Dikenal juga sebagai ikan kurisi, hidup di dasar berpasir."},
-                {name: "Ikan Sebelah (Pleuronectiformes)", latin: "Pleuronectiformes", desc: "Ikan pipih yang hidup di dasar laut."},
-                {name: "Ikan Lidah (Cynoglossus spp.)", latin: "Cynoglossus spp.", desc: "Bentuk pipih memanjang, hidup di dasar berlumpur."},
-                {name: "Ikan Petek (Leiognathus spp.)", latin: "Leiognathus spp.", desc: "Ikan kecil, sering ditemukan di dasar perairan dangkal."},
-                {name: "Ikan Duri (Arius spp.)", latin: "Arius spp.", desc: "Mirip manyung, hidup di dasar berlumpur."},
-                {name: "Ikan Kerapu (Epinephelus spp.)", latin: "Epinephelus spp.", desc: "Ikan demersal yang hidup di karang."},
-                {name: "Ikan Kakap Merah (Lutjanus spp.)", latin: "Lutjanus spp.", desc: "Ikan demersal yang hidup di karang."},
-                {name: "Ikan Sembilang (Plotosus canius)", latin: "Plotosus canius", desc: "Ikan demersal yang hidup di dasar berlumpur."},
-                {name: "Ikan Biji Nangka (Upeneus spp.)", latin: "Upeneus spp.", desc: "Ikan demersal yang hidup di dasar berpasir."},
-                {name: "Ikan Kurisi (Nemipterus spp.)", latin: "Nemipterus spp.", desc: "Ikan demersal yang hidup di dasar berpasir."}
+                {name: "Ikan Mangla (Pomadasys spp.)", latin: "Pomadasys spp.", desc: "Ikan demersal yang hidup di dasar berpasir, sering ditemukan di perairan tropis. Dagingnya putih dan gurih."},
+                {name: "Ikan Sebelah (Pleuronectiformes)", latin: "Pleuronectiformes", desc: "Ikan pipih dengan kedua mata di satu sisi tubuh. Hidup di dasar laut berpasir atau berlumpur."},
+                {name: "Ikan Lidah (Cynoglossus spp.)", latin: "Cynoglossus spp.", desc: "Bentuk pipih memanjang seperti lidah, hidup di dasar berlumpur. Populer untuk konsumsi lokal."},
+                {name: "Ikan Petek (Leiognathus spp.)", latin: "Leiognathus spp.", desc: "Ikan kecil berwarna keperakan, hidup di dasar perairan dangkal. Sering digunakan sebagai umpan."},
+                {name: "Ikan Duri (Arius spp.)", latin: "Arius spp.", desc: "Memiliki duri tajam di siripnya. Hidup di dasar berlumpur, dagingnya lembut bertekstur."},
+                {name: "Ikan Kerapu (Epinephelus spp.)", latin: "Epinephelus spp.", desc: "Ikan demersal yang hidup di karang. Bernilai ekonomi tinggi dengan daging padat."},
+                {name: "Ikan Kakap Merah (Lutjanus spp.)", latin: "Lutjanus spp.", desc: "Ikan demersal berwarna merah, hidup di karang. Salah satu ikan komersial penting."},
+                {name: "Ikan Sembilang (Plotosus canius)", latin: "Plotosus canius", desc: "Ikan demersal bertubuh panjang, hidup di dasar berlumpur. Memiliki bisa pada duri siripnya."},
+                {name: "Ikan Biji Nangka (Upeneus spp.)", latin: "Upeneus spp.", desc: "Ikan demersal kecil dengan sungut di mulut. Hidup di dasar berpasir."},
+                {name: "Ikan Kurisi (Nemipterus spp.)", latin: "Nemipterus spp.", desc: "Ikan demersal dengan ekor bercabang, hidup di dasar berpasir. Warna tubuh merah muda."}
             ],
             "Pelagis Kecil": [
-                {name: "Ikan Tembang (Sardinella gibbosa)", latin: "Sardinella gibbosa", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Kembung Lelaki & Perempuan (Rastrelliger spp.)", latin: "Rastrelliger spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Selar Kuning (Selaroides leptolepis)", latin: "Selaroides leptolepis", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Layang (Decapterus spp.)", latin: "Decapterus spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Teri (Stolephorus spp.)", latin: "Stolephorus spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Japuh (Caranx spp.)", latin: "Caranx spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Lemuru (Sardinella lemuru)", latin: "Sardinella lemuru", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Bentong (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Banyar (Carangoides spp.)", latin: "Carangoides spp.", desc: "Ikan pelagis kecil yang hidup dalam kawanan."},
-                {name: "Ikan Banyar Mata Besar (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil yang hidup dalam kawanan."}
+                {name: "Ikan Tembang (Sardinella gibbosa)", latin: "Sardinella gibbosa", desc: "Ikan pelagis kecil yang hidup dalam kawanan besar. Tubuh ramping, sering diawetkan."},
+                {name: "Ikan Kembung Lelaki & Perempuan (Rastrelliger spp.)", latin: "Rastrelliger spp.", desc: "Ikan pelagis kecil dengan tubuh pipih. Salah satu ikan ekonomis penting di Indonesia."},
+                {name: "Ikan Selar Kuning (Selaroides leptolepis)", latin: "Selaroides leptolepis", desc: "Ikan kecil berwarna kuning keperakan. Hidup dalam gerombolan di perairan pantai."},
+                {name: "Ikan Layang (Decapterus spp.)", latin: "Decapterus spp.", desc: "Ikan pelagis kecil dengan tubuh memanjang. Sering digunakan untuk pindang dan kalengan."},
+                {name: "Ikan Teri (Stolephorus spp.)", latin: "Stolephorus spp.", desc: "Ikan terkecil dalam kelompok pelagis. Biasanya dikeringkan atau diolah menjadi terasi."},
+                {name: "Ikan Japuh (Caranx spp.)", latin: "Caranx spp.", desc: "Ikan pelagis kecil dengan tubuh agak tinggi. Hidup dalam kawanan di perairan pantai."},
+                {name: "Ikan Lemuru (Sardinella lemuru)", latin: "Sardinella lemuru", desc: "Ikan pelagis kecil khusus di Selat Bali. Bahan utama industri pengalengan."},
+                {name: "Ikan Bentong (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil dengan tubuh pipih. Cepat berenang dalam kawanan besar."},
+                {name: "Ikan Banyar (Carangoides spp.)", latin: "Carangoides spp.", desc: "Ikan pelagis kecil dengan bentuk tubuh ramping. Hidup di perairan pantai."},
+                {name: "Ikan Banyar Mata Besar (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil dengan mata besar. Aktif pada malam hari."}
             ],
             "Pelagis Besar": [
-                {name: "Ikan Tongkol (Euthynnus affinis)", latin: "Euthynnus affinis", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Cakalang (Katsuwonus pelamis)", latin: "Katsuwonus pelamis", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Tenggiri (Scomberomorus commerson)", latin: "Scomberomorus commerson", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Tuna Sirip Kuning (Thunnus albacares)", latin: "Thunnus albacares", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Tuna Mata Besar (Thunnus obesus)", latin: "Thunnus obesus", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Layur (Trichiurus lepturus)", latin: "Trichiurus lepturus", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Todak (Xiphias gladius)", latin: "Xiphias gladius", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Lemadang (Coryphaena hippurus)", latin: "Coryphaena hippurus", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Marlin (Makaira spp.)", latin: "Makaira spp.", desc: "Ikan pelagis besar yang bermigrasi."},
-                {name: "Ikan Cucut (Carcharhinus limbatus)", latin: "Carcharhinus limbatus", desc: "Hiu permukaan seperti hiu sirip hitam."}
+                {name: "Ikan Tongkol (Euthynnus affinis)", latin: "Euthynnus affinis", desc: "Ikan pelagis besar yang bermigrasi. Dagingnya padat, sering dibuat abon atau pindang."},
+                {name: "Ikan Cakalang (Katsuwonus pelamis)", latin: "Katsuwonus pelamis", desc: "Ikan pelagis besar berwarna biru metalik. Bahan utama tuna kalengan."},
+                {name: "Ikan Tenggiri (Scomberomorus commerson)", latin: "Scomberomorus commerson", desc: "Ikan pelagis besar dengan tubuh memanjang. Dagingnya lembut untuk pempek."},
+                {name: "Ikan Tuna Sirip Kuning (Thunnus albacares)", latin: "Thunnus albacares", desc: "Ikan pelagis besar bernilai tinggi. Siripnya berwarna kuning cerah."},
+                {name: "Ikan Tuna Mata Besar (Thunnus obesus)", latin: "Thunnus obesus", desc: "Ikan pelagis besar dengan mata besar. Hidup di perairan dalam."},
+                {name: "Ikan Layur (Trichiurus lepturus)", latin: "Trichiurus lepturus", desc: "Ikan pelagis besar bertubuh panjang seperti pita. Dagingnya renyah."},
+                {name: "Ikan Todak (Xiphias gladius)", latin: "Xiphias gladius", desc: "Ikan pelagis besar dengan moncong panjang seperti pedang. Perenang cepat."},
+                {name: "Ikan Lemadang (Coryphaena hippurus)", latin: "Coryphaena hippurus", desc: "Ikan pelagis besar dengan warna tubuh cerah. Sering ditemukan di perairan hangat."},
+                {name: "Ikan Marlin (Makaira spp.)", latin: "Makaira spp.", desc: "Ikan pelagis besar dengan moncong panjang. Target favorit pemancing olahraga."},
+                {name: "Ikan Cucut (Carcharhinus limbatus)", latin: "Carcharhinus limbatus", desc: "Hiu permukaan dengan sirip hitam. Hidup di perairan pantai."}
             ]
         };
 
@@ -1238,47 +1241,50 @@
             "Perahu Insang": ["Jaring Insang (gill net)"],
             "Perahu Jaring Angkat": ["Jaring Angkat (lift net)"],
             "Perahu Pancing": ["Pancing", "Pancing Ulur"],
+            "Perahu Pukat Tarik": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)"],
             "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Lainnya"]
         };
 
         // Mapping antara Alat Tangkap dan Kategori Ikan yang bisa ditangkap
         const API_FISH_MAPPING = {
-            "Pukat Cincin": ["Pelagis Besar"],
-            "Pukat Tarik": ["Pelagis Kecil", "Pelagis Besar"],
-            "Pancing Ulur": ["Demersal"],
-            "Jaring Insang (gill net)": ["Demersal", "Pelagis Kecil"],
-            "Jaring Angkat (lift net)": ["Pelagis Kecil"],
+            "Pukat Cincin": ["Pelagis Besar", "Pelagis Kecil"],
+            "Pukat Tarik": ["Pelagis Kecil", "Pelagis Besar", "Demersal"],
+            "Pancing Ulur": ["Demersal", "Pelagis Besar"],
+            "Jaring Insang (gill net)": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
+            "Jaring Angkat (lift net)": ["Pelagis Kecil", "Demersal"],
             "Pancing": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
-            "Perangkap Bubu": ["Demersal"],
+            "Perangkap Bubu": ["Demersal", "Pelagis Kecil"],
             "Lainnya": ["Demersal", "Pelagis Kecil", "Pelagis Besar"]
         };
 
-        // Mapping informasi alat tangkap
+        // Mapping informasi alat tangkap - DIPERBAIKI DAN DILENGKAPI
         const API_INFO = {
-            "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis besar seperti tuna dan cakalang.",
-            "Pukat Tarik": "Jaring yang ditarik oleh kapal untuk menangkap ikan di permukaan atau pertengahan air. Cocok untuk ikan pelagis kecil seperti teri dan lemuru.",
-            "Pancing Ulur": "Pancing dengan sistem ulur (handline) yang dioperasikan secara manual. Digunakan untuk menangkap ikan dasar seperti kerapu dan kakap.",
-            "Jaring Insang (gill net)": "Jaring yang dipasang diam di air, ikan yang berenang akan tersangkut insangnya. Cocok untuk berbagai jenis ikan.",
-            "Jaring Angkat (lift net)": "Jaring berbentuk persegi yang diturunkan ke air lalu diangkat cepat. Efektif untuk ikan permukaan.",
-            "Pancing": "Alat tangkap tradisional menggunakan mata pancing dan umpan. Fleksibel untuk berbagai jenis ikan.",
-            "Perangkap Bubu": "Perangkap berbentuk kurungan untuk menjebak ikan. Umum untuk menangkap ikan karang dan udang.",
-            "Lainnya": "Alat tangkap lain yang tidak termasuk dalam kategori di atas."
+            "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis besar seperti tuna, cakalang, dan tongkol. Biasanya dioperasikan oleh kapal berukuran sedang hingga besar.",
+            "Pukat Tarik": "Jaring berbentuk kerucut yang ditarik oleh kapal di permukaan atau pertengahan air. Cocok untuk menangkap ikan pelagis kecil seperti teri, lemuru, dan kembung. Memerlukan kapal dengan mesin yang kuat.",
+            "Pancing Ulur": "Pancing dengan sistem ulur (handline) yang dioperasikan secara manual. Digunakan untuk menangkap ikan dasar seperti kerapu, kakap, dan ikan demersal lainnya. Cocok untuk perairan karang.",
+            "Jaring Insang (gill net)": "Jaring yang dipasang diam di air, ikan yang berenang akan tersangkut insangnya. Cocok untuk berbagai jenis ikan mulai dari demersal hingga pelagis kecil. Efektif di perairan tenang.",
+            "Jaring Angkat (lift net)": "Jaring berbentuk persegi yang diturunkan ke air lalu diangkat cepat. Efektif untuk ikan permukaan seperti teri dan ikan pelagis kecil. Biasanya menggunakan lampu untuk menarik ikan.",
+            "Pancing": "Alat tangkap tradisional menggunakan mata pancing dan umpan. Fleksibel untuk berbagai jenis ikan. Termasuk pancing tonda, pancing rawai, dan pancing tangan.",
+            "Perangkap Bubu": "Perangkap berbentuk kurungan untuk menjebak ikan. Umum untuk menangkap ikan karang, udang, dan kepiting. Terbuat dari bambu atau jaring.",
+            "Lainnya": "Alat tangkap lain yang tidak termasuk dalam kategori di atas seperti sero, jermal, atau alat tradisional setempat."
         };
 
+        // Mapping informasi perahu - DIPERBAIKI DAN DITAMBAH PERAHU PUKAT TARIK
         const KAPAL_INFO = {
-            "Perahu Jukung": "Perahu tradisional kayu kecil, umumnya tanpa mesin atau bermesin kecil. Cocok untuk perairan tenang dan dekat pantai. Biasanya digunakan untuk pancing dan perangkap bubu.",
-            "Perahu Mayang": "Perahu tradisional yang lebih besar dari jukung, biasanya bermesin tempel. Untuk penangkapan di perairan sedang. Cocok untuk pukat tarik dan jaring insang.",
-            "Perahu Slerek": "Perahu khas Situbondo dengan bentuk ramping, biasanya menggunakan layar atau mesin kecil. Untuk operasi dekat pantai. Cocok untuk pukat cincin dan jaring angkat.",
-            "Perahu Insang": "Perahu khusus untuk operasi jaring insang (gill net), dilengkapi dengan sistem pemasangan jaring.",
-            "Perahu Jaring Angkat": "Perahu dengan sistem derek untuk mengoperasikan jaring angkat (lift net).",
-            "Perahu Pancing": "Perahu yang didesain khusus untuk operasi pancing, baik handline maupun rawai.",
-            "Lainnya": "Jenis kapal lain yang tidak termasuk dalam kategori di atas."
+            "Perahu Jukung": "Perahu tradisional kayu kecil, umumnya tanpa mesin atau bermesin kecil (5-15 PK). Cocok untuk perairan tenang dan dekat pantai (0-5 mil). Biasanya digunakan untuk pancing, perangkap bubu, dan jaring insang. Kapasitas 1-3 orang.",
+            "Perahu Mayang": "Perahu tradisional yang lebih besar dari jukung, biasanya bermesin tempel (15-40 PK). Untuk penangkapan di perairan sedang (5-12 mil). Cocok untuk pukat tarik, jaring insang, dan jaring angkat. Kapasitas 3-5 orang.",
+            "Perahu Slerek": "Perahu khas Situbondo dengan bentuk ramping, biasanya menggunakan layar atau mesin kecil (10-30 PK). Untuk operasi dekat pantai (0-8 mil). Cocok untuk pukat cincin dan jaring angkat. Kapasitas 2-4 orang.",
+            "Perahu Insang": "Perahu khusus untuk operasi jaring insang (gill net), dilengkapi dengan sistem pemasangan jaring. Mesin 20-50 PK. Untuk perairan pantai hingga sedang (5-15 mil). Kapasitas 2-3 orang.",
+            "Perahu Jaring Angkat": "Perahu dengan sistem derek untuk mengoperasikan jaring angkat (lift net). Biasanya memiliki lampu untuk menarik ikan. Mesin 30-60 PK. Untuk perairan pantai (0-10 mil). Kapasitas 3-6 orang.",
+            "Perahu Pancing": "Perahu yang didesain khusus untuk operasi pancing, baik handline maupun rawai. Dilengkapi dengan tempat pancing dan penyimpanan hasil. Mesin 15-40 PK. Untuk berbagai jenis perairan. Kapasitas 2-4 orang.",
+            "Perahu Pukat Tarik": "Perahu yang dilengkapi dengan sistem penarik pukat (trawl net) untuk menangkap ikan di dasar laut. Biasanya berukuran sedang hingga besar dengan mesin yang kuat (40-100 PK). Untuk perairan sedang hingga lepas pantai (10-30 mil). Kapasitas 4-8 orang.",
+            "Lainnya": "Jenis kapal lain yang tidak termasuk dalam kategori di atas seperti kapal motor besar, perahu fiberglass modern, atau kapal dengan spesifikasi khusus."
         };
 
         const PROFESI_INFO = {
-            "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain.",
-            "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan.",
-            "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan."
+            "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain. Biasanya melaut setiap hari atau sesuai musim tangkap.",
+            "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan (lebih dari 50% pendapatan).",
+            "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan (kurang dari 50% pendapatan)."
         };
 
         // Data wilayah Situbondo untuk dropdown (tetap diperlukan untuk form input)
@@ -2026,6 +2032,150 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             reader.readAsText(file);
         }
 
+        // --- FUNGSI PAGINATION YANG DIPERBAIKI ---
+        function updatePagination(total) {
+            const pages = Math.ceil(total / appSettings.itemsPerPage);
+            const ul = document.getElementById('pagination');
+            const paginationInfo = document.getElementById('paginationInfo');
+            
+            ul.innerHTML = '';
+            
+            if (pages <= 1) {
+                paginationInfo.textContent = `Halaman 1 dari 1`;
+                return;
+            }
+            
+            paginationInfo.textContent = `Halaman ${currentPage} dari ${pages}`;
+            
+            // Tombol pertama
+            const first = document.createElement('li');
+            first.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            first.innerHTML = `<a class="page-link" href="#" onclick="currentPage=1;renderDataTable();return false;">&laquo;</a>`;
+            ul.appendChild(first);
+            
+            // Tombol sebelumnya
+            const prev = document.createElement('li');
+            prev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prev.innerHTML = `<a class="page-link" href="#" onclick="currentPage=${currentPage-1};renderDataTable();return false;">&lt;</a>`;
+            ul.appendChild(prev);
+            
+            // Tampilkan beberapa halaman sekitar currentPage
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(pages, currentPage + 2);
+            
+            // Pastikan kita selalu menampilkan 5 halaman jika memungkinkan
+            if (endPage - startPage < 4) {
+                if (startPage === 1) {
+                    endPage = Math.min(pages, startPage + 4);
+                } else if (endPage === pages) {
+                    startPage = Math.max(1, endPage - 4);
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="currentPage=${i};renderDataTable();return false;">${i}</a>`;
+                ul.appendChild(li);
+            }
+            
+            // Tombol berikutnya
+            const next = document.createElement('li');
+            next.className = `page-item ${currentPage === pages ? 'disabled' : ''}`;
+            next.innerHTML = `<a class="page-link" href="#" onclick="currentPage=${currentPage+1};renderDataTable();return false;">&gt;</a>`;
+            ul.appendChild(next);
+            
+            // Tombol terakhir
+            const last = document.createElement('li');
+            last.className = `page-item ${currentPage === pages ? 'disabled' : ''}`;
+            last.innerHTML = `<a class="page-link" href="#" onclick="currentPage=${pages};renderDataTable();return false;">&raquo;</a>`;
+            ul.appendChild(last);
+        }
+
+        // --- FUNGSI RENDER DATA TABLE YANG DIPERBAIKI ---
+        function renderDataTable() {
+            const tableBody = document.getElementById('dataTableBody');
+            const search = document.getElementById('searchData').value.toLowerCase();
+            let filtered = appData.filter(d => JSON.stringify(d).toLowerCase().includes(search));
+            const nikCounts = {};
+            appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
+
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / appSettings.itemsPerPage);
+            
+            // Validasi currentPage
+            if (currentPage > totalPages && totalPages > 0) {
+                currentPage = totalPages;
+            } else if (totalPages === 0) {
+                currentPage = 1;
+            }
+            
+            const start = (currentPage - 1) * appSettings.itemsPerPage;
+            const pageData = filtered.slice(start, start + appSettings.itemsPerPage);
+
+            tableBody.innerHTML = '';
+            if(pageData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Data tidak ditemukan</td></tr>`;
+                toggleBulkDeleteBtn();
+                updatePagination(totalItems);
+                return;
+            }
+
+            pageData.forEach((d, i) => {
+                const kapalInfo = d.status === 'Pemilik Kapal' ? `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : '-';
+                const isDuplicate = nikCounts[d.nik] > 1;
+                const rowClass = isDuplicate ? 'table-danger' : '';
+                
+                let badgeClass = 'bg-secondary';
+                if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
+                else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
+                else if(d.profesi === 'Nelayan Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
+                
+                const displayNik = maskData(d.nik);
+                const displayWaRaw = maskData(d.whatsapp);
+                
+                let contactDisplay = '';
+                if(displayWaRaw === "Tidak Ada") {
+                    contactDisplay = `<span class="badge bg-light text-muted border">Tidak Ada</span>`;
+                } else {
+                    if (appSettings.privacyMode) {
+                        contactDisplay = `<div class="small"><i class="fas fa-phone-alt text-secondary me-1"></i> ${displayWaRaw}</div>`;
+                    } else {
+                        let cleanNum = d.whatsapp;
+                        if(cleanNum.startsWith('0')) cleanNum = '62' + cleanNum.substring(1);
+                        contactDisplay = `<div class="d-flex align-items-center gap-1"><a href="https://wa.me/${cleanNum}" target="_blank" class="btn btn-sm btn-success py-0 px-1" title="Chat WhatsApp"><i class="fab fa-whatsapp"></i></a><span class="small font-monospace ms-1">${d.whatsapp}</span></div>`;
+                    }
+                }
+
+                const row = `<tr class="${rowClass}">
+                    <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
+                    <td class="text-center">${start + i + 1}</td>
+                    <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
+                        <div class="fw-bold text-dark text-wrap">${d.nama}</div>
+                        <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
+                        <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
+                    </td>
+                    <td class="col-contact-cell">${contactDisplay}</td>
+                    <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
+                    <td class="col-status-cell">${kapalInfo}</td>
+                    <td style="white-space:nowrap;"><span class="badge bg-info text-white">${d.alatTangkap}</span></td>
+                    <td class="col-action sticky-col-right">
+                        <div class="btn-group shadow-sm" role="group">
+                            <button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="btn btn-sm btn-idcard" onclick="safeGenerateIDCard('${d.id}')" title="Cetak ID Card"><i class="fas fa-id-card"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+            
+            document.getElementById('tableInfo').textContent = `Menampilkan ${start + 1}-${start + pageData.length} dari ${totalItems} data`;
+            updatePagination(totalItems);
+            toggleBulkDeleteBtn();
+        }
+
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
             try {
@@ -2069,12 +2219,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 console.log("Reload Repository detected. Ready to merge/sync.");
             }
 
+            // Inisialisasi dropdown kecamatan
             const kecSelect = document.getElementById('kecamatan');
             kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
             if (typeof SITUBONDO_DATA !== 'undefined') {
                 Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
             }
             
+            // Inisialisasi dropdown filter desa
             const allDesas = new Set();
             if (typeof SITUBONDO_DATA !== 'undefined') {
                 Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
@@ -2083,9 +2235,29 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             filterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
             [...allDesas].sort().forEach(d => filterDesaSelect.add(new Option(d, d)));
             
+            // Inisialisasi dropdown filter alat tangkap
             const filterAlatTangkap = document.getElementById('filterAlatTangkap');
             filterAlatTangkap.innerHTML = `<option value="">Semua</option>`;
             Object.keys(API_INFO).forEach(api => filterAlatTangkap.add(new Option(api, api)));
+            
+            // Inisialisasi dropdown filter jenis kapal
+            const filterJenisKapal = document.getElementById('filterJenisKapal');
+            filterJenisKapal.innerHTML = `<option value="">Semua</option>`;
+            Object.keys(KAPAL_INFO).forEach(kapal => filterJenisKapal.add(new Option(kapal, kapal)));
+            
+            // Inisialisasi dropdown jenis kapal di form input
+            const jenisKapalSelect = document.getElementById('jenisKapal');
+            jenisKapalSelect.innerHTML = '<option value="">Pilih Jenis...</option>';
+            Object.keys(KAPAL_INFO).forEach(kapal => {
+                jenisKapalSelect.add(new Option(kapal, kapal));
+            });
+            
+            // Inisialisasi dropdown alat tangkap di form input
+            const alatTangkapSelect = document.getElementById('alatTangkap');
+            alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
+            Object.keys(API_INFO).forEach(api => {
+                alatTangkapSelect.add(new Option(api, api));
+            });
             
             updateAppIdentity();
             updatePrivacyUI();
@@ -2420,7 +2592,11 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             });
 
             // Search and Filter
-            document.getElementById('searchData').addEventListener('input', renderDataTable);
+            document.getElementById('searchData').addEventListener('input', function() {
+                currentPage = 1; // Reset ke halaman pertama saat mencari
+                renderDataTable();
+            });
+            
             document.getElementById('applyFilterBtn').addEventListener('click', renderFilterTable);
             document.getElementById('btnCekGanda').addEventListener('click', showDuplicateDataInFilter);
             document.getElementById('selectAllCheckbox').addEventListener('change', function() {
@@ -2622,78 +2798,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             renderDataTable();
             document.getElementById('v-pills-data-tab').click();
             checkGlobalDuplicates();
-        }
-
-        function renderDataTable() {
-            const tableBody = document.getElementById('dataTableBody');
-            const search = document.getElementById('searchData').value.toLowerCase();
-            let filtered = appData.filter(d => JSON.stringify(d).toLowerCase().includes(search));
-            const nikCounts = {};
-            appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
-
-            const totalItems = filtered.length;
-            const start = (currentPage - 1) * appSettings.itemsPerPage;
-            const pageData = filtered.slice(start, start + appSettings.itemsPerPage);
-
-            tableBody.innerHTML = '';
-            if(pageData.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Data tidak ditemukan</td></tr>`;
-                toggleBulkDeleteBtn();
-                return;
-            }
-
-            pageData.forEach((d, i) => {
-                const kapalInfo = d.status === 'Pemilik Kapal' ? `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : '-';
-                const isDuplicate = nikCounts[d.nik] > 1;
-                const rowClass = isDuplicate ? 'table-danger' : '';
-                
-                let badgeClass = 'bg-secondary';
-                if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
-                else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
-                else if(d.profesi === 'Nelayan Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
-                
-                const displayNik = maskData(d.nik);
-                const displayWaRaw = maskData(d.whatsapp);
-                
-                let contactDisplay = '';
-                if(displayWaRaw === "Tidak Ada") {
-                    contactDisplay = `<span class="badge bg-light text-muted border">Tidak Ada</span>`;
-                } else {
-                    if (appSettings.privacyMode) {
-                        contactDisplay = `<div class="small"><i class="fas fa-phone-alt text-secondary me-1"></i> ${displayWaRaw}</div>`;
-                    } else {
-                        let cleanNum = d.whatsapp;
-                        if(cleanNum.startsWith('0')) cleanNum = '62' + cleanNum.substring(1);
-                        contactDisplay = `<div class="d-flex align-items-center gap-1"><a href="https://wa.me/${cleanNum}" target="_blank" class="btn btn-sm btn-success py-0 px-1" title="Chat WhatsApp"><i class="fab fa-whatsapp"></i></a><span class="small font-monospace ms-1">${d.whatsapp}</span></div>`;
-                    }
-                }
-
-                const row = `<tr class="${rowClass}">
-                    <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
-                    <td class="text-center">${start + i + 1}</td>
-                    <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
-                        <div class="fw-bold text-dark text-wrap">${d.nama}</div>
-                        <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
-                        <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
-                    </td>
-                    <td class="col-contact-cell">${contactDisplay}</td>
-                    <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
-                    <td class="col-status-cell">${kapalInfo}</td>
-                    <td style="white-space:nowrap;"><span class="badge bg-info text-white">${d.alatTangkap}</span></td>
-                    <td class="col-action sticky-col-right">
-                        <div class="btn-group shadow-sm" role="group">
-                            <button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button>
-                            <button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
-                            <button class="btn btn-sm btn-idcard" onclick="safeGenerateIDCard('${d.id}')" title="Cetak ID Card"><i class="fas fa-id-card"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>`;
-                tableBody.appendChild(document.createElement('tbody')).innerHTML = row;
-            });
-            document.getElementById('tableInfo').textContent = `Menampilkan ${pageData.length} dari ${totalItems} data (Limit: ${appSettings.itemsPerPage})`;
-            updatePagination(totalItems);
-            toggleBulkDeleteBtn();
         }
 
         function viewDetail(id) {
@@ -2911,15 +3015,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             }, 500);
         }
 
-        function updatePagination(total) {
-            const pages = Math.ceil(total / appSettings.itemsPerPage);
-            const ul = document.getElementById('pagination');
-            ul.innerHTML = '';
-            for(let i=1; i<=pages; i++) {
-                ul.innerHTML += `<li class="page-item ${i===currentPage?'active':''}"><a class="page-link" href="#" onclick="currentPage=${i};renderDataTable()">${i}</a></li>`;
-            }
-        }
-
         function toggleBulkDeleteBtn() {
             const checked = document.querySelectorAll('.row-checkbox:checked').length > 0;
             const btn = document.getElementById('bulkDeleteBtn');
@@ -2934,7 +3029,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if(userCode === appSettings.securityCodeSensor) {
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
-                saveData(); renderDataTable(); updateDashboard();
+                saveData(); 
+                currentPage = 1; // Reset ke halaman pertama setelah menghapus
+                renderDataTable(); 
+                updateDashboard();
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 document.getElementById('selectAllCheckbox').checked = false;
                 checkGlobalDuplicates();
@@ -3032,7 +3130,17 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if(userCode === appSettings.securityCodeSensor) {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
-                    saveData(); renderDataTable(); updateDashboard();
+                    saveData(); 
+                    
+                    // Periksa apakah halaman saat ini akan kosong setelah penghapusan
+                    const totalItems = appData.length;
+                    const totalPages = Math.ceil(totalItems / appSettings.itemsPerPage);
+                    if (currentPage > totalPages && totalPages > 0) {
+                        currentPage = totalPages;
+                    }
+                    
+                    renderDataTable(); 
+                    updateDashboard();
                     showNotification('Data berhasil dihapus', 'success');
                     checkGlobalDuplicates();
                 }
@@ -3620,11 +3728,13 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.restoreData = restoreData;
         window.updateAlatTangkapByKapal = updateAlatTangkapByKapal;
         window.updateFishOptionsByAPI = updateFishOptionsByAPI;
+        window.renderDataTable = renderDataTable;
 
         console.log('✅ SIMATA Application v5.4 initialized successfully');
         console.log('✅ Data ikan telah dilengkapi dengan 3 kategori: Demersal, Pelagis Kecil, Pelagis Besar');
-        console.log('✅ Mapping antara Jenis Kapal, Alat Tangkap, dan Ikan telah diterapkan');
-        console.log('✅ Informasi ikan (nama latin, deskripsi) telah ditambahkan');
+        console.log('✅ Perahu Pukat Tarik telah ditambahkan ke sistem');
+        console.log('✅ Mapping antara Jenis Kapal, Alat Tangkap, dan Ikan telah diperbarui dan disinkronkan');
+        console.log('✅ Pagination tabel telah diperbaiki untuk menangani data tanpa batas');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
     </script>
 </body>
