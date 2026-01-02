@@ -540,16 +540,6 @@
                                     </div>
                                  </div>
                                  
-                                 <!-- NOTIFIKASI DATA DISEMBUNYIKAN -->
-                                 <div class="alert alert-warning alert-dismissible fade show mb-3" id="hiddenRowsAlert" style="display:none;">
-                                     <i class="fas fa-eye-slash me-2"></i>
-                                     <strong>Data Tersembunyi:</strong> 
-                                     Total data: <span id="totalDataCount">0</span> | 
-                                     Ditampilkan: <span id="shownDataCount">0</span> | 
-                                     Disembunyikan: <span id="hiddenDataCount">0</span>
-                                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                 </div>
-                                 
                                 <!-- TABEL DATA NELAYAN -->
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-white py-3">
@@ -562,9 +552,6 @@
                                                     <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                                                     <input type="text" class="form-control border-start-0" id="searchData" placeholder="Cari cerdas (Nama, NIK, Kapal)...">
                                                 </div>
-                                                <!-- TOMBOL FITUR BARU: Sembunyikan/Tampilkan Data -->
-                                                <button class="btn btn-warning btn-sm shadow-sm" id="btnHideSelected"><i class="fas fa-eye-slash me-1"></i> Sembunyikan Terpilih</button>
-                                                <button class="btn btn-info btn-sm shadow-sm" id="btnShowAll"><i class="fas fa-eye me-1"></i> Tampilkan Semua</button>
                                                 <button class="btn btn-danger btn-sm d-none" id="bulkDeleteBtn"><i class="fas fa-trash me-1"></i> Hapus Terpilih</button>
                                             </div>
                                         </div>
@@ -599,7 +586,6 @@
                                         <div class="p-2 small text-muted fst-italic text-end border-top">
                                             <span id="sensorStatusText" class="badge bg-secondary me-2">Sensor: ON</span>
                                             <i class="fas fa-info-circle text-danger me-1"></i> Baris <span class="badge bg-danger">Merah</span> = duplikasi NIK.
-                                            <i class="fas fa-eye-slash text-warning ms-2 me-1"></i> Data tersembunyi: <span class="badge bg-warning" id="hiddenCountBadge">0</span>
                                         </div>
                                     </div>
                                 </div>
@@ -832,6 +818,31 @@
                                     </form>
                                 </div>
                                 
+                                <!-- FITUR BARU: Pengaturan Pejabat Penandatangan -->
+                                <div class="card p-4 border-0 shadow-sm mb-4">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Pengaturan Pejabat Penandatangan</h6>
+                                    <form id="officialForm">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Nama Pejabat</label>
+                                                <input type="text" class="form-control" id="officialName" placeholder="Masukkan nama pejabat" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">NIP</label>
+                                                <input type="text" class="form-control" id="officialNip" placeholder="Masukkan NIP pejabat" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <label class="form-label">Jabatan</label>
+                                                <input type="text" class="form-control" id="officialPosition" placeholder="Masukkan jabatan pejabat" required>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Simpan Pengaturan Pejabat</button>
+                                        <small class="text-muted d-block mt-2">*Data ini akan digunakan untuk tanda tangan pada dokumen PDF resmi</small>
+                                    </form>
+                                </div>
+                                
                                 <!-- Kode Keamanan Sensor Data -->
                                 <div class="card p-4 border-0 shadow-sm mb-4">
                                     <h6 class="fw-bold mb-3 border-bottom pb-2">Kode Keamanan Sensor Data</h6>
@@ -1053,6 +1064,7 @@
     <script>
         // =====================================================
         // KODE UTAMA APLIKASI SIMATA - VERSI 5.5 FINAL DIPERBAIKI
+        // DENGAN TAMBAHAN FITUR PENGATURAN PEJABAT
         // =====================================================
         
         // Data ikan yang diperbarui dan dilengkapi - DITAMBAHKAN IKAN TOGEK
@@ -1195,18 +1207,17 @@
             appSubtitle: 'DINAS PERIKANAN KABUPATEN SITUBONDO',
             itemsPerPage: 5, // DIUBAH DARI 10 MENJADI 5 (DEFAULT)
             privacyMode: true,
-            securityCodeSensor: '987654321'
+            securityCodeSensor: '987654321',
+            // TAMBAHAN: Data pejabat default
+            officialName: 'SUGENG PURWO PRIYANTO, S.E, M.M',
+            officialNip: '19761103 200903 1 001',
+            officialPosition: 'Kepala Bidang Pemberdayaan Nelayan'
         };
         let currentPage = 1;
         let duplicateCheckInterval = null;
         let currentDetailId = null; 
         let verifyDataResult = null;
         let currentFilter = {}; // Variabel untuk menyimpan filter aktif
-        
-        // VARIABLE BARU UNTUK FITUR SEMBUNYIKAN DATA - DIPERBAIKI: TIPE DATA ID HARUS KONSISTEN
-        let hiddenRows = []; // Array untuk menyimpan ID data yang disembunyikan (sebagai numbers)
-        let isHidingEnabled = false; // Status apakah fitur menyembunyikan aktif
-        
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
         const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
@@ -1681,7 +1692,7 @@
 
             // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
             document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nNIP: 19761103 200903 1 001\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
+            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
             
             try {
                 new QRCode(document.getElementById("qr-right"), { 
@@ -1885,7 +1896,7 @@
                     doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
                     
                     // JABATAN
-                    doc.text('Kepala Bidang Pemberdayaan Nelayan', rightX + 32, rightY + 6, {align: 'center'});
+                    doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
 
                     // QR Code dengan warna biru muda
                     const qrRightCanvas = document.querySelector('#qr-right canvas');
@@ -1908,10 +1919,10 @@
                     const nameY = rightY + 45;
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(9);
-                    doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', rightX + 32, nameY, {align: 'center'});
+                    doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(8);
-                    doc.text('NIP. 19761103 200903 1 001', rightX + 32, nameY + 5, {align: 'center'});
+                    doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
 
                     // FOOTER DENGAN INFORMASI SISTEM
                     const footerY = pageHeight - 15;
@@ -2333,118 +2344,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             return filtered;
         }
 
-        // --- FUNGSI BARU: LOAD DAN SAVE HIDDEN ROWS - DIPERBAIKI ---
-        function loadHiddenRows() {
-            const hr = localStorage.getItem('hiddenRows');
-            if (hr) {
-                try {
-                    // Pastikan semua id dalam hiddenRows adalah numbers
-                    hiddenRows = JSON.parse(hr).map(id => Number(id));
-                } catch (e) {
-                    hiddenRows = [];
-                }
-            } else {
-                hiddenRows = [];
-            }
-        }
-        
-        function saveHiddenRows() {
-            localStorage.setItem('hiddenRows', JSON.stringify(hiddenRows));
-        }
-
-        // --- FUNGSI BARU: TOGGLE HIDE/SHOW BUTTONS ---
-        function toggleHideShowButtons() {
-            const btnHideSelected = document.getElementById('btnHideSelected');
-            const btnShowAll = document.getElementById('btnShowAll');
-            const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-            
-            if (btnHideSelected) {
-                btnHideSelected.disabled = (checkedCount === 0);
-            }
-            
-            if (btnShowAll) {
-                btnShowAll.disabled = (hiddenRows.length === 0);
-            }
-        }
-
-        // --- FUNGSI BARU: HIDE SELECTED ROWS - DIPERBAIKI ---
-        function hideSelectedRows() {
-            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
-            const idsToHide = Array.from(checkedBoxes).map(cb => Number(cb.value));
-            
-            if (idsToHide.length === 0) {
-                showNotification('Pilih data terlebih dahulu dengan mencentang checkbox!', 'warning');
-                return;
-            }
-            
-            // Tambahkan ke hiddenRows jika belum ada
-            let addedCount = 0;
-            idsToHide.forEach(id => {
-                if (!hiddenRows.includes(id)) {
-                    hiddenRows.push(id);
-                    addedCount++;
-                }
-            });
-            
-            saveHiddenRows();
-            
-            // Reset checkbox select all
-            document.getElementById('selectAllCheckbox').checked = false;
-            
-            // Reset current page ke 1 agar tampilan konsisten
-            currentPage = 1;
-            
-            // Render ulang tabel
-            renderDataTable();
-            
-            showNotification(`${addedCount} data disembunyikan dari tampilan tabel`, 'success');
-        }
-
-        // --- FUNGSI BARU: SHOW ALL HIDDEN ROWS - DIPERBAIKI ---
-        function showAllHiddenRows() {
-            if (hiddenRows.length === 0) {
-                showNotification('Tidak ada data yang disembunyikan', 'info');
-                return;
-            }
-            
-            const count = hiddenRows.length;
-            hiddenRows = [];
-            saveHiddenRows();
-            
-            // Reset current page ke 1
-            currentPage = 1;
-            
-            renderDataTable();
-            showNotification(`${count} data yang disembunyikan ditampilkan kembali`, 'success');
-        }
-
-        // --- FUNGSI BARU: UPDATE HIDDEN ROWS NOTIFICATION ---
-        function updateHiddenRowsNotification() {
-            const alert = document.getElementById('hiddenRowsAlert');
-            const totalDataCount = document.getElementById('totalDataCount');
-            const shownDataCount = document.getElementById('shownDataCount');
-            const hiddenDataCount = document.getElementById('hiddenDataCount');
-            const hiddenCountBadge = document.getElementById('hiddenCountBadge');
-            
-            if (hiddenRows.length > 0) {
-                alert.style.display = 'block';
-                
-                // Hitung jumlah data yang ditampilkan setelah filter dan hidden rows
-                const filteredData = getFilteredData();
-                const shownData = filteredData.filter(d => !hiddenRows.includes(d.id)).length;
-                const totalData = filteredData.length;
-                
-                totalDataCount.textContent = totalData;
-                shownDataCount.textContent = shownData;
-                hiddenDataCount.textContent = hiddenRows.length;
-                hiddenCountBadge.textContent = hiddenRows.length;
-            } else {
-                alert.style.display = 'none';
-                hiddenCountBadge.textContent = '0';
-            }
-        }
-
-        // --- FUNGSI RENDER DATA TABLE YANG DISEMPURNAKAN DENGAN FITUR HIDE/SHOW - DIPERBAIKI ---
+        // --- FUNGSI RENDER DATA TABLE YANG DISEMPURNAKAN ---
         function renderDataTable() {
             const tableBody = document.getElementById('dataTableBody');
             const search = document.getElementById('searchData').value.toLowerCase();
@@ -2490,13 +2390,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 );
             }
             
-            // Hapus data yang disembunyikan dari filtered - DIPERBAIKI: Gunakan filter yang tepat
-            const filteredVisible = filtered.filter(d => !hiddenRows.includes(d.id));
-            
             const nikCounts = {};
             appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
 
-            const totalItems = filteredVisible.length;
+            const totalItems = filtered.length;
             const totalPages = Math.max(1, Math.ceil(totalItems / appSettings.itemsPerPage));
             
             // Validasi currentPage
@@ -2508,7 +2405,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             const start = (currentPage - 1) * appSettings.itemsPerPage;
             const end = start + appSettings.itemsPerPage;
-            const pageData = filteredVisible.slice(start, end);
+            const pageData = filtered.slice(start, end);
 
             tableBody.innerHTML = '';
             
@@ -2560,7 +2457,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     }
 
                     const row = `<tr class="${rowClass}">
-                        <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn(); toggleHideShowButtons();"></td>
+                        <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
                         <td class="text-center">${start + i + 1}</td>
                         <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
                             <div class="fw-bold text-dark text-wrap">${d.nama}</div>
@@ -2594,12 +2491,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             // Update tombol bulk delete
             toggleBulkDeleteBtn();
-            
-            // Update tombol hide/show
-            toggleHideShowButtons();
-            
-            // Update notifikasi hidden rows
-            updateHiddenRowsNotification();
         }
 
         // --- FUNGSI FILTER YANG DISEMPURNAKAN ---
@@ -2718,7 +2609,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
 
             // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
             document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nNIP: 19761103 200903 1 001\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
+            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
             
             try {
                 new QRCode(document.getElementById("qr-right"), { 
@@ -2910,7 +2801,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
                     
                     // JABATAN
-                    doc.text('Kepala Bidang Pemberdayaan Nelayan', rightX + 32, rightY + 6, {align: 'center'});
+                    doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
 
                     // QR Code dengan warna biru muda
                     const qrRightCanvas = document.querySelector('#qr-right canvas');
@@ -2933,10 +2824,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     const nameY = rightY + 45;
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(9);
-                    doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', rightX + 32, nameY, {align: 'center'});
+                    doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(8);
-                    doc.text('NIP. 19761103 200903 1 001', rightX + 32, nameY + 5, {align: 'center'});
+                    doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
 
                     // FOOTER DENGAN INFORMASI SISTEM
                     const footerY = pageHeight - 15;
@@ -3032,7 +2923,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
 
             // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
             document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nNIP: 19761103 200903 1 001\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
+            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
             
             try {
                 new QRCode(document.getElementById("qr-right"), { 
@@ -3231,7 +3122,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
                     
                     // JABATAN
-                    doc.text('Kepala Bidang Pemberdayaan Nelayan', rightX + 32, rightY + 6, {align: 'center'});
+                    doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
 
                     // QR Code dengan warna biru muda
                     const qrRightCanvas = document.querySelector('#qr-right canvas');
@@ -3254,10 +3145,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     const nameY = rightY + 45;
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(9);
-                    doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', rightX + 32, nameY, {align: 'center'});
+                    doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(8);
-                    doc.text('NIP. 19761103 200903 1 001', rightX + 32, nameY + 5, {align: 'center'});
+                    doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
 
                     // FOOTER DENGAN INFORMASI SISTEM
                     const footerY = pageHeight - 15;
@@ -3323,9 +3214,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             loadSettings();
             migrateOldData();
             
-            // LOAD HIDDEN ROWS DARI LOCALSTORAGE - DIPERBAIKI
-            loadHiddenRows();
-            
             if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
                 console.log("Reload Repository detected. Ready to merge/sync.");
             }
@@ -3378,6 +3266,16 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             // Inisialisasi daftar ikan
             updateFishOptionsByAPI('');
+            
+            // TAMBAHAN: Inisialisasi form pengaturan pejabat
+            loadOfficialData();
+        }
+
+        function loadOfficialData() {
+            // Load data pejabat dari appSettings ke form
+            document.getElementById('officialName').value = appSettings.officialName || 'SUGENG PURWO PRIYANTO, S.E, M.M';
+            document.getElementById('officialNip').value = appSettings.officialNip || '19761103 200903 1 001';
+            document.getElementById('officialPosition').value = appSettings.officialPosition || 'Kepala Bidang Pemberdayaan Nelayan';
         }
 
         function setupInfoTooltips() {
@@ -3716,7 +3614,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 const checkboxes = document.querySelectorAll('.row-checkbox');
                 checkboxes.forEach(cb => cb.checked = this.checked);
                 toggleBulkDeleteBtn();
-                toggleHideShowButtons();
             });
             document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
             
@@ -3725,10 +3622,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             // Download PDF Tabel Data - TAMBAHAN BARU
             document.getElementById('btnUnduhTabelPdf').addEventListener('click', generateTabelPdf);
-            
-            // TOMBOL BARU: Sembunyikan/Tampilkan Data - DIPERBAIKI
-            document.getElementById('btnHideSelected').addEventListener('click', hideSelectedRows);
-            document.getElementById('btnShowAll').addEventListener('click', showAllHiddenRows);
 
             // Print and Export
             document.getElementById('printPdfBtn').addEventListener('click', printData);
@@ -3766,6 +3659,26 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 updateAppIdentity(); 
                 renderDataTable();
                 showNotification('Pengaturan tersimpan! Nama instansi dan jumlah baris per halaman berhasil diperbarui.', 'success');
+            });
+
+            // TAMBAHAN: Form Pengaturan Pejabat
+            document.getElementById('officialForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const officialName = document.getElementById('officialName').value;
+                const officialNip = document.getElementById('officialNip').value;
+                const officialPosition = document.getElementById('officialPosition').value;
+                
+                if (!officialName || !officialNip || !officialPosition) {
+                    showNotification('Harap isi semua field data pejabat!', 'error');
+                    return;
+                }
+                
+                appSettings.officialName = officialName;
+                appSettings.officialNip = officialNip;
+                appSettings.officialPosition = officialPosition;
+                
+                saveSettings();
+                showNotification('Data pejabat penandatangan berhasil disimpan!', 'success');
             });
 
             // Sensor Code Form
@@ -3879,7 +3792,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
 
             const isOwner = document.getElementById('statusNelayan').value === 'Pemilik Kapal';
             const formData = {
-                id: editId ? Number(editId) : Date.now(), // DIPERBAIKI: Pastikan id adalah number
+                id: editId || Date.now(),
                 nama: document.getElementById('nama').value,
                 nik: nik,
                 whatsapp: whatsapp,
@@ -3980,7 +3893,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if(!d) return;
 
             document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `DOKUMEN SAH\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nRef: ${d.kodeValidasi || 'N/A'}`;
+            const signatureText = `DOKUMEN SAH\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nRef: ${d.kodeValidasi || 'N/A'}`;
             new QRCode(document.getElementById("qr-right"), { 
                 text: signatureText, width: 256, height: 256,
                 colorDark: "#0984e3",
@@ -4117,7 +4030,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 doc.text(`Situbondo, ${dateStr}`, sigCenterX, footerY - 5, {align: 'center'});
                 doc.text('Diketahui Oleh :', sigCenterX, footerY, {align: 'center'});
                 doc.setFont('helvetica', 'bold');
-                doc.text('Kepala Bidang Pemberdayaan Nelayan', sigCenterX, footerY + 5, {align: 'center'});
+                doc.text(appSettings.officialPosition, sigCenterX, footerY + 5, {align: 'center'});
 
                 const qrRightCanvas = document.querySelector('#qr-right canvas');
                 if(qrRightCanvas) {
@@ -4126,9 +4039,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 }
 
                 const nameY = footerY + 38; 
-                doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', sigCenterX, nameY, {align: 'center'});
+                doc.text(appSettings.officialName, sigCenterX, nameY, {align: 'center'});
                 doc.setFont('helvetica', 'normal');
-                doc.text('NIP. 19761103 200903 1 001', sigCenterX, nameY + 5, {align: 'center'});
+                doc.text(`NIP. ${appSettings.officialNip}`, sigCenterX, nameY + 5, {align: 'center'});
 
                 doc.setFontSize(7); doc.setTextColor(150);
                 doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Ref ID: ${d.kodeValidasi || '-'}`, 105, 285, {align:'center'});
@@ -4159,13 +4072,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN SENSOR:`);
             if(userCode === appSettings.securityCodeSensor) {
-                const idsToDelete = Array.from(checkedBoxes).map(cb => Number(cb.value));
-                appData = appData.filter(d => !idsToDelete.includes(d.id));
-                
-                // Hapus juga dari hiddenRows
-                hiddenRows = hiddenRows.filter(id => !idsToDelete.includes(id));
-                saveHiddenRows();
-                
+                const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
+                appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
                 saveData(); 
                 currentPage = 1; // Reset ke halaman pertama setelah menghapus
                 renderDataTable(); 
@@ -4263,16 +4171,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         }
 
         function deleteData(id) {
-            const numId = Number(id); // DIPERBAIKI: Konversi ke number
             const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk menghapus data:");
             if(userCode === appSettings.securityCodeSensor) {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
-                    appData = appData.filter(d => d.id != numId);
-                    
-                    // Hapus juga dari hiddenRows
-                    hiddenRows = hiddenRows.filter(hiddenId => hiddenId != numId);
-                    saveHiddenRows();
-                    
+                    appData = appData.filter(d => d.id != id);
                     saveData(); 
                     
                     // Periksa apakah halaman saat ini akan kosong setelah penghapusan
@@ -4385,6 +4287,16 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 loadedSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
                 if (!loadedSettings.securityCodeSensor) {
                     loadedSettings.securityCodeSensor = '987654321';
+                }
+                // TAMBAHAN: Load data pejabat jika ada
+                if (!loadedSettings.officialName) {
+                    loadedSettings.officialName = 'SUGENG PURWO PRIYANTO, S.E, M.M';
+                }
+                if (!loadedSettings.officialNip) {
+                    loadedSettings.officialNip = '19761103 200903 1 001';
+                }
+                if (!loadedSettings.officialPosition) {
+                    loadedSettings.officialPosition = 'Kepala Bidang Pemberdayaan Nelayan';
                 }
                 // Pastikan itemsPerPage valid (minimal 1)
                 if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
@@ -4519,11 +4431,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.generateTabelPdf = generateTabelPdf;
         window.getFilteredData = getFilteredData;
         window.refreshPage = refreshPage;
-        
-        // Ekspos fungsi baru
-        window.hideSelectedRows = hideSelectedRows;
-        window.showAllHiddenRows = showAllHiddenRows;
-        window.toggleHideShowButtons = toggleHideShowButtons;
 
         console.log('✅ SIMATA Application v5.5 FINAL initialized successfully');
         console.log('✅ Fitur Filter & Validasi Data telah dipindahkan ke menu Database Nelayan');
@@ -4534,11 +4441,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         console.log('✅ PDF tabel menyesuaikan jumlah baris per halaman');
         console.log('✅ Verifikasi KIN telah disempurnakan dengan tampilan responsif');
         console.log('✅ Pagination telah disempurnakan dengan navigasi yang lebih baik');
-        console.log('✅ FITUR BARU: Sembunyikan/Tampilkan Data telah DIPERBAIKI DAN DISEMPURNAKAN');
-        console.log('✅ FITUR BARU: Notifikasi data tersembunyi telah ditambahkan');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
         console.log('✅ Format laporan PDF telah diperbaiki dengan struktur yang lebih baik');
         console.log('✅ Fitur tampilan baris per halaman telah diperbaiki menjadi input number bebas (default: 5)');
+        console.log('✅ FITUR BARU: Pengaturan Pejabat Penandatangan telah ditambahkan di menu Pengaturan');
     </script>
 </body>
 </html>
