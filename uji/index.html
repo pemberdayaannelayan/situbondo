@@ -188,6 +188,10 @@
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button"><i class="fas fa-file-export"></i> Ekspor Data</button>
                         <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button"><i class="fas fa-cloud-download-alt"></i> Backup & Restore</button>
                         <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button"><i class="fas fa-cog"></i> Pengaturan</button>
+                        <!-- Tombol Refresh Halaman -->
+                        <button class="nav-link" id="refreshPageBtn" type="button">
+                            <i class="fas fa-redo"></i> Refresh Halaman
+                        </button>
                         <!-- Tombol Reload Data dengan spinner -->
                         <button class="nav-link" id="btn-reload-repo" type="button">
                             <i class="fas fa-sync"></i> Reload Data
@@ -2586,17 +2590,20 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             }, 800);
         }
 
-        // --- FUNGSI BARU: GENERATE PDF TABEL DATA NELAYAN ---
+        // --- FUNGSI BARU: GENERATE PDF TABEL DATA NELAYAN YANG DISEMPURNAKAN ---
         function generateTablePdf() {
             const filteredData = getFilteredData();
             
-            if (filteredData.length === 0) {
+            // Ambil hanya data sesuai dengan jumlah baris per halaman yang diset
+            const limitedData = filteredData.slice(0, appSettings.itemsPerPage);
+            
+            if (limitedData.length === 0) {
                 showNotification('Tidak ada data untuk dicetak!', 'error');
                 return;
             }
             
-            // Siapkan data untuk tabel
-            const tableRows = filteredData.map((d, index) => [
+            // Siapkan data untuk tabel dengan kolom yang diminta: No, Nama, No HP, NIK, Desa, Kecamatan, Status, Nama Perahu, Kode Validasi
+            const tableRows = limitedData.map((d, index) => [
                 index + 1, 
                 d.nama,
                 d.whatsapp === '00000000' || !d.whatsapp ? '-' : d.whatsapp,
@@ -2605,9 +2612,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 d.kecamatan,
                 d.status,
                 d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
-                d.tanggalValidasi,
-                d.kodeValidasi || '-',
-                d.keterangan || ''
+                d.kodeValidasi || '-'
             ]);
 
             // Generate kode unik untuk setiap cetakan
@@ -2703,7 +2708,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     doc.setFont('helvetica', 'normal');
                     const now = new Date();
                     const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+                    doc.text(`Dicetak pada: ${dateString} | Baris per halaman: ${appSettings.itemsPerPage}`, pageWidth/2, 66, { align: 'center' });
 
                     // Tabel Data dengan kolom sesuai permintaan
                     const tableWidth = pageWidth - 40;
@@ -2718,10 +2723,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                             {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
                             {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
                             {content: 'Status', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Tanggal Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Keterangan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}}
+                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                            {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}}
                         ]],
                         body: tableRows,
                         startY: 72,
@@ -2764,10 +2767,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                             4: {cellWidth: 30, halign: 'center'},
                             5: {cellWidth: 30, halign: 'center'},
                             6: {cellWidth: 25, halign: 'center'},
-                            7: {cellWidth: 30, halign: 'center'},
-                            8: {cellWidth: 30, halign: 'center'},
-                            9: {cellWidth: 35, halign: 'center'},
-                            10: {cellWidth: 40, halign: 'left'}
+                            7: {cellWidth: 35, halign: 'center'},
+                            8: {cellWidth: 35, halign: 'center'}
                         }
                     });
 
@@ -2851,7 +2852,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         doc.setFontSize(7);
                         const printTime = new Date().toLocaleString('id-ID');
                         doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
-                        doc.text(`Total Data Tabel: ${filteredData.length} records`, pageWidth / 2, pageHeight - 2, { align: 'center' });
+                        doc.text(`Total Data Tabel: ${limitedData.length} records (${appSettings.itemsPerPage} baris per halaman)`, pageWidth / 2, pageHeight - 2, { align: 'center' });
                     }
 
                     // Simpan file PDF
@@ -2859,7 +2860,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     doc.save(fileName);
                     document.getElementById('qr-right').innerHTML = "";
                     
-                    showNotification(`Tabel PDF data nelayan berhasil dibuat (${filteredData.length} data)`, 'success');
+                    showNotification(`Tabel PDF data nelayan berhasil dibuat (${limitedData.length} data)`, 'success');
                     
                 } catch (error) {
                     console.error("Error generating table PDF:", error);
@@ -3312,6 +3313,11 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 document.getElementById('restoreDataBtn').disabled = !this.files.length;
             });
             document.getElementById('restoreDataBtn').addEventListener('click', restoreData);
+            
+            // Event listener untuk tombol Refresh Halaman
+            document.getElementById('refreshPageBtn').addEventListener('click', function() {
+                location.reload();
+            });
             
             // Event listener untuk tombol Reload Data yang sudah diperbaiki
             document.getElementById('btn-reload-repo').addEventListener('click', handleReloadRepo);
@@ -4371,7 +4377,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         console.log('✅ SIMATA Application v5.5 initialized successfully');
         console.log('✅ Fitur Filter & Validasi Data telah dipindahkan ke menu Database Nelayan');
         console.log('✅ Fitur Unduh PDF Terfilter telah ditambahkan ke menu Database Nelayan');
-        console.log('✅ Fitur Unduh PDF Tabel Data telah ditambahkan ke menu Database Nelayan');
+        console.log('✅ Fitur Unduh PDF Tabel Data telah disempurnakan');
+        console.log('✅ Tombol Refresh Halaman telah ditambahkan');
         console.log('✅ Verifikasi KIN telah disempurnakan dengan tampilan responsif');
         console.log('✅ Pagination telah disempurnakan dengan navigasi yang lebih baik');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
