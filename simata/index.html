@@ -23,7 +23,94 @@
     <script src="idcard.js"></script>
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
     <script src="convert.js"></script>
-     
+    
+    <style>
+        /* Styling untuk tombol Reload Data */
+        #btn-reload-repo {
+            background-color: #f8f9fa;
+            color: #0c2461;
+            border-left: 3px solid #0c2461;
+            transition: all 0.3s ease;
+        }
+        
+        #btn-reload-repo:hover {
+            background: linear-gradient(90deg, #0c2461, #1e3799) !important;
+            color: white !important;
+        }
+        
+        .reload-spinner {
+            display: none;
+            margin-left: 5px;
+        }
+        
+        .reload-spinner.active {
+            display: inline-block;
+        }
+        
+        /* PERBAIKAN TAMBAHAN UNTUK PDF */
+        .pdf-table-container {
+            display: none;
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+        
+        /* Style untuk halaman PDF */
+        .pdf-header-img {
+            display: block;
+            margin: 0 auto;
+            max-width: 80px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .verify-result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .verify-result-label,
+            .verify-result-value {
+                min-width: auto;
+                text-align: left;
+                width: 100%;
+            }
+            
+            .verify-result-actions {
+                flex-direction: column;
+            }
+            
+            .verify-breadcrumb-item {
+                min-width: 120px;
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Style untuk verifikasi KIN */
+        .verify-card {
+            border-left: 4px solid #0c2461;
+        }
+        
+        .verify-success {
+            border-left: 4px solid #28a745 !important;
+        }
+        
+        .verify-error {
+            border-left: 4px solid #dc3545 !important;
+        }
+        
+        .verify-warning {
+            border-left: 4px solid #ffc107 !important;
+        }
+        
+        .kin-badge {
+            font-family: monospace;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+    </style>
 </head>
 <body>
 
@@ -153,7 +240,7 @@
             <div>
                 <h6 class="fw-bold text-danger mb-1">PERHATIAN: Data Ganda!</h6>
                 <p class="small text-muted mb-2">Sistem mendeteksi adanya NIK ganda yang belum diperbaiki.</p>
-                <button class="btn btn-sm btn-outline-danger" onclick="document.getElementById('v-pills-data-tab').click(); setTimeout(() => document.getElementById('btnCekGanda').click(), 200);">Periksa Sekarang</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="document.getElementById('v-pills-filter-tab').click(); setTimeout(() => document.getElementById('btnCekGanda').click(), 200);">Periksa Sekarang</button>
                 <button class="btn btn-sm btn-link text-muted text-decoration-none ms-2" onclick="document.getElementById('duplicateWarning').style.display='none'">Tutup</button>
             </div>
         </div>
@@ -172,7 +259,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.5</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.4</span>
                 </div>
             </div>
             
@@ -183,6 +270,7 @@
                         <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
                         <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button"><i class="fas fa-edit"></i> Input Data</button>
                         <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button"><i class="fas fa-database"></i> Data Nelayan</button>
+                        <button class="nav-link" id="v-pills-filter-tab" data-bs-toggle="pill" data-bs-target="#v-pills-filter" type="button"><i class="fas fa-filter"></i> Filter & Validasi</button>
                         <button class="nav-link" id="v-pills-verify-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verify" type="button"><i class="fas fa-check-circle"></i> Verifikasi KIN</button>
                         <button class="nav-link" id="v-pills-print-tab" data-bs-toggle="pill" data-bs-target="#v-pills-print" type="button"><i class="fas fa-print"></i> Cetak Laporan</button>
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button"><i class="fas fa-file-export"></i> Ekspor Data</button>
@@ -372,6 +460,14 @@
                                                     <div class="card p-3 bg-light border">
                                                         <select class="form-select" id="alatTangkap" required>
                                                             <option value="">Pilih Alat Penangkapan Ikan...</option>
+                                                            <option value="Pukat Cincin">Pukat Cincin</option>
+                                                            <option value="Pukat Tarik">Pukat Tarik</option>
+                                                            <option value="Pancing Ulur">Pancing Ulur</option>
+                                                            <option value="Jaring Insang (gill net)">Jaring Insang (gill net)</option>
+                                                            <option value="Jaring Angkat (lift net)">Jaring Angkat (lift net)</option>
+                                                            <option value="Pancing">Pancing</option>
+                                                            <option value="Perangkap Bubu">Perangkap Bubu</option>
+                                                            <option value="Lainnya">Lainnya</option>
                                                         </select>
                                                         <div id="apiInfo" class="api-info-box mt-2" style="display:none;"></div>
                                                     </div>
@@ -389,24 +485,25 @@
                                                         <label class="form-label">Jenis Kapal</label>
                                                         <select class="form-select" id="jenisKapal">
                                                             <option value="">Pilih Jenis...</option>
+                                                            <option value="Perahu Jukung">Perahu Jukung</option>
+                                                            <option value="Perahu Mayang">Perahu Mayang</option>
+                                                            <option value="Perahu Slerek">Perahu Slerek</option>
+                                                            <option value="Perahu Insang">Perahu Insang</option>
+                                                            <option value="Perahu Jaring Angkat">Perahu Jaring Angkat</option>
+                                                            <option value="Perahu Pancing">Perahu Pancing</option>
+                                                            <option value="Lainnya">Lainnya</option>
                                                         </select>
                                                         <div id="kapalInfo" class="kapal-info-box mt-2" style="display:none;"></div>
-                                                        <div id="apiMappingInfo" class="api-mapping-info mt-2" style="display:none;"></div>
                                                     </div>
                                                 </div>
                                             </div>
                                             
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
-                                                    <label class="form-label fw-bold">Jenis Ikan Tangkapan Utama <span class="text-danger">*</span>
-                                                        <button type="button" class="fish-info-btn" onclick="showFishInfoModal()" title="Lihat Referensi Jenis Ikan">
-                                                            <i class="fas fa-info"></i>
-                                                        </button>
-                                                    </label>
+                                                    <label class="form-label fw-bold">Jenis Ikan Tangkapan Utama <span class="text-danger">*</span></label>
                                                     <div class="card p-3 bg-light border">
                                                         <div id="fishCheckboxContainer" style="max-height: 200px; overflow-y: auto;">
-                                                            <!-- Daftar ikan akan dimuat secara dinamis berdasarkan alat tangkap -->
-                                                        </div>
+                                                            </div>
                                                         <input type="text" class="form-control form-control-sm mt-2" id="jenisIkanLainnya" placeholder="Sebutkan jenis lainnya..." style="display:none;">
                                                     </div>
                                                     <small class="text-muted fst-italic">*Pilih minimal satu</small>
@@ -466,75 +563,6 @@
                             
                             <div class="tab-pane fade" id="v-pills-data">
                                 <h3 class="section-title">Database Nelayan</h3>
-                                
-                                <!-- FITUR FILTER & VALIDASI DATA YANG DIPINDAHKAN -->
-                                <div class="card mb-4 border-0 shadow-sm filter-section">
-                                    <div class="card-header bg-white py-3 border-bottom">
-                                        <h6 class="mb-0 fw-bold"><i class="fas fa-filter me-2 text-primary"></i>Filter & Validasi Data</h6>
-                                    </div>
-                                    <div class="card-body bg-light rounded">
-                                        <div class="row g-3">
-                                            <div class="col-md-3">
-                                                <label class="form-label small fw-bold">Desa</label>
-                                                <select class="form-select form-select-sm" id="filterDesa">
-                                                    <option value="">Semua Desa</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label small fw-bold">Profesi</label>
-                                                <select class="form-select form-select-sm" id="filterProfesi">
-                                                    <option value="">Semua</option>
-                                                    <option value="Nelayan Penuh Waktu">Nelayan Penuh Waktu</option>
-                                                    <option value="Nelayan Sambilan Utama">Nelayan Sambilan Utama</option>
-                                                    <option value="Nelayan Sambilan Tambahan">Nelayan Sambilan Tambahan</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label small fw-bold">Status Kepemilikan</label>
-                                                <select class="form-select form-select-sm" id="filterStatus">
-                                                    <option value="">Semua</option>
-                                                    <option value="Anak Buah Kapal">Anak Buah Kapal</option>
-                                                    <option value="Pemilik Kapal">Pemilik Kapal</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label small fw-bold">Jenis Kapal</label>
-                                                <select class="form-select form-select-sm" id="filterJenisKapal">
-                                                    <option value="">Semua</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label small fw-bold">Alat Tangkap (API)</label>
-                                                <select class="form-select form-select-sm" id="filterAlatTangkap">
-                                                    <option value="">Semua</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label small fw-bold">Usaha Sampingan</label>
-                                                <select class="form-select form-select-sm" id="filterUsaha">
-                                                    <option value="">Semua</option>
-                                                    <option value="Ada">Ada Usaha Sampingan</option>
-                                                    <option value="Tidak">Tidak Ada</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3 d-flex align-items-end">
-                                                <button class="btn btn-primary w-100 btn-sm" id="applyFilterBtn"><i class="fas fa-search me-2"></i> Terapkan Filter</button>
-                                            </div>
-                                            <div class="col-md-3 d-flex align-items-end">
-                                                <button class="btn btn-outline-secondary w-100 btn-sm" id="resetFilterBtn"><i class="fas fa-redo me-2"></i> Reset Filter</button>
-                                            </div>
-                                            <div class="col-md-12 mt-2">
-                                                <div class="d-flex justify-content-end gap-2">
-                                                    <button class="btn btn-download-filtered-pdf btn-sm shadow-sm" id="btnUnduhFilteredPdf"><i class="fas fa-file-pdf me-2"></i> Unduh PDF (Filter)</button>
-                                                    <button class="btn btn-download-table-pdf btn-sm shadow-sm" id="btnUnduhTablePdf"><i class="fas fa-table me-2"></i> Unduh PDF Tabel Data</button>
-                                                    <button class="btn btn-danger btn-sm shadow-sm" id="btnCekGanda"><i class="fas fa-exclamation-triangle me-2"></i> Cek Data Ganda</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                 </div>
-                                 
-                                <!-- TABEL DATA NELAYAN -->
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-white py-3">
                                         <div class="row align-items-center g-2">
@@ -572,10 +600,7 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light flex-wrap gap-2">
                                             <div class="text-muted small" id="tableInfo">Menampilkan 0 data</div>
-                                            <div class="pagination-container">
-                                                <span class="pagination-info" id="paginationInfo">Halaman 1</span>
-                                                <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
-                                            </div>
+                                            <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
                                         </div>
                                         <div class="p-2 small text-muted fst-italic text-end border-top">
                                             <span id="sensorStatusText" class="badge bg-secondary me-2">Sensor: ON</span>
@@ -585,47 +610,126 @@
                                 </div>
                             </div>
 
-                            <!-- TAB FILTER & VALIDASI YANG DIBIARKAN KOSONG -->
                             <div class="tab-pane fade" id="v-pills-filter">
                                  <h3 class="section-title">Filter & Validasi Data</h3>
-                                 <div class="alert alert-info mt-4">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <strong>Fitur Filter & Validasi Data telah dipindahkan ke menu <u>Database Nelayan</u>.</strong>
-                                    <p class="mb-0 mt-2">Silakan gunakan menu Database Nelayan untuk mengakses semua fitur filter dan validasi data yang telah disempurnakan.</p>
+                                 <div class="card mb-4 border-0 shadow-sm">
+                                    <div class="card-body bg-light rounded">
+                                        <div class="row g-3">
+                                            <div class="col-md-3">
+                                                <label class="form-label small fw-bold">Desa</label>
+                                                <select class="form-select form-select-sm" id="filterDesa"></select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small fw-bold">Profesi</label>
+                                                <select class="form-select form-select-sm" id="filterProfesi">
+                                                    <option value="">Semua</option>
+                                                    <option value="Nelayan Penuh Waktu">Nelayan Penuh Waktu</option>
+                                                    <option value="Nelayan Sambilan Utama">Nelayan Sambilan Utama</option>
+                                                    <option value="Nelayan Sambilan Tambahan">Nelayan Sambilan Tambahan</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small fw-bold">Status Kepemilikan</label>
+                                                <select class="form-select form-select-sm" id="filterStatus">
+                                                    <option value="">Semua</option>
+                                                    <option value="Anak Buah Kapal">Anak Buah Kapal</option>
+                                                    <option value="Pemilik Kapal">Pemilik Kapal</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small fw-bold">Jenis Kapal</label>
+                                                <select class="form-select form-select-sm" id="filterJenisKapal">
+                                                    <option value="">Semua</option>
+                                                    <option value="Perahu Jukung">Perahu Jukung</option>
+                                                    <option value="Perahu Mayang">Perahu Mayang</option>
+                                                    <option value="Perahu Slerek">Perahu Slerek</option>
+                                                    <option value="Perahu Insang">Perahu Insang</option>
+                                                    <option value="Perahu Jaring Angkat">Perahu Jaring Angkat</option>
+                                                    <option value="Perahu Pancing">Perahu Pancing</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small fw-bold">Alat Tangkap (API)</label>
+                                                <select class="form-select form-select-sm" id="filterAlatTangkap">
+                                                    <option value="">Semua</option>
+                                                    <option value="Pukat Cincin">Pukat Cincin</option>
+                                                    <option value="Pukat Tarik">Pukat Tarik</option>
+                                                    <option value="Pancing Ulur">Pancing Ulur</option>
+                                                    <option value="Jaring Insang">Jaring Insang</option>
+                                                    <option value="Jaring Angkat">Jaring Angkat</option>
+                                                    <option value="Pancing">Pancing</option>
+                                                    <option value="Perangkap Bubu">Perangkap Bubu</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small fw-bold">Usaha Sampingan</label>
+                                                <select class="form-select form-select-sm" id="filterUsaha">
+                                                    <option value="">Semua</option>
+                                                    <option value="Ada">Ada Usaha Sampingan</option>
+                                                    <option value="Tidak">Tidak Ada</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 d-flex align-items-end">
+                                                <button class="btn btn-primary w-100 btn-sm" id="applyFilterBtn"><i class="fas fa-search me-2"></i> Terapkan Filter</button>
+                                            </div>
+                                            <div class="col-md-12">
+                                                 <button class="btn btn-danger btn-sm shadow-sm float-end" id="btnCekGanda"><i class="fas fa-exclamation-triangle me-2"></i> Cek Data Ganda</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                  </div>
-                                 <div class="text-center mt-4">
-                                    <button class="btn btn-primary" onclick="document.getElementById('v-pills-data-tab').click()">
-                                        <i class="fas fa-database me-2"></i>Buka Menu Database Nelayan
-                                    </button>
+                                 <div class="card border-0 shadow-sm">
+                                     <div class="card-body p-0">
+                                         <div class="table-responsive">
+                                            <table class="table table-hover data-table mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col-no">No</th>
+                                                        <th class="col-id">NIK</th>
+                                                        <th class="col-id">Nama & Identitas</th>
+                                                        <th class="col-prof">Status</th>
+                                                        <th class="col-asset">API</th>
+                                                        <th class="col-income">Profesi</th>
+                                                        <th class="col-action">Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="filterTableBody"><tr><td colspan="7" class="text-center py-4">Silakan terapkan filter untuk melihat hasil</td></tr></tbody>
+                                            </table>
+                                         </div>
+                                     </div>
                                  </div>
                             </div>
 
-                            <!-- TAB VERIFIKASI KIN BARU - DIREVISI DAN DISEMPURNAKAN -->
+                            <!-- TAB VERIFIKASI KIN BARU -->
                             <div class="tab-pane fade" id="v-pills-verify">
                                 <h3 class="section-title">Verifikasi KIN (Kode Identifikasi Nelayan)</h3>
                                 
                                 <div class="row mb-4">
-                                    <div class="col-md-10 mx-auto">
+                                    <div class="col-md-8 mx-auto">
                                         <div class="card verify-card shadow-sm">
-                                            <div class="verify-header">
-                                                <div class="verify-icon-container">
-                                                    <i class="fas fa-id-card"></i>
-                                                </div>
-                                                <h4 class="fw-bold mb-2">Verifikasi Data Nelayan</h4>
-                                                <p class="mb-0 opacity-75">Masukkan Kode Validasi (KIN) atau NIK untuk memverifikasi keabsahan data nelayan</p>
-                                            </div>
                                             <div class="card-body p-4">
+                                                <div class="text-center mb-4">
+                                                    <i class="fas fa-qrcode fa-3x text-primary mb-3"></i>
+                                                    <h5 class="fw-bold">Verifikasi Data Nelayan</h5>
+                                                    <p class="text-muted">Masukkan Kode Validasi (KIN) atau NIK untuk memverifikasi keabsahan data nelayan</p>
+                                                </div>
+                                                
                                                 <div class="row mb-4">
-                                                    <div class="col-md-12">
-                                                        <div class="input-group verify-input-group">
-                                                            <span class="input-group-text bg-primary text-white border-0"><i class="fas fa-search"></i></span>
-                                                            <input type="text" class="form-control border-0 py-3" id="verifyInput" placeholder="Masukkan Kode Validasi (contoh: VLD-ABC123) atau NIK 16 digit" autocomplete="off">
-                                                            <button class="btn btn-primary px-4 fw-bold border-0" type="button" id="verifyBtn">Verifikasi</button>
+                                                    <div class="col-md-8">
+                                                        <div class="input-group input-group-lg">
+                                                            <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                                                            <input type="text" class="form-control" id="verifyInput" placeholder="Masukkan Kode Validasi (contoh: VLD-ABC123) atau NIK 16 digit">
+                                                            <button class="btn btn-primary" type="button" id="verifyBtn">Verifikasi</button>
                                                         </div>
-                                                        <div class="form-text mt-3 text-center">
+                                                        <div class="form-text mt-2">
                                                             <i class="fas fa-info-circle text-primary me-1"></i>
                                                             Kode Validasi (KIN) dapat ditemukan di ID Card atau kolom "Kode Validasi" pada data nelayan
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <button class="btn btn-outline-primary w-100 h-100" onclick="scanQRCode()">
+                                                            <i class="fas fa-camera me-2"></i> Scan QR Code
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 
@@ -654,31 +758,31 @@
                                     <div class="col-md-12">
                                         <div class="card shadow-sm border-0 mb-4" id="verifyResultCard" style="display: none;">
                                             <div class="card-body p-0">
-                                                <div class="verify-result-header" id="verifyResultHeader">
+                                                <div class="verify-result-header p-4" id="verifyResultHeader">
                                                     <div class="d-flex align-items-center">
                                                         <div class="me-3" id="verifyResultIcon"></div>
                                                         <div>
                                                             <h5 class="fw-bold mb-1" id="verifyResultTitle"></h5>
-                                                            <p class="mb-0 opacity-75" id="verifyResultSubtitle"></p>
+                                                            <p class="mb-0" id="verifyResultSubtitle"></p>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 
-                                                <div class="verify-result-content" id="verifyResultBody">
+                                                <div class="p-4" id="verifyResultBody">
                                                     <div class="row" id="verifyResultContent"></div>
-                                                </div>
-                                                
-                                                <div class="verify-actions" id="verifyResultActions">
-                                                    <div class="d-flex gap-2 flex-wrap justify-content-center">
-                                                        <button class="btn btn-outline-secondary px-4" onclick="resetVerifyForm()">
-                                                            <i class="fas fa-redo me-2"></i>Cari Lagi
-                                                        </button>
-                                                        <button class="btn btn-primary px-4" id="verifyDetailBtn" style="display: none;">
-                                                            <i class="fas fa-eye me-2"></i>Lihat Detail Lengkap
-                                                        </button>
-                                                        <button class="btn btn-success px-4" id="verifyIdCardBtn" style="display: none;">
-                                                            <i class="fas fa-id-card me-2"></i>Cetak ID Card
-                                                        </button>
+                                                    
+                                                    <div class="mt-4" id="verifyResultActions">
+                                                        <div class="d-flex gap-2 justify-content-end">
+                                                            <button class="btn btn-outline-secondary" onclick="resetVerifyForm()">
+                                                                <i class="fas fa-redo me-2"></i>Cari Lagi
+                                                            </button>
+                                                            <button class="btn btn-primary" id="verifyDetailBtn" style="display: none;">
+                                                                <i class="fas fa-eye me-2"></i>Lihat Detail Lengkap
+                                                            </button>
+                                                            <button class="btn btn-success" id="verifyIdCardBtn" style="display: none;">
+                                                                <i class="fas fa-id-card me-2"></i>Cetak ID Card
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -686,14 +790,9 @@
                                         
                                         <!-- DAFTAR SEMUA KIN -->
                                         <div class="card shadow-sm border-0" id="allKinCard" style="display: none;">
-                                            <div class="verify-result-header">
-                                                <div class="d-flex align-items-center">
-                                                    <i class="fas fa-list-check me-2"></i> 
-                                                    <div>
-                                                        <h5 class="fw-bold mb-0">Daftar Semua Kode Validasi (KIN) Terdaftar</h5>
-                                                        <p class="mb-0 opacity-75">Total: <span class="badge bg-warning ms-1" id="totalKinCount">0</span> KIN terdaftar</p>
-                                                    </div>
-                                                </div>
+                                            <div class="card-header bg-white fw-bold py-3">
+                                                <i class="fas fa-list-check me-2"></i>Daftar Semua Kode Validasi (KIN) Terdaftar
+                                                <span class="badge bg-primary ms-2" id="totalKinCount">0</span>
                                             </div>
                                             <div class="card-body p-0">
                                                 <div class="table-responsive">
@@ -712,7 +811,7 @@
                                                         <tbody id="allKinTableBody">
                                                             <tr>
                                                                 <td colspan="7" class="text-center py-4 text-muted">
-                                                                    <i class="fas fa-spinner fa-spin me-2"></i>Memuat data KIN...
+                                                                    Memuat data KIN...
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -954,48 +1053,27 @@
             </div>
         </div>
 
-        <!-- Modal Info Jenis Ikan -->
-        <div class="modal fade" id="fishInfoModal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
+        <!-- Modal QR Code Scanner -->
+        <div class="modal fade" id="qrScannerModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title fw-bold"><i class="fas fa-fish me-2"></i>Referensi Jenis Ikan Tangkapan</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-camera me-2"></i>Scan QR Code</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body text-center">
+                        <div id="qr-scanner-container" style="width: 100%; height: 300px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                            <i class="fas fa-qrcode fa-5x text-muted"></i>
+                        </div>
+                        <p class="text-muted">Arahkan kamera ke QR Code pada ID Card untuk memindai kode validasi</p>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
-                            Berikut adalah referensi visual jenis ikan tangkapan yang umum ditemukan di perairan Situbondo.
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-12 mb-4">
-                                <h6 class="fw-bold text-primary">Gambar Referensi 1</h6>
-                                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simata/info%20jenis%20ikan%20tangkapan%201.jpg" 
-                                     alt="Referensi Jenis Ikan 1" class="fish-modal-img img-fluid">
-                                <p class="small text-muted mt-2">Ilustrasi berbagai jenis ikan tangkapan yang umum ditemui.</p>
-                            </div>
-                            <div class="col-md-12 mb-4">
-                                <h6 class="fw-bold text-primary">Gambar Referensi 2</h6>
-                                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simata/info%20jenis%20ikan%20tangkapan%202.jpg" 
-                                     alt="Referensi Jenis Ikan 2" class="fish-modal-img img-fluid">
-                                <p class="small text-muted mt-2">Klasifikasi dan ciri-ciri ikan tangkapan utama.</p>
-                            </div>
-                            <div class="col-md-12">
-                                <h6 class="fw-bold text-primary">Gambar Referensi 3</h6>
-                                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simata/info%20jenis%20ikan%20tangkapan%203.jpg" 
-                                     alt="Referensi Jenis Ikan 3" class="fish-modal-img img-fluid">
-                                <p class="small text-muted mt-2">Panduan identifikasi ikan tangkapan berdasarkan alat tangkap.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="alert alert-warning mt-4">
-                            <i class="fas fa-lightbulb me-2"></i>
-                            <strong>Tips:</strong> Gunakan referensi ini untuk memastikan ketepatan pemilihan jenis ikan tangkapan utama dalam pendataan nelayan.
+                            Fitur ini memerlukan akses kamera. Pastikan browser Anda mengizinkan akses kamera.
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary" onclick="startQRScanner()">Mulai Scan</button>
                     </div>
                 </div>
             </div>
@@ -1034,122 +1112,45 @@
         </div>
     </div>
 
-    <!-- KODE UTAMA APLIKASI TANPA FITUR PETA - VERSI DIPERBAIKI -->
+    <!-- KODE UTAMA APLIKASI TANPA FITUR PETA -->
     <script>
         // =====================================================
-        // KODE UTAMA APLIKASI SIMATA - VERSI 5.5 DIPERBAIKI
+        // KODE UTAMA APLIKASI SIMATA - VERSI FINAL DIPERBAIKI (TANPA PETA)
         // =====================================================
         
-        // Data ikan yang diperbarui dan dilengkapi - DITAMBAHKAN IKAN TOGEK
-        const FISH_CATEGORIES = {
-            "Demersal": [
-                {name: "Ikan Mangla (Pomadasys spp.)", latin: "Pomadasys spp.", desc: "Ikan demersal yang hidup di dasar berpasir, sering ditemukan di perairan tropis. Dagingnya putih dan gurih."},
-                {name: "Ikan Sebelah (Pleuronectiformes)", latin: "Pleuronectiformes", desc: "Ikan pipih dengan kedua mata di satu sisi tubuh. Hidup di dasar laut berpasir atau berlumpur."},
-                {name: "Ikan Lidah (Cynoglossus spp.)", latin: "Cynoglossus spp.", desc: "Bentuk pipih memanjang seperti lidah, hidup di dasar berlumpur. Populer untuk konsumsi lokal."},
-                {name: "Ikan Petek (Leiognathus spp.)", latin: "Leiognathus spp.", desc: "Ikan kecil berwarna keperakan, hidup di dasar perairan dangkal. Sering digunakan sebagai umpan."},
-                {name: "Ikan Duri (Arius spp.)", latin: "Arius spp.", desc: "Memiliki duri tajam di siripnya. Hidup di dasar berlumpur, dagingnya lembut bertekstur."},
-                {name: "Ikan Kerapu (Epinephelus spp.)", latin: "Epinephelus spp.", desc: "Ikan demersal yang hidup di karang. Bernilai ekonomi tinggi dengan daging padat."},
-                {name: "Ikan Kakap Merah (Lutjanus spp.)", latin: "Lutjanus spp.", desc: "Ikan demersal berwarna merah, hidup di karang. Salah satu ikan komersial penting."},
-                {name: "Ikan Sembilang (Plotosus canius)", latin: "Plotosus canius", desc: "Ikan demersal bertubuh panjang, hidup di dasar berlumpur. Memiliki bisa pada duri siripnya."},
-                {name: "Ikan Biji Nangka (Upeneus spp.)", latin: "Upeneus spp.", desc: "Ikan demersal kecil dengan sungut di mulut. Hidup di dasar berpasir."},
-                {name: "Ikan Kurisi (Nemipterus spp.)", latin: "Nemipterus spp.", desc: "Ikan demersal dengan ekor bercabang, hidup di dasar berpasir. Warna tubuh merah muda."},
-                {name: "Ikan Togek / Mendut (Star Triggerfish)", latin: "Abalistes stellaris", desc: "Ikan demersal dengan tubuh pipih dan sirip punggung yang khas. Hidup di dasar berpasir atau berlumpur, sering ditemukan di perairan tropis. Dikenal dengan pola bintang di tubuhnya."}
-            ],
-            "Pelagis Kecil": [
-                {name: "Ikan Tembang (Sardinella gibbosa)", latin: "Sardinella gibbosa", desc: "Ikan pelagis kecil yang hidup dalam kawanan besar. Tubuh ramping, sering diawetkan."},
-                {name: "Ikan Kembung Lelaki & Perempuan (Rastrelliger spp.)", latin: "Rastrelliger spp.", desc: "Ikan pelagis kecil dengan tubuh pipih. Salah satu ikan ekonomis penting di Indonesia."},
-                {name: "Ikan Selar Kuning (Selaroides leptolepis)", latin: "Selaroides leptolepis", desc: "Ikan kecil berwarna kuning keperakan. Hidup dalam gerombolan di perairan pantai."},
-                {name: "Ikan Layang (Decapterus spp.)", latin: "Decapterus spp.", desc: "Ikan pelagis kecil dengan tubuh memanjang. Sering digunakan untuk pindang dan kalengan."},
-                {name: "Ikan Teri (Stolephorus spp.)", latin: "Stolephorus spp.", desc: "Ikan terkecil dalam kelompok pelagis. Biasanya dikeringkan atau diolah menjadi terasi."},
-                {name: "Ikan Japuh (Caranx spp.)", latin: "Caranx spp.", desc: "Ikan pelagis kecil dengan tubuh agak tinggi. Hidup dalam kawanan di perairan pantai."},
-                {name: "Ikan Lemuru (Sardinella lemuru)", latin: "Sardinella lemuru", desc: "Ikan pelagis kecil khusus di Selat Bali. Bahan utama industri pengalengan."},
-                {name: "Ikan Bentong (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil dengan tubuh pipih. Cepat berenang dalam kawanan besar."},
-                {name: "Ikan Banyar (Carangoides spp.)", latin: "Carangoides spp.", desc: "Ikan pelagis kecil dengan bentuk tubuh ramping. Hidup di perairan pantai."},
-                {name: "Ikan Banyar Mata Besar (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil dengan mata besar. Aktif pada malam hari."}
-            ],
-            "Pelagis Besar": [
-                {name: "Ikan Tongkol (Euthynnus affinis)", latin: "Euthynnus affinis", desc: "Ikan pelagis besar yang bermigrasi. Dagingnya padat, sering dibuat abon atau pindang."},
-                {name: "Ikan Cakalang (Katsuwonus pelamis)", latin: "Katsuwonus pelamis", desc: "Ikan pelagis besar berwarna biru metalik. Bahan utama tuna kalengan."},
-                {name: "Ikan Tenggiri (Scomberomorus commerson)", latin: "Scomberomorus commerson", desc: "Ikan pelagis besar dengan tubuh memanjang. Dagingnya lembut untuk pempek."},
-                {name: "Ikan Tuna Sirip Kuning (Thunnus albacares)", latin: "Thunnus albacares", desc: "Ikan pelagis besar bernilai tinggi. Siripnya berwarna kuning cerah."},
-                {name: "Ikan Tuna Mata Besar (Thunnus obesus)", latin: "Thunnus obesus", desc: "Ikan pelagis besar dengan mata besar. Hidup di perairan dalam."},
-                {name: "Ikan Layur (Trichiurus lepturus)", latin: "Trichiurus lepturus", desc: "Ikan pelagis besar bertubuh panjang seperti pita. Dagingnya renyah."},
-                {name: "Ikan Todak (Xiphias gladius)", latin: "Xiphias gladius", desc: "Ikan pelagis besar dengan moncong panjang seperti pedang. Perenang cepat."},
-                {name: "Ikan Lemadang (Coryphaena hippurus)", latin: "Coryphaena hippurus", desc: "Ikan pelagis besar dengan warna tubuh cerah. Sering ditemukan di perairan hangat."},
-                {name: "Ikan Marlin (Makaira spp.)", latin: "Makaira spp.", desc: "Ikan pelagis besar dengan moncong panjang. Target favorit pemancing olahraga."},
-                {name: "Ikan Cucut (Carcharhinus limbatus)", latin: "Carcharhinus limbatus", desc: "Hiu permukaan dengan sirip hitam. Hidup di perairan pantai."}
-            ]
-        };
+        // Data yang tetap di index.html
+        const FISH_TYPES = [
+            "Lainnya", 
+            "Ikan Tongkol", "Ikan Kembung", "Ikan Selar", "Ikan Tenggiri", "Ikan Layang", 
+            "Cumi-cumi", "Ikan Teri", "Kakap Merah", "Ikan Barakuda", "Kepiting",
+            "Ikan Layur", "Ikan Mangla", "Ikan Kurisi", "Ikan Cakalang", "Ikan Kerapu", "Ikan Lemuru"
+        ];
 
-        // Array untuk kompatibilitas
-        const FISH_TYPES = [];
-        const FISH_DETAILS = {};
-        
-        // Isi array FISH_TYPES dan objek FISH_DETAILS
-        for (const category in FISH_CATEGORIES) {
-            FISH_CATEGORIES[category].forEach(fish => {
-                FISH_TYPES.push(fish.name);
-                FISH_DETAILS[fish.name] = {
-                    latin: fish.latin,
-                    desc: fish.desc,
-                    category: category
-                };
-            });
-        }
-        FISH_TYPES.push("Lainnya");
-
-        // Mapping antara Jenis Kapal dan Alat Tangkap yang sesuai
-        const KAPAL_API_MAPPING = {
-            "Perahu Jukung": ["Pancing", "Pancing Ulur", "Perangkap Bubu", "Jaring Insang (gill net)"],
-            "Perahu Mayang": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)"],
-            "Perahu Slerek": ["Pukat Cincin", "Pukat Tarik", "Jaring Angkat (lift net)"],
-            "Perahu Insang": ["Jaring Insang (gill net)"],
-            "Perahu Jaring Angkat": ["Jaring Angkat (lift net)"],
-            "Perahu Pancing": ["Pancing", "Pancing Ulur"],
-            "Perahu Pukat Tarik": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)"],
-            "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Lainnya"]
-        };
-
-        // Mapping antara Alat Tangkap dan Kategori Ikan yang bisa ditangkap
-        const API_FISH_MAPPING = {
-            "Pukat Cincin": ["Pelagis Besar", "Pelagis Kecil"],
-            "Pukat Tarik": ["Pelagis Kecil", "Pelagis Besar", "Demersal"],
-            "Pancing Ulur": ["Demersal", "Pelagis Besar"],
-            "Jaring Insang (gill net)": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
-            "Jaring Angkat (lift net)": ["Pelagis Kecil", "Demersal"],
-            "Pancing": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
-            "Perangkap Bubu": ["Demersal", "Pelagis Kecil"],
-            "Lainnya": ["Demersal", "Pelagis Kecil", "Pelagis Besar"]
-        };
-
-        // Mapping informasi alat tangkap - DIPERBAIKI DAN DILENGKAPI
         const API_INFO = {
-            "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis besar seperti tuna, cakalang, dan tongkol. Biasanya dioperasikan oleh kapal berukuran sedang hingga besar.",
-            "Pukat Tarik": "Jaring berbentuk kerucut yang ditarik oleh kapal di permukaan atau pertengahan air. Cocok untuk menangkap ikan pelagis kecil seperti teri, lemuru, dan kembung. Memerlukan kapal dengan mesin yang kuat.",
-            "Pancing Ulur": "Pancing dengan sistem ulur (handline) yang dioperasikan secara manual. Digunakan untuk menangkap ikan dasar seperti kerapu, kakap, dan ikan demersal lainnya. Cocok untuk perairan karang.",
-            "Jaring Insang (gill net)": "Jaring yang dipasang diam di air, ikan yang berenang akan tersangkut insangnya. Cocok untuk berbagai jenis ikan mulai dari demersal hingga pelagis kecil. Efektif di perairan tenang.",
-            "Jaring Angkat (lift net)": "Jaring berbentuk persegi yang diturunkan ke air lalu diangkat cepat. Efektif untuk ikan permukaan seperti teri dan ikan pelagis kecil. Biasanya menggunakan lampu untuk menarik ikan.",
-            "Pancing": "Alat tangkap tradisional menggunakan mata pancing dan umpan. Fleksibel untuk berbagai jenis ikan. Termasuk pancing tonda, pancing rawai, dan pancing tangan.",
-            "Perangkap Bubu": "Perangkap berbentuk kurungan untuk menjebak ikan. Umum untuk menangkap ikan karang, udang, dan kepiting. Terbuat dari bambu atau jaring.",
-            "Lainnya": "Alat tangkap lain yang tidak termasuk dalam kategori di atas seperti sero, jermal, atau alat tradisional setempat."
+            "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis seperti tuna dan cakalang.",
+            "Pukat Tarik": "Jaring yang ditarik oleh kapal untuk menangkap ikan di permukaan atau pertengahan air. Cocok untuk ikan pelagis kecil seperti teri dan lemuru.",
+            "Pancing Ulur": "Pancing dengan sistem ulur (handline) yang dioperasikan secara manual. Digunakan untuk menangkap ikan dasar seperti kerapu dan kakap.",
+            "Jaring Insang (gill net)": "Jaring yang dipasang diam di air, ikan yang berenang akan tersangkut insangnya. Cocok untuk berbagai jenis ikan.",
+            "Jaring Angkat (lift net)": "Jaring berbentuk persegi yang diturunkan ke air lalu diangkat cepat. Efektif untuk ikan permukaan.",
+            "Pancing": "Alat tangkap tradisional menggunakan mata pancing dan umpan. Fleksibel untuk berbagai jenis ikan.",
+            "Perangkap Bubu": "Perangkap berbentuk kurungan untuk menjebak ikan. Umum untuk menangkap ikan karang dan udang.",
+            "Lainnya": "Alat tangkap lain yang tidak termasuk dalam kategori di atas."
         };
 
-        // Mapping informasi perahu - DIPERBAIKI DAN DITAMBAH PERAHU PUKAT TARIK
         const KAPAL_INFO = {
-            "Perahu Jukung": "Perahu tradisional kayu kecil, umumnya tanpa mesin atau bermesin kecil (5-15 PK). Cocok untuk perairan tenang dan dekat pantai (0-5 mil). Biasanya digunakan untuk pancing, perangkap bubu, dan jaring insang. Kapasitas 1-3 orang.",
-            "Perahu Mayang": "Perahu tradisional yang lebih besar dari jukung, biasanya bermesin tempel (15-40 PK). Untuk penangkapan di perairan sedang (5-12 mil). Cocok untuk pukat tarik, jaring insang, dan jaring angkat. Kapasitas 3-5 orang.",
-            "Perahu Slerek": "Perahu khas Situbondo dengan bentuk ramping, biasanya menggunakan layar atau mesin kecil (10-30 PK). Untuk operasi dekat pantai (0-8 mil). Cocok untuk pukat cincin dan jaring angkat. Kapasitas 2-4 orang.",
-            "Perahu Insang": "Perahu khusus untuk operasi jaring insang (gill net), dilengkapi dengan sistem pemasangan jaring. Mesin 20-50 PK. Untuk perairan pantai hingga sedang (5-15 mil). Kapasitas 2-3 orang.",
-            "Perahu Jaring Angkat": "Perahu dengan sistem derek untuk mengoperasikan jaring angkat (lift net). Biasanya memiliki lampu untuk menarik ikan. Mesin 30-60 PK. Untuk perairan pantai (0-10 mil). Kapasitas 3-6 orang.",
-            "Perahu Pancing": "Perahu yang didesain khusus untuk operasi pancing, baik handline maupun rawai. Dilengkapi dengan tempat pancing dan penyimpanan hasil. Mesin 15-40 PK. Untuk berbagai jenis perairan. Kapasitas 2-4 orang.",
-            "Perahu Pukat Tarik": "Perahu yang dilengkapi dengan sistem penarik pukat (trawl net) untuk menangkap ikan di dasar laut. Biasanya berukuran sedang hingga besar dengan mesin yang kuat (40-100 PK). Untuk perairan sedang hingga lepas pantai (10-30 mil). Kapasitas 4-8 orang.",
-            "Lainnya": "Jenis kapal lain yang tidak termasuk dalam kategori di atas seperti kapal motor besar, perahu fiberglass modern, atau kapal dengan spesifikasi khusus."
+            "Perahu Jukung": "Perahu tradisional kayu kecil, umumnya tanpa mesin atau bermesin kecil. Cocok untuk perairan tenang dan dekat pantai.",
+            "Perahu Mayang": "Perahu tradisional yang lebih besar dari jukung, biasanya bermesin tempel. Untuk penangkapan di perairan sedang.",
+            "Perahu Slerek": "Perahu khas Situbondo dengan bentuk ramping, biasanya menggunakan layar atau mesin kecil. Untuk operasi dekat pantai.",
+            "Perahu Insang": "Perahu khusus untuk operasi jaring insang (gill net), dilengkapi dengan sistem pemasangan jaring.",
+            "Perahu Jaring Angkat": "Perahu dengan sistem derek untuk mengoperasikan jaring angkat (lift net).",
+            "Perahu Pancing": "Perahu yang didesain khusus untuk operasi pancing, baik handline maupun rawai.",
+            "Lainnya": "Jenis kapal lain yang tidak termasuk dalam kategori di atas."
         };
 
         const PROFESI_INFO = {
-            "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain. Biasanya melaut setiap hari atau sesuai musim tangkap.",
-            "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan (lebih dari 50% pendapatan).",
-            "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan (kurang dari 50% pendapatan)."
+            "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain.",
+            "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan.",
+            "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan."
         };
 
         // Data wilayah Situbondo untuk dropdown (tetap diperlukan untuk form input)
@@ -1186,11 +1187,10 @@
         let duplicateCheckInterval = null;
         let currentDetailId = null; 
         let verifyDataResult = null;
-        let currentFilter = {}; // Variabel untuk menyimpan filter aktif
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
         const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
-        const fishInfoModal = new bootstrap.Modal(document.getElementById('fishInfoModal'));
+        const qrScannerModal = new bootstrap.Modal(document.getElementById('qrScannerModal'));
         
         const PROFESI_MAPPING = {
             "Penuh Waktu": "Nelayan Penuh Waktu",
@@ -1250,111 +1250,10 @@
             const lower = fishName.toLowerCase();
             if (lower.includes('cumi')) return 'fa-ghost'; 
             if (lower.includes('kepiting')) return 'fa-spider'; 
-            if (lower.includes('togek') || lower.includes('mendut')) return 'fa-star'; 
             return 'fa-fish';
         }
 
-        // --- FUNGSI BARU: MAPPING KAPAL DAN ALAT TANGKAP ---
-        function updateAlatTangkapByKapal() {
-            const jenisKapal = document.getElementById('jenisKapal').value;
-            const alatTangkapSelect = document.getElementById('alatTangkap');
-            const apiMappingInfo = document.getElementById('apiMappingInfo');
-            
-            if (!jenisKapal) {
-                apiMappingInfo.style.display = 'none';
-                return;
-            }
-            
-            const availableAPIs = KAPAL_API_MAPPING[jenisKapal] || Object.keys(API_INFO);
-            const currentAPI = alatTangkapSelect.value;
-            
-            // Update opsi alat tangkap
-            alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
-            availableAPIs.forEach(api => {
-                const option = document.createElement('option');
-                option.value = api;
-                option.textContent = api;
-                if (api === currentAPI) option.selected = true;
-                alatTangkapSelect.appendChild(option);
-            });
-            
-            // Tampilkan informasi mapping
-            apiMappingInfo.innerHTML = `<strong>${jenisKapal}</strong> biasanya digunakan untuk: ${availableAPIs.join(', ')}`;
-            apiMappingInfo.style.display = 'block';
-            
-            // Update daftar ikan jika alat tangkap sudah dipilih
-            if (currentAPI && availableAPIs.includes(currentAPI)) {
-                updateFishOptionsByAPI(currentAPI);
-            } else {
-                updateFishOptionsByAPI('');
-            }
-        }
-        
-        function updateFishOptionsByAPI(api) {
-            const fishContainer = document.getElementById('fishCheckboxContainer');
-            if (!fishContainer) return;
-            
-            fishContainer.innerHTML = '';
-            
-            let fishList = [];
-            if (api && API_FISH_MAPPING[api]) {
-                // Ambil ikan berdasarkan kategori yang sesuai
-                API_FISH_MAPPING[api].forEach(category => {
-                    if (FISH_CATEGORIES[category]) {
-                        FISH_CATEGORIES[category].forEach(fish => {
-                            fishList.push(fish.name);
-                        });
-                    }
-                });
-            } else {
-                // Jika tidak ada API yang dipilih, tampilkan semua ikan
-                for (const category in FISH_CATEGORIES) {
-                    FISH_CATEGORIES[category].forEach(fish => {
-                        fishList.push(fish.name);
-                    });
-                }
-            }
-            
-            // Tambahkan opsi "Lainnya"
-            fishList.push("Lainnya");
-            
-            // Tampilkan checklist dengan informasi
-            fishList.forEach(fish => {
-                const id = 'fish_' + fish.replace(/\s/g, '');
-                const fishInfo = FISH_DETAILS[fish] || {};
-                const html = `
-                <label class="fish-option-box">
-                    <input type="checkbox" class="form-check-input me-2 fish-checkbox" value="${fish}" id="${id}">
-                    <span>${fish}</span>
-                    ${fishInfo.latin ? `
-                    <div class="fish-info-box">
-                        <div class="fish-info-title">${fish}</div>
-                        <div class="fish-info-latin">${fishInfo.latin}</div>
-                        <div class="fish-info-desc">${fishInfo.desc || ''}</div>
-                    </div>
-                    ` : ''}
-                </label>`;
-                fishContainer.innerHTML += html;
-            });
-            
-            // Event listener untuk "Lainnya"
-            const lainCheckbox = document.getElementById('fish_Lainnya');
-            if (lainCheckbox) {
-                lainCheckbox.addEventListener('change', function() {
-                    const inputLain = document.getElementById('jenisIkanLainnya');
-                    if(this.checked) {
-                        inputLain.style.display = 'block';
-                        inputLain.setAttribute('required', 'required');
-                    } else {
-                        inputLain.style.display = 'none';
-                        inputLain.value = '';
-                        inputLain.removeAttribute('required');
-                    }
-                });
-            }
-        }
-
-        // --- FUNGSI VERIFIKASI KIN YANG DISEMPURNAKAN ---
+        // --- FUNGSI VERIFIKASI KIN ---
         function verifyKIN(input) {
             if (!input || input.trim() === '') {
                 return { success: false, message: "Masukkan Kode Validasi (KIN) atau NIK untuk verifikasi" };
@@ -1443,7 +1342,7 @@
                         <div class="verify-result-item">
                             <div class="verify-result-label">Kode Validasi (KIN)</div>
                             <div class="verify-result-value">
-                                <span class="kin-badge">${data.kodeValidasi || 'Tidak Ada'}</span>
+                                <span class="badge kin-badge bg-primary">${data.kodeValidasi || 'Tidak Ada'}</span>
                             </div>
                         </div>
                         <div class="verify-result-item">
@@ -1519,32 +1418,20 @@
             
             // Tampilkan kartu hasil
             card.style.display = 'block';
-            
-            // Scroll ke hasil dengan animasi smooth
-            setTimeout(() => {
-                card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
         }
 
         function setVerifyExample(type) {
             const input = document.getElementById('verifyInput');
-            const breadcrumbItems = document.querySelectorAll('.verify-breadcrumb-item');
-            
-            // Reset semua breadcrumb
-            breadcrumbItems.forEach(item => item.classList.remove('active'));
             
             if (type === 'kin') {
                 input.value = 'VLD-';
                 input.placeholder = 'Masukkan Kode Validasi (contoh: VLD-ABC123)';
                 input.focus();
-                breadcrumbItems[0].classList.add('active');
             } else if (type === 'nik') {
                 input.value = '';
                 input.placeholder = 'Masukkan NIK 16 digit';
                 input.focus();
-                breadcrumbItems[1].classList.add('active');
             } else if (type === 'all') {
-                breadcrumbItems[2].classList.add('active');
                 showAllKIN();
             }
         }
@@ -1580,7 +1467,7 @@
                         <tr>
                             <td>${index + 1}</td>
                             <td>
-                                <span class="kin-badge">${d.kodeValidasi}</span>
+                                <span class="badge kin-badge bg-primary">${d.kodeValidasi}</span>
                             </td>
                             <td>
                                 <div class="fw-bold">${d.nama}</div>
@@ -1616,12 +1503,15 @@
             
             // Tampilkan kartu
             allKinCard.style.display = 'block';
-            allKinCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            allKinCard.scrollIntoView({ behavior: 'smooth' });
         }
 
         function verifyKINAndShow(input) {
             const result = verifyKIN(input);
             displayVerifyResult(result);
+            
+            // Scroll ke hasil
+            document.getElementById('verifyResultCard').scrollIntoView({ behavior: 'smooth' });
             
             // Update input field
             document.getElementById('verifyInput').value = input;
@@ -1632,14 +1522,30 @@
             document.getElementById('verifyInput').focus();
             document.getElementById('verifyResultCard').style.display = 'none';
             document.getElementById('allKinCard').style.display = 'none';
-            
-            // Reset breadcrumb ke pertama
-            setVerifyExample('kin');
         }
 
-        // Fungsi untuk menampilkan modal info ikan
-        function showFishInfoModal() {
-            fishInfoModal.show();
+        function scanQRCode() {
+            qrScannerModal.show();
+            
+            // Informasi bahwa fitur QR scanner memerlukan implementasi lebih lanjut
+            setTimeout(() => {
+                showNotification('Fitur QR Scanner sedang dalam pengembangan. Untuk sekarang, gunakan input manual.', 'info');
+            }, 500);
+        }
+
+        function startQRScanner() {
+            showNotification('Fitur QR Scanner akan segera hadir di versi mendatang.', 'info');
+            qrScannerModal.hide();
+            
+            // Simulasi scan QR Code untuk demo
+            setTimeout(() => {
+                const demoCodes = appData.filter(d => d.kodeValidasi).map(d => d.kodeValidasi);
+                if (demoCodes.length > 0) {
+                    const randomCode = demoCodes[Math.floor(Math.random() * demoCodes.length)];
+                    document.getElementById('verifyInput').value = randomCode;
+                    verifyKINAndShow(randomCode);
+                }
+            }, 1000);
         }
 
         // --- FUNGSI BACKUP DATA YANG DIPERBAIKI ---
@@ -1892,987 +1798,12 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             reader.readAsText(file);
         }
 
-        // --- FUNGSI PAGINATION YANG DISEMPURNAKAN ---
-        function updatePagination(totalItems) {
-            const totalPages = Math.max(1, Math.ceil(totalItems / appSettings.itemsPerPage));
-            const ul = document.getElementById('pagination');
-            const paginationInfo = document.getElementById('paginationInfo');
-            
-            // Validasi currentPage
-            if (currentPage > totalPages) {
-                currentPage = totalPages;
-            }
-            if (currentPage < 1) {
-                currentPage = 1;
-            }
-            
-            ul.innerHTML = '';
-            
-            if (totalPages <= 1) {
-                paginationInfo.textContent = `Halaman 1 dari 1 (Total: ${totalItems} data)`;
-                return;
-            }
-            
-            paginationInfo.textContent = `Halaman ${currentPage} dari ${totalPages} (Total: ${totalItems} data)`;
-            
-            // Tombol pertama
-            const first = document.createElement('li');
-            first.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-            first.innerHTML = `<a class="page-link" href="#" onclick="goToPage(1); return false;" title="Halaman Pertama">&laquo;</a>`;
-            ul.appendChild(first);
-            
-            // Tombol sebelumnya
-            const prev = document.createElement('li');
-            prev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-            prev.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage-1}); return false;" title="Halaman Sebelumnya">&lt;</a>`;
-            ul.appendChild(prev);
-            
-            // Tampilkan beberapa halaman sekitar currentPage
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, currentPage + 2);
-            
-            // Pastikan kita selalu menampilkan 5 halaman jika memungkini
-            if (endPage - startPage < 4) {
-                if (startPage === 1) {
-                    endPage = Math.min(totalPages, startPage + 4);
-                } else if (endPage === totalPages) {
-                    startPage = Math.max(1, endPage - 4);
-                }
-            }
-            
-            // Tambahkan ellipsis di awal jika diperlukan
-            if (startPage > 1) {
-                const ellipsis1 = document.createElement('li');
-                ellipsis1.className = 'page-item disabled';
-                ellipsis1.innerHTML = `<span class="page-link">...</span>`;
-                ul.appendChild(ellipsis1);
-            }
-            
-            for (let i = startPage; i <= endPage; i++) {
-                const li = document.createElement('li');
-                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-                li.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>`;
-                ul.appendChild(li);
-            }
-            
-            // Tambahkan ellipsis di akhir jika diperlukan
-            if (endPage < totalPages) {
-                const ellipsis2 = document.createElement('li');
-                ellipsis2.className = 'page-item disabled';
-                ellipsis2.innerHTML = `<span class="page-link">...</span>`;
-                ul.appendChild(ellipsis2);
-            }
-            
-            // Tombol berikutnya
-            const next = document.createElement('li');
-            next.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-            next.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage+1}); return false;" title="Halaman Berikutnya">&gt;</a>`;
-            ul.appendChild(next);
-            
-            // Tombol terakhir
-            const last = document.createElement('li');
-            last.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-            last.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;" title="Halaman Terakhir">&raquo;</a>`;
-            ul.appendChild(last);
-        }
-
-        function goToPage(page) {
-            currentPage = page;
-            renderDataTable();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // --- FUNGSI GET FILTERED DATA UNTUK PDF ---
-        function getFilteredData() {
-            const search = document.getElementById('searchData').value.toLowerCase();
-            
-            // Filter data berdasarkan pencarian dan filter
-            let filtered = appData;
-            
-            // Terapkan filter jika ada
-            if (Object.keys(currentFilter).length > 0) {
-                filtered = filtered.filter(d => {
-                    const matchDesa = !currentFilter.desa || d.desa === currentFilter.desa;
-                    const matchProfesi = !currentFilter.profesi || d.profesi === currentFilter.profesi;
-                    const matchStatus = !currentFilter.status || d.status === currentFilter.status;
-                    
-                    // Filter jenis kapal hanya untuk pemilik kapal
-                    let matchJenis = true;
-                    if (currentFilter.jenisKapal) {
-                        if (d.status === 'Pemilik Kapal') {
-                            matchJenis = d.jenisKapal === currentFilter.jenisKapal;
-                        } else {
-                            matchJenis = false;
-                        }
-                    }
-                    
-                    const matchAlatTangkap = !currentFilter.alatTangkap || d.alatTangkap === currentFilter.alatTangkap;
-                    const matchUsaha = !currentFilter.usaha || 
-                        (currentFilter.usaha === 'Ada' ? 
-                            (d.usahaSampingan && d.usahaSampingan.trim() !== '' && d.usahaSampingan !== '-') : 
-                            (!d.usahaSampingan || d.usahaSampingan.trim() === '' || d.usahaSampingan === '-'));
-                    
-                    return matchDesa && matchProfesi && matchStatus && matchJenis && matchAlatTangkap && matchUsaha;
-                });
-            }
-            
-            // Terapkan pencarian jika ada
-            if (search) {
-                filtered = filtered.filter(d => 
-                    d.nama.toLowerCase().includes(search) || 
-                    d.nik.includes(search) || 
-                    (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
-                    d.desa.toLowerCase().includes(search) ||
-                    d.kecamatan.toLowerCase().includes(search)
-                );
-            }
-            
-            return filtered;
-        }
-
-        // --- FUNGSI RENDER DATA TABLE YANG DISEMPURNAKAN ---
-        function renderDataTable() {
-            const tableBody = document.getElementById('dataTableBody');
-            const search = document.getElementById('searchData').value.toLowerCase();
-            
-            // Filter data berdasarkan pencarian dan filter
-            let filtered = appData;
-            
-            // Terapkan filter jika ada
-            if (Object.keys(currentFilter).length > 0) {
-                filtered = filtered.filter(d => {
-                    const matchDesa = !currentFilter.desa || d.desa === currentFilter.desa;
-                    const matchProfesi = !currentFilter.profesi || d.profesi === currentFilter.profesi;
-                    const matchStatus = !currentFilter.status || d.status === currentFilter.status;
-                    
-                    // Filter jenis kapal hanya untuk pemilik kapal
-                    let matchJenis = true;
-                    if (currentFilter.jenisKapal) {
-                        if (d.status === 'Pemilik Kapal') {
-                            matchJenis = d.jenisKapal === currentFilter.jenisKapal;
-                        } else {
-                            matchJenis = false;
-                        }
-                    }
-                    
-                    const matchAlatTangkap = !currentFilter.alatTangkap || d.alatTangkap === currentFilter.alatTangkap;
-                    const matchUsaha = !currentFilter.usaha || 
-                        (currentFilter.usaha === 'Ada' ? 
-                            (d.usahaSampingan && d.usahaSampingan.trim() !== '' && d.usahaSampingan !== '-') : 
-                            (!d.usahaSampingan || d.usahaSampingan.trim() === '' || d.usahaSampingan === '-'));
-                    
-                    return matchDesa && matchProfesi && matchStatus && matchJenis && matchAlatTangkap && matchUsaha;
-                });
-            }
-            
-            // Terapkan pencarian jika ada
-            if (search) {
-                filtered = filtered.filter(d => 
-                    d.nama.toLowerCase().includes(search) || 
-                    d.nik.includes(search) || 
-                    (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
-                    d.desa.toLowerCase().includes(search) ||
-                    d.kecamatan.toLowerCase().includes(search)
-                );
-            }
-            
-            const nikCounts = {};
-            appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
-
-            const totalItems = filtered.length;
-            const totalPages = Math.max(1, Math.ceil(totalItems / appSettings.itemsPerPage));
-            
-            // Validasi currentPage
-            if (currentPage > totalPages && totalPages > 0) {
-                currentPage = totalPages;
-            } else if (totalItems === 0) {
-                currentPage = 1;
-            }
-            
-            const start = (currentPage - 1) * appSettings.itemsPerPage;
-            const end = start + appSettings.itemsPerPage;
-            const pageData = filtered.slice(start, end);
-
-            tableBody.innerHTML = '';
-            
-            if (totalItems === 0) {
-                const row = `<tr>
-                    <td colspan="8" class="text-center py-5 text-muted">
-                        <i class="fas fa-database fa-2x mb-3"></i>
-                        <p>Tidak ada data ditemukan</p>
-                        ${search || Object.keys(currentFilter).length > 0 ? '<small>Coba dengan kata kunci pencarian atau filter yang berbeda</small>' : ''}
-                    </td>
-                </tr>`;
-                tableBody.innerHTML = row;
-            } else if (pageData.length === 0) {
-                const row = `<tr>
-                    <td colspan="8" class="text-center py-5 text-muted">
-                        <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
-                        <p>Data untuk halaman ini tidak ditemukan</p>
-                    </td>
-                </tr>`;
-                tableBody.innerHTML = row;
-            } else {
-                pageData.forEach((d, i) => {
-                    const kapalInfo = d.status === 'Pemilik Kapal' ? 
-                        `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : 
-                        '-';
-                    
-                    const isDuplicate = nikCounts[d.nik] > 1;
-                    const rowClass = isDuplicate ? 'table-danger' : '';
-                    
-                    let badgeClass = 'bg-secondary';
-                    if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
-                    else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
-                    else if(d.profesi === 'Nelayan Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
-                    
-                    const displayNik = maskData(d.nik);
-                    const displayWaRaw = maskData(d.whatsapp);
-                    
-                    let contactDisplay = '';
-                    if(displayWaRaw === "Tidak Ada") {
-                        contactDisplay = `<span class="badge bg-light text-muted border">Tidak Ada</span>`;
-                    } else {
-                        if (appSettings.privacyMode) {
-                            contactDisplay = `<div class="small"><i class="fas fa-phone-alt text-secondary me-1"></i> ${displayWaRaw}</div>`;
-                        } else {
-                            let cleanNum = d.whatsapp;
-                            if(cleanNum.startsWith('0')) cleanNum = '62' + cleanNum.substring(1);
-                            contactDisplay = `<div class="d-flex align-items-center gap-1"><a href="https://wa.me/${cleanNum}" target="_blank" class="btn btn-sm btn-success py-0 px-1" title="Chat WhatsApp"><i class="fab fa-whatsapp"></i></a><span class="small font-monospace ms-1">${d.whatsapp}</span></div>`;
-                        }
-                    }
-
-                    const row = `<tr class="${rowClass}">
-                        <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
-                        <td class="text-center">${start + i + 1}</td>
-                        <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
-                            <div class="fw-bold text-dark text-wrap">${d.nama}</div>
-                            <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
-                            <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
-                        </td>
-                        <td class="col-contact-cell">${contactDisplay}</td>
-                        <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
-                        <td class="col-status-cell">${kapalInfo}</td>
-                        <td style="white-space:nowrap;"><span class="badge bg-info text-white">${d.alatTangkap}</span></td>
-                        <td class="col-action sticky-col-right">
-                            <div class="btn-group shadow-sm" role="group">
-                                <button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
-                                <button class="btn btn-sm btn-idcard" onclick="safeGenerateIDCard('${d.id}')" title="Cetak ID Card"><i class="fas fa-id-card"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
-            }
-            
-            // Update informasi tabel
-            const startItem = totalItems > 0 ? start + 1 : 0;
-            const endItem = Math.min(start + appSettings.itemsPerPage, totalItems);
-            document.getElementById('tableInfo').textContent = `Menampilkan ${startItem}-${endItem} dari ${totalItems} data`;
-            
-            // Update pagination
-            updatePagination(totalItems);
-            
-            // Update tombol bulk delete
-            toggleBulkDeleteBtn();
-        }
-
-        // --- FUNGSI FILTER YANG DISEMPURNAKAN ---
-        function applyFilter() {
-            currentFilter = {
-                desa: document.getElementById('filterDesa').value,
-                profesi: document.getElementById('filterProfesi').value,
-                status: document.getElementById('filterStatus').value,
-                jenisKapal: document.getElementById('filterJenisKapal').value,
-                alatTangkap: document.getElementById('filterAlatTangkap').value,
-                usaha: document.getElementById('filterUsaha').value
-            };
-            
-            currentPage = 1; // Reset ke halaman pertama saat filter diterapkan
-            renderDataTable();
-            
-            // Hitung jumlah data yang difilter
-            const filteredCount = appData.filter(d => {
-                const matchDesa = !currentFilter.desa || d.desa === currentFilter.desa;
-                const matchProfesi = !currentFilter.profesi || d.profesi === currentFilter.profesi;
-                const matchStatus = !currentFilter.status || d.status === currentFilter.status;
-                
-                let matchJenis = true;
-                if (currentFilter.jenisKapal) {
-                    if (d.status === 'Pemilik Kapal') {
-                        matchJenis = d.jenisKapal === currentFilter.jenisKapal;
-                    } else {
-                        matchJenis = false;
-                    }
-                }
-                
-                const matchAlatTangkap = !currentFilter.alatTangkap || d.alatTangkap === currentFilter.alatTangkap;
-                const matchUsaha = !currentFilter.usaha || 
-                    (currentFilter.usaha === 'Ada' ? 
-                        (d.usahaSampingan && d.usahaSampingan.trim() !== '' && d.usahaSampingan !== '-') : 
-                        (!d.usahaSampingan || d.usahaSampingan.trim() === '' || d.usahaSampingan === '-'));
-                
-                return matchDesa && matchProfesi && matchStatus && matchJenis && matchAlatTangkap && matchUsaha;
-            }).length;
-            
-            showNotification(`Filter diterapkan: ${filteredCount} data ditemukan`, 'success');
-        }
-
-        function resetFilter() {
-            // Reset semua dropdown filter
-            document.getElementById('filterDesa').value = '';
-            document.getElementById('filterProfesi').value = '';
-            document.getElementById('filterStatus').value = '';
-            document.getElementById('filterJenisKapal').value = '';
-            document.getElementById('filterAlatTangkap').value = '';
-            document.getElementById('filterUsaha').value = '';
-            
-            // Reset filter aktif
-            currentFilter = {};
-            currentPage = 1;
-            
-            // Render ulang tabel
-            renderDataTable();
-            
-            showNotification('Filter direset, menampilkan semua data', 'info');
-        }
-
-        function showDuplicateDataInFilter() {
-            // Hitung data duplikat
-            const counts = {};
-            appData.forEach(d => counts[d.nik] = (counts[d.nik] || 0) + 1);
-            const duplicateData = appData.filter(d => counts[d.nik] > 1);
-            
-            if (duplicateData.length === 0) {
-                showNotification('Tidak ditemukan data NIK ganda. Data sudah bersih!', 'success');
-                return;
-            }
-            
-            // Set filter untuk menampilkan hanya data duplikat
-            currentFilter = { duplicate: true };
-            currentPage = 1;
-            
-            // Render ulang tabel
-            renderDataTable();
-            
-            showNotification(`Ditemukan ${duplicateData.length} data dengan NIK ganda`, 'warning');
-        }
-
-        // --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER ---
-        function generateFilteredPdf() {
-            const filteredData = getFilteredData();
-            
-            if (filteredData.length === 0) {
-                showNotification('Tidak ada data untuk dicetak!', 'error');
-                return;
-            }
-            
-            // Hitung statistik per desa dari data terfilter
-            const desaStats = {};
-            filteredData.forEach(d => {
-                const desa = d.desa || "Tidak Diketahui";
-                if (!desaStats[desa]) {
-                    desaStats[desa] = { 
-                        count: 0, 
-                        owner: 0, 
-                        abk: 0, 
-                        penuhWaktu: 0, 
-                        sambilanUtama: 0, 
-                        sambilanTambahan: 0 
-                    };
-                }
-                desaStats[desa].count++;
-                if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; 
-                else desaStats[desa].abk++;
-                
-                if(d.profesi === 'Nelayan Penuh Waktu') desaStats[desa].penuhWaktu++;
-                else if(d.profesi === 'Nelayan Sambilan Utama') desaStats[desa].sambilanUtama++;
-                else if(d.profesi === 'Nelayan Sambilan Tambahan') desaStats[desa].sambilanTambahan++;
-            });
-
-            // Siapkan data untuk tabel
-            const tableRows = Object.keys(desaStats).sort().map((desa, index) => [
-                index + 1, 
-                desa, 
-                desaStats[desa].count, 
-                desaStats[desa].owner,
-                desaStats[desa].abk, 
-                desaStats[desa].penuhWaktu, 
-                desaStats[desa].sambilanUtama,
-                desaStats[desa].sambilanTambahan
-            ]);
-
-            // Hitung total dari data terfilter
-            const totalCount = tableRows.reduce((sum, row) => sum + row[2], 0);
-            const totalOwner = tableRows.reduce((sum, row) => sum + row[3], 0);
-            const totalAbk = tableRows.reduce((sum, row) => sum + row[4], 0);
-            const totalPenuhWaktu = tableRows.reduce((sum, row) => sum + row[5], 0);
-            const totalSambilanUtama = tableRows.reduce((sum, row) => sum + row[6], 0);
-            const totalSambilanTambahan = tableRows.reduce((sum, row) => sum + row[7], 0);
-
-            // Tambahkan baris total
-            tableRows.push([
-                "",
-                "TOTAL KESELURUHAN",
-                totalCount,
-                totalOwner,
-                totalAbk,
-                totalPenuhWaktu,
-                totalSambilanUtama,
-                totalSambilanTambahan
-            ]);
-
-            // Generate kode unik untuk setiap cetakan
-            const printId = 'SIMATA-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-            // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
-            document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nNIP: 19761103 200903 1 001\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
-            
-            try {
-                new QRCode(document.getElementById("qr-right"), { 
-                    text: signatureText, 
-                    width: 120, 
-                    height: 120,
-                    colorDark: "#4a69bd", // Biru muda
-                    colorLight: "#ffffff", 
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            } catch (error) {
-                console.error("Error generating QR code:", error);
-            }
-
-            setTimeout(() => {
-                try {
-                    const { jsPDF } = window.jspdf;
-                    
-                    if (typeof jsPDF.API.autoTable !== 'function') {
-                        showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
-                        return;
-                    }
-
-                    const doc = new jsPDF('l', 'mm', 'a4');
-                    const pageWidth = doc.internal.pageSize.width;
-                    const pageHeight = doc.internal.pageSize.height;
-
-                    // Header
-                    doc.setFillColor(12, 36, 97);
-                    doc.rect(10, 10, pageWidth - 20, 28, 'F');
-                    
-                    // Judul utama
-                    doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('SISTEM INFORMASI PEMETAAN NELAYAN (SIMATA)', pageWidth/2, 20, { align: 'center' });
-                    
-                    // Subjudul
-                    doc.setFontSize(12);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
-
-                    // Slogan dengan warna oranye
-                    doc.setTextColor(246, 185, 59);
-                    doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10);
-                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
-
-                    // Garis bawah header dengan warna aksen
-                    doc.setDrawColor(246, 185, 59);
-                    doc.setLineWidth(1.5);
-                    doc.line(20, 38, pageWidth - 20, 38);
-
-                    // Judul Laporan dengan informasi filter
-                    doc.setTextColor(12, 36, 97);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
-                    doc.text('LAPORAN DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
-                    
-                    // Informasi filter yang aktif
-                    let filterInfo = "Semua Data";
-                    if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
-                        filterInfo = "Data Terfilter: ";
-                        const filterParts = [];
-                        
-                        if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
-                        if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
-                        if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
-                        if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
-                        if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
-                        if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
-                        if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
-                        
-                        filterInfo += filterParts.join(', ');
-                    }
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
-                    
-                    doc.setFontSize(14);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('PER DESA / KELURAHAN', pageWidth/2, 60, { align: 'center' });
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    const now = new Date();
-                    const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
-
-                    // Tabel Data
-                    const tableWidth = pageWidth - 40;
-                    const tableStartX = (pageWidth - tableWidth) / 2;
-
-                    doc.autoTable({
-                        head: [[
-                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
-                            {content: 'Desa / Kelurahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 60}},
-                            {content: 'Jumlah Nelayan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Pemilik Kapal', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'ABK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                            {content: 'Penuh Waktu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Sambilan Utama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}}
-                        ]],
-                        body: tableRows,
-                        startY: 72,
-                        theme: 'grid',
-                        tableWidth: tableWidth,
-                        margin: { left: tableStartX, right: tableStartX },
-                        headStyles: { 
-                            fillColor: [12, 36, 97],
-                            textColor: [255, 255, 255], 
-                            fontStyle: 'bold', 
-                            halign: 'center',
-                            fontSize: 9,
-                            cellPadding: 4,
-                            lineWidth: 0.5,
-                            lineColor: [255, 255, 255]
-                        },
-                        bodyStyles: {
-                            textColor: [0, 0, 0],
-                            fontSize: 9,
-                            fillColor: [255, 255, 255],
-                            cellPadding: 4,
-                            lineWidth: 0.1,
-                            lineColor: [200, 200, 200]
-                        },
-                        alternateRowStyles: {
-                            fillColor: [245, 245, 245]
-                        },
-                        styles: {
-                            overflow: 'linebreak',
-                            cellPadding: 4,
-                            fontSize: 9,
-                            valign: 'middle',
-                            halign: 'center'
-                        },
-                        columnStyles: {
-                            0: {cellWidth: 20, halign: 'center'},
-                            1: {cellWidth: 60, halign: 'left'},
-                            2: {cellWidth: 30, halign: 'center'},
-                            3: {cellWidth: 30, halign: 'center'},
-                            4: {cellWidth: 25, halign: 'center'},
-                            5: {cellWidth: 30, halign: 'center'},
-                            6: {cellWidth: 30, halign: 'center'},
-                            7: {cellWidth: 35, halign: 'center'}
-                        },
-                        willDrawCell: function(data) {
-                            // Baris total dengan warna kuning
-                            if (data.row.index === tableRows.length - 1) {
-                                data.cell.styles.fillColor = [255, 235, 59];
-                                data.cell.styles.textColor = [0, 0, 0];
-                                data.cell.styles.fontStyle = 'bold';
-                                data.cell.styles.lineWidth = 0.5;
-                                data.cell.styles.lineColor = [12, 36, 97];
-                            }
-                        }
-                    });
-
-                    // Footer
-                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
-                    const footerY = Math.min(finalY + 15, pageHeight - 50);
-                    
-                    // Garis pemisah
-                    doc.setDrawColor(200, 200, 200);
-                    doc.setLineWidth(0.3);
-                    doc.line(20, footerY, pageWidth - 20, footerY);
-                    
-                    // Bagian kiri: Validasi elektronik
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(8);
-                    doc.setTextColor(12, 36, 97);
-                    
-                    const leftX = 25;
-                    const leftY = footerY + 8;
-                    
-                    doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
-                    doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
-                    doc.text("SISTEM SATU DATA NELAYAN (SIMATA)", leftX, leftY + 8);
-                    
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(7);
-                    doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
-                    doc.setTextColor(230, 126, 34);
-                    doc.text("www.dinasperikanansitubondo.com/simata", leftX, leftY + 18);
-                    
-                    // Bagian kanan: Tanda tangan dan QR Code
-                    const rightX = pageWidth - 85;
-                    const rightY = footerY + 5;
-                    
-                    // Tanggal
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
-                    doc.setTextColor(0, 0, 0);
-                    const currentDate = new Date();
-                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
-                    doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
-                    
-                    // Jabatan
-                    doc.text('Kepala Bidang Pemberdayaan Nelayan', rightX + 32, rightY + 6, {align: 'center'});
-                    
-                    // QR Code dengan warna biru muda
-                    const qrRightCanvas = document.querySelector('#qr-right canvas');
-                    if(qrRightCanvas) {
-                        try {
-                            const imgRight = qrRightCanvas.toDataURL("image/png");
-                            // QR code 25x25 mm
-                            doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
-                        } catch (error) {
-                            console.error("Error adding QR code image:", error);
-                        }
-                    }
-                    
-                    // Garis tanda tangan
-                    doc.setDrawColor(0, 0, 0);
-                    doc.setLineWidth(0.5);
-                    doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
-                    
-                    // Nama dan NIP
-                    const nameY = rightY + 45;
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(9);
-                    doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', rightX + 32, nameY, {align: 'center'});
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8);
-                    doc.text('NIP. 19761103 200903 1 001', rightX + 32, nameY + 5, {align: 'center'});
-
-                    // Footer dengan kode unik
-                    const totalPages = doc.getNumberOfPages();
-                    for (let i = 1; i <= totalPages; i++) {
-                        doc.setPage(i);
-                        doc.setFontSize(8);
-                        doc.setTextColor(100);
-                        doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
-                        
-                        // Informasi sistem di footer dengan kode unik
-                        doc.setFontSize(7);
-                        const printTime = new Date().toLocaleString('id-ID');
-                        doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
-                        doc.text(`Total Data Terfilter: ${filteredData.length} records`, pageWidth / 2, pageHeight - 2, { align: 'center' });
-                    }
-
-                    // Simpan file PDF
-                    const fileName = `Laporan_Nelayan_Terfilter_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
-                    doc.save(fileName);
-                    document.getElementById('qr-right').innerHTML = "";
-                    
-                    showNotification(`Laporan PDF terfilter berhasil dibuat (${filteredData.length} data)`, 'success');
-                    
-                } catch (error) {
-                    console.error("Error generating filtered PDF:", error);
-                    showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
-                }
-            }, 800);
-        }
-
-        // --- FUNGSI BARU: GENERATE PDF TABEL DATA NELAYAN ---
-        function generateTablePdf() {
-            const filteredData = getFilteredData();
-            
-            if (filteredData.length === 0) {
-                showNotification('Tidak ada data untuk dicetak!', 'error');
-                return;
-            }
-            
-            // Siapkan data untuk tabel
-            const tableRows = filteredData.map((d, index) => [
-                index + 1, 
-                d.nama,
-                d.whatsapp === '00000000' || !d.whatsapp ? '-' : d.whatsapp,
-                d.nik,
-                d.desa,
-                d.kecamatan,
-                d.status,
-                d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
-                d.tanggalValidasi,
-                d.kodeValidasi || '-',
-                d.keterangan || ''
-            ]);
-
-            // Generate kode unik untuk setiap cetakan
-            const printId = 'SIMATA-TABLE-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-            // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
-            document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: SUGENG PURWO PRIYANTO, S.E, M.M\nJabatan: Kabid Pemberdayaan Nelayan\nNIP: 19761103 200903 1 001\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
-            
-            try {
-                new QRCode(document.getElementById("qr-right"), { 
-                    text: signatureText, 
-                    width: 120, 
-                    height: 120,
-                    colorDark: "#4a69bd", // Biru muda
-                    colorLight: "#ffffff", 
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            } catch (error) {
-                console.error("Error generating QR code:", error);
-            }
-
-            setTimeout(() => {
-                try {
-                    const { jsPDF } = window.jspdf;
-                    
-                    if (typeof jsPDF.API.autoTable !== 'function') {
-                        showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
-                        return;
-                    }
-
-                    const doc = new jsPDF('l', 'mm', 'a4');
-                    const pageWidth = doc.internal.pageSize.width;
-                    const pageHeight = doc.internal.pageSize.height;
-
-                    // Header
-                    doc.setFillColor(12, 36, 97);
-                    doc.rect(10, 10, pageWidth - 20, 28, 'F');
-                    
-                    // Judul utama
-                    doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('SISTEM INFORMASI PEMETAAN NELAYAN (SIMATA)', pageWidth/2, 20, { align: 'center' });
-                    
-                    // Subjudul
-                    doc.setFontSize(12);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
-
-                    // Slogan dengan warna oranye
-                    doc.setTextColor(246, 185, 59);
-                    doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10);
-                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
-
-                    // Garis bawah header dengan warna aksen
-                    doc.setDrawColor(246, 185, 59);
-                    doc.setLineWidth(1.5);
-                    doc.line(20, 38, pageWidth - 20, 38);
-
-                    // Judul Laporan dengan informasi filter
-                    doc.setTextColor(12, 36, 97);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
-                    doc.text('TABEL DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
-                    
-                    // Informasi filter yang aktif
-                    let filterInfo = "Semua Data";
-                    if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
-                        filterInfo = "Data Terfilter: ";
-                        const filterParts = [];
-                        
-                        if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
-                        if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
-                        if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
-                        if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
-                        if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
-                        if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
-                        if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
-                        
-                        filterInfo += filterParts.join(', ');
-                    }
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
-                    
-                    doc.setFontSize(14);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('DETAIL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    const now = new Date();
-                    const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
-
-                    // Tabel Data dengan kolom sesuai permintaan
-                    const tableWidth = pageWidth - 40;
-                    const tableStartX = (pageWidth - tableWidth) / 2;
-
-                    doc.autoTable({
-                        head: [[
-                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
-                            {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
-                            {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
-                            {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Status', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Tanggal Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Keterangan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}}
-                        ]],
-                        body: tableRows,
-                        startY: 72,
-                        theme: 'grid',
-                        tableWidth: tableWidth,
-                        margin: { left: tableStartX, right: tableStartX },
-                        headStyles: { 
-                            fillColor: [12, 36, 97],
-                            textColor: [255, 255, 255], 
-                            fontStyle: 'bold', 
-                            halign: 'center',
-                            fontSize: 8,
-                            cellPadding: 3,
-                            lineWidth: 0.5,
-                            lineColor: [255, 255, 255]
-                        },
-                        bodyStyles: {
-                            textColor: [0, 0, 0],
-                            fontSize: 7,
-                            fillColor: [255, 255, 255],
-                            cellPadding: 3,
-                            lineWidth: 0.1,
-                            lineColor: [200, 200, 200]
-                        },
-                        alternateRowStyles: {
-                            fillColor: [245, 245, 245]
-                        },
-                        styles: {
-                            overflow: 'linebreak',
-                            cellPadding: 3,
-                            fontSize: 7,
-                            valign: 'middle',
-                            halign: 'center'
-                        },
-                        columnStyles: {
-                            0: {cellWidth: 15, halign: 'center'},
-                            1: {cellWidth: 40, halign: 'left'},
-                            2: {cellWidth: 30, halign: 'center'},
-                            3: {cellWidth: 40, halign: 'center'},
-                            4: {cellWidth: 30, halign: 'center'},
-                            5: {cellWidth: 30, halign: 'center'},
-                            6: {cellWidth: 25, halign: 'center'},
-                            7: {cellWidth: 30, halign: 'center'},
-                            8: {cellWidth: 30, halign: 'center'},
-                            9: {cellWidth: 35, halign: 'center'},
-                            10: {cellWidth: 40, halign: 'left'}
-                        }
-                    });
-
-                    // Footer
-                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
-                    const footerY = Math.min(finalY + 15, pageHeight - 50);
-                    
-                    // Garis pemisah
-                    doc.setDrawColor(200, 200, 200);
-                    doc.setLineWidth(0.3);
-                    doc.line(20, footerY, pageWidth - 20, footerY);
-                    
-                    // Bagian kiri: Validasi elektronik
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(8);
-                    doc.setTextColor(12, 36, 97);
-                    
-                    const leftX = 25;
-                    const leftY = footerY + 8;
-                    
-                    doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
-                    doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
-                    doc.text("SISTEM SATU DATA NELAYAN (SIMATA)", leftX, leftY + 8);
-                    
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(7);
-                    doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
-                    doc.setTextColor(230, 126, 34);
-                    doc.text("www.dinasperikanansitubondo.com/simata", leftX, leftY + 18);
-                    
-                    // Bagian kanan: Tanda tangan dan QR Code
-                    const rightX = pageWidth - 85;
-                    const rightY = footerY + 5;
-                    
-                    // Tanggal
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
-                    doc.setTextColor(0, 0, 0);
-                    const currentDate = new Date();
-                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
-                    doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
-                    
-                    // Jabatan
-                    doc.text('Kepala Bidang Pemberdayaan Nelayan', rightX + 32, rightY + 6, {align: 'center'});
-                    
-                    // QR Code dengan warna biru muda
-                    const qrRightCanvas = document.querySelector('#qr-right canvas');
-                    if(qrRightCanvas) {
-                        try {
-                            const imgRight = qrRightCanvas.toDataURL("image/png");
-                            // QR code 25x25 mm
-                            doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
-                        } catch (error) {
-                            console.error("Error adding QR code image:", error);
-                        }
-                    }
-                    
-                    // Garis tanda tangan
-                    doc.setDrawColor(0, 0, 0);
-                    doc.setLineWidth(0.5);
-                    doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
-                    
-                    // Nama dan NIP
-                    const nameY = rightY + 45;
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(9);
-                    doc.text('SUGENG PURWO PRIYANTO, S.E, M.M', rightX + 32, nameY, {align: 'center'});
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8);
-                    doc.text('NIP. 19761103 200903 1 001', rightX + 32, nameY + 5, {align: 'center'});
-
-                    // Footer dengan kode unik
-                    const totalPages = doc.getNumberOfPages();
-                    for (let i = 1; i <= totalPages; i++) {
-                        doc.setPage(i);
-                        doc.setFontSize(8);
-                        doc.setTextColor(100);
-                        doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
-                        
-                        // Informasi sistem di footer dengan kode unik
-                        doc.setFontSize(7);
-                        const printTime = new Date().toLocaleString('id-ID');
-                        doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
-                        doc.text(`Total Data Tabel: ${filteredData.length} records`, pageWidth / 2, pageHeight - 2, { align: 'center' });
-                    }
-
-                    // Simpan file PDF
-                    const fileName = `Tabel_Data_Nelayan_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
-                    doc.save(fileName);
-                    document.getElementById('qr-right').innerHTML = "";
-                    
-                    showNotification(`Tabel PDF data nelayan berhasil dibuat (${filteredData.length} data)`, 'success');
-                    
-                } catch (error) {
-                    console.error("Error generating table PDF:", error);
-                    showNotification('Gagal membuat tabel PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
-                }
-            }, 800);
-        }
-
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 initializeApp();
                 setupEventListeners();
+                initFishOptions();
                 
                 displayCurrentDate();
                 
@@ -2911,14 +1842,12 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 console.log("Reload Repository detected. Ready to merge/sync.");
             }
 
-            // Inisialisasi dropdown kecamatan
             const kecSelect = document.getElementById('kecamatan');
             kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
             if (typeof SITUBONDO_DATA !== 'undefined') {
                 Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
             }
             
-            // Inisialisasi dropdown filter desa
             const allDesas = new Set();
             if (typeof SITUBONDO_DATA !== 'undefined') {
                 Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
@@ -2927,38 +1856,41 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             filterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
             [...allDesas].sort().forEach(d => filterDesaSelect.add(new Option(d, d)));
             
-            // Inisialisasi dropdown filter alat tangkap
             const filterAlatTangkap = document.getElementById('filterAlatTangkap');
             filterAlatTangkap.innerHTML = `<option value="">Semua</option>`;
             Object.keys(API_INFO).forEach(api => filterAlatTangkap.add(new Option(api, api)));
-            
-            // Inisialisasi dropdown filter jenis kapal
-            const filterJenisKapal = document.getElementById('filterJenisKapal');
-            filterJenisKapal.innerHTML = `<option value="">Semua</option>`;
-            Object.keys(KAPAL_INFO).forEach(kapal => filterJenisKapal.add(new Option(kapal, kapal)));
-            
-            // Inisialisasi dropdown jenis kapal di form input
-            const jenisKapalSelect = document.getElementById('jenisKapal');
-            jenisKapalSelect.innerHTML = '<option value="">Pilih Jenis...</option>';
-            Object.keys(KAPAL_INFO).forEach(kapal => {
-                jenisKapalSelect.add(new Option(kapal, kapal));
-            });
-            
-            // Inisialisasi dropdown alat tangkap di form input
-            const alatTangkapSelect = document.getElementById('alatTangkap');
-            alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
-            Object.keys(API_INFO).forEach(api => {
-                alatTangkapSelect.add(new Option(api, api));
-            });
             
             updateAppIdentity();
             updatePrivacyUI();
             startDuplicateChecker();
             setupInfoTooltips();
             setupProfesiInfo();
-            
-            // Inisialisasi daftar ikan
-            updateFishOptionsByAPI('');
+        }
+
+        function initFishOptions() {
+            const container = document.getElementById('fishCheckboxContainer');
+            container.innerHTML = '';
+            FISH_TYPES.forEach(fish => {
+                const id = 'fish_' + fish.replace(/\s/g, '');
+                const html = `
+                <label class="fish-option-box">
+                    <input type="checkbox" class="form-check-input me-2 fish-checkbox" value="${fish}" id="${id}">
+                    <span>${fish}</span>
+                </label>`;
+                container.innerHTML += html;
+            });
+
+            document.getElementById('fish_Lainnya').addEventListener('change', function() {
+                const inputLain = document.getElementById('jenisIkanLainnya');
+                if(this.checked) {
+                    inputLain.style.display = 'block';
+                    inputLain.setAttribute('required', 'required');
+                } else {
+                    inputLain.style.display = 'none';
+                    inputLain.value = '';
+                    inputLain.removeAttribute('required');
+                }
+            });
         }
 
         function setupInfoTooltips() {
@@ -2970,10 +1902,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 if (selected && API_INFO[selected]) {
                     apiInfoDiv.style.display = 'block';
                     apiInfoDiv.innerHTML = `<strong>${selected}:</strong> ${API_INFO[selected]}`;
-                    updateFishOptionsByAPI(selected);
                 } else {
                     apiInfoDiv.style.display = 'none';
-                    updateFishOptionsByAPI('');
                 }
             });
 
@@ -2985,10 +1915,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 if (selected && KAPAL_INFO[selected]) {
                     kapalInfoDiv.style.display = 'block';
                     kapalInfoDiv.innerHTML = `<strong>${selected}:</strong> ${KAPAL_INFO[selected]}`;
-                    updateAlatTangkapByKapal();
                 } else {
                     kapalInfoDiv.style.display = 'none';
-                    document.getElementById('apiMappingInfo').style.display = 'none';
                 }
             });
         }
@@ -3040,7 +1968,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             }
         }
 
-        // --- EVENT LISTENERS YANG DISEMPURNAKAN ---
+        // --- EVENT LISTENERS ---
         function setupEventListeners() {
             // Password Toggle
             const passwordToggle = document.getElementById('passwordToggle');
@@ -3178,6 +2106,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     document.getElementById('desa').disabled = true;
                     document.getElementById('desa').innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
                     document.getElementById('inputForm').removeAttribute('data-edit-id');
+                    document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
                     document.getElementById('jenisIkanLainnya').style.display = 'none';
                     const kv = document.getElementById('kodeValidasi');
                     kv.value = '';
@@ -3191,13 +2120,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     document.getElementById('apiInfo').style.display = 'none';
                     document.getElementById('kapalInfo').style.display = 'none';
                     document.getElementById('profesiHelp').innerHTML = '';
-                    document.getElementById('apiMappingInfo').style.display = 'none';
                     
                     const today = new Date().toISOString().split('T')[0];
                     document.getElementById('tanggalValidasi').value = today;
-                    
-                    // Reset daftar ikan ke semua opsi
-                    updateFishOptionsByAPI('');
                 }, 100);
             });
             
@@ -3210,7 +2135,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     document.getElementById('namaKapal').value = '';
                     document.getElementById('jenisKapal').value = '';
                     document.getElementById('kapalInfo').style.display = 'none';
-                    document.getElementById('apiMappingInfo').style.display = 'none';
                 }
             });
 
@@ -3249,6 +2173,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 
                 const result = verifyKIN(input);
                 displayVerifyResult(result);
+                
+                // Scroll ke hasil
+                document.getElementById('verifyResultCard').scrollIntoView({ behavior: 'smooth' });
             });
 
             // Mobile Menu
@@ -3281,14 +2208,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             });
 
             // Search and Filter
-            document.getElementById('searchData').addEventListener('input', function() {
-                currentPage = 1; // Reset ke halaman pertama saat mencari
-                renderDataTable();
-            });
-            
-            // Filter & Validasi Data - DIPERBAIKI DAN DIPINDAHKAN
-            document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
-            document.getElementById('resetFilterBtn').addEventListener('click', resetFilter);
+            document.getElementById('searchData').addEventListener('input', renderDataTable);
+            document.getElementById('applyFilterBtn').addEventListener('click', renderFilterTable);
             document.getElementById('btnCekGanda').addEventListener('click', showDuplicateDataInFilter);
             document.getElementById('selectAllCheckbox').addEventListener('change', function() {
                 const checkboxes = document.querySelectorAll('.row-checkbox');
@@ -3296,11 +2217,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 toggleBulkDeleteBtn();
             });
             document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
-            
-            // Download PDF Terfilter
-            document.getElementById('btnUnduhFilteredPdf').addEventListener('click', generateFilteredPdf);
-            // Download Tabel PDF (Fitur Baru)
-            document.getElementById('btnUnduhTablePdf').addEventListener('click', generateTablePdf);
 
             // Print and Export
             document.getElementById('printPdfBtn').addEventListener('click', printData);
@@ -3312,7 +2228,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 document.getElementById('restoreDataBtn').disabled = !this.files.length;
             });
             document.getElementById('restoreDataBtn').addEventListener('click', restoreData);
-            
             // Event listener untuk tombol Reload Data yang sudah diperbaiki
             document.getElementById('btn-reload-repo').addEventListener('click', handleReloadRepo);
             
@@ -3481,6 +2396,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             document.getElementById('ownerFields').style.display = 'none';
             document.getElementById('desa').innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
             document.getElementById('desa').disabled = true;
+            document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('jenisIkanLainnya').style.display = 'none';
             
             const today = new Date().toISOString().split('T')[0];
@@ -3489,12 +2405,83 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             document.getElementById('apiInfo').style.display = 'none';
             document.getElementById('kapalInfo').style.display = 'none';
             document.getElementById('profesiHelp').innerHTML = '';
-            document.getElementById('apiMappingInfo').style.display = 'none';
 
             updateDashboard(); 
             renderDataTable();
             document.getElementById('v-pills-data-tab').click();
             checkGlobalDuplicates();
+        }
+
+        function renderDataTable() {
+            const tableBody = document.getElementById('dataTableBody');
+            const search = document.getElementById('searchData').value.toLowerCase();
+            let filtered = appData.filter(d => JSON.stringify(d).toLowerCase().includes(search));
+            const nikCounts = {};
+            appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
+
+            const totalItems = filtered.length;
+            const start = (currentPage - 1) * appSettings.itemsPerPage;
+            const pageData = filtered.slice(start, start + appSettings.itemsPerPage);
+
+            tableBody.innerHTML = '';
+            if(pageData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Data tidak ditemukan</td></tr>`;
+                toggleBulkDeleteBtn();
+                return;
+            }
+
+            pageData.forEach((d, i) => {
+                const kapalInfo = d.status === 'Pemilik Kapal' ? `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : '-';
+                const isDuplicate = nikCounts[d.nik] > 1;
+                const rowClass = isDuplicate ? 'table-danger' : '';
+                
+                let badgeClass = 'bg-secondary';
+                if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
+                else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
+                else if(d.profesi === 'Nelayan Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
+                
+                const displayNik = maskData(d.nik);
+                const displayWaRaw = maskData(d.whatsapp);
+                
+                let contactDisplay = '';
+                if(displayWaRaw === "Tidak Ada") {
+                    contactDisplay = `<span class="badge bg-light text-muted border">Tidak Ada</span>`;
+                } else {
+                    if (appSettings.privacyMode) {
+                        contactDisplay = `<div class="small"><i class="fas fa-phone-alt text-secondary me-1"></i> ${displayWaRaw}</div>`;
+                    } else {
+                        let cleanNum = d.whatsapp;
+                        if(cleanNum.startsWith('0')) cleanNum = '62' + cleanNum.substring(1);
+                        contactDisplay = `<div class="d-flex align-items-center gap-1"><a href="https://wa.me/${cleanNum}" target="_blank" class="btn btn-sm btn-success py-0 px-1" title="Chat WhatsApp"><i class="fab fa-whatsapp"></i></a><span class="small font-monospace ms-1">${d.whatsapp}</span></div>`;
+                    }
+                }
+
+                const row = `<tr class="${rowClass}">
+                    <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
+                    <td class="text-center">${start + i + 1}</td>
+                    <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
+                        <div class="fw-bold text-dark text-wrap">${d.nama}</div>
+                        <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
+                        <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
+                    </td>
+                    <td class="col-contact-cell">${contactDisplay}</td>
+                    <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
+                    <td class="col-status-cell">${kapalInfo}</td>
+                    <td style="white-space:nowrap;"><span class="badge bg-info text-white">${d.alatTangkap}</span></td>
+                    <td class="col-action sticky-col-right">
+                        <div class="btn-group shadow-sm" role="group">
+                            <button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Lihat Detail"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-warning text-white" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="btn btn-sm btn-idcard" onclick="safeGenerateIDCard('${d.id}')" title="Cetak ID Card"><i class="fas fa-id-card"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+                tableBody.appendChild(document.createElement('tbody')).innerHTML = row;
+            });
+            document.getElementById('tableInfo').textContent = `Menampilkan ${pageData.length} dari ${totalItems} data (Limit: ${appSettings.itemsPerPage})`;
+            updatePagination(totalItems);
+            toggleBulkDeleteBtn();
         }
 
         function viewDetail(id) {
@@ -3712,6 +2699,15 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             }, 500);
         }
 
+        function updatePagination(total) {
+            const pages = Math.ceil(total / appSettings.itemsPerPage);
+            const ul = document.getElementById('pagination');
+            ul.innerHTML = '';
+            for(let i=1; i<=pages; i++) {
+                ul.innerHTML += `<li class="page-item ${i===currentPage?'active':''}"><a class="page-link" href="#" onclick="currentPage=${i};renderDataTable()">${i}</a></li>`;
+            }
+        }
+
         function toggleBulkDeleteBtn() {
             const checked = document.querySelectorAll('.row-checkbox:checked').length > 0;
             const btn = document.getElementById('bulkDeleteBtn');
@@ -3726,10 +2722,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if(userCode === appSettings.securityCodeSensor) {
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
-                saveData(); 
-                currentPage = 1; // Reset ke halaman pertama setelah menghapus
-                renderDataTable(); 
-                updateDashboard();
+                saveData(); renderDataTable(); updateDashboard();
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 document.getElementById('selectAllCheckbox').checked = false;
                 checkGlobalDuplicates();
@@ -3759,38 +2752,26 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 btnWa.textContent = "Tidak Ada";
             }
 
+            document.querySelectorAll('.fish-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('jenisIkanLainnya').style.display = 'none';
             document.getElementById('jenisIkanLainnya').value = '';
             
-            // Set alat tangkap dan update daftar ikan
-            document.getElementById('alatTangkap').value = d.alatTangkap;
-            updateFishOptionsByAPI(d.alatTangkap);
-            
-            // Set ikan yang sudah dipilih setelah daftar diupdate
-            setTimeout(() => {
-                if(d.jenisIkan) {
-                    const savedFish = d.jenisIkan.split(', ');
-                    savedFish.forEach(fish => {
-                        let found = false;
-                        document.querySelectorAll('.fish-checkbox').forEach(cb => {
-                            if(cb.value === fish) { 
-                                cb.checked = true; 
-                                found = true; 
-                            }
-                        });
-                        if(!found) {
-                            // Jika ikan tidak ada dalam daftar, maka tambahkan ke opsi "Lainnya"
-                            const cbLain = document.getElementById('fish_Lainnya');
-                            if (cbLain) {
-                                cbLain.checked = true;
-                                const inputLain = document.getElementById('jenisIkanLainnya');
-                                inputLain.style.display = 'block';
-                                inputLain.value = fish;
-                            }
-                        }
+            if(d.jenisIkan) {
+                const savedFish = d.jenisIkan.split(', ');
+                savedFish.forEach(fish => {
+                    let found = false;
+                    document.querySelectorAll('.fish-checkbox').forEach(cb => {
+                        if(cb.value === fish) { cb.checked = true; found = true; }
                     });
-                }
-            }, 100);
+                    if(!found) {
+                        const cbLain = document.getElementById('fish_Lainnya');
+                        cbLain.checked = true;
+                        const inputLain = document.getElementById('jenisIkanLainnya');
+                        inputLain.style.display = 'block';
+                        inputLain.value = fish;
+                    }
+                });
+            }
 
             const kecSelect = document.getElementById('kecamatan');
             kecSelect.value = d.kecamatan;
@@ -3809,7 +2790,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 if(d.jenisKapal && KAPAL_INFO[d.jenisKapal]) {
                     document.getElementById('kapalInfo').style.display = 'block';
                     document.getElementById('kapalInfo').innerHTML = `<strong>${d.jenisKapal}:</strong> ${KAPAL_INFO[d.jenisKapal]}`;
-                    updateAlatTangkapByKapal();
                 }
             }
 
@@ -3827,21 +2807,77 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if(userCode === appSettings.securityCodeSensor) {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
-                    saveData(); 
-                    
-                    // Periksa apakah halaman saat ini akan kosong setelah penghapusan
-                    const totalItems = appData.length;
-                    const totalPages = Math.ceil(totalItems / appSettings.itemsPerPage);
-                    if (currentPage > totalPages && totalPages > 0) {
-                        currentPage = totalPages;
-                    }
-                    
-                    renderDataTable(); 
-                    updateDashboard();
+                    saveData(); renderDataTable(); updateDashboard();
                     showNotification('Data berhasil dihapus', 'success');
                     checkGlobalDuplicates();
                 }
             } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
+        }
+
+        function renderFilterTable() {
+            const filters = {
+                desa: document.getElementById('filterDesa').value,
+                profesi: document.getElementById('filterProfesi').value,
+                status: document.getElementById('filterStatus').value,
+                jenisKapal: document.getElementById('filterJenisKapal').value,
+                alatTangkap: document.getElementById('filterAlatTangkap').value,
+                usaha: document.getElementById('filterUsaha').value
+            };
+
+            const filtered = appData.filter(d => {
+                const matchDesa = !filters.desa || d.desa === filters.desa;
+                const matchProfesi = !filters.profesi || d.profesi === filters.profesi;
+                const matchStatus = !filters.status || d.status === filters.status;
+                const matchJenis = !filters.jenisKapal || (d.status === 'Pemilik Kapal' && d.jenisKapal === filters.jenisKapal);
+                const matchAlatTangkap = !filters.alatTangkap || d.alatTangkap === filters.alatTangkap;
+                const matchUsaha = !filters.usaha || (filters.usaha === 'Ada' ? (d.usahaSampingan && d.usahaSampingan.length > 2) : (!d.usahaSampingan || d.usahaSampingan.length < 2));
+                return matchDesa && matchProfesi && matchStatus && matchJenis && matchAlatTangkap && matchUsaha;
+            });
+
+            const tbody = document.getElementById('filterTableBody');
+            tbody.innerHTML = '';
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada data yang cocok dengan filter</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((d, i) => {
+                const displayNik = maskData(d.nik);
+                let profesiBadge = 'bg-secondary';
+                if(d.profesi === 'Nelayan Penuh Waktu') profesiBadge = 'badge-profesi-penuh';
+                else if(d.profesi === 'Nelayan Sambilan Utama') profesiBadge = 'badge-profesi-sambilan-utama';
+                else if(d.profesi === 'Nelayan Sambilan Tambahan') profesiBadge = 'badge-profesi-sambilan-tambahan';
+                
+                tbody.innerHTML += `<tr>
+                    <td>${i+1}</td>
+                    <td class="font-monospace small">${displayNik}</td>
+                    <td><div class="fw-bold text-truncate" style="max-width:200px;">${d.nama}</div><div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div></td>
+                    <td><span class="badge ${d.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">${d.status}</span></td>
+                    <td><span class="badge bg-warning text-dark">${d.alatTangkap}</span></td>
+                    <td><span class="badge ${profesiBadge}">${d.profesi}</span></td>
+                    <td><div class="btn-group"><button class="btn btn-sm btn-info text-white" onclick="viewDetail('${d.id}')" title="Detail"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-idcard" onclick="safeGenerateIDCard('${d.id}')" title="ID Card"><i class="fas fa-id-card"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
+                </tr>`;
+            });
+            showNotification(`Filter berhasil: ${filtered.length} data ditemukan`, 'success');
+        }
+
+        function showDuplicateDataInFilter() {
+            const counts = {};
+            appData.forEach(d => counts[d.nik] = (counts[d.nik] || 0) + 1);
+            const filtered = appData.filter(d => counts[d.nik] > 1);
+            const tbody = document.getElementById('filterTableBody');
+            tbody.innerHTML = '';
+            
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-success"><i class="fas fa-check-circle me-2"></i>Hebat! Tidak ditemukan data NIK ganda.</td></tr>`;
+                return;
+            }
+            filtered.sort((a,b) => a.nik.localeCompare(b.nik));
+            filtered.forEach((d, i) => {
+                const displayNik = maskData(d.nik);
+                tbody.innerHTML += `<tr class="table-danger"><td>${i+1}</td><td class="fw-bold text-danger">${displayNik}</td><td><strong>${d.nama}</strong><br><small>${d.desa}</small></td><td>${d.status}</td><td>${d.alatTangkap}</td><td>${d.profesi}</td><td><div class="btn-group"><button class="btn btn-sm btn-warning" onclick="editData('${d.id}')"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-sm btn-danger" onclick="deleteData('${d.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            });
+            showNotification(`PERINGATAN: Ditemukan ${filtered.length} baris data ganda!`, 'error');
         }
 
         function startDuplicateChecker() {
@@ -4203,7 +3239,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     doc.setFontSize(9);
                     doc.setTextColor(0, 0, 0);
                     const currentDate = new Date();
-                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
+                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
                     doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
                     
                     // Jabatan
@@ -4246,7 +3282,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         // Informasi sistem di footer dengan kode unik
                         doc.setFontSize(7);
                         const printTime = new Date().toLocaleString('id-ID');
-                        doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
+                        doc.text(`Dicetak dari SIMATA v5.4 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
                     }
 
                     // Simpan file PDF
@@ -4353,28 +3389,16 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.verifyKINAndShow = verifyKINAndShow;
         window.showAllKIN = showAllKIN;
         window.resetVerifyForm = resetVerifyForm;
-        window.showFishInfoModal = showFishInfoModal;
+        window.scanQRCode = scanQRCode;
         window.mergeData = mergeData;
         window.backupData = backupData;
         window.restoreData = restoreData;
-        window.updateAlatTangkapByKapal = updateAlatTangkapByKapal;
-        window.updateFishOptionsByAPI = updateFishOptionsByAPI;
-        window.renderDataTable = renderDataTable;
-        window.goToPage = goToPage;
-        window.applyFilter = applyFilter;
-        window.resetFilter = resetFilter;
-        window.showDuplicateDataInFilter = showDuplicateDataInFilter;
-        window.generateFilteredPdf = generateFilteredPdf;
-        window.generateTablePdf = generateTablePdf; // Fungsi baru diekspos
-        window.getFilteredData = getFilteredData;
 
-        console.log('✅ SIMATA Application v5.5 initialized successfully');
-        console.log('✅ Fitur Filter & Validasi Data telah dipindahkan ke menu Database Nelayan');
-        console.log('✅ Fitur Unduh PDF Terfilter telah ditambahkan ke menu Database Nelayan');
-        console.log('✅ Fitur Unduh PDF Tabel Data telah ditambahkan ke menu Database Nelayan');
-        console.log('✅ Verifikasi KIN telah disempurnakan dengan tampilan responsif');
-        console.log('✅ Pagination telah disempurnakan dengan navigasi yang lebih baik');
-        console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
+        console.log('✅ SIMATA Application v5.4 initialized successfully');
+        console.log('✅ Fitur Peta telah dihapus sesuai permintaan');
+        console.log('✅ Fitur Verifikasi KIN tetap berfungsi dengan baik');
+        console.log('✅ Fitur Backup/Restore telah diperbaiki untuk menghindari duplikasi');
+        console.log('✅ Semua menu dan fitur lain tetap utuh dan berfungsi');
     </script>
 </body>
 </html>
