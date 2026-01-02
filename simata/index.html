@@ -188,10 +188,6 @@
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button"><i class="fas fa-file-export"></i> Ekspor Data</button>
                         <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button"><i class="fas fa-cloud-download-alt"></i> Backup & Restore</button>
                         <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button"><i class="fas fa-cog"></i> Pengaturan</button>
-                        <!-- TAMBAHAN TOMBOL REFRESH HALAMAN -->
-                        <button class="nav-link" id="btn-refresh-page" type="button">
-                            <i class="fas fa-redo"></i> Refresh Halaman
-                        </button>
                         <!-- Tombol Reload Data dengan spinner -->
                         <button class="nav-link" id="btn-reload-repo" type="button">
                             <i class="fas fa-sync"></i> Reload Data
@@ -902,7 +898,7 @@
                                         <div class="detail-label">NIK (Nomori Induk Kependudukan)</div>
                                         <div class="detail-value font-monospace" id="d_nik">  </div>
                                         <div class="detail-label">Usia / Tahun Lahir</div>
-                                        <div class="detail-value" id="d_usia">  </div>
+                                        <div class="detail-value" id="d_usia">-</div>
                                         <div class="detail-label">Kontak (WhatsApp/Telp)</div>
                                         <div class="detail-value font-monospace" id="d_wa">-</div>
                                         <div class="detail-label">Domisili</div>
@@ -2590,24 +2586,18 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             }, 800);
         }
 
-        // --- FUNGSI BARU: GENERATE PDF TABEL DATA NELAYAN YANG DIPERBAIKI ---
+        // --- FUNGSI BARU: GENERATE PDF TABEL DATA NELAYAN ---
         function generateTablePdf() {
-            // Dapatkan data terfilter
             const filteredData = getFilteredData();
             
-            // Ambil data untuk halaman saat ini (sesuai dengan pengaturan baris per halaman)
-            const start = (currentPage - 1) * appSettings.itemsPerPage;
-            const end = start + appSettings.itemsPerPage;
-            const pageData = filteredData.slice(start, end);
-            
-            if (pageData.length === 0) {
+            if (filteredData.length === 0) {
                 showNotification('Tidak ada data untuk dicetak!', 'error');
                 return;
             }
             
-            // Siapkan data untuk tabel (tanpa kolom tanggal validasi)
-            const tableRows = pageData.map((d, index) => [
-                start + index + 1, 
+            // Siapkan data untuk tabel
+            const tableRows = filteredData.map((d, index) => [
+                index + 1, 
                 d.nama,
                 d.whatsapp === '00000000' || !d.whatsapp ? '-' : d.whatsapp,
                 d.nik,
@@ -2615,6 +2605,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 d.kecamatan,
                 d.status,
                 d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
+                d.tanggalValidasi,
                 d.kodeValidasi || '-',
                 d.keterangan || ''
             ]);
@@ -2681,7 +2672,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     doc.setTextColor(12, 36, 97);
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(18);
-                    doc.text(`TABEL DATA NELAYAN TERFILTER (Halaman ${currentPage} dari ${Math.ceil(filteredData.length / appSettings.itemsPerPage)})`, pageWidth/2, 48, { align: 'center' });
+                    doc.text('TABEL DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
                     
                     // Informasi filter yang aktif
                     let filterInfo = "Semua Data";
@@ -2714,7 +2705,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
                     doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
 
-                    // Tabel Data dengan kolom sesuai permintaan (tanpa tanggal validasi)
+                    // Tabel Data dengan kolom sesuai permintaan
                     const tableWidth = pageWidth - 40;
                     const tableStartX = (pageWidth - tableWidth) / 2;
 
@@ -2727,7 +2718,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                             {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
                             {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
                             {content: 'Status', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'Tanggal Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
                             {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
                             {content: 'Keterangan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}}
                         ]],
@@ -2772,9 +2764,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                             4: {cellWidth: 30, halign: 'center'},
                             5: {cellWidth: 30, halign: 'center'},
                             6: {cellWidth: 25, halign: 'center'},
-                            7: {cellWidth: 35, halign: 'center'},
-                            8: {cellWidth: 35, halign: 'center'},
-                            9: {cellWidth: 40, halign: 'left'}
+                            7: {cellWidth: 30, halign: 'center'},
+                            8: {cellWidth: 30, halign: 'center'},
+                            9: {cellWidth: 35, halign: 'center'},
+                            10: {cellWidth: 40, halign: 'left'}
                         }
                     });
 
@@ -2858,15 +2851,15 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         doc.setFontSize(7);
                         const printTime = new Date().toLocaleString('id-ID');
                         doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, pageHeight - 7, { align: 'center' });
-                        doc.text(`Total Data Tabel (Halaman ${currentPage}): ${pageData.length} records | Pengaturan baris: ${appSettings.itemsPerPage} baris/halaman`, pageWidth / 2, pageHeight - 2, { align: 'center' });
+                        doc.text(`Total Data Tabel: ${filteredData.length} records`, pageWidth / 2, pageHeight - 2, { align: 'center' });
                     }
 
                     // Simpan file PDF
-                    const fileName = `Tabel_Data_Nelayan_Halaman_${currentPage}_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
+                    const fileName = `Tabel_Data_Nelayan_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
                     doc.save(fileName);
                     document.getElementById('qr-right').innerHTML = "";
                     
-                    showNotification(`Tabel PDF data nelayan berhasil dibuat (Halaman ${currentPage}, ${pageData.length} data)`, 'success');
+                    showNotification(`Tabel PDF data nelayan berhasil dibuat (${filteredData.length} data)`, 'success');
                     
                 } catch (error) {
                     console.error("Error generating table PDF:", error);
@@ -3131,13 +3124,6 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     this.classList.add('active', 'btn-secondary');
                     this.classList.remove('btn-outline-secondary');
                     this.textContent = "Batal";
-                }
-            });
-
-            // Refresh Page Button
-            document.getElementById('btn-refresh-page').addEventListener('click', function() {
-                if (confirm('Apakah Anda yakin ingin merefresh halaman? Semua perubahan yang belum disimpan akan hilang.')) {
-                    location.reload();
                 }
             });
 
@@ -4385,8 +4371,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         console.log('✅ SIMATA Application v5.5 initialized successfully');
         console.log('✅ Fitur Filter & Validasi Data telah dipindahkan ke menu Database Nelayan');
         console.log('✅ Fitur Unduh PDF Terfilter telah ditambahkan ke menu Database Nelayan');
-        console.log('✅ Fitur Unduh PDF Tabel Data telah diperbaiki (tanpa kolom tanggal validasi, sesuai pengaturan baris)');
-        console.log('✅ Tombol Refresh Halaman telah ditambahkan di sidebar');
+        console.log('✅ Fitur Unduh PDF Tabel Data telah ditambahkan ke menu Database Nelayan');
         console.log('✅ Verifikasi KIN telah disempurnakan dengan tampilan responsif');
         console.log('✅ Pagination telah disempurnakan dengan navigasi yang lebih baik');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
