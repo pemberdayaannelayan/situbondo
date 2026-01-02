@@ -540,6 +540,16 @@
                                     </div>
                                  </div>
                                  
+                                 <!-- NOTIFIKASI DATA DISEMBUNYIKAN -->
+                                 <div class="alert alert-warning alert-dismissible fade show mb-3" id="hiddenRowsAlert" style="display:none;">
+                                     <i class="fas fa-eye-slash me-2"></i>
+                                     <strong>Data Tersembunyi:</strong> 
+                                     Total data: <span id="totalDataCount">0</span> | 
+                                     Ditampilkan: <span id="shownDataCount">0</span> | 
+                                     Disembunyikan: <span id="hiddenDataCount">0</span>
+                                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                 </div>
+                                 
                                 <!-- TABEL DATA NELAYAN -->
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-white py-3">
@@ -552,6 +562,9 @@
                                                     <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                                                     <input type="text" class="form-control border-start-0" id="searchData" placeholder="Cari cerdas (Nama, NIK, Kapal)...">
                                                 </div>
+                                                <!-- TOMBOL FITUR BARU: Sembunyikan/Tampilkan Data -->
+                                                <button class="btn btn-warning btn-sm shadow-sm" id="btnHideSelected"><i class="fas fa-eye-slash me-1"></i> Sembunyikan Terpilih</button>
+                                                <button class="btn btn-info btn-sm shadow-sm" id="btnShowAll"><i class="fas fa-eye me-1"></i> Tampilkan Semua</button>
                                                 <button class="btn btn-danger btn-sm d-none" id="bulkDeleteBtn"><i class="fas fa-trash me-1"></i> Hapus Terpilih</button>
                                             </div>
                                         </div>
@@ -586,6 +599,7 @@
                                         <div class="p-2 small text-muted fst-italic text-end border-top">
                                             <span id="sensorStatusText" class="badge bg-secondary me-2">Sensor: ON</span>
                                             <i class="fas fa-info-circle text-danger me-1"></i> Baris <span class="badge bg-danger">Merah</span> = duplikasi NIK.
+                                            <i class="fas fa-eye-slash text-warning ms-2 me-1"></i> Data tersembunyi: <span class="badge bg-warning" id="hiddenCountBadge">0</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1188,6 +1202,11 @@
         let currentDetailId = null; 
         let verifyDataResult = null;
         let currentFilter = {}; // Variabel untuk menyimpan filter aktif
+        
+        // VARIABLE BARU UNTUK FITUR SEMBUNYIKAN DATA
+        let hiddenRows = []; // Array untuk menyimpan ID data yang disembunyikan
+        let isHidingEnabled = false; // Status apakah fitur menyembunyikan aktif
+        
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
         const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
@@ -2314,7 +2333,108 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             return filtered;
         }
 
-        // --- FUNGSI RENDER DATA TABLE YANG DISEMPURNAKAN ---
+        // --- FUNGSI BARU: LOAD DAN SAVE HIDDEN ROWS ---
+        function loadHiddenRows() {
+            const hr = localStorage.getItem('hiddenRows');
+            if (hr) {
+                try {
+                    hiddenRows = JSON.parse(hr);
+                } catch (e) {
+                    hiddenRows = [];
+                }
+            }
+        }
+        
+        function saveHiddenRows() {
+            localStorage.setItem('hiddenRows', JSON.stringify(hiddenRows));
+        }
+
+        // --- FUNGSI BARU: TOGGLE HIDE/SHOW BUTTONS ---
+        function toggleHideShowButtons() {
+            const btnHideSelected = document.getElementById('btnHideSelected');
+            const btnShowAll = document.getElementById('btnShowAll');
+            const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+            
+            if (btnHideSelected) {
+                btnHideSelected.disabled = (checkedCount === 0);
+            }
+            
+            if (btnShowAll) {
+                btnShowAll.disabled = (hiddenRows.length === 0);
+            }
+        }
+
+        // --- FUNGSI BARU: HIDE SELECTED ROWS ---
+        function hideSelectedRows() {
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+            const idsToHide = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+            
+            if (idsToHide.length === 0) {
+                showNotification('Pilih data terlebih dahulu dengan mencentang checkbox!', 'warning');
+                return;
+            }
+            
+            // Tambahkan ke hiddenRows jika belum ada
+            let addedCount = 0;
+            idsToHide.forEach(id => {
+                if (!hiddenRows.includes(id)) {
+                    hiddenRows.push(id);
+                    addedCount++;
+                }
+            });
+            
+            saveHiddenRows();
+            
+            // Reset checkbox select all
+            document.getElementById('selectAllCheckbox').checked = false;
+            
+            // Render ulang tabel
+            renderDataTable();
+            
+            showNotification(`${addedCount} data disembunyikan dari tampilan tabel`, 'success');
+        }
+
+        // --- FUNGSI BARU: SHOW ALL HIDDEN ROWS ---
+        function showAllHiddenRows() {
+            if (hiddenRows.length === 0) {
+                showNotification('Tidak ada data yang disembunyikan', 'info');
+                return;
+            }
+            
+            const count = hiddenRows.length;
+            hiddenRows = [];
+            saveHiddenRows();
+            renderDataTable();
+            showNotification(`${count} data yang disembunyikan ditampilkan kembali`, 'success');
+        }
+
+        // --- FUNGSI BARU: UPDATE HIDDEN ROWS NOTIFICATION ---
+        function updateHiddenRowsNotification() {
+            const alert = document.getElementById('hiddenRowsAlert');
+            const totalDataCount = document.getElementById('totalDataCount');
+            const shownDataCount = document.getElementById('shownDataCount');
+            const hiddenDataCount = document.getElementById('hiddenDataCount');
+            const hiddenCountBadge = document.getElementById('hiddenCountBadge');
+            
+            if (hiddenRows.length > 0) {
+                alert.style.display = 'block';
+                
+                // Hitung jumlah data yang ditampilkan setelah filter dan hidden rows
+                const filteredData = getFilteredData();
+                const shownData = filteredData.filter(d => !hiddenRows.includes(d.id)).length;
+                const totalData = filteredData.length;
+                
+                totalDataCount.textContent = totalData;
+                shownDataCount.textContent = shownData;
+                hiddenDataCount.textContent = hiddenRows.length;
+                hiddenCountBadge.textContent = hiddenRows.length;
+            } else {
+                alert.style.display = 'none';
+                hiddenCountBadge.textContent = '0';
+            }
+        }
+
+        // --- FUNGSI RENDER DATA TABLE YANG DISEMPURNAKAN DENGAN FITUR HIDE/SHOW ---
         function renderDataTable() {
             const tableBody = document.getElementById('dataTableBody');
             const search = document.getElementById('searchData').value.toLowerCase();
@@ -2359,6 +2479,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     d.kecamatan.toLowerCase().includes(search)
                 );
             }
+            
+            // Hapus data yang disembunyikan dari filtered
+            filtered = filtered.filter(d => !hiddenRows.includes(d.id));
             
             const nikCounts = {};
             appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
@@ -2427,7 +2550,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     }
 
                     const row = `<tr class="${rowClass}">
-                        <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
+                        <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn(); toggleHideShowButtons();"></td>
                         <td class="text-center">${start + i + 1}</td>
                         <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
                             <div class="fw-bold text-dark text-wrap">${d.nama}</div>
@@ -2461,6 +2584,12 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             // Update tombol bulk delete
             toggleBulkDeleteBtn();
+            
+            // Update tombol hide/show
+            toggleHideShowButtons();
+            
+            // Update notifikasi hidden rows
+            updateHiddenRowsNotification();
         }
 
         // --- FUNGSI FILTER YANG DISEMPURNAKAN ---
@@ -3184,6 +3313,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             loadSettings();
             migrateOldData();
             
+            // LOAD HIDDEN ROWS DARI LOCALSTORAGE
+            loadHiddenRows();
+            
             if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
                 console.log("Reload Repository detected. Ready to merge/sync.");
             }
@@ -3574,6 +3706,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 const checkboxes = document.querySelectorAll('.row-checkbox');
                 checkboxes.forEach(cb => cb.checked = this.checked);
                 toggleBulkDeleteBtn();
+                toggleHideShowButtons();
             });
             document.getElementById('bulkDeleteBtn').addEventListener('click', bulkDeleteData);
             
@@ -3582,6 +3715,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             // Download PDF Tabel Data - TAMBAHAN BARU
             document.getElementById('btnUnduhTabelPdf').addEventListener('click', generateTabelPdf);
+            
+            // TOMBOL BARU: Sembunyikan/Tampilkan Data
+            document.getElementById('btnHideSelected').addEventListener('click', hideSelectedRows);
+            document.getElementById('btnShowAll').addEventListener('click', showAllHiddenRows);
 
             // Print and Export
             document.getElementById('printPdfBtn').addEventListener('click', printData);
@@ -4014,6 +4151,11 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if(userCode === appSettings.securityCodeSensor) {
                 const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
                 appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
+                
+                // Hapus juga dari hiddenRows
+                hiddenRows = hiddenRows.filter(id => !idsToDelete.includes(id.toString()));
+                saveHiddenRows();
+                
                 saveData(); 
                 currentPage = 1; // Reset ke halaman pertama setelah menghapus
                 renderDataTable(); 
@@ -4115,6 +4257,11 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if(userCode === appSettings.securityCodeSensor) {
                 if(confirm('Yakin menghapus data ini secara permanen?')) {
                     appData = appData.filter(d => d.id != id);
+                    
+                    // Hapus juga dari hiddenRows
+                    hiddenRows = hiddenRows.filter(hiddenId => hiddenId != id);
+                    saveHiddenRows();
+                    
                     saveData(); 
                     
                     // Periksa apakah halaman saat ini akan kosong setelah penghapusan
@@ -4361,6 +4508,11 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.generateTabelPdf = generateTabelPdf;
         window.getFilteredData = getFilteredData;
         window.refreshPage = refreshPage;
+        
+        // Ekspos fungsi baru
+        window.hideSelectedRows = hideSelectedRows;
+        window.showAllHiddenRows = showAllHiddenRows;
+        window.toggleHideShowButtons = toggleHideShowButtons;
 
         console.log('✅ SIMATA Application v5.5 FINAL initialized successfully');
         console.log('✅ Fitur Filter & Validasi Data telah dipindahkan ke menu Database Nelayan');
@@ -4371,6 +4523,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         console.log('✅ PDF tabel menyesuaikan jumlah baris per halaman');
         console.log('✅ Verifikasi KIN telah disempurnakan dengan tampilan responsif');
         console.log('✅ Pagination telah disempurnakan dengan navigasi yang lebih baik');
+        console.log('✅ FITUR BARU: Sembunyikan/Tampilkan Data telah ditambahkan');
+        console.log('✅ FITUR BARU: Notifikasi data tersembunyi telah ditambahkan');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
         console.log('✅ Format laporan PDF telah diperbaiki dengan struktur yang lebih baik');
         console.log('✅ Fitur tampilan baris per halaman telah diperbaiki menjadi input number bebas (default: 5)');
