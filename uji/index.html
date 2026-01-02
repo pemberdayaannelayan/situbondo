@@ -809,13 +809,8 @@
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label class="form-label">Tampilkan Baris Per Halaman</label>
-                                                <select class="form-select" id="itemsPerPageSelect">
-                                                    <option value="10">10 Baris (Default)</option>
-                                                    <option value="25">25 Baris</option>
-                                                    <option value="50">50 Baris</option>
-                                                    <option value="75">75 Baris</option>
-                                                    <option value="100">100 Baris</option>
-                                                </select>
+                                                <input type="number" class="form-control" id="itemsPerPageSelect" min="1" value="5" step="1">
+                                                <small class="text-muted">Masukkan jumlah baris yang ingin ditampilkan per halaman (minimal 1)</small>
                                             </div>
                                         </div>
 
@@ -1184,7 +1179,7 @@
         let appSettings = {
             appName: 'SISTEM PEMETAAN DATA NELAYAN',
             appSubtitle: 'DINAS PERIKANAN KABUPATEN SITUBONDO',
-            itemsPerPage: 10,
+            itemsPerPage: 5, // DIUBAH DARI 10 MENJADI 5 (DEFAULT)
             privacyMode: true,
             securityCodeSensor: '987654321'
         };
@@ -3607,16 +3602,23 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 downloadSinglePdf(currentDetailId);
             });
 
-            // Settings Form
+            // Settings Form - DIPERBAIKI: Input number untuk itemsPerPage
             document.getElementById('settingsForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 appSettings.appName = "SISTEM PEMETAAN DATA NELAYAN";
                 appSettings.appSubtitle = document.getElementById('appSubtitle').value;
-                appSettings.itemsPerPage = parseInt(document.getElementById('itemsPerPageSelect').value);
+                
+                // Baca nilai dari input number dengan validasi
+                let itemsPerPage = parseInt(document.getElementById('itemsPerPageSelect').value);
+                if (isNaN(itemsPerPage) || itemsPerPage < 1) {
+                    itemsPerPage = 5; // Default jika nilai tidak valid
+                }
+                appSettings.itemsPerPage = itemsPerPage;
+                
                 saveSettings(); 
                 updateAppIdentity(); 
                 renderDataTable();
-                showNotification('Pengaturan tersimpan! Nama instansi berhasil diperbarui.', 'success');
+                showNotification('Pengaturan tersimpan! Nama instansi dan jumlah baris per halaman berhasil diperbarui.', 'success');
             });
 
             // Sensor Code Form
@@ -4226,6 +4228,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 if (!loadedSettings.securityCodeSensor) {
                     loadedSettings.securityCodeSensor = '987654321';
                 }
+                // Pastikan itemsPerPage valid (minimal 1)
+                if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
+                    loadedSettings.itemsPerPage = 5;
+                }
                 Object.assign(appSettings, loadedSettings);
             }
         }
@@ -4367,6 +4373,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         console.log('✅ Pagination telah disempurnakan dengan navigasi yang lebih baik');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
         console.log('✅ Format laporan PDF telah diperbaiki dengan struktur yang lebih baik');
+        console.log('✅ Fitur tampilan baris per halaman telah diperbaiki menjadi input number bebas (default: 5)');
     </script>
 </body>
 </html>
