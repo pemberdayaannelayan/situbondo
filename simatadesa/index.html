@@ -24,7 +24,149 @@
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
     <script src="convert.js"></script>
     
-    
+    <style>
+        /* CAPTCHA STYLES */
+        .captcha-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .captcha-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+        }
+        
+        .captcha-canvas {
+            border-radius: 6px;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .captcha-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .captcha-controls .btn {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .captcha-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .captcha-toggle-btn {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .captcha-toggle-btn:hover {
+            background-color: #e9ecef;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .audio-controls .btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        /* Login Modal Specific */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Animasi untuk background login */
+        .circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .circles li {
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(12, 36, 97, 0.1);
+            animation: animate 25s linear infinite;
+            bottom: -150px;
+        }
+        
+        .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .circles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .circles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .circles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .circles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .circles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .circles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        .circles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .circles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .circles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+        
+        @keyframes animate {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+        }
+    </style>
 </head>
 <body>
 
@@ -55,19 +197,40 @@
             <div class="p-4 p-md-5 pt-2">
                 <form id="loginForm">
                     <div class="mb-4 text-center">
-                        <p class="small text-muted mb-3">Masukkan kode keamanan untuk mengakses sistem.</p>
-                        <p class="small text-primary fw-bold mb-2" id="currentDateDisplay"></p>
-                        <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
-                            <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-key text-success"></i></span>
-                            <input type="password" class="form-control bg-light border-0 fs-6" id="securityCode" placeholder="Masukkan kode keamanan" required>
-                            <button type="button" class="input-group-text bg-light border-0 password-toggle-btn" id="passwordToggle">
-                                <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                        <p class="small text-muted mb-3">Verifikasi keamanan dengan memasukkan kode CAPTCHA</p>
+                        
+                        <!-- CAPTCHA Container -->
+                        <div class="captcha-container mb-3">
+                            <div class="captcha-box" id="captchaDisplay">
+                                <!-- CAPTCHA akan di-generate oleh JavaScript -->
+                            </div>
+                            <div class="captcha-controls">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshCaptcha" title="Refresh CAPTCHA">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="audioCaptcha" title="Dengarkan CAPTCHA (Audio)">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Input CAPTCHA -->
+                        <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden mb-2">
+                            <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-shield-alt text-primary"></i></span>
+                            <input type="text" class="form-control bg-light border-0 fs-6" id="captchaInput" placeholder="Masukkan kode CAPTCHA di atas" required autocomplete="off">
+                            <button type="button" class="input-group-text bg-light border-0 captcha-toggle-btn" id="captchaToggle">
+                                <i class="fas fa-eye" id="captchaToggleIcon"></i>
                             </button>
                         </div>
-                        <small class="text-muted mt-2 d-block" id="passwordHint">Kode Keamanan Berubah Setiap Hari</small>
+                        
+                        <!-- Status CAPTCHA -->
+                        <div class="captcha-status small mt-2">
+                            <span id="captchaStatus" class="text-muted">Harap masukkan kode keamanan yang terlihat</span>
+                            <span id="captchaTimer" class="text-muted float-end">Tidak kedaluwarsa</span>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton" style="background: var(--primary-gradient);">
-                        BUKA DASHBOARD
+                        <i class="fas fa-lock me-2"></i>BUKA DASHBOARD
                         <span class="spinner-border spinner-border-sm d-none ms-2" id="loginSpinner"></span>
                     </button>
                 </form>
@@ -119,6 +282,29 @@
                     <button type="button" class="btn btn-primary px-5 fw-bold shadow" data-bs-dismiss="modal" id="btnContinueDashboard">
                         <i class="fas fa-rocket me-2"></i>LANJUT KE DASHBOARD
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Audio CAPTCHA -->
+    <div class="modal fade" id="audioCaptchaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h6 class="modal-title mb-0"><i class="fas fa-volume-up me-2"></i>Audio CAPTCHA</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="fas fa-headphones fa-3x text-primary mb-3"></i>
+                    <p class="mb-3">Dengarkan kode keamanan berikut:</p>
+                    <div class="audio-controls">
+                        <button class="btn btn-primary btn-lg rounded-circle" id="playAudioCaptcha">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <audio id="captchaAudio" preload="auto"></audio>
+                    </div>
+                    <p class="text-muted small mt-3">Klik tombol play untuk mendengarkan kode</p>
                 </div>
             </div>
         </div>
@@ -1060,11 +1246,11 @@
         </div>
     </div>
 
-    <!-- KODE UTAMA APLIKASI TANPA FITUR PETA - VERSI FINAL DIPERBAIKI -->
+    <!-- KODE UTAMA APLIKASI DENGAN CAPTCHA LOGIN -->
     <script>
         // =====================================================
         // KODE UTAMA APLIKASI SIMATA - VERSI 5.6 FINAL
-        // DENGAN PERBAIKAN BUG DAN FITUR SENSOR PADA MODAL DETAIL
+        // DENGAN SISTEM CAPTCHA PROFESIONAL UNTUK LOGIN
         // =====================================================
         
         // Data ikan yang diperbarui dan dilengkapi - DITAMBAHKAN IKAN TOGEK
@@ -1200,6 +1386,275 @@
             "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
         };
 
+        // =====================================================
+        // SISTEM CAPTCHA UNTUK LOGIN - PROFESIONAL & AMAN
+        // =====================================================
+
+        let currentCaptcha = '';
+        let captchaAudio = null;
+        let audioCaptchaModal = null;
+
+        // Karakter yang digunakan untuk CAPTCHA
+        const CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+        const CAPTCHA_LENGTH = 6;
+
+        // Generate CAPTCHA teks
+        function generateCaptchaText() {
+            let text = '';
+            for (let i = 0; i < CAPTCHA_LENGTH; i++) {
+                text += CAPTCHA_CHARS.charAt(Math.floor(Math.random() * CAPTCHA_CHARS.length));
+            }
+            return text;
+        }
+
+        // Render CAPTCHA visual dengan efek distorsi
+        function renderCaptcha(text) {
+            const container = document.getElementById('captchaDisplay');
+            if (!container) return;
+            
+            // Clear previous
+            container.innerHTML = '';
+            
+            // Create canvas for CAPTCHA
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 60;
+            canvas.className = 'captcha-canvas';
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#f8f9fa');
+            gradient.addColorStop(1, '#e9ecef');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add noise dots
+            for (let i = 0; i < 150; i++) {
+                ctx.fillStyle = `rgba(${Math.random() * 100}, ${Math.random() * 100}, ${Math.random() * 100}, 0.1)`;
+                ctx.beginPath();
+                ctx.arc(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    Math.random() * 2,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            }
+            
+            // Add wavy lines
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, Math.random() * canvas.height);
+                for (let x = 0; x < canvas.width; x += 10) {
+                    ctx.lineTo(x, Math.random() * canvas.height);
+                }
+                ctx.stroke();
+            }
+            
+            // Draw each character with distortion
+            const charWidth = 25;
+            const startX = (canvas.width - (charWidth * text.length)) / 2;
+            
+            for (let i = 0; i < text.length; i++) {
+                // Random rotation and position
+                const rotation = (Math.random() * 0.3) - 0.15; // -15° to +15°
+                const yOffset = (Math.random() * 10) - 5; // -5px to +5px
+                const xPos = startX + (i * charWidth) + (Math.random() * 5) - 2.5;
+                
+                // Random color for each character
+                const hue = Math.floor(Math.random() * 60) + 200; // Blue to purple range
+                ctx.fillStyle = `hsl(${hue}, 70%, 40%)`;
+                
+                // Random font weight
+                const fontWeight = Math.random() > 0.5 ? 'bold' : 'normal';
+                const fontSize = 28 + (Math.random() * 6) - 3; // 25-31px
+                
+                ctx.save();
+                ctx.translate(xPos, 30 + yOffset);
+                ctx.rotate(rotation);
+                
+                // Draw character with shadow
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+                ctx.shadowBlur = 2;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
+                
+                ctx.font = `${fontWeight} ${fontSize}px 'Inter', sans-serif`;
+                ctx.fillText(text.charAt(i), 0, 0);
+                
+                ctx.restore();
+            }
+            
+            container.appendChild(canvas);
+        }
+
+        // Setup CAPTCHA event listeners
+        function setupCaptchaListeners() {
+            // Refresh CAPTCHA button
+            const refreshBtn = document.getElementById('refreshCaptcha');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    initCaptcha();
+                    showNotification('CAPTCHA diperbarui', 'info');
+                });
+            }
+            
+            // Audio CAPTCHA button
+            const audioBtn = document.getElementById('audioCaptcha');
+            if (audioBtn) {
+                audioBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (audioCaptchaModal) {
+                        audioCaptchaModal.show();
+                    }
+                });
+            }
+            
+            // Play audio CAPTCHA button
+            const playAudioBtn = document.getElementById('playAudioCaptcha');
+            if (playAudioBtn) {
+                playAudioBtn.addEventListener('click', function() {
+                    if (captchaAudio) {
+                        captchaAudio.play().catch(e => {
+                            showNotification('Tidak dapat memutar audio. Periksa volume atau izin browser.', 'warning');
+                        });
+                    }
+                });
+            }
+            
+            // CAPTCHA input toggle visibility
+            const captchaToggle = document.getElementById('captchaToggle');
+            if (captchaToggle) {
+                captchaToggle.addEventListener('click', function() {
+                    const input = document.getElementById('captchaInput');
+                    const icon = document.getElementById('captchaToggleIcon');
+                    if (!input || !icon) return;
+                    
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                        this.title = "Sembunyikan kode";
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                        this.title = "Lihat kode";
+                    }
+                });
+            }
+        }
+
+        // Validate CAPTCHA
+        function validateCaptcha(input) {
+            if (!input || input.trim() === '') {
+                return { valid: false, message: 'Harap masukkan kode CAPTCHA' };
+            }
+            
+            // Case insensitive comparison
+            if (input.toUpperCase() === currentCaptcha.toUpperCase()) {
+                return { valid: true, message: 'CAPTCHA valid' };
+            }
+            
+            // Check for common misread characters
+            const normalizedInput = input.toUpperCase().replace(/[O0]/g, '0').replace(/[Il1]/g, '1');
+            const normalizedCaptcha = currentCaptcha.toUpperCase().replace(/[O0]/g, '0').replace(/[Il1]/g, '1');
+            
+            if (normalizedInput === normalizedCaptcha) {
+                return { valid: true, message: 'CAPTCHA valid' };
+            }
+            
+            return { 
+                valid: false, 
+                message: 'Kode CAPTCHA tidak sesuai. Coba lagi atau refresh CAPTCHA baru.' 
+            };
+        }
+
+        // Initialize CAPTCHA system
+        function initCaptcha() {
+            // Generate new CAPTCHA
+            currentCaptcha = generateCaptchaText();
+            
+            // Render visual CAPTCHA
+            renderCaptcha(currentCaptcha);
+            
+            // Update status
+            const statusEl = document.getElementById('captchaStatus');
+            if (statusEl) {
+                statusEl.textContent = 'Kode keamanan telah dibuat';
+                statusEl.className = 'text-success';
+            }
+        }
+
+        // New login handler with CAPTCHA
+        function handleCaptchaLogin() {
+            const btn = document.getElementById('loginButton');
+            const spinner = document.getElementById('loginSpinner');
+            const inputCaptcha = document.getElementById('captchaInput').value;
+            
+            if (!btn || !spinner) return;
+            
+            // Validate CAPTCHA
+            const validation = validateCaptcha(inputCaptcha);
+            if (!validation.valid) {
+                showNotification(validation.message, 'error');
+                
+                // Shake animation for wrong CAPTCHA
+                const captchaInput = document.getElementById('captchaInput');
+                if (captchaInput) {
+                    captchaInput.classList.add('shake');
+                    setTimeout(() => captchaInput.classList.remove('shake'), 500);
+                }
+                
+                // Update status
+                const statusEl = document.getElementById('captchaStatus');
+                if (statusEl) {
+                    statusEl.textContent = 'Kode salah, coba lagi';
+                    statusEl.className = 'text-danger';
+                }
+                
+                // Generate new CAPTCHA after failed attempt
+                setTimeout(() => {
+                    initCaptcha();
+                    document.getElementById('captchaInput').value = '';
+                }, 1000);
+                
+                return;
+            }
+            
+            // CAPTCHA is valid, proceed with login
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+            btn.innerHTML = '<i class="fas fa-lock me-2"></i>MEMVERIFIKASI... <span class="spinner-border spinner-border-sm ms-2"></span>';
+            
+            // Update status
+            const statusEl = document.getElementById('captchaStatus');
+            if (statusEl) {
+                statusEl.textContent = 'CAPTCHA valid, membuka sistem...';
+                statusEl.className = 'text-success';
+            }
+            
+            // Simulate server verification
+            setTimeout(() => {
+                sessionStorage.setItem('simata_session', 'active');
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block';
+                initializeCharts();
+                updateDashboard();
+                renderDataTable();
+                loginSuccessModal.show();
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+                btn.innerHTML = '<i class="fas fa-lock me-2"></i>BUKA DASHBOARD';
+            }, 1500);
+        }
+
         // --- GLOBAL VARIABLES ---
         let appData = [];
         let appSettings = {
@@ -1247,22 +1702,6 @@
             saveData();
         }
         
-        function generateSecurityCode() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `${year}${month}${day}`;
-        }
-        
-        function displayCurrentDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('id-ID', options);
-            document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-            document.getElementById('passwordHint').innerHTML = `Kode keamanan berubah setiap hari berdasarkan tanggal.`;
-        }
-
         function maskData(data, force = false) {
             if (!data) return "-";
             if (data === '00000000') return "Tidak Ada";
@@ -2248,7 +2687,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, currentPage + 2);
             
-            // Pastikan kita selalu menampilkan 5 halaman jika memungkinkan
+            // Pastikan kita selalu menampilkan 5 halaman jika memungkini
             if (endPage - startPage < 4) {
                 if (startPage === 1) {
                     endPage = Math.min(totalPages, startPage + 4);
@@ -3187,10 +3626,26 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function() {
             try {
+                // Initialize audio captcha modal
+                audioCaptchaModal = new bootstrap.Modal(document.getElementById('audioCaptchaModal'));
+                
+                // Initialize CAPTCHA system
+                initCaptcha();
+                setupCaptchaListeners();
+                
+                // Modify login form submission
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    // Add new event listener with CAPTCHA validation
+                    loginForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        handleCaptchaLogin();
+                    });
+                }
+                
+                // Initialize the rest of the app
                 initializeApp();
                 setupEventListeners();
-                
-                displayCurrentDate();
                 
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('tanggalValidasi').value = today;
@@ -3400,64 +3855,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
 
         // --- EVENT LISTENERS YANG DISEMPURNAKAN ---
         function setupEventListeners() {
-            // Password Toggle
-            const passwordToggle = document.getElementById('passwordToggle');
-            if (passwordToggle) {
-                passwordToggle.addEventListener('click', function() {
-                    const passwordInput = document.getElementById('securityCode');
-                    const icon = document.getElementById('passwordToggleIcon');
-                    if (!passwordInput || !icon) return;
-                    
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        icon.classList.remove('fa-eye');
-                        icon.classList.add('fa-eye-slash');
-                        this.title = "Sembunyikan kode";
-                    } else {
-                        passwordInput.type = 'password';
-                        icon.classList.remove('fa-eye-slash');
-                        icon.classList.add('fa-eye');
-                        this.title = "Lihat kode";
-                    }
-                });
-            }
-
-            // Login Form
-            const loginForm = document.getElementById('loginForm');
-            if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const btn = document.getElementById('loginButton');
-                    const spinner = document.getElementById('loginSpinner');
-                    const inputCode = document.getElementById('securityCode').value;
-                    const correctCode = generateSecurityCode();
-                    
-                    if (!btn || !spinner) return;
-                    
-                    if (inputCode !== correctCode) {
-                        showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
-                        return;
-                    }
-                    
-                    btn.disabled = true;
-                    spinner.classList.remove('d-none');
-                    btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
-                    
-                    setTimeout(() => {
-                        sessionStorage.setItem('simata_session', 'active');
-                        document.getElementById('loginModal').style.display = 'none';
-                        document.getElementById('appContent').style.display = 'block';
-                        initializeCharts();
-                        updateDashboard();
-                        renderDataTable();
-                        loginSuccessModal.show();
-                        btn.disabled = false;
-                        spinner.classList.add('d-none');
-                        btn.innerHTML = 'BUKA DASHBOARD';
-                    }, 1200);
-                });
-            }
-
+            // CAPTCHA system is already initialized in initCaptcha()
+            
             // Continue to Dashboard
             const continueBtn = document.getElementById('btnContinueDashboard');
             if (continueBtn) {
@@ -4719,8 +5118,13 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.generateTabelPdf = generateTabelPdf;
         window.getFilteredData = getFilteredData;
         window.refreshPage = refreshPage;
+        window.initCaptcha = initCaptcha;
+        window.validateCaptcha = validateCaptcha;
+        window.generateCaptchaText = generateCaptchaText;
+        window.handleCaptchaLogin = handleCaptchaLogin;
 
         console.log('✅ SIMATA Application v5.6 FINAL initialized successfully');
+        console.log('✅ CAPTCHA Login System implemented');
         console.log('✅ Fitur Sensor NIK/HP pada modal detail telah ditambahkan');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
         console.log('✅ Bug fix dan error handling telah diterapkan');
