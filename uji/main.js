@@ -1,5 +1,5 @@
 // =====================================================
-// KODE UTAMA APLIKASI SIMATA - VERSI 5.5 FINAL DIPERBAIKI
+// KODE UTAMA APLIKASI SIMATA - VERSI 5.6 FINAL DIPERBAIKI
 // DIPISAHKAN DARI index.html KE DALAM FILE TERPISAH
 // =====================================================
 
@@ -149,7 +149,7 @@ const SIMATA = (function() {
     let appSettings = {
         appName: 'SISTEM PEMETAAN DATA NELAYAN',
         appSubtitle: 'DINAS PERIKANAN KABUPATEN SITUBONDO',
-        itemsPerPage: 5, // DIUBAH DARI 10 MENJADI 5 (DEFAULT)
+        itemsPerPage: 5,
         privacyMode: true,
         securityCodeSensor: '987654321',
         // TAMBAHAN: Data pejabat default
@@ -161,11 +161,13 @@ const SIMATA = (function() {
     let duplicateCheckInterval = null;
     let currentDetailId = null; 
     let verifyDataResult = null;
-    let currentFilter = {}; // Variabel untuk menyimpan filter aktif
+    let currentFilter = {};
+    let guestCurrentFilter = {};
     let detailModal = null;
     let welcomeModal = null;
     let loginSuccessModal = null;
     let fishInfoModal = null;
+    let isGuestMode = false;
     
     // Variabel untuk chart
     let profesiChart = null;
@@ -465,7 +467,11 @@ const SIMATA = (function() {
             title.textContent = 'VERIFIKASI BERHASIL';
             subtitle.textContent = result.message;
             
-            // Isi konten
+            // Isi konten dengan sensor data jika privacy mode aktif
+            const displayNik = appSettings.privacyMode ? maskData(data.nik) : data.nik;
+            const displayWa = data.whatsapp === '00000000' || !data.whatsapp ? '-' : 
+                            (appSettings.privacyMode ? maskData(data.whatsapp) : data.whatsapp);
+            
             content.innerHTML = `
                 <div class="col-md-6">
                     <div class="verify-result-item">
@@ -474,7 +480,7 @@ const SIMATA = (function() {
                     </div>
                     <div class="verify-result-item">
                         <div class="verify-result-label">NIK</div>
-                        <div class="verify-result-value font-monospace">${maskData(data.nik)}</div>
+                        <div class="verify-result-value font-monospace">${displayNik}</div>
                     </div>
                     <div class="verify-result-item">
                         <div class="verify-result-label">Kode Validasi (KIN)</div>
@@ -488,6 +494,10 @@ const SIMATA = (function() {
                     </div>
                 </div>
                 <div class="col-md-6">
+                    <div class="verify-result-item">
+                        <div class="verify-result-label">Nomor HP/WhatsApp</div>
+                        <div class="verify-result-value">${displayWa}</div>
+                    </div>
                     <div class="verify-result-item">
                         <div class="verify-result-label">Profesi</div>
                         <div class="verify-result-value">
@@ -620,6 +630,8 @@ const SIMATA = (function() {
         } else {
             tbody.innerHTML = '';
             dataWithKIN.sort((a, b) => a.kodeValidasi.localeCompare(b.kodeValidasi)).forEach((d, index) => {
+                const displayNik = appSettings.privacyMode ? maskData(d.nik) : d.nik;
+                
                 const row = `
                     <tr>
                         <td>${index + 1}</td>
@@ -630,7 +642,7 @@ const SIMATA = (function() {
                             <div class="fw-bold">${d.nama}</div>
                             <small class="text-muted">${d.usia} Tahun</small>
                         </td>
-                        <td class="font-monospace">${maskData(d.nik)}</td>
+                        <td class="font-monospace">${displayNik}</td>
                         <td>
                             <div class="small">${d.desa}</div>
                             <div class="small text-muted">${d.kecamatan}</div>
@@ -954,7 +966,7 @@ const SIMATA = (function() {
                 // Informasi sistem di footer
                 doc.setFontSize(7);
                 const printTime = new Date().toLocaleString('id-ID');
-                doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                doc.text(`Dicetak dari SIMATA v5.6 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                 doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                 // Simpan file PDF
@@ -1075,6 +1087,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         appData = mergedData;
                         saveData();
                         renderDataTable();
+                        renderGuestDataTable();
                         updateDashboard();
                         
                         // Tampilkan notifikasi yang informatif
@@ -1156,6 +1169,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         appData = mergedData;
                         saveData();
                         renderDataTable();
+                        renderGuestDataTable();
                         updateDashboard();
                         
                         let message = '';
@@ -1200,6 +1214,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 appData = mergedData;
                 saveData();
                 renderDataTable();
+                renderGuestDataTable();
                 updateDashboard();
                 
                 let message = '';
@@ -1272,7 +1287,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, currentPage + 2);
         
-        // Pastikan kita selalu menampilkan 5 halaman jika memungkinkan
+        // Pastikan kita selalu menampilkan 5 halaman jika memungkini
         if (endPage - startPage < 4) {
             if (startPage === 1) {
                 endPage = Math.min(totalPages, startPage + 4);
@@ -1317,9 +1332,101 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         ul.appendChild(last);
     }
 
+    // --- FUNGSI PAGINATION UNTUK MODE TAMU ---
+    function updateGuestPagination(totalItems) {
+        const guestTotalPages = Math.max(1, Math.ceil(totalItems / appSettings.itemsPerPage));
+        const guestUl = document.getElementById('guestPagination');
+        const guestPaginationInfo = document.getElementById('guestPaginationInfo');
+        
+        if (!guestUl || !guestPaginationInfo) return;
+        
+        // Validasi guestCurrentPage
+        if (guestCurrentPage > guestTotalPages) {
+            guestCurrentPage = guestTotalPages;
+        }
+        if (guestCurrentPage < 1) {
+            guestCurrentPage = 1;
+        }
+        
+        guestUl.innerHTML = '';
+        
+        if (guestTotalPages <= 1) {
+            guestPaginationInfo.textContent = `Halaman 1 dari 1 (Total: ${totalItems} data)`;
+            return;
+        }
+        
+        guestPaginationInfo.textContent = `Halaman ${guestCurrentPage} dari ${guestTotalPages} (Total: ${totalItems} data)`;
+        
+        // Tombol pertama
+        const first = document.createElement('li');
+        first.className = `page-item ${guestCurrentPage === 1 ? 'disabled' : ''}`;
+        first.innerHTML = `<a class="page-link" href="#" onclick="SIMATA.goToGuestPage(1); return false;" title="Halaman Pertama">&laquo;</a>`;
+        guestUl.appendChild(first);
+        
+        // Tombol sebelumnya
+        const prev = document.createElement('li');
+        prev.className = `page-item ${guestCurrentPage === 1 ? 'disabled' : ''}`;
+        prev.innerHTML = `<a class="page-link" href="#" onclick="SIMATA.goToGuestPage(${guestCurrentPage-1}); return false;" title="Halaman Sebelumnya">&lt;</a>`;
+        guestUl.appendChild(prev);
+        
+        // Tampilkan beberapa halaman sekitar guestCurrentPage
+        let startPage = Math.max(1, guestCurrentPage - 2);
+        let endPage = Math.min(guestTotalPages, guestCurrentPage + 2);
+        
+        // Pastikan kita selalu menampilkan 5 halaman jika memungkini
+        if (endPage - startPage < 4) {
+            if (startPage === 1) {
+                endPage = Math.min(guestTotalPages, startPage + 4);
+            } else if (endPage === guestTotalPages) {
+                startPage = Math.max(1, endPage - 4);
+            }
+        }
+        
+        // Tambahkan ellipsis di awal jika diperlukan
+        if (startPage > 1) {
+            const ellipsis1 = document.createElement('li');
+            ellipsis1.className = 'page-item disabled';
+            ellipsis1.innerHTML = `<span class="page-link">...</span>`;
+            guestUl.appendChild(ellipsis1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const li = document.createElement('li');
+            li.className = `page-item ${i === guestCurrentPage ? 'active' : ''}`;
+            li.innerHTML = `<a class="page-link" href="#" onclick="SIMATA.goToGuestPage(${i}); return false;">${i}</a>`;
+            guestUl.appendChild(li);
+        }
+        
+        // Tambahkan ellipsis di akhir jika diperlukan
+        if (endPage < guestTotalPages) {
+            const ellipsis2 = document.createElement('li');
+            ellipsis2.className = 'page-item disabled';
+            ellipsis2.innerHTML = `<span class="page-link">...</span>`;
+            guestUl.appendChild(ellipsis2);
+        }
+        
+        // Tombol berikutnya
+        const next = document.createElement('li');
+        next.className = `page-item ${guestCurrentPage === guestTotalPages ? 'disabled' : ''}`;
+        next.innerHTML = `<a class="page-link" href="#" onclick="SIMATA.goToGuestPage(${guestCurrentPage+1}); return false;" title="Halaman Berikutnya">&gt;</a>`;
+        guestUl.appendChild(next);
+        
+        // Tombol terakhir
+        const last = document.createElement('li');
+        last.className = `page-item ${guestCurrentPage === guestTotalPages ? 'disabled' : ''}`;
+        last.innerHTML = `<a class="page-link" href="#" onclick="SIMATA.goToGuestPage(${guestTotalPages}); return false;" title="Halaman Terakhir">&raquo;</a>`;
+        guestUl.appendChild(last);
+    }
+
     function goToPage(page) {
         currentPage = page;
         renderDataTable();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goToGuestPage(page) {
+        guestCurrentPage = page;
+        renderGuestDataTable();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1351,6 +1458,55 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 const matchAlatTangkap = !currentFilter.alatTangkap || d.alatTangkap === currentFilter.alatTangkap;
                 const matchUsaha = !currentFilter.usaha || 
                     (currentFilter.usaha === 'Ada' ? 
+                        (d.usahaSampingan && d.usahaSampingan.trim() !== '' && d.usahaSampingan !== '-') : 
+                        (!d.usahaSampingan || d.usahaSampingan.trim() === '' || d.usahaSampingan === '-'));
+                
+                return matchDesa && matchProfesi && matchStatus && matchJenis && matchAlatTangkap && matchUsaha;
+            });
+        }
+        
+        // Terapkan pencarian jika ada
+        if (search) {
+            filtered = filtered.filter(d => 
+                d.nama.toLowerCase().includes(search) || 
+                d.nik.includes(search) || 
+                (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
+                d.desa.toLowerCase().includes(search) ||
+                d.kecamatan.toLowerCase().includes(search)
+            );
+        }
+        
+        return filtered;
+    }
+
+    // --- FUNGSI GET FILTERED DATA UNTUK MODE TAMU ---
+    function getGuestFilteredData() {
+        const searchData = document.getElementById('guestSearchData');
+        const search = searchData ? searchData.value.toLowerCase() : '';
+        
+        // Filter data berdasarkan pencarian dan filter
+        let filtered = appData;
+        
+        // Terapkan filter jika ada
+        if (Object.keys(guestCurrentFilter).length > 0) {
+            filtered = filtered.filter(d => {
+                const matchDesa = !guestCurrentFilter.desa || d.desa === guestCurrentFilter.desa;
+                const matchProfesi = !guestCurrentFilter.profesi || d.profesi === guestCurrentFilter.profesi;
+                const matchStatus = !guestCurrentFilter.status || d.status === guestCurrentFilter.status;
+                
+                // Filter jenis kapal hanya untuk pemilik kapal
+                let matchJenis = true;
+                if (guestCurrentFilter.jenisKapal) {
+                    if (d.status === 'Pemilik Kapal') {
+                        matchJenis = d.jenisKapal === guestCurrentFilter.jenisKapal;
+                    } else {
+                        matchJenis = false;
+                    }
+                }
+                
+                const matchAlatTangkap = !guestCurrentFilter.alatTangkap || d.alatTangkap === guestCurrentFilter.alatTangkap;
+                const matchUsaha = !guestCurrentFilter.usaha || 
+                    (guestCurrentFilter.usaha === 'Ada' ? 
                         (d.usahaSampingan && d.usahaSampingan.trim() !== '' && d.usahaSampingan !== '-') : 
                         (!d.usahaSampingan || d.usahaSampingan.trim() === '' || d.usahaSampingan === '-'));
                 
@@ -1525,6 +1681,141 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         toggleBulkDeleteBtn();
     }
 
+    // --- FUNGSI RENDER DATA TABLE UNTUK MODE TAMU ---
+    function renderGuestDataTable() {
+        const tableBody = document.getElementById('guestDataTableBody');
+        const searchData = document.getElementById('guestSearchData');
+        const search = searchData ? searchData.value.toLowerCase() : '';
+        
+        if (!tableBody) return;
+        
+        // Filter data berdasarkan pencarian dan filter
+        let filtered = appData;
+        
+        // Terapkan filter jika ada
+        if (Object.keys(guestCurrentFilter).length > 0) {
+            filtered = filtered.filter(d => {
+                const matchDesa = !guestCurrentFilter.desa || d.desa === guestCurrentFilter.desa;
+                const matchProfesi = !guestCurrentFilter.profesi || d.profesi === guestCurrentFilter.profesi;
+                const matchStatus = !guestCurrentFilter.status || d.status === guestCurrentFilter.status;
+                
+                // Filter jenis kapal hanya untuk pemilik kapal
+                let matchJenis = true;
+                if (guestCurrentFilter.jenisKapal) {
+                    if (d.status === 'Pemilik Kapal') {
+                        matchJenis = d.jenisKapal === guestCurrentFilter.jenisKapal;
+                    } else {
+                        matchJenis = false;
+                    }
+                }
+                
+                const matchAlatTangkap = !guestCurrentFilter.alatTangkap || d.alatTangkap === guestCurrentFilter.alatTangkap;
+                const matchUsaha = !guestCurrentFilter.usaha || 
+                    (guestCurrentFilter.usaha === 'Ada' ? 
+                        (d.usahaSampingan && d.usahaSampingan.trim() !== '' && d.usahaSampingan !== '-') : 
+                        (!d.usahaSampingan || d.usahaSampingan.trim() === '' || d.usahaSampingan === '-'));
+                
+                return matchDesa && matchProfesi && matchStatus && matchJenis && matchAlatTangkap && matchUsaha;
+            });
+        }
+        
+        // Terapkan pencarian jika ada
+        if (search) {
+            filtered = filtered.filter(d => 
+                d.nama.toLowerCase().includes(search) || 
+                d.nik.includes(search) || 
+                (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
+                d.desa.toLowerCase().includes(search) ||
+                d.kecamatan.toLowerCase().includes(search)
+            );
+        }
+        
+        const nikCounts = {};
+        appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
+
+        const totalItems = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / appSettings.itemsPerPage));
+        
+        // Validasi guestCurrentPage
+        if (guestCurrentPage > totalPages && totalPages > 0) {
+            guestCurrentPage = totalPages;
+        } else if (totalItems === 0) {
+            guestCurrentPage = 1;
+        }
+        
+        const start = (guestCurrentPage - 1) * appSettings.itemsPerPage;
+        const end = start + appSettings.itemsPerPage;
+        const pageData = filtered.slice(start, end);
+
+        tableBody.innerHTML = '';
+        
+        if (totalItems === 0) {
+            const row = `<tr>
+                <td colspan="6" class="text-center py-5 text-muted">
+                    <i class="fas fa-database fa-2x mb-3"></i>
+                    <p>Tidak ada data ditemukan</p>
+                    ${search || Object.keys(guestCurrentFilter).length > 0 ? '<small>Coba dengan kata kunci pencarian atau filter yang berbeda</small>' : ''}
+                </td>
+            </tr>`;
+            tableBody.innerHTML = row;
+        } else if (pageData.length === 0) {
+            const row = `<tr>
+                <td colspan="6" class="text-center py-5 text-muted">
+                    <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
+                    <p>Data untuk halaman ini tidak ditemukan</p>
+                </td>
+            </tr>`;
+            tableBody.innerHTML = row;
+        } else {
+            pageData.forEach((d, i) => {
+                const kapalInfo = d.status === 'Pemilik Kapal' ? 
+                    `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : 
+                    '-';
+                
+                const isDuplicate = nikCounts[d.nik] > 1;
+                const rowClass = isDuplicate ? 'table-danger' : '';
+                
+                let badgeClass = 'bg-secondary';
+                if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
+                else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
+                else if(d.profesi === 'Nelayan Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
+                
+                const displayNik = maskData(d.nik);
+                const displayWaRaw = maskData(d.whatsapp);
+                
+                let contactDisplay = '';
+                if(displayWaRaw === "Tidak Ada") {
+                    contactDisplay = `<span class="badge bg-light text-muted border">Tidak Ada</span>`;
+                } else {
+                    contactDisplay = `<div class="small"><i class="fas fa-phone-alt text-secondary me-1"></i> ${displayWaRaw}</div>`;
+                }
+
+                const row = `<tr class="${rowClass}">
+                    <td class="text-center">${start + i + 1}</td>
+                    <td class="col-id-cell">
+                        <div class="fw-bold text-dark text-wrap">${d.nama}</div>
+                        <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
+                        <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
+                    </td>
+                    <td class="col-contact-cell">${contactDisplay}</td>
+                    <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
+                    <td class="col-status-cell">${kapalInfo}</td>
+                    <td style="white-space:nowrap;"><span class="badge bg-info text-white">${d.alatTangkap}</span></td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+        
+        // Update informasi tabel
+        const startItem = totalItems > 0 ? start + 1 : 0;
+        const endItem = Math.min(start + appSettings.itemsPerPage, totalItems);
+        const guestTableInfo = document.getElementById('guestTableInfo');
+        if (guestTableInfo) guestTableInfo.textContent = `Menampilkan ${startItem}-${endItem} dari ${totalItems} data`;
+        
+        // Update pagination
+        updateGuestPagination(totalItems);
+    }
+
     // --- FUNGSI FILTER YANG DISEMPURNAKAN ---
     function applyFilter() {
         const filterDesa = document.getElementById('filterDesa');
@@ -1599,6 +1890,82 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         renderDataTable();
         
         showNotification('Filter direset, menampilkan semua data', 'info');
+    }
+
+    // --- FUNGSI FILTER UNTUK MODE TAMU ---
+    function applyGuestFilter() {
+        const filterDesa = document.getElementById('guestFilterDesa');
+        const filterProfesi = document.getElementById('guestFilterProfesi');
+        const filterStatus = document.getElementById('guestFilterStatus');
+        const filterJenisKapal = document.getElementById('guestFilterJenisKapal');
+        const filterAlatTangkap = document.getElementById('guestFilterAlatTangkap');
+        const filterUsaha = document.getElementById('guestFilterUsaha');
+        
+        if (!filterDesa || !filterProfesi || !filterStatus || !filterJenisKapal || !filterAlatTangkap || !filterUsaha) return;
+        
+        guestCurrentFilter = {
+            desa: filterDesa.value,
+            profesi: filterProfesi.value,
+            status: filterStatus.value,
+            jenisKapal: filterJenisKapal.value,
+            alatTangkap: filterAlatTangkap.value,
+            usaha: filterUsaha.value
+        };
+        
+        guestCurrentPage = 1; // Reset ke halaman pertama saat filter diterapkan
+        renderGuestDataTable();
+        
+        // Hitung jumlah data yang difilter
+        const filteredCount = appData.filter(d => {
+            const matchDesa = !guestCurrentFilter.desa || d.desa === guestCurrentFilter.desa;
+            const matchProfesi = !guestCurrentFilter.profesi || d.profesi === guestCurrentFilter.profesi;
+            const matchStatus = !guestCurrentFilter.status || d.status === guestCurrentFilter.status;
+            
+            let matchJenis = true;
+            if (guestCurrentFilter.jenisKapal) {
+                if (d.status === 'Pemilik Kapal') {
+                    matchJenis = d.jenisKapal === guestCurrentFilter.jenisKapal;
+                } else {
+                    matchJenis = false;
+                }
+            }
+            
+            const matchAlatTangkap = !guestCurrentFilter.alatTangkap || d.alatTangkap === guestCurrentFilter.alatTangkap;
+            const matchUsaha = !guestCurrentFilter.usaha || 
+                (guestCurrentFilter.usaha === 'Ada' ? 
+                    (d.usahaSampingan && d.usahaSampingan.trim() !== '' && d.usahaSampingan !== '-') : 
+                    (!d.usahaSampingan || d.usahaSampingan.trim() === '' || d.usahaSampingan === '-'));
+            
+            return matchDesa && matchProfesi && matchStatus && matchJenis && matchAlatTangkap && matchUsaha;
+        }).length;
+        
+        showNotification(`Filter Mode Tamu diterapkan: ${filteredCount} data ditemukan`, 'success');
+    }
+
+    function resetGuestFilter() {
+        // Reset semua dropdown filter
+        const filterDesa = document.getElementById('guestFilterDesa');
+        const filterProfesi = document.getElementById('guestFilterProfesi');
+        const filterStatus = document.getElementById('guestFilterStatus');
+        const filterJenisKapal = document.getElementById('guestFilterJenisKapal');
+        const filterAlatTangkap = document.getElementById('guestFilterAlatTangkap');
+        const filterUsaha = document.getElementById('guestFilterUsaha');
+        
+        if (filterDesa) filterDesa.value = '';
+        if (filterProfesi) filterProfesi.value = '';
+        if (filterStatus) filterStatus.value = '';
+        if (filterJenisKapal) filterJenisKapal.value = '';
+        if (filterAlatTangkap) filterAlatTangkap.value = '';
+        if (filterUsaha) filterUsaha.value = '';
+        
+        // Reset filter aktif
+        guestCurrentFilter = {};
+        guestCurrentPage = 1;
+        
+        // Render ulang tabel
+        renderGuestDataTable();
+        
+        showNotification('Filter Mode Tamu direset, menampilkan semua data', 'info');
     }
 
     function showDuplicateDataInFilter() {
@@ -1889,7 +2256,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 // Informasi sistem di footer
                 doc.setFontSize(7);
                 const printTime = new Date().toLocaleString('id-ID');
-                doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                doc.text(`Dicetak dari SIMATA v5.6 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                 doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                 // Simpan file PDF
@@ -2214,7 +2581,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 // Informasi sistem di footer
                 doc.setFontSize(7);
                 const printTime = new Date().toLocaleString('id-ID');
-                doc.text(`Dicetak dari SIMATA v5.5 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                doc.text(`Dicetak dari SIMATA v5.6 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                 doc.text(`Total Data Terfilter: ${filteredData.length} records`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                 // Simpan file PDF
@@ -2293,6 +2660,25 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             });
         }
         
+        // Inisialisasi dropdown filter untuk mode tamu
+        const guestFilterDesaSelect = document.getElementById('guestFilterDesa');
+        if (guestFilterDesaSelect) {
+            guestFilterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
+            [...allDesas].sort().forEach(d => guestFilterDesaSelect.add(new Option(d, d)));
+        }
+        
+        const guestFilterAlatTangkap = document.getElementById('guestFilterAlatTangkap');
+        if (guestFilterAlatTangkap) {
+            guestFilterAlatTangkap.innerHTML = `<option value="">Semua</option>`;
+            Object.keys(API_INFO).forEach(api => guestFilterAlatTangkap.add(new Option(api, api)));
+        }
+        
+        const guestFilterJenisKapal = document.getElementById('guestFilterJenisKapal');
+        if (guestFilterJenisKapal) {
+            guestFilterJenisKapal.innerHTML = `<option value="">Semua</option>`;
+            Object.keys(KAPAL_INFO).forEach(kapal => guestFilterJenisKapal.add(new Option(kapal, kapal)));
+        }
+        
         updateAppIdentity();
         updatePrivacyUI();
         startDuplicateChecker();
@@ -2302,7 +2688,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         // Inisialisasi daftar ikan
         updateFishOptionsByAPI('');
         
-        // TAMBAHAN: Inisialisasi form pengaturan pejabat
+        // Inisialisasi form pengaturan pejabat
         loadOfficialData();
     }
 
@@ -2418,6 +2804,87 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         }
     }
 
+    // --- FUNGSI BARU: MODE TAMU ---
+    function activateGuestMode() {
+        isGuestMode = true;
+        
+        // Sembunyikan tombol-tombol menu yang tidak diperlukan di Mode Tamu
+        document.querySelectorAll('.nav-link').forEach(link => {
+            const id = link.id;
+            if (id !== 'v-pills-guest-tab' && id !== 'btn-refresh-page' && id !== 'btn-reload-repo' && id !== 'v-pills-logout-tab') {
+                link.style.display = 'none';
+            }
+        });
+        
+        // Tampilkan hanya menu Mode Tamu
+        document.getElementById('v-pills-guest-tab').click();
+        
+        // Nonaktifkan FAB menu
+        const fabMenu = document.getElementById('fabMenu');
+        if (fabMenu) fabMenu.style.display = 'none';
+        
+        // Render data tamu
+        renderGuestDataTable();
+        
+        // Update dashboard untuk mode tamu
+        updateGuestDashboard();
+        
+        showNotification('Anda masuk dalam Mode Tamu. Hanya dapat melihat data tanpa aksi.', 'info');
+    }
+
+    function updateGuestDashboard() {
+        // Update dashboard untuk mode tamu (hanya tampilan)
+        const totalPenerima = document.getElementById('totalPenerima');
+        const totalPenuhWaktu = document.getElementById('totalPenuhWaktu');
+        const totalPemilik = document.getElementById('totalPemilik');
+        const totalSambilanUtama = document.getElementById('totalSambilanUtama');
+        const totalSambilanTambahan = document.getElementById('totalSambilanTambahan');
+        const totalABK = document.getElementById('totalABK');
+        
+        if (totalPenerima) totalPenerima.textContent = appData.length;
+        
+        const penuhWaktuCount = appData.filter(d => d.profesi === 'Nelayan Penuh Waktu').length;
+        if (totalPenuhWaktu) totalPenuhWaktu.textContent = penuhWaktuCount;
+        
+        const pemilikCount = appData.filter(d => d.status === 'Pemilik Kapal').length;
+        if (totalPemilik) totalPemilik.textContent = pemilikCount;
+        
+        const sambilanUtamaCount = appData.filter(d => d.profesi === 'Nelayan Sambilan Utama').length;
+        if (totalSambilanUtama) totalSambilanUtama.textContent = sambilanUtamaCount;
+        
+        const sambilanTambahanCount = appData.filter(d => d.profesi === 'Nelayan Sambilan Tambahan').length;
+        if (totalSambilanTambahan) totalSambilanTambahan.textContent = sambilanTambahanCount;
+        
+        const abkCount = appData.filter(d => d.status === 'Anak Buah Kapal').length;
+        if (totalABK) totalABK.textContent = abkCount;
+        
+        // Update charts
+        if (profesiChart) {
+            const pData = {};
+            appData.forEach(d => pData[d.profesi] = (pData[d.profesi] || 0) + 1);
+            
+            profesiChart.data = {
+                labels: Object.keys(pData),
+                datasets: [{ 
+                    data: Object.values(pData), 
+                    backgroundColor: ['#0c2461', '#e58e26', '#27ae60', '#4a69bd', '#f6b93b'] 
+                }] 
+            };
+            profesiChart.update();
+        }
+
+        if (kapalChart) {
+            const kData = {};
+            appData.filter(d => d.status === 'Pemilik Kapal').forEach(d => kData[d.jenisKapal] = (kData[d.jenisKapal] || 0) + 1);
+            
+            kapalChart.data = {
+                labels: Object.keys(kData),
+                datasets: [{ label: 'Unit', data: Object.values(kData), backgroundColor: '#4a69bd' }]
+            };
+            kapalChart.update();
+        }
+    }
+
     // --- EVENT LISTENERS YANG DISEMPURNAKAN ---
     function setupEventListeners() {
         // Password Toggle
@@ -2467,6 +2934,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 
                 setTimeout(() => {
                     sessionStorage.setItem('simata_session', 'active');
+                    sessionStorage.setItem('simata_guest_mode', 'false');
                     const loginModal = document.getElementById('loginModal');
                     const appContent = document.getElementById('appContent');
                     
@@ -2483,6 +2951,26 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     spinner.classList.add('d-none');
                     btn.innerHTML = 'BUKA DASHBOARD';
                 }, 1200);
+            });
+        }
+
+        // Tombol Masuk sebagai Tamu - TAMBAHAN BARU
+        const guestLoginButton = document.getElementById('guestLoginButton');
+        if (guestLoginButton) {
+            guestLoginButton.addEventListener('click', function() {
+                const loginModal = document.getElementById('loginModal');
+                const appContent = document.getElementById('appContent');
+                
+                if (loginModal) loginModal.style.display = 'none';
+                if (appContent) appContent.style.display = 'block';
+                
+                sessionStorage.setItem('simata_session', 'active');
+                sessionStorage.setItem('simata_guest_mode', 'true');
+                
+                isGuestMode = true;
+                activateGuestMode();
+                
+                showNotification('Anda masuk sebagai Tamu. Akses terbatas pada Mode Tamu saja.', 'info');
             });
         }
 
@@ -2545,6 +3033,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         saveSettings(); 
                         updatePrivacyUI(); 
                         renderDataTable();
+                        renderGuestDataTable();
                         showNotification('Sensor Data dinonaktifkan.', 'warning');
                     } else { 
                         alert("Kode Keamanan Sensor Salah!"); 
@@ -2555,6 +3044,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     saveSettings(); 
                     updatePrivacyUI(); 
                     renderDataTable();
+                    renderGuestDataTable();
                     showNotification('Sensor Data diaktifkan.', 'success');
                 }
             });
@@ -2712,7 +3202,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             });
         }
 
-        // Refresh Halaman Button - TAMBAHAN BARU
+        // Refresh Halaman Button
         const btnRefreshPage = document.getElementById('btn-refresh-page');
         if (btnRefreshPage) {
             btnRefreshPage.addEventListener('click', refreshPage);
@@ -2754,13 +3244,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             logoutTab.addEventListener('click', () => {
                 if(confirm('Apakah Anda yakin ingin keluar? Sistem akan mengunduh data (reload.js) secara otomatis.')) {
                     sessionStorage.removeItem('simata_session');
+                    sessionStorage.removeItem('simata_guest_mode');
                     backupData('reload.js');
                     setTimeout(() => location.reload(), 2000);
                 }
             });
         }
 
-        // Search and Filter
+        // Search and Filter untuk Data Utama
         const searchData = document.getElementById('searchData');
         if (searchData) {
             searchData.addEventListener('input', function() {
@@ -2769,7 +3260,16 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             });
         }
         
-        // Filter & Validasi Data - DIPERBAIKI DAN DIPINDAHKAN
+        // Search and Filter untuk Mode Tamu
+        const guestSearchData = document.getElementById('guestSearchData');
+        if (guestSearchData) {
+            guestSearchData.addEventListener('input', function() {
+                guestCurrentPage = 1; // Reset ke halaman pertama saat mencari
+                renderGuestDataTable();
+            });
+        }
+        
+        // Filter & Validasi Data
         const applyFilterBtn = document.getElementById('applyFilterBtn');
         if (applyFilterBtn) applyFilterBtn.addEventListener('click', applyFilter);
         
@@ -2778,6 +3278,13 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         
         const btnCekGanda = document.getElementById('btnCekGanda');
         if (btnCekGanda) btnCekGanda.addEventListener('click', showDuplicateDataInFilter);
+        
+        // Filter untuk Mode Tamu
+        const guestApplyFilterBtn = document.getElementById('guestApplyFilterBtn');
+        if (guestApplyFilterBtn) guestApplyFilterBtn.addEventListener('click', applyGuestFilter);
+        
+        const guestResetFilterBtn = document.getElementById('guestResetFilterBtn');
+        if (guestResetFilterBtn) guestResetFilterBtn.addEventListener('click', resetGuestFilter);
         
         const selectAllCheckbox = document.getElementById('selectAllCheckbox');
         if (selectAllCheckbox) {
@@ -2795,7 +3302,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         const btnUnduhFilteredPdf = document.getElementById('btnUnduhFilteredPdf');
         if (btnUnduhFilteredPdf) btnUnduhFilteredPdf.addEventListener('click', generateFilteredPdf);
         
-        // Download PDF Tabel Data - TAMBAHAN BARU
+        // Download PDF Tabel Data
         const btnUnduhTabelPdf = document.getElementById('btnUnduhTabelPdf');
         if (btnUnduhTabelPdf) btnUnduhTabelPdf.addEventListener('click', generateTabelPdf);
 
@@ -2826,7 +3333,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         const restoreDataBtn = document.getElementById('restoreDataBtn');
         if (restoreDataBtn) restoreDataBtn.addEventListener('click', restoreData);
         
-        // Event listener untuk tombol Reload Data yang sudah diperbaiki
+        // Event listener untuk tombol Reload Data
         const btnReloadRepo = document.getElementById('btn-reload-repo');
         if (btnReloadRepo) btnReloadRepo.addEventListener('click', handleReloadRepo);
         
@@ -2838,7 +3345,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             });
         }
 
-        // Settings Form - DIPERBAIKI: Input number untuk itemsPerPage
+        // Settings Form
         const settingsForm = document.getElementById('settingsForm');
         if (settingsForm) {
             settingsForm.addEventListener('submit', function(e) {
@@ -2861,11 +3368,12 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 saveSettings(); 
                 updateAppIdentity(); 
                 renderDataTable();
+                renderGuestDataTable();
                 showNotification('Pengaturan tersimpan! Nama instansi dan jumlah baris per halaman berhasil diperbarui.', 'success');
             });
         }
 
-        // TAMBAHAN: Form Pengaturan Pejabat
+        // Form Pengaturan Pejabat
         const officialForm = document.getElementById('officialForm');
         if (officialForm) {
             officialForm.addEventListener('submit', function(e) {
@@ -2933,6 +3441,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 newCode.value = '';
                 confirmCode.value = '';
                 showNotification('Kode keamanan sensor berhasil diperbarui!', 'success');
+            });
+        }
+
+        // Event listener untuk tab Mode Tamu
+        const guestTab = document.getElementById('v-pills-guest-tab');
+        if (guestTab) {
+            guestTab.addEventListener('click', function() {
+                renderGuestDataTable();
             });
         }
 
@@ -3122,7 +3638,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         if (apiMappingInfo) apiMappingInfo.style.display = 'none';
 
         updateDashboard(); 
+        updateGuestDashboard();
         renderDataTable();
+        renderGuestDataTable();
         const dataTab = document.getElementById('v-pills-data-tab');
         if (dataTab) dataTab.click();
         checkGlobalDuplicates();
@@ -3134,7 +3652,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         
         currentDetailId = id;
         
-        // Update modal content
+        // Update modal content dengan sensor data jika privacy mode aktif
         const d_nama = document.getElementById('d_nama');
         const d_nik = document.getElementById('d_nik');
         const d_usia = document.getElementById('d_usia');
@@ -3152,9 +3670,21 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         const d_validator = document.getElementById('d_validator');
         
         if (d_nama) d_nama.innerText = d.nama;
-        if (d_nik) d_nik.innerText = d.nik; 
+        
+        // Sensor NIK dan No HP jika privacy mode aktif
+        if (d_nik) d_nik.innerText = appSettings.privacyMode ? maskData(d.nik) : d.nik;
+        
         if (d_usia) d_usia.innerText = `${d.usia} Tahun (${d.tahunLahir})`;
-        if (d_wa) d_wa.innerText = d.whatsapp;
+        
+        // Sensor nomor HP jika privacy mode aktif
+        if (d_wa) {
+            if (d.whatsapp === '00000000' || !d.whatsapp) {
+                d_wa.innerText = '-';
+            } else {
+                d_wa.innerText = appSettings.privacyMode ? maskData(d.whatsapp) : d.whatsapp;
+            }
+        }
+        
         if (d_domisili) d_domisili.innerText = `${d.desa}, ${d.kecamatan}`;
         
         if (d_profesi) {
@@ -3275,10 +3805,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             
             doc.setFontSize(10);
             printLine('Nama Lengkap', d.nama);
-            printLine('NIK', d.nik);
+            printLine('NIK', appSettings.privacyMode ? maskData(d.nik) : d.nik);
             printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
             printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
-            printLine('No. Handphone', d.whatsapp);
+            printLine('No. Handphone', d.whatsapp === '00000000' || !d.whatsapp ? '-' : (appSettings.privacyMode ? maskData(d.whatsapp) : d.whatsapp));
             y += 8;
 
             checkPage(30);
@@ -3397,8 +3927,11 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
             saveData(); 
             currentPage = 1; // Reset ke halaman pertama setelah menghapus
+            guestCurrentPage = 1; // Reset juga untuk mode tamu
             renderDataTable(); 
+            renderGuestDataTable();
             updateDashboard();
+            updateGuestDashboard();
             showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             if (selectAllCheckbox) selectAllCheckbox.checked = false;
@@ -3540,9 +4073,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 if (currentPage > totalPages && totalPages > 0) {
                     currentPage = totalPages;
                 }
+                if (guestCurrentPage > totalPages && totalPages > 0) {
+                    guestCurrentPage = totalPages;
+                }
                 
                 renderDataTable(); 
+                renderGuestDataTable();
                 updateDashboard();
+                updateGuestDashboard();
                 showNotification('Data berhasil dihapus', 'success');
                 checkGlobalDuplicates();
             }
@@ -3589,6 +4127,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         });
         
         updateDashboard();
+        updateGuestDashboard();
     }
 
     function updateDashboard() {
@@ -3776,15 +4315,22 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if (tanggalValidasi) tanggalValidasi.value = today;
             
             const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
+            const isGuestModeActive = sessionStorage.getItem('simata_guest_mode') === 'true';
             const loginModal = document.getElementById('loginModal');
             const appContent = document.getElementById('appContent');
             
             if (isSessionActive) {
                 if (loginModal) loginModal.style.display = 'none';
                 if (appContent) appContent.style.display = 'block';
-                initializeCharts();
-                updateDashboard();
-                renderDataTable();
+                
+                if (isGuestModeActive) {
+                    isGuestMode = true;
+                    activateGuestMode();
+                } else {
+                    initializeCharts();
+                    updateDashboard();
+                    renderDataTable();
+                }
             } else {
                 setTimeout(() => {
                     if (loginModal) loginModal.style.display = 'flex';
@@ -3795,9 +4341,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 window.handleHashRouting();
             }
 
-            console.log('✅ SIMATA Application v5.5 FINAL initialized successfully');
-            console.log('✅ Code telah dipisahkan menjadi index.html dan main.js');
+            console.log('✅ SIMATA Application v5.6 FINAL initialized successfully');
             console.log('✅ Semua fungsi dan fitur tetap utuh dan berfungsi');
+            console.log('✅ Fitur Mode Tamu dan sensor data di detail telah ditambahkan');
             console.log('✅ Refactoring berhasil tanpa bug atau malfungsi');
 
         } catch (error) {
@@ -3828,15 +4374,20 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         updateAlatTangkapByKapal: updateAlatTangkapByKapal,
         updateFishOptionsByAPI: updateFishOptionsByAPI,
         renderDataTable: renderDataTable,
+        renderGuestDataTable: renderGuestDataTable,
         goToPage: goToPage,
+        goToGuestPage: goToGuestPage,
         applyFilter: applyFilter,
         resetFilter: resetFilter,
+        applyGuestFilter: applyGuestFilter,
+        resetGuestFilter: resetGuestFilter,
         showDuplicateDataInFilter: showDuplicateDataInFilter,
         generateFilteredPdf: generateFilteredPdf,
         generateTabelPdf: generateTabelPdf,
         getFilteredData: getFilteredData,
         refreshPage: refreshPage,
         handleDuplicateCheck: handleDuplicateCheck,
+        activateGuestMode: activateGuestMode,
         
         // Fungsi utility
         maskData: maskData,
@@ -3845,7 +4396,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         appData: appData,
         appSettings: appSettings,
         FISH_CATEGORIES: FISH_CATEGORIES,
-        SITUBONDO_DATA: SITUBONDO_DATA
+        SITUBONDO_DATA: SITUBONDO_DATA,
+        isGuestMode: isGuestMode
     };
 })();
 
