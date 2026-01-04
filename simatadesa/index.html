@@ -33,6 +33,10 @@
             text-align: center;
             user-select: none;
             margin-bottom: 10px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .captcha-input-group {
@@ -1356,10 +1360,10 @@
     <script>
         // =====================================================
         // KODE UTAMA APLIKASI SIMATA - VERSI 5.6 FINAL
-        // DENGAN LOGIN CAPTCHA DAN SEMUA FITUR UTUH
+        // DENGAN LOGIN CAPTCHA YANG SUDAH DIPERBAIKI
         // =====================================================
         
-        // --- FUNGSI CAPTCHA BARU YANG DIPERBAIKI ---
+        // --- FUNGSI CAPTCHA YANG DIPERBAIKI ---
         function generateCaptcha() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Tidak termasuk I, O, 0, 1 untuk mengurangi kebingungan
             let captcha = '';
@@ -1377,17 +1381,16 @@
             if (captchaDisplay) {
                 const captcha = generateCaptcha();
                 captchaDisplay.textContent = captcha;
-                sessionStorage.setItem('simata_captcha', captcha);
+                // Simpan di localStorage untuk persistensi
+                localStorage.setItem('simata_captcha', captcha);
+                console.log('CAPTCHA baru ditampilkan:', captcha);
             }
         }
         
         function validateCaptcha(input) {
-            const storedCaptcha = sessionStorage.getItem('simata_captcha');
-            if (!storedCaptcha || !input) {
-                return false;
-            }
-            // Perbaikan: Hilangkan spasi dan bandingkan dengan case sensitive
-            return input.trim() === storedCaptcha;
+            const storedCaptcha = localStorage.getItem('simata_captcha');
+            console.log('Validasi CAPTCHA:', { input, storedCaptcha, match: input === storedCaptcha });
+            return input === storedCaptcha;
         }
         
         // --- DATA DAN KONFIGURASI APLIKASI (TIDAK BERUBAH) ---
@@ -2564,11 +2567,27 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 }
             }
             
+            // Tambahkan ellipsis di awal jika diperlukan
+            if (startPage > 1) {
+                const ellipsis1 = document.createElement('li');
+                ellipsis1.className = 'page-item disabled';
+                ellipsis1.innerHTML = `<span class="page-link">...</span>`;
+                ul.appendChild(ellipsis1);
+            }
+            
             for (let i = startPage; i <= endPage; i++) {
                 const li = document.createElement('li');
                 li.className = `page-item ${i === currentPage ? 'active' : ''}`;
                 li.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>`;
                 ul.appendChild(li);
+            }
+            
+            // Tambahkan ellipsis di akhir jika diperlukan
+            if (endPage < totalPages) {
+                const ellipsis2 = document.createElement('li');
+                ellipsis2.className = 'page-item disabled';
+                ellipsis2.innerHTML = `<span class="page-link">...</span>`;
+                ul.appendChild(ellipsis2);
             }
             
             // Tombol berikutnya
@@ -2866,6 +2885,289 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             renderDataTable();
             
             showNotification(`Ditemukan ${duplicateData.length} data dengan NIK ganda`, 'warning');
+        }
+
+        // --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER ---
+        function generateFilteredPdf() {
+            const filteredData = getFilteredData();
+            
+            if (filteredData.length === 0) {
+                showNotification('Tidak ada data untuk dicetak!', 'error');
+                return;
+            }
+            
+            // Ambil data sesuai dengan halaman dan jumlah baris per halaman
+            const start = (currentPage - 1) * appSettings.itemsPerPage;
+            const end = start + appSettings.itemsPerPage;
+            const pageData = filteredData.slice(start, end);
+
+            // Siapkan data untuk tabel dengan kolom baru
+            const tableRows = pageData.map((d, index) => [
+                index + 1, 
+                d.nama,
+                d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
+                maskData(d.nik),
+                d.desa,
+                d.kecamatan,
+                d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
+                d.kodeValidasi || '-'
+            ]);
+
+            // Hitung total dari data yang ditampilkan
+            const totalCount = filteredData.length;
+            const displayedCount = pageData.length;
+
+            // Generate kode unik untuk setiap cetakan
+            const printId = 'SIMATA-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+            // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
+            document.getElementById('qr-right').innerHTML = "";
+            const signatureText = `Dokumen Sah - ${appSettings.appSubtitle}\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}${appSettings.officialNip ? '\nNIP: ' + appSettings.officialNip : ''}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
+            
+            try {
+                new QRCode(document.getElementById("qr-right"), { 
+                    text: signatureText, 
+                    width: 120, 
+                    height: 120,
+                    colorDark: "#4a69bd",
+                    colorLight: "#ffffff", 
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (error) {
+                console.error("Error generating QR code:", error);
+            }
+
+            setTimeout(() => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    
+                    if (typeof jsPDF.API.autoTable !== 'function') {
+                        showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
+                        return;
+                    }
+
+                    const doc = new jsPDF('l', 'mm', 'a4');
+                    const pageWidth = doc.internal.pageSize.width;
+                    const pageHeight = doc.internal.pageSize.height;
+
+                    // Header
+                    doc.setFillColor(12, 36, 97);
+                    doc.rect(10, 10, pageWidth - 20, 28, 'F');
+                    
+                    // Judul utama
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('SISTEM INFORMASI PEMETAAN NELAYAN (SIMATA)', pageWidth/2, 20, { align: 'center' });
+                    
+                    // Subjudul
+                    doc.setFontSize(12);
+                    doc.text(appSettings.appSubtitle.toUpperCase(), pageWidth/2, 26, { align: 'center' });
+
+                    // Slogan dengan warna oranye
+                    doc.setTextColor(246, 185, 59);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setFontSize(10);
+                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
+
+                    // Garis bawah header dengan warna aksen
+                    doc.setDrawColor(246, 185, 59);
+                    doc.setLineWidth(1.5);
+                    doc.line(20, 38, pageWidth - 20, 38);
+
+                    // Judul Laporan dengan informasi filter
+                    doc.setTextColor(12, 36, 97);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(18);
+                    doc.text('LAPORAN DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
+                    
+                    // Informasi filter yang aktif
+                    let filterInfo = "Semua Data";
+                    if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
+                        filterInfo = "Data Terfilter: ";
+                        const filterParts = [];
+                        
+                        if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
+                        if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
+                        if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
+                        if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
+                        if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
+                        if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
+                        if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
+                        
+                        filterInfo += filterParts.join(', ');
+                    }
+                    
+                    // Tambahkan informasi halaman dan jumlah baris
+                    filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
+                    
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    const now = new Date();
+                    const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
+                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+
+                    // Tabel Data
+                    const tableWidth = pageWidth - 40;
+                    const tableStartX = (pageWidth - tableWidth) / 2;
+
+                    doc.autoTable({
+                        head: [[
+                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
+                            {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
+                            {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                            {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                            {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                            {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                            {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
+                        ]],
+                        body: tableRows,
+                        startY: 72,
+                        theme: 'grid',
+                        tableWidth: tableWidth,
+                        margin: { left: tableStartX, right: tableStartX },
+                        headStyles: { 
+                            fillColor: [12, 36, 97],
+                            textColor: [255, 255, 255], 
+                            fontStyle: 'bold', 
+                            halign: 'center',
+                            fontSize: 8,
+                            cellPadding: 3,
+                            lineWidth: 0.5,
+                            lineColor: [255, 255, 255]
+                        },
+                        bodyStyles: {
+                            textColor: [0, 0, 0],
+                            fontSize: 8,
+                            fillColor: [255, 255, 255],
+                            cellPadding: 3,
+                            lineWidth: 0.1,
+                            lineColor: [200, 200, 200]
+                        },
+                        alternateRowStyles: {
+                            fillColor: [245, 245, 245]
+                        },
+                        styles: {
+                            overflow: 'linebreak',
+                            cellPadding: 3,
+                            fontSize: 8,
+                            valign: 'middle',
+                            halign: 'left'
+                        },
+                        columnStyles: {
+                            0: {cellWidth: 15, halign: 'center'},
+                            1: {cellWidth: 45, halign: 'left'},
+                            2: {cellWidth: 30, halign: 'center'},
+                            3: {cellWidth: 35, halign: 'center'},
+                            4: {cellWidth: 35, halign: 'left'},
+                            5: {cellWidth: 35, halign: 'left'},
+                            6: {cellWidth: 35, halign: 'left'},
+                            7: {cellWidth: 30, halign: 'center'}
+                        }
+                    });
+
+                    // Setelah autoTable, kita atur footer
+                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
+
+                    // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
+                    const separatorY = finalY + 10;
+                    doc.setDrawColor(200, 200, 200);
+                    doc.setLineWidth(0.5);
+                    doc.line(20, separatorY, pageWidth - 20, separatorY);
+
+                    // Bagian kiri: Validasi elektronik
+                    const leftX = 25;
+                    const leftY = separatorY + 12;
+
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(8);
+                    doc.setTextColor(12, 36, 97);
+                    doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
+                    doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
+                    doc.text("SISTEM SATU DATA NELAYAN (SIMATA)", leftX, leftY + 8);
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(7);
+                    doc.text(appSettings.appSubtitle, leftX, leftY + 14);
+                    doc.setTextColor(230, 126, 34);
+                    doc.text("www.dinasperikanansitubondo.com/simata", leftX, leftY + 18);
+
+                    // Bagian kanan: Tanda tangan dan QR Code
+                    const rightX = pageWidth - 85;
+                    const rightY = separatorY + 10;
+
+                    // PERIODE/TANGGAL
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 0, 0);
+                    const currentDate = new Date();
+                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
+                    doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
+                    
+                    // JABATAN
+                    doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
+
+                    // QR Code dengan warna biru muda
+                    const qrRightCanvas = document.querySelector('#qr-right canvas');
+                    if(qrRightCanvas) {
+                        try {
+                            const imgRight = qrRightCanvas.toDataURL("image/png");
+                            // QR code 25x25 mm
+                            doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
+                        } catch (error) {
+                            console.error("Error adding QR code image:", error);
+                        }
+                    }
+                    
+                    // GARIS TANDA TANGAN
+                    doc.setDrawColor(0, 0, 0);
+                    doc.setLineWidth(0.5);
+                    doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
+                    
+                    // NAMA DAN NIP PEJABAT
+                    const nameY = rightY + 45;
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(9);
+                    doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(8);
+                    // Hanya tampilkan NIP jika ada
+                    if (appSettings.officialNip && appSettings.officialNip.trim() !== '') {
+                        doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
+                    }
+
+                    // FOOTER DENGAN INFORMASI SISTEM
+                    const footerY = pageHeight - 15;
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    
+                    // Informasi sistem di footer
+                    doc.setFontSize(7);
+                    const printTime = new Date().toLocaleString('id-ID');
+                    doc.text(`Dicetak dari SIMATA v5.6 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
+
+                    // Simpan file PDF
+                    const fileName = `Laporan_Nelayan_Terfilter_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_Halaman${currentPage}_${Date.now()}.pdf`;
+                    doc.save(fileName);
+                    document.getElementById('qr-right').innerHTML = "";
+                    
+                    showNotification(`Laporan PDF terfilter berhasil dibuat (${pageData.length} data dari halaman ${currentPage})`, 'success');
+                    
+                } catch (error) {
+                    console.error("Error generating filtered PDF:", error);
+                    showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
+                }
+            }, 800);
         }
 
         // --- FUNGSI PRINT DATA ---
@@ -3198,8 +3500,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                 initializeApp();
                 setupEventListeners();
                 
-                // Inisialisasi CAPTCHA - PERBAIKAN UTAMA
-                displayCaptcha();
+                // Inisialisasi CAPTCHA dengan localStorage
+                if (!localStorage.getItem('simata_captcha')) {
+                    displayCaptcha();
+                } else {
+                    const savedCaptcha = localStorage.getItem('simata_captcha');
+                    const captchaDisplay = document.getElementById('captchaDisplay');
+                    if (captchaDisplay) captchaDisplay.textContent = savedCaptcha;
+                }
                 
                 // Setup event listener untuk refresh CAPTCHA
                 const refreshCaptchaBtn = document.getElementById('refreshCaptcha');
@@ -3208,6 +3516,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         displayCaptcha();
                         document.getElementById('captchaInput').value = '';
                         document.getElementById('captchaInput').focus();
+                        showNotification('CAPTCHA berhasil diperbarui', 'success');
                     });
                 }
                 
@@ -3226,7 +3535,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     if (captchaInput) captchaInput.focus();
                 }, 500);
                 
-                const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
+                const isSessionActive = localStorage.getItem('simata_session') === 'active';
                 if (isSessionActive) {
                     document.getElementById('loginModal').style.display = 'none';
                     document.getElementById('appContent').style.display = 'block';
@@ -3431,14 +3740,14 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
 
         // --- EVENT LISTENERS YANG DISEMPURNAKAN ---
         function setupEventListeners() {
-            // Login Form dengan CAPTCHA - PERBAIKAN UTAMA
+            // Login Form dengan CAPTCHA YANG DIPERBAIKI
             const loginForm = document.getElementById('loginForm');
             if (loginForm) {
                 loginForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     const btn = document.getElementById('loginButton');
                     const spinner = document.getElementById('loginSpinner');
-                    const inputCaptcha = document.getElementById('captchaInput').value.trim();
+                    const inputCaptcha = document.getElementById('captchaInput').value.trim().toUpperCase();
                     
                     if (!btn || !spinner) return;
                     
@@ -3448,8 +3757,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         return;
                     }
                     
-                    // Perbaikan: Validasi CAPTCHA yang benar
-                    if (!validateCaptcha(inputCaptcha)) {
+                    const storedCaptcha = localStorage.getItem('simata_captcha');
+                    console.log('Login attempt:', { input: inputCaptcha, stored: storedCaptcha });
+                    
+                    if (!storedCaptcha || inputCaptcha !== storedCaptcha) {
                         showNotification('Kode CAPTCHA salah! Silakan coba lagi.', 'error');
                         displayCaptcha(); // Generate CAPTCHA baru
                         document.getElementById('captchaInput').value = '';
@@ -3462,7 +3773,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                     btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
                     
                     setTimeout(() => {
-                        sessionStorage.setItem('simata_session', 'active');
+                        localStorage.setItem('simata_session', 'active');
                         document.getElementById('loginModal').style.display = 'none';
                         document.getElementById('appContent').style.display = 'block';
                         initializeCharts();
@@ -3472,6 +3783,8 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
                         btn.disabled = false;
                         spinner.classList.add('d-none');
                         btn.innerHTML = 'BUKA DASHBOARD';
+                        // Hapus CAPTCHA setelah login berhasil
+                        localStorage.removeItem('simata_captcha');
                     }, 1200);
                 });
             }
@@ -3742,7 +4055,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', () => {
                     if(confirm('Apakah Anda yakin ingin keluar? Sistem akan mengunduh data (reload.js) secara otomatis.')) {
-                        sessionStorage.removeItem('simata_session');
+                        localStorage.removeItem('simata_session');
                         backupData('reload.js');
                         setTimeout(() => location.reload(), 2000);
                     }
@@ -4741,10 +5054,10 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encryptedData}';`;
         window.generateCaptcha = generateCaptcha;
         window.validateCaptcha = validateCaptcha;
 
-        console.log('✅ SIMATA Application v5.6 FINAL dengan CAPTCHA login initialized successfully');
+        console.log('✅ SIMATA Application v5.6 FINAL dengan CAPTCHA login yang sudah diperbaiki');
         console.log('✅ Fitur Sensor NIK/HP pada modal detail telah ditambahkan');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
-        console.log('✅ Sistem login menggunakan CAPTCHA huruf dan angka');
+        console.log('✅ Sistem login menggunakan CAPTCHA huruf dan angka dengan localStorage');
         console.log('✅ Aplikasi siap digunakan');
     </script>
 </body>
