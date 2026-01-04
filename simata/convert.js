@@ -3,6 +3,7 @@
  * Konversi data antara format Excel (.xlsx) dan reload.js dengan fitur Impor Data Cepat
  * Developer: Dinas Perikanan Kabupaten Situbondo
  * Version: 2.1 - Fitur Impor Data Cerdas dengan Validasi Lengkap
+ * Fixed Version: GitHub Compatible
  */
 
 // CSS untuk konverter
@@ -713,6 +714,10 @@ function previewExcelData(file) {
     reader.onload = function(e) {
         try {
             const data = new Uint8Array(e.target.result);
+            if (typeof XLSX === 'undefined') {
+                console.error('XLSX library tidak tersedia');
+                return;
+            }
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
             const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
@@ -740,6 +745,10 @@ function previewImportData(file) {
     reader.onload = function(e) {
         try {
             const data = new Uint8Array(e.target.result);
+            if (typeof XLSX === 'undefined') {
+                console.error('XLSX library tidak tersedia');
+                return;
+            }
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
             const jsonData = XLSX.utils.sheet_to_json(firstSheet);
@@ -777,6 +786,9 @@ function convertExcelToReload() {
     reader.onload = function(e) {
         try {
             const data = new Uint8Array(e.target.result);
+            if (typeof XLSX === 'undefined') {
+                throw new Error('XLSX library tidak tersedia. Pastikan library xlsx telah dimuat.');
+            }
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
@@ -918,6 +930,10 @@ function convertExcelToReload() {
  */
 function downloadTemplate() {
     try {
+        if (typeof XLSX === 'undefined') {
+            throw new Error('XLSX library tidak tersedia. Pastikan library xlsx telah dimuat.');
+        }
+        
         // Buat template Excel
         const templateData = [
             {
@@ -1031,6 +1047,9 @@ function importExcelToSystem() {
     reader.onload = function(e) {
         try {
             const data = new Uint8Array(e.target.result);
+            if (typeof XLSX === 'undefined') {
+                throw new Error('XLSX library tidak tersedia. Pastikan library xlsx telah dimuat.');
+            }
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
@@ -1594,6 +1613,11 @@ function getProfesiBadgeClass(profesi) {
 
 // Inisialisasi saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
+    // Pastikan XLSX library tersedia
+    if (typeof XLSX === 'undefined') {
+        console.warn('XLSX library belum dimuat. Pastikan script xlsx.full.min.js sudah dimuat sebelum convert.js');
+    }
+    
     initConverter();
     createImportDataTab();
     
