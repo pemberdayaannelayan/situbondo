@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Data Excel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 40px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .file-upload-area {
+            border: 3px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            background-color: var(--light-bg);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-area:hover, .file-upload-area.dragover {
+            border-color: var(--secondary-color);
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .file-upload-icon {
+            font-size: 60px;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .stats-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .stats-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stats-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .data-table {
+            margin-top: 20px;
+        }
+        
+        .dataTables_wrapper {
+            padding: 0;
+        }
+        
+        .dataTables_filter {
+            margin-bottom: 15px;
+        }
+        
+        .nik-cell {
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+        
+        .alert-custom {
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .action-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-database me-2"></i>Sistem Manajemen Data Excel</h1>
+                    <p class="lead mb-0">Import, kelola, dan export data dengan format Excel. Data NIK duplikat akan ditindih otomatis.</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="fas fa-table fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Statistik -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="stats-icon text-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-number" id="totalData">0</div>
+                    <div class="stats-label">Total Data</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="stats-icon text-success">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <div class="stats-number" id="importCount">0</div>
+                    <div class="stats-label">File Diimpor</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="stats-icon text-warning">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="stats-number" id="overwrittenCount">0</div>
+                    <div class="stats-label">Data Ditindih</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="stats-icon text-danger">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="stats-number" id="exportCount">0</div>
+                    <div class="stats-label">File Diekspor</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Area Import Excel -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-file-import me-2"></i>Import Data dari Excel</span>
+                        <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#importHelp">
+                            <i class="fas fa-info-circle"></i> Panduan
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="collapse mb-3" id="importHelp">
+                            <div class="alert alert-info alert-custom">
+                                <h5><i class="fas fa-info-circle me-2"></i>Panduan Import Data</h5>
+                                <ul class="mb-0">
+                                    <li>File Excel harus memiliki kolom: <strong>Nama, NIK, Kecamatan, Desa</strong> (urutan tidak harus sama)</li>
+                                    <li>Data dengan NIK yang sama akan <strong>ditindih/diupdate</strong> dengan data yang lebih baru</li>
+                                    <li>Format file yang didukung: .xlsx, .xls, .csv</li>
+                                    <li>Data akan tersimpan secara otomatis di browser Anda (localStorage)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="file-upload-area" id="dropArea">
+                            <div class="file-upload-icon">
+                                <i class="fas fa-file-excel"></i>
+                            </div>
+                            <h4>Seret file Excel ke sini atau klik untuk memilih</h4>
+                            <p class="text-muted">Format yang didukung: .xlsx, .xls, .csv</p>
+                            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" class="d-none">
+                            <button class="btn btn-primary mt-3" id="browseBtn">
+                                <i class="fas fa-folder-open me-2"></i>Pilih File Excel
+                            </button>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="overwriteData" checked>
+                                <label class="form-check-label" for="overwriteData">
+                                    Tindih data yang sudah ada (NIK sama akan diupdate dengan data baru)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kontrol Aksi -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center">
+                            <h5 class="card-title mb-0"><i class="fas fa-tasks me-2"></i>Aksi Data</h5>
+                            <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                                <button class="btn btn-success" id="exportBtn">
+                                    <i class="fas fa-file-export me-2"></i>Export ke Excel
+                                </button>
+                                <button class="btn btn-danger" id="clearBtn">
+                                    <i class="fas fa-trash-alt me-2"></i>Hapus Semua Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Data -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-table me-2"></i>Daftar Data
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive data-table">
+                            <table id="dataTable" class="table table-striped table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama</th>
+                                        <th>NIK</th>
+                                        <th>Kecamatan</th>
+                                        <th>Desa</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <!-- Data akan diisi oleh JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifikasi -->
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div id="alertContainer"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Dibuat dengan <i class="fas fa-heart text-danger"></i> | Sistem Manajemen Data Excel v1.0</p>
+        </div>
+    </div>
+
+    <!-- Modal untuk Detail Data -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">Detail Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <tr>
+                            <th width="30%">Nama</th>
+                            <td id="detailNama">-</td>
+                        </tr>
+                        <tr>
+                            <th>NIK</th>
+                            <td id="detailNIK" class="nik-cell">-</td>
+                        </tr>
+                        <tr>
+                            <th>Kecamatan</th>
+                            <td id="detailKecamatan">-</td>
+                        </tr>
+                        <tr>
+                            <th>Desa</th>
+                            <td id="detailDesa">-</td>
+                        </tr>
+                        <tr>
+                            <th>Ditambahkan</th>
+                            <td id="detailAdded">-</td>
+                        </tr>
+                        <tr>
+                            <th>Diupdate</th>
+                            <td id="detailUpdated">-</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <!-- SheetJS untuk membaca dan menulis file Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        // Inisialisasi variabel global
+        let dataTable;
+        let database = [];
+        let stats = {
+            totalData: 0,
+            importCount: 0,
+            overwrittenCount: 0,
+            exportCount: 0
+        };
+
+        // Fungsi untuk memuat data dari localStorage
+        function loadData() {
+            const savedData = localStorage.getItem('excelDatabase');
+            const savedStats = localStorage.getItem('excelStats');
+            
+            if (savedData) {
+                database = JSON.parse(savedData);
+            }
+            
+            if (savedStats) {
+                stats = JSON.parse(savedStats);
+                updateStatsDisplay();
+            }
+            
+            renderTable();
+        }
+
+        // Fungsi untuk menyimpan data ke localStorage
+        function saveData() {
+            localStorage.setItem('excelDatabase', JSON.stringify(database));
+            localStorage.setItem('excelStats', JSON.stringify(stats));
+        }
+
+        // Fungsi untuk memperbarui tampilan statistik
+        function updateStatsDisplay() {
+            document.getElementById('totalData').textContent = stats.totalData;
+            document.getElementById('importCount').textContent = stats.importCount;
+            document.getElementById('overwrittenCount').textContent = stats.overwrittenCount;
+            document.getElementById('exportCount').textContent = stats.exportCount;
+        }
+
+        // Fungsi untuk menampilkan notifikasi
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            
+            const alertHTML = `
+                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show alert-custom" role="alert">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHTML;
+            
+            // Auto-hide setelah 5 detik untuk alert sukses/info
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    const alertElement = document.getElementById(alertId);
+                    if (alertElement) {
+                        const bsAlert = new bootstrap.Alert(alertElement);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Fungsi untuk merender tabel
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            if (database.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Belum ada data</h5>
+                            <p class="text-muted">Mulai dengan mengimpor file Excel</p>
+                        </td>
+                    </tr>
+                `;
+                
+                if (dataTable) {
+                    dataTable.destroy();
+                }
+                
+                stats.totalData = 0;
+                updateStatsDisplay();
+                return;
+            }
+            
+            // Update statistik
+            stats.totalData = database.length;
+            updateStatsDisplay();
+            
+            // Render data ke tabel
+            database.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.Nama || '-'}</td>
+                    <td class="nik-cell">${item.NIK || '-'}</td>
+                    <td>${item.Kecamatan || '-'}</td>
+                    <td>${item.Desa || '-'}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-info action-btn" onclick="showDetail(${index})" title="Detail">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning action-btn" onclick="editData(${index})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger action-btn" onclick="deleteData(${index})" title="Hapus">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Inisialisasi DataTables jika belum ada
+            if (!dataTable) {
+                dataTable = $('#dataTable').DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
+                    },
+                    pageLength: 10,
+                    responsive: true
+                });
+            } else {
+                dataTable.clear().rows.add($('#tableBody tr')).draw();
+            }
+            
+            saveData();
+        }
+
+        // Fungsi untuk memproses file Excel
+        function processExcelFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = e.target.result;
+                    const workbook = XLSX.read(data, { type: 'binary' });
+                    
+                    // Ambil sheet pertama
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+                    
+                    // Konversi ke JSON
+                    const jsonData = XLSX.utils.sheet_to_json(sheet);
+                    
+                    if (jsonData.length === 0) {
+                        showAlert('File Excel tidak memiliki data', 'danger');
+                        return;
+                    }
+                    
+                    // Validasi kolom yang diperlukan
+                    const firstRow = jsonData[0];
+                    const requiredColumns = ['Nama', 'NIK', 'Kecamatan', 'Desa'];
+                    const missingColumns = requiredColumns.filter(col => !firstRow.hasOwnProperty(col));
+                    
+                    if (missingColumns.length > 0) {
+                        showAlert(`Kolom yang diperlukan tidak ditemukan: ${missingColumns.join(', ')}`, 'danger');
+                        return;
+                    }
+                    
+                    // Proses data
+                    const overwrite = document.getElementById('overwriteData').checked;
+                    let newCount = 0;
+                    let overwrittenCount = 0;
+                    
+                    jsonData.forEach(item => {
+                        // Cari indeks data dengan NIK yang sama
+                        const existingIndex = database.findIndex(dbItem => dbItem.NIK === item.NIK);
+                        
+                        if (existingIndex >= 0 && overwrite) {
+                            // Update data yang sudah ada
+                            database[existingIndex] = {
+                                ...database[existingIndex],
+                                ...item,
+                                updatedAt: new Date().toISOString()
+                            };
+                            overwrittenCount++;
+                        } else if (existingIndex === -1) {
+                            // Tambah data baru
+                            database.push({
+                                ...item,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                            });
+                            newCount++;
+                        }
+                    });
+                    
+                    // Update statistik
+                    stats.importCount++;
+                    stats.overwrittenCount += overwrittenCount;
+                    
+                    // Render ulang tabel
+                    renderTable();
+                    
+                    // Tampilkan notifikasi
+                    showAlert(
+                        `Data berhasil diimpor! ${newCount} data baru, ${overwrittenCount} data diperbarui. Total data: ${database.length}`,
+                        'success'
+                    );
+                    
+                } catch (error) {
+                    console.error('Error processing Excel file:', error);
+                    showAlert('Terjadi kesalahan saat memproses file Excel', 'danger');
+                }
+            };
+            
+            reader.onerror = function() {
+                showAlert('Gagal membaca file', 'danger');
+            };
+            
+            reader.readAsBinaryString(file);
+        }
+
+        // Fungsi untuk mengekspor data ke Excel
+        function exportToExcel() {
+            if (database.length === 0) {
+                showAlert('Tidak ada data untuk diekspor', 'warning');
+                return;
+            }
+            
+            try {
+                // Siapkan data untuk diekspor
+                const exportData = database.map(item => ({
+                    Nama: item.Nama || '',
+                    NIK: item.NIK || '',
+                    Kecamatan: item.Kecamatan || '',
+                    Desa: item.Desa || ''
+                }));
+                
+                // Buat worksheet
+                const worksheet = XLSX.utils.json_to_sheet(exportData);
+                
+                // Buat workbook
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+                
+                // Generate file Excel
+                const fileName = `data_export_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                XLSX.writeFile(workbook, fileName);
+                
+                // Update statistik
+                stats.exportCount++;
+                updateStatsDisplay();
+                saveData();
+                
+                showAlert(`Data berhasil diekspor ke ${fileName}`, 'success');
+            } catch (error) {
+                console.error('Error exporting to Excel:', error);
+                showAlert('Terjadi kesalahan saat mengekspor data', 'danger');
+            }
+        }
+
+        // Fungsi untuk menghapus semua data
+        function clearAllData() {
+            if (database.length === 0) {
+                showAlert('Tidak ada data untuk dihapus', 'warning');
+                return;
+            }
+            
+            if (confirm(`Apakah Anda yakin ingin menghapus semua data (${database.length} data)?`)) {
+                database = [];
+                renderTable();
+                showAlert('Semua data berhasil dihapus', 'success');
+            }
+        }
+
+        // Fungsi untuk menampilkan detail data
+        function showDetail(index) {
+            const item = database[index];
+            document.getElementById('detailNama').textContent = item.Nama || '-';
+            document.getElementById('detailNIK').textContent = item.NIK || '-';
+            document.getElementById('detailKecamatan').textContent = item.Kecamatan || '-';
+            document.getElementById('detailDesa').textContent = item.Desa || '-';
+            document.getElementById('detailAdded').textContent = item.createdAt ? new Date(item.createdAt).toLocaleString('id-ID') : '-';
+            document.getElementById('detailUpdated').textContent = item.updatedAt ? new Date(item.updatedAt).toLocaleString('id-ID') : '-';
+            
+            const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+            modal.show();
+        }
+
+        // Fungsi untuk mengedit data
+        function editData(index) {
+            const item = database[index];
+            
+            const newNama = prompt('Edit Nama:', item.Nama || '');
+            if (newNama === null) return;
+            
+            const newNIK = prompt('Edit NIK:', item.NIK || '');
+            if (newNIK === null) return;
+            
+            // Cek apakah NIK sudah ada (kecuali data yang sedang diedit)
+            const nikExists = database.some((dbItem, idx) => idx !== index && dbItem.NIK === newNIK);
+            if (nikExists) {
+                showAlert('NIK sudah digunakan oleh data lain', 'danger');
+                return;
+            }
+            
+            const newKecamatan = prompt('Edit Kecamatan:', item.Kecamatan || '');
+            if (newKecamatan === null) return;
+            
+            const newDesa = prompt('Edit Desa:', item.Desa || '');
+            if (newDesa === null) return;
+            
+            // Update data
+            database[index] = {
+                ...database[index],
+                Nama: newNama,
+                NIK: newNIK,
+                Kecamatan: newKecamatan,
+                Desa: newDesa,
+                updatedAt: new Date().toISOString()
+            };
+            
+            renderTable();
+            showAlert('Data berhasil diperbarui', 'success');
+        }
+
+        // Fungsi untuk menghapus data
+        function deleteData(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                database.splice(index, 1);
+                renderTable();
+                showAlert('Data berhasil dihapus', 'success');
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Muat data saat halaman dimuat
+            loadData();
+            
+            // Event listener untuk tombol pilih file
+            document.getElementById('browseBtn').addEventListener('click', function() {
+                document.getElementById('excelFile').click();
+            });
+            
+            // Event listener untuk input file
+            document.getElementById('excelFile').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    processExcelFile(file);
+                    // Reset input file
+                    e.target.value = '';
+                }
+            });
+            
+            // Event listener untuk drag & drop
+            const dropArea = document.getElementById('dropArea');
+            
+            dropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropArea.classList.add('dragover');
+            });
+            
+            dropArea.addEventListener('dragleave', function() {
+                dropArea.classList.remove('dragover');
+            });
+            
+            dropArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropArea.classList.remove('dragover');
+                
+                const file = e.dataTransfer.files[0];
+                if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.name.endsWith('.csv'))) {
+                    processExcelFile(file);
+                } else {
+                    showAlert('Silakan unggah file Excel (.xlsx, .xls, .csv)', 'warning');
+                }
+            });
+            
+            // Event listener untuk tombol export
+            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+            
+            // Event listener untuk tombol hapus semua
+            document.getElementById('clearBtn').addEventListener('click', clearAllData);
+            
+            // Tampilkan pesan selamat datang
+            setTimeout(() => {
+                if (database.length === 0) {
+                    showAlert(
+                        'Selamat datang! Mulai dengan mengimpor file Excel yang memiliki kolom: Nama, NIK, Kecamatan, Desa.',
+                        'info'
+                    );
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
