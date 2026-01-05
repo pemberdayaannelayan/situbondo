@@ -159,7 +159,6 @@
             font-size: 14px;
         }
         
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .action-buttons {
                 flex-direction: column;
@@ -249,8 +248,9 @@
                                 <ul class="mb-0">
                                     <li>File Excel harus memiliki kolom: <strong>Nama, NIK, Kecamatan, Desa</strong> (urutan tidak harus sama)</li>
                                     <li>Data dengan NIK yang sama akan <strong>ditindih/diupdate</strong> dengan data yang lebih baru</li>
-                                    <li>Format file yang didukung: .xlsx, .xls, .csv</li>
+                                    <li>Format file yang didukung: .xlsx, .xls</li>
                                     <li>Data akan tersimpan secara otomatis di browser Anda (localStorage)</li>
+                                    <li><strong>Format CSV tidak didukung pada versi ini</strong></li>
                                 </ul>
                             </div>
                         </div>
@@ -260,8 +260,8 @@
                                 <i class="fas fa-file-excel"></i>
                             </div>
                             <h4>Seret file Excel ke sini atau klik untuk memilih</h4>
-                            <p class="text-muted">Format yang didukung: .xlsx, .xls, .csv</p>
-                            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" class="d-none">
+                            <p class="text-muted">Format yang didukung: .xlsx, .xls</p>
+                            <input type="file" id="excelFile" accept=".xlsx,.xls" class="d-none">
                             <button class="btn btn-primary mt-3" id="browseBtn">
                                 <i class="fas fa-folder-open me-2"></i>Pilih File Excel
                             </button>
@@ -392,8 +392,8 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <!-- SheetJS untuk membaca dan menulis file Excel -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <!-- SheetJS (XLSX) -->
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     
     <script>
         // Inisialisasi variabel global
@@ -412,15 +412,25 @@
             const savedStats = localStorage.getItem('excelStats');
             
             if (savedData) {
-                database = JSON.parse(savedData);
+                try {
+                    database = JSON.parse(savedData);
+                } catch (e) {
+                    console.error("Error parsing saved data:", e);
+                    database = [];
+                }
             }
             
             if (savedStats) {
-                stats = JSON.parse(savedStats);
-                updateStatsDisplay();
+                try {
+                    stats = JSON.parse(savedStats);
+                } catch (e) {
+                    console.error("Error parsing saved stats:", e);
+                    stats = { totalData: 0, importCount: 0, overwrittenCount: 0, exportCount: 0 };
+                }
             }
             
             renderTable();
+            updateStatsDisplay();
         }
 
         // Fungsi untuk menyimpan data ke localStorage
@@ -442,9 +452,16 @@
             const alertContainer = document.getElementById('alertContainer');
             const alertId = 'alert-' + Date.now();
             
+            const icons = {
+                'success': 'check-circle',
+                'danger': 'exclamation-circle',
+                'warning': 'exclamation-triangle',
+                'info': 'info-circle'
+            };
+            
             const alertHTML = `
                 <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show alert-custom" role="alert">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                    <i class="fas fa-${icons[type] || 'info-circle'} me-2"></i>
                     ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -482,10 +499,12 @@
                 
                 if (dataTable) {
                     dataTable.destroy();
+                    dataTable = null;
                 }
                 
                 stats.totalData = 0;
                 updateStatsDisplay();
+                saveData();
                 return;
             }
             
@@ -498,10 +517,10 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${item.Nama || '-'}</td>
-                    <td class="nik-cell">${item.NIK || '-'}</td>
-                    <td>${item.Kecamatan || '-'}</td>
-                    <td>${item.Desa || '-'}</td>
+                    <td>${item.Nama || item.nama || '-'}</td>
+                    <td class="nik-cell">${item.NIK || item.nik || '-'}</td>
+                    <td>${item.Kecamatan || item.kecamatan || '-'}</td>
+                    <td>${item.Desa || item.desa || '-'}</td>
                     <td>
                         <div class="action-buttons">
                             <button class="btn btn-sm btn-info action-btn" onclick="showDetail(${index})" title="Detail">
@@ -519,7 +538,7 @@
                 tableBody.appendChild(row);
             });
             
-            // Inisialisasi DataTables jika belum ada
+            // Inisialisasi atau perbarui DataTables
             if (!dataTable) {
                 dataTable = $('#dataTable').DataTable({
                     language: {
@@ -536,87 +555,126 @@
         }
 
         // Fungsi untuk memproses file Excel
-        function processExcelFile(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = e.target.result;
-                    const workbook = XLSX.read(data, { type: 'binary' });
-                    
-                    // Ambil sheet pertama
-                    const sheetName = workbook.SheetNames[0];
-                    const sheet = workbook.Sheets[sheetName];
-                    
-                    // Konversi ke JSON
-                    const jsonData = XLSX.utils.sheet_to_json(sheet);
-                    
-                    if (jsonData.length === 0) {
-                        showAlert('File Excel tidak memiliki data', 'danger');
-                        return;
+        async function processExcelFile(file) {
+            if (!file) {
+                showAlert('Silakan pilih file Excel terlebih dahulu', 'warning');
+                return;
+            }
+            
+            // Validasi ekstensi file
+            const validExtensions = ['.xlsx', '.xls'];
+            const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+            
+            if (!validExtensions.includes(fileExtension)) {
+                showAlert('Format file tidak didukung. Silakan gunakan file .xlsx atau .xls', 'danger');
+                return;
+            }
+            
+            showAlert('Memproses file Excel...', 'info');
+            
+            try {
+                // Baca file sebagai array buffer
+                const data = await readFileAsArrayBuffer(file);
+                
+                // Parse file Excel
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Ambil sheet pertama
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Konversi ke JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                
+                if (jsonData.length === 0) {
+                    showAlert('File Excel tidak memiliki data', 'warning');
+                    return;
+                }
+                
+                // Normalisasi nama kolom (case insensitive)
+                const normalizedData = jsonData.map(row => {
+                    const normalizedRow = {};
+                    for (const key in row) {
+                        const normalizedKey = key.toLowerCase();
+                        normalizedRow[normalizedKey] = row[key];
                     }
+                    return normalizedRow;
+                });
+                
+                // Cek kolom yang diperlukan (case insensitive)
+                const requiredColumns = ['nama', 'nik', 'kecamatan', 'desa'];
+                const firstRow = normalizedData[0];
+                const missingColumns = requiredColumns.filter(col => !firstRow.hasOwnProperty(col));
+                
+                if (missingColumns.length > 0) {
+                    showAlert(`Kolom yang diperlukan tidak ditemukan: ${missingColumns.join(', ')}. Pastikan file memiliki kolom Nama, NIK, Kecamatan, Desa`, 'danger');
+                    return;
+                }
+                
+                // Proses data
+                const overwrite = document.getElementById('overwriteData').checked;
+                let newCount = 0;
+                let overwrittenCount = 0;
+                
+                normalizedData.forEach(item => {
+                    // Normalisasi kunci menjadi huruf kapital pertama
+                    const processedItem = {
+                        Nama: item.nama,
+                        NIK: item.nik ? String(item.nik).trim() : '',
+                        Kecamatan: item.kecamatan,
+                        Desa: item.desa,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
                     
-                    // Validasi kolom yang diperlukan
-                    const firstRow = jsonData[0];
-                    const requiredColumns = ['Nama', 'NIK', 'Kecamatan', 'Desa'];
-                    const missingColumns = requiredColumns.filter(col => !firstRow.hasOwnProperty(col));
-                    
-                    if (missingColumns.length > 0) {
-                        showAlert(`Kolom yang diperlukan tidak ditemukan: ${missingColumns.join(', ')}`, 'danger');
-                        return;
-                    }
-                    
-                    // Proses data
-                    const overwrite = document.getElementById('overwriteData').checked;
-                    let newCount = 0;
-                    let overwrittenCount = 0;
-                    
-                    jsonData.forEach(item => {
-                        // Cari indeks data dengan NIK yang sama
-                        const existingIndex = database.findIndex(dbItem => dbItem.NIK === item.NIK);
-                        
-                        if (existingIndex >= 0 && overwrite) {
-                            // Update data yang sudah ada
-                            database[existingIndex] = {
-                                ...database[existingIndex],
-                                ...item,
-                                updatedAt: new Date().toISOString()
-                            };
-                            overwrittenCount++;
-                        } else if (existingIndex === -1) {
-                            // Tambah data baru
-                            database.push({
-                                ...item,
-                                createdAt: new Date().toISOString(),
-                                updatedAt: new Date().toISOString()
-                            });
-                            newCount++;
-                        }
-                    });
-                    
-                    // Update statistik
-                    stats.importCount++;
-                    stats.overwrittenCount += overwrittenCount;
-                    
-                    // Render ulang tabel
-                    renderTable();
-                    
-                    // Tampilkan notifikasi
-                    showAlert(
-                        `Data berhasil diimpor! ${newCount} data baru, ${overwrittenCount} data diperbarui. Total data: ${database.length}`,
-                        'success'
+                    // Cari indeks data dengan NIK yang sama
+                    const existingIndex = database.findIndex(dbItem => 
+                        dbItem.NIK === processedItem.NIK && processedItem.NIK !== ''
                     );
                     
-                } catch (error) {
-                    console.error('Error processing Excel file:', error);
-                    showAlert('Terjadi kesalahan saat memproses file Excel', 'danger');
-                }
-            };
-            
-            reader.onerror = function() {
-                showAlert('Gagal membaca file', 'danger');
-            };
-            
-            reader.readAsBinaryString(file);
+                    if (existingIndex >= 0 && overwrite) {
+                        // Update data yang sudah ada
+                        database[existingIndex] = {
+                            ...database[existingIndex],
+                            ...processedItem,
+                            createdAt: database[existingIndex].createdAt, // Pertahankan tanggal dibuat
+                            updatedAt: new Date().toISOString()
+                        };
+                        overwrittenCount++;
+                    } else if (existingIndex === -1) {
+                        // Tambah data baru
+                        database.push(processedItem);
+                        newCount++;
+                    }
+                });
+                
+                // Update statistik
+                stats.importCount++;
+                stats.overwrittenCount += overwrittenCount;
+                
+                // Render ulang tabel
+                renderTable();
+                
+                // Tampilkan notifikasi
+                showAlert(
+                    `Data berhasil diimpor! ${newCount} data baru, ${overwrittenCount} data diperbarui. Total data: ${database.length}`,
+                    'success'
+                );
+                
+            } catch (error) {
+                console.error('Error processing Excel file:', error);
+                showAlert(`Terjadi kesalahan saat memproses file Excel: ${error.message}`, 'danger');
+            }
+        }
+
+        // Fungsi untuk membaca file sebagai ArrayBuffer
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(new Error('Gagal membaca file'));
+                reader.readAsArrayBuffer(file);
+            });
         }
 
         // Fungsi untuk mengekspor data ke Excel
@@ -629,10 +687,10 @@
             try {
                 // Siapkan data untuk diekspor
                 const exportData = database.map(item => ({
-                    Nama: item.Nama || '',
-                    NIK: item.NIK || '',
-                    Kecamatan: item.Kecamatan || '',
-                    Desa: item.Desa || ''
+                    'Nama': item.Nama || '',
+                    'NIK': item.NIK || '',
+                    'Kecamatan': item.Kecamatan || '',
+                    'Desa': item.Desa || ''
                 }));
                 
                 // Buat worksheet
@@ -769,10 +827,10 @@
                 dropArea.classList.remove('dragover');
                 
                 const file = e.dataTransfer.files[0];
-                if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.name.endsWith('.csv'))) {
+                if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
                     processExcelFile(file);
                 } else {
-                    showAlert('Silakan unggah file Excel (.xlsx, .xls, .csv)', 'warning');
+                    showAlert('Silakan unggah file Excel (.xlsx, .xls)', 'warning');
                 }
             });
             
