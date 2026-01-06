@@ -1,8 +1,8 @@
 /* 
  * SIMATA BACKUP DATA
  * Versi: 2.0
- * Tanggal: 6/1/2026, 12.40.21
- * Total Data: 499 records
+ * Tanggal: 6/1/2026, 13.06.53
+ * Total Data: 501 records
  * Aplikasi: Sistem Pemetaan Data Nelayan
  * Instansi: Dinas Perikanan Kabupaten Situbondo
  * 
@@ -16,8 +16,8 @@
 // Format baru: SIMATA_BACKUP_DATA (rekomendasi)
 window.SIMATA_BACKUP_DATA = {
   "version": "2.0",
-  "timestamp": "2026-01-06T05:40:21.300Z",
-  "totalRecords": 499,
+  "timestamp": "2026-01-06T06:06:53.628Z",
+  "totalRecords": 501,
   "appName": "SISTEM PEMETAAN DATA NELAYAN",
   "appSubtitle": "DINAS PERIKANAN KABUPATEN SITUBONDO",
   "data": [
@@ -42,13 +42,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5I3781",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9458,
@@ -71,13 +73,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1SU755",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5503,
@@ -100,13 +104,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-W390ES",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.205,
@@ -129,13 +135,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4F6857",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9902,
@@ -158,13 +166,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3PYT36",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5874,
@@ -187,13 +197,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-S3I511",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.453,
@@ -216,13 +228,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Z0WM8X",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1501,
@@ -245,13 +259,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-U6009H",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8733,
@@ -274,13 +290,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-26XX3O",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1619,
@@ -303,13 +321,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-10478F",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.029,
@@ -332,13 +352,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-VPFF7K",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8657,
@@ -361,13 +383,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-X8ZGC1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.568,
@@ -390,13 +414,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-50V75D",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3499,
@@ -419,13 +445,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-68CRI1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9524,
@@ -448,13 +476,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-EJ0979",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9026,
@@ -477,13 +507,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-79015H",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.826,
@@ -506,13 +538,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-16CYP5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.0378,
@@ -535,13 +569,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-LL25C8",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.7168,
@@ -564,13 +600,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-225A1T",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.7107,
@@ -593,13 +631,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3W3G64",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4937,
@@ -622,13 +662,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ZW45AU",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.038,
@@ -651,13 +693,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4MY3L0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1042,
@@ -680,13 +724,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4P3W13",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9126,
@@ -709,13 +755,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2894J2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5496,
@@ -738,13 +786,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8WNRT6",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8606,
@@ -767,13 +817,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-X599A1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.2458,
@@ -796,13 +848,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-170O01",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.785,
@@ -825,13 +879,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3GY53P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9753,
@@ -854,13 +910,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-87J8G5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.268Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9646,
@@ -883,13 +941,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0U6414",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.6985,
@@ -912,13 +972,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-N2FY91",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.6602,
@@ -941,13 +1003,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8M22T1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9565,
@@ -970,13 +1034,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1W2Y6D",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1958,
@@ -999,13 +1065,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-YL78D3",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3943,
@@ -1028,13 +1096,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-T26IEQ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1643,
@@ -1057,13 +1127,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6XHA6Y",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1914,
@@ -1086,13 +1158,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-LNP6CQ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.037Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.917,
@@ -1115,13 +1189,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-P9948G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.917,
@@ -1144,13 +1220,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3PP326",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9092,
@@ -1173,13 +1251,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-80O537",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.484,
@@ -1202,13 +1282,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-66A7R6",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3735,
@@ -1231,13 +1313,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-G9J001",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5115,
@@ -1260,13 +1344,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-HL1352",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.816,
@@ -1289,13 +1375,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-89EQ26",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4995,
@@ -1318,13 +1406,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-T8CYVU",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.576,
@@ -1347,13 +1437,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-UG9NMF",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9138,
@@ -1376,13 +1468,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8OFGEK",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1306,
@@ -1405,13 +1499,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-BXO09V",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4739,
@@ -1434,13 +1530,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6T3O17",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.876,
@@ -1463,13 +1561,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3SQT5R",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.2085,
@@ -1492,13 +1592,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-WN9709",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9368,
@@ -1521,13 +1623,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6K223X",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4224,
@@ -1550,13 +1654,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-167720",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.2297,
@@ -1579,13 +1685,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-VJI85Y",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.031,
@@ -1608,13 +1716,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-V88R4W",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.919,
@@ -1637,13 +1747,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2132FI",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.919,
@@ -1666,13 +1778,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-M0CEU4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.0967,
@@ -1695,13 +1809,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-QSR7NP",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9126,
@@ -1724,13 +1840,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4H586H",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.939,
@@ -1753,13 +1871,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-860HYN",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5789,
@@ -1782,13 +1902,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-DL068P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.663,
@@ -1811,13 +1933,15 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0VDKAM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.2695,
@@ -1840,14 +1964,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-955IMB",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.689,
@@ -1870,14 +1996,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-057069",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8794,
@@ -1900,14 +2028,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6639MR",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.6616,
@@ -1930,14 +2060,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6T6Z87",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.198,
@@ -1960,14 +2092,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-96V7RF",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.251,
@@ -1990,14 +2124,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-X373JU",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.2373,
@@ -2020,14 +2156,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-W4K043",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.6663,
@@ -2050,14 +2188,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-95F6ZQ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5752,
@@ -2080,14 +2220,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J37O98",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1167,
@@ -2110,14 +2252,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-628S15",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.2236,
@@ -2140,14 +2284,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-HWA5M2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4558,
@@ -2170,14 +2316,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9K1SRS",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.6375,
@@ -2200,14 +2348,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-HB0S49",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.224,
@@ -2230,14 +2380,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1S5E0G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.0208,
@@ -2260,14 +2412,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-M275RO",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.672,
@@ -2290,14 +2444,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-AA9Y66",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.7139,
@@ -2320,14 +2476,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-AC5P0S",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3792,
@@ -2350,14 +2508,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5186P0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8875,
@@ -2380,14 +2540,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-W66O00",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5432,
@@ -2410,14 +2572,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1A9R84",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1777,
@@ -2440,14 +2604,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-67Y51X",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8745,
@@ -2470,14 +2636,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-N269AP",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9082,
@@ -2500,14 +2668,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1146UQ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.893,
@@ -2530,14 +2700,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-RR0G38",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.7498,
@@ -2560,14 +2732,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1O225A",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9214,
@@ -2590,14 +2764,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-SU96G9",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3667,
@@ -2620,14 +2796,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-UV111T",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3682,
@@ -2650,14 +2828,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4LXB7J",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.814,
@@ -2680,14 +2860,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E08SRM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.171,
@@ -2710,14 +2892,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ZYR611",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.7434,
@@ -2740,14 +2924,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-63YN2J",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.682,
@@ -2770,14 +2956,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-C0U5XJ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.012,
@@ -2800,14 +2988,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3P2DFX",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.0044,
@@ -2830,14 +3020,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-H5D0K4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8528,
@@ -2860,14 +3052,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-DA8APJ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.172,
@@ -2890,14 +3084,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E49W98",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9568,
@@ -2920,14 +3116,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1K3MN8",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1648,
@@ -2950,14 +3148,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-LM9K89",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5713,
@@ -2980,14 +3180,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-24JUW1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9275,
@@ -3010,14 +3212,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-MH32G3",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.248,
@@ -3040,14 +3244,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-593467",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.959,
@@ -3070,14 +3276,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4JI738",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.7844,
@@ -3100,14 +3308,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-QBE33L",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3235,
@@ -3130,14 +3340,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-279T6B",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.462,
@@ -3160,14 +3372,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2X2I2N",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.0037,
@@ -3190,14 +3404,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-VE6L31",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8655,
@@ -3220,14 +3436,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-805BF1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.0571,
@@ -3250,14 +3468,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E5E87P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3584,
@@ -3280,14 +3500,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-AF631G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.637,
@@ -3310,14 +3532,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-B2Q75A",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.071,
@@ -3340,14 +3564,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-D9ZS95",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.368,
@@ -3370,14 +3596,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0J79P1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3574,
@@ -3400,14 +3628,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-B095TP",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4128,
@@ -3430,14 +3660,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-WNW61P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5374,
@@ -3460,14 +3692,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-26ZH14",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9888,
@@ -3490,14 +3724,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-S57848",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.2532,
@@ -3520,14 +3756,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-849M3K",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5183,
@@ -3550,14 +3788,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-49898G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4197,
@@ -3580,14 +3820,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-T9GQDT",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1028,
@@ -3610,14 +3852,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-M4440O",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1436,
@@ -3640,14 +3884,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-O91723",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4758,
@@ -3670,14 +3916,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-KQ0L29",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1462,
@@ -3700,14 +3948,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Q534Y7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3164,
@@ -3730,14 +3980,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1GVL8J",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4065,
@@ -3760,14 +4012,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-CYU005",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.366,
@@ -3790,14 +4044,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-164LCM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.142,
@@ -3820,14 +4076,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-V0746V",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1853,
@@ -3850,14 +4108,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4Q9881",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9785,
@@ -3880,14 +4140,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5969SD",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9658,
@@ -3910,14 +4172,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E1K146",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.7852,
@@ -3940,14 +4204,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-7QDPC7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.369,
@@ -3970,14 +4236,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-WZ8BVX",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.465,
@@ -4000,14 +4268,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-074IL0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9055,
@@ -4030,14 +4300,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8Y258W",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1843,
@@ -4060,14 +4332,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-WU4713",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.107,
@@ -4090,14 +4364,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-04O5M3",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.165,
@@ -4120,14 +4396,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-123LH9",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1953,
@@ -4150,14 +4428,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-M61GR0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.0325,
@@ -4180,14 +4460,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-80QF8J",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.418Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.084,
@@ -4210,14 +4492,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1602W5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.6323,
@@ -4240,14 +4524,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9X9NGW",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8035,
@@ -4270,14 +4556,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-94VY6T",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8958,
@@ -4300,14 +4588,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-835C2H",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3025,
@@ -4330,14 +4620,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3K96G7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1257,
@@ -4360,14 +4652,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6B7B54",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9292,
@@ -4390,14 +4684,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-DJ9Y65",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.6082,
@@ -4420,14 +4716,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8R23TA",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.743,
@@ -4450,14 +4748,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-A381X4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.841,
@@ -4480,14 +4780,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9AQI69",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.7732,
@@ -4510,14 +4812,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E791W2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3042,
@@ -4540,14 +4844,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-80TN9K",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.1157,
@@ -4570,14 +4876,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-MYX713",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.3022,
@@ -4600,14 +4908,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-DL01NY",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.599,
@@ -4630,14 +4940,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6Z4643",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4795,
@@ -4660,14 +4972,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4457T7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.973,
@@ -4690,14 +5004,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-714LTW",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4023,
@@ -4720,14 +5036,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2U1BG9",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4692,
@@ -4750,14 +5068,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-R5F430",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.034,
@@ -4780,14 +5100,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3J1R0P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.9294,
@@ -4810,14 +5132,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-278972",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.4038,
@@ -4840,14 +5164,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8T29LH",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.5647,
@@ -4870,14 +5196,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1BU612",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.8977,
@@ -4900,14 +5228,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8A2LJU",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004259.2993,
@@ -4930,14 +5260,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-NLE6U2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.259Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6208,
@@ -4960,14 +5292,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-12CW28",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9424,
@@ -4990,14 +5324,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-U1KOQ0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1936,
@@ -5020,14 +5356,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9B369R",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2021,
@@ -5050,14 +5388,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-JIP7LZ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.504,
@@ -5080,14 +5420,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-7O5HV1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9714,
@@ -5110,14 +5452,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1O3404",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6836,
@@ -5140,14 +5484,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6RI047",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.064,
@@ -5170,14 +5516,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0639K8",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4434,
@@ -5200,14 +5548,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E54548",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8716,
@@ -5230,14 +5580,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-PIEQ5Z",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.895,
@@ -5260,14 +5612,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-516GGN",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5098,
@@ -5290,14 +5644,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-89U199",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0696,
@@ -5320,14 +5676,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-06731C",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6995,
@@ -5350,14 +5708,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4Z6YRI",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9512,
@@ -5380,14 +5740,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-929TJU",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2554,
@@ -5410,14 +5772,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-LY3Q9Z",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2207,
@@ -5440,14 +5804,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-T4W785",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.533,
@@ -5470,14 +5836,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-XLP1SO",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4363,
@@ -5500,14 +5868,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-7691TR",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7148,
@@ -5530,14 +5900,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E56Z44",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1335,
@@ -5560,14 +5932,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-S7S1FJ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1855,
@@ -5590,14 +5964,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-W3OW96",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.974,
@@ -5620,14 +5996,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-QAS52R",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5837,
@@ -5650,14 +6028,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5O22V3",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.3918,
@@ -5680,14 +6060,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-571EL5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0933,
@@ -5710,14 +6092,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ZK78XS",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6018,
@@ -5740,14 +6124,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J6RI60",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0615,
@@ -5770,14 +6156,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-740N39",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9514,
@@ -5800,14 +6188,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-12I442",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.797,
@@ -5830,14 +6220,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J84NF8",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.038Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5107,
@@ -5860,14 +6252,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-166IM5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7827,
@@ -5890,14 +6284,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4XU6B1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.294,
@@ -5920,14 +6316,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-IA9F8G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.96,
@@ -5950,14 +6348,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4F54CL",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5747,
@@ -5980,14 +6380,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-633649",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6975,
@@ -6010,14 +6412,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-UY9NM5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0234,
@@ -6040,14 +6444,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-W86L56",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.224,
@@ -6070,14 +6476,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-X6AR6T",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8047,
@@ -6100,14 +6508,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4N3819",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7673,
@@ -6130,14 +6540,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-550CDR",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4514,
@@ -6160,14 +6572,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9R989Z",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.55,
@@ -6190,14 +6604,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5IA52Z",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9668,
@@ -6220,14 +6636,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4K3I8R",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2817,
@@ -6250,14 +6668,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-M3MJVR",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5598,
@@ -6280,14 +6700,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-MCGC3B",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9326,
@@ -6310,14 +6732,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9E58UJ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4639,
@@ -6340,14 +6764,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9AYY72",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5652,
@@ -6370,14 +6796,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-OX0KLS",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4365,
@@ -6400,14 +6828,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J4I008",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.139,
@@ -6430,14 +6860,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2D2084",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0962,
@@ -6460,14 +6892,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2V1012",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2336,
@@ -6490,14 +6924,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-FRU337",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6172,
@@ -6520,14 +6956,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ZM30B8",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2349,
@@ -6550,14 +6988,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-R38V03",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0059,
@@ -6580,14 +7020,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-FS2J0T",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6433,
@@ -6610,14 +7052,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-T7N94U",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.223,
@@ -6640,14 +7084,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-19U6M2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.3953,
@@ -6670,14 +7116,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4BRRIN",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5676,
@@ -6700,14 +7148,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6KEIAH",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.786,
@@ -6730,14 +7180,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6JBR11",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5007,
@@ -6760,14 +7212,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Q9H16V",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.257,
@@ -6790,14 +7244,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-V429A0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0466,
@@ -6820,14 +7276,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5HSM07",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4622,
@@ -6850,14 +7308,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-L3OOZ0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7922,
@@ -6880,14 +7340,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-SY9573",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9395,
@@ -6910,14 +7372,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3JISWO",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5574,
@@ -6940,14 +7404,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-78N522",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.269Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0771,
@@ -6970,14 +7436,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-V41R0H",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.585,
@@ -7000,14 +7468,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-G4WH21",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4888,
@@ -7030,14 +7500,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6KV235",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0435,
@@ -7060,14 +7532,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8B7634",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2903,
@@ -7090,14 +7564,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-72F82D",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1165,
@@ -7120,14 +7596,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-H4X0J2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1814,
@@ -7150,14 +7628,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3I6MKF",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7004,
@@ -7180,14 +7660,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9QD94F",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8184,
@@ -7210,14 +7692,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-071284",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0312,
@@ -7240,14 +7724,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-47G575",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.343,
@@ -7270,14 +7756,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-02RH83",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.3955,
@@ -7300,14 +7788,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-NM794Y",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6633,
@@ -7330,14 +7820,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0G6571",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2805,
@@ -7360,14 +7852,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-XIP7Q5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.831,
@@ -7390,14 +7884,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5B83AF",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.057,
@@ -7420,14 +7916,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-XT6OUJ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.419Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0332,
@@ -7450,14 +7948,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-JBTO2P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.3716,
@@ -7480,14 +7980,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-34536O",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4534,
@@ -7510,14 +8012,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-RL1RBF",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1958,
@@ -7540,14 +8044,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Q4IIJ2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0442,
@@ -7570,14 +8076,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-C70EB4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7385,
@@ -7600,14 +8108,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-121P00",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8086,
@@ -7630,14 +8140,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-PL8G9B",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.901,
@@ -7660,14 +8172,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4DE460",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2222,
@@ -7690,14 +8204,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0T4J3X",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.518,
@@ -7720,14 +8236,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-G0S53G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1748,
@@ -7750,14 +8268,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-7Z3J4Z",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.477,
@@ -7780,14 +8300,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-11O4US",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9077,
@@ -7810,14 +8332,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-241J14",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6785,
@@ -7840,14 +8364,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0262Y4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4243,
@@ -7870,14 +8396,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-06J50B",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8806,
@@ -7900,14 +8428,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-YJV13S",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.058,
@@ -7930,14 +8460,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-P7Y61R",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8906,
@@ -7960,14 +8492,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6Y00ZK",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8457,
@@ -7990,14 +8524,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-N260A1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2568,
@@ -8020,14 +8556,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-072V6T",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.356,
@@ -8050,14 +8588,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-CWH9LY",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5623,
@@ -8080,14 +8620,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-A1M83K",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8477,
@@ -8110,14 +8652,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6Q31KC",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5393,
@@ -8140,14 +8684,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-U79QCZ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.315,
@@ -8170,14 +8716,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6CG15M",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9004,
@@ -8200,14 +8748,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-60U7D5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5027,
@@ -8230,14 +8780,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3S4BJC",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.088,
@@ -8260,14 +8812,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-14O7X1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4072,
@@ -8290,14 +8844,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-P4PJNG",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4001,
@@ -8320,14 +8876,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2Y833J",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7432,
@@ -8350,14 +8908,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3C6584",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.753,
@@ -8380,14 +8940,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-N3ZD7C",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2668,
@@ -8410,14 +8972,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5WAGM2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8438,
@@ -8440,14 +9004,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6SWX1V",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.459,
@@ -8470,14 +9036,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-70G1T3",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.492,
@@ -8500,14 +9068,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ROY34G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2607,
@@ -8530,14 +9100,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4V9PT6",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0764,
@@ -8560,14 +9132,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-JU50QD",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4285,
@@ -8590,14 +9164,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-354V4P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.969,
@@ -8620,14 +9196,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1U81T9",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7722,
@@ -8650,14 +9228,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J61483",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4097,
@@ -8680,14 +9260,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2SH762",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.8335,
@@ -8710,14 +9292,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-33I5Q5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9314,
@@ -8740,14 +9324,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-83A88M",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.976,
@@ -8770,14 +9356,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-82SS0M",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.3962,
@@ -8800,14 +9388,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-AV35HD",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9438,
@@ -8830,14 +9420,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-D877MK",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7717,
@@ -8860,14 +9452,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-FKMRY7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7698,
@@ -8890,14 +9484,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-F0927O",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2114,
@@ -8920,14 +9516,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-709V2W",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0168,
@@ -8950,14 +9548,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-37053D",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4966,
@@ -8980,14 +9580,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-TLXI9Q",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.103,
@@ -9010,14 +9612,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-97I27A",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.701,
@@ -9040,14 +9644,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J8R461",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1348,
@@ -9070,14 +9676,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-UY04E2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0674,
@@ -9100,14 +9708,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6E2613",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7427,
@@ -9130,14 +9740,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8J7415",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9287,
@@ -9160,14 +9772,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-VKS35K",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.7732,
@@ -9190,14 +9804,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-52Q3IV",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.494,
@@ -9220,14 +9836,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2QJ2Z7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.1152,
@@ -9250,14 +9868,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-68YA3T",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.265,
@@ -9280,7 +9900,7 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J614I7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: nik, whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "nik",
         "whatsapp",
@@ -9288,7 +9908,9 @@ window.SIMATA_BACKUP_DATA = {
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.9988,
@@ -9311,14 +9933,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ELK188",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.696,
@@ -9341,14 +9965,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-C3KL4Z",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.399,
@@ -9371,14 +9997,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-LTW4TI",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.412,
@@ -9401,14 +10029,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-562522",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.387,
@@ -9431,14 +10061,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0IF1FF",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.073,
@@ -9461,14 +10093,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-601XHZ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.5872,
@@ -9491,14 +10125,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-98S1TZ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.397,
@@ -9521,14 +10157,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-7T2U37",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.0002,
@@ -9551,14 +10189,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-63QP4G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.2324,
@@ -9581,14 +10221,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-30Z81M",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.4224,
@@ -9611,14 +10253,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-98TF40",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004260.6938,
@@ -9641,14 +10285,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-N3A856",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.260Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2983,
@@ -9671,14 +10317,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-JWBRWE",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9065,
@@ -9701,14 +10349,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1868Y7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9404,
@@ -9731,14 +10381,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-7O3PB7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.3599,
@@ -9761,14 +10413,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-KB5G6H",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9177,
@@ -9791,14 +10445,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4H58JM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7727,
@@ -9821,14 +10477,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0RX3L0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1018,
@@ -9851,14 +10509,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Q4F24B",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.913,
@@ -9881,14 +10541,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-RE56TS",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1663,
@@ -9911,14 +10573,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-27O8O3",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.3713,
@@ -9941,14 +10605,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-C2ZQ98",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2454,
@@ -9971,14 +10637,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-A1D25E",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9075,
@@ -10001,14 +10669,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-GJ30HW",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.6516,
@@ -10031,14 +10701,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4MA736",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8757,
@@ -10061,14 +10733,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E34T1J",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7705,
@@ -10091,14 +10765,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-FGE1P1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.420Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.059,
@@ -10121,14 +10797,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2F052O",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.4888,
@@ -10151,14 +10829,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Z32R03",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.255,
@@ -10181,14 +10861,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9JI92I",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.869,
@@ -10211,14 +10893,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-NL3U94",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.629,
@@ -10241,14 +10925,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-BHX3T4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1543,
@@ -10271,14 +10957,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-487A1T",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9998,
@@ -10301,14 +10989,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9OB917",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.5935,
@@ -10331,14 +11021,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-25267L",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2427,
@@ -10361,14 +11053,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4966YN",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.4946,
@@ -10391,14 +11085,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-RHN396",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.4155,
@@ -10421,14 +11117,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1FGUQ1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.258,
@@ -10451,14 +11149,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-V757Y5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.127,
@@ -10481,14 +11181,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-237125",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8315,
@@ -10511,14 +11213,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-58SZTJ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1514,
@@ -10541,14 +11245,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Q7SAJ5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.796,
@@ -10571,14 +11277,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-F44O8F",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.3442,
@@ -10601,14 +11309,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3VX5U4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1519,
@@ -10631,14 +11341,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J8XR0I",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.556,
@@ -10661,14 +11373,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4ZJ4FA",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.725,
@@ -10691,14 +11405,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-G88633",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.6013,
@@ -10721,14 +11437,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8WZ2E8",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7415,
@@ -10751,14 +11469,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-866226",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1912,
@@ -10781,14 +11501,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2V5OHF",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0303,
@@ -10811,14 +11533,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-D1UQPK",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8909,
@@ -10841,14 +11565,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-N5DPI9",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.5615,
@@ -10871,14 +11597,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8775E7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2478,
@@ -10901,14 +11629,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-C5360L",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0317,
@@ -10931,14 +11661,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8YCU3P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2659,
@@ -10961,14 +11693,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-X09FG5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7478,
@@ -10991,14 +11725,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-OUD8V0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.694,
@@ -11021,14 +11757,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-YBN8WM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.039Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.6611,
@@ -11051,14 +11789,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-792ZU3",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2783,
@@ -11081,14 +11821,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-FAKX21",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7415,
@@ -11111,14 +11853,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-99DRDW",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2278,
@@ -11141,14 +11885,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-YFX4VI",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.889,
@@ -11171,14 +11917,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-82I6Q2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8342,
@@ -11201,14 +11949,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4L3B8Z",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.868,
@@ -11231,14 +11981,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-I3M927",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0085,
@@ -11261,14 +12013,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-534186",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.68,
@@ -11291,14 +12045,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-69X59F",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9812,
@@ -11321,14 +12077,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-UF7GHG",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7017,
@@ -11351,14 +12109,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-DP3ICT",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.3333,
@@ -11381,14 +12141,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-PNX341",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.5386,
@@ -11411,14 +12173,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-VP40N7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7593,
@@ -11441,14 +12205,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-NALJCW",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8003,
@@ -11471,14 +12237,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-AP2584",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.4353,
@@ -11501,14 +12269,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-SQPS25",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.993,
@@ -11531,14 +12301,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-S9032F",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.6516,
@@ -11561,14 +12333,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-S983I6",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7957,
@@ -11591,14 +12365,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-K56ADG",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0989,
@@ -11621,14 +12397,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-548GMM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0537,
@@ -11651,14 +12429,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-MC4U1I",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.5027,
@@ -11681,14 +12461,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5394AV",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0046,
@@ -11711,14 +12493,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-K56556",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7944,
@@ -11741,14 +12525,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-46K6F6",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8093,
@@ -11771,14 +12557,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-F5W306",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1555,
@@ -11801,14 +12589,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-C405N4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7651,
@@ -11831,14 +12621,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J1RV51",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7397,
@@ -11861,14 +12653,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-A6ZWW4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.486,
@@ -11891,14 +12685,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-C44RAK",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2126,
@@ -11921,14 +12717,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-D44260",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9644,
@@ -11951,14 +12749,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-H9BOU2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.3948,
@@ -11981,14 +12781,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-96747W",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8374,
@@ -12011,14 +12813,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-37OG69",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8943,
@@ -12041,14 +12845,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-478V2P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.4575,
@@ -12071,14 +12877,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-O54117",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7498,
@@ -12101,14 +12909,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1398GZ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.5894,
@@ -12131,14 +12941,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1VR31S",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.3567,
@@ -12161,14 +12973,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-70O0IN",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2866,
@@ -12191,14 +13005,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-O56O9X",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.3044,
@@ -12221,14 +13037,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5A6B5K",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.006,
@@ -12251,14 +13069,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-WW8AJQ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1155,
@@ -12281,14 +13101,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-DU1S36",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2476,
@@ -12311,14 +13133,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-W2935F",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.784,
@@ -12341,14 +13165,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-423963",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0684,
@@ -12371,14 +13197,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8XU3JS",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.421Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.374,
@@ -12401,14 +13229,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Z17443",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.937,
@@ -12431,14 +13261,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-CQ26IV",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.5881,
@@ -12461,14 +13293,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-42IE0J",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.633,
@@ -12491,14 +13325,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-917ER0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7815,
@@ -12521,14 +13357,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-55FS9W",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.96,
@@ -12551,14 +13389,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-4LO7UZ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.4333,
@@ -12581,14 +13421,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3T00I0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2437,
@@ -12611,14 +13453,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-YXB14N",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0662,
@@ -12641,14 +13485,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-GOY3M0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.446,
@@ -12671,14 +13517,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0W0F37",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.5051,
@@ -12701,14 +13549,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-546ZR6",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.1304,
@@ -12731,14 +13581,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-E9VCW7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9048,
@@ -12761,14 +13613,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-G9U2G0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.9668,
@@ -12791,14 +13645,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-TQIYJH",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.5227,
@@ -12821,14 +13677,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-X6PI6P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7935,
@@ -12851,14 +13709,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-PI8594",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8396,
@@ -12881,14 +13741,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-UK0I8E",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.8413,
@@ -12911,14 +13773,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-27P9M0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2114,
@@ -12941,14 +13805,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-04GBI6",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7441,
@@ -12971,14 +13837,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-724H16",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.7185,
@@ -13001,14 +13869,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-PR85WN",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.837,
@@ -13031,14 +13901,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0197VB",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0195,
@@ -13061,14 +13933,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-T1DS1O",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.6611,
@@ -13091,14 +13965,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-A33684",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.226,
@@ -13121,14 +13997,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-83SO14",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.6882,
@@ -13151,14 +14029,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-A31FFC",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2385,
@@ -13181,14 +14061,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9X4LCV",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.6045,
@@ -13211,14 +14093,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3V2286",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.0842,
@@ -13241,14 +14125,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-5221JC",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.265,
@@ -13271,14 +14157,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-19KJTU",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004261.2043,
@@ -13301,14 +14189,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-650803",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.261Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.7434,
@@ -13331,14 +14221,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ON0V68",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.026,
@@ -13361,14 +14253,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-46R97K",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.5864,
@@ -13391,14 +14285,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-L9SJU8",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.2202,
@@ -13421,14 +14317,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-FPYC20",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.0627,
@@ -13451,14 +14349,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Y31N21",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.5254,
@@ -13481,14 +14381,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Q1H393",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.9712,
@@ -13511,14 +14413,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-OY2RU0",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.4465,
@@ -13541,14 +14445,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-66ORKS",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.8718,
@@ -13571,14 +14477,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-MN7678",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.5532,
@@ -13601,14 +14509,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-267LZM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.1208,
@@ -13631,14 +14541,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-36346G",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.5042,
@@ -13661,14 +14573,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-7Y0K58",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.037,
@@ -13691,14 +14605,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-58A321",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.270Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.7217,
@@ -13721,14 +14637,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-IIUAVM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.2236,
@@ -13751,14 +14669,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ZKO14V",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.1372,
@@ -13781,14 +14701,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-0PCC35",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.1362,
@@ -13811,14 +14733,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-M0C5SG",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.428,
@@ -13841,14 +14765,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-070579",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.6426,
@@ -13871,14 +14797,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-W37103",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.1704,
@@ -13901,14 +14829,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-04TVL1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.9998,
@@ -13931,14 +14861,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-V7N1E5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.5825,
@@ -13961,14 +14893,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-K158GM",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.9875,
@@ -13991,14 +14925,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1436Z5",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.3022,
@@ -14021,14 +14957,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8902HH",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.1687,
@@ -14051,14 +14989,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-CTXM88",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.1064,
@@ -14081,14 +15021,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Q1931S",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.288,
@@ -14111,14 +15053,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-PCASVV",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.121,
@@ -14141,14 +15085,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-ZS5X45",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.9504,
@@ -14171,14 +15117,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-J1DD3I",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.7314,
@@ -14201,14 +15149,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-41F73P",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.1074,
@@ -14231,14 +15181,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-3I7O57",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.552,
@@ -14261,14 +15213,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-Z1X770",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.422Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.684,
@@ -14291,14 +15245,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-261FVZ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.2695,
@@ -14321,14 +15277,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8F3803",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.6191,
@@ -14351,14 +15309,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-FBO50Q",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.042,
@@ -14381,14 +15341,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-89C57S",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.3364,
@@ -14411,14 +15373,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-BN0ND1",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.4724,
@@ -14441,14 +15405,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-22NCAL",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.8477,
@@ -14471,14 +15437,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-M31MG4",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.4429,
@@ -14501,14 +15469,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-8KS1TQ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.7861,
@@ -14531,14 +15501,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-6ZE81U",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.9028,
@@ -14561,14 +15533,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-MQ7034",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.56,
@@ -14591,14 +15565,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-X45579",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.7458,
@@ -14621,14 +15597,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1T9106",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.603,
@@ -14651,14 +15629,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-B0E398",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.8909,
@@ -14681,14 +15661,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-I8VK37",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.6729,
@@ -14711,14 +15693,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-1JU2ZZ",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.1917,
@@ -14741,14 +15725,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-XBE3VA",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.2915,
@@ -14771,14 +15757,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-9G3T76",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.9692,
@@ -14801,14 +15789,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-LQ957R",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.5125,
@@ -14831,14 +15821,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-46VCRS",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.040Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.5588,
@@ -14861,14 +15853,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-2956EG",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.041Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.3145,
@@ -14891,14 +15885,16 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-S191U2",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.041Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
-      "createdBy": "System Import"
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
     },
     {
       "id": 1767678004262.909,
@@ -14921,25 +15917,83 @@ window.SIMATA_BACKUP_DATA = {
       "driveLink": "",
       "kodeValidasi": "VLD-957PS7",
       "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
-      "importDate": "2026-01-06T05:40:02.271Z",
+      "importDate": "2026-01-06T06:06:23.041Z",
       "missingFields": [
         "whatsapp",
         "jenisIkan"
       ],
       "isComplete": false,
       "createdAt": "2026-01-06T05:40:04.262Z",
+      "createdBy": "System Import",
+      "updatedAt": "2026-01-06T06:06:25.423Z",
+      "updatedBy": "System Import"
+    },
+    {
+      "id": 1767679585423.1787,
+      "nama": "MOH RIFA’I",
+      "nik": "3512090107970048",
+      "whatsapp": "00000000",
+      "profesi": "Nelayan Penuh Waktu",
+      "status": "Anak Buah Kapal",
+      "tahunLahir": 1980,
+      "usia": 46,
+      "kecamatan": "Mangaran",
+      "desa": "Tanjung Kamal",
+      "alatTangkap": "Pukat Cincin",
+      "namaKapal": "-",
+      "jenisKapal": "-",
+      "jenisIkan": "",
+      "usahaSampingan": "",
+      "tanggalValidasi": "2026-01-04",
+      "validator": "MUHAMMAD S",
+      "driveLink": "",
+      "kodeValidasi": "VLD-61JK61",
+      "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
+      "importDate": "2026-01-06T06:06:23.041Z",
+      "missingFields": [
+        "whatsapp",
+        "jenisIkan"
+      ],
+      "isComplete": false,
+      "createdAt": "2026-01-06T06:06:25.423Z",
+      "createdBy": "System Import"
+    },
+    {
+      "id": 1767679585423.452,
+      "nama": "NADIS SUGIANTO",
+      "nik": "3512101402900005",
+      "whatsapp": "00000000",
+      "profesi": "Nelayan Penuh Waktu",
+      "status": "Anak Buah Kapal",
+      "tahunLahir": 1980,
+      "usia": 46,
+      "kecamatan": "Mangaran",
+      "desa": "Tanjung Kamal",
+      "alatTangkap": "Pancing Ulur",
+      "namaKapal": "-",
+      "jenisKapal": "-",
+      "jenisIkan": "",
+      "usahaSampingan": "",
+      "tanggalValidasi": "2026-01-04",
+      "validator": "MUHAMMAD S",
+      "driveLink": "",
+      "kodeValidasi": "VLD-2KUX0H",
+      "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: whatsapp, jenisIkan",
+      "importDate": "2026-01-06T06:06:23.041Z",
+      "missingFields": [
+        "whatsapp",
+        "jenisIkan"
+      ],
+      "isComplete": false,
+      "createdAt": "2026-01-06T06:06:25.423Z",
       "createdBy": "System Import"
     }
   ]
 };
 
 // Tanda bahwa file telah berhasil dimuat
-console.log('SIMATA Backup Data v2.0 loaded successfully - 499 records');
+console.log('SIMATA Backup Data v2.0 loaded successfully - 501 records');
 
 
 
 
-
-
-
-      
