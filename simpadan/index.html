@@ -771,16 +771,16 @@
                                     <div class="col-md-6">
                                         <div class="card p-4 h-100 text-center border-primary shadow-sm">
                                             <div class="mb-3"><i class="fas fa-cloud-download-alt fa-3x text-primary"></i></div>
-                                            <h5>Download Backup Encrypted</h5>
-                                            <p class="small text-muted mb-4">Unduh file backup terenkripsi yang aman.</p>
+                                            <h5>Download Backup Data</h5>
+                                            <p class="small text-muted mb-4">Unduh file backup data dalam format JSON yang mudah dibaca.</p>
                                             <button class="btn btn-primary w-100" id="backupDataBtn">Unduh Database Lengkap</button>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="card p-4 h-100 text-center border-warning shadow-sm">
                                             <div class="mb-3"><i class="fas fa-cloud-upload-alt fa-3x text-warning"></i></div>
-                                            <h5>Restore Data Encrypted</h5>
-                                            <p class="small text-muted mb-0">Upload file reload.js untuk mengembalikan data.</p>
+                                            <h5>Restore Data</h5>
+                                            <p class="small text-muted mb-0">Upload file reload.js atau file JSON untuk mengembalikan data.</p>
                                             <input type="file" class="form-control my-3" id="restoreFileInput" accept=".js,.json,.txt">
                                             <button class="btn btn-warning w-100 text-white" id="restoreDataBtn" disabled>Proses Restore & Merge</button>
                                         </div>
@@ -1064,7 +1064,7 @@
     <script>
         // =====================================================
         // KODE UTAMA APLIKASI SIMATA - VERSI 5.8 FINAL
-        // DENGAN PERBAIKAN BACKUP DATA UNLIMITED (10.000+ ITEM)
+        // DENGAN PERBAIKAN BACKUP DATA TANPA ENKRIPSI
         // DAN OPTIMASI GENERATE reload.js UNTUK DATA BESAR
         // =====================================================
         
@@ -1223,10 +1223,6 @@
         const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
         const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
         const fishInfoModal = new bootstrap.Modal(document.getElementById('fishInfoModal'));
-        
-        // VARIABEL BARU UNTUK BACKUP BESAR
-        let isBackupInProgress = false;
-        let backupProgress = 0;
         
         const PROFESI_MAPPING = {
             "Penuh Waktu": "Nelayan Penuh Waktu",
@@ -1679,10 +1675,10 @@
         }
 
         // =====================================================
-        // FUNGSI UTAMA BACKUP DATA YANG DIPERBAIKI UNTUK DATA BESAR
+        // FUNGSI UTAMA BACKUP DATA TANPA ENKRIPSI - VERSI BARU
         // =====================================================
         
-        // Fungsi untuk mengatasi data besar dengan chunking
+        // Fungsi untuk mengatasi data besar dengan chunking (tanpa enkripsi)
         function stringifyLargeData(data, chunkSize = 1000) {
             if (!Array.isArray(data)) {
                 return JSON.stringify(data);
@@ -1708,49 +1704,8 @@
             return result;
         }
         
-        // Fungsi untuk encode base64 dengan chunking untuk data besar
-        function encodeLargeBase64(str) {
-            if (str.length < 1000000) { // Kurang dari 1MB
-                return btoa(str);
-            }
-            
-            // Untuk data sangat besar, encode per bagian
-            let result = '';
-            const chunkSize = 50000;
-            for (let i = 0; i < str.length; i += chunkSize) {
-                const chunk = str.slice(i, i + chunkSize);
-                result += btoa(chunk);
-            }
-            return result;
-        }
-        
-        // Fungsi untuk decode base64 dengan chunking untuk data besar
-        function decodeLargeBase64(str) {
-            if (str.length < 1000000) { // Kurang dari 1MB
-                return atob(str);
-            }
-            
-            // Untuk data sangat besar, decode per bagian
-            let result = '';
-            const chunkSize = 50000;
-            for (let i = 0; i < str.length; i += chunkSize) {
-                const chunk = str.slice(i, i + chunkSize);
-                result += atob(chunk);
-            }
-            return result;
-        }
-        
-        // Fungsi utama backup data yang diperbaiki - VERSI BARU UNTUK DATA BESAR
+        // Fungsi utama backup data tanpa enkripsi - VERSI BARU UNTUK DATA BESAR
         function backupData(filename = 'reload.js') {
-            if (isBackupInProgress) {
-                showNotification('Proses backup sedang berjalan, harap tunggu...', 'warning');
-                return;
-            }
-            
-            isBackupInProgress = true;
-            backupProgress = 0;
-            
-            // Tampilkan notifikasi proses dimulai
             showNotification(`Memulai proses backup data (${appData.length} item)...`, 'info');
             
             // Nonaktifkan tombol backup selama proses
@@ -1759,49 +1714,39 @@
             if (backupBtn) backupBtn.disabled = true;
             if (exportBtn) exportBtn.disabled = true;
             
-            // Gunakan setTimeout untuk tidak memblokir UI
-            setTimeout(() => {
+            try {
+                // Buat objek backup baru tanpa enkripsi
+                const backupObject = {
+                    version: '2.0',
+                    timestamp: new Date().toISOString(),
+                    totalRecords: appData.length,
+                    appName: appSettings.appName,
+                    appSubtitle: appSettings.appSubtitle,
+                    data: appData
+                };
+                
+                let jsonString;
                 try {
-                    // Buat objek backup baru dengan struktur yang lebih baik
-                    const backupObject = {
+                    jsonString = JSON.stringify(backupObject, null, 2);
+                } catch (error) {
+                    console.error('Error stringifying backup object:', error);
+                    // Jika error, gunakan chunking untuk data
+                    jsonString = JSON.stringify({
                         version: '2.0',
                         timestamp: new Date().toISOString(),
                         totalRecords: appData.length,
-                        encoded: false,
-                        data: appData
-                    };
-                    
-                    let jsonString;
-                    try {
-                        jsonString = JSON.stringify(backupObject);
-                    } catch (error) {
-                        console.error('Error stringifying backup object:', error);
-                        // Jika error, gunakan chunking untuk data
-                        backupObject.encoded = true;
-                        backupObject.data = encodeLargeBase64(stringifyLargeData(appData, 1000));
-                        jsonString = JSON.stringify(backupObject);
-                    }
-                    
-                    // Tentukan apakah perlu encoding berdasarkan ukuran
-                    const shouldEncode = jsonString.length > 5 * 1024 * 1024; // 5MB
-                    
-                    let fileContent;
-                    if (shouldEncode) {
-                        // Encode hanya data asli ke base64
-                        backupObject.encoded = true;
-                        backupObject.data = encodeLargeBase64(JSON.stringify(appData));
-                        // Stringify objek backup yang sudah di-update
-                        fileContent = JSON.stringify(backupObject);
-                    } else {
-                        fileContent = JSON.stringify(backupObject);
-                    }
-                    
-                    // Buat konten file dengan format yang aman dan mudah dibaca
-                    const now = new Date();
-                    const dateStr = now.toLocaleDateString('id-ID');
-                    const timeStr = now.toLocaleTimeString('id-ID');
-                    
-                    const backupContent = `/* 
+                        appName: appSettings.appName,
+                        appSubtitle: appSettings.appSubtitle,
+                        data: JSON.parse(stringifyLargeData(appData, 1000))
+                    }, null, 2);
+                }
+                
+                // Buat konten file dengan format yang mudah dibaca
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('id-ID');
+                const timeStr = now.toLocaleTimeString('id-ID');
+                
+                const backupContent = `/* 
  * SIMATA BACKUP DATA
  * Versi: 2.0
  * Tanggal: ${dateStr}, ${timeStr}
@@ -1811,60 +1756,52 @@
  * 
  * PETUNJUK:
  * 1. File ini adalah backup resmi dari aplikasi SIMATA
- * 2. Data disimpan dalam format JSON yang terstruktur
+ * 2. Data disimpan dalam format JSON yang mudah dibaca
  * 3. Upload file ini ke server untuk sinkronisasi data
  * 4. File ini aman untuk disimpan di repository GitHub
  */
 
 // Format baru: SIMATA_BACKUP_DATA (rekomendasi)
-window.SIMATA_BACKUP_DATA = ${fileContent};
-
-// Format lama: SIMATA_BACKUP_ENCRYPTED (untuk kompatibilitas)
-// Data dalam format base64 untuk kompatibilitas dengan versi lama
-window.SIMATA_BACKUP_ENCRYPTED = '${encodeLargeBase64(JSON.stringify(appData))}';
+window.SIMATA_BACKUP_DATA = ${jsonString};
 
 // Tanda bahwa file telah berhasil dimuat
 console.log('SIMATA Backup Data v2.0 loaded successfully - ${appData.length} records');`;
-                    
-                    // Gunakan Blob dengan tipe yang tepat
-                    const blob = new Blob([backupContent], { type: 'application/javascript' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
-                    a.style.display = 'none';
-                    document.body.appendChild(a);
-                    a.click();
-                    
-                    // Cleanup
-                    setTimeout(() => {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                        
-                        // Aktifkan kembali tombol
-                        if (backupBtn) backupBtn.disabled = false;
-                        if (exportBtn) exportBtn.disabled = false;
-                        isBackupInProgress = false;
-                        backupProgress = 100;
-                        
-                        showNotification(`Backup berhasil: ${filename} (${appData.length} data)`, 'success');
-                    }, 100);
-                    
-                } catch (error) {
-                    console.error('Backup error:', error);
-                    showNotification('Gagal membuat backup. Silakan coba lagi.', 'error');
+                
+                // Gunakan Blob dengan tipe yang tepat
+                const blob = new Blob([backupContent], { type: 'application/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
                     
                     // Aktifkan kembali tombol
-                    const backupBtn = document.getElementById('backupDataBtn');
-                    const exportBtn = document.getElementById('exportReloadJsBtn');
                     if (backupBtn) backupBtn.disabled = false;
                     if (exportBtn) exportBtn.disabled = false;
-                    isBackupInProgress = false;
-                }
-            }, 100);
+                    
+                    showNotification(`Backup berhasil: ${filename} (${appData.length} data)`, 'success');
+                }, 100);
+                
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Gagal membuat backup. Silakan coba lagi.', 'error');
+                
+                // Aktifkan kembali tombol
+                const backupBtn = document.getElementById('backupDataBtn');
+                const exportBtn = document.getElementById('exportReloadJsBtn');
+                if (backupBtn) backupBtn.disabled = false;
+                if (exportBtn) exportBtn.disabled = false;
+            }
         }
 
-        // Fungsi untuk mengekstrak data dari backup (mendukung format baru dan lama)
+        // Fungsi untuk mengekstrak data dari backup (mendukung format baru tanpa enkripsi)
         function extractDataFromBackup(content) {
             try {
                 // Eksekusi konten untuk menginisialisasi variabel global
@@ -1876,26 +1813,9 @@ console.log('SIMATA Backup Data v2.0 loaded successfully - ${appData.length} rec
                 // Cek format baru terlebih dahulu
                 if (window.SIMATA_BACKUP_DATA) {
                     const backup = window.SIMATA_BACKUP_DATA;
-                    let restoredData;
-                    
-                    if (backup.encoded) {
-                        // Decode data yang di-encode
-                        const jsonString = decodeLargeBase64(backup.data);
-                        restoredData = JSON.parse(jsonString);
-                    } else {
-                        // Data langsung tersedia
-                        restoredData = backup.data;
-                    }
+                    let restoredData = backup.data;
                     
                     console.log(`Data berhasil diekstrak dari format baru: ${restoredData.length} records`);
-                    return restoredData;
-                }
-                // Cek format lama untuk kompatibilitas
-                else if (window.SIMATA_BACKUP_ENCRYPTED) {
-                    const jsonString = decodeLargeBase64(window.SIMATA_BACKUP_ENCRYPTED);
-                    const restoredData = JSON.parse(jsonString);
-                    
-                    console.log(`Data berhasil diekstrak dari format lama: ${restoredData.length} records`);
                     return restoredData;
                 } else {
                     throw new Error('Format backup tidak dikenali');
@@ -1925,7 +1845,7 @@ console.log('SIMATA Backup Data v2.0 loaded successfully - ${appData.length} rec
             return Array.from(dataMap.values());
         }
 
-        // --- FUNGSI RESTORE DATA YANG DIPERBAIKI UNTUK DATA BESAR ---
+        // --- FUNGSI RESTORE DATA TANPA ENKRIPSI ---
         function restoreData() {
             const fileInput = document.getElementById('restoreFileInput');
             if (!fileInput.files.length) return;
@@ -2026,23 +1946,10 @@ console.log('SIMATA Backup Data v2.0 loaded successfully - ${appData.length} rec
                     try {
                         let restoredData = null;
                         
-                        // Cek format baru terlebih dahulu
+                        // Cek format baru tanpa enkripsi
                         if (window.SIMATA_BACKUP_DATA) {
                             const backup = window.SIMATA_BACKUP_DATA;
-                            
-                            if (backup.encoded) {
-                                // Decode data yang di-encode
-                                const jsonString = decodeLargeBase64(backup.data);
-                                restoredData = JSON.parse(jsonString);
-                            } else {
-                                // Data langsung tersedia
-                                restoredData = backup.data;
-                            }
-                        }
-                        // Cek format lama untuk kompatibilitas
-                        else if (window.SIMATA_BACKUP_ENCRYPTED) {
-                            const jsonString = decodeLargeBase64(window.SIMATA_BACKUP_ENCRYPTED);
-                            restoredData = JSON.parse(jsonString);
+                            restoredData = backup.data;
                         }
                         
                         if (!restoredData || !Array.isArray(restoredData)) {
@@ -3400,7 +3307,7 @@ console.log('SIMATA Backup Data v2.0 loaded successfully - ${appData.length} rec
             loadSettings();
             migrateOldData();
             
-            if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
+            if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
                 console.log("Reload Repository detected. Ready to merge/sync.");
             }
 
@@ -4910,10 +4817,9 @@ console.log('SIMATA Backup Data v2.0 loaded successfully - ${appData.length} rec
         window.refreshPage = refreshPage;
 
         console.log('✅ SIMATA Application v5.8 FINAL initialized successfully');
-        console.log('✅ Fitur Backup Data Unlimited (10.000+ item) telah diperbaiki');
+        console.log('✅ Sistem backup data tanpa enkripsi telah diperbaiki');
         console.log('✅ Sistem generate reload.js untuk ribuan data telah dioptimasi');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
-        console.log('✅ Bug fix dan error handling telah diterapkan');
         console.log('✅ Aplikasi siap digunakan untuk data besar');
     </script>
 </body>
