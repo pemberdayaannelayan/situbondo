@@ -24,7 +24,6 @@
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
     <script src="convert.js"></script>
     
-    
 </head>
 <body>
 
@@ -148,18 +147,6 @@
         </div>
     </div>
 
-    <div class="sticky-warning" id="duplicateWarning">
-        <div class="d-flex align-items-start">
-            <div class="me-3 text-danger"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-            <div>
-                <h6 class="fw-bold text-danger mb-1">PERHATIAN: Data Ganda!</h6>
-                <p class="small text-muted mb-2">Sistem mendeteksi adanya NIK ganda yang belum diperbaiki.</p>
-                <button class="btn btn-sm btn-outline-danger" onclick="document.getElementById('v-pills-data-tab').click(); setTimeout(() => document.getElementById('btnCekGanda').click(), 200);">Periksa Sekarang</button>
-                <button class="btn btn-sm btn-link text-muted text-decoration-none ms-2" onclick="document.getElementById('duplicateWarning').style.display='none'">Tutup</button>
-            </div>
-        </div>
-    </div>
-
     <div class="app-content-unauthenticated" id="appContent" style="display:none;">
         <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
         
@@ -173,7 +160,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.8</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.9</span>
                 </div>
             </div>
             
@@ -472,10 +459,10 @@
                             <div class="tab-pane fade" id="v-pills-data">
                                 <h3 class="section-title">Database Nelayan</h3>
                                 
-                                <!-- FITUR FILTER & VALIDASI DATA YANG DIPINDAHKAN -->
+                                <!-- FITUR FILTER & VALIDASI DATA -->
                                 <div class="card mb-4 border-0 shadow-sm filter-section">
                                     <div class="card-header bg-white py-3 border-bottom">
-                                        <h6 class="mb-0 fw-bold"><i class="fas fa-filter me-2 text-primary"></i>Filter & Validasi Data</h6>
+                                        <h6 class="mb-0 fw-bold"><i class="fas fa-filter me-2 text-primary"></i>Filter Data</h6>
                                     </div>
                                     <div class="card-body bg-light rounded">
                                         <div class="row g-3">
@@ -533,7 +520,6 @@
                                                     <!-- TAMBAHAN: Tombol Unduh PDF Tabel Data -->
                                                     <button class="btn btn-download-table-pdf btn-sm shadow-sm" id="btnUnduhTabelPdf"><i class="fas fa-file-pdf me-2"></i> Unduh PDF Tabel Data</button>
                                                     <button class="btn btn-download-filtered-pdf btn-sm shadow-sm" id="btnUnduhFilteredPdf"><i class="fas fa-file-pdf me-2"></i> Unduh PDF (Filter)</button>
-                                                    <button class="btn btn-danger btn-sm shadow-sm" id="btnCekGanda"><i class="fas fa-exclamation-triangle me-2"></i> Cek Data Ganda</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -585,7 +571,7 @@
                                         </div>
                                         <div class="p-2 small text-muted fst-italic text-end border-top">
                                             <span id="sensorStatusText" class="badge bg-secondary me-2">Sensor: ON</span>
-                                            <i class="fas fa-info-circle text-danger me-1"></i> Baris <span class="badge bg-danger">Merah</span> = duplikasi NIK.
+                                            <i class="fas fa-info-circle text-info me-1"></i> Total Data: <span id="totalDataCount" class="badge bg-primary">0</span>
                                         </div>
                                     </div>
                                 </div>
@@ -766,7 +752,7 @@
 
                             <div class="tab-pane fade" id="v-pills-backup">
                                 <h3 class="section-title">Backup & Restore</h3>
-                                <div class="alert alert-warning small"><i class="fas fa-exclamation-triangle me-2"></i> <strong>Sistem Smart Restore:</strong> Data yang direstore akan <strong>DIGABUNGKAN</strong> dengan data yang ada (Merge), tidak menghapus data lama. Duplikasi NIK akan ditandai Merah.</div>
+                                <div class="alert alert-warning small"><i class="fas fa-exclamation-triangle me-2"></i> <strong>Sistem Smart Restore:</strong> Data yang direstore akan <strong>DIGABUNGKAN</strong> dengan data yang ada (Merge), tidak menghapus data lama.</div>
                                 <div class="row g-4">
                                     <div class="col-md-6">
                                         <div class="card p-4 h-100 text-center border-primary shadow-sm">
@@ -783,6 +769,24 @@
                                             <p class="small text-muted mb-0">Upload file reload.js atau file JSON untuk mengembalikan data.</p>
                                             <input type="file" class="form-control my-3" id="restoreFileInput" accept=".js,.json,.txt">
                                             <button class="btn btn-warning w-100 text-white" id="restoreDataBtn" disabled>Proses Restore & Merge</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <div class="card border-info shadow-sm">
+                                            <div class="card-header bg-info text-white">
+                                                <i class="fas fa-lightbulb me-2"></i> Panduan Backup & Restore Data Besar
+                                            </div>
+                                            <div class="card-body">
+                                                <ol class="mb-0">
+                                                    <li>Untuk data besar (ribuan data), sistem menggunakan format <strong>SIMATA_BACKUP_DATA</strong> yang dioptimasi</li>
+                                                    <li>File backup (reload.js) dapat di-upload ke repository GitHub tanpa masalah</li>
+                                                    <li>Format backup menggunakan <strong>JSON.stringify dengan chunking</strong> untuk menghindari error memori</li>
+                                                    <li>Sistem restore akan secara otomatis menggabungkan data lama dan baru (merge)</li>
+                                                    <li>Data dengan NIK yang sama akan diperbarui dengan data terbaru</li>
+                                                </ol>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -897,8 +901,6 @@
                                     <a href="mailto:info@dinasperikanansitubondo.com">
                                         <i class="fas fa-envelope me-1"></i> info@dinasperikanansitubondo.com
                                     </a>
-                                    <span class="footer-divider">|</span>
-                                    <a href="#" id="footerVersion">Versi 5.9</a>
                                 </div>
                             </div>
                         </footer>
@@ -1066,8 +1068,8 @@
     <script>
         // =====================================================
         // KODE UTAMA APLIKASI SIMATA - VERSI 5.9 FINAL
-        // DENGAN SISTEM BACKUP DATA CERDAS UNTUK DATA BESAR
-        // DAN FORMAT KOMPATIBEL UNTUK PENGGABUNGAN
+        // DENGAN PERBAIKAN SISTEM BACKUP & RESTORE DATA BESAR
+        // DAN PENGHAPUSAN FITUR CEK DATA GANDA
         // =====================================================
         
         // Data ikan yang diperbarui dan dilengkapi - DITAMBAHKAN IKAN TOGEK
@@ -1214,12 +1216,9 @@
             // TAMBAHAN: Data pejabat default
             officialName: 'SUGENG PURWO PRIYANTO, S.E, M.M',
             officialNip: '19761103 200903 1 001',
-            officialPosition: 'Kepala Bidang Pemberdayaan Nelayan',
-            // TAMBAHAN: Versi sistem untuk backup
-            systemVersion: '5.9'
+            officialPosition: 'Kepala Bidang Pemberdayaan Nelayan'
         };
         let currentPage = 1;
-        let duplicateCheckInterval = null;
         let currentDetailId = null; 
         let verifyDataResult = null;
         let currentFilter = {};
@@ -1238,116 +1237,12 @@
         window.appData = appData;
         window.appSettings = appSettings;
         
-        // FUNGSI UTAMA UNTUK HANDLE DATA BESAR - DIPERBAIKI
-        function getProfesiLabel(profesi) {
-            return PROFESI_MAPPING[profesi] || profesi;
-        }
-        
-        function migrateOldData() {
-            appData.forEach(item => {
-                if (PROFESI_MAPPING[item.profesi]) {
-                    item.profesi = PROFESI_MAPPING[item.profesi];
-                }
-            });
-            saveData();
-        }
-        
-        function generateSecurityCode() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `${year}${month}${day}`;
-        }
-        
-        function displayCurrentDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('id-ID', options);
-            document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-            document.getElementById('passwordHint').innerHTML = `Kode keamanan berubah setiap hari berdasarkan tanggal.`;
-        }
-
-        function maskData(data, force = false) {
-            if (!data) return "-";
-            if (data === '00000000') return "Tidak Ada";
-            if (!appSettings.privacyMode && !force) return data.toString();
-            
-            let str = data.toString();
-            if (str.length <= 4) return str;
-            
-            const maskedLength = Math.min(4, str.length);
-            const visiblePart = str.slice(0, -maskedLength);
-            const maskedPart = '*'.repeat(maskedLength);
-            return visiblePart + maskedPart;
-        }
-
-        function getFishIconClass(fishName) {
-            const lower = fishName.toLowerCase();
-            if (lower.includes('cumi')) return 'fa-ghost'; 
-            if (lower.includes('kepiting')) return 'fa-spider'; 
-            if (lower.includes('togek') || lower.includes('mendut')) return 'fa-star'; 
-            return 'fa-fish';
-        }
-
         // =====================================================
-        // SISTEM BACKUP DATA CERDAS UNTUK DATA BESAR
+        // SISTEM BACKUP DATA BESAR YANG DIOPTIMASI
         // =====================================================
         
-        // Fungsi untuk mengatasi data besar dengan chunking yang lebih efisien
-        function stringifyLargeData(data, chunkSize = 500) {
-            if (!Array.isArray(data)) {
-                return JSON.stringify(data);
-            }
-            
-            if (data.length <= chunkSize) {
-                return JSON.stringify(data);
-            }
-            
-            try {
-                let result = '[';
-                let isFirstChunk = true;
-                
-                // Proses data dalam chunk
-                for (let i = 0; i < data.length; i += chunkSize) {
-                    const chunk = data.slice(i, i + chunkSize);
-                    const chunkStr = JSON.stringify(chunk);
-                    const cleanChunk = chunkStr.slice(1, -1);
-                    
-                    if (!isFirstChunk) {
-                        result += ',';
-                    }
-                    
-                    result += cleanChunk;
-                    isFirstChunk = false;
-                    
-                    // Beri jeda untuk mencegah blocking UI
-                    if (i % (chunkSize * 10) === 0) {
-                        // Memberikan kesempatan untuk UI update
-                        awaitYield();
-                    }
-                }
-                
-                result += ']';
-                return result;
-            } catch (error) {
-                console.error('Error in stringifyLargeData:', error);
-                // Fallback ke metode sederhana jika terjadi error
-                try {
-                    return JSON.stringify(data);
-                } catch (fallbackError) {
-                    return '[]';
-                }
-            }
-        }
-        
-        // Fungsi helper untuk memberikan jeda
-        function awaitYield() {
-            return new Promise(resolve => setTimeout(resolve, 0));
-        }
-        
-        // Fungsi backup data yang cerdas untuk data besar
-        function backupData(filename = 'reload.js') {
+        // Fungsi untuk backup data dalam jumlah besar tanpa error memori
+        function backupDataLarge(filename = 'reload.js') {
             showNotification(`Memulai proses backup data (${appData.length} item)...`, 'info');
             
             // Nonaktifkan tombol backup selama proses
@@ -1357,118 +1252,55 @@
             if (exportBtn) exportBtn.disabled = true;
             
             try {
-                // Buat backup object dengan metadata lengkap
-                const backupObject = {
-                    version: appSettings.systemVersion || '5.9',
-                    timestamp: new Date().toISOString(),
-                    totalRecords: appData.length,
-                    appName: appSettings.appName,
-                    appSubtitle: appSettings.appSubtitle,
-                    backupId: generateBackupId(),
-                    dataSource: 'SIMATA_SYSTEM',
-                    data: appData
-                };
-                
-                let jsonString;
-                const useChunking = appData.length > 1000; // Gunakan chunking untuk data > 1000
-                
-                if (useChunking) {
-                    showNotification(`Menggunakan chunking untuk ${appData.length} data...`, 'info');
-                    jsonString = stringifyBackupObject(backupObject, 500);
-                } else {
-                    try {
-                        jsonString = JSON.stringify(backupObject, null, 2);
-                    } catch (error) {
-                        console.error('Error stringifying backup object:', error);
-                        // Fallback ke chunking jika stringify biasa gagal
-                        jsonString = stringifyBackupObject(backupObject, 500);
-                    }
-                }
-                
-                // Buat konten file dengan format yang mudah digabungkan
                 const now = new Date();
                 const dateStr = now.toLocaleDateString('id-ID');
                 const timeStr = now.toLocaleTimeString('id-ID');
                 
-                const backupContent = `/* 
- * SIMATA BACKUP DATA - FORMAT CERDAS
- * Versi: ${backupObject.version}
+                // Header file backup
+                let backupContent = `/* 
+ * SIMATA BACKUP DATA
+ * Versi: 2.1 (Optimized for Large Data)
  * Tanggal: ${dateStr}, ${timeStr}
  * Total Data: ${appData.length} records
- * Backup ID: ${backupObject.backupId}
  * Aplikasi: Sistem Pemetaan Data Nelayan
- * Instansi: Dinas Perikanan Kabupaten Situbondo
+ * Instansi: ${appSettings.appSubtitle}
  * 
  * PETUNJUK:
  * 1. File ini adalah backup resmi dari aplikasi SIMATA
- * 2. Data disimpan dalam format JSON yang mudah digabungkan
- * 3. Beberapa file backup dapat digabungkan tanpa error
+ * 2. Data disimpan dalam format JSON yang mudah dibaca
+ * 3. Upload file ini ke server untuk sinkronisasi data
  * 4. File ini aman untuk disimpan di repository GitHub
  */
 
-// Inisialisasi namespace backup jika belum ada
-if (typeof window.SIMATA_BACKUP_COLLECTION === 'undefined') {
-    window.SIMATA_BACKUP_COLLECTION = {};
-}
-
-// Simpan backup individual dengan ID unik
-window.SIMATA_BACKUP_COLLECTION['${backupObject.backupId}'] = ${jsonString};
-
-// Untuk kompatibilitas dengan sistem lama
-if (typeof window.SIMATA_BACKUP_DATA === 'undefined') {
-    window.SIMATA_BACKUP_DATA = ${jsonString};
-} else {
-    // Jika sudah ada, gabungkan data
-    try {
-        const existingData = window.SIMATA_BACKUP_DATA.data || [];
-        const newData = ${jsonString}.data || [];
-        const mergedData = mergeBackupData(existingData, newData);
-        window.SIMATA_BACKUP_DATA = {
-            version: '${backupObject.version}',
-            timestamp: '${backupObject.timestamp}',
-            totalRecords: mergedData.length,
-            appName: '${backupObject.appName}',
-            appSubtitle: '${backupObject.appSubtitle}',
-            backupId: 'COMBINED_' + Date.now(),
-            dataSource: 'MERGED_FROM_MULTIPLE',
-            data: mergedData
-        };
-    } catch (mergeError) {
-        console.error('Error merging backup data:', mergeError);
-        // Tetap gunakan data baru jika merge gagal
-        window.SIMATA_BACKUP_DATA = ${jsonString};
-    }
-}
-
-// Fungsi untuk menggabungkan data backup
-function mergeBackupData(existingData, newData) {
-    const dataMap = new Map();
-    
-    // Tambahkan data yang sudah ada
-    if (existingData && Array.isArray(existingData)) {
-        existingData.forEach(item => {
-            if (item && item.nik) {
-                dataMap.set(item.nik, item);
-            }
-        });
-    }
-    
-    // Tambahkan atau update data baru
-    if (newData && Array.isArray(newData)) {
-        newData.forEach(item => {
-            if (item && item.nik) {
-                dataMap.set(item.nik, item);
-            }
-        });
-    }
-    
-    return Array.from(dataMap.values());
-}
-
-// Tanda bahwa file telah berhasil dimuat
-console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - ${appData.length} records, Backup ID: ${backupObject.backupId}');`;
+// Format baru: SIMATA_BACKUP_DATA (rekomendasi)
+window.SIMATA_BACKUP_DATA = {
+    version: '2.1',
+    timestamp: '${now.toISOString()}',
+    totalRecords: ${appData.length},
+    appName: '${appSettings.appName.replace(/'/g, "\\'")}',
+    appSubtitle: '${appSettings.appSubtitle.replace(/'/g, "\\'")}',
+    data: [\n`;
                 
-                // Gunakan Blob dengan tipe yang tepat
+                // Serialize data dengan chunking untuk menghindari error memori
+                const chunkSize = 500; // Jumlah data per chunk
+                for (let i = 0; i < appData.length; i += chunkSize) {
+                    const chunk = appData.slice(i, i + chunkSize);
+                    const chunkJson = JSON.stringify(chunk, null, 2);
+                    // Hapus kurung siku awal dan akhir
+                    const cleanChunk = chunkJson.slice(2, -2);
+                    backupContent += cleanChunk;
+                    
+                    // Tambahkan koma kecuali untuk chunk terakhir
+                    if (i + chunkSize < appData.length) {
+                        backupContent += ',\n';
+                    }
+                }
+                
+                // Tutup struktur JSON
+                backupContent += '\n    ]\n};\n\n';
+                backupContent += `// Tanda bahwa file telah berhasil dimuat\nconsole.log('SIMATA Backup Data v2.1 loaded successfully - ${appData.length} records');`;
+                
+                // Buat Blob dan download
                 const blob = new Blob([backupContent], { type: 'application/javascript' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1501,37 +1333,8 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                 if (exportBtn) exportBtn.disabled = false;
             }
         }
-        
-        // Generate ID unik untuk backup
-        function generateBackupId() {
-            const timestamp = Date.now();
-            const random = Math.random().toString(36).substr(2, 9);
-            return `BACKUP_${timestamp}_${random}`.toUpperCase();
-        }
-        
-        // Fungsi untuk stringify backup object dengan chunking
-        function stringifyBackupObject(backupObject, chunkSize = 500) {
-            const { data, ...rest } = backupObject;
-            
-            let result = '{\n';
-            let first = true;
-            
-            // Properti selain data
-            for (const key in rest) {
-                if (!first) result += ',\n';
-                result += `  "${key}": ${JSON.stringify(rest[key])}`;
-                first = false;
-            }
-            
-            // Properti data dengan chunking
-            if (!first) result += ',\n';
-            result += `  "data": ${stringifyLargeData(data, chunkSize)}\n`;
-            result += '}';
-            
-            return result;
-        }
-        
-        // Fungsi untuk mengekstrak data dari backup (mendukung format baru)
+
+        // Fungsi untuk mengekstrak data dari backup (format baru)
         function extractDataFromBackup(content) {
             try {
                 // Eksekusi konten untuk menginisialisasi variabel global
@@ -1540,119 +1343,69 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                 document.head.appendChild(script);
                 document.head.removeChild(script);
                 
-                // Coba ambil dari koleksi backup terlebih dahulu
-                let restoredData = null;
-                
-                if (window.SIMATA_BACKUP_COLLECTION && typeof window.SIMATA_BACKUP_COLLECTION === 'object') {
-                    // Ambil semua data dari koleksi backup
-                    const allData = [];
-                    Object.values(window.SIMATA_BACKUP_COLLECTION).forEach(backup => {
-                        if (backup && backup.data && Array.isArray(backup.data)) {
-                            allData.push(...backup.data);
-                        }
-                    });
-                    
-                    if (allData.length > 0) {
-                        // Hapus duplikasi berdasarkan NIK
-                        const uniqueData = removeDuplicatesByNik(allData);
-                        restoredData = uniqueData;
-                        console.log(`Data berhasil diekstrak dari koleksi backup: ${uniqueData.length} unique records`);
-                    }
-                }
-                
-                // Jika tidak ada di koleksi, coba dari backup data lama
-                if (!restoredData && window.SIMATA_BACKUP_DATA) {
+                // Cek format baru terlebih dahulu
+                if (window.SIMATA_BACKUP_DATA) {
                     const backup = window.SIMATA_BACKUP_DATA;
-                    restoredData = backup.data;
-                    console.log(`Data berhasil diekstrak dari format lama: ${restoredData.length} records`);
+                    let restoredData = backup.data || [];
+                    
+                    console.log(`Data berhasil diekstrak dari format baru: ${restoredData.length} records`);
+                    window.SIMATA_BACKUP_DATA = null; // Reset untuk backup berikutnya
+                    return restoredData;
+                } else {
+                    // Coba parsing langsung sebagai JSON (format lama)
+                    try {
+                        const jsonMatch = content.match(/window\.SIMATA_BACKUP_DATA\s*=\s*({[\s\S]*?});/);
+                        if (jsonMatch) {
+                            const backup = JSON.parse(jsonMatch[1]);
+                            const restoredData = backup.data || [];
+                            console.log(`Data berhasil diekstrak dari regex: ${restoredData.length} records`);
+                            return restoredData;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing JSON:', e);
+                    }
+                    
+                    throw new Error('Format backup tidak dikenali');
                 }
-                
-                // Reset global variables
-                window.SIMATA_BACKUP_COLLECTION = undefined;
-                window.SIMATA_BACKUP_DATA = undefined;
-                
-                return restoredData;
             } catch (error) {
                 console.error('Error extracting data from backup:', error);
                 return null;
             }
         }
-        
-        // Fungsi untuk menghapus duplikasi berdasarkan NIK
-        function removeDuplicatesByNik(dataArray) {
+
+        // --- FUNGSI MERGE DATA UNTUK MENGHINDARI DUPLIKASI ---
+        function mergeData(existingData, newData) {
+            // Buat map untuk data yang sudah ada dengan NIK sebagai key
             const dataMap = new Map();
             
-            dataArray.forEach(item => {
-                if (item && item.nik) {
+            // Tambahkan data yang sudah ada ke map
+            existingData.forEach(item => {
+                if (item.id && item.nik) {
                     dataMap.set(item.nik, item);
                 }
             });
             
+            // Tambahkan atau timpa data baru (data baru akan menimpa data lama dengan NIK yang sama)
+            newData.forEach(item => {
+                if (item.id && item.nik) {
+                    dataMap.set(item.nik, item);
+                }
+            });
+            
+            // Kembalikan sebagai array
             return Array.from(dataMap.values());
         }
-        
-        // Fungsi untuk menggabungkan beberapa file backup menjadi satu
-        function combineBackupFiles(backupContents) {
-            try {
-                const allData = [];
-                
-                backupContents.forEach(content => {
-                    try {
-                        // Eksekusi setiap konten backup
-                        const script = document.createElement('script');
-                        script.textContent = content;
-                        document.head.appendChild(script);
-                        document.head.removeChild(script);
-                    } catch (e) {
-                        console.warn('Error executing backup content:', e);
-                    }
-                });
-                
-                // Kumpulkan semua data dari koleksi backup
-                if (window.SIMATA_BACKUP_COLLECTION && typeof window.SIMATA_BACKUP_COLLECTION === 'object') {
-                    Object.values(window.SIMATA_BACKUP_COLLECTION).forEach(backup => {
-                        if (backup && backup.data && Array.isArray(backup.data)) {
-                            allData.push(...backup.data);
-                        }
-                    });
-                }
-                
-                // Hapus duplikasi
-                const uniqueData = removeDuplicatesByNik(allData);
-                
-                // Buat backup object gabungan
-                const combinedBackup = {
-                    version: appSettings.systemVersion || '5.9',
-                    timestamp: new Date().toISOString(),
-                    totalRecords: uniqueData.length,
-                    appName: appSettings.appName,
-                    appSubtitle: appSettings.appSubtitle,
-                    backupId: 'COMBINED_' + Date.now(),
-                    dataSource: 'COMBINED_FROM_MULTIPLE_FILES',
-                    data: uniqueData
-                };
-                
-                // Reset global variables
-                window.SIMATA_BACKUP_COLLECTION = undefined;
-                window.SIMATA_BACKUP_DATA = undefined;
-                
-                return combinedBackup;
-            } catch (error) {
-                console.error('Error combining backup files:', error);
-                return null;
-            }
-        }
-        
-        // --- FUNGSI RESTORE DATA YANG DIPERBAIKI ---
+
+        // --- FUNGSI RESTORE DATA YANG DIOPTIMASI ---
         function restoreData() {
             const fileInput = document.getElementById('restoreFileInput');
             if (!fileInput.files.length) return;
             
             const file = fileInput.files[0];
             
-            // Validasi ukuran file (maksimal 50MB)
-            if (file.size > 50 * 1024 * 1024) {
-                showNotification('File terlalu besar (maksimal 50MB)', 'error');
+            // Validasi ukuran file (maksimal 100MB)
+            if (file.size > 100 * 1024 * 1024) {
+                showNotification('File terlalu besar (maksimal 100MB)', 'error');
                 return;
             }
             
@@ -1719,26 +1472,245 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
             
             reader.readAsText(file);
         }
+
+        // --- FUNGSI RELOAD DATA YANG DIOPTIMASI UNTUK DATA BESAR ---
+        function handleReloadRepo() {
+            const reloadBtn = document.getElementById('btn-reload-repo');
+            const spinner = document.getElementById('reloadSpinner');
+            
+            // Tampilkan spinner dan nonaktifkan tombol
+            spinner.classList.add('active');
+            reloadBtn.disabled = true;
+            reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Memuat Data... <span class="spinner-border spinner-border-sm reload-spinner active" id="reloadSpinner"></span>';
+            
+            showNotification('Memulai sinkronisasi data dari server...', 'info');
+            
+            // Coba load ulang file reload.js
+            const script = document.createElement('script');
+            script.src = 'reload.js?t=' + new Date().getTime(); // Tambahkan timestamp untuk cache busting
+            
+            script.onload = function() {
+                console.log('File reload.js berhasil dimuat ulang');
+                
+                // Beri waktu untuk pemrosesan
+                setTimeout(() => {
+                    try {
+                        let restoredData = null;
+                        
+                        // Cek format baru tanpa enkripsi
+                        if (window.SIMATA_BACKUP_DATA) {
+                            const backup = window.SIMATA_BACKUP_DATA;
+                            restoredData = backup.data || [];
+                            window.SIMATA_BACKUP_DATA = null; // Reset untuk penggunaan berikutnya
+                        }
+                        
+                        if (!restoredData || !Array.isArray(restoredData)) {
+                            throw new Error('Data tidak valid atau format file tidak dikenali');
+                        }
+                        
+                        // Merge data lama dengan data baru (data baru menimpa data lama dengan NIK yang sama)
+                        const existingData = appData;
+                        const mergedData = mergeData(existingData, restoredData);
+                        
+                        // Hitung perubahan
+                        const newCount = restoredData.length;
+                        const existingCount = existingData.length;
+                        const mergedCount = mergedData.length;
+                        const replacedCount = existingCount + newCount - mergedCount;
+                        const addedCount = mergedCount - existingCount;
+                        
+                        // Update data aplikasi
+                        appData = mergedData;
+                        saveData();
+                        renderDataTable();
+                        updateDashboard();
+                        
+                        // Tampilkan notifikasi yang informatif
+                        let message = '';
+                        if (replacedCount > 0 && addedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
+                        } else if (replacedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui`;
+                        } else if (addedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${addedCount} data baru ditambahkan`;
+                        } else {
+                            message = 'Data sudah up-to-date. Tidak ada perubahan.';
+                        }
+                        
+                        showNotification(message, 'success');
+                        
+                    } catch (error) {
+                        console.error('Reload error:', error);
+                        showNotification('Gagal memuat data dari repository. Format data tidak valid.', 'error');
+                    }
+                    
+                    // Reset tombol
+                    spinner.classList.remove('active');
+                    reloadBtn.disabled = false;
+                    reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+                }, 500);
+            };
+            
+            script.onerror = function() {
+                console.error('Gagal memuat file reload.js');
+                showNotification('Gagal memuat data dari server. Pastikan koneksi internet aktif.', 'error');
+                
+                // Reset tombol
+                spinner.classList.remove('active');
+                reloadBtn.disabled = false;
+                reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        // Fungsi backup data kompatibilitas (untuk tombol yang sudah ada)
+        function backupData(filename = 'reload.js') {
+            return backupDataLarge(filename);
+        }
+
+        // =====================================================
+        // FUNGSI UTAMA TANPA FITUR CEK DATA GANDA
+        // =====================================================
         
-        // --- FUNGSI MERGE DATA UNTUK MENGHINDARI DUPLIKASI ---
-        function mergeData(existingData, newData) {
-            // Buat map untuk data yang sudah ada dengan NIK sebagai key
-            const dataMap = new Map();
-            
-            // Tambahkan data yang sudah ada ke map
-            existingData.forEach(item => {
-                dataMap.set(item.nik, item);
-            });
-            
-            // Tambahkan atau timpa data baru (data baru akan menimpa data lama dengan NIK yang sama)
-            newData.forEach(item => {
-                dataMap.set(item.nik, item);
-            });
-            
-            // Kembalikan sebagai array
-            return Array.from(dataMap.values());
+        function generateSecurityCode() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}${month}${day}`;
         }
         
+        function displayCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('id-ID', options);
+            document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
+            document.getElementById('passwordHint').innerHTML = `Kode keamanan berubah setiap hari berdasarkan tanggal.`;
+        }
+
+        function maskData(data, force = false) {
+            if (!data) return "-";
+            if (data === '00000000') return "Tidak Ada";
+            if (!appSettings.privacyMode && !force) return data.toString();
+            
+            let str = data.toString();
+            if (str.length <= 4) return str;
+            
+            const maskedLength = Math.min(4, str.length);
+            const visiblePart = str.slice(0, -maskedLength);
+            const maskedPart = '*'.repeat(maskedLength);
+            return visiblePart + maskedPart;
+        }
+
+        function getFishIconClass(fishName) {
+            const lower = fishName.toLowerCase();
+            if (lower.includes('cumi')) return 'fa-ghost'; 
+            if (lower.includes('kepiting')) return 'fa-spider'; 
+            if (lower.includes('togek') || lower.includes('mendut')) return 'fa-star'; 
+            return 'fa-fish';
+        }
+
+        // --- FUNGSI BARU: MAPPING KAPAL DAN ALAT TANGKAP ---
+        function updateAlatTangkapByKapal() {
+            const jenisKapal = document.getElementById('jenisKapal').value;
+            const alatTangkapSelect = document.getElementById('alatTangkap');
+            const apiMappingInfo = document.getElementById('apiMappingInfo');
+            
+            if (!jenisKapal) {
+                apiMappingInfo.style.display = 'none';
+                return;
+            }
+            
+            const availableAPIs = KAPAL_API_MAPPING[jenisKapal] || Object.keys(API_INFO);
+            const currentAPI = alatTangkapSelect.value;
+            
+            // Update opsi alat tangkap
+            alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
+            availableAPIs.forEach(api => {
+                const option = document.createElement('option');
+                option.value = api;
+                option.textContent = api;
+                if (api === currentAPI) option.selected = true;
+                alatTangkapSelect.appendChild(option);
+            });
+            
+            // Tampilkan informasi mapping
+            apiMappingInfo.innerHTML = `<strong>${jenisKapal}</strong> biasanya digunakan untuk: ${availableAPIs.join(', ')}`;
+            apiMappingInfo.style.display = 'block';
+            
+            // Update daftar ikan jika alat tangkap sudah dipilih
+            if (currentAPI && availableAPIs.includes(currentAPI)) {
+                updateFishOptionsByAPI(currentAPI);
+            } else {
+                updateFishOptionsByAPI('');
+            }
+        }
+        
+        function updateFishOptionsByAPI(api) {
+            const fishContainer = document.getElementById('fishCheckboxContainer');
+            if (!fishContainer) return;
+            
+            fishContainer.innerHTML = '';
+            
+            let fishList = [];
+            if (api && API_FISH_MAPPING[api]) {
+                // Ambil ikan berdasarkan kategori yang sesuai
+                API_FISH_MAPPING[api].forEach(category => {
+                    if (FISH_CATEGORIES[category]) {
+                        FISH_CATEGORIES[category].forEach(fish => {
+                            fishList.push(fish.name);
+                        });
+                    }
+                });
+            } else {
+                // Jika tidak ada API yang dipilih, tampilkan semua ikan
+                for (const category in FISH_CATEGORIES) {
+                    FISH_CATEGORIES[category].forEach(fish => {
+                        fishList.push(fish.name);
+                    });
+                }
+            }
+            
+            // Tambahkan opsi "Lainnya"
+            fishList.push("Lainnya");
+            
+            // Tampilkan checklist dengan informasi
+            fishList.forEach(fish => {
+                const id = 'fish_' + fish.replace(/\s/g, '');
+                const fishInfo = FISH_DETAILS[fish] || {};
+                const html = `
+                <label class="fish-option-box">
+                    <input type="checkbox" class="form-check-input me-2 fish-checkbox" value="${fish}" id="${id}">
+                    <span>${fish}</span>
+                    ${fishInfo.latin ? `
+                    <div class="fish-info-box">
+                        <div class="fish-info-title">${fish}</div>
+                        <div class="fish-info-latin">${fishInfo.latin}</div>
+                        <div class="fish-info-desc">${fishInfo.desc || ''}</div>
+                    </div>
+                    ` : ''}
+                </label>`;
+                fishContainer.innerHTML += html;
+            });
+            
+            // Event listener untuk "Lainnya"
+            const lainCheckbox = document.getElementById('fish_Lainnya');
+            if (lainCheckbox) {
+                lainCheckbox.addEventListener('change', function() {
+                    const inputLain = document.getElementById('jenisIkanLainnya');
+                    if(this.checked) {
+                        inputLain.style.display = 'block';
+                        inputLain.setAttribute('required', 'required');
+                    } else {
+                        inputLain.style.display = 'none';
+                        inputLain.value = '';
+                        inputLain.removeAttribute('required');
+                    }
+                });
+            }
+        }
+
         // --- FUNGSI VERIFIKASI KIN YANG DISEMPURNAKAN ---
         function verifyKIN(input) {
             if (!input || input.trim() === '') {
@@ -1788,357 +1760,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                 message: "Data tidak ditemukan. Pastikan Kode Validasi (KIN) atau NIK yang dimasukkan benar."
             };
         }
-
-        function displayVerifyResult(result) {
-            const card = document.getElementById('verifyResultCard');
-            const header = document.getElementById('verifyResultHeader');
-            const icon = document.getElementById('verifyResultIcon');
-            const title = document.getElementById('verifyResultTitle');
-            const subtitle = document.getElementById('verifyResultSubtitle');
-            const content = document.getElementById('verifyResultContent');
-            const detailBtn = document.getElementById('verifyDetailBtn');
-            const idCardBtn = document.getElementById('verifyIdCardBtn');
-            const allKinCard = document.getElementById('allKinCard');
-            
-            // Sembunyikan daftar semua KIN jika sedang ditampilkan
-            if (allKinCard) allKinCard.style.display = 'none';
-            
-            if (result.success) {
-                const data = result.data;
-                verifyDataResult = data;
-                
-                // Update UI untuk hasil sukses
-                card.className = 'card shadow-sm border-0 mb-4 verify-success';
-                header.className = 'verify-result-header p-4 bg-success text-white';
-                icon.innerHTML = '<i class="fas fa-check-circle fa-3x"></i>';
-                title.textContent = 'VERIFIKASI BERHASIL';
-                subtitle.textContent = result.message;
-                
-                // Isi konten
-                content.innerHTML = `
-                    <div class="col-md-6">
-                        <div class="verify-result-item">
-                            <div class="verify-result-label">Nama Lengkap</div>
-                            <div class="verify-result-value fw-bold">${data.nama}</div>
-                        </div>
-                        <div class="verify-result-item">
-                            <div class="verify-result-label">NIK</div>
-                            <div class="verify-result-value font-monospace">${maskData(data.nik)}</div>
-                        </div>
-                        <div class="verify-result-item">
-                            <div class="verify-result-label">Kode Validasi (KIN)</div>
-                            <div class="verify-result-value">
-                                <span class="kin-badge">${data.kodeValidasi || 'Tidak Ada'}</span>
-                            </div>
-                        </div>
-                        <div class="verify-result-item">
-                            <div class="verify-result-label">Domisili</div>
-                            <div class="verify-result-value">${data.desa}, ${data.kecamatan}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="verify-result-item">
-                            <div class="verify-result-label">Profesi</div>
-                            <div class="verify-result-value">
-                                <span class="badge ${data.profesi === 'Nelayan Penuh Waktu' ? 'badge-profesi-penuh' : data.profesi === 'Nelayan Sambilan Utama' ? 'badge-profesi-sambilan-utama' : 'badge-profesi-sambilan-tambahan'}">
-                                    ${data.profesi}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="verify-result-item">
-                            <div class="verify-result-label">Status</div>
-                            <div class="verify-result-value">
-                                <span class="badge ${data.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">
-                                    ${data.status}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="verify-result-item">
-                            <div class="verify-result-label">Alat Tangkap (API)</div>
-                            <div class="verify-result-value">${data.alatTangkap}</div>
-                        </div>
-                        <div class="verify-result-item">
-                            <div class="verify-result-label">Tanggal Validasi</div>
-                            <div class="verify-result-value">${data.tanggalValidasi} oleh ${data.validator}</div>
-                        </div>
-                    </div>
-                `;
-                
-                // Tampilkan tombol aksi
-                detailBtn.style.display = 'inline-block';
-                detailBtn.onclick = () => {
-                    viewDetail(data.id);
-                    detailModal.show();
-                };
-                
-                idCardBtn.style.display = 'inline-block';
-                idCardBtn.onclick = () => {
-                    safeGenerateIDCard(data.id);
-                };
-                
-            } else {
-                // Update UI untuk hasil gagal
-                card.className = 'card shadow-sm border-0 mb-4 verify-error';
-                header.className = 'verify-result-header p-4 bg-danger text-white';
-                icon.innerHTML = '<i class="fas fa-times-circle fa-3x"></i>';
-                title.textContent = 'VERIFIKASI GAGAL';
-                subtitle.textContent = result.message;
-                
-                // Isi konten
-                content.innerHTML = `
-                    <div class="col-md-12 text-center py-4">
-                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
-                        <h5 class="text-muted">Data Tidak Ditemukan</h5>
-                        <p class="text-muted">Kode Validasi (KIN) atau NIK yang dimasukkan tidak terdaftar dalam database.</p>
-                        <div class="alert alert-warning mt-3">
-                            <i class="fas fa-lightbulb me-2"></i>
-                            <strong>Saran:</strong> Periksa kembali ketikan atau gunakan fitur "Tampilkan Semua KIN" untuk melihat daftar kode validasi yang terdaftar.
-                        </div>
-                    </div>
-                `;
-                
-                // Sembunyikan tombol aksi
-                detailBtn.style.display = 'none';
-                idCardBtn.style.display = 'none';
-            }
-            
-            // Tampilkan kartu hasil
-            card.style.display = 'block';
-            
-            // Scroll ke hasil dengan animasi smooth
-            setTimeout(() => {
-                card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-        }
-
-        function setVerifyExample(type) {
-            const input = document.getElementById('verifyInput');
-            const breadcrumbItems = document.querySelectorAll('.verify-breadcrumb-item');
-            
-            // Reset semua breadcrumb
-            breadcrumbItems.forEach(item => item.classList.remove('active'));
-            
-            if (type === 'kin') {
-                input.value = 'VLD-';
-                input.placeholder = 'Masukkan Kode Validasi (contoh: VLD-ABC123)';
-                input.focus();
-                breadcrumbItems[0].classList.add('active');
-            } else if (type === 'nik') {
-                input.value = '';
-                input.placeholder = 'Masukkan NIK 16 digit';
-                input.focus();
-                breadcrumbItems[1].classList.add('active');
-            } else if (type === 'all') {
-                breadcrumbItems[2].classList.add('active');
-                showAllKIN();
-            }
-        }
-
-        function showAllKIN() {
-            const allKinCard = document.getElementById('allKinCard');
-            const tbody = document.getElementById('allKinTableBody');
-            const totalKinCount = document.getElementById('totalKinCount');
-            const verifyResultCard = document.getElementById('verifyResultCard');
-            
-            // Sembunyikan hasil verifikasi individual
-            if (verifyResultCard) verifyResultCard.style.display = 'none';
-            
-            // Filter data yang memiliki kode validasi
-            const dataWithKIN = appData.filter(d => d.kodeValidasi && d.kodeValidasi.trim() !== '');
-            
-            // Update count
-            totalKinCount.textContent = dataWithKIN.length;
-            
-            if (dataWithKIN.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Tidak ada data dengan Kode Validasi (KIN) yang terdaftar
-                        </td>
-                    </tr>
-                `;
-            } else {
-                tbody.innerHTML = '';
-                dataWithKIN.sort((a, b) => a.kodeValidasi.localeCompare(b.kodeValidasi)).forEach((d, index) => {
-                    const row = `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>
-                                <span class="kin-badge">${d.kodeValidasi}</span>
-                            </td>
-                            <td>
-                                <div class="fw-bold">${d.nama}</div>
-                                <small class="text-muted">${d.usia} Tahun</small>
-                            </td>
-                            <td class="font-monospace">${maskData(d.nik)}</td>
-                            <td>
-                                <div class="small">${d.desa}</div>
-                                <div class="small text-muted">${d.kecamatan}</div>
-                            </td>
-                            <td>
-                                <span class="badge ${d.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">
-                                    ${d.status}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-primary" onclick="verifyKINAndShow('${d.kodeValidasi}')" title="Verifikasi">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn btn-outline-info" onclick="viewDetail('${d.id}')" title="Detail">
-                                        <i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-outline-success" onclick="safeGenerateIDCard('${d.id}')" title="ID Card">
-                                        <i class="fas fa-id-card"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
-            
-            // Tampilkan kartu
-            allKinCard.style.display = 'block';
-            allKinCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function verifyKINAndShow(input) {
-            const result = verifyKIN(input);
-            displayVerifyResult(result);
-            
-            // Update input field
-            document.getElementById('verifyInput').value = input;
-        }
-
-        function resetVerifyForm() {
-            document.getElementById('verifyInput').value = '';
-            document.getElementById('verifyInput').focus();
-            document.getElementById('verifyResultCard').style.display = 'none';
-            document.getElementById('allKinCard').style.display = 'none';
-            
-            // Reset breadcrumb ke pertama
-            setVerifyExample('kin');
-        }
-
-        // Fungsi untuk menampilkan modal info ikan
-        function showFishInfoModal() {
-            fishInfoModal.show();
-        }
-
-        // --- FUNGSI RELOAD DATA YANG DIPERBAIKI ---
-        function handleReloadRepo() {
-            const reloadBtn = document.getElementById('btn-reload-repo');
-            const spinner = document.getElementById('reloadSpinner');
-            
-            // Tampilkan spinner dan nonaktifkan tombol
-            spinner.classList.add('active');
-            reloadBtn.disabled = true;
-            reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Memuat Data... <span class="spinner-border spinner-border-sm reload-spinner active" id="reloadSpinner"></span>';
-            
-            showNotification('Memulai sinkronisasi data dari server...', 'info');
-            
-            // Coba load ulang file reload.js
-            const script = document.createElement('script');
-            script.src = 'reload.js?t=' + new Date().getTime(); // Tambahkan timestamp untuk cache busting
-            
-            script.onload = function() {
-                console.log('File reload.js berhasil dimuat ulang');
-                
-                // Beri waktu untuk pemrosesan
-                setTimeout(() => {
-                    try {
-                        let restoredData = null;
-                        
-                        // Cek format baru
-                        if (window.SIMATA_BACKUP_COLLECTION) {
-                            // Kumpulkan semua data dari koleksi
-                            const allData = [];
-                            Object.values(window.SIMATA_BACKUP_COLLECTION).forEach(backup => {
-                                if (backup && backup.data && Array.isArray(backup.data)) {
-                                    allData.push(...backup.data);
-                                }
-                            });
-                            
-                            if (allData.length > 0) {
-                                restoredData = removeDuplicatesByNik(allData);
-                            }
-                        }
-                        
-                        // Jika tidak ada di koleksi, coba dari backup data lama
-                        if (!restoredData && window.SIMATA_BACKUP_DATA) {
-                            const backup = window.SIMATA_BACKUP_DATA;
-                            restoredData = backup.data;
-                        }
-                        
-                        if (!restoredData || !Array.isArray(restoredData)) {
-                            throw new Error('Data tidak valid atau format file tidak dikenali');
-                        }
-                        
-                        // Merge data lama dengan data baru
-                        const existingData = appData;
-                        const mergedData = mergeData(existingData, restoredData);
-                        
-                        // Hitung perubahan
-                        const newCount = restoredData.length;
-                        const existingCount = existingData.length;
-                        const mergedCount = mergedData.length;
-                        const replacedCount = existingCount + newCount - mergedCount;
-                        const addedCount = mergedCount - existingCount;
-                        
-                        // Update data aplikasi
-                        appData = mergedData;
-                        saveData();
-                        renderDataTable();
-                        updateDashboard();
-                        
-                        // Tampilkan notifikasi yang informatif
-                        let message = '';
-                        if (replacedCount > 0 && addedCount > 0) {
-                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
-                        } else if (replacedCount > 0) {
-                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui`;
-                        } else if (addedCount > 0) {
-                            message = `Data berhasil disinkronisasi: ${addedCount} data baru ditambahkan`;
-                        } else {
-                            message = 'Data sudah up-to-date. Tidak ada perubahan.';
-                        }
-                        
-                        showNotification(message, 'success');
-                        
-                        // Reset global variables
-                        window.SIMATA_BACKUP_COLLECTION = undefined;
-                        window.SIMATA_BACKUP_DATA = undefined;
-                        
-                    } catch (error) {
-                        console.error('Reload error:', error);
-                        showNotification('Gagal memuat data dari repository. Format data tidak valid.', 'error');
-                    }
-                    
-                    // Reset tombol
-                    spinner.classList.remove('active');
-                    reloadBtn.disabled = false;
-                    reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
-                }, 500);
-            };
-            
-            script.onerror = function() {
-                console.error('Gagal memuat file reload.js');
-                showNotification('Gagal memuat data dari server. Pastikan koneksi internet aktif.', 'error');
-                
-                // Reset tombol
-                spinner.classList.remove('active');
-                reloadBtn.disabled = false;
-                reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
-            };
-            
-            document.head.appendChild(script);
-        }
-
-        // =====================================================
-        // FUNGSI LAINNYA TETAP SAMA DENGAN PERBAIKAN KECIL
-        // =====================================================
 
         // --- FUNGSI PAGINATION YANG DISEMPURNAKAN ---
         function updatePagination(totalItems) {
@@ -2324,9 +1945,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                 );
             }
             
-            const nikCounts = {};
-            appData.forEach(d => nikCounts[d.nik] = (nikCounts[d.nik] || 0) + 1);
-
             const totalItems = filtered.length;
             const totalPages = Math.max(1, Math.ceil(totalItems / appSettings.itemsPerPage));
             
@@ -2366,9 +1984,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                         `<div class="text-truncate-2 small fw-bold text-primary">${d.namaKapal}</div><div class="small text-muted">${d.jenisKapal}</div>` : 
                         '-';
                     
-                    const isDuplicate = nikCounts[d.nik] > 1;
-                    const rowClass = isDuplicate ? 'table-danger' : '';
-                    
                     let badgeClass = 'bg-secondary';
                     if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
                     else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
@@ -2390,12 +2005,12 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                         }
                     }
 
-                    const row = `<tr class="${rowClass}">
+                    const row = `<tr>
                         <td class="text-center"><input type="checkbox" class="row-checkbox" value="${d.id}" onchange="toggleBulkDeleteBtn()"></td>
                         <td class="text-center">${start + i + 1}</td>
                         <td onclick="viewDetail('${d.id}')" class="clickable-name col-id-cell">
                             <div class="fw-bold text-dark text-wrap">${d.nama}</div>
-                            <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
+                            <div class="small font-monospace text-muted">${displayNik}</div>
                             <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
                         </td>
                         <td class="col-contact-cell">${contactDisplay}</td>
@@ -2419,6 +2034,7 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
             const startItem = totalItems > 0 ? start + 1 : 0;
             const endItem = Math.min(start + appSettings.itemsPerPage, totalItems);
             document.getElementById('tableInfo').textContent = `Menampilkan ${startItem}-${endItem} dari ${totalItems} data`;
+            document.getElementById('totalDataCount').textContent = appData.length;
             
             // Update pagination
             updatePagination(totalItems);
@@ -2487,27 +2103,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
             showNotification('Filter direset, menampilkan semua data', 'info');
         }
 
-        function showDuplicateDataInFilter() {
-            // Hitung data duplikat
-            const counts = {};
-            appData.forEach(d => counts[d.nik] = (counts[d.nik] || 0) + 1);
-            const duplicateData = appData.filter(d => counts[d.nik] > 1);
-            
-            if (duplicateData.length === 0) {
-                showNotification('Tidak ditemukan data NIK ganda. Data sudah bersih!', 'success');
-                return;
-            }
-            
-            // Set filter untuk menampilkan hanya data duplikat
-            currentFilter = { duplicate: true };
-            currentPage = 1;
-            
-            // Render ulang tabel
-            renderDataTable();
-            
-            showNotification(`Ditemukan ${duplicateData.length} data dengan NIK ganda`, 'warning');
-        }
-
         // --- FUNGSI GENERATE PDF TABEL DATA NELAYAN YANG DIPERBAIKI ---
         function generateTabelPdf() {
             const filteredData = getFilteredData();
@@ -2522,266 +2117,20 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
             const end = start + appSettings.itemsPerPage;
             const pageData = filteredData.slice(start, end);
             
-            // Generate kode unik untuk setiap cetakan
-            const printId = 'SIMATA-TABEL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            // Siapkan data untuk tabel dengan kolom baru
+            const tableRows = pageData.map((d, index) => [
+                index + 1,
+                d.nama,
+                d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
+                maskData(d.nik),
+                d.desa,
+                d.kecamatan,
+                d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
+                d.kodeValidasi || '-'
+            ]);
 
-            // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
-            document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
-            
-            try {
-                new QRCode(document.getElementById("qr-right"), { 
-                    text: signatureText, 
-                    width: 120, 
-                    height: 120,
-                    colorDark: "#4a69bd",
-                    colorLight: "#ffffff", 
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            } catch (error) {
-                console.error("Error generating QR code:", error);
-            }
-
-            setTimeout(() => {
-                try {
-                    const { jsPDF } = window.jspdf;
-                    
-                    if (typeof jsPDF.API.autoTable !== 'function') {
-                        showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
-                        return;
-                    }
-
-                    const doc = new jsPDF('l', 'mm', 'a4');
-                    const pageWidth = doc.internal.pageSize.width;
-                    const pageHeight = doc.internal.pageSize.height;
-
-                    // Header
-                    doc.setFillColor(12, 36, 97);
-                    doc.rect(10, 10, pageWidth - 20, 28, 'F');
-                    
-                    // Judul utama
-                    doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('SISTEM INFORMASI PEMETAAN NELAYAN (SIMATA)', pageWidth/2, 20, { align: 'center' });
-                    
-                    // Subjudul
-                    doc.setFontSize(12);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
-
-                    // Slogan dengan warna oranye
-                    doc.setTextColor(246, 185, 59);
-                    doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10);
-                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
-
-                    // Garis bawah header dengan warna aksen
-                    doc.setDrawColor(246, 185, 59);
-                    doc.setLineWidth(1.5);
-                    doc.line(20, 38, pageWidth - 20, 38);
-
-                    // Judul Laporan dengan informasi filter
-                    doc.setTextColor(12, 36, 97);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
-                    doc.text('LAPORAN TABEL DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
-                    
-                    // Informasi filter yang aktif
-                    let filterInfo = "Semua Data";
-                    if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
-                        filterInfo = "Data Terfilter: ";
-                        const filterParts = [];
-                        
-                        if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
-                        if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
-                        if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
-                        if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
-                        if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
-                        if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
-                        if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
-                        
-                        filterInfo += filterParts.join(', ');
-                    }
-                    
-                    // Tambahkan informasi halaman dan jumlah baris
-                    filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
-                    
-                    doc.setFontSize(14);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    const now = new Date();
-                    const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
-
-                    // Siapkan data untuk tabel dengan kolom baru
-                    const tableRows = pageData.map((d, index) => [
-                        index + 1,
-                        d.nama,
-                        d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
-                        maskData(d.nik),
-                        d.desa,
-                        d.kecamatan,
-                        d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
-                        d.kodeValidasi || '-'
-                    ]);
-
-                    // Tabel Data
-                    const tableWidth = pageWidth - 40;
-                    const tableStartX = (pageWidth - tableWidth) / 2;
-
-                    doc.autoTable({
-                        head: [[
-                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
-                            {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
-                            {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
-                        ]],
-                        body: tableRows,
-                        startY: 72,
-                        theme: 'grid',
-                        tableWidth: tableWidth,
-                        margin: { left: tableStartX, right: tableStartX },
-                        headStyles: { 
-                            fillColor: [12, 36, 97],
-                            textColor: [255, 255, 255], 
-                            fontStyle: 'bold', 
-                            halign: 'center',
-                            fontSize: 8,
-                            cellPadding: 3,
-                            lineWidth: 0.5,
-                            lineColor: [255, 255, 255]
-                        },
-                        bodyStyles: {
-                            textColor: [0, 0, 0],
-                            fontSize: 8,
-                            fillColor: [255, 255, 255],
-                            cellPadding: 3,
-                            lineWidth: 0.1,
-                            lineColor: [200, 200, 200]
-                        },
-                        alternateRowStyles: {
-                            fillColor: [245, 245, 245]
-                        },
-                        styles: {
-                            overflow: 'linebreak',
-                            cellPadding: 3,
-                            fontSize: 8,
-                            valign: 'middle',
-                            halign: 'left'
-                        },
-                        columnStyles: {
-                            0: {cellWidth: 15, halign: 'center'},
-                            1: {cellWidth: 45, halign: 'left'},
-                            2: {cellWidth: 30, halign: 'center'},
-                            3: {cellWidth: 35, halign: 'center'},
-                            4: {cellWidth: 35, halign: 'left'},
-                            5: {cellWidth: 35, halign: 'left'},
-                            6: {cellWidth: 35, halign: 'left'},
-                            7: {cellWidth: 30, halign: 'center'}
-                        }
-                    });
-
-                    // Setelah autoTable, kita atur footer
-                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
-
-                    // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
-                    const separatorY = finalY + 10;
-                    doc.setDrawColor(200, 200, 200);
-                    doc.setLineWidth(0.5);
-                    doc.line(20, separatorY, pageWidth - 20, separatorY);
-
-                    // Bagian kiri: Validasi elektronik
-                    const leftX = 25;
-                    const leftY = separatorY + 12;
-
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(8);
-                    doc.setTextColor(12, 36, 97);
-                    doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
-                    doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
-                    doc.text("SISTEM SATU DATA NELAYAN (SIMATA)", leftX, leftY + 8);
-
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(7);
-                    doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
-                    doc.setTextColor(230, 126, 34);
-                    doc.text("www.dinasperikanansitubondo.com/simata", leftX, leftY + 18);
-
-                    // Bagian kanan: Tanda tangan dan QR Code
-                    const rightX = pageWidth - 85;
-                    const rightY = separatorY + 10;
-
-                    // PERIODE/TANGGAL
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
-                    doc.setTextColor(0, 0, 0);
-                    const currentDate = new Date();
-                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
-                    doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
-                    
-                    // JABATAN
-                    doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
-
-                    // QR Code dengan warna biru muda
-                    const qrRightCanvas = document.querySelector('#qr-right canvas');
-                    if(qrRightCanvas) {
-                        try {
-                            const imgRight = qrRightCanvas.toDataURL("image/png");
-                            // QR code 25x25 mm
-                            doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
-                        } catch (error) {
-                            console.error("Error adding QR code image:", error);
-                        }
-                    }
-                    
-                    // GARIS TANDA TANGAN
-                    doc.setDrawColor(0, 0, 0);
-                    doc.setLineWidth(0.5);
-                    doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
-                    
-                    // NAMA DAN NIP PEJABAT
-                    const nameY = rightY + 45;
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(9);
-                    doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8);
-                    doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
-
-                    // FOOTER DENGAN INFORMASI SISTEM
-                    const footerY = pageHeight - 15;
-                    doc.setFontSize(8);
-                    doc.setTextColor(100);
-                    
-                    // Informasi sistem di footer
-                    doc.setFontSize(7);
-                    const printTime = new Date().toLocaleString('id-ID');
-                    doc.text(`Dicetak dari SIMATA v5.9 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
-                    doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
-
-                    // Simpan file PDF
-                    const fileName = `Tabel_Nelayan_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_Halaman${currentPage}_${Date.now()}.pdf`;
-                    doc.save(fileName);
-                    document.getElementById('qr-right').innerHTML = "";
-                    
-                    showNotification(`Tabel PDF berhasil dibuat (${pageData.length} data dari halaman ${currentPage})`, 'success');
-                    
-                } catch (error) {
-                    console.error("Error generating table PDF:", error);
-                    showNotification('Gagal membuat PDF tabel. Silakan coba lagi atau periksa konsol browser.', 'error');
-                }
-            }, 800);
+            // Gunakan fungsi printData yang sudah ada
+            printData();
         }
 
         // --- FUNGSI BARU: REFRESH HALAMAN ---
@@ -2800,271 +2149,8 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                 return;
             }
             
-            // Ambil data sesuai dengan halaman dan jumlah baris per halaman
-            const start = (currentPage - 1) * appSettings.itemsPerPage;
-            const end = start + appSettings.itemsPerPage;
-            const pageData = filteredData.slice(start, end);
-
-            // Siapkan data untuk tabel dengan kolom baru
-            const tableRows = pageData.map((d, index) => [
-                index + 1, 
-                d.nama,
-                d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
-                maskData(d.nik),
-                d.desa,
-                d.kecamatan,
-                d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
-                d.kodeValidasi || '-'
-            ]);
-
-            // Generate kode unik untuk setiap cetakan
-            const printId = 'SIMATA-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-            // Generate QR Code untuk tanda tangan dengan warna biru muda (#4a69bd)
-            document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
-            
-            try {
-                new QRCode(document.getElementById("qr-right"), { 
-                    text: signatureText, 
-                    width: 120, 
-                    height: 120,
-                    colorDark: "#4a69bd",
-                    colorLight: "#ffffff", 
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            } catch (error) {
-                console.error("Error generating QR code:", error);
-            }
-
-            setTimeout(() => {
-                try {
-                    const { jsPDF } = window.jspdf;
-                    
-                    if (typeof jsPDF.API.autoTable !== 'function') {
-                        showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
-                        return;
-                    }
-
-                    const doc = new jsPDF('l', 'mm', 'a4');
-                    const pageWidth = doc.internal.pageSize.width;
-                    const pageHeight = doc.internal.pageSize.height;
-
-                    // Header
-                    doc.setFillColor(12, 36, 97);
-                    doc.rect(10, 10, pageWidth - 20, 28, 'F');
-                    
-                    // Judul utama
-                    doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('SISTEM INFORMASI PEMETAAN NELAYAN (SIMATA)', pageWidth/2, 20, { align: 'center' });
-                    
-                    // Subjudul
-                    doc.setFontSize(12);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
-
-                    // Slogan dengan warna oranye
-                    doc.setTextColor(246, 185, 59);
-                    doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10);
-                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
-
-                    // Garis bawah header dengan warna aksen
-                    doc.setDrawColor(246, 185, 59);
-                    doc.setLineWidth(1.5);
-                    doc.line(20, 38, pageWidth - 20, 38);
-
-                    // Judul Laporan dengan informasi filter
-                    doc.setTextColor(12, 36, 97);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
-                    doc.text('LAPORAN DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
-                    
-                    // Informasi filter yang aktif
-                    let filterInfo = "Semua Data";
-                    if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
-                        filterInfo = "Data Terfilter: ";
-                        const filterParts = [];
-                        
-                        if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
-                        if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
-                        if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
-                        if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
-                        if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
-                        if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
-                        if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
-                        
-                        filterInfo += filterParts.join(', ');
-                    }
-                    
-                    // Tambahkan informasi halaman dan jumlah baris
-                    filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
-                    
-                    doc.setFontSize(14);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    const now = new Date();
-                    const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
-
-                    // Tabel Data
-                    const tableWidth = pageWidth - 40;
-                    const tableStartX = (pageWidth - tableWidth) / 2;
-
-                    doc.autoTable({
-                        head: [[
-                            {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
-                            {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
-                            {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                            {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                            {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
-                        ]],
-                        body: tableRows,
-                        startY: 72,
-                        theme: 'grid',
-                        tableWidth: tableWidth,
-                        margin: { left: tableStartX, right: tableStartX },
-                        headStyles: { 
-                            fillColor: [12, 36, 97],
-                            textColor: [255, 255, 255], 
-                            fontStyle: 'bold', 
-                            halign: 'center',
-                            fontSize: 8,
-                            cellPadding: 3,
-                            lineWidth: 0.5,
-                            lineColor: [255, 255, 255]
-                        },
-                        bodyStyles: {
-                            textColor: [0, 0, 0],
-                            fontSize: 8,
-                            fillColor: [255, 255, 255],
-                            cellPadding: 3,
-                            lineWidth: 0.1,
-                            lineColor: [200, 200, 200]
-                        },
-                        alternateRowStyles: {
-                            fillColor: [245, 245, 245]
-                        },
-                        styles: {
-                            overflow: 'linebreak',
-                            cellPadding: 3,
-                            fontSize: 8,
-                            valign: 'middle',
-                            halign: 'left'
-                        },
-                        columnStyles: {
-                            0: {cellWidth: 15, halign: 'center'},
-                            1: {cellWidth: 45, halign: 'left'},
-                            2: {cellWidth: 30, halign: 'center'},
-                            3: {cellWidth: 35, halign: 'center'},
-                            4: {cellWidth: 35, halign: 'left'},
-                            5: {cellWidth: 35, halign: 'left'},
-                            6: {cellWidth: 35, halign: 'left'},
-                            7: {cellWidth: 30, halign: 'center'}
-                        }
-                    });
-
-                    // Setelah autoTable, kita atur footer
-                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
-
-                    // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
-                    const separatorY = finalY + 10;
-                    doc.setDrawColor(200, 200, 200);
-                    doc.setLineWidth(0.5);
-                    doc.line(20, separatorY, pageWidth - 20, separatorY);
-
-                    // Bagian kiri: Validasi elektronik
-                    const leftX = 25;
-                    const leftY = separatorY + 12;
-
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(8);
-                    doc.setTextColor(12, 36, 97);
-                    doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
-                    doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
-                    doc.text("SISTEM SATU DATA NELAYAN (SIMATA)", leftX, leftY + 8);
-
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(7);
-                    doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
-                    doc.setTextColor(230, 126, 34);
-                    doc.text("www.dinasperikanansitubondo.com/simata", leftX, leftY + 18);
-
-                    // Bagian kanan: Tanda tangan dan QR Code
-                    const rightX = pageWidth - 85;
-                    const rightY = separatorY + 10;
-
-                    // PERIODE/TANGGAL
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
-                    doc.setTextColor(0, 0, 0);
-                    const currentDate = new Date();
-                    const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
-                    doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
-                    
-                    // JABATAN
-                    doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
-
-                    // QR Code dengan warna biru muda
-                    const qrRightCanvas = document.querySelector('#qr-right canvas');
-                    if(qrRightCanvas) {
-                        try {
-                            const imgRight = qrRightCanvas.toDataURL("image/png");
-                            // QR code 25x25 mm
-                            doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
-                        } catch (error) {
-                            console.error("Error adding QR code image:", error);
-                        }
-                    }
-                    
-                    // GARIS TANDA TANGAN
-                    doc.setDrawColor(0, 0, 0);
-                    doc.setLineWidth(0.5);
-                    doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
-                    
-                    // NAMA DAN NIP PEJABAT
-                    const nameY = rightY + 45;
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(9);
-                    doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8);
-                    doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
-
-                    // FOOTER DENGAN INFORMASI SISTEM
-                    const footerY = pageHeight - 15;
-                    doc.setFontSize(8);
-                    doc.setTextColor(100);
-                    
-                    // Informasi sistem di footer
-                    doc.setFontSize(7);
-                    const printTime = new Date().toLocaleString('id-ID');
-                    doc.text(`Dicetak dari SIMATA v5.9 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
-                    doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
-
-                    // Simpan file PDF
-                    const fileName = `Laporan_Nelayan_Terfilter_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_Halaman${currentPage}_${Date.now()}.pdf`;
-                    doc.save(fileName);
-                    document.getElementById('qr-right').innerHTML = "";
-                    
-                    showNotification(`Laporan PDF terfilter berhasil dibuat (${pageData.length} data dari halaman ${currentPage})`, 'success');
-                    
-                } catch (error) {
-                    console.error("Error generating filtered PDF:", error);
-                    showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
-                }
-            }, 800);
+            // Gunakan fungsi printData yang sudah ada
+            printData();
         }
 
         // --- FUNGSI PRINT DATA YANG DIPERBAIKI DENGAN STRUKTUR YANG LEBIH BAIK ---
@@ -3416,12 +2502,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                     window.handleHashRouting();
                 }
 
-                // Update versi di footer
-                const footerVersion = document.getElementById('footerVersion');
-                if (footerVersion) {
-                    footerVersion.textContent = `Versi ${appSettings.systemVersion || '5.9'}`;
-                }
-
             } catch (error) {
                 console.error("Initialization Error:", error);
                 showNotification("Terjadi kesalahan sistem saat memuat. Silakan refresh halaman.", 'error');
@@ -3431,7 +2511,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
         function initializeApp() {
             loadData();
             loadSettings();
-            migrateOldData();
             
             if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
                 console.log("Reload Repository detected. Ready to merge/sync.");
@@ -3491,7 +2570,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
             
             updateAppIdentity();
             updatePrivacyUI();
-            startDuplicateChecker();
             setupInfoTooltips();
             setupProfesiInfo();
             
@@ -3950,16 +3028,14 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                 });
             }
             
-            // Filter & Validasi Data - DIPERBAIKI DAN DIPINDAHKAN
+            // Filter & Validasi Data - DIPERBAIKI
             const applyFilterBtn = document.getElementById('applyFilterBtn');
             const resetFilterBtn = document.getElementById('resetFilterBtn');
-            const cekGandaBtn = document.getElementById('btnCekGanda');
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
             
             if (applyFilterBtn) applyFilterBtn.addEventListener('click', applyFilter);
             if (resetFilterBtn) resetFilterBtn.addEventListener('click', resetFilter);
-            if (cekGandaBtn) cekGandaBtn.addEventListener('click', showDuplicateDataInFilter);
             if (selectAllCheckbox) selectAllCheckbox.addEventListener('change', function() {
                 const checkboxes = document.querySelectorAll('.row-checkbox');
                 checkboxes.forEach(cb => cb.checked = this.checked);
@@ -4012,7 +3088,7 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                 });
             }
 
-            // Settings Form - DIPERBAIKI: Input number untuk itemsPerPage
+            // Settings Form
             const settingsForm = document.getElementById('settingsForm');
             if (settingsForm) {
                 settingsForm.addEventListener('submit', function(e) {
@@ -4256,7 +3332,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
             renderDataTable();
             const dataTab = document.getElementById('v-pills-data-tab');
             if (dataTab) dataTab.click();
-            checkGlobalDuplicates();
         }
 
         // --- PERBAIKAN UTAMA: NIK dan No HP/WA tersensor di modal detail ---
@@ -4310,178 +3385,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
             detailModal.show();
         }
 
-        function downloadSinglePdf(id) {
-            const d = appData.find(item => item.id == id);
-            if(!d) return;
-
-            document.getElementById('qr-right').innerHTML = "";
-            const signatureText = `DOKUMEN SAH\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nRef: ${d.kodeValidasi || 'N/A'}`;
-            new QRCode(document.getElementById("qr-right"), { 
-                text: signatureText, width: 256, height: 256,
-                colorDark: "#0984e3",
-                colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
-            });
-
-            setTimeout(() => {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-                
-                doc.setDrawColor(12, 36, 97);
-                doc.setLineWidth(1);
-                doc.rect(10, 10, 190, 277);
-
-                doc.setFillColor(12, 36, 97);
-                doc.rect(10, 10, 190, 40, 'F');
-                
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(14); doc.setFont('helvetica', 'bold');
-                doc.text(appSettings.appName.toUpperCase(), 105, 22, { align: 'center' });
-                doc.setFontSize(16);
-                doc.text('DINAS PERIKANAN', 105, 29, { align: 'center' });
-                doc.setTextColor(246, 185, 59);
-                doc.setFont('times', 'italic'); doc.setFontSize(12);
-                doc.text('"Situbondo Naik Kelas"', 105, 37, { align: 'center' });
-                
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(10);
-                doc.text(appSettings.appSubtitle, 105, 45, { align: 'center' });
-                
-                doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
-                doc.text('BIODATA NELAYAN TERDAFTAR', 105, 65, { align: 'center' });
-                doc.setLineWidth(0.5); doc.line(70, 68, 140, 68);
-
-                let y = 80;
-                const lineHeight = 7;
-                
-                const checkPage = (heightNeeded) => {
-                    if (y + heightNeeded > 250) { 
-                        doc.addPage();
-                        doc.setDrawColor(12, 36, 97); doc.setLineWidth(1); doc.rect(10, 10, 190, 277);
-                        y = 30; 
-                    }
-                };
-
-                const printLine = (label, value) => {
-                    checkPage(lineHeight);
-                    doc.setFont('helvetica', 'normal'); doc.text(label, 25, y);
-                    doc.setFont('helvetica', 'bold'); 
-                    
-                    if (label === 'Domisili' || value.length > 50) {
-                        const splitText = doc.splitTextToSize(': ' + value, 110);
-                        doc.text(splitText, 80, y);
-                        y += (splitText.length * 6);
-                    } else {
-                        doc.text(': ' + value, 80, y);
-                        y += lineHeight;
-                    }
-                };
-
-                checkPage(30);
-                doc.setFontSize(11); doc.setFillColor(230, 230, 230);
-                doc.rect(20, y-4, 170, 6, 'F');
-                doc.text('I. IDENTITAS PRIBADI', 22, y); y += 12;
-                
-                doc.setFontSize(10);
-                printLine('Nama Lengkap', d.nama);
-                printLine('NIK', d.nik); // Di PDF tetap tampilkan asli
-                printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
-                printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
-                printLine('No. Handphone', d.whatsapp); // Di PDF tetap tampilkan asli
-                y += 8;
-
-                checkPage(30);
-                doc.setFontSize(11); doc.setFillColor(230, 230, 230);
-                doc.rect(20, y-4, 170, 6, 'F');
-                doc.text('II. PROFESI & EKONOMI', 22, y); y += 12;
-
-                doc.setFontSize(10);
-                printLine('Status Profesi', d.profesi);
-                printLine('Posisi Kerja', d.status);
-                printLine('Alat Penangkapan Ikan (API)', d.alatTangkap);
-                printLine('Usaha Sampingan', d.usahaSampingan || '-');
-                y += 8;
-
-                checkPage(30);
-                doc.setFontSize(11); doc.setFillColor(230, 230, 230);
-                doc.rect(20, y-4, 170, 6, 'F');
-                doc.text('III. JENIS IKAN TANGKAPAN UTAMA', 22, y); y += 12;
-
-                doc.setFontSize(10);
-                const fishList = d.jenisIkan ? d.jenisIkan.split(', ') : [];
-                fishList.forEach((fish, idx) => {
-                    printLine(`Ikan ${idx + 1}`, fish);
-                });
-                y += 8;
-
-                if(d.status === 'Pemilik Kapal') {
-                    checkPage(30);
-                    doc.setFontSize(11); doc.setFillColor(230, 230, 230);
-                    doc.rect(20, y-4, 170, 6, 'F');
-                    doc.text('IV. DATA ASET KAPAL', 22, y); y += 12;
-
-                    doc.setFontSize(10);
-                    printLine('Nama Kapal', d.namaKapal);
-                    printLine('Jenis Kapal', d.jenisKapal);
-                }
-
-                if(y > 210) doc.addPage();
-
-                const footerY = 230; 
-                const sigCenterX = 150; 
-                const leftX = 25;
-
-                doc.setDrawColor(150);
-                doc.setLineWidth(0.5);
-                doc.rect(leftX, footerY, 70, 30);
-                
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(8);
-                doc.setTextColor(100);
-                doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX + 35, footerY + 6, {align: 'center'});
-                doc.text("SECARA ELEKTRONIK OLEH", leftX + 35, footerY + 10, {align: 'center'});
-                doc.text("SISTEM SATU DATA (SIMATA)", leftX + 35, footerY + 14, {align: 'center'});
-                
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(7);
-                doc.text("Dinas Perikanan Kabupaten Situbondo", leftX + 35, footerY + 20, {align: 'center'});
-                doc.setTextColor(0, 0, 255);
-                doc.text("www.dinasperikanansitubondo.com/simata", leftX + 35, footerY + 25, {align: 'center'});
-
-                doc.setFontSize(10); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'normal');
-                const dateStr = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
-                doc.text(`Situbondo, ${dateStr}`, sigCenterX, footerY - 5, {align: 'center'});
-                doc.text('Diketahui Oleh :', sigCenterX, footerY, {align: 'center'});
-                doc.setFont('helvetica', 'bold');
-                doc.text(appSettings.officialPosition, sigCenterX, footerY + 5, {align: 'center'});
-
-                const qrRightCanvas = document.querySelector('#qr-right canvas');
-                if(qrRightCanvas) {
-                    const imgRight = qrRightCanvas.toDataURL("image/png");
-                    doc.addImage(imgRight, 'PNG', sigCenterX - 12.5, footerY + 8, 25, 25); 
-                }
-
-                const nameY = footerY + 38; 
-                doc.text(appSettings.officialName, sigCenterX, nameY, {align: 'center'});
-                doc.setFont('helvetica', 'normal');
-                doc.text(`NIP. ${appSettings.officialNip}`, sigCenterX, nameY + 5, {align: 'center'});
-
-                doc.setFontSize(7); doc.setTextColor(150);
-                doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Ref ID: ${d.kodeValidasi || '-'}`, 105, 285, {align:'center'});
-
-                const totalPages = doc.getNumberOfPages();
-                for (let i = 1; i <= totalPages; i++) {
-                    doc.setPage(i);
-                    doc.setFontSize(8);
-                    doc.setTextColor(100);
-                    doc.text(`Dokumen ini saling berhubungan - Halaman ${i} dari ${totalPages}`, 105, 292, { align: 'center' });
-                }
-
-                doc.save(`${d.nama}_${d.nik}.pdf`);
-                document.getElementById('qr-right').innerHTML = "";
-
-            }, 500);
-        }
-
         function toggleBulkDeleteBtn() {
             const checked = document.querySelectorAll('.row-checkbox:checked').length > 0;
             const btn = document.getElementById('bulkDeleteBtn');
@@ -4505,7 +3408,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                 showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
                 const selectAllCheckbox = document.getElementById('selectAllCheckbox');
                 if (selectAllCheckbox) selectAllCheckbox.checked = false;
-                checkGlobalDuplicates();
             } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
         }
 
@@ -4647,27 +3549,8 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                     renderDataTable(); 
                     updateDashboard();
                     showNotification('Data berhasil dihapus', 'success');
-                    checkGlobalDuplicates();
                 }
             } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
-        }
-
-        function startDuplicateChecker() {
-            checkGlobalDuplicates();
-            duplicateCheckInterval = setInterval(checkGlobalDuplicates, 15000);
-        }
-
-        function checkGlobalDuplicates() {
-            const counts = {};
-            let hasDuplicate = false;
-            for (const d of appData) {
-                counts[d.nik] = (counts[d.nik] || 0) + 1;
-                if (counts[d.nik] > 1) { hasDuplicate = true; break; }
-            }
-            const duplicateWarning = document.getElementById('duplicateWarning');
-            if (duplicateWarning) {
-                duplicateWarning.style.display = hasDuplicate ? 'block' : 'none';
-            }
         }
 
         function initializeCharts() {
@@ -4780,10 +3663,6 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
                     }
                     if (!loadedSettings.officialPosition) {
                         loadedSettings.officialPosition = 'Kepala Bidang Pemberdayaan Nelayan';
-                    }
-                    // TAMBAHAN: Load versi sistem
-                    if (!loadedSettings.systemVersion) {
-                        loadedSettings.systemVersion = '5.9';
                     }
                     // Pastikan itemsPerPage valid (minimal 1)
                     if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
@@ -4918,6 +3797,398 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
             toast.show();
         }
 
+        // Fungsi untuk menampilkan modal info ikan
+        function showFishInfoModal() {
+            fishInfoModal.show();
+        }
+
+        // Fungsi untuk display verify result
+        function displayVerifyResult(result) {
+            const card = document.getElementById('verifyResultCard');
+            const header = document.getElementById('verifyResultHeader');
+            const icon = document.getElementById('verifyResultIcon');
+            const title = document.getElementById('verifyResultTitle');
+            const subtitle = document.getElementById('verifyResultSubtitle');
+            const content = document.getElementById('verifyResultContent');
+            const detailBtn = document.getElementById('verifyDetailBtn');
+            const idCardBtn = document.getElementById('verifyIdCardBtn');
+            const allKinCard = document.getElementById('allKinCard');
+            
+            if (result.success) {
+                const data = result.data;
+                verifyDataResult = data;
+                
+                card.className = 'card shadow-sm border-0 mb-4 verify-success';
+                header.className = 'verify-result-header p-4 bg-success text-white';
+                icon.innerHTML = '<i class="fas fa-check-circle fa-3x"></i>';
+                title.textContent = 'VERIFIKASI BERHASIL';
+                subtitle.textContent = result.message;
+                
+                content.innerHTML = `
+                    <div class="col-md-6">
+                        <div class="verify-result-item">
+                            <div class="verify-result-label">Nama Lengkap</div>
+                            <div class="verify-result-value fw-bold">${data.nama}</div>
+                        </div>
+                        <div class="verify-result-item">
+                            <div class="verify-result-label">NIK</div>
+                            <div class="verify-result-value font-monospace">${maskData(data.nik)}</div>
+                        </div>
+                        <div class="verify-result-item">
+                            <div class="verify-result-label">Kode Validasi (KIN)</div>
+                            <div class="verify-result-value">
+                                <span class="kin-badge">${data.kodeValidasi || 'Tidak Ada'}</span>
+                            </div>
+                        </div>
+                        <div class="verify-result-item">
+                            <div class="verify-result-label">Domisili</div>
+                            <div class="verify-result-value">${data.desa}, ${data.kecamatan}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="verify-result-item">
+                            <div class="verify-result-label">Profesi</div>
+                            <div class="verify-result-value">
+                                <span class="badge ${data.profesi === 'Nelayan Penuh Waktu' ? 'badge-profesi-penuh' : data.profesi === 'Nelayan Sambilan Utama' ? 'badge-profesi-sambilan-utama' : 'badge-profesi-sambilan-tambahan'}">
+                                    ${data.profesi}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="verify-result-item">
+                            <div class="verify-result-label">Status</div>
+                            <div class="verify-result-value">
+                                <span class="badge ${data.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">
+                                    ${data.status}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="verify-result-item">
+                            <div class="verify-result-label">Alat Tangkap (API)</div>
+                            <div class="verify-result-value">${data.alatTangkap}</div>
+                        </div>
+                        <div class="verify-result-item">
+                            <div class="verify-result-label">Tanggal Validasi</div>
+                            <div class="verify-result-value">${data.tanggalValidasi} oleh ${data.validator}</div>
+                        </div>
+                    </div>
+                `;
+                
+                detailBtn.style.display = 'inline-block';
+                detailBtn.onclick = () => {
+                    viewDetail(data.id);
+                    detailModal.show();
+                };
+                
+                idCardBtn.style.display = 'inline-block';
+                idCardBtn.onclick = () => {
+                    safeGenerateIDCard(data.id);
+                };
+                
+            } else {
+                card.className = 'card shadow-sm border-0 mb-4 verify-error';
+                header.className = 'verify-result-header p-4 bg-danger text-white';
+                icon.innerHTML = '<i class="fas fa-times-circle fa-3x"></i>';
+                title.textContent = 'VERIFIKASI GAGAL';
+                subtitle.textContent = result.message;
+                
+                content.innerHTML = `
+                    <div class="col-md-12 text-center py-4">
+                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                        <h5 class="text-muted">Data Tidak Ditemukan</h5>
+                        <p class="text-muted">Kode Validasi (KIN) atau NIK yang dimasukkan tidak terdaftar dalam database.</p>
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>Saran:</strong> Periksa kembali ketikan atau gunakan fitur "Tampilkan Semua KIN" untuk melihat daftar kode validasi yang terdaftar.
+                        </div>
+                    </div>
+                `;
+                
+                detailBtn.style.display = 'none';
+                idCardBtn.style.display = 'none';
+            }
+            
+            card.style.display = 'block';
+            if (allKinCard) allKinCard.style.display = 'none';
+            
+            setTimeout(() => {
+                card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function setVerifyExample(type) {
+            const input = document.getElementById('verifyInput');
+            const breadcrumbItems = document.querySelectorAll('.verify-breadcrumb-item');
+            
+            breadcrumbItems.forEach(item => item.classList.remove('active'));
+            
+            if (type === 'kin') {
+                input.value = 'VLD-';
+                input.placeholder = 'Masukkan Kode Validasi (contoh: VLD-ABC123)';
+                input.focus();
+                breadcrumbItems[0].classList.add('active');
+            } else if (type === 'nik') {
+                input.value = '';
+                input.placeholder = 'Masukkan NIK 16 digit';
+                input.focus();
+                breadcrumbItems[1].classList.add('active');
+            } else if (type === 'all') {
+                breadcrumbItems[2].classList.add('active');
+                showAllKIN();
+            }
+        }
+
+        function showAllKIN() {
+            const allKinCard = document.getElementById('allKinCard');
+            const tbody = document.getElementById('allKinTableBody');
+            const totalKinCount = document.getElementById('totalKinCount');
+            const verifyResultCard = document.getElementById('verifyResultCard');
+            
+            if (verifyResultCard) verifyResultCard.style.display = 'none';
+            
+            const dataWithKIN = appData.filter(d => d.kodeValidasi && d.kodeValidasi.trim() !== '');
+            
+            totalKinCount.textContent = dataWithKIN.length;
+            
+            if (dataWithKIN.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Tidak ada data dengan Kode Validasi (KIN) yang terdaftar
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = '';
+                dataWithKIN.sort((a, b) => a.kodeValidasi.localeCompare(b.kodeValidasi)).forEach((d, index) => {
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>
+                                <span class="kin-badge">${d.kodeValidasi}</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold">${d.nama}</div>
+                                <small class="text-muted">${d.usia} Tahun</small>
+                            </td>
+                            <td class="font-monospace">${maskData(d.nik)}</td>
+                            <td>
+                                <div class="small">${d.desa}</div>
+                                <div class="small text-muted">${d.kecamatan}</div>
+                            </td>
+                            <td>
+                                <span class="badge ${d.status === 'Pemilik Kapal' ? 'bg-info' : 'bg-secondary'}">
+                                    ${d.status}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="verifyKINAndShow('${d.kodeValidasi}')" title="Verifikasi">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="viewDetail('${d.id}')" title="Detail">
+                                        <i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-outline-success" onclick="safeGenerateIDCard('${d.id}')" title="ID Card">
+                                        <i class="fas fa-id-card"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+            
+            allKinCard.style.display = 'block';
+            allKinCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function verifyKINAndShow(input) {
+            const result = verifyKIN(input);
+            displayVerifyResult(result);
+            document.getElementById('verifyInput').value = input;
+        }
+
+        function resetVerifyForm() {
+            document.getElementById('verifyInput').value = '';
+            document.getElementById('verifyInput').focus();
+            document.getElementById('verifyResultCard').style.display = 'none';
+            document.getElementById('allKinCard').style.display = 'none';
+            setVerifyExample('kin');
+        }
+
+        function downloadSinglePdf(id) {
+            const d = appData.find(item => item.id == id);
+            if(!d) return;
+
+            document.getElementById('qr-right').innerHTML = "";
+            const signatureText = `DOKUMEN SAH\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nRef: ${d.kodeValidasi || 'N/A'}`;
+            new QRCode(document.getElementById("qr-right"), { 
+                text: signatureText, width: 256, height: 256,
+                colorDark: "#0984e3",
+                colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
+            });
+
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+                
+                doc.setDrawColor(12, 36, 97);
+                doc.setLineWidth(1);
+                doc.rect(10, 10, 190, 277);
+
+                doc.setFillColor(12, 36, 97);
+                doc.rect(10, 10, 190, 40, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+                doc.text(appSettings.appName.toUpperCase(), 105, 22, { align: 'center' });
+                doc.setFontSize(16);
+                doc.text('DINAS PERIKANAN', 105, 29, { align: 'center' });
+                doc.setTextColor(246, 185, 59);
+                doc.setFont('times', 'italic'); doc.setFontSize(12);
+                doc.text('"Situbondo Naik Kelas"', 105, 37, { align: 'center' });
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(10);
+                doc.text(appSettings.appSubtitle, 105, 45, { align: 'center' });
+                
+                doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+                doc.text('BIODATA NELAYAN TERDAFTAR', 105, 65, { align: 'center' });
+                doc.setLineWidth(0.5); doc.line(70, 68, 140, 68);
+
+                let y = 80;
+                const lineHeight = 7;
+                
+                const checkPage = (heightNeeded) => {
+                    if (y + heightNeeded > 250) { 
+                        doc.addPage();
+                        doc.setDrawColor(12, 36, 97); doc.setLineWidth(1); doc.rect(10, 10, 190, 277);
+                        y = 30; 
+                    }
+                };
+
+                const printLine = (label, value) => {
+                    checkPage(lineHeight);
+                    doc.setFont('helvetica', 'normal'); doc.text(label, 25, y);
+                    doc.setFont('helvetica', 'bold'); 
+                    
+                    if (label === 'Domisili' || value.length > 50) {
+                        const splitText = doc.splitTextToSize(': ' + value, 110);
+                        doc.text(splitText, 80, y);
+                        y += (splitText.length * 6);
+                    } else {
+                        doc.text(': ' + value, 80, y);
+                        y += lineHeight;
+                    }
+                };
+
+                checkPage(30);
+                doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+                doc.rect(20, y-4, 170, 6, 'F');
+                doc.text('I. IDENTITAS PRIBADI', 22, y); y += 12;
+                
+                doc.setFontSize(10);
+                printLine('Nama Lengkap', d.nama);
+                printLine('NIK', d.nik);
+                printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
+                printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
+                printLine('No. Handphone', d.whatsapp);
+                y += 8;
+
+                checkPage(30);
+                doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+                doc.rect(20, y-4, 170, 6, 'F');
+                doc.text('II. PROFESI & EKONOMI', 22, y); y += 12;
+
+                doc.setFontSize(10);
+                printLine('Status Profesi', d.profesi);
+                printLine('Posisi Kerja', d.status);
+                printLine('Alat Penangkapan Ikan (API)', d.alatTangkap);
+                printLine('Usaha Sampingan', d.usahaSampingan || '-');
+                y += 8;
+
+                checkPage(30);
+                doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+                doc.rect(20, y-4, 170, 6, 'F');
+                doc.text('III. JENIS IKAN TANGKAPAN UTAMA', 22, y); y += 12;
+
+                doc.setFontSize(10);
+                const fishList = d.jenisIkan ? d.jenisIkan.split(', ') : [];
+                fishList.forEach((fish, idx) => {
+                    printLine(`Ikan ${idx + 1}`, fish);
+                });
+                y += 8;
+
+                if(d.status === 'Pemilik Kapal') {
+                    checkPage(30);
+                    doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+                    doc.rect(20, y-4, 170, 6, 'F');
+                    doc.text('IV. DATA ASET KAPAL', 22, y); y += 12;
+
+                    doc.setFontSize(10);
+                    printLine('Nama Kapal', d.namaKapal);
+                    printLine('Jenis Kapal', d.jenisKapal);
+                }
+
+                if(y > 210) doc.addPage();
+
+                const footerY = 230; 
+                const sigCenterX = 150; 
+                const leftX = 25;
+
+                doc.setDrawColor(150);
+                doc.setLineWidth(0.5);
+                doc.rect(leftX, footerY, 70, 30);
+                
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(8);
+                doc.setTextColor(100);
+                doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX + 35, footerY + 6, {align: 'center'});
+                doc.text("SECARA ELEKTRONIK OLEH", leftX + 35, footerY + 10, {align: 'center'});
+                doc.text("SISTEM SATU DATA (SIMATA)", leftX + 35, footerY + 14, {align: 'center'});
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(7);
+                doc.text("Dinas Perikanan Kabupaten Situbondo", leftX + 35, footerY + 20, {align: 'center'});
+                doc.setTextColor(0, 0, 255);
+                doc.text("www.dinasperikanansitubondo.com/simata", leftX + 35, footerY + 25, {align: 'center'});
+
+                doc.setFontSize(10); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'normal');
+                const dateStr = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+                doc.text(`Situbondo, ${dateStr}`, sigCenterX, footerY - 5, {align: 'center'});
+                doc.text('Diketahui Oleh :', sigCenterX, footerY, {align: 'center'});
+                doc.setFont('helvetica', 'bold');
+                doc.text(appSettings.officialPosition, sigCenterX, footerY + 5, {align: 'center'});
+
+                const qrRightCanvas = document.querySelector('#qr-right canvas');
+                if(qrRightCanvas) {
+                    const imgRight = qrRightCanvas.toDataURL("image/png");
+                    doc.addImage(imgRight, 'PNG', sigCenterX - 12.5, footerY + 8, 25, 25); 
+                }
+
+                const nameY = footerY + 38; 
+                doc.text(appSettings.officialName, sigCenterX, nameY, {align: 'center'});
+                doc.setFont('helvetica', 'normal');
+                doc.text(`NIP. ${appSettings.officialNip}`, sigCenterX, nameY + 5, {align: 'center'});
+
+                doc.setFontSize(7); doc.setTextColor(150);
+                doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Ref ID: ${d.kodeValidasi || '-'}`, 105, 285, {align:'center'});
+
+                const totalPages = doc.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    doc.text(`Dokumen ini saling berhubungan - Halaman ${i} dari ${totalPages}`, 105, 292, { align: 'center' });
+                }
+
+                doc.save(`${d.nama}_${d.nik}.pdf`);
+                document.getElementById('qr-right').innerHTML = "";
+
+            }, 500);
+        }
+
         // Ekspos fungsi-fungsi penting ke window agar bisa diakses dari file lain
         window.maskData = maskData;
         window.viewDetail = viewDetail;
@@ -4933,6 +4204,7 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
         window.showFishInfoModal = showFishInfoModal;
         window.mergeData = mergeData;
         window.backupData = backupData;
+        window.backupDataLarge = backupDataLarge;
         window.restoreData = restoreData;
         window.updateAlatTangkapByKapal = updateAlatTangkapByKapal;
         window.updateFishOptionsByAPI = updateFishOptionsByAPI;
@@ -4940,19 +4212,18 @@ console.log('SIMATA Backup Data v${backupObject.version} loaded successfully - $
         window.goToPage = goToPage;
         window.applyFilter = applyFilter;
         window.resetFilter = resetFilter;
-        window.showDuplicateDataInFilter = showDuplicateDataInFilter;
         window.generateFilteredPdf = generateFilteredPdf;
         window.generateTabelPdf = generateTabelPdf;
         window.getFilteredData = getFilteredData;
         window.refreshPage = refreshPage;
-        window.combineBackupFiles = combineBackupFiles;
-        window.removeDuplicatesByNik = removeDuplicatesByNik;
+        window.handleReloadRepo = handleReloadRepo;
 
         console.log('✅ SIMATA Application v5.9 FINAL initialized successfully');
-        console.log('✅ Sistem backup data cerdas untuk data besar telah diimplementasikan');
-        console.log('✅ Format backup kompatibel untuk penggabungan file');
-        console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
-        console.log('✅ Aplikasi siap digunakan untuk data besar dan backup gabungan');
+        console.log('✅ Sistem backup & restore data besar telah dioptimasi');
+        console.log('✅ Fitur cek data ganda telah dihapus');
+        console.log('✅ Sistem dapat menangani ribuan data tanpa error');
+        console.log('✅ Format backup kompatibel untuk upload ke repository');
+        console.log('✅ Aplikasi siap digunakan untuk data besar');
     </script>
 </body>
 </html>
