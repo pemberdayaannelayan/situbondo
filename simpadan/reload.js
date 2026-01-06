@@ -2,7 +2,7 @@
  * SIMATA BACKUP DATA
  * Versi: 2.0
  * Tanggal: 6/1/2026, 13.06.53
- * Total Data: 501 records
+ * Total Data: 1000 records
  * Aplikasi: Sistem Pemetaan Data Nelayan
  * Instansi: Dinas Perikanan Kabupaten Situbondo
  * 
