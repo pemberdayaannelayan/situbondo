@@ -11,6 +11,148 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     
+    <!-- TAMBAHAN: Style untuk tombol desa -->
+    <style>
+        .btn-desa {
+            min-width: 140px;
+            height: 80px;
+            margin: 8px;
+            padding: 12px 8px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border: 2px solid #4a69bd;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            box-shadow: 0 4px 6px rgba(74, 105, 189, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-desa:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(74, 105, 189, 0.2);
+            border-color: #0c2461;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .btn-desa i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: #0c2461;
+        }
+        
+        .btn-desa .desa-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #0c2461;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .btn-desa .desa-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #0c2461;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .btn-desa.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .btn-desa.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-desa.loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #wilayah-desa-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .desa-search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .desa-search-container .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 10;
+        }
+        
+        .desa-search-container .clear-search {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .desa-stats {
+            background: #e9f7fe;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0c2461;
+        }
+        
+        .desa-stats i {
+            color: #0c2461;
+            font-size: 1.2rem;
+        }
+    </style>
+    
     <!-- LOAD SEMUA JAVASCRIPT LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -1911,7 +2053,7 @@ window.SIMATA_BACKUP_DATA = {
             }
         }
         
-        // Fungsi untuk merender tombol-tombol desa
+        // PERBAIKAN UTAMA: Fungsi untuk merender tombol-tombol desa yang sudah disempurnakan
         function renderDesaButtons() {
             const container = document.getElementById('wilayah-desa-buttons');
             if (!container) return;
@@ -1925,16 +2067,42 @@ window.SIMATA_BACKUP_DATA = {
             document.getElementById('totalDesaCount').textContent = sortedDesas.length;
             
             container.innerHTML = '';
-            sortedDesas.forEach(desa => {
+            
+            // Tentukan ikon berdasarkan jenis desa
+            const getDesaIcon = (namaDesa) => {
+                const lower = namaDesa.toLowerCase();
+                if (lower.includes('pantai') || lower.includes('pesisir')) return 'fa-water';
+                if (lower.includes('gunung')) return 'fa-mountain';
+                if (lower.includes('sumber')) return 'fa-water';
+                if (lower.includes('tanjung')) return 'fa-map-pin';
+                if (lower.includes('wonorejo') || lower.includes('sumberejo')) return 'fa-home';
+                return 'fa-map-marker-alt';
+            };
+            
+            sortedDesas.forEach((desa, index) => {
                 const button = document.createElement('button');
-                button.className = 'btn btn-outline-primary btn-desa';
+                button.className = 'btn btn-desa';
                 button.innerHTML = `
-                    <i class="fas fa-map-marker-alt me-2"></i>
-                    ${desa.nama}
-                    <small class="d-block text-muted mt-1">${desa.file}</small>
+                    <i class="fas ${getDesaIcon(desa.nama)}"></i>
+                    <span class="desa-name">${desa.nama}</span>
+                    <span class="desa-badge">${index + 1}</span>
                 `;
                 button.title = `Klik untuk memuat data dari ${desa.nama}`;
-                button.addEventListener('click', () => loadDesaData(desa.file.replace('.js', ''), desa.nama));
+                button.setAttribute('data-desa', desa.nama);
+                button.setAttribute('data-file', desa.file);
+                
+                button.addEventListener('click', () => {
+                    // Tampilkan loading state
+                    button.classList.add('loading');
+                    button.innerHTML = `
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span class="desa-name">Memuat...</span>
+                    `;
+                    
+                    // Load data desa
+                    loadDesaData(desa.file.replace('.js', ''), desa.nama);
+                });
+                
                 container.appendChild(button);
             });
             
@@ -1947,9 +2115,9 @@ window.SIMATA_BACKUP_DATA = {
                     
                     let visibleCount = 0;
                     buttons.forEach(button => {
-                        const desaText = button.textContent.toLowerCase();
-                        if (desaText.includes(searchTerm)) {
-                            button.style.display = 'inline-block';
+                        const desaName = button.getAttribute('data-desa').toLowerCase();
+                        if (desaName.includes(searchTerm)) {
+                            button.style.display = 'flex';
                             visibleCount++;
                         } else {
                             button.style.display = 'none';
@@ -1965,7 +2133,27 @@ window.SIMATA_BACKUP_DATA = {
                 clearSearchBtn.addEventListener('click', function() {
                     document.getElementById('searchDesa').value = '';
                     const buttons = document.querySelectorAll('#wilayah-desa-buttons .btn-desa');
-                    buttons.forEach(button => button.style.display = 'inline-block');
+                    buttons.forEach(button => {
+                        button.style.display = 'flex';
+                        button.classList.remove('loading');
+                        
+                        // Reset tombol ke state awal
+                        const desaName = button.getAttribute('data-desa');
+                        const file = button.getAttribute('data-file');
+                        const index = Array.from(buttons).indexOf(button);
+                        const icon = desaName.toLowerCase().includes('pantai') || desaName.toLowerCase().includes('pesisir') ? 'fa-water' : 
+                                   desaName.toLowerCase().includes('gunung') ? 'fa-mountain' :
+                                   desaName.toLowerCase().includes('sumber') ? 'fa-water' :
+                                   desaName.toLowerCase().includes('tanjung') ? 'fa-map-pin' :
+                                   desaName.toLowerCase().includes('wonorejo') || desaName.toLowerCase().includes('sumberejo') ? 'fa-home' : 'fa-map-marker-alt';
+                        
+                        button.innerHTML = `
+                            <i class="fas ${icon}"></i>
+                            <span class="desa-name">${desaName}</span>
+                            <span class="desa-badge">${index + 1}</span>
+                        `;
+                    });
+                    
                     document.getElementById('totalDesaCount').textContent = buttons.length;
                 });
             }
@@ -2988,7 +3176,7 @@ window.SIMATA_BACKUP_DATA = {
             // TAMBAHAN: Inisialisasi form pengaturan pejabat
             loadOfficialData();
             
-            // TAMBAHAN: Inisialisasi fitur Data Wilayah
+            // TAMBAHAN: Inisialisasi fitur Data Wilayah dengan tampilan baru
             renderDesaButtons();
         }
 
@@ -4648,7 +4836,7 @@ window.SIMATA_BACKUP_DATA = {
         console.log('✅ Fitur cek data ganda telah dihapus');
         console.log('✅ Sistem dapat menangani ribuan data tanpa error');
         console.log('✅ Format backup kompatibel untuk upload ke repository');
-        console.log('✅ Fitur Data Wilayah telah ditambahkan dengan 34 desa');
+        console.log('✅ Fitur Data Wilayah telah disempurnakan dengan tampilan tombol yang modern');
         console.log('✅ Aplikasi siap digunakan untuk data besar');
     </script>
 </body>
