@@ -173,7 +173,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.7</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.8</span>
                 </div>
             </div>
             
@@ -1724,7 +1724,23 @@
             return result;
         }
         
-        // Fungsi utama backup data yang diperbaiki
+        // Fungsi untuk decode base64 dengan chunking untuk data besar
+        function decodeLargeBase64(str) {
+            if (str.length < 1000000) { // Kurang dari 1MB
+                return atob(str);
+            }
+            
+            // Untuk data sangat besar, decode per bagian
+            let result = '';
+            const chunkSize = 50000;
+            for (let i = 0; i < str.length; i += chunkSize) {
+                const chunk = str.slice(i, i + chunkSize);
+                result += atob(chunk);
+            }
+            return result;
+        }
+        
+        // Fungsi utama backup data yang diperbaiki - VERSI BARU UNTUK DATA BESAR
         function backupData(filename = 'reload.js') {
             if (isBackupInProgress) {
                 showNotification('Proses backup sedang berjalan, harap tunggu...', 'warning');
@@ -1746,37 +1762,69 @@
             // Gunakan setTimeout untuk tidak memblokir UI
             setTimeout(() => {
                 try {
-                    let jsonString;
+                    // Buat objek backup baru dengan struktur yang lebih baik
+                    const backupObject = {
+                        version: '2.0',
+                        timestamp: new Date().toISOString(),
+                        totalRecords: appData.length,
+                        encoded: false,
+                        data: appData
+                    };
                     
-                    // Coba stringify biasa dulu
+                    let jsonString;
                     try {
-                        jsonString = JSON.stringify(appData);
+                        jsonString = JSON.stringify(backupObject);
                     } catch (error) {
-                        console.error('Error stringifying data, using chunking:', error);
-                        // Jika error, gunakan chunking
-                        jsonString = stringifyLargeData(appData, 1000);
+                        console.error('Error stringifying backup object:', error);
+                        // Jika error, gunakan chunking untuk data
+                        backupObject.encoded = true;
+                        backupObject.data = encodeLargeBase64(stringifyLargeData(appData, 1000));
+                        jsonString = JSON.stringify(backupObject);
                     }
                     
-                    // Encode ke base64 dengan chunking jika diperlukan
-                    const encodedData = encodeLargeBase64(jsonString);
+                    // Tentukan apakah perlu encoding berdasarkan ukuran
+                    const shouldEncode = jsonString.length > 5 * 1024 * 1024; // 5MB
                     
+                    let fileContent;
+                    if (shouldEncode) {
+                        // Encode hanya data asli ke base64
+                        backupObject.encoded = true;
+                        backupObject.data = encodeLargeBase64(JSON.stringify(appData));
+                        // Stringify objek backup yang sudah di-update
+                        fileContent = JSON.stringify(backupObject);
+                    } else {
+                        fileContent = JSON.stringify(backupObject);
+                    }
+                    
+                    // Buat konten file dengan format yang aman dan mudah dibaca
                     const now = new Date();
                     const dateStr = now.toLocaleDateString('id-ID');
                     const timeStr = now.toLocaleTimeString('id-ID');
                     
-                    // Buat konten file dengan data yang sudah diencode
-                    const backupContent = `/* PETUNJUK PENGGUNAAN RELOAD REPO:
-    1. Ini adalah file backup otomatis dari Aplikasi.
-    2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
-    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
-    
-    APP NAME : SISTEM PEMETAAN DATA NELAYAN
-    INSTANSI : DINAS PERIKANAN KABUPATEN SITUBONDO
-    TANGGAL  : ${dateStr}, ${timeStr}
-    TOTAL DATA : ${appData.length} RECORDS
-*/
+                    const backupContent = `/* 
+ * SIMATA BACKUP DATA
+ * Versi: 2.0
+ * Tanggal: ${dateStr}, ${timeStr}
+ * Total Data: ${appData.length} records
+ * Aplikasi: Sistem Pemetaan Data Nelayan
+ * Instansi: Dinas Perikanan Kabupaten Situbondo
+ * 
+ * PETUNJUK:
+ * 1. File ini adalah backup resmi dari aplikasi SIMATA
+ * 2. Data disimpan dalam format JSON yang terstruktur
+ * 3. Upload file ini ke server untuk sinkronisasi data
+ * 4. File ini aman untuk disimpan di repository GitHub
+ */
 
-window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
+// Format baru: SIMATA_BACKUP_DATA (rekomendasi)
+window.SIMATA_BACKUP_DATA = ${fileContent};
+
+// Format lama: SIMATA_BACKUP_ENCRYPTED (untuk kompatibilitas)
+// Data dalam format base64 untuk kompatibilitas dengan versi lama
+window.SIMATA_BACKUP_ENCRYPTED = '${encodeLargeBase64(JSON.stringify(appData))}';
+
+// Tanda bahwa file telah berhasil dimuat
+console.log('SIMATA Backup Data v2.0 loaded successfully - ${appData.length} records');`;
                     
                     // Gunakan Blob dengan tipe yang tepat
                     const blob = new Blob([backupContent], { type: 'application/javascript' });
@@ -1816,6 +1864,48 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
             }, 100);
         }
 
+        // Fungsi untuk mengekstrak data dari backup (mendukung format baru dan lama)
+        function extractDataFromBackup(content) {
+            try {
+                // Eksekusi konten untuk menginisialisasi variabel global
+                const script = document.createElement('script');
+                script.textContent = content;
+                document.head.appendChild(script);
+                document.head.removeChild(script);
+                
+                // Cek format baru terlebih dahulu
+                if (window.SIMATA_BACKUP_DATA) {
+                    const backup = window.SIMATA_BACKUP_DATA;
+                    let restoredData;
+                    
+                    if (backup.encoded) {
+                        // Decode data yang di-encode
+                        const jsonString = decodeLargeBase64(backup.data);
+                        restoredData = JSON.parse(jsonString);
+                    } else {
+                        // Data langsung tersedia
+                        restoredData = backup.data;
+                    }
+                    
+                    console.log(`Data berhasil diekstrak dari format baru: ${restoredData.length} records`);
+                    return restoredData;
+                }
+                // Cek format lama untuk kompatibilitas
+                else if (window.SIMATA_BACKUP_ENCRYPTED) {
+                    const jsonString = decodeLargeBase64(window.SIMATA_BACKUP_ENCRYPTED);
+                    const restoredData = JSON.parse(jsonString);
+                    
+                    console.log(`Data berhasil diekstrak dari format lama: ${restoredData.length} records`);
+                    return restoredData;
+                } else {
+                    throw new Error('Format backup tidak dikenali');
+                }
+            } catch (error) {
+                console.error('Error extracting data from backup:', error);
+                return null;
+            }
+        }
+
         // --- FUNGSI MERGE DATA UNTUK MENGHINDARI DUPLIKASI ---
         function mergeData(existingData, newData) {
             // Buat map untuk data yang sudah ada dengan NIK sebagai key
@@ -1842,9 +1932,9 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
             
             const file = fileInput.files[0];
             
-            // Validasi ukuran file (maksimal 50MB)
-            if (file.size > 50 * 1024 * 1024) {
-                showNotification('File terlalu besar (maksimal 50MB)', 'error');
+            // Validasi ukuran file (maksimal 100MB)
+            if (file.size > 100 * 1024 * 1024) {
+                showNotification('File terlalu besar (maksimal 100MB)', 'error');
                 return;
             }
             
@@ -1856,66 +1946,15 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
                     
                     const content = e.target.result;
                     
-                    // Coba ekstrak data dari file JS
-                    let encryptedData = '';
-                    if (content.includes('SIMATA_BACKUP_ENCRYPTED')) {
-                        const match = content.match(/window\.SIMATA_BACKUP_ENCRYPTED\s*=\s*'([^']+)'/);
-                        if (match) encryptedData = match[1];
-                    } else if (content.startsWith('window.SIMATA_BACKUP_ENCRYPTED')) {
-                        const match = content.match(/='([^']+)'/);
-                        if (match) encryptedData = match[1];
-                    } else {
-                        // Coba parse sebagai JSON langsung
-                        try {
-                            const restoredData = JSON.parse(content);
-                            // Merge data lama dengan data baru
-                            const existingData = appData;
-                            const mergedData = mergeData(existingData, restoredData);
-                            
-                            const newCount = restoredData.length;
-                            const existingCount = existingData.length;
-                            const mergedCount = mergedData.length;
-                            const replacedCount = existingCount + newCount - mergedCount;
-                            const addedCount = mergedCount - existingCount;
-                            
-                            appData = mergedData;
-                            saveData();
-                            renderDataTable();
-                            updateDashboard();
-                            
-                            let message = '';
-                            if (replacedCount > 0 && addedCount > 0) {
-                                message = `Restore berhasil: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
-                            } else if (replacedCount > 0) {
-                                message = `Restore berhasil: ${replacedCount} data diperbarui`;
-                            } else if (addedCount > 0) {
-                                message = `Restore berhasil: ${addedCount} data baru ditambahkan`;
-                            } else {
-                                message = 'Tidak ada data baru untuk di-restore';
-                            }
-                            
-                            showNotification(message, 'success');
-                            fileInput.value = '';
-                            document.getElementById('restoreDataBtn').disabled = true;
-                            return;
-                        } catch (jsonError) {
-                            throw new Error('Format file tidak dikenali');
-                        }
+                    // Ekstrak data dari backup
+                    const restoredData = extractDataFromBackup(content);
+                    
+                    if (!restoredData || !Array.isArray(restoredData)) {
+                        throw new Error('Data tidak valid atau format file tidak dikenali');
                     }
                     
-                    if (!encryptedData) throw new Error('Data terenkripsi tidak ditemukan');
-                    
-                    showNotification('Mendekripsi data...', 'info');
-                    
-                    let restoredData;
-                    try {
-                        // Decode base64
-                        const jsonString = atob(encryptedData);
-                        // Parse JSON
-                        restoredData = JSON.parse(jsonString);
-                    } catch (error) {
-                        console.error('Error parsing restored data:', error);
-                        showNotification('Gagal memparse data. Format file tidak sesuai.', 'error');
+                    if (restoredData.length === 0) {
+                        showNotification('Tidak ada data baru untuk di-restore', 'warning');
                         return;
                     }
                     
@@ -1929,11 +1968,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
                     const replacedCount = existingCount + newCount - mergedCount;
                     const addedCount = mergedCount - existingCount;
                     
-                    if (newCount === 0) {
-                        showNotification('Tidak ada data baru untuk di-restore', 'warning');
-                        return;
-                    }
-                    
+                    // Update data aplikasi
                     appData = mergedData;
                     saveData();
                     renderDataTable();
@@ -1982,54 +2017,72 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
             // Coba load ulang file reload.js
             const script = document.createElement('script');
             script.src = 'reload.js?t=' + new Date().getTime(); // Tambahkan timestamp untuk cache busting
+            
             script.onload = function() {
                 console.log('File reload.js berhasil dimuat ulang');
                 
                 // Beri waktu untuk pemrosesan
                 setTimeout(() => {
-                    if (typeof window.SIMATA_BACKUP_ENCRYPTED !== 'undefined' && window.SIMATA_BACKUP_ENCRYPTED) {
-                        try {
-                            // Decode data dari base64
-                            const jsonString = atob(window.SIMATA_BACKUP_ENCRYPTED);
-                            const restoredData = JSON.parse(jsonString);
+                    try {
+                        let restoredData = null;
+                        
+                        // Cek format baru terlebih dahulu
+                        if (window.SIMATA_BACKUP_DATA) {
+                            const backup = window.SIMATA_BACKUP_DATA;
                             
-                            // Merge data lama dengan data baru (data baru menimpa data lama dengan NIK yang sama)
-                            const existingData = appData;
-                            const mergedData = mergeData(existingData, restoredData);
-                            
-                            // Hitung perubahan
-                            const newCount = restoredData.length;
-                            const existingCount = existingData.length;
-                            const mergedCount = mergedData.length;
-                            const replacedCount = existingCount + newCount - mergedCount;
-                            const addedCount = mergedCount - existingCount;
-                            
-                            // Update data aplikasi
-                            appData = mergedData;
-                            saveData();
-                            renderDataTable();
-                            updateDashboard();
-                            
-                            // Tampilkan notifikasi yang informatif
-                            let message = '';
-                            if (replacedCount > 0 && addedCount > 0) {
-                                message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
-                            } else if (replacedCount > 0) {
-                                message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui`;
-                            } else if (addedCount > 0) {
-                                message = `Data berhasil disinkronisasi: ${addedCount} data baru ditambahkan`;
+                            if (backup.encoded) {
+                                // Decode data yang di-encode
+                                const jsonString = decodeLargeBase64(backup.data);
+                                restoredData = JSON.parse(jsonString);
                             } else {
-                                message = 'Data sudah up-to-date. Tidak ada perubahan.';
+                                // Data langsung tersedia
+                                restoredData = backup.data;
                             }
-                            
-                            showNotification(message, 'success');
-                            
-                        } catch (error) {
-                            console.error('Reload error:', error);
-                            showNotification('Gagal memuat data dari repository. Format data tidak valid.', 'error');
                         }
-                    } else {
-                        showNotification('Tidak ada data repository yang tersedia untuk dimuat', 'warning');
+                        // Cek format lama untuk kompatibilitas
+                        else if (window.SIMATA_BACKUP_ENCRYPTED) {
+                            const jsonString = decodeLargeBase64(window.SIMATA_BACKUP_ENCRYPTED);
+                            restoredData = JSON.parse(jsonString);
+                        }
+                        
+                        if (!restoredData || !Array.isArray(restoredData)) {
+                            throw new Error('Data tidak valid atau format file tidak dikenali');
+                        }
+                        
+                        // Merge data lama dengan data baru (data baru menimpa data lama dengan NIK yang sama)
+                        const existingData = appData;
+                        const mergedData = mergeData(existingData, restoredData);
+                        
+                        // Hitung perubahan
+                        const newCount = restoredData.length;
+                        const existingCount = existingData.length;
+                        const mergedCount = mergedData.length;
+                        const replacedCount = existingCount + newCount - mergedCount;
+                        const addedCount = mergedCount - existingCount;
+                        
+                        // Update data aplikasi
+                        appData = mergedData;
+                        saveData();
+                        renderDataTable();
+                        updateDashboard();
+                        
+                        // Tampilkan notifikasi yang informatif
+                        let message = '';
+                        if (replacedCount > 0 && addedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
+                        } else if (replacedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui`;
+                        } else if (addedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${addedCount} data baru ditambahkan`;
+                        } else {
+                            message = 'Data sudah up-to-date. Tidak ada perubahan.';
+                        }
+                        
+                        showNotification(message, 'success');
+                        
+                    } catch (error) {
+                        console.error('Reload error:', error);
+                        showNotification('Gagal memuat data dari repository. Format data tidak valid.', 'error');
                     }
                     
                     // Reset tombol
@@ -2683,7 +2736,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
                     // Informasi sistem di footer
                     doc.setFontSize(7);
                     const printTime = new Date().toLocaleString('id-ID');
-                    doc.text(`Dicetak dari SIMATA v5.7 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.text(`Dicetak dari SIMATA v5.8 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                     doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                     // Simpan file PDF
@@ -2970,7 +3023,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
                     // Informasi sistem di footer
                     doc.setFontSize(7);
                     const printTime = new Date().toLocaleString('id-ID');
-                    doc.text(`Dicetak dari SIMATA v5.7 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.text(`Dicetak dari SIMATA v5.8 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                     doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                     // Simpan file PDF
@@ -3291,7 +3344,7 @@ window.SIMATA_BACKUP_ENCRYPTED = '${encodedData}';`;
                     // Informasi sistem di footer
                     doc.setFontSize(7);
                     const printTime = new Date().toLocaleString('id-ID');
-                    doc.text(`Dicetak dari SIMATA v5.7 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.text(`Dicetak dari SIMATA v5.8 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                     doc.text(`Total Data Terfilter: ${filteredData.length} records`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                     // Simpan file PDF
