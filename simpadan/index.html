@@ -24,7 +24,166 @@
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
     <script src="convert.js"></script>
     
-    
+    <style>
+        /* STYLE TAMBAHAN UNTUK DATA WILAYAH YANG DISEMPURNAKAN */
+        .wilayah-card {
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .wilayah-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #0c2461;
+        }
+        
+        .wilayah-card.active {
+            border-color: #0c2461;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e3e9ff 100%);
+            box-shadow: 0 5px 15px rgba(12, 36, 97, 0.15);
+        }
+        
+        .wilayah-card-header {
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        
+        .wilayah-card-body {
+            padding: 1.5rem;
+        }
+        
+        .wilayah-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .wilayah-btn {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .wilayah-btn-load {
+            background: #4a69bd;
+            color: white;
+            border: 1px solid #4a69bd;
+        }
+        
+        .wilayah-btn-load:hover {
+            background: #3867d6;
+            transform: translateY(-2px);
+        }
+        
+        .wilayah-btn-input {
+            background: #20bf6b;
+            color: white;
+            border: 1px solid #20bf6b;
+        }
+        
+        .wilayah-btn-input:hover {
+            background: #1ca55d;
+            transform: translateY(-2px);
+        }
+        
+        .wilayah-info-badge {
+            background: #f6b93b;
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .wilayah-modal-header {
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            padding: 1.5rem;
+        }
+        
+        .wilayah-search-box {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            padding: 1rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .wilayah-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .wilayah-status-global {
+            background: rgba(246, 185, 59, 0.2);
+            color: #e67e22;
+            border: 1px solid #f6b93b;
+        }
+        
+        .wilayah-status-desa {
+            background: rgba(74, 105, 189, 0.2);
+            color: #0c2461;
+            border: 1px solid #4a69bd;
+        }
+        
+        .wilayah-empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6c757d;
+        }
+        
+        .wilayah-empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+        
+        .wilayah-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .wilayah-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
+        .wilayah-global-card {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffefc6 100%);
+            border: 2px dashed #f6b93b;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .wilayah-global-card .icon {
+            font-size: 3rem;
+            color: #f6b93b;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -148,31 +307,82 @@
         </div>
     </div>
 
-    <!-- Modal Data Wilayah -->
+    <!-- Modal Data Wilayah - DIREVISI DAN DISEMPURNAKAN -->
     <div class="modal fade" id="modalDataWilayah" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold"><i class="fas fa-map-marked-alt me-2"></i> Data Wilayah</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Pilih desa untuk memuat data nelayan dari wilayah tersebut. Data yang ada akan diganti dengan data dari desa yang dipilih.
-                    </div>
-                    
-                    <div class="row" id="wilayahButtonsContainer">
-                        <!-- Tombol-tombol desa akan dimuat di sini -->
-                    </div>
-                    
-                    <div class="mt-4 border-top pt-3">
-                        <div class="d-flex justify-content-between">
-                            <button class="btn btn-warning" id="btnInputGlobalModal">
-                                <i class="fas fa-globe me-2"></i> Input Global (reload.js)
-                            </button>
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <div class="wilayah-modal-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="modal-title fw-bold mb-1"><i class="fas fa-map-marked-alt me-2"></i> Data Wilayah</h5>
+                            <p class="mb-0 opacity-75">Kelola data berdasarkan wilayah administratif</p>
                         </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="wilayah-search-box px-4">
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Pilih desa untuk memuat data nelayan dari wilayah tersebut. Anda juga dapat langsung input data untuk desa yang dipilih.
+                        </div>
+                        
+                        <div class="row align-items-center mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="searchWilayah" placeholder="Cari nama desa...">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-end align-items-center gap-3">
+                                    <div class="wilayah-status-indicator" id="wilayahStatusIndicator">
+                                        <i class="fas fa-globe"></i>
+                                        <span>Mode Global</span>
+                                    </div>
+                                    <button class="btn btn-warning" id="btnInputGlobalModal">
+                                        <i class="fas fa-globe me-2"></i> Switch ke Global
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="px-4 pb-4">
+                        <!-- KARTU GLOBAL -->
+                        <div class="wilayah-global-card mb-4">
+                            <div class="icon">
+                                <i class="fas fa-globe-americas"></i>
+                            </div>
+                            <h5 class="fw-bold">Mode Global</h5>
+                            <p class="text-muted mb-3">Akses dan kelola semua data nelayan tanpa batasan wilayah</p>
+                            <button class="btn btn-warning px-4" id="btnGlobalMode">
+                                <i class="fas fa-database me-2"></i> Aktifkan Mode Global
+                            </button>
+                        </div>
+                        
+                        <h6 class="fw-bold mb-3">Daftar Desa / Kelurahan</h6>
+                        
+                        <!-- KONTAINER KARTU DESA -->
+                        <div class="wilayah-grid" id="wilayahCardsContainer">
+                            <!-- Kartu desa akan dimuat di sini -->
+                        </div>
+                        
+                        <!-- STATE KOSONG -->
+                        <div class="wilayah-empty-state d-none" id="wilayahEmptyState">
+                            <i class="fas fa-search"></i>
+                            <h5 class="text-muted">Desa tidak ditemukan</h5>
+                            <p class="text-muted">Coba gunakan kata kunci pencarian yang berbeda</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top py-3">
+                    <div class="d-flex justify-content-between w-100">
+                        <div class="text-muted small">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Total <span id="totalDesaCount">0</span> desa tersedia
+                        </div>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </div>
             </div>
@@ -204,7 +414,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.7</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.8</span>
                 </div>
             </div>
             
@@ -1086,6 +1296,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="document.getElementById('v-pills-input-tab').click(); window.scrollTo(0, 0);">
+                            <i class="fas fa-plus me-2"></i>Input Data Nelayan
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1124,11 +1337,11 @@
         </div>
     </div>
 
-    <!-- KODE UTAMA APLIKASI DENGAN FITUR DATA WILAYAH -->
+    <!-- KODE UTAMA APLIKASI DENGAN FITUR DATA WILAYAH YANG DISEMPURNAKAN -->
     <script>
         // =====================================================
-        // KODE UTAMA APLIKASI SIMATA - VERSI 5.7 FINAL
-        // DENGAN FITUR DATA WILAYAH DAN IMPROVED BACKUP SYSTEM
+        // KODE UTAMA APLIKASI SIMATA - VERSI 5.8 FINAL
+        // DENGAN FITUR DATA WILAYAH YANG DISEMPURNAKAN
         // =====================================================
         
         // Data ikan yang diperbarui dan dilengkapi
@@ -1397,9 +1610,9 @@
             return 'fa-fish';
         }
 
-        // --- FUNGSI DATA WILAYAH ---
+        // --- FUNGSI DATA WILAYAH YANG DISEMPURNAKAN ---
         function initDataWilayah() {
-            const container = document.getElementById('wilayahButtonsContainer');
+            const container = document.getElementById('wilayahCardsContainer');
             if (!container) return;
             
             container.innerHTML = '';
@@ -1407,19 +1620,112 @@
             // Urutkan desa berdasarkan nama
             const sortedDesa = [...DESA_LIST].sort((a, b) => a.name.localeCompare(b.name));
             
-            // Tambahkan tombol untuk setiap desa
+            // Tambahkan kartu untuk setiap desa
             sortedDesa.forEach(desa => {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'btn btn-outline-primary btn-sm m-1';
-                button.innerHTML = `<i class="fas fa-map-marker-alt me-1"></i> ${desa.name}`;
-                button.title = `Muat data dari ${desa.name} (${desa.file})`;
-                button.onclick = () => loadDataByDesa(desa.name, desa.file);
+                const card = document.createElement('div');
+                card.className = 'wilayah-card';
                 
-                container.appendChild(button);
+                // Cek jika ini desa yang sedang aktif
+                if (currentWilayah.mode === 'desa' && currentWilayah.desaName === desa.name) {
+                    card.classList.add('active');
+                }
+                
+                card.innerHTML = `
+                    <div class="wilayah-card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <strong>${desa.name}</strong>
+                            </div>
+                            ${currentWilayah.mode === 'desa' && currentWilayah.desaName === desa.name ? 
+                                '<span class="badge bg-success">Aktif</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="wilayah-card-body">
+                        <div class="text-muted small mb-2">
+                            <i class="fas fa-file-code me-1"></i> ${desa.file}
+                        </div>
+                        <div class="wilayah-info-badge">
+                            <i class="fas fa-database me-1"></i> Data Tersedia
+                        </div>
+                        
+                        <div class="wilayah-actions">
+                            <button class="btn wilayah-btn wilayah-btn-load" onclick="loadDataByDesa('${desa.name}', '${desa.file}')">
+                                <i class="fas fa-database"></i>
+                                <span>Muat Data</span>
+                            </button>
+                            <button class="btn wilayah-btn wilayah-btn-input" onclick="setupInputForDesa('${desa.name}')">
+                                <i class="fas fa-plus"></i>
+                                <span>Input Data</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
             });
             
+            // Update total desa count
+            document.getElementById('totalDesaCount').textContent = sortedDesa.length;
+            
+            // Update status indicator
+            updateWilayahStatusIndicator();
+        }
+
+        // Fungsi untuk mendapatkan kecamatan dari nama desa
+        function getKecamatanByDesa(desaName) {
+            for (const kec in SITUBONDO_DATA) {
+                if (SITUBONDO_DATA[kec].includes(desaName)) {
+                    return kec;
+                }
+            }
+            return null;
+        }
+
+        // Fungsi untuk setup input data berdasarkan desa
+        function setupInputForDesa(desaName) {
+            // Tutup modal Data Wilayah
+            modalDataWilayah.hide();
+            
+            // Cari kecamatan dari desa ini
+            const kecamatan = getKecamatanByDesa(desaName);
+            
+            // Set mode wilayah ke desa
+            currentWilayah.mode = 'desa';
+            currentWilayah.desaName = desaName;
+            currentWilayah.fileName = DESA_LIST.find(d => d.name === desaName)?.file || `${desaName.toLowerCase()}.js`;
+            
+            // Update UI wilayah
             updateWilayahUI();
+            updateWilayahStatusIndicator();
+            
+            // Buka tab Input Data
+            document.getElementById('v-pills-input-tab').click();
+            
+            // Atur dropdown kecamatan dan desa
+            if (kecamatan) {
+                const kecSelect = document.getElementById('kecamatan');
+                if (kecSelect) {
+                    kecSelect.value = kecamatan;
+                    // Trigger change event untuk memuat desa
+                    kecSelect.dispatchEvent(new Event('change'));
+                    
+                    // Setelah dropdown desa terisi, atur desa
+                    setTimeout(() => {
+                        const desaSelect = document.getElementById('desa');
+                        if (desaSelect) {
+                            desaSelect.value = desaName;
+                        }
+                        
+                        // Focus ke field nama
+                        document.getElementById('nama').focus();
+                        
+                        showNotification(`Mode input data untuk Desa ${desaName} telah diaktifkan. Data yang diinput akan otomatis tersimpan untuk desa ini.`, 'success');
+                    }, 500);
+                }
+            } else {
+                showNotification(`Desa ${desaName} tidak ditemukan dalam data kecamatan.`, 'warning');
+            }
         }
 
         function loadDataByDesa(desaName, fileName) {
@@ -1430,6 +1736,10 @@
                 currentWilayah.mode = 'desa';
                 currentWilayah.desaName = desaName;
                 currentWilayah.fileName = fileName;
+                
+                // Update UI
+                updateWilayahUI();
+                updateWilayahStatusIndicator();
                 
                 // Load data dari file JavaScript
                 const script = document.createElement('script');
@@ -1447,7 +1757,6 @@
                                 saveData();
                                 renderDataTable();
                                 updateDashboard();
-                                updateWilayahUI();
                                 
                                 showNotification(`Data dari Desa ${desaName} berhasil dimuat (${appData.length} data)`, 'success');
                                 modalDataWilayah.hide();
@@ -1483,6 +1792,7 @@
                 // Reload data dari reload.js
                 handleReloadRepo();
                 updateWilayahUI();
+                updateWilayahStatusIndicator();
                 showNotification('Mode Input Global diaktifkan. Data dari reload.js akan dimuat.', 'info');
             }
         }
@@ -1495,8 +1805,10 @@
             const submitFormBtn = document.getElementById('submitFormBtn');
             
             if (currentWilayah.mode === 'desa') {
-                if (badge) badge.innerHTML = `Wilayah: Desa ${currentWilayah.desaName} (${currentWilayah.fileName})`;
-                if (badge) badge.className = 'badge bg-info';
+                if (badge) {
+                    badge.innerHTML = `Wilayah: Desa ${currentWilayah.desaName}`;
+                    badge.className = 'badge bg-info';
+                }
                 if (info) info.textContent = `Mode Desa: Data dari ${currentWilayah.fileName}. Input data hanya untuk desa ${currentWilayah.desaName}.`;
                 if (inputModeBadge) {
                     inputModeBadge.textContent = `Mode: Desa ${currentWilayah.desaName}`;
@@ -1505,8 +1817,10 @@
                 if (desaWarning) desaWarning.classList.remove('d-none');
                 if (submitFormBtn) submitFormBtn.disabled = false;
             } else {
-                if (badge) badge.innerHTML = 'Wilayah: Global (reload.js)';
-                if (badge) badge.className = 'badge bg-primary';
+                if (badge) {
+                    badge.innerHTML = 'Wilayah: Global (reload.js)';
+                    badge.className = 'badge bg-primary';
+                }
                 if (info) info.textContent = 'Mode Global: Data dari reload.js. Input data bebas tanpa batasan desa.';
                 if (inputModeBadge) {
                     inputModeBadge.textContent = 'Mode: Global';
@@ -1514,6 +1828,20 @@
                 }
                 if (desaWarning) desaWarning.classList.add('d-none');
                 if (submitFormBtn) submitFormBtn.disabled = false;
+            }
+        }
+
+        // Fungsi untuk update status indicator di modal
+        function updateWilayahStatusIndicator() {
+            const indicator = document.getElementById('wilayahStatusIndicator');
+            if (!indicator) return;
+            
+            if (currentWilayah.mode === 'desa') {
+                indicator.className = 'wilayah-status-indicator wilayah-status-desa';
+                indicator.innerHTML = `<i class="fas fa-map-marker-alt"></i><span>Mode Desa: ${currentWilayah.desaName || '-'}</span>`;
+            } else {
+                indicator.className = 'wilayah-status-indicator wilayah-status-global';
+                indicator.innerHTML = `<i class="fas fa-globe"></i><span>Mode Global</span>`;
             }
         }
 
@@ -2399,7 +2727,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     // Informasi sistem di footer
                     doc.setFontSize(7);
                     const printTime = new Date().toLocaleString('id-ID');
-                    doc.text(`Dicetak dari SIMATA v5.7 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.text(`Dicetak dari SIMATA v5.8 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                     doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                     // Simpan file PDF
@@ -2471,27 +2799,11 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                 }
             }
             
-            // Tambahkan ellipsis di awal jika diperlukan
-            if (startPage > 1) {
-                const ellipsis1 = document.createElement('li');
-                ellipsis1.className = 'page-item disabled';
-                ellipsis1.innerHTML = `<span class="page-link">...</span>`;
-                ul.appendChild(ellipsis1);
-            }
-            
             for (let i = startPage; i <= endPage; i++) {
                 const li = document.createElement('li');
                 li.className = `page-item ${i === currentPage ? 'active' : ''}`;
                 li.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>`;
                 ul.appendChild(li);
-            }
-            
-            // Tambahkan ellipsis di akhir jika diperlukan
-            if (endPage < totalPages) {
-                const ellipsis2 = document.createElement('li');
-                ellipsis2.className = 'page-item disabled';
-                ellipsis2.innerHTML = `<span class="page-link">...</span>`;
-                ul.appendChild(ellipsis2);
             }
             
             // Tombol berikutnya
@@ -3050,7 +3362,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     // Informasi sistem di footer
                     doc.setFontSize(7);
                     const printTime = new Date().toLocaleString('id-ID');
-                    doc.text(`Dicetak dari SIMATA v5.7 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.text(`Dicetak dari SIMATA v5.8 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                     doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                     // Simpan file PDF
@@ -3371,7 +3683,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     // Informasi sistem di footer
                     doc.setFontSize(7);
                     const printTime = new Date().toLocaleString('id-ID');
-                    doc.text(`Dicetak dari SIMATA v5.7 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.text(`Dicetak dari SIMATA v5.8 - ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
                     doc.text(`Total Data Terfilter: ${filteredData.length} records`, pageWidth / 2, footerY + 5, { align: 'center' });
 
                     // Simpan file PDF
@@ -3427,7 +3739,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
             loadSettings();
             migrateOldData();
             
-            // Inisialisasi Data Wilayah
+            // Inisialisasi Data Wilayah yang disempurnakan
             initDataWilayah();
             
             if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
@@ -3489,6 +3801,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
             updateAppIdentity();
             updatePrivacyUI();
             updateWilayahUI();
+            updateWilayahStatusIndicator();
             startDuplicateChecker();
             setupInfoTooltips();
             setupProfesiInfo();
@@ -3900,6 +4213,46 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                 btnInputGlobalModal.addEventListener('click', function() {
                     modalDataWilayah.hide();
                     setInputGlobalMode();
+                });
+            }
+
+            // Tombol Global Mode di modal
+            const btnGlobalMode = document.getElementById('btnGlobalMode');
+            if (btnGlobalMode) {
+                btnGlobalMode.addEventListener('click', function() {
+                    modalDataWilayah.hide();
+                    setInputGlobalMode();
+                });
+            }
+
+            // Search wilayah di modal
+            const searchWilayah = document.getElementById('searchWilayah');
+            if (searchWilayah) {
+                searchWilayah.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const cards = document.querySelectorAll('.wilayah-card');
+                    let visibleCount = 0;
+                    
+                    cards.forEach(card => {
+                        const desaName = card.querySelector('strong').textContent.toLowerCase();
+                        if (desaName.includes(searchTerm)) {
+                            card.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    const emptyState = document.getElementById('wilayahEmptyState');
+                    const cardsContainer = document.getElementById('wilayahCardsContainer');
+                    
+                    if (visibleCount === 0 && searchTerm.trim() !== '') {
+                        emptyState.classList.remove('d-none');
+                        cardsContainer.classList.add('d-none');
+                    } else {
+                        emptyState.classList.add('d-none');
+                        cardsContainer.classList.remove('d-none');
+                    }
                 });
             }
 
@@ -4964,9 +5317,12 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
         window.refreshPage = refreshPage;
         window.loadDataByDesa = loadDataByDesa;
         window.setInputGlobalMode = setInputGlobalMode;
+        window.setupInputForDesa = setupInputForDesa;
+        window.getKecamatanByDesa = getKecamatanByDesa;
 
-        console.log('✅ SIMATA Application v5.7 FINAL initialized successfully');
-        console.log('✅ Fitur Data Wilayah telah ditambahkan');
+        console.log('✅ SIMATA Application v5.8 FINAL initialized successfully');
+        console.log('✅ Fitur Data Wilayah telah disempurnakan dengan desain yang profesional');
+        console.log('✅ Tambah tombol input data di setiap kartu desa');
         console.log('✅ Backup system improved (tanpa enkripsi)');
         console.log('✅ Semua menu dan fitur tetap utuh dan berfungsi');
         console.log('✅ Aplikasi siap digunakan');
