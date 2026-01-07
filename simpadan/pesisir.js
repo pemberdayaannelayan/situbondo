@@ -1,5 +1,5 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: reload.js
+// File: pesisir.js
 // Dibuat: 7/1/2026, 22.17.00
 // Jumlah Data: 1462
 
