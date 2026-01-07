@@ -310,7 +310,6 @@
                             Tutup Notifikasi
                         </button>
                     </div>
-                </div>
             </div>
         </div>
     </div>
@@ -1339,10 +1338,8 @@
     <!-- KODE UTAMA APLIKASI TANPA FITUR PETA - VERSI FINAL DIPERBAIKI -->
     <script>
         // =====================================================
-        // KODE UTAMA APLIKASI SIMATA - VERSI 5.9 FINAL
-        // DENGAN PERBAIKAN SISTEM BACKUP & RESTORE DATA BESAR
-        // DAN PENGHAPUSAN FITUR CEK DATA GANDA
-        // SERTA PENAMBAHAN FITUR DATA WILAYAH YANG DISEMPURNAKAN
+        // KODE UTAMA APLIKASI SIMATA - VERSI 5.9 FINAL REVISI
+        // DENGAN PERBAIKAN SISTEM DATA WILAYAH DAN FORMAT JSON
         // =====================================================
         
         // Data ikan yang diperbarui dan dilengkapi - DITAMBAHKAN IKAN TOGEK
@@ -1478,7 +1475,7 @@
             "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
         };
 
-        // DAFTAR DESA UNTUK FITUR DATA WILAYAH - DIURUTKAN SESUAI ABJAD
+        // DAFTAR DESA UNTUK FITUR DATA WILAYAH - DIURUTKAN SESUAI ABJAD DAN DIPERBAIKI
         const DAFTAR_DESA = [
             { nama: "Alasmalang", file: "alasmalang.js" },
             { nama: "Arjasa", file: "arjasa.js" },
@@ -1497,6 +1494,7 @@
             { nama: "Kilensari", file: "kilensari.js" },
             { nama: "Klatakan", file: "klatakan.js" },
             { nama: "Kumbangsari", file: "kumbangsari.js" },
+            { nama: "Lamongan", file: "lamongan.js" },
             { nama: "Landangan", file: "landangan.js" },
             { nama: "Mlandingan Kulon", file: "mlandingankulon.js" },
             { nama: "Pasir Putih", file: "pasirputih.js" },
@@ -1553,753 +1551,6 @@
         window.appData = appData;
         window.appSettings = appSettings;
         
-        // =====================================================
-        // FITUR DATA WILAYAH YANG DISEMPURNAKAN
-        // =====================================================
-        
-        // Fungsi untuk memuat data dari file JavaScript desa dengan logika yang benar
-        function loadDesaData(desaFile, desaName, buttonElement = null) {
-            if (!desaFile || !desaName) {
-                showNotification('Parameter desa tidak valid', 'error');
-                return;
-            }
-            
-            // Simpan data asli jika belum disimpan
-            if (originalAppData.length === 0 && appData.length > 0) {
-                originalAppData = [...appData];
-            }
-            
-            // Konfirmasi penggantian data
-            if (!confirm(`Data database utama akan diganti dengan data dari Desa ${desaName}. Data sebelumnya akan disimpan sementara. Lanjutkan?`)) {
-                if (buttonElement) {
-                    buttonElement.classList.remove('loading');
-                    buttonElement.disabled = false;
-                }
-                return;
-            }
-            
-            // Nonaktifkan tombol selama proses
-            const allButtons = document.querySelectorAll('#wilayah-desa-buttons button');
-            allButtons.forEach(btn => {
-                if (btn !== buttonElement) {
-                    btn.disabled = true;
-                }
-            });
-            
-            if (buttonElement) {
-                buttonElement.classList.add('loading');
-                buttonElement.disabled = true;
-                buttonElement.innerHTML = `
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <span class="desa-name">Memuat...</span>
-                `;
-            }
-            
-            showNotification(`Memuat data desa ${desaName}...`, 'info');
-            
-            // Buat elemen script untuk memuat file JS
-            const script = document.createElement('script');
-            script.src = desaFile + '?t=' + new Date().getTime(); // Cache busting
-            
-            script.onload = function() {
-                try {
-                    let restoredData = null;
-                    
-                    // Cek format data
-                    if (window.SIMATA_BACKUP_DATA) {
-                        const backup = window.SIMATA_BACKUP_DATA;
-                        restoredData = backup.data || [];
-                        window.SIMATA_BACKUP_DATA = null; // Reset
-                    } else {
-                        // Coba ekstrak dari konten script
-                        console.log('Mencoba ekstrak data dari format alternatif...');
-                        // Jika file hanya berisi data, coba parsing langsung
-                        if (window.SIMATA_BACKUP_DATA) {
-                            restoredData = window.SIMATA_BACKUP_DATA.data || [];
-                        } else {
-                            // Cari variabel data lainnya
-                            for (let key in window) {
-                                if (key.includes('data') || key.includes('Data') || key.includes('DATA')) {
-                                    const value = window[key];
-                                    if (Array.isArray(value) && value.length > 0) {
-                                        restoredData = value;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    if (!restoredData || !Array.isArray(restoredData)) {
-                        throw new Error('Data tidak valid atau format file tidak dikenali');
-                    }
-                    
-                    if (restoredData.length === 0) {
-                        showNotification(`Tidak ada data di file ${desaFile}`, 'warning');
-                        enableDesaButtons();
-                        if (buttonElement) {
-                            resetDesaButton(buttonElement, desaName);
-                        }
-                        return;
-                    }
-                    
-                    // Filter data hanya untuk desa yang dipilih (jika data berisi berbagai desa)
-                    const filteredDesaData = restoredData.filter(d => 
-                        d.desa && d.desa.toLowerCase().includes(desaName.toLowerCase())
-                    );
-                    
-                    const dataToLoad = filteredDesaData.length > 0 ? filteredDesaData : restoredData;
-                    
-                    // GANTI database utama dengan data dari desa (bukan merge)
-                    appData = dataToLoad;
-                    saveData();
-                    
-                    // Tambahkan ke riwayat
-                    addToWilayahHistory(desaName, desaFile, dataToLoad.length);
-                    
-                    // Reset filter
-                    resetFilter();
-                    
-                    // Update dashboard dan render tabel
-                    updateDashboard();
-                    renderDataTable();
-                    
-                    // Update status wilayah
-                    updateWilayahStatus(desaName, dataToLoad.length);
-                    lastLoadedDesa = desaName;
-                    
-                    // Tampilkan tombol reset database
-                    document.getElementById('resetDatabaseBtn').style.display = 'inline-block';
-                    
-                    // Beri notifikasi
-                    showNotification(`Data desa ${desaName} berhasil dimuat (${dataToLoad.length} data). Database utama telah diganti.`, 'success');
-                    
-                    // Switch ke tab Data Nelayan
-                    setTimeout(() => {
-                        document.getElementById('v-pills-data-tab').click();
-                    }, 500);
-                    
-                    // Aktifkan kembali tombol
-                    enableDesaButtons();
-                    if (buttonElement) {
-                        resetDesaButton(buttonElement, desaName);
-                    }
-                    
-                } catch (error) {
-                    console.error('Error memuat data desa:', error);
-                    showNotification(`Gagal memuat data desa: ${error.message}`, 'error');
-                    enableDesaButtons();
-                    if (buttonElement) {
-                        resetDesaButton(buttonElement, desaName);
-                    }
-                }
-            };
-            
-            script.onerror = function() {
-                showNotification(`Gagal memuat file ${desaFile}. Pastikan file tersedia di server.`, 'error');
-                enableDesaButtons();
-                if (buttonElement) {
-                    resetDesaButton(buttonElement, desaName);
-                }
-            };
-            
-            document.head.appendChild(script);
-        }
-        
-        // Fungsi untuk reset tombol desa ke state awal
-        function resetDesaButton(buttonElement, desaName) {
-            if (!buttonElement || !desaName) return;
-            
-            buttonElement.classList.remove('loading');
-            buttonElement.disabled = false;
-            
-            // Cari index tombol
-            const buttons = document.querySelectorAll('#wilayah-desa-buttons button');
-            const index = Array.from(buttons).indexOf(buttonElement);
-            
-            // Tentukan ikon berdasarkan jenis desa
-            const getDesaIcon = (namaDesa) => {
-                const lower = namaDesa.toLowerCase();
-                if (lower.includes('pantai') || lower.includes('pesisir')) return 'fa-water';
-                if (lower.includes('gunung')) return 'fa-mountain';
-                if (lower.includes('sumber')) return 'fa-water';
-                if (lower.includes('tanjung')) return 'fa-map-pin';
-                if (lower.includes('wonorejo') || lower.includes('sumberejo')) return 'fa-home';
-                return 'fa-map-marker-alt';
-            };
-            
-            const icon = getDesaIcon(desaName);
-            buttonElement.innerHTML = `
-                <i class="fas ${icon}"></i>
-                <span class="desa-name">${desaName}</span>
-                <span class="desa-badge">${index + 1}</span>
-            `;
-        }
-        
-        // Fungsi untuk mengaktifkan kembali tombol desa
-        function enableDesaButtons() {
-            const allButtons = document.querySelectorAll('#wilayah-desa-buttons button');
-            allButtons.forEach(btn => btn.disabled = false);
-        }
-        
-        // Fungsi untuk update status wilayah
-        function updateWilayahStatus(desaName, dataCount) {
-            document.getElementById('wilayahStatus').textContent = `Terakhir dimuat: ${desaName} (${dataCount} data)`;
-            document.getElementById('wilayahDesaAktif').textContent = desaName;
-            document.getElementById('wilayahDataDimuat').textContent = `${dataCount} data`;
-            document.getElementById('wilayahWaktuMuat').textContent = new Date().toLocaleTimeString('id-ID');
-            
-            // Tampilkan kartu status
-            document.getElementById('wilayahStatusCard').style.display = 'block';
-        }
-        
-        // Fungsi untuk reset ke database utama
-        function resetToMainDatabase() {
-            if (originalAppData.length === 0) {
-                showNotification('Tidak ada data asli yang tersimpan untuk direset', 'warning');
-                return;
-            }
-            
-            if (confirm('Reset database ke data utama? Data dari desa akan dihapus dan diganti dengan data asli.')) {
-                appData = [...originalAppData];
-                saveData();
-                resetFilter();
-                updateDashboard();
-                renderDataTable();
-                
-                // Reset status wilayah
-                document.getElementById('wilayahStatus').textContent = 'Database utama aktif';
-                document.getElementById('wilayahStatusCard').style.display = 'none';
-                document.getElementById('resetDatabaseBtn').style.display = 'none';
-                
-                showNotification('Database berhasil direset ke data utama', 'success');
-            }
-        }
-        
-        // Fungsi untuk menambahkan ke riwayat pemanggilan
-        function addToWilayahHistory(desaName, desaFile, dataCount) {
-            const historyEntry = {
-                desa: desaName,
-                file: desaFile,
-                timestamp: new Date().toLocaleString('id-ID'),
-                dataCount: dataCount,
-                status: 'Berhasil'
-            };
-            
-            // Tambahkan ke awal array
-            wilayahHistory.unshift(historyEntry);
-            
-            // Simpan maksimal 10 riwayat
-            if (wilayahHistory.length > 10) {
-                wilayahHistory = wilayahHistory.slice(0, 10);
-            }
-            
-            // Update tampilan riwayat
-            renderWilayahHistory();
-            
-            // Simpan ke localStorage
-            saveWilayahHistory();
-        }
-        
-        // Fungsi untuk merender riwayat pemanggilan
-        function renderWilayahHistory() {
-            const tbody = document.getElementById('wilayahHistoryBody');
-            if (!tbody) return;
-            
-            if (wilayahHistory.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            <i class="fas fa-history me-2"></i>Belum ada riwayat pemanggilan data
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            tbody.innerHTML = '';
-            wilayahHistory.forEach((entry, index) => {
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>
-                            <div class="fw-bold">${entry.desa}</div>
-                            <small class="text-muted">${entry.timestamp}</small>
-                        </td>
-                        <td>
-                            <span class="badge bg-light text-dark font-monospace">${entry.file}</span>
-                        </td>
-                        <td>${entry.timestamp}</td>
-                        <td>
-                            <span class="badge ${entry.dataCount > 0 ? 'bg-success' : 'bg-secondary'}">
-                                ${entry.dataCount} data
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">${entry.status}</span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary" onclick="loadDesaData('${entry.file.replace('.js', '')}', '${entry.desa}', this)">
-                                <i class="fas fa-redo"></i> Muat Ulang
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        }
-        
-        // Fungsi untuk menyimpan riwayat ke localStorage
-        function saveWilayahHistory() {
-            localStorage.setItem('simata_wilayah_history', JSON.stringify(wilayahHistory));
-        }
-        
-        // Fungsi untuk memuat riwayat dari localStorage
-        function loadWilayahHistory() {
-            const saved = localStorage.getItem('simata_wilayah_history');
-            if (saved) {
-                try {
-                    wilayahHistory = JSON.parse(saved);
-                    renderWilayahHistory();
-                } catch (e) {
-                    console.error('Error loading wilayah history:', e);
-                }
-            }
-        }
-        
-        // PERBAIKAN UTAMA: Fungsi untuk merender tombol-tombol desa yang sudah disempurnakan
-        function renderDesaButtons() {
-            const container = document.getElementById('wilayah-desa-buttons');
-            if (!container) return;
-            
-            // Urutkan daftar desa berdasarkan nama
-            const sortedDesas = [...DAFTAR_DESA].sort((a, b) => 
-                a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' })
-            );
-            
-            // Update count
-            document.getElementById('totalDesaCount').textContent = sortedDesas.length;
-            
-            container.innerHTML = '';
-            
-            // Tentukan ikon berdasarkan jenis desa
-            const getDesaIcon = (namaDesa) => {
-                const lower = namaDesa.toLowerCase();
-                if (lower.includes('pantai') || lower.includes('pesisir')) return 'fa-water';
-                if (lower.includes('gunung')) return 'fa-mountain';
-                if (lower.includes('sumber')) return 'fa-water';
-                if (lower.includes('tanjung')) return 'fa-map-pin';
-                if (lower.includes('wonorejo') || lower.includes('sumberejo')) return 'fa-home';
-                return 'fa-map-marker-alt';
-            };
-            
-            sortedDesas.forEach((desa, index) => {
-                const button = document.createElement('button');
-                button.className = 'btn btn-desa';
-                button.innerHTML = `
-                    <i class="fas ${getDesaIcon(desa.nama)}"></i>
-                    <span class="desa-name">${desa.nama}</span>
-                    <span class="desa-badge">${index + 1}</span>
-                `;
-                button.title = `Klik untuk memuat data dari ${desa.nama}`;
-                button.setAttribute('data-desa', desa.nama);
-                button.setAttribute('data-file', desa.file);
-                
-                button.addEventListener('click', function() {
-                    const button = this;
-                    loadDesaData(desa.file.replace('.js', ''), desa.nama, button);
-                });
-                
-                container.appendChild(button);
-            });
-            
-            // Setup search functionality
-            const searchInput = document.getElementById('searchDesa');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    const buttons = document.querySelectorAll('#wilayah-desa-buttons .btn-desa');
-                    
-                    let visibleCount = 0;
-                    buttons.forEach(button => {
-                        const desaName = button.getAttribute('data-desa').toLowerCase();
-                        if (desaName.includes(searchTerm)) {
-                            button.style.display = 'flex';
-                            visibleCount++;
-                        } else {
-                            button.style.display = 'none';
-                        }
-                    });
-                    
-                    document.getElementById('totalDesaCount').textContent = visibleCount;
-                });
-            }
-            
-            const clearSearchBtn = document.getElementById('clearSearchDesa');
-            if (clearSearchBtn) {
-                clearSearchBtn.addEventListener('click', function() {
-                    document.getElementById('searchDesa').value = '';
-                    const buttons = document.querySelectorAll('#wilayah-desa-buttons .btn-desa');
-                    buttons.forEach(button => {
-                        button.style.display = 'flex';
-                        button.classList.remove('loading');
-                        
-                        // Reset tombol ke state awal
-                        const desaName = button.getAttribute('data-desa');
-                        const file = button.getAttribute('data-file');
-                        const index = Array.from(buttons).indexOf(button);
-                        const icon = getDesaIcon(desaName);
-                        
-                        button.innerHTML = `
-                            <i class="fas ${icon}"></i>
-                            <span class="desa-name">${desaName}</span>
-                            <span class="desa-badge">${index + 1}</span>
-                        `;
-                    });
-                    
-                    document.getElementById('totalDesaCount').textContent = buttons.length;
-                });
-            }
-            
-            // Setup tombol reset database
-            const resetDbBtn = document.getElementById('resetDatabaseBtn');
-            if (resetDbBtn) {
-                resetDbBtn.addEventListener('click', resetToMainDatabase);
-            }
-        }
-        
-        // =====================================================
-        // SISTEM BACKUP DATA BESAR YANG DIOPTIMASI
-        // =====================================================
-        
-        // Fungsi untuk backup data dalam jumlah besar tanpa error memori
-        function backupDataLarge(filename = 'reload.js') {
-            showNotification(`Memulai proses backup data (${appData.length} item)...`, 'info');
-            
-            // Nonaktifkan tombol backup selama proses
-            const backupBtn = document.getElementById('backupDataBtn');
-            const exportBtn = document.getElementById('exportReloadJsBtn');
-            if (backupBtn) backupBtn.disabled = true;
-            if (exportBtn) exportBtn.disabled = true;
-            
-            try {
-                const now = new Date();
-                const dateStr = now.toLocaleDateString('id-ID');
-                const timeStr = now.toLocaleTimeString('id-ID');
-                
-                // Header file backup
-                let backupContent = `/* 
- * SIMATA BACKUP DATA
- * Versi: 2.1 (Optimized for Large Data)
- * Tanggal: ${dateStr}, ${timeStr}
- * Total Data: ${appData.length} records
- * Aplikasi: Sistem Pemetaan Data Nelayan
- * Instansi: ${appSettings.appSubtitle}
- * 
- * PETUNJUK:
- * 1. File ini adalah backup resmi dari aplikasi SIMATA
- * 2. Data disimpan dalam format JSON yang mudah dibaca
- * 3. Upload file ini ke server untuk sinkronisasi data
- * 4. File ini aman untuk disimpan di repository GitHub
- */
-
-// Format baru: SIMATA_BACKUP_DATA (rekomendasi)
-window.SIMATA_BACKUP_DATA = {
-    version: '2.1',
-    timestamp: '${now.toISOString()}',
-    totalRecords: ${appData.length},
-    appName: '${appSettings.appName.replace(/'/g, "\\'")}',
-    appSubtitle: '${appSettings.appSubtitle.replace(/'/g, "\\'")}',
-    data: [\n`;
-                
-                // Serialize data dengan chunking untuk menghindari error memori
-                const chunkSize = 500; // Jumlah data per chunk
-                for (let i = 0; i < appData.length; i += chunkSize) {
-                    const chunk = appData.slice(i, i + chunkSize);
-                    const chunkJson = JSON.stringify(chunk, null, 2);
-                    // Hapus kurung siku awal dan akhir
-                    const cleanChunk = chunkJson.slice(2, -2);
-                    backupContent += cleanChunk;
-                    
-                    // Tambahkan koma kecuali untuk chunk terakhir
-                    if (i + chunkSize < appData.length) {
-                        backupContent += ',\n';
-                    }
-                }
-                
-                // Tutup struktur JSON
-                backupContent += '\n    ]\n};\n\n';
-                backupContent += `// Tanda bahwa file telah berhasil dimuat\nconsole.log('SIMATA Backup Data v2.1 loaded successfully - ${appData.length} records');`;
-                
-                // Buat Blob dan download
-                const blob = new Blob([backupContent], { type: 'application/javascript' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                
-                // Cleanup
-                setTimeout(() => {
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    
-                    // Aktifkan kembali tombol
-                    if (backupBtn) backupBtn.disabled = false;
-                    if (exportBtn) exportBtn.disabled = false;
-                    
-                    showNotification(`Backup berhasil: ${filename} (${appData.length} data)`, 'success');
-                }, 100);
-                
-            } catch (error) {
-                console.error('Backup error:', error);
-                showNotification('Gagal membuat backup. Silakan coba lagi.', 'error');
-                
-                // Aktifkan kembali tombol
-                const backupBtn = document.getElementById('backupDataBtn');
-                const exportBtn = document.getElementById('exportReloadJsBtn');
-                if (backupBtn) backupBtn.disabled = false;
-                if (exportBtn) exportBtn.disabled = false;
-            }
-        }
-
-        // Fungsi untuk mengekstrak data dari backup (format baru)
-        function extractDataFromBackup(content) {
-            try {
-                // Eksekusi konten untuk menginisialisasi variabel global
-                const script = document.createElement('script');
-                script.textContent = content;
-                document.head.appendChild(script);
-                document.head.removeChild(script);
-                
-                // Cek format baru terlebih dahulu
-                if (window.SIMATA_BACKUP_DATA) {
-                    const backup = window.SIMATA_BACKUP_DATA;
-                    let restoredData = backup.data || [];
-                    
-                    console.log(`Data berhasil diekstrak dari format baru: ${restoredData.length} records`);
-                    window.SIMATA_BACKUP_DATA = null; // Reset untuk backup berikutnya
-                    return restoredData;
-                } else {
-                    // Coba parsing langsung sebagai JSON (format lama)
-                    try {
-                        const jsonMatch = content.match(/window\.SIMATA_BACKUP_DATA\s*=\s*({[\s\S]*?});/);
-                        if (jsonMatch) {
-                            const backup = JSON.parse(jsonMatch[1]);
-                            const restoredData = backup.data || [];
-                            console.log(`Data berhasil diekstrak dari regex: ${restoredData.length} records`);
-                            return restoredData;
-                        }
-                    } catch (e) {
-                        console.error('Error parsing JSON:', e);
-                    }
-                    
-                    throw new Error('Format backup tidak dikenali');
-                }
-            } catch (error) {
-                console.error('Error extracting data from backup:', error);
-                return null;
-            }
-        }
-
-        // --- FUNGSI MERGE DATA UNTUK MENGHINDARI DUPLIKASI ---
-        function mergeData(existingData, newData) {
-            // Buat map untuk data yang sudah ada dengan NIK sebagai key
-            const dataMap = new Map();
-            
-            // Tambahkan data yang sudah ada ke map
-            existingData.forEach(item => {
-                if (item.id && item.nik) {
-                    dataMap.set(item.nik, item);
-                }
-            });
-            
-            // Tambahkan atau timpa data baru (data baru akan menimpa data lama dengan NIK yang sama)
-            newData.forEach(item => {
-                if (item.id && item.nik) {
-                    dataMap.set(item.nik, item);
-                }
-            });
-            
-            // Kembalikan sebagai array
-            return Array.from(dataMap.values());
-        }
-
-        // --- FUNGSI RESTORE DATA YANG DIOPTIMASI ---
-        function restoreData() {
-            const fileInput = document.getElementById('restoreFileInput');
-            if (!fileInput.files.length) return;
-            
-            const file = fileInput.files[0];
-            
-            // Validasi ukuran file (maksimal 100MB)
-            if (file.size > 100 * 1024 * 1024) {
-                showNotification('File terlalu besar (maksimal 100MB)', 'error');
-                return;
-            }
-            
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    showNotification('Memproses file restore...', 'info');
-                    
-                    const content = e.target.result;
-                    
-                    // Ekstrak data dari backup
-                    const restoredData = extractDataFromBackup(content);
-                    
-                    if (!restoredData || !Array.isArray(restoredData)) {
-                        throw new Error('Data tidak valid atau format file tidak dikenali');
-                    }
-                    
-                    if (restoredData.length === 0) {
-                        showNotification('Tidak ada data baru untuk di-restore', 'warning');
-                        return;
-                    }
-                    
-                    // Merge data lama dengan data baru
-                    const existingData = appData;
-                    const mergedData = mergeData(existingData, restoredData);
-                    
-                    const newCount = restoredData.length;
-                    const existingCount = existingData.length;
-                    const mergedCount = mergedData.length;
-                    const replacedCount = existingCount + newCount - mergedCount;
-                    const addedCount = mergedCount - existingCount;
-                    
-                    // Update data aplikasi
-                    appData = mergedData;
-                    saveData();
-                    renderDataTable();
-                    updateDashboard();
-                    
-                    let message = '';
-                    if (replacedCount > 0 && addedCount > 0) {
-                        message = `Restore berhasil: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
-                    } else if (replacedCount > 0) {
-                        message = `Restore berhasil: ${replacedCount} data diperbarui`;
-                    } else if (addedCount > 0) {
-                        message = `Restore berhasil: ${addedCount} data baru ditambahkan`;
-                    } else {
-                        message = 'Tidak ada data baru untuk di-restore';
-                    }
-                    
-                    showNotification(message, 'success');
-                    fileInput.value = '';
-                    document.getElementById('restoreDataBtn').disabled = true;
-                    
-                } catch (error) {
-                    console.error('Restore error:', error);
-                    showNotification(`Gagal restore: ${error.message}`, 'error');
-                }
-            };
-            
-            reader.onerror = function() {
-                showNotification('Gagal membaca file', 'error');
-            };
-            
-            reader.readAsText(file);
-        }
-
-        // --- FUNGSI RELOAD DATA YANG DIOPTIMASI UNTUK DATA BESAR ---
-        function handleReloadRepo() {
-            const reloadBtn = document.getElementById('btn-reload-repo');
-            const spinner = document.getElementById('reloadSpinner');
-            
-            // Tampilkan spinner dan nonaktifkan tombol
-            spinner.classList.add('active');
-            reloadBtn.disabled = true;
-            reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Memuat Data... <span class="spinner-border spinner-border-sm reload-spinner active" id="reloadSpinner"></span>';
-            
-            showNotification('Memulai sinkronisasi data dari server...', 'info');
-            
-            // Coba load ulang file reload.js
-            const script = document.createElement('script');
-            script.src = 'reload.js?t=' + new Date().getTime(); // Tambahkan timestamp untuk cache busting
-            
-            script.onload = function() {
-                console.log('File reload.js berhasil dimuat ulang');
-                
-                // Beri waktu untuk pemrosesan
-                setTimeout(() => {
-                    try {
-                        let restoredData = null;
-                        
-                        // Cek format baru tanpa enkripsi
-                        if (window.SIMATA_BACKUP_DATA) {
-                            const backup = window.SIMATA_BACKUP_DATA;
-                            restoredData = backup.data || [];
-                            window.SIMATA_BACKUP_DATA = null; // Reset untuk penggunaan berikutnya
-                        }
-                        
-                        if (!restoredData || !Array.isArray(restoredData)) {
-                            throw new Error('Data tidak valid atau format file tidak dikenali');
-                        }
-                        
-                        // Merge data lama dengan data baru (data baru menimpa data lama dengan NIK yang sama)
-                        const existingData = appData;
-                        const mergedData = mergeData(existingData, restoredData);
-                        
-                        // Hitung perubahan
-                        const newCount = restoredData.length;
-                        const existingCount = existingData.length;
-                        const mergedCount = mergedData.length;
-                        const replacedCount = existingCount + newCount - mergedCount;
-                        const addedCount = mergedCount - existingCount;
-                        
-                        // Update data aplikasi
-                        appData = mergedData;
-                        saveData();
-                        renderDataTable();
-                        updateDashboard();
-                        
-                        // Tampilkan notifikasi yang informatif
-                        let message = '';
-                        if (replacedCount > 0 && addedCount > 0) {
-                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
-                        } else if (replacedCount > 0) {
-                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui`;
-                        } else if (addedCount > 0) {
-                            message = `Data berhasil disinkronisasi: ${addedCount} data baru ditambahkan`;
-                        } else {
-                            message = 'Data sudah up-to-date. Tidak ada perubahan.';
-                        }
-                        
-                        showNotification(message, 'success');
-                        
-                    } catch (error) {
-                        console.error('Reload error:', error);
-                        showNotification('Gagal memuat data dari repository. Format data tidak valid.', 'error');
-                    }
-                    
-                    // Reset tombol
-                    spinner.classList.remove('active');
-                    reloadBtn.disabled = false;
-                    reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
-                }, 500);
-            };
-            
-            script.onerror = function() {
-                console.error('Gagal memuat file reload.js');
-                showNotification('Gagal memuat data dari server. Pastikan koneksi internet aktif.', 'error');
-                
-                // Reset tombol
-                spinner.classList.remove('active');
-                reloadBtn.disabled = false;
-                reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
-            };
-            
-            document.head.appendChild(script);
-        }
-
-        // Fungsi backup data kompatibilitas (untuk tombol yang sudah ada)
-        function backupData(filename = 'reload.js') {
-            return backupDataLarge(filename);
-        }
-
         // =====================================================
         // FUNGSI UTAMA TANPA FITUR CEK DATA GANDA
         // =====================================================
@@ -2531,7 +1782,7 @@ window.SIMATA_BACKUP_DATA = {
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, currentPage + 2);
             
-            // Pastikan kita selalu menampilkan 5 halaman jika memungkinkan
+            // Pastikan kita selalu menampilkan 5 halaman jika memungkini
             if (endPage - startPage < 4) {
                 if (startPage === 1) {
                     endPage = Math.min(totalPages, startPage + 4);
@@ -2848,18 +2099,6 @@ window.SIMATA_BACKUP_DATA = {
             const end = start + appSettings.itemsPerPage;
             const pageData = filteredData.slice(start, end);
             
-            // Siapkan data untuk tabel dengan kolom baru
-            const tableRows = pageData.map((d, index) => [
-                index + 1,
-                d.nama,
-                d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
-                maskData(d.nik),
-                d.desa,
-                d.kecamatan,
-                d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
-                d.kodeValidasi || '-'
-            ]);
-
             // Gunakan fungsi printData yang sudah ada
             printData();
         }
@@ -3203,6 +2442,740 @@ window.SIMATA_BACKUP_DATA = {
                     showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
                 }
             }, 800);
+        }
+
+        // =====================================================
+        // FITUR DATA WILAYAH YANG DIPERBAIKI
+        // =====================================================
+        
+        // Fungsi untuk memuat data dari file JavaScript desa dengan format yang benar
+        function loadDesaData(desaFile, desaName, buttonElement = null) {
+            if (!desaFile || !desaName) {
+                showNotification('Parameter desa tidak valid', 'error');
+                return;
+            }
+            
+            // Simpan data asli jika belum disimpan
+            if (originalAppData.length === 0 && appData.length > 0) {
+                originalAppData = [...appData];
+            }
+            
+            // Konfirmasi penggantian data
+            if (!confirm(`Data database utama akan diganti dengan data dari Desa ${desaName}. Data sebelumnya akan disimpan sementara. Lanjutkan?`)) {
+                if (buttonElement) {
+                    buttonElement.classList.remove('loading');
+                    buttonElement.disabled = false;
+                }
+                return;
+            }
+            
+            // Nonaktifkan tombol selama proses
+            const allButtons = document.querySelectorAll('#wilayah-desa-buttons button');
+            allButtons.forEach(btn => {
+                if (btn !== buttonElement) {
+                    btn.disabled = true;
+                }
+            });
+            
+            if (buttonElement) {
+                buttonElement.classList.add('loading');
+                buttonElement.disabled = true;
+                buttonElement.innerHTML = `
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span class="desa-name">Memuat...</span>
+                `;
+            }
+            
+            showNotification(`Memuat data desa ${desaName}...`, 'info');
+            
+            // Buat elemen script untuk memuat file JS
+            const script = document.createElement('script');
+            script.src = desaFile + '?t=' + new Date().getTime(); // Cache busting
+            
+            script.onload = function() {
+                try {
+                    let restoredData = null;
+                    
+                    // Cek format data yang benar
+                    if (window.SIMATA_BACKUP_DATA && window.SIMATA_BACKUP_DATA.data) {
+                        const backup = window.SIMATA_BACKUP_DATA;
+                        restoredData = backup.data || [];
+                        console.log(`Data berhasil dimuat dari ${desaFile}: ${restoredData.length} data`);
+                        window.SIMATA_BACKUP_DATA = null; // Reset
+                    } else if (window.nelayanData) {
+                        // Format alternatif: window.nelayanData
+                        restoredData = window.nelayanData || [];
+                        console.log(`Data berhasil dimuat dari ${desaFile} (format alternatif): ${restoredData.length} data`);
+                        window.nelayanData = null;
+                    } else {
+                        // Coba cari data di window object
+                        for (let key in window) {
+                            if (key.toLowerCase().includes('data') && Array.isArray(window[key]) && window[key].length > 0) {
+                                restoredData = window[key];
+                                console.log(`Data berhasil dimuat dari ${desaFile} (variabel ${key}): ${restoredData.length} data`);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (!restoredData || !Array.isArray(restoredData) || restoredData.length === 0) {
+                        throw new Error(`Tidak ada data yang valid ditemukan di file ${desaFile}`);
+                    }
+                    
+                    // Filter data hanya untuk desa yang dipilih
+                    const filteredDesaData = restoredData.filter(d => 
+                        d.desa && d.desa.toLowerCase().includes(desaName.toLowerCase())
+                    );
+                    
+                    const dataToLoad = filteredDesaData.length > 0 ? filteredDesaData : restoredData;
+                    
+                    // GANTI database utama dengan data dari desa (bukan merge)
+                    appData = dataToLoad;
+                    saveData();
+                    
+                    // Tambahkan ke riwayat
+                    addToWilayahHistory(desaName, desaFile, dataToLoad.length);
+                    
+                    // Reset filter
+                    resetFilter();
+                    
+                    // Update dashboard dan render tabel
+                    updateDashboard();
+                    renderDataTable();
+                    
+                    // Update status wilayah
+                    updateWilayahStatus(desaName, dataToLoad.length);
+                    lastLoadedDesa = desaName;
+                    
+                    // Tampilkan tombol reset database
+                    document.getElementById('resetDatabaseBtn').style.display = 'inline-block';
+                    
+                    // Beri notifikasi
+                    showNotification(`Data desa ${desaName} berhasil dimuat (${dataToLoad.length} data). Database utama telah diganti.`, 'success');
+                    
+                    // Switch ke tab Data Nelayan
+                    setTimeout(() => {
+                        document.getElementById('v-pills-data-tab').click();
+                    }, 500);
+                    
+                    // Aktifkan kembali tombol
+                    enableDesaButtons();
+                    if (buttonElement) {
+                        resetDesaButton(buttonElement, desaName);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error memuat data desa:', error);
+                    showNotification(`Gagal memuat data desa: ${error.message}`, 'error');
+                    enableDesaButtons();
+                    if (buttonElement) {
+                        resetDesaButton(buttonElement, desaName);
+                    }
+                }
+            };
+            
+            script.onerror = function() {
+                showNotification(`Gagal memuat file ${desaFile}. Pastikan file tersedia di server.`, 'error');
+                enableDesaButtons();
+                if (buttonElement) {
+                    resetDesaButton(buttonElement, desaName);
+                }
+            };
+            
+            document.head.appendChild(script);
+        }
+        
+        // Fungsi untuk reset tombol desa ke state awal
+        function resetDesaButton(buttonElement, desaName) {
+            if (!buttonElement || !desaName) return;
+            
+            buttonElement.classList.remove('loading');
+            buttonElement.disabled = false;
+            
+            // Cari index tombol
+            const buttons = document.querySelectorAll('#wilayah-desa-buttons button');
+            const index = Array.from(buttons).indexOf(buttonElement);
+            
+            // Tentukan ikon berdasarkan jenis desa
+            const getDesaIcon = (namaDesa) => {
+                const lower = namaDesa.toLowerCase();
+                if (lower.includes('pantai') || lower.includes('pesisir')) return 'fa-water';
+                if (lower.includes('gunung')) return 'fa-mountain';
+                if (lower.includes('sumber')) return 'fa-water';
+                if (lower.includes('tanjung')) return 'fa-map-pin';
+                if (lower.includes('wonorejo') || lower.includes('sumberejo')) return 'fa-home';
+                return 'fa-map-marker-alt';
+            };
+            
+            const icon = getDesaIcon(desaName);
+            buttonElement.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span class="desa-name">${desaName}</span>
+                <span class="desa-badge">${index + 1}</span>
+            `;
+        }
+        
+        // Fungsi untuk mengaktifkan kembali tombol desa
+        function enableDesaButtons() {
+            const allButtons = document.querySelectorAll('#wilayah-desa-buttons button');
+            allButtons.forEach(btn => btn.disabled = false);
+        }
+        
+        // Fungsi untuk update status wilayah
+        function updateWilayahStatus(desaName, dataCount) {
+            document.getElementById('wilayahStatus').textContent = `Terakhir dimuat: ${desaName} (${dataCount} data)`;
+            document.getElementById('wilayahDesaAktif').textContent = desaName;
+            document.getElementById('wilayahDataDimuat').textContent = `${dataCount} data`;
+            document.getElementById('wilayahWaktuMuat').textContent = new Date().toLocaleTimeString('id-ID');
+            
+            // Tampilkan kartu status
+            document.getElementById('wilayahStatusCard').style.display = 'block';
+        }
+        
+        // Fungsi untuk reset ke database utama
+        function resetToMainDatabase() {
+            if (originalAppData.length === 0) {
+                showNotification('Tidak ada data asli yang tersimpan untuk direset', 'warning');
+                return;
+            }
+            
+            if (confirm('Reset database ke data utama? Data dari desa akan dihapus dan diganti dengan data asli.')) {
+                appData = [...originalAppData];
+                saveData();
+                resetFilter();
+                updateDashboard();
+                renderDataTable();
+                
+                // Reset status wilayah
+                document.getElementById('wilayahStatus').textContent = 'Database utama aktif';
+                document.getElementById('wilayahStatusCard').style.display = 'none';
+                document.getElementById('resetDatabaseBtn').style.display = 'none';
+                
+                showNotification('Database berhasil direset ke data utama', 'success');
+            }
+        }
+        
+        // Fungsi untuk menambahkan ke riwayat pemanggilan
+        function addToWilayahHistory(desaName, desaFile, dataCount) {
+            const historyEntry = {
+                desa: desaName,
+                file: desaFile,
+                timestamp: new Date().toLocaleString('id-ID'),
+                dataCount: dataCount,
+                status: 'Berhasil'
+            };
+            
+            // Tambahkan ke awal array
+            wilayahHistory.unshift(historyEntry);
+            
+            // Simpan maksimal 10 riwayat
+            if (wilayahHistory.length > 10) {
+                wilayahHistory = wilayahHistory.slice(0, 10);
+            }
+            
+            // Update tampilan riwayat
+            renderWilayahHistory();
+            
+            // Simpan ke localStorage
+            saveWilayahHistory();
+        }
+        
+        // Fungsi untuk merender riwayat pemanggilan
+        function renderWilayahHistory() {
+            const tbody = document.getElementById('wilayahHistoryBody');
+            if (!tbody) return;
+            
+            if (wilayahHistory.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            <i class="fas fa-history me-2"></i>Belum ada riwayat pemanggilan data
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            wilayahHistory.forEach((entry, index) => {
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            <div class="fw-bold">${entry.desa}</div>
+                            <small class="text-muted">${entry.timestamp}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark font-monospace">${entry.file}</span>
+                        </td>
+                        <td>${entry.timestamp}</td>
+                        <td>
+                            <span class="badge ${entry.dataCount > 0 ? 'bg-success' : 'bg-secondary'}">
+                                ${entry.dataCount} data
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">${entry.status}</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="loadDesaData('${entry.file.replace('.js', '')}', '${entry.desa}', this)">
+                                <i class="fas fa-redo"></i> Muat Ulang
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        // Fungsi untuk menyimpan riwayat ke localStorage
+        function saveWilayahHistory() {
+            localStorage.setItem('simata_wilayah_history', JSON.stringify(wilayahHistory));
+        }
+        
+        // Fungsi untuk memuat riwayat dari localStorage
+        function loadWilayahHistory() {
+            const saved = localStorage.getItem('simata_wilayah_history');
+            if (saved) {
+                try {
+                    wilayahHistory = JSON.parse(saved);
+                    renderWilayahHistory();
+                } catch (e) {
+                    console.error('Error loading wilayah history:', e);
+                }
+            }
+        }
+        
+        // PERBAIKAN UTAMA: Fungsi untuk merender tombol-tombol desa yang sudah disempurnakan
+        function renderDesaButtons() {
+            const container = document.getElementById('wilayah-desa-buttons');
+            if (!container) return;
+            
+            // Urutkan daftar desa berdasarkan nama
+            const sortedDesas = [...DAFTAR_DESA].sort((a, b) => 
+                a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' })
+            );
+            
+            // Update count
+            document.getElementById('totalDesaCount').textContent = sortedDesas.length;
+            
+            container.innerHTML = '';
+            
+            // Tentukan ikon berdasarkan jenis desa
+            const getDesaIcon = (namaDesa) => {
+                const lower = namaDesa.toLowerCase();
+                if (lower.includes('pantai') || lower.includes('pesisir')) return 'fa-water';
+                if (lower.includes('gunung')) return 'fa-mountain';
+                if (lower.includes('sumber')) return 'fa-water';
+                if (lower.includes('tanjung')) return 'fa-map-pin';
+                if (lower.includes('wonorejo') || lower.includes('sumberejo')) return 'fa-home';
+                return 'fa-map-marker-alt';
+            };
+            
+            sortedDesas.forEach((desa, index) => {
+                const button = document.createElement('button');
+                button.className = 'btn btn-desa';
+                button.innerHTML = `
+                    <i class="fas ${getDesaIcon(desa.nama)}"></i>
+                    <span class="desa-name">${desa.nama}</span>
+                    <span class="desa-badge">${index + 1}</span>
+                `;
+                button.title = `Klik untuk memuat data dari ${desa.nama}`;
+                button.setAttribute('data-desa', desa.nama);
+                button.setAttribute('data-file', desa.file);
+                
+                button.addEventListener('click', function() {
+                    const button = this;
+                    loadDesaData(desa.file.replace('.js', ''), desa.nama, button);
+                });
+                
+                container.appendChild(button);
+            });
+            
+            // Setup search functionality
+            const searchInput = document.getElementById('searchDesa');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const buttons = document.querySelectorAll('#wilayah-desa-buttons .btn-desa');
+                    
+                    let visibleCount = 0;
+                    buttons.forEach(button => {
+                        const desaName = button.getAttribute('data-desa').toLowerCase();
+                        if (desaName.includes(searchTerm)) {
+                            button.style.display = 'flex';
+                            visibleCount++;
+                        } else {
+                            button.style.display = 'none';
+                        }
+                    });
+                    
+                    document.getElementById('totalDesaCount').textContent = visibleCount;
+                });
+            }
+            
+            const clearSearchBtn = document.getElementById('clearSearchDesa');
+            if (clearSearchBtn) {
+                clearSearchBtn.addEventListener('click', function() {
+                    document.getElementById('searchDesa').value = '';
+                    const buttons = document.querySelectorAll('#wilayah-desa-buttons .btn-desa');
+                    buttons.forEach(button => {
+                        button.style.display = 'flex';
+                        button.classList.remove('loading');
+                        
+                        // Reset tombol ke state awal
+                        const desaName = button.getAttribute('data-desa');
+                        const file = button.getAttribute('data-file');
+                        const index = Array.from(buttons).indexOf(button);
+                        const icon = getDesaIcon(desaName);
+                        
+                        button.innerHTML = `
+                            <i class="fas ${icon}"></i>
+                            <span class="desa-name">${desaName}</span>
+                            <span class="desa-badge">${index + 1}</span>
+                        `;
+                    });
+                    
+                    document.getElementById('totalDesaCount').textContent = buttons.length;
+                });
+            }
+            
+            // Setup tombol reset database
+            const resetDbBtn = document.getElementById('resetDatabaseBtn');
+            if (resetDbBtn) {
+                resetDbBtn.addEventListener('click', resetToMainDatabase);
+            }
+        }
+
+        // =====================================================
+        // SISTEM BACKUP DATA BESAR YANG DIOPTIMASI
+        // =====================================================
+        
+        // Fungsi untuk backup data dalam jumlah besar tanpa error memori
+        function backupDataLarge(filename = 'reload.js') {
+            showNotification(`Memulai proses backup data (${appData.length} item)...`, 'info');
+            
+            // Nonaktifkan tombol backup selama proses
+            const backupBtn = document.getElementById('backupDataBtn');
+            const exportBtn = document.getElementById('exportReloadJsBtn');
+            if (backupBtn) backupBtn.disabled = true;
+            if (exportBtn) exportBtn.disabled = true;
+            
+            try {
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('id-ID');
+                const timeStr = now.toLocaleTimeString('id-ID');
+                
+                // Header file backup
+                let backupContent = `/* 
+ * SIMATA BACKUP DATA
+ * Versi: 2.1 (Optimized for Large Data)
+ * Tanggal: ${dateStr}, ${timeStr}
+ * Total Data: ${appData.length} records
+ * Aplikasi: Sistem Pemetaan Data Nelayan
+ * Instansi: ${appSettings.appSubtitle}
+ * 
+ * PETUNJUK:
+ * 1. File ini adalah backup resmi dari aplikasi SIMATA
+ * 2. Data disimpan dalam format JSON yang mudah dibaca
+ * 3. Upload file ini ke server untuk sinkronisasi data
+ * 4. File ini aman untuk disimpan di repository GitHub
+ */
+
+// Format baru: SIMATA_BACKUP_DATA (rekomendasi)
+window.SIMATA_BACKUP_DATA = {
+    version: '2.1',
+    timestamp: '${now.toISOString()}',
+    totalRecords: ${appData.length},
+    appName: '${appSettings.appName.replace(/'/g, "\\'")}',
+    appSubtitle: '${appSettings.appSubtitle.replace(/'/g, "\\'")}',
+    data: [\n`;
+                
+                // Serialize data dengan chunking untuk menghindari error memori
+                const chunkSize = 500; // Jumlah data per chunk
+                for (let i = 0; i < appData.length; i += chunkSize) {
+                    const chunk = appData.slice(i, i + chunkSize);
+                    const chunkJson = JSON.stringify(chunk, null, 2);
+                    // Hapus kurung siku awal dan akhir
+                    const cleanChunk = chunkJson.slice(2, -2);
+                    backupContent += cleanChunk;
+                    
+                    // Tambahkan koma kecuali untuk chunk terakhir
+                    if (i + chunkSize < appData.length) {
+                        backupContent += ',\n';
+                    }
+                }
+                
+                // Tutup struktur JSON
+                backupContent += '\n    ]\n};\n\n';
+                backupContent += `// Tanda bahwa file telah berhasil dimuat\nconsole.log('SIMATA Backup Data v2.1 loaded successfully - ${appData.length} records');`;
+                
+                // Buat Blob dan download
+                const blob = new Blob([backupContent], { type: 'application/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    // Aktifkan kembali tombol
+                    if (backupBtn) backupBtn.disabled = false;
+                    if (exportBtn) exportBtn.disabled = false;
+                    
+                    showNotification(`Backup berhasil: ${filename} (${appData.length} data)`, 'success');
+                }, 100);
+                
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Gagal membuat backup. Silakan coba lagi.', 'error');
+                
+                // Aktifkan kembali tombol
+                const backupBtn = document.getElementById('backupDataBtn');
+                const exportBtn = document.getElementById('exportReloadJsBtn');
+                if (backupBtn) backupBtn.disabled = false;
+                if (exportBtn) exportBtn.disabled = false;
+            }
+        }
+
+        // Fungsi untuk mengekstrak data dari backup (format baru)
+        function extractDataFromBackup(content) {
+            try {
+                // Eksekusi konten untuk menginisialisasi variabel global
+                const script = document.createElement('script');
+                script.textContent = content;
+                document.head.appendChild(script);
+                document.head.removeChild(script);
+                
+                // Cek format baru terlebih dahulu
+                if (window.SIMATA_BACKUP_DATA) {
+                    const backup = window.SIMATA_BACKUP_DATA;
+                    let restoredData = backup.data || [];
+                    
+                    console.log(`Data berhasil diekstrak dari format baru: ${restoredData.length} records`);
+                    window.SIMATA_BACKUP_DATA = null; // Reset untuk backup berikutnya
+                    return restoredData;
+                } else {
+                    // Coba parsing langsung sebagai JSON (format lama)
+                    try {
+                        const jsonMatch = content.match(/window\.SIMATA_BACKUP_DATA\s*=\s*({[\s\S]*?});/);
+                        if (jsonMatch) {
+                            const backup = JSON.parse(jsonMatch[1]);
+                            const restoredData = backup.data || [];
+                            console.log(`Data berhasil diekstrak dari regex: ${restoredData.length} records`);
+                            return restoredData;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing JSON:', e);
+                    }
+                    
+                    throw new Error('Format backup tidak dikenali');
+                }
+            } catch (error) {
+                console.error('Error extracting data from backup:', error);
+                return null;
+            }
+        }
+
+        // --- FUNGSI MERGE DATA UNTUK MENGHINDARI DUPLIKASI ---
+        function mergeData(existingData, newData) {
+            // Buat map untuk data yang sudah ada dengan NIK sebagai key
+            const dataMap = new Map();
+            
+            // Tambahkan data yang sudah ada ke map
+            existingData.forEach(item => {
+                if (item.id && item.nik) {
+                    dataMap.set(item.nik, item);
+                }
+            });
+            
+            // Tambahkan atau timpa data baru (data baru akan menimpa data lama dengan NIK yang sama)
+            newData.forEach(item => {
+                if (item.id && item.nik) {
+                    dataMap.set(item.nik, item);
+                }
+            });
+            
+            // Kembalikan sebagai array
+            return Array.from(dataMap.values());
+        }
+
+        // --- FUNGSI RESTORE DATA YANG DIOPTIMASI ---
+        function restoreData() {
+            const fileInput = document.getElementById('restoreFileInput');
+            if (!fileInput.files.length) return;
+            
+            const file = fileInput.files[0];
+            
+            // Validasi ukuran file (maksimal 100MB)
+            if (file.size > 100 * 1024 * 1024) {
+                showNotification('File terlalu besar (maksimal 100MB)', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    showNotification('Memproses file restore...', 'info');
+                    
+                    const content = e.target.result;
+                    
+                    // Ekstrak data dari backup
+                    const restoredData = extractDataFromBackup(content);
+                    
+                    if (!restoredData || !Array.isArray(restoredData)) {
+                        throw new Error('Data tidak valid atau format file tidak dikenali');
+                    }
+                    
+                    if (restoredData.length === 0) {
+                        showNotification('Tidak ada data baru untuk di-restore', 'warning');
+                        return;
+                    }
+                    
+                    // Merge data lama dengan data baru
+                    const existingData = appData;
+                    const mergedData = mergeData(existingData, restoredData);
+                    
+                    const newCount = restoredData.length;
+                    const existingCount = existingData.length;
+                    const mergedCount = mergedData.length;
+                    const replacedCount = existingCount + newCount - mergedCount;
+                    const addedCount = mergedCount - existingCount;
+                    
+                    // Update data aplikasi
+                    appData = mergedData;
+                    saveData();
+                    renderDataTable();
+                    updateDashboard();
+                    
+                    let message = '';
+                    if (replacedCount > 0 && addedCount > 0) {
+                        message = `Restore berhasil: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
+                    } else if (replacedCount > 0) {
+                        message = `Restore berhasil: ${replacedCount} data diperbarui`;
+                    } else if (addedCount > 0) {
+                        message = `Restore berhasil: ${addedCount} data baru ditambahkan`;
+                    } else {
+                        message = 'Tidak ada data baru untuk di-restore';
+                    }
+                    
+                    showNotification(message, 'success');
+                    fileInput.value = '';
+                    document.getElementById('restoreDataBtn').disabled = true;
+                    
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification(`Gagal restore: ${error.message}`, 'error');
+                }
+            };
+            
+            reader.onerror = function() {
+                showNotification('Gagal membaca file', 'error');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // --- FUNGSI RELOAD DATA YANG DIOPTIMASI UNTUK DATA BESAR ---
+        function handleReloadRepo() {
+            const reloadBtn = document.getElementById('btn-reload-repo');
+            const spinner = document.getElementById('reloadSpinner');
+            
+            // Tampilkan spinner dan nonaktifkan tombol
+            spinner.classList.add('active');
+            reloadBtn.disabled = true;
+            reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Memuat Data... <span class="spinner-border spinner-border-sm reload-spinner active" id="reloadSpinner"></span>';
+            
+            showNotification('Memulai sinkronisasi data dari server...', 'info');
+            
+            // Coba load ulang file reload.js
+            const script = document.createElement('script');
+            script.src = 'reload.js?t=' + new Date().getTime(); // Tambahkan timestamp untuk cache busting
+            
+            script.onload = function() {
+                console.log('File reload.js berhasil dimuat ulang');
+                
+                // Beri waktu untuk pemrosesan
+                setTimeout(() => {
+                    try {
+                        let restoredData = null;
+                        
+                        // Cek format baru tanpa enkripsi
+                        if (window.SIMATA_BACKUP_DATA) {
+                            const backup = window.SIMATA_BACKUP_DATA;
+                            restoredData = backup.data || [];
+                            window.SIMATA_BACKUP_DATA = null; // Reset untuk penggunaan berikutnya
+                        }
+                        
+                        if (!restoredData || !Array.isArray(restoredData)) {
+                            throw new Error('Data tidak valid atau format file tidak dikenali');
+                        }
+                        
+                        // Merge data lama dengan data baru (data baru menimpa data lama dengan NIK yang sama)
+                        const existingData = appData;
+                        const mergedData = mergeData(existingData, restoredData);
+                        
+                        // Hitung perubahan
+                        const newCount = restoredData.length;
+                        const existingCount = existingData.length;
+                        const mergedCount = mergedData.length;
+                        const replacedCount = existingCount + newCount - mergedCount;
+                        const addedCount = mergedCount - existingCount;
+                        
+                        // Update data aplikasi
+                        appData = mergedData;
+                        saveData();
+                        renderDataTable();
+                        updateDashboard();
+                        
+                        // Tampilkan notifikasi yang informatif
+                        let message = '';
+                        if (replacedCount > 0 && addedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
+                        } else if (replacedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${replacedCount} data diperbarui`;
+                        } else if (addedCount > 0) {
+                            message = `Data berhasil disinkronisasi: ${addedCount} data baru ditambahkan`;
+                        } else {
+                            message = 'Data sudah up-to-date. Tidak ada perubahan.';
+                        }
+                        
+                        showNotification(message, 'success');
+                        
+                    } catch (error) {
+                        console.error('Reload error:', error);
+                        showNotification('Gagal memuat data dari repository. Format data tidak valid.', 'error');
+                    }
+                    
+                    // Reset tombol
+                    spinner.classList.remove('active');
+                    reloadBtn.disabled = false;
+                    reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+                }, 500);
+            };
+            
+            script.onerror = function() {
+                console.error('Gagal memuat file reload.js');
+                showNotification('Gagal memuat data dari server. Pastikan koneksi internet aktif.', 'error');
+                
+                // Reset tombol
+                spinner.classList.remove('active');
+                reloadBtn.disabled = false;
+                reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        function backupData(filename = 'reload.js') {
+            return backupDataLarge(filename);
         }
 
         // --- INITIALIZATION ---
@@ -4974,12 +4947,10 @@ window.SIMATA_BACKUP_DATA = {
         window.renderDesaButtons = renderDesaButtons;
         window.resetToMainDatabase = resetToMainDatabase;
 
-        console.log('✅ SIMATA Application v5.9 FINAL initialized successfully');
-        console.log('✅ Sistem backup & restore data besar telah dioptimasi');
-        console.log('✅ Fitur cek data ganda telah dihapus');
-        console.log('✅ Sistem dapat menangani ribuan data tanpa error');
-        console.log('✅ Format backup kompatibel untuk upload ke repository');
-        console.log('✅ Fitur Data Wilayah telah disempurnakan dengan logika penggantian database');
+        console.log('✅ SIMATA Application v5.9 FINAL REVISI initialized successfully');
+        console.log('✅ Sistem data wilayah telah diperbaiki');
+        console.log('✅ Desa Lamongan telah ditambahkan ke daftar');
+        console.log('✅ Semua tombol JSON desa telah diperbaiki');
         console.log('✅ Aplikasi siap digunakan untuk data besar');
     </script>
 </body>
