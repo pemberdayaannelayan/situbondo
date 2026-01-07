@@ -1,5 +1,5 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: reload.js
+// File: banyuglugur.js
 // Dibuat: 7/1/2026, 22.25.49
 // Jumlah Data: 112
 
