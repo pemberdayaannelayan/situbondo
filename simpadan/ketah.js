@@ -1,7 +1,7 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
 // File: ketah.js
 // Dibuat: 7/1/2026, 21.40.48
-// Jumlah Data: 317
+// Jumlah Data: 318
 
 window.SIMATA_BACKUP_DATA = [
   {
@@ -31,6 +31,33 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-07T14:39:55.881Z",
+    "createdBy": "System Import"
+  },
+   {
+    "id": 1767798986680.5583,
+    "nama": "ABDUL JAMAL",
+    "nik": "3512030509830001",
+    "whatsapp": "Tidak Ada",
+    "profesi": "Nelayan Penuh Waktu",
+    "status": "Anak Buah Kapal",
+    "tahunLahir": 1973,
+    "usia": 53,
+    "kecamatan": "Suboh",
+    "desa": "Ketah",
+    "alatTangkap": "Pukat Cincin",
+    "namaKapal": "-",
+    "jenisKapal": "-",
+    "jenisIkan": "Ikan Tongkol, Cumi-cumi, Kakap Merah, Ikan Mangla, Ikan Kurisi",
+    "usahaSampingan": "",
+    "tanggalValidasi": "2025-12-23",
+    "validator": "MUHAMMAD S",
+    "driveLink": "",
+    "kodeValidasi": "VLD-A122Z8",
+    "keterangan": "Diimpor pada 4/1/2026, 17.48.57",
+    "importDate": "2026-01-07T15:16:23.999Z",
+    "missingFields": [],
+    "isComplete": true,
+    "createdAt": "2026-01-07T15:16:26.680Z",
     "createdBy": "System Import"
   },
   {
