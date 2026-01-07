@@ -1,6 +1,6 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: reload.js
-// Dibuat: 7/1/2026, 22.46.28
+// File: bungatan.js
+// Dibuat: 7/1/2026, 22.52.32
 // Jumlah Data: 71
 
 window.SIMATA_BACKUP_DATA = [
