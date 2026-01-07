@@ -1,5 +1,5 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: reload.js
+// File: selomukti.js
 // Dibuat: 7/1/2026, 22.28.44
 // Jumlah Data: 78
 
