@@ -1793,27 +1793,11 @@
                 }
             }
             
-            // Tambahkan ellipsis di awal jika diperlukan
-            if (startPage > 1) {
-                const ellipsis1 = document.createElement('li');
-                ellipsis1.className = 'page-item disabled';
-                ellipsis1.innerHTML = `<span class="page-link">...</span>`;
-                ul.appendChild(ellipsis1);
-            }
-            
             for (let i = startPage; i <= endPage; i++) {
                 const li = document.createElement('li');
                 li.className = `page-item ${i === currentPage ? 'active' : ''}`;
                 li.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>`;
                 ul.appendChild(li);
-            }
-            
-            // Tambahkan ellipsis di akhir jika diperlukan
-            if (endPage < totalPages) {
-                const ellipsis2 = document.createElement('li');
-                ellipsis2.className = 'page-item disabled';
-                ellipsis2.innerHTML = `<span class="page-link">...</span>`;
-                ul.appendChild(ellipsis2);
             }
             
             // Tombol berikutnya
@@ -2095,11 +2079,6 @@
                 showNotification('Tidak ada data untuk dicetak!', 'error');
                 return;
             }
-            
-            // Ambil data sesuai dengan halaman dan jumlah baris per halaman
-            const start = (currentPage - 1) * appSettings.itemsPerPage;
-            const end = start + appSettings.itemsPerPage;
-            const pageData = filteredData.slice(start, end);
             
             // Gunakan fungsi printData yang sudah ada
             printData();
@@ -3212,10 +3191,6 @@ window.SIMATA_BACKUP_DATA = {
                     }, 100);
                 }
 
-                if (typeof window.handleHashRouting === 'function') {
-                    window.handleHashRouting();
-                }
-
             } catch (error) {
                 console.error("Initialization Error:", error);
                 showNotification("Terjadi kesalahan sistem saat memuat. Silakan refresh halaman.", 'error');
@@ -3427,7 +3402,7 @@ window.SIMATA_BACKUP_DATA = {
                 });
             }
 
-            // Login Form
+            // Login Form - PERBAIKAN UTAMA: Menambahkan error handling
             const loginForm = document.getElementById('loginForm');
             if (loginForm) {
                 loginForm.addEventListener('submit', function(e) {
@@ -3449,18 +3424,39 @@ window.SIMATA_BACKUP_DATA = {
                     btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
                     
                     setTimeout(() => {
-                        sessionStorage.setItem('simata_session', 'active');
-                        document.getElementById('loginModal').style.display = 'none';
-                        document.getElementById('appContent').style.display = 'block';
-                        initializeCharts();
-                        updateDashboard();
-                        renderDataTable();
-                        // TAMBAHAN: Load riwayat wilayah
-                        loadWilayahHistory();
-                        loginSuccessModal.show();
-                        btn.disabled = false;
-                        spinner.classList.add('d-none');
-                        btn.innerHTML = 'BUKA DASHBOARD';
+                        try {
+                            sessionStorage.setItem('simata_session', 'active');
+                            
+                            // Sembunyikan modal login
+                            const loginModal = document.getElementById('loginModal');
+                            if (loginModal) {
+                                loginModal.style.display = 'none';
+                            }
+                            
+                            // Tampilkan appContent
+                            const appContent = document.getElementById('appContent');
+                            if (appContent) {
+                                appContent.style.display = 'block';
+                            }
+                            
+                            // Inisialisasi komponen utama
+                            initializeCharts();
+                            updateDashboard();
+                            renderDataTable();
+                            loadWilayahHistory();
+                            
+                            // Tampilkan modal sukses
+                            if (loginSuccessModal) {
+                                loginSuccessModal.show();
+                            }
+                        } catch (error) {
+                            console.error('Error during login:', error);
+                            showNotification('Terjadi kesalahan saat memuat aplikasi. Silakan refresh halaman.', 'error');
+                        } finally {
+                            btn.disabled = false;
+                            spinner.classList.add('d-none');
+                            btn.innerHTML = 'BUKA DASHBOARD';
+                        }
                     }, 1200);
                 });
             }
@@ -3469,9 +3465,13 @@ window.SIMATA_BACKUP_DATA = {
             const continueBtn = document.getElementById('btnContinueDashboard');
             if (continueBtn) {
                 continueBtn.addEventListener('click', function() {
-                    loginSuccessModal.hide();
+                    if (loginSuccessModal) {
+                        loginSuccessModal.hide();
+                    }
                     setTimeout(() => {
-                        welcomeModal.show();
+                        if (welcomeModal) {
+                            welcomeModal.show();
+                        }
                     }, 300);
                 });
             }
@@ -3480,7 +3480,9 @@ window.SIMATA_BACKUP_DATA = {
             const welcomeReloadBtn = document.getElementById('btnWelcomeReload');
             if (welcomeReloadBtn) {
                 welcomeReloadBtn.addEventListener('click', function() {
-                    welcomeModal.hide();
+                    if (welcomeModal) {
+                        welcomeModal.hide();
+                    }
                     handleReloadRepo();
                 });
             }
@@ -4116,7 +4118,9 @@ window.SIMATA_BACKUP_DATA = {
             }
             document.getElementById('d_tgl_valid').innerText = d.tanggalValidasi;
             document.getElementById('d_validator').innerText = d.validator;
-            detailModal.show();
+            if (detailModal) {
+                detailModal.show();
+            }
         }
 
         function toggleBulkDeleteBtn() {
@@ -4533,7 +4537,9 @@ window.SIMATA_BACKUP_DATA = {
 
         // Fungsi untuk menampilkan modal info ikan
         function showFishInfoModal() {
-            fishInfoModal.show();
+            if (fishInfoModal) {
+                fishInfoModal.show();
+            }
         }
 
         // Fungsi untuk display verify result
@@ -4610,7 +4616,9 @@ window.SIMATA_BACKUP_DATA = {
                 detailBtn.style.display = 'inline-block';
                 detailBtn.onclick = () => {
                     viewDetail(data.id);
-                    detailModal.show();
+                    if (detailModal) {
+                        detailModal.show();
+                    }
                 };
                 
                 idCardBtn.style.display = 'inline-block';
