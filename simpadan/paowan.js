@@ -1,7 +1,7 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
 // File: paowan.js
 // Dibuat: 8/1/2026, 19.26.03
-// Jumlah Data: 
+// Jumlah Data: 1
 
 window.SIMATA_BACKUP_DATA = [
   {
