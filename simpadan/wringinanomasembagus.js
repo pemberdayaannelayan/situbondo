@@ -1,5 +1,5 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: wringinanom.js
+// File: wringinanomasembagus.js
 // Dibuat: 7/1/2026, 22.03.08
 // Jumlah Data: 85
 
