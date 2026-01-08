@@ -7,241 +7,76 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background-color: #f5f7fa;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #1e5799 0%, #207cca 100%);
-            color: white;
-            padding: 1rem 1.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-        
-        .header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .header p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            max-width: 800px;
-        }
-        
-        .stats-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            background-color: white;
-            padding: 0.8rem 1.5rem;
-            border-bottom: 1px solid #e1e5eb;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .stat-value {
-            font-weight: bold;
-            color: #1e5799;
-        }
-        
-        #map {
-            flex: 1;
-            width: 100%;
-            z-index: 1;
-        }
-        
-        .info-panel {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 1000;
-            background-color: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            max-width: 300px;
-            max-height: 70vh;
-            overflow-y: auto;
-            display: none;
-        }
-        
-        .info-panel h3 {
-            margin-bottom: 10px;
-            color: #1e5799;
-            border-bottom: 2px solid #e1e5eb;
-            padding-bottom: 5px;
-        }
-        
-        .info-list {
-            list-style-type: none;
-        }
-        
-        .info-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .legend {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            background-color: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            font-size: 0.9rem;
-            max-width: 200px;
-        }
-        
-        .legend h4 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #1e5799;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 1px solid #ccc;
-        }
-        
-        .mobile-notice {
-            display: none;
-            background-color: #fff3cd;
-            color: #856404;
-            padding: 10px;
-            text-align: center;
-            font-size: 0.9rem;
-            border-bottom: 1px solid #ffeaa7;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; flex-direction: column; height: 100vh; background-color: #f5f7fa; }
+        .header { background: linear-gradient(135deg, #1e5799 0%, #207cca 100%); color: white; padding: 1rem 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .header h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .header p { font-size: 0.9rem; opacity: 0.9; }
+        .stats-bar { display: flex; flex-wrap: wrap; gap: 1rem; background-color: white; padding: 0.8rem 1.5rem; border-bottom: 1px solid #e1e5eb; font-size: 0.9rem; }
+        .stat-item { display: flex; align-items: center; gap: 0.5rem; }
+        .stat-value { font-weight: bold; color: #1e5799; }
+        #map { flex: 1; width: 100%; }
+        .legend { position: absolute; bottom: 20px; right: 20px; z-index: 1000; background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); font-size: 0.9rem; max-width: 200px; }
+        .legend h4 { margin-top: 0; margin-bottom: 10px; color: #1e5799; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 8px; }
+        .legend-color { width: 20px; height: 20px; border-radius: 50%; margin-right: 10px; border: 1px solid #ccc; }
+        .mobile-notice { display: none; background-color: #fff3cd; color: #856404; padding: 10px; text-align: center; font-size: 0.9rem; border-bottom: 1px solid #ffeaa7; }
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.3rem;
-            }
-            
-            .stats-bar {
-                padding: 0.6rem 1rem;
-                font-size: 0.85rem;
-            }
-            
-            .legend {
-                bottom: 10px;
-                right: 10px;
-                padding: 10px;
-                font-size: 0.8rem;
-                max-width: 180px;
-            }
-            
-            .info-panel {
-                bottom: 10px;
-                left: 10px;
-                padding: 10px;
-                max-width: 250px;
-            }
-            
-            .mobile-notice {
-                display: block;
-            }
+            .header h1 { font-size: 1.3rem; }
+            .stats-bar { padding: 0.6rem 1rem; font-size: 0.85rem; }
+            .legend { bottom: 10px; right: 10px; padding: 10px; font-size: 0.8rem; max-width: 180px; }
+            .mobile-notice { display: block; }
         }
-        
-        .leaflet-popup-content {
-            font-size: 0.95rem;
-        }
-        
-        .leaflet-popup-content b {
-            color: #1e5799;
-        }
-        
-        .toggle-panel-btn {
-            position: absolute;
-            top: 120px;
-            left: 20px;
-            z-index: 1000;
-            background-color: #1e5799;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 15px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
+        .leaflet-popup-content { font-size: 0.95rem; }
+        .leaflet-popup-content b { color: #1e5799; }
+        .search-box { position: absolute; top: 120px; left: 20px; z-index: 1000; background-color: white; padding: 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); width: 250px; }
+        .search-box input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .search-results { max-height: 300px; overflow-y: auto; margin-top: 10px; display: none; }
+        .search-result-item { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .search-result-item:hover { background-color: #f0f8ff; }
+        .district-filter { position: absolute; top: 180px; left: 20px; z-index: 1000; background-color: white; padding: 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); width: 250px; }
         @media (max-width: 768px) {
-            .toggle-panel-btn {
-                top: 160px;
-                left: 10px;
-                padding: 6px 12px;
-                font-size: 0.85rem;
-            }
+            .search-box, .district-filter { top: 160px; left: 10px; width: calc(100% - 20px); }
+            .district-filter { top: 220px; }
         }
     </style>
 </head>
 <body>
-    <div class="mobile-notice">
-        👆 Gunakan jari untuk memperbesar/memperkecil peta dan mengetuk desa
-    </div>
+    <div class="mobile-notice">👆 Gunakan jari untuk memperbesar/memperkecil peta dan mengetuk desa</div>
     
     <div class="header">
         <h1>Peta Data Nelayan Kabupaten Situbondo</h1>
-        <p>Aplikasi SIMPADAN TANGKAP - Dinas Perikanan Situbondo | Total: <strong>8,089</strong> nelayan tersebar di <strong>37</strong> desa/kelurahan</p>
+        <p>Aplikasi SIMPADAN TANGKAP - Dinas Perikanan Situbondo | Total: <strong>8,089</strong> nelayan di <strong>37</strong> desa</p>
     </div>
     
     <div class="stats-bar">
         <div class="stat-item">
-            <span>Desa dengan Nelayan Terbanyak:</span>
+            <span>Desa Terpadat:</span>
             <span class="stat-value" id="max-village">Pesisir (1,463 orang)</span>
         </div>
         <div class="stat-item">
-            <span>Desa dengan Nelayan Tersedikit:</span>
+            <span>Desa Tersedikit:</span>
             <span class="stat-value" id="min-village">Paowan (1 orang)</span>
         </div>
         <div class="stat-item">
-            <span>Rata-rata Nelayan per Desa:</span>
+            <span>Rata-rata per Desa:</span>
             <span class="stat-value" id="avg-village">219 orang</span>
         </div>
     </div>
     
-    <button class="toggle-panel-btn" onclick="toggleInfoPanel()">📋 Tampilkan Daftar Desa</button>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Cari desa..." onkeyup="searchVillages()">
+        <div class="search-results" id="searchResults"></div>
+    </div>
+    
+    <div class="district-filter">
+        <select id="districtSelect" onchange="filterByDistrict()" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+            <option value="">Semua Kecamatan</option>
+            <!-- Opsi kecamatan akan diisi oleh JavaScript -->
+        </select>
+    </div>
     
     <div id="map"></div>
-    
-    <div class="info-panel" id="infoPanel">
-        <h3>Daftar Desa & Jumlah Nelayan</h3>
-        <ul class="info-list" id="villageList">
-            <!-- Daftar desa akan diisi oleh JavaScript -->
-        </ul>
-    </div>
     
     <div class="legend">
         <h4>Kategori Jumlah Nelayan</h4>
@@ -264,8 +99,9 @@
     </div>
 
     <script>
-        // Data lengkap desa dan jumlah nelayan
+        // Data lengkap desa dan jumlah nelayan dengan koordinat yang tepat
         const villageData = [
+            // Data dari daftar desa yang diberikan
             {name: "Alasmalang", population: 6, lat: -7.6970, lng: 113.7687, district: "Panarukan"},
             {name: "Arjasa", population: 50, lat: -7.7099, lng: 113.6780, district: "Panji"},
             {name: "Banyuglugur", population: 112, lat: -7.6941, lng: 113.6958, district: "Panji"},
@@ -334,8 +170,13 @@
 
         // Tambahkan marker untuk setiap desa
         const markers = [];
+        const districtSelect = document.getElementById('districtSelect');
+        const districts = new Set();
         
         villageData.forEach(village => {
+            // Tambahkan kecamatan ke set untuk filter
+            districts.add(village.district);
+            
             // Buat marker dengan lingkaran berwarna
             const marker = L.circleMarker([village.lat, village.lng], {
                 color: '#333',
@@ -350,8 +191,9 @@
             marker.bindPopup(`
                 <b>${village.name}</b><br/>
                 <b>Kecamatan:</b> ${village.district}<br/>
-                <b>Jumlah Nelayan:</b> ${village.population} orang<br/>
-                <b>Koordinat:</b> ${village.lat.toFixed(4)}, ${village.lng.toFixed(4)}
+                <b>Jumlah Nelayan:</b> <strong style="color:#1e5799;">${village.population} orang</strong><br/>
+                <b>Koordinat:</b> ${village.lat.toFixed(4)}, ${village.lng.toFixed(4)}<br/>
+                <small><i>Klik untuk melihat detail</i></small>
             `);
             
             // Simpan referensi marker
@@ -359,34 +201,87 @@
                 name: village.name,
                 marker: marker,
                 population: village.population,
-                district: village.district
+                district: village.district,
+                lat: village.lat,
+                lng: village.lng
             });
         });
 
-        // Urutkan desa berdasarkan jumlah nelayan (terbanyak ke terkecil)
-        markers.sort((a, b) => b.population - a.population);
-        
-        // Isi daftar desa di panel info
-        const villageList = document.getElementById('villageList');
-        markers.forEach(item => {
-            const li = document.createElement('li');
-            li.innerHTML = `<span>${item.name}</span> <span style="font-weight:bold;color:#1e5799;">${item.population} org</span>`;
-            villageList.appendChild(li);
+        // Isi dropdown filter kecamatan
+        districts.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            districtSelect.appendChild(option);
         });
 
-        // Fungsi untuk menampilkan/sembunyikan panel info
-        function toggleInfoPanel() {
-            const panel = document.getElementById('infoPanel');
-            const button = document.querySelector('.toggle-panel-btn');
+        // Fungsi filter berdasarkan kecamatan
+        function filterByDistrict() {
+            const selectedDistrict = districtSelect.value;
             
-            if (panel.style.display === 'block') {
-                panel.style.display = 'none';
-                button.textContent = '📋 Tampilkan Daftar Desa';
-            } else {
-                panel.style.display = 'block';
-                button.textContent = '✖️ Tutup Daftar Desa';
+            markers.forEach(item => {
+                if (!selectedDistrict || item.district === selectedDistrict) {
+                    item.marker.setStyle({opacity: 0.8, fillOpacity: 0.8});
+                    item.marker.addTo(map);
+                } else {
+                    item.marker.setStyle({opacity: 0.3, fillOpacity: 0.3});
+                }
+            });
+            
+            // Jika ada kecamatan yang dipilih, fokuskan peta ke desa di kecamatan tersebut
+            if (selectedDistrict) {
+                const districtMarkers = markers.filter(item => item.district === selectedDistrict);
+                if (districtMarkers.length > 0) {
+                    const bounds = L.latLngBounds(districtMarkers.map(item => [item.lat, item.lng]));
+                    map.fitBounds(bounds, {padding: [50, 50]});
+                }
             }
         }
+
+        // Fungsi pencarian desa
+        function searchVillages() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (searchTerm.length < 2) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+            
+            const filtered = markers.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) || 
+                item.district.toLowerCase().includes(searchTerm)
+            );
+            
+            resultsContainer.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                resultsContainer.innerHTML = '<div class="search-result-item">Tidak ditemukan</div>';
+            } else {
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.innerHTML = `<strong>${item.name}</strong> - ${item.district} (${item.population} orang)`;
+                    div.onclick = function() {
+                        map.setView([item.lat, item.lng], 13);
+                        item.marker.openPopup();
+                        resultsContainer.style.display = 'none';
+                        document.getElementById('searchInput').value = item.name;
+                    };
+                    resultsContainer.appendChild(div);
+                });
+            }
+            
+            resultsContainer.style.display = 'block';
+        }
+
+        // Tutup hasil pencarian saat klik di luar
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('searchInput').contains(e.target) && 
+                !document.getElementById('searchResults').contains(e.target)) {
+                document.getElementById('searchResults').style.display = 'none';
+            }
+        });
 
         // Hitung dan tampilkan statistik
         const populations = villageData.map(v => v.population);
