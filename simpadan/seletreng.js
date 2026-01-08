@@ -1,5 +1,5 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: reload.js
+// File: seletreng.js
 // Dibuat: 8/1/2026, 15.35.26
 // Jumlah Data: 76
 
