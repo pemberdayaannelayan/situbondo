@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Data Nelayan - SIMPADAN TANGKAP Situbondo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f5f7fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e5799 0%, #207cca 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            max-width: 800px;
+        }
+        
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background-color: white;
+            padding: 0.8rem 1.5rem;
+            border-bottom: 1px solid #e1e5eb;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #1e5799;
+        }
+        
+        #map {
+            flex: 1;
+            width: 100%;
+            z-index: 1;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+            max-height: 70vh;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .info-panel h3 {
+            margin-bottom: 10px;
+            color: #1e5799;
+            border-bottom: 2px solid #e1e5eb;
+            padding-bottom: 5px;
+        }
+        
+        .info-list {
+            list-style-type: none;
+        }
+        
+        .info-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+            max-width: 200px;
+        }
+        
+        .legend h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1e5799;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+        }
+        
+        .mobile-notice {
+            display: none;
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #ffeaa7;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .stats-bar {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .legend {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px;
+                font-size: 0.8rem;
+                max-width: 180px;
+            }
+            
+            .info-panel {
+                bottom: 10px;
+                left: 10px;
+                padding: 10px;
+                max-width: 250px;
+            }
+            
+            .mobile-notice {
+                display: block;
+            }
+        }
+        
+        .leaflet-popup-content {
+            font-size: 0.95rem;
+        }
+        
+        .leaflet-popup-content b {
+            color: #1e5799;
+        }
+        
+        .toggle-panel-btn {
+            position: absolute;
+            top: 120px;
+            left: 20px;
+            z-index: 1000;
+            background-color: #1e5799;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .toggle-panel-btn {
+                top: 160px;
+                left: 10px;
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-notice">
+        👆 Gunakan jari untuk memperbesar/memperkecil peta dan mengetuk desa
+    </div>
+    
+    <div class="header">
+        <h1>Peta Data Nelayan Kabupaten Situbondo</h1>
+        <p>Aplikasi SIMPADAN TANGKAP - Dinas Perikanan Situbondo | Total: <strong>8,089</strong> nelayan tersebar di <strong>37</strong> desa/kelurahan</p>
+    </div>
+    
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span>Desa dengan Nelayan Terbanyak:</span>
+            <span class="stat-value" id="max-village">Pesisir (1,463 orang)</span>
+        </div>
+        <div class="stat-item">
+            <span>Desa dengan Nelayan Tersedikit:</span>
+            <span class="stat-value" id="min-village">Paowan (1 orang)</span>
+        </div>
+        <div class="stat-item">
+            <span>Rata-rata Nelayan per Desa:</span>
+            <span class="stat-value" id="avg-village">219 orang</span>
+        </div>
+    </div>
+    
+    <button class="toggle-panel-btn" onclick="toggleInfoPanel()">📋 Tampilkan Daftar Desa</button>
+    
+    <div id="map"></div>
+    
+    <div class="info-panel" id="infoPanel">
+        <h3>Daftar Desa & Jumlah Nelayan</h3>
+        <ul class="info-list" id="villageList">
+            <!-- Daftar desa akan diisi oleh JavaScript -->
+        </ul>
+    </div>
+    
+    <div class="legend">
+        <h4>Kategori Jumlah Nelayan</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ffeda0;"></div>
+            <span>1 - 100 orang</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #feb24c;"></div>
+            <span>101 - 300 orang</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #f03b20;"></div>
+            <span>301 - 600 orang</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #bd0026;"></div>
+            <span>601+ orang</span>
+        </div>
+    </div>
+
+    <script>
+        // Data lengkap desa dan jumlah nelayan
+        const villageData = [
+            {name: "Alasmalang", population: 6, lat: -7.6970, lng: 113.7687, district: "Panarukan"},
+            {name: "Arjasa", population: 50, lat: -7.7099, lng: 113.6780, district: "Panji"},
+            {name: "Banyuglugur", population: 112, lat: -7.6941, lng: 113.6958, district: "Panji"},
+            {name: "Besuki", population: 529, lat: -7.6946, lng: 113.6653, district: "Panji"},
+            {name: "Blitok", population: 94, lat: -7.7025, lng: 113.6737, district: "Panji"},
+            {name: "Buduan", population: 6, lat: -7.8523, lng: 113.7659, district: "Suboh"},
+            {name: "Bungatan", population: 71, lat: -7.7272, lng: 113.6482, district: "Panji"},
+            {name: "Demung", population: 392, lat: -7.7126, lng: 113.7038, district: "Panji"},
+            {name: "Duwet", population: 54, lat: -7.6977, lng: 113.7882, district: "Panarukan"},
+            {name: "Gadingan", population: 45, lat: -7.7019, lng: 113.7059, district: "Panji"},
+            {name: "Gelung", population: 180, lat: -7.7134, lng: 113.8028, district: "Panarukan"},
+            {name: "Jangkar", population: 407, lat: -7.7188, lng: 113.6806, district: "Panji"},
+            {name: "Kalianget", population: 265, lat: -7.7163, lng: 113.6579, district: "Panji"},
+            {name: "Ketah", population: 318, lat: -7.8614, lng: 113.7894, district: "Suboh"},
+            {name: "Kilensari", population: 340, lat: -7.6843, lng: 113.7656, district: "Panarukan"},
+            {name: "Klatakan", population: 181, lat: -7.7320, lng: 113.6703, district: "Panji"},
+            {name: "Kumbangsari", population: 31, lat: -7.7155, lng: 113.6944, district: "Panji"},
+            {name: "Lamongan", population: 22, lat: -7.7091, lng: 113.6952, district: "Panji"},
+            {name: "Landangan", population: 319, lat: -7.7082, lng: 114.0061, district: "Situbondo"},
+            {name: "Mlandingan Kulon", population: 68, lat: -7.6814, lng: 114.0225, district: "Situbondo"},
+            {name: "Paowan", population: 1, lat: -7.7298, lng: 113.7800, district: "Panarukan"},
+            {name: "Pasir Putih", population: 195, lat: -7.6819, lng: 114.0367, district: "Situbondo"},
+            {name: "Peleyan", population: 66, lat: -7.6950, lng: 113.8071, district: "Panarukan"},
+            {name: "Pesisir", population: 1463, lat: -7.6681, lng: 114.0475, district: "Situbondo"},
+            {name: "Seletreng", population: 76, lat: -7.6926, lng: 113.9937, district: "Situbondo"},
+            {name: "Selomukti", population: 78, lat: -7.6729, lng: 113.9771, district: "Situbondo"},
+            {name: "Semiring", population: 129, lat: -7.8267, lng: 113.7425, district: "Suboh"},
+            {name: "Sumberanyar", population: 840, lat: -7.8398, lng: 113.7719, district: "Suboh"},
+            {name: "Sumberejo", population: 88, lat: -7.8708, lng: 113.7489, district: "Suboh"},
+            {name: "Sumberkolak", population: 5, lat: -7.7118, lng: 113.7618, district: "Panarukan"},
+            {name: "Sumberwaru", population: 218, lat: -7.8647, lng: 113.7325, district: "Suboh"},
+            {name: "Tanjung Glugur", population: 159, lat: -7.8360, lng: 113.7829, district: "Suboh"},
+            {name: "Tanjung Kamal", population: 561, lat: -7.8475, lng: 113.7580, district: "Suboh"},
+            {name: "Tanjung Pecinan", population: 310, lat: -7.8771, lng: 113.8437, district: "Sumbermalang"},
+            {name: "Wonorejo", population: 319, lat: -7.8318, lng: 113.8214, district: "Sumbermalang"},
+            {name: "Wringinanom-Asembagus", population: 85, lat: -7.8203, lng: 113.8525, district: "Sumbermalang"},
+            {name: "Wringinanom-Panarukan", population: 6, lat: -7.7061, lng: 113.8256, district: "Panarukan"}
+        ];
+
+        // Fungsi untuk menentukan warna berdasarkan jumlah penduduk
+        function getColor(population) {
+            if (population <= 100) return '#ffeda0';
+            if (population <= 300) return '#feb24c';
+            if (population <= 600) return '#f03b20';
+            return '#bd0026';
+        }
+
+        // Fungsi untuk menentukan ukuran marker berdasarkan jumlah penduduk
+        function getRadius(population) {
+            if (population <= 10) return 6;
+            if (population <= 50) return 8;
+            if (population <= 100) return 10;
+            if (population <= 300) return 12;
+            if (population <= 600) return 14;
+            return 16;
+        }
+
+        // Inisialisasi peta
+        const map = L.map('map').setView([-7.75, 113.85], 10);
+
+        // Tambahkan tile layer dari OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18
+        }).addTo(map);
+
+        // Tambahkan marker untuk setiap desa
+        const markers = [];
+        
+        villageData.forEach(village => {
+            // Buat marker dengan lingkaran berwarna
+            const marker = L.circleMarker([village.lat, village.lng], {
+                color: '#333',
+                weight: 1,
+                opacity: 0.8,
+                fillColor: getColor(village.population),
+                fillOpacity: 0.8,
+                radius: getRadius(village.population)
+            }).addTo(map);
+            
+            // Tambahkan popup dengan informasi desa
+            marker.bindPopup(`
+                <b>${village.name}</b><br/>
+                <b>Kecamatan:</b> ${village.district}<br/>
+                <b>Jumlah Nelayan:</b> ${village.population} orang<br/>
+                <b>Koordinat:</b> ${village.lat.toFixed(4)}, ${village.lng.toFixed(4)}
+            `);
+            
+            // Simpan referensi marker
+            markers.push({
+                name: village.name,
+                marker: marker,
+                population: village.population,
+                district: village.district
+            });
+        });
+
+        // Urutkan desa berdasarkan jumlah nelayan (terbanyak ke terkecil)
+        markers.sort((a, b) => b.population - a.population);
+        
+        // Isi daftar desa di panel info
+        const villageList = document.getElementById('villageList');
+        markers.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${item.name}</span> <span style="font-weight:bold;color:#1e5799;">${item.population} org</span>`;
+            villageList.appendChild(li);
+        });
+
+        // Fungsi untuk menampilkan/sembunyikan panel info
+        function toggleInfoPanel() {
+            const panel = document.getElementById('infoPanel');
+            const button = document.querySelector('.toggle-panel-btn');
+            
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+                button.textContent = '📋 Tampilkan Daftar Desa';
+            } else {
+                panel.style.display = 'block';
+                button.textContent = '✖️ Tutup Daftar Desa';
+            }
+        }
+
+        // Hitung dan tampilkan statistik
+        const populations = villageData.map(v => v.population);
+        const maxPopulation = Math.max(...populations);
+        const minPopulation = Math.min(...populations);
+        const avgPopulation = Math.round(populations.reduce((a, b) => a + b, 0) / populations.length);
+        
+        const maxVillage = villageData.find(v => v.population === maxPopulation);
+        const minVillage = villageData.find(v => v.population === minPopulation);
+        
+        document.getElementById('max-village').textContent = `${maxVillage.name} (${maxPopulation} orang)`;
+        document.getElementById('min-village').textContent = `${minVillage.name} (${minPopulation} orang)`;
+        document.getElementById('avg-village').textContent = `${avgPopulation} orang`;
+        
+        // Tambahkan kontrol zoom untuk mobile
+        L.control.zoom({
+            position: 'topright'
+        }).addTo(map);
+        
+        // Tambahkan skala
+        L.control.scale({
+            imperial: false,
+            position: 'bottomleft'
+        }).addTo(map);
+
+        // Penyesuaian peta untuk ukuran layar
+        function adjustMapForScreen() {
+            if (window.innerWidth <= 768) {
+                map.setView([-7.75, 113.85], 9.5);
+            } else {
+                map.setView([-7.75, 113.85], 10);
+            }
+        }
+
+        // Panggil fungsi penyesuaian saat load dan resize
+        window.addEventListener('load', adjustMapForScreen);
+        window.addEventListener('resize', adjustMapForScreen);
+    </script>
+</body>
+</html>
