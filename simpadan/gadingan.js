@@ -1,11 +1,11 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
 // File: gadingan.js
-// Dibuat: 7/1/2026, 21.45.23
+// Dibuat: 8/1/2026, 15.16.31
 // Jumlah Data: 45
 
 window.SIMATA_BACKUP_DATA = [
   {
-    "id": 1767797112822.5576,
+    "id": 1767860175389.335,
     "nama": "ABD KHOLIK",
     "nik": "3512120504930001",
     "whatsapp": "Tidak Ada",
@@ -23,18 +23,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8GZ",
+    "kodeValidasi": "IMP-MK56AVPZ",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.691Z",
+    "importDate": "2026-01-08T08:16:13.079Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.052,
+    "id": 1767860175389.2676,
     "nama": "ABDUL LATIF",
     "nik": "3512120404020005",
     "whatsapp": "Tidak Ada",
@@ -52,18 +52,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.128,
+    "id": 1767860175389.1482,
     "nama": "ABDURROHIM",
     "nik": "3512122102990001",
     "whatsapp": "Tidak Ada",
@@ -81,18 +81,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.9553,
+    "id": 1767860175389.1965,
     "nama": "ABU NADI",
     "nik": "3512120205800002",
     "whatsapp": "Tidak Ada",
@@ -110,18 +110,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.2344,
+    "id": 1767860175389.7559,
     "nama": "AMSE",
     "nik": "3512120108800002",
     "whatsapp": "Tidak Ada",
@@ -139,18 +139,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.4817,
+    "id": 1767860175389.2595,
     "nama": "ARNAWI",
     "nik": "3512120103770001",
     "whatsapp": "Tidak Ada",
@@ -168,18 +168,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.5708,
+    "id": 1767860175389.7817,
     "nama": "ASMORA",
     "nik": "3512122511590001",
     "whatsapp": "Tidak Ada",
@@ -197,18 +197,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.026,
+    "id": 1767860175389.9207,
     "nama": "ASMUYANTO",
     "nik": "3512121304820002",
     "whatsapp": "Tidak Ada",
@@ -226,18 +226,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.1106,
+    "id": 1767860175389.983,
     "nama": "BUSAWI",
     "nik": "3512121112490001",
     "whatsapp": "Tidak Ada",
@@ -255,18 +255,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.2844,
+    "id": 1767860175389.6482,
     "nama": "HASAN",
     "nik": "3512120911720001",
     "whatsapp": "Tidak Ada",
@@ -284,18 +284,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.2292,
+    "id": 1767860175389.2485,
     "nama": "HIJRI",
     "nik": "3512122102900001",
     "whatsapp": "Tidak Ada",
@@ -313,18 +313,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.7996,
+    "id": 1767860175389.076,
     "nama": "HOLIS RIYADI",
     "nik": "3512120404840003",
     "whatsapp": "Tidak Ada",
@@ -342,18 +342,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.2444,
+    "id": 1767860175389.913,
     "nama": "IPTO",
     "nik": "3512122103650003",
     "whatsapp": "Tidak Ada",
@@ -371,18 +371,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.4602,
+    "id": 1767860175389.8909,
     "nama": "JAMAL",
     "nik": "3512122702830001",
     "whatsapp": "Tidak Ada",
@@ -400,18 +400,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.4285,
+    "id": 1767860175389.8196,
     "nama": "JUNAIDI",
     "nik": "3512120101680007",
     "whatsapp": "Tidak Ada",
@@ -429,18 +429,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.9456,
+    "id": 1767860175389.019,
     "nama": "MAATO",
     "nik": "3512121503810001",
     "whatsapp": "Tidak Ada",
@@ -458,18 +458,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.938,
+    "id": 1767860175389.29,
     "nama": "MAKNA",
     "nik": "3512121202590000",
     "whatsapp": "Tidak Ada",
@@ -487,18 +487,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.3594,
+    "id": 1767860175389.1497,
     "nama": "MISDARATUN /P. ARIS",
     "nik": "3512123012730002",
     "whatsapp": "Tidak Ada",
@@ -516,18 +516,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.5974,
+    "id": 1767860175389.0654,
     "nama": "MOH. LATIFAH",
     "nik": "3512122507950001",
     "whatsapp": "Tidak Ada",
@@ -545,18 +545,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.9502,
+    "id": 1767860175389.993,
     "nama": "MOHAMMAD SHALEH",
     "nik": "3512121710960001",
     "whatsapp": "Tidak Ada",
@@ -574,18 +574,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.7139,
+    "id": 1767860175389.1008,
     "nama": "MUHAMMAD SA'DILLAH",
     "nik": "3512122803010001",
     "whatsapp": "Tidak Ada",
@@ -603,18 +603,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.36,
+    "id": 1767860175389.0144,
     "nama": "MUHAWI",
     "nik": "3512121012560003",
     "whatsapp": "Tidak Ada",
@@ -632,18 +632,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.0366,
+    "id": 1767860175389.153,
     "nama": "NAHIJO",
     "nik": "3512120310520001",
     "whatsapp": "Tidak Ada",
@@ -661,18 +661,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.2158,
+    "id": 1767860175389.5881,
     "nama": "RAHMAN AFANDI",
     "nik": "3512141512760001",
     "whatsapp": "Tidak Ada",
@@ -690,18 +690,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.0493,
+    "id": 1767860175389.3223,
     "nama": "RITO",
     "nik": "3512121801550001",
     "whatsapp": "Tidak Ada",
@@ -719,18 +719,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.6587,
+    "id": 1767860175389.6045,
     "nama": "SAHRI",
     "nik": "3512120305690001",
     "whatsapp": "Tidak Ada",
@@ -748,18 +748,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.0857,
+    "id": 1767860175389.442,
     "nama": "SAIFUDDIN",
     "nik": "3512121701750001",
     "whatsapp": "Tidak Ada",
@@ -777,18 +777,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.4116,
+    "id": 1767860175389.7642,
     "nama": "SAIFUL",
     "nik": "3512121703780001",
     "whatsapp": "Tidak Ada",
@@ -806,18 +806,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.436,
+    "id": 1767860175389.8752,
     "nama": "SAIFUL BAHRI",
     "nik": "3512121910850001",
     "whatsapp": "Tidak Ada",
@@ -835,18 +835,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.8079,
+    "id": 1767860175389.347,
     "nama": "SALAMET",
     "nik": "3512120705720006",
     "whatsapp": "Tidak Ada",
@@ -864,18 +864,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.119,
+    "id": 1767860175389.0835,
     "nama": "SAMSUL",
     "nik": "3512121907640002",
     "whatsapp": "Tidak Ada",
@@ -893,18 +893,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.5251,
+    "id": 1767860175389.6023,
     "nama": "SANTOSO",
     "nik": "3512120702840002",
     "whatsapp": "Tidak Ada",
@@ -922,18 +922,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.1877,
+    "id": 1767860175389.103,
     "nama": "SASEM",
     "nik": "35121210011540001",
     "whatsapp": "Tidak Ada",
@@ -951,18 +951,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.7947,
+    "id": 1767860175389.1614,
     "nama": "SAWI",
     "nik": "3512121603720001",
     "whatsapp": "Tidak Ada",
@@ -980,18 +980,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.5835,
+    "id": 1767860175389.3984,
     "nama": "SUARIP",
     "nik": "3512121703530001",
     "whatsapp": "Tidak Ada",
@@ -1009,18 +1009,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.79,
+    "id": 1767860175389.5603,
     "nama": "SUDI",
     "nik": "3512121505730002",
     "whatsapp": "Tidak Ada",
@@ -1038,18 +1038,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.5303,
+    "id": 1767860175389.7234,
     "nama": "SUGIANTO",
     "nik": "3512122001850002",
     "whatsapp": "Tidak Ada",
@@ -1067,18 +1067,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.9458,
+    "id": 1767860175389.2046,
     "nama": "SUHARI",
     "nik": "3512122010650000",
     "whatsapp": "Tidak Ada",
@@ -1096,18 +1096,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.4956,
+    "id": 1767860175389.3262,
     "nama": "SUKRI",
     "nik": "3512121506600001",
     "whatsapp": "Tidak Ada",
@@ -1125,18 +1125,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.7727,
+    "id": 1767860175389.891,
     "nama": "SUMARWI",
     "nik": "3512120801630001",
     "whatsapp": "Tidak Ada",
@@ -1154,18 +1154,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.9475,
+    "id": 1767860175389.4656,
     "nama": "SUTEP",
     "nik": "3512120304680001",
     "whatsapp": "Tidak Ada",
@@ -1183,18 +1183,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.9036,
+    "id": 1767860175389.4036,
     "nama": "SUTO",
     "nik": "3512121507660003",
     "whatsapp": "Tidak Ada",
@@ -1212,18 +1212,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.7573,
+    "id": 1767860175389.135,
     "nama": "TOLAK ADI",
     "nik": "3512120104790002",
     "whatsapp": "Tidak Ada",
@@ -1241,18 +1241,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.2295,
+    "id": 1767860175389.7595,
     "nama": "TORADIN",
     "nik": "3512121202730001",
     "whatsapp": "Tidak Ada",
@@ -1270,18 +1270,18 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767797112822.8962,
+    "id": 1767860175389.739,
     "nama": "USMAN",
     "nik": "3512121008810001",
     "whatsapp": "Tidak Ada",
@@ -1299,14 +1299,14 @@ window.SIMATA_BACKUP_DATA = [
     "tanggalValidasi": "2026-01-04",
     "validator": "MUHAMMAD S",
     "driveLink": "",
-    "kodeValidasi": "IMP-MK44R8H0",
+    "kodeValidasi": "IMP-MK56AVQ0",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T14:45:10.692Z",
+    "importDate": "2026-01-08T08:16:13.080Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T14:45:12.822Z",
+    "createdAt": "2026-01-08T08:16:15.389Z",
     "createdBy": "System Import"
   }
 ];
