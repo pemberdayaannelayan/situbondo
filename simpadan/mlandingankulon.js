@@ -1,11 +1,11 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: mlandingankulon.js
-// Dibuat: 7/1/2026, 22.31.06
+// File: mlandingan.js
+// Dibuat: 8/1/2026, 15.22.14
 // Jumlah Data: 68
 
 window.SIMATA_BACKUP_DATA = [
   {
-    "id": 1767799857600.9585,
+    "id": 1767860517565.8157,
     "nama": "ABD. AZIS",
     "nik": "3512040706780002",
     "whatsapp": "Tidak Ada",
@@ -25,16 +25,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-OGJ592",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.4448,
+    "id": 1767860517565.384,
     "nama": "ABDULLAH",
     "nik": "3512040404500002",
     "whatsapp": "Tidak Ada",
@@ -54,16 +54,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-2Z3B6Y",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.8655,
+    "id": 1767860517565.1587,
     "nama": "ADI PURNOMO",
     "nik": "3512020101810038",
     "whatsapp": "Tidak Ada",
@@ -83,16 +83,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-1454F5",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.5532,
+    "id": 1767860517565.102,
     "nama": "AGUS",
     "nik": "3512041708850003",
     "whatsapp": "Tidak Ada",
@@ -112,16 +112,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-Q9B227",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.7947,
+    "id": 1767860517565.2268,
     "nama": "AHMAD RAKIB",
     "nik": "3512041711920004",
     "whatsapp": "Tidak Ada",
@@ -141,16 +141,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-8G2H6F",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.7358,
+    "id": 1767860517565.4968,
     "nama": "AMAR",
     "nik": "3512040104460001",
     "whatsapp": "Tidak Ada",
@@ -170,16 +170,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-Q52P5L",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.0925,
+    "id": 1767860517565.4814,
     "nama": "AMIR",
     "nik": "3512042812450001",
     "whatsapp": "Tidak Ada",
@@ -199,16 +199,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-4Z139K",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.8726,
+    "id": 1767860517565.3542,
     "nama": "ASMAD",
     "nik": "3512040102710003",
     "whatsapp": "Tidak Ada",
@@ -228,16 +228,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-2UY9A4",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.5615,
+    "id": 1767860517565.052,
     "nama": "BAHRI",
     "nik": "3512042102630002",
     "whatsapp": "Tidak Ada",
@@ -257,16 +257,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-336ZCX",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.7278,
+    "id": 1767860517565.4407,
     "nama": "BUNIMAN",
     "nik": "3512041002800004",
     "whatsapp": "Tidak Ada",
@@ -286,16 +286,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-BM51L5",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.3303,
+    "id": 1767860517565.8396,
     "nama": "BUSIRI",
     "nik": "3512041808800002",
     "whatsapp": "Tidak Ada",
@@ -315,16 +315,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-G78ID1",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.093,
+    "id": 1767860517565.3726,
     "nama": "CUNG EFENDI",
     "nik": "3512041405770002",
     "whatsapp": "Tidak Ada",
@@ -344,16 +344,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-75FVY2",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.0596,
+    "id": 1767860517565.557,
     "nama": "CUNG HADI",
     "nik": "3512041510770003",
     "whatsapp": "Tidak Ada",
@@ -373,16 +373,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-7MX7CE",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.2175,
+    "id": 1767860517565.0676,
     "nama": "ERFANDI",
     "nik": "3512041006850003",
     "whatsapp": "Tidak Ada",
@@ -402,16 +402,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-0T33QT",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.9282,
+    "id": 1767860517565.293,
     "nama": "HAFID",
     "nik": "3512043004750001",
     "whatsapp": "Tidak Ada",
@@ -431,16 +431,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-2N4JL7",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.516,
+    "id": 1767860517565.6782,
     "nama": "HALIM",
     "nik": "3512040601650002",
     "whatsapp": "Tidak Ada",
@@ -460,16 +460,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-UWN2YY",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.7249,
+    "id": 1767860517565.6985,
     "nama": "HARI BUDI CAHYONO",
     "nik": "3512040808790001",
     "whatsapp": "Tidak Ada",
@@ -489,16 +489,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-48QALZ",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.9976,
+    "id": 1767860517565.542,
     "nama": "HARI MINDARI",
     "nik": "3512040104630002",
     "whatsapp": "Tidak Ada",
@@ -518,16 +518,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-76UZ97",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.2778,
+    "id": 1767860517565.6863,
     "nama": "HARIYATI",
     "nik": "3512045207710002",
     "whatsapp": "Tidak Ada",
@@ -547,16 +547,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-5HS1DF",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.2852,
+    "id": 1767860517565.5225,
     "nama": "HARNOKO",
     "nik": "3512041106810004",
     "whatsapp": "Tidak Ada",
@@ -576,16 +576,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-PNYD6B",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.8252,
+    "id": 1767860517565.497,
     "nama": "HASAN",
     "nik": "3512043006500003",
     "whatsapp": "Tidak Ada",
@@ -605,16 +605,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-7QHSCN",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.6553,
+    "id": 1767860517565.4775,
     "nama": "JOKO SUDARYANTO",
     "nik": "3512041012910001",
     "whatsapp": "Tidak Ada",
@@ -634,16 +634,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-Y17HXN",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.8752,
+    "id": 1767860517565.2046,
     "nama": "JUMALI",
     "nik": "3512043008690001",
     "whatsapp": "Tidak Ada",
@@ -663,16 +663,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-E02S93",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.1743,
+    "id": 1767860517565.408,
     "nama": "MISRAN",
     "nik": "3512041208550001",
     "whatsapp": "Tidak Ada",
@@ -692,16 +692,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-SQ8Z5N",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.0613,
+    "id": 1767860517565.516,
     "nama": "MIYAHRAL",
     "nik": "3512040909390002",
     "whatsapp": "Tidak Ada",
@@ -721,16 +721,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-EG1L34",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.235,
+    "id": 1767860517565.2178,
     "nama": "NA' IM",
     "nik": "3512041208680003",
     "whatsapp": "Tidak Ada",
@@ -750,16 +750,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-80N4CC",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.812,
+    "id": 1767860517565.321,
     "nama": "PARNA",
     "nik": "3512040107530005",
     "whatsapp": "Tidak Ada",
@@ -779,16 +779,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-5ZM5H2",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.0933,
+    "id": 1767860517565.8088,
     "nama": "RAHMAN",
     "nik": "3512040608780001",
     "whatsapp": "Tidak Ada",
@@ -808,16 +808,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-DP51W7",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.2346,
+    "id": 1767860517565.868,
     "nama": "RINIS",
     "nik": "3512041803850001",
     "whatsapp": "Tidak Ada",
@@ -837,16 +837,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-1J1HLI",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.608,
+    "id": 1767860517565.2327,
     "nama": "SAIFUL BAHRI",
     "nik": "3512041610870001",
     "whatsapp": "Tidak Ada",
@@ -866,16 +866,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-6XN4RW",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.8044,
+    "id": 1767860517565.4863,
     "nama": "SLAMET RIYADI",
     "nik": "3512042005830002",
     "whatsapp": "Tidak Ada",
@@ -895,16 +895,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-M0G2JH",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.891,
+    "id": 1767860517565.9722,
     "nama": "SUHERMAN",
     "nik": "3512040307730002",
     "whatsapp": "Tidak Ada",
@@ -924,16 +924,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-8672T7",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.7566,
+    "id": 1767860517565.2878,
     "nama": "SUMARDI",
     "nik": "3512040707690001",
     "whatsapp": "Tidak Ada",
@@ -953,16 +953,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-RP5F59",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.7722,
+    "id": 1767860517565.5625,
     "nama": "TIPYONO",
     "nik": "3512042605720001",
     "whatsapp": "Tidak Ada",
@@ -982,16 +982,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-Z5Y0G4",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.6821,
+    "id": 1767860517565.7905,
     "nama": "TOMO",
     "nik": "3512043006550007",
     "whatsapp": "Tidak Ada",
@@ -1011,16 +1011,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-979GX4",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.564,
+    "id": 1767860517565.7,
     "nama": "YANTO",
     "nik": "3512041611730001",
     "whatsapp": "Tidak Ada",
@@ -1040,16 +1040,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-0F7070",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.147,
+    "id": 1767860517565.9778,
     "nama": "ZAINUDDIN A.",
     "nik": "3512040701870001",
     "whatsapp": "Tidak Ada",
@@ -1069,16 +1069,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-3GC0HC",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.0935,
+    "id": 1767860517565.7043,
     "nama": "RIPA'I",
     "nik": "3512041707730002",
     "whatsapp": "Tidak Ada",
@@ -1098,16 +1098,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-377Z63",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.154,
+    "id": 1767860517565.128,
     "nama": "MISWAR",
     "nik": "3512040707770004",
     "whatsapp": "Tidak Ada",
@@ -1127,16 +1127,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-1629ZV",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.4424,
+    "id": 1767860517565.9634,
     "nama": "MARYONO",
     "nik": "3512042206790001",
     "whatsapp": "Tidak Ada",
@@ -1156,16 +1156,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-9018U5",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.1694,
+    "id": 1767860517565.8408,
     "nama": "MA'ADI",
     "nik": "3512041006620002",
     "whatsapp": "Tidak Ada",
@@ -1185,16 +1185,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-69T828",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.4697,
+    "id": 1767860517565.0989,
     "nama": "SAIMAN",
     "nik": "3512040201630002",
     "whatsapp": "Tidak Ada",
@@ -1214,16 +1214,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-9BY647",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.8503,
+    "id": 1767860517565.6465,
     "nama": "MOH. ERFAN",
     "nik": "3512042511870001",
     "whatsapp": "Tidak Ada",
@@ -1243,16 +1243,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-606G03",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.0723,
+    "id": 1767860517565.2383,
     "nama": "ALI",
     "nik": "3512040201630001",
     "whatsapp": "Tidak Ada",
@@ -1272,16 +1272,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-253840",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.6921,
+    "id": 1767860517565.1958,
     "nama": "BUSADI",
     "nik": "3512040309640002",
     "whatsapp": "Tidak Ada",
@@ -1301,16 +1301,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-37H8Y7",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.1106,
+    "id": 1767860517565.4976,
     "nama": "YANTO",
     "nik": "3512041611730003",
     "whatsapp": "Tidak Ada",
@@ -1330,16 +1330,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-W9127X",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.5378,
+    "id": 1767860517565.9902,
     "nama": "SUGIANTO",
     "nik": "3512041305780001",
     "whatsapp": "Tidak Ada",
@@ -1359,16 +1359,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-85B228",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.992,
+    "id": 1767860517565.6216,
     "nama": "SUKARDI",
     "nik": "3512041503570001",
     "whatsapp": "Tidak Ada",
@@ -1388,16 +1388,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-D815CQ",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.462,
+    "id": 1767860517565.8618,
     "nama": "ABDUL HAFIZD",
     "nik": "6171022606780005",
     "whatsapp": "Tidak Ada",
@@ -1417,16 +1417,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-576T42",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.7783,
+    "id": 1767860517565.541,
     "nama": "TIPTO HAJAR",
     "nik": "3512041207700004",
     "whatsapp": "Tidak Ada",
@@ -1446,16 +1446,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-AX5TM2",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.9905,
+    "id": 1767860517565.113,
     "nama": "HERMANTO",
     "nik": "3512042301900001",
     "whatsapp": "Tidak Ada",
@@ -1475,16 +1475,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-252CPV",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.5457,
+    "id": 1767860517565.165,
     "nama": "MAHUDI",
     "nik": "3512040203500002",
     "whatsapp": "Tidak Ada",
@@ -1504,16 +1504,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-069CG1",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.1077,
+    "id": 1767860517565.0505,
     "nama": "DULHANAN",
     "nik": "3512040107490027",
     "whatsapp": "Tidak Ada",
@@ -1533,16 +1533,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-D5H58E",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.3804,
+    "id": 1767860517565.0728,
     "nama": "BUHAM",
     "nik": "3512043008700002",
     "whatsapp": "Tidak Ada",
@@ -1562,16 +1562,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-AE43SF",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.565Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.6277,
+    "id": 1767860517566.849,
     "nama": "RUSDI",
     "nik": "3512041910860001",
     "whatsapp": "Tidak Ada",
@@ -1591,16 +1591,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-URPF54",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.9429,
+    "id": 1767860517566.6855,
     "nama": "RAFIK",
     "nik": "3512040405730001",
     "whatsapp": "Tidak Ada",
@@ -1620,16 +1620,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-SZVXY1",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.7996,
+    "id": 1767860517566.0386,
     "nama": "RUDI YANTO",
     "nik": "3511091408870001",
     "whatsapp": "Tidak Ada",
@@ -1649,16 +1649,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-Z00PX7",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.247,
+    "id": 1767860517566.3206,
     "nama": "MUHAMMAD",
     "nik": "3512041201700001",
     "whatsapp": "Tidak Ada",
@@ -1678,16 +1678,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-KWGOV5",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.3306,
+    "id": 1767860517566.2986,
     "nama": "MOH. HOSNAN",
     "nik": "3512041202850005",
     "whatsapp": "Tidak Ada",
@@ -1707,16 +1707,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-Z15U8J",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.8467,
+    "id": 1767860517566.7163,
     "nama": "ABDUL HAFID",
     "nik": "3512040204750002",
     "whatsapp": "Tidak Ada",
@@ -1736,16 +1736,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-59N7XK",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.9766,
+    "id": 1767860517566.862,
     "nama": "JAMALUDDIN",
     "nik": "3512040808740001",
     "whatsapp": "Tidak Ada",
@@ -1765,16 +1765,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-5742R3",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.9727,
+    "id": 1767860517566.5007,
     "nama": "HAERUDDIN",
     "nik": "3512041301910001",
     "whatsapp": "Tidak Ada",
@@ -1794,16 +1794,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-20V202",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.3662,
+    "id": 1767860517566.0266,
     "nama": "IBRAHIM",
     "nik": "3512040608620001",
     "whatsapp": "Tidak Ada",
@@ -1823,16 +1823,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-49R134",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.2632,
+    "id": 1767860517566.139,
     "nama": "ABD. BARI",
     "nik": "3512041601870002",
     "whatsapp": "Tidak Ada",
@@ -1852,16 +1852,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-AVGD0G",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.9727,
+    "id": 1767860517566.336,
     "nama": "MUSYAWIR",
     "nik": "3512040112750001",
     "whatsapp": "Tidak Ada",
@@ -1881,16 +1881,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-JFN2A3",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.1396,
+    "id": 1767860517566.485,
     "nama": "MOHAMMAD ZAINAL ABIDIN",
     "nik": "3512042005670001",
     "whatsapp": "Tidak Ada",
@@ -1910,16 +1910,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-42JWR6",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.9426,
+    "id": 1767860517566.046,
     "nama": "ABDURRAHEM",
     "nik": "3512044608350001",
     "whatsapp": "Tidak Ada",
@@ -1939,16 +1939,16 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-2BN75O",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   },
   {
-    "id": 1767799857600.2974,
+    "id": 1767860517566.4329,
     "nama": "PURNOMO",
     "nik": "3512040306000001",
     "whatsapp": "Tidak Ada",
@@ -1968,12 +1968,12 @@ window.SIMATA_BACKUP_DATA = [
     "driveLink": "",
     "kodeValidasi": "VLD-BHKR7G",
     "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-07T15:30:55.315Z",
+    "importDate": "2026-01-08T08:21:55.326Z",
     "missingFields": [
       "jenisIkan"
     ],
     "isComplete": false,
-    "createdAt": "2026-01-07T15:30:57.600Z",
+    "createdAt": "2026-01-08T08:21:57.566Z",
     "createdBy": "System Import"
   }
 ];
