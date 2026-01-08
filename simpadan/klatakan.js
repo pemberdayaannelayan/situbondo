@@ -1,7 +1,7 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: klatakan.js
-// Dibuat: 7/1/2026, 22.41.26
-// Jumlah Data: 180
+// File: reload.js
+// Dibuat: 8/1/2026, 09.21.00
+// Jumlah Data: 181
 
 window.SIMATA_BACKUP_DATA = [
   {
@@ -5222,6 +5222,33 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-07T15:41:14.168Z",
+    "createdBy": "System Import"
+  },
+  {
+    "id": 1767838832278.4873,
+    "nama": "SA'IWAN",
+    "nik": "3512052206560002",
+    "whatsapp": "Tidak Ada",
+    "profesi": "Nelayan Penuh Waktu",
+    "status": "Anak Buah Kapal",
+    "tahunLahir": 1956,
+    "usia": 70,
+    "kecamatan": "Kendit",
+    "desa": "Klatakan",
+    "alatTangkap": "Pancing Ulur",
+    "namaKapal": "-",
+    "jenisKapal": "-",
+    "jenisIkan": "Ikan Layang, Cumi-cumi, Kakap Merah, Ikan Kurisi",
+    "usahaSampingan": "",
+    "tanggalValidasi": "2025-12-23",
+    "validator": "MUHAMMAD S",
+    "driveLink": "",
+    "kodeValidasi": "VLD-AG90CJ",
+    "keterangan": "Diimpor pada 4/1/2026, 17.48.57",
+    "importDate": "2026-01-08T02:20:30.227Z",
+    "missingFields": [],
+    "isComplete": true,
+    "createdAt": "2026-01-08T02:20:32.278Z",
     "createdBy": "System Import"
   }
 ];
