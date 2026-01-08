@@ -183,9 +183,140 @@
             color: #f6b93b;
             margin-bottom: 1rem;
         }
+        
+        /* LOADING MODAL STYLES */
+        .loading-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(12, 36, 97, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeInScale 0.4s ease-out;
+        }
+        
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .loading-spinner {
+            width: 70px;
+            height: 70px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #0c2461;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0c2461;
+            margin-bottom: 1rem;
+        }
+        
+        .loading-message {
+            color: #6c757d;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .loading-progress {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-top: 2rem;
+            overflow: hidden;
+        }
+        
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #0c2461, #1e3799);
+            width: 0%;
+            animation: progress 2s ease-in-out infinite;
+        }
+        
+        @keyframes progress {
+            0% { width: 0%; transform: translateX(-100%); }
+            50% { width: 50%; }
+            100% { width: 100%; transform: translateX(100%); }
+        }
+        
+        /* WILAYAH CARD STYLE PERBAIKAN */
+        .wilayah-card-header .badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        /* ERROR STATE STYLE */
+        .wilayah-error-state {
+            text-align: center;
+            padding: 2rem;
+            background: #fff5f5;
+            border-radius: 12px;
+            border: 1px solid #f8d7da;
+            margin: 1rem 0;
+        }
+        
+        .wilayah-error-state i {
+            font-size: 3rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+        
+        .wilayah-error-state h5 {
+            color: #721c24;
+            margin-bottom: 0.5rem;
+        }
+        
+        .wilayah-error-state p {
+            color: #856404;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Modal Loading -->
+    <div class="loading-modal-overlay" id="loadingModal" style="display: none;">
+        <div class="loading-modal-content">
+            <div class="loading-spinner"></div>
+            <h3 class="loading-title" id="loadingTitle">Memproses Data</h3>
+            <p class="loading-message" id="loadingMessage">Mohon tunggu, sistem sedang memproses permintaan Anda. Proses ini mungkin memerlukan waktu beberapa saat tergantung jumlah data yang tersedia.</p>
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
+            </div>
+        </div>
+    </div>
 
     <div id="qr-code-generator">
         <div id="qr-right"></div> 
@@ -414,7 +545,7 @@
                 <div class="app-slogan">Situbondo Naik Kelas</div>
                 <div class="app-origin" id="appOrigin">App System Bidang Pemberdayaan Nelayan</div>
                 <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
-                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.8</span>
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v5.9</span>
                 </div>
             </div>
             
@@ -1340,8 +1471,8 @@
     <!-- KODE UTAMA APLIKASI DENGAN FITUR DATA WILAYAH YANG DISEMPURNAKAN -->
     <script>
         // =====================================================
-        // KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 5.8 FINAL
-        // DENGAN FITUR DATA WILAYAH YANG DISEMPURNAKAN
+        // KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 5.9 FINAL
+        // DENGAN FITUR DATA WILAYAH DAN LOADING EFFECT YANG DISEMPURNAKAN
         // =====================================================
         
         // Data ikan yang diperbarui dan dilengkapi
@@ -1477,7 +1608,7 @@
             "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
         };
 
-        // Daftar desa untuk fitur Data Wilayah
+        // Daftar desa untuk fitur Data Wilayah - DIPERBARUI dengan desa baru
         const DESA_LIST = [
             { name: "Kilensari", file: "kilensari.js" },
             { name: "Klatakan", file: "klatakan.js" },
@@ -1497,7 +1628,8 @@
             { name: "Gelung", file: "gelung.js" },
             { name: "Peleyan", file: "peleyan.js" },
             { name: "Alasmalang", file: "alasmalang.js" },
-            { name: "Wringinanom", file: "wringinanom.js" },
+            { name: "Wringinanom-Asembagus", file: "wringinanomasembagus.js" },
+            { name: "Wringinanom-Panarukan", file: "wringinanompanarukan.js" },
             { name: "Sumberkolak", file: "sumberkolak.js" },
             { name: "Tanjung Glugur", file: "tanjungglugur.js" },
             { name: "Semiring", file: "semiring.js" },
@@ -1513,7 +1645,8 @@
             { name: "Sumberejo", file: "sumberrejo.js" },
             { name: "Jangkar", file: "jangkar.js" },
             { name: "Gadingan", file: "gadingan.js" },
-            { name: "Kumbangsari", file: "kumbangsari.js" }
+            { name: "Kumbangsari", file: "kumbangsari.js" },
+            { name: "Paowan", file: "paowan.js" }
         ];
 
         // --- GLOBAL VARIABLES ---
@@ -1557,6 +1690,19 @@
         window.appData = appData;
         window.appSettings = appSettings;
         window.currentWilayah = currentWilayah;
+        
+        // --- FUNGSI LOADING EFFECT ---
+        function showLoading(title = "Memproses Data", message = "Mohon tunggu, sistem sedang memproses permintaan Anda. Proses ini mungkin memerlukan waktu beberapa saat tergantung jumlah data yang tersedia.") {
+            document.getElementById('loadingTitle').textContent = title;
+            document.getElementById('loadingMessage').textContent = message;
+            document.getElementById('loadingModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Mencegah scroll saat loading
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Mengembalikan scroll
+        }
         
         // --- FUNGSI UTAMA ---
         function getProfesiLabel(profesi) {
@@ -1630,6 +1776,7 @@
                     card.classList.add('active');
                 }
                 
+                // HAPUS TEKS NAMA FILE .js dari template kartu
                 card.innerHTML = `
                     <div class="wilayah-card-header">
                         <div class="d-flex justify-content-between align-items-center">
@@ -1642,9 +1789,6 @@
                         </div>
                     </div>
                     <div class="wilayah-card-body">
-                        <div class="text-muted small mb-2">
-                            <i class="fas fa-file-code me-1"></i> ${desa.file}
-                        </div>
                         <div class="wilayah-info-badge">
                             <i class="fas fa-database me-1"></i> Data Tersedia
                         </div>
@@ -1730,7 +1874,7 @@
 
         function loadDataByDesa(desaName, fileName) {
             if (confirm(`Anda akan memuat data dari Desa ${desaName}. Data saat ini akan digantikan. Lanjutkan?`)) {
-                showNotification(`Memuat data dari Desa ${desaName}...`, 'info');
+                showLoading("Memuat Data Desa", `Sedang memproses data dari Desa ${desaName}. Mohon tunggu...`);
                 
                 // Reset currentWilayah
                 currentWilayah.mode = 'desa';
@@ -1758,6 +1902,7 @@
                                 renderDataTable();
                                 updateDashboard();
                                 
+                                hideLoading();
                                 showNotification(`Data dari Desa ${desaName} berhasil dimuat (${appData.length} data)`, 'success');
                                 modalDataWilayah.hide();
                                 
@@ -1766,9 +1911,11 @@
                                 
                             } catch (error) {
                                 console.error('Error memuat data desa:', error);
+                                hideLoading();
                                 showNotification('Gagal memuat data dari desa. Format data tidak valid.', 'error');
                             }
                         } else {
+                            hideLoading();
                             showNotification(`Tidak ada data yang ditemukan di file ${fileName}`, 'warning');
                         }
                     }, 500);
@@ -1776,7 +1923,8 @@
                 
                 script.onerror = function() {
                     console.error(`Gagal memuat file ${fileName}`);
-                    showNotification(`Gagal memuat file ${fileName}. Pastikan file tersedia di server.`, 'error');
+                    hideLoading();
+                    showNotification(`Maaf, Desa Tersebut Masih Belum Ada Data Di SIMPADAN TANGKAP`, 'error');
                 };
                 
                 document.head.appendChild(script);
@@ -1867,57 +2015,66 @@
             });
         }
 
-        // --- FUNGSI BACKUP DATA YANG DISEMPURNAKAN (TANPA ENKRIPSI) ---
+        // --- FUNGSI BACKUP DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
         function backupData() {
             try {
-                let dataToBackup = appData;
-                let backupFileName = 'reload.js';
-                let backupContent = '';
+                showLoading("Membuat Backup", "Sedang menyimpan data ke file backup. Mohon tunggu...");
                 
-                // Tentukan nama file berdasarkan mode
-                if (currentWilayah.mode === 'desa' && currentWilayah.desaName) {
-                    backupFileName = currentWilayah.fileName;
+                setTimeout(() => {
+                    let dataToBackup = appData;
+                    let backupFileName = 'reload.js';
+                    let backupContent = '';
                     
-                    // Filter data hanya untuk desa yang dipilih
-                    dataToBackup = appData.filter(d => d.desa === currentWilayah.desaName);
-                    
-                    backupContent = `// DATA NELAYAN DESA ${currentWilayah.desaName.toUpperCase()}
+                    // Tentukan nama file berdasarkan mode
+                    if (currentWilayah.mode === 'desa' && currentWilayah.desaName) {
+                        backupFileName = currentWilayah.fileName;
+                        
+                        // Filter data hanya untuk desa yang dipilih
+                        dataToBackup = appData.filter(d => d.desa === currentWilayah.desaName);
+                        
+                        backupContent = `// DATA NELAYAN DESA ${currentWilayah.desaName.toUpperCase()}
 // File: ${backupFileName}
 // Dibuat: ${new Date().toLocaleString('id-ID')}
 // Jumlah Data: ${dataToBackup.length}
 
 window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
-                } else {
-                    backupContent = `// DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
+                    } else {
+                        backupContent = `// DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
 // File: reload.js
 // Dibuat: ${new Date().toLocaleString('id-ID')}
 // Jumlah Data: ${dataToBackup.length}
 
 window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
-                }
+                    }
+                    
+                    // Buat dan download file
+                    const blob = new Blob([backupContent], { type: 'text/javascript' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = backupFileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    hideLoading();
+                    showNotification(`Backup berhasil: ${backupFileName} (${dataToBackup.length} data)`, 'success');
+                }, 1000);
                 
-                // Buat dan download file
-                const blob = new Blob([backupContent], { type: 'text/javascript' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = backupFileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showNotification(`Backup berhasil: ${backupFileName} (${dataToBackup.length} data)`, 'success');
             } catch (error) {
                 console.error('Backup error:', error);
+                hideLoading();
                 showNotification('Gagal membuat backup. Silakan coba lagi.', 'error');
             }
         }
 
-        // --- FUNGSI RESTORE DATA YANG DISEMPURNAKAN ---
+        // --- FUNGSI RESTORE DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
         function restoreData() {
             const fileInput = document.getElementById('restoreFileInput');
             if (!fileInput.files.length) return;
+            
+            showLoading("Restore Data", "Sedang memproses restore data. Mohon tunggu, proses ini mungkin memerlukan waktu beberapa saat...");
             
             const file = fileInput.files[0];
             const reader = new FileReader();
@@ -1950,6 +2107,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     }
                     
                     if (restoredData.length === 0) {
+                        hideLoading();
                         showNotification('File tidak berisi data', 'warning');
                         return;
                     }
@@ -1981,17 +2139,20 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                         message = 'Tidak ada data baru untuk di-restore';
                     }
                     
+                    hideLoading();
                     showNotification(message, 'success');
                     fileInput.value = '';
                     document.getElementById('restoreDataBtn').disabled = true;
                     
                 } catch (error) {
                     console.error('Restore error:', error);
+                    hideLoading();
                     showNotification(`Gagal restore: ${error.message}`, 'error');
                 }
             };
             
             reader.onerror = function() {
+                hideLoading();
                 showNotification('Gagal membaca file', 'error');
             };
             
@@ -2017,17 +2178,9 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
             return Array.from(dataMap.values());
         }
 
-        // --- FUNGSI RELOAD DATA YANG DISEMPURNAKAN ---
+        // --- FUNGSI RELOAD DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
         function handleReloadRepo() {
-            const reloadBtn = document.getElementById('btn-reload-repo');
-            const spinner = document.getElementById('reloadSpinner');
-            
-            // Tampilkan spinner dan nonaktifkan tombol
-            spinner.classList.add('active');
-            reloadBtn.disabled = true;
-            reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Memuat Data... <span class="spinner-border spinner-border-sm reload-spinner active" id="reloadSpinner"></span>';
-            
-            showNotification('Memulai sinkronisasi data dari server...', 'info');
+            showLoading("Sinkronisasi Data", "Sedang melakukan sinkronisasi data dari server. Mohon tunggu, proses ini mungkin memerlukan waktu beberapa saat...");
             
             // Tentukan file yang akan dimuat berdasarkan mode
             const fileName = currentWilayah.mode === 'desa' ? currentWilayah.fileName : 'reload.js';
@@ -2050,31 +2203,25 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                             updateDashboard();
                             updateFilterDesaOptions();
                             
+                            hideLoading();
                             showNotification(`Data berhasil disinkronisasi dari ${fileName} (${appData.length} data)`, 'success');
                             
                         } catch (error) {
                             console.error('Reload error:', error);
+                            hideLoading();
                             showNotification('Gagal memuat data. Format data tidak valid.', 'error');
                         }
                     } else {
+                        hideLoading();
                         showNotification(`Tidak ada data yang ditemukan di file ${fileName}`, 'warning');
                     }
-                    
-                    // Reset tombol
-                    spinner.classList.remove('active');
-                    reloadBtn.disabled = false;
-                    reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
                 }, 500);
             };
             
             script.onerror = function() {
                 console.error(`Gagal memuat file ${fileName}`);
-                showNotification(`Gagal memuat data dari ${fileName}. Pastikan file tersedia di server.`, 'error');
-                
-                // Reset tombol
-                spinner.classList.remove('active');
-                reloadBtn.disabled = false;
-                reloadBtn.innerHTML = '<i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span>';
+                hideLoading();
+                showNotification(`Maaf, Data Tidak Ditemukan Di SIMPADAN TANGKAP`, 'error');
             };
             
             document.head.appendChild(script);
@@ -4308,9 +4455,15 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', () => {
                     if(confirm('Apakah Anda yakin ingin keluar? Sistem akan mengunduh data backup secara otomatis.')) {
-                        sessionStorage.removeItem('simata_session');
-                        backupData();
-                        setTimeout(() => location.reload(), 2000);
+                        showLoading("Membuat Backup", "Sedang membuat backup data sebelum keluar. Mohon tunggu...");
+                        setTimeout(() => {
+                            sessionStorage.removeItem('simata_session');
+                            backupData();
+                            setTimeout(() => {
+                                hideLoading();
+                                location.reload();
+                            }, 2000);
+                        }, 500);
                     }
                 });
             }
@@ -4877,20 +5030,30 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
             const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
             if(checkedBoxes.length === 0) return;
             
-            const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN SENSOR:`);
-            if(userCode === appSettings.securityCodeSensor) {
-                const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
-                appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
-                saveData(); 
-                currentPage = 1; // Reset ke halaman pertama setelah menghapus
-                renderDataTable(); 
-                updateDashboard();
-                updateFilterDesaOptions();
-                showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
-                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-                if (selectAllCheckbox) selectAllCheckbox.checked = false;
-                checkGlobalDuplicates();
-            } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
+            showLoading("Menghapus Data", `Sedang menghapus ${checkedBoxes.length} data terpilih. Mohon tunggu...`);
+            
+            setTimeout(() => {
+                const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN SENSOR:`);
+                if(userCode === appSettings.securityCodeSensor) {
+                    const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
+                    appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
+                    saveData(); 
+                    currentPage = 1; // Reset ke halaman pertama setelah menghapus
+                    renderDataTable(); 
+                    updateDashboard();
+                    updateFilterDesaOptions();
+                    hideLoading();
+                    showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
+                    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                    if (selectAllCheckbox) selectAllCheckbox.checked = false;
+                    checkGlobalDuplicates();
+                } else if (userCode !== null) {
+                    hideLoading();
+                    alert("Kode keamanan sensor SALAH!");
+                } else {
+                    hideLoading();
+                }
+            }, 500);
         }
 
         function editData(id) {
@@ -5015,26 +5178,38 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
         }
 
         function deleteData(id) {
-            const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk menghapus data:");
-            if(userCode === appSettings.securityCodeSensor) {
-                if(confirm('Yakin menghapus data ini secara permanen?')) {
-                    appData = appData.filter(d => d.id != id);
-                    saveData(); 
-                    
-                    // Periksa apakah halaman saat ini akan kosong setelah penghapusan
-                    const totalItems = appData.length;
-                    const totalPages = Math.ceil(totalItems / appSettings.itemsPerPage);
-                    if (currentPage > totalPages && totalPages > 0) {
-                        currentPage = totalPages;
+            showLoading("Menghapus Data", "Sedang memproses penghapusan data. Mohon tunggu...");
+            
+            setTimeout(() => {
+                const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk menghapus data:");
+                if(userCode === appSettings.securityCodeSensor) {
+                    if(confirm('Yakin menghapus data ini secara permanen?')) {
+                        appData = appData.filter(d => d.id != id);
+                        saveData(); 
+                        
+                        // Periksa apakah halaman saat ini akan kosong setelah penghapusan
+                        const totalItems = appData.length;
+                        const totalPages = Math.ceil(totalItems / appSettings.itemsPerPage);
+                        if (currentPage > totalPages && totalPages > 0) {
+                            currentPage = totalPages;
+                        }
+                        
+                        renderDataTable(); 
+                        updateDashboard();
+                        updateFilterDesaOptions();
+                        hideLoading();
+                        showNotification('Data berhasil dihapus', 'success');
+                        checkGlobalDuplicates();
+                    } else {
+                        hideLoading();
                     }
-                    
-                    renderDataTable(); 
-                    updateDashboard();
-                    updateFilterDesaOptions();
-                    showNotification('Data berhasil dihapus', 'success');
-                    checkGlobalDuplicates();
+                } else if (userCode !== null) {
+                    hideLoading();
+                    alert("Kode keamanan sensor SALAH!");
+                } else {
+                    hideLoading();
                 }
-            } else if (userCode !== null) alert("Kode keamanan sensor SALAH!");
+            }, 500);
         }
 
         function startDuplicateChecker() {
@@ -5202,85 +5377,62 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
         }
 
         function sendDataToWhatsapp() {
-            const message = `Yth. Administrator Dinas Perikanan Kabupaten Situbondo,\n\nBerikut kami lampirkan data pembaruan Sistem Satu Data Nelayan dari:\n*${appSettings.appSubtitle}*\n\nTanggal Laporan: ${new Date().toLocaleDateString('id-ID')}\nTotal Data: ${appData.length} Records\n\nFile lampiran (reload.js) telah kami sertakan pada pesan ini untuk proses sinkronisasi data.\n\nTerima Kasih.`;
+            const message = `Yth. Administrator Dinas Perikanan Kabupaten Situbondo,\n\nBerikut kami lampirkan data pembaruan Sistem Satu Data Nelayan dari:\n*${appSettings.appSubtitle}*\n\nTanggal Laporan: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\nTotal Data: ${appData.length} nelayan\n\nData terlampir dalam format reload.js\n\nSalam,\nOperator SIMPADAN TANGKAP`;
             const url = `https://wa.me/6287865614222?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
         }
 
-        // Fungsi untuk generate ID Card dengan error handling
-        function safeGenerateIDCard(id) {
-            const loadingEl = document.getElementById('idcardLoading');
-            if (!loadingEl) return;
-            
-            try {
-                const d = appData.find(item => item.id == id);
-                if(!d) {
-                    showNotification('Data nelayan tidak ditemukan!', 'error');
-                    return;
-                }
-                
-                loadingEl.classList.add('active');
-                
-                if (typeof window.generateSimataIDCard === 'function') {
-                    setTimeout(() => {
-                        try {
-                            window.generateSimataIDCard(d);
-                        } catch (error) {
-                            console.error("Error generating ID card:", error);
-                            showNotification('Gagal membuat ID Card. Silakan coba lagi.', 'error');
-                            loadingEl.classList.remove('active');
-                        }
-                    }, 100);
-                } else {
-                    showNotification('Fitur ID Card tidak tersedia. Pastikan file idcard.js telah dimuat.', 'error');
-                    loadingEl.classList.remove('active');
-                }
-            } catch (error) {
-                console.error("Error in safeGenerateIDCard:", error);
-                showNotification('Terjadi kesalahan saat membuat ID Card.', 'error');
-                if (loadingEl) loadingEl.classList.remove('active');
-            }
-        }
-
-        // Fungsi untuk menampilkan notifikasi
+        // --- FUNGSI NOTIFIKASI ---
         function showNotification(message, type = 'info') {
-            const toastEl = document.querySelector('.notification-toast');
+            const toast = document.querySelector('.notification-toast');
             const toastTitle = document.getElementById('toastTitle');
             const toastMessage = document.getElementById('toastMessage');
             
-            if (!toastEl || !toastTitle || !toastMessage) return;
+            if (!toast || !toastTitle || !toastMessage) return;
             
-            // Set warna berdasarkan tipe
-            let titleText = 'Notifikasi';
-            let titleColor = '';
-            
+            // Atur warna berdasarkan tipe
             switch(type) {
                 case 'success':
-                    titleText = 'Berhasil';
-                    titleColor = 'text-success';
+                    toastTitle.innerHTML = '<i class="fas fa-check-circle me-2 text-success"></i>Berhasil';
                     break;
                 case 'error':
-                    titleText = 'Error';
-                    titleColor = 'text-danger';
+                    toastTitle.innerHTML = '<i class="fas fa-exclamation-circle me-2 text-danger"></i>Error';
                     break;
                 case 'warning':
-                    titleText = 'Peringatan';
-                    titleColor = 'text-warning';
+                    toastTitle.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning"></i>Peringatan';
                     break;
-                case 'info':
                 default:
-                    titleText = 'Informasi';
-                    titleColor = 'text-info';
+                    toastTitle.innerHTML = '<i class="fas fa-info-circle me-2 text-info"></i>Informasi';
             }
             
-            toastTitle.textContent = titleText;
-            toastTitle.className = `me-auto ${titleColor}`;
             toastMessage.textContent = message;
             
-            // Tampilkan toast
-            const toast = new bootstrap.Toast(toastEl);
-            toast.show();
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
         }
+
+        // --- FUNGSI TAMBAHAN UNTUK KOMPATIBILITAS ---
+        function safeGenerateIDCard(id) {
+            if (typeof window.generateIDCard === 'function') {
+                window.generateIDCard(id);
+            } else {
+                showNotification('Fitur ID Card belum tersedia. Pastikan file idcard.js sudah dimuat.', 'error');
+            }
+        }
+
+        // --- INISIALISASI TAMBAHAN ---
+        // Pastikan fungsi-fungsi yang dipanggil dari event sudah tersedia di scope global
+        window.showFishInfoModal = showFishInfoModal;
+        window.loadDataByDesa = loadDataByDesa;
+        window.setupInputForDesa = setupInputForDesa;
+        window.setInputGlobalMode = setInputGlobalMode;
+        window.setVerifyExample = setVerifyExample;
+        window.verifyKINAndShow = verifyKINAndShow;
+        window.resetVerifyForm = resetVerifyForm;
+        window.refreshPage = refreshPage;
+        window.goToPage = goToPage;
+        window.showLoading = showLoading;
+        window.hideLoading = hideLoading;
     </script>
 </body>
 </html>
