@@ -8,6 +8,20 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
         * { 
             margin: 0; 
             padding: 0; 
@@ -19,7 +33,7 @@
             display: flex; 
             flex-direction: column; 
             height: 100vh; 
-            background: #0c1c3d;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
             overflow: hidden;
         }
@@ -28,66 +42,70 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            background: #0c1c3d;
+            max-width: 100vw;
+            overflow: hidden;
         }
         
         /* Header Styles */
         .header { 
-            background: linear-gradient(135deg, #1a3a6d 0%, #0c1c3d 100%);
-            padding: 1.2rem 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            background: rgba(44, 62, 80, 0.95);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
+            z-index: 1000;
             position: relative;
+            backdrop-filter: blur(10px);
         }
         
         .header-content {
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .header-top {
-            display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
+            max-width: 100%;
         }
         
         .logo-container {
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-shrink: 0;
         }
         
         .logo-icon {
-            background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
-            width: 42px;
-            height: 42px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
         }
         
         .header-text {
-            flex: 1;
+            min-width: 0;
         }
         
         .header h1 { 
-            font-size: 1.5rem; 
+            font-size: 1.3rem; 
             font-weight: 700;
             color: white;
             margin: 0;
             line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .header-subtitle {
-            font-size: 0.85rem;
-            color: #a0b3e0;
-            margin-top: 4px;
+            font-size: 0.8rem;
+            color: #bdc3c7;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .mobile-menu-btn {
@@ -100,23 +118,7 @@
             border-radius: 8px;
             font-size: 1.2rem;
             cursor: pointer;
-        }
-        
-        .header-badges {
-            display: flex;
-            gap: 10px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .header-badge {
-            background: rgba(67, 97, 238, 0.2);
-            border: 1px solid rgba(67, 97, 238, 0.4);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #a0b3e0;
+            flex-shrink: 0;
         }
         
         /* Main Content Layout */
@@ -125,42 +127,47 @@
             flex: 1;
             overflow: hidden;
             position: relative;
+            min-height: 0;
         }
         
         /* Sidebar Styles */
         .sidebar {
-            width: 340px;
-            background: #152642;
+            width: 320px;
+            background: rgba(44, 62, 80, 0.95);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             transition: transform 0.3s ease;
-            box-shadow: 3px 0 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            z-index: 900;
         }
         
         .sidebar-content {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 1.2rem;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 1.2rem;
+            min-height: 0;
         }
         
         /* Panel Styles */
         .panel {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--border-radius);
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--box-shadow);
         }
         
         .panel-title {
             font-size: 1rem;
             font-weight: 600;
-            color: #4cc9f0;
-            margin-bottom: 15px;
+            color: #3498db;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -170,74 +177,82 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
         }
         
         .stat-card {
-            background: rgba(255, 255, 255, 0.07);
-            border-radius: 10px;
-            padding: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: var(--transition);
             cursor: pointer;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .stat-card:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
         
         .stat-label {
-            font-size: 0.8rem;
-            color: #8fa3d8;
-            margin-bottom: 6px;
+            font-size: 0.75rem;
+            color: #bdc3c7;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             gap: 6px;
         }
         
         .stat-value {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: white;
             line-height: 1.2;
         }
         
         .stat-subtext {
-            font-size: 0.75rem;
-            color: #7d94d0;
-            margin-top: 4px;
+            font-size: 0.7rem;
+            color: #95a5a6;
+            margin-top: 0.25rem;
         }
         
         /* Search Container */
         .search-container {
             position: relative;
+            margin-bottom: 1rem;
         }
         
         .search-input-container {
             position: relative;
+            width: 100%;
         }
         
         .search-input {
             width: 100%;
-            padding: 12px 40px 12px 14px;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
+            padding: 0.8rem 2.5rem 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
             color: white;
             font-size: 0.9rem;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
         
         .search-input:focus {
             outline: none;
-            border-color: #4361ee;
-            background: rgba(255, 255, 255, 0.1);
+            border-color: #3498db;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
         
         .search-input::placeholder {
-            color: #8fa3d8;
+            color: #95a5a6;
         }
         
         .search-icon {
@@ -245,7 +260,8 @@
             right: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #8fa3d8;
+            color: #95a5a6;
+            pointer-events: none;
         }
         
         .search-results { 
@@ -255,86 +271,109 @@
             right: 0;
             max-height: 300px; 
             overflow-y: auto; 
-            margin-top: 8px; 
+            margin-top: 0.5rem; 
             display: none;
-            border-radius: 10px;
-            background: #1a3a6d;
+            border-radius: var(--border-radius);
+            background: rgba(44, 62, 80, 0.98);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
         
         .search-result-item { 
-            padding: 12px 14px; 
+            padding: 0.8rem 1rem; 
             border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
             cursor: pointer; 
-            transition: all 0.2s;
+            transition: var(--transition);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
         .search-result-item:hover { 
-            background: rgba(67, 97, 238, 0.2); 
+            background: rgba(52, 152, 219, 0.2); 
         }
         
         .result-name {
             font-weight: 600;
             color: white;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .result-details {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.8rem;
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .result-district {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+            white-space: nowrap;
         }
         
         .result-population {
-            background: #4361ee;
+            background: #3498db;
             color: white;
-            padding: 3px 8px;
+            padding: 0.2rem 0.6rem;
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 600;
-            min-width: 40px;
+            min-width: 36px;
             text-align: center;
         }
         
         /* Total Summary */
         .total-summary {
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15) 0%, rgba(76, 201, 240, 0.15) 100%);
-            border-radius: 12px;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.2) 100%);
+            border-radius: var(--border-radius);
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
         }
         
         .total-number {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            background: linear-gradient(90deg, #4cc9f0 0%, #4361ee 100%);
+            background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             line-height: 1;
-            margin: 10px 0;
+            margin: 0.5rem 0;
         }
         
         .total-label {
-            font-size: 1rem;
-            color: #c5d5ff;
+            font-size: 0.9rem;
+            color: #ecf0f1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .total-info {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+            margin-top: 0.5rem;
         }
         
         /* Map Container */
         .map-container {
             flex: 1;
             position: relative;
-            background: #0a1931;
+            background: #1a252f;
+            min-width: 0;
+            min-height: 0;
         }
         
         #map { 
             width: 100%;
             height: 100%;
+            z-index: 1;
         }
         
         /* Map Controls */
@@ -345,28 +384,30 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
         
         .map-control-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            background: rgba(21, 38, 66, 0.9);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius);
+            background: rgba(44, 62, 80, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(5px);
         }
         
         .map-control-btn:hover {
-            background: rgba(67, 97, 238, 0.3);
-            border-color: #4361ee;
+            background: rgba(52, 152, 219, 0.3);
+            border-color: #3498db;
+            transform: translateY(-2px);
         }
         
         /* Legend */
@@ -375,20 +416,21 @@
             bottom: 20px; 
             left: 20px; 
             z-index: 1000; 
-            background: rgba(21, 38, 66, 0.95); 
-            padding: 16px; 
-            border-radius: 12px; 
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); 
+            background: rgba(44, 62, 80, 0.95); 
+            padding: 1rem; 
+            border-radius: var(--border-radius); 
+            box-shadow: var(--box-shadow); 
             font-size: 0.85rem; 
             max-width: 200px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
         
         .legend h4 { 
             margin-top: 0; 
-            margin-bottom: 12px; 
-            color: #4cc9f0; 
-            font-size: 0.95rem;
+            margin-bottom: 0.8rem; 
+            color: #3498db; 
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -397,35 +439,52 @@
         .legend-items {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 0.6rem;
         }
         
         .legend-item { 
             display: flex; 
             align-items: center; 
-            gap: 10px;
+            gap: 0.8rem;
         }
         
         .legend-color { 
-            width: 20px; 
-            height: 20px; 
+            width: 18px; 
+            height: 18px; 
             border-radius: 4px; 
             border: 2px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
         }
         
         .legend-text {
-            color: #c5d5ff;
-            font-size: 0.85rem;
+            color: #ecf0f1;
+            font-size: 0.8rem;
+        }
+        
+        /* Overlay for mobile */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 899;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
         }
         
         /* Mobile Styles */
         @media (max-width: 768px) {
             .header {
-                padding: 1rem;
+                padding: 0.8rem 1rem;
             }
             
-            .header h1 {
-                font-size: 1.3rem;
+            .header-content {
+                gap: 0.8rem;
             }
             
             .logo-icon {
@@ -434,12 +493,12 @@
                 font-size: 1.1rem;
             }
             
-            .header-subtitle {
-                font-size: 0.8rem;
+            .header h1 {
+                font-size: 1.1rem;
             }
             
-            .header-badges {
-                display: none;
+            .header-subtitle {
+                font-size: 0.75rem;
             }
             
             .mobile-menu-btn {
@@ -453,13 +512,13 @@
             }
             
             .sidebar {
-                position: absolute;
+                position: fixed;
                 left: 0;
                 top: 0;
                 bottom: 0;
-                width: 100%;
-                max-width: 320px;
-                z-index: 1000;
+                width: 85%;
+                max-width: 300px;
+                z-index: 900;
                 transform: translateX(-100%);
                 box-shadow: 5px 0 25px rgba(0, 0, 0, 0.4);
             }
@@ -469,37 +528,42 @@
             }
             
             .sidebar-content {
-                padding: 16px;
-                gap: 16px;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .panel {
+                padding: 1rem;
             }
             
             .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
             }
             
             .stat-card {
-                padding: 12px;
+                padding: 0.8rem;
+                min-height: 70px;
             }
             
             .stat-value {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
             .total-number {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
             
             .map-controls {
                 top: 15px;
                 right: 15px;
-                gap: 8px;
+                gap: 6px;
             }
             
             .map-control-btn {
-                width: 38px;
-                height: 38px;
-                font-size: 1rem;
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
             }
             
             .legend { 
@@ -507,32 +571,29 @@
                 left: 15px; 
                 right: 15px;
                 max-width: none;
-                padding: 14px;
+                padding: 0.8rem;
             }
             
             .legend h4 {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             
             .legend-items {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
+                gap: 0.8rem;
             }
             
-            .overlay {
+            .search-results {
                 position: fixed;
-                top: 0;
+                top: auto;
+                bottom: 0;
                 left: 0;
                 right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 999;
-                display: none;
-            }
-            
-            .overlay.active {
-                display: block;
+                max-height: 50vh;
+                margin-top: 0;
+                border-radius: 12px 12px 0 0;
+                box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
             }
         }
         
@@ -547,23 +608,27 @@
         }
         
         ::-webkit-scrollbar-thumb {
-            background: rgba(76, 201, 240, 0.5);
+            background: rgba(52, 152, 219, 0.5);
             border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(52, 152, 219, 0.7);
         }
         
         /* Popup Styles */
         .leaflet-popup-content { 
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             padding: 0;
-            min-width: 220px;
-            color: #333;
+            min-width: 200px;
+            color: #2c3e50;
+            margin: 0;
         }
         
         .popup-header {
-            background: linear-gradient(90deg, #4361ee 0%, #3a56d4 100%);
+            background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
             color: white;
-            padding: 12px;
-            margin: 0;
+            padding: 0.8rem 1rem;
             border-radius: 6px 6px 0 0;
             font-weight: 600;
             display: flex;
@@ -572,43 +637,45 @@
         }
         
         .popup-content {
-            padding: 12px;
+            padding: 1rem;
         }
         
         .popup-detail {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
         }
         
         .popup-label {
-            color: #666;
+            color: #7f8c8d;
+            font-weight: 500;
         }
         
         .popup-value {
-            color: #333;
+            color: #2c3e50;
             font-weight: 600;
         }
         
         .popup-stats {
-            background: #f0f4ff;
-            padding: 10px;
+            background: #f8f9fa;
+            padding: 0.8rem;
             border-radius: 6px;
-            margin: 8px 0;
+            margin: 0.8rem 0;
             text-align: center;
             font-weight: 700;
-            color: #4361ee;
-            font-size: 1.1rem;
+            color: #3498db;
+            font-size: 1rem;
+            border-left: 4px solid #3498db;
         }
         
         .popup-coords {
-            background: #f5f7ff;
-            padding: 6px 8px;
+            background: #f1f8ff;
+            padding: 0.6rem 0.8rem;
             border-radius: 4px;
-            margin-top: 8px;
-            font-size: 0.8rem;
-            color: #555;
+            margin-top: 0.8rem;
+            font-size: 0.75rem;
+            color: #5d6d7e;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -617,24 +684,26 @@
         /* Leaflet Controls */
         .leaflet-control-zoom {
             border: none !important;
-            border-radius: 10px !important;
+            border-radius: var(--border-radius) !important;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            box-shadow: var(--box-shadow) !important;
+            margin-top: 60px !important;
         }
         
         .leaflet-control-zoom a {
-            background: rgba(21, 38, 66, 0.9) !important;
+            background: rgba(44, 62, 80, 0.9) !important;
             color: white !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-            transition: all 0.2s;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
         }
         
         .leaflet-control-zoom a:hover {
-            background: rgba(67, 97, 238, 0.3) !important;
+            background: rgba(52, 152, 219, 0.3) !important;
         }
         
         .leaflet-control-scale {
-            background: rgba(21, 38, 66, 0.9) !important;
+            background: rgba(44, 62, 80, 0.9) !important;
             color: white !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
             border-radius: 4px !important;
@@ -642,10 +711,26 @@
         }
         
         .leaflet-touch .leaflet-control-zoom a {
-            width: 40px !important;
-            height: 40px !important;
-            line-height: 40px !important;
-            font-size: 20px !important;
+            width: 36px !important;
+            height: 36px !important;
+            line-height: 36px !important;
+            font-size: 18px !important;
+        }
+        
+        /* No results message */
+        .no-results {
+            padding: 1rem;
+            text-align: center;
+            color: #95a5a6;
+            font-style: italic;
+        }
+        
+        /* Loading state */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            color: #3498db;
         }
     </style>
 </head>
@@ -654,31 +739,18 @@
         <!-- Header -->
         <div class="header">
             <div class="header-content">
-                <div class="header-top">
-                    <div class="logo-container">
-                        <div class="logo-icon">
-                            <i class="fas fa-map-marked-alt"></i>
-                        </div>
-                        <div class="header-text">
-                            <h1>Peta Data Nelayan Situbondo</h1>
-                            <div class="header-subtitle">SIMPADAN TANGKAP - Dinas Perikanan</div>
-                        </div>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-map"></i>
                     </div>
-                    <button class="mobile-menu-btn" id="menuToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                    <div class="header-text">
+                        <h1>Peta Data Nelayan Situbondo</h1>
+                        <div class="header-subtitle">SIMPADAN TANGKAP - Dinas Perikanan</div>
+                    </div>
                 </div>
-                <div class="header-badges">
-                    <span class="header-badge">
-                        <i class="fas fa-village"></i> 37 Desa
-                    </span>
-                    <span class="header-badge">
-                        <i class="fas fa-users"></i> 8,089 Nelayan
-                    </span>
-                    <span class="header-badge">
-                        <i class="fas fa-calendar-alt"></i> Data 2024
-                    </span>
-                </div>
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
         
@@ -690,21 +762,21 @@
                     <!-- Statistics Panel -->
                     <div class="panel">
                         <div class="panel-title">
-                            <i class="fas fa-chart-line"></i> Statistik Utama
+                            <i class="fas fa-chart-bar"></i> Statistik Utama
                         </div>
                         
                         <div class="stats-grid">
-                            <div class="stat-card" onclick="focusOnVillage('max')">
+                            <div class="stat-card" id="statMax">
                                 <div class="stat-label">
-                                    <i class="fas fa-arrow-up"></i> Terpadat
+                                    <i class="fas fa-arrow-up"></i> Desa Terpadat
                                 </div>
                                 <div class="stat-value" id="max-village">1,463</div>
                                 <div class="stat-subtext" id="max-village-name">Pesisir</div>
                             </div>
                             
-                            <div class="stat-card" onclick="focusOnVillage('min')">
+                            <div class="stat-card" id="statMin">
                                 <div class="stat-label">
-                                    <i class="fas fa-arrow-down"></i> Tersedikit
+                                    <i class="fas fa-arrow-down"></i> Desa Tersedikit
                                 </div>
                                 <div class="stat-value" id="min-village">1</div>
                                 <div class="stat-subtext" id="min-village-name">Paowan</div>
@@ -715,29 +787,33 @@
                                     <i class="fas fa-calculator"></i> Rata-rata
                                 </div>
                                 <div class="stat-value" id="avg-village">219</div>
-                                <div class="stat-subtext">Per Desa</div>
+                                <div class="stat-subtext">Nelayan per Desa</div>
                             </div>
                             
                             <div class="stat-card">
                                 <div class="stat-label">
-                                    <i class="fas fa-map"></i> Total
+                                    <i class="fas fa-map-marker-alt"></i> Total Desa
                                 </div>
                                 <div class="stat-value">37</div>
-                                <div class="stat-subtext">Desa</div>
+                                <div class="stat-subtext">Desa Nelayan</div>
                             </div>
                         </div>
                         
                         <!-- Search -->
                         <div class="search-container">
-                            <div class="panel-title" style="margin-bottom: 10px;">
+                            <div class="panel-title">
                                 <i class="fas fa-search"></i> Cari Desa
                             </div>
                             <div class="search-input-container">
-                                <input type="text" id="searchInput" class="search-input" placeholder="Nama desa atau kecamatan...">
+                                <input type="text" id="searchInput" class="search-input" 
+                                       placeholder="Ketik nama desa atau kecamatan..." 
+                                       autocomplete="off">
                                 <div class="search-icon">
                                     <i class="fas fa-search"></i>
                                 </div>
-                                <div class="search-results" id="searchResults"></div>
+                                <div class="search-results" id="searchResults">
+                                    <div class="no-results" id="noResults">Tidak ada hasil ditemukan</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -746,12 +822,12 @@
                     <div class="panel">
                         <div class="total-summary">
                             <div class="panel-title">
-                                <i class="fas fa-anchor"></i> Total Nelayan
+                                <i class="fas fa-users"></i> Total Nelayan
                             </div>
                             <div class="total-number" id="total-fishermen">8,089</div>
                             <div class="total-label">Kabupaten Situbondo</div>
-                            <div style="margin-top: 10px; font-size: 0.8rem; color: #a0b3e0;">
-                                <i class="fas fa-info-circle"></i> Sumber: Dinas Perikanan
+                            <div class="total-info">
+                                <i class="fas fa-info-circle"></i> Data Terbaru 2024
                             </div>
                         </div>
                     </div>
@@ -850,12 +926,14 @@
         let map, markers = [];
         let maxVillage = null, minVillage = null;
         let isMobile = window.innerWidth <= 768;
+        let currentHighlightedMarker = null;
 
         // Initialize the application
         function initApp() {
             calculateStatistics();
             initMap();
             setupEventListeners();
+            updateUIForScreenSize();
         }
 
         // Calculate statistics
@@ -880,7 +958,11 @@
 
         // Initialize map
         function initMap() {
-            map = L.map('map').setView([-7.72, 113.95], isMobile ? 10 : 10.5);
+            // Set initial view based on screen size
+            const initialView = isMobile ? [-7.72, 113.95] : [-7.72, 113.95];
+            const initialZoom = isMobile ? 10 : 10.5;
+            
+            map = L.map('map').setView(initialView, initialZoom);
             
             // Add tile layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -892,9 +974,21 @@
             // Add markers
             villageData.forEach(village => addMarker(village));
             
-            // Add controls
-            L.control.zoom({ position: 'topright' }).addTo(map);
-            L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+            // Adjust zoom control position to avoid overlap
+            L.control.zoom({ 
+                position: 'topright'
+            }).addTo(map);
+            
+            L.control.scale({ 
+                imperial: false, 
+                position: 'bottomleft' 
+            }).addTo(map);
+            
+            // Fit bounds to show all markers
+            if (markers.length > 0) {
+                const bounds = L.latLngBounds(markers.map(m => [m.lat, m.lng]));
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
         }
 
         // Add marker to map
@@ -903,7 +997,7 @@
             const radius = getRadius(village.population);
             
             const marker = L.circleMarker([village.lat, village.lng], {
-                color: '#333',
+                color: '#2c3e50',
                 weight: 1.5,
                 opacity: 0.9,
                 fillColor: color,
@@ -917,26 +1011,21 @@
             });
             
             marker.on('mouseout', function() {
-                this.setStyle({ weight: 1.5, fillOpacity: 0.85 });
+                if (this !== currentHighlightedMarker) {
+                    this.setStyle({ weight: 1.5, fillOpacity: 0.85 });
+                }
+            });
+            
+            // Click event
+            marker.on('click', function() {
+                highlightMarker(marker);
             });
             
             // Popup
-            marker.bindPopup(`
-                <div class="popup-header">
-                    <i class="fas fa-map-marker-alt"></i> ${village.name}
-                </div>
-                <div class="popup-content">
-                    <div class="popup-detail">
-                        <span class="popup-label">Kecamatan:</span>
-                        <span class="popup-value">${village.district}</span>
-                    </div>
-                    <div class="popup-stats">${village.population.toLocaleString()} Nelayan</div>
-                    <div class="popup-coords">
-                        <i class="fas fa-location-dot"></i> 
-                        ${village.lat.toFixed(5)}, ${village.lng.toFixed(5)}
-                    </div>
-                </div>
-            `);
+            marker.bindPopup(createPopupContent(village), {
+                className: 'custom-popup',
+                maxWidth: 250
+            });
             
             markers.push({
                 name: village.name,
@@ -946,6 +1035,26 @@
                 lat: village.lat,
                 lng: village.lng
             });
+        }
+
+        // Create popup content
+        function createPopupContent(village) {
+            return `
+                <div class="popup-header">
+                    <i class="fas fa-map-marker-alt"></i> ${village.name}
+                </div>
+                <div class="popup-content">
+                    <div class="popup-detail">
+                        <span class="popup-label">Kecamatan:</span>
+                        <span class="popup-value">${village.district}</span>
+                    </div>
+                    <div class="popup-detail">
+                        <span class="popup-label">Koordinat:</span>
+                        <span class="popup-value">${village.lat.toFixed(5)}, ${village.lng.toFixed(5)}</span>
+                    </div>
+                    <div class="popup-stats">${village.population.toLocaleString()} Nelayan</div>
+                </div>
+            `;
         }
 
         // Get color based on population
@@ -973,47 +1082,12 @@
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
+            const statMax = document.getElementById('statMax');
+            const statMin = document.getElementById('statMin');
             
             // Search functionality
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-                
-                if (searchTerm.length < 2) {
-                    searchResults.style.display = 'none';
-                    return;
-                }
-                
-                const filtered = markers.filter(item => 
-                    item.name.toLowerCase().includes(searchTerm) || 
-                    item.district.toLowerCase().includes(searchTerm)
-                );
-                
-                searchResults.innerHTML = '';
-                
-                if (filtered.length === 0) {
-                    searchResults.innerHTML = '<div class="search-result-item">Desa tidak ditemukan</div>';
-                } else {
-                    filtered.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'search-result-item';
-                        div.innerHTML = `
-                            <div class="result-name">${item.name}</div>
-                            <div class="result-details">
-                                <span class="result-population">${item.population}</span>
-                            </div>
-                        `;
-                        div.onclick = () => {
-                            focusOnVillageByName(item.name);
-                            searchResults.style.display = 'none';
-                            searchInput.value = item.name;
-                            if (isMobile) closeSidebar();
-                        };
-                        searchResults.appendChild(div);
-                    });
-                }
-                
-                searchResults.style.display = 'block';
-            });
+            searchInput.addEventListener('input', handleSearch);
+            searchInput.addEventListener('focus', handleSearchFocus);
             
             // Close search results when clicking outside
             document.addEventListener('click', function(e) {
@@ -1026,15 +1100,76 @@
             menuToggle.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', closeSidebar);
             
-            // Close sidebar when clicking a link on mobile
-            document.querySelectorAll('.stat-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    if (isMobile) closeSidebar();
-                });
-            });
+            // Stat cards click events
+            statMax.addEventListener('click', () => focusOnVillage('max'));
+            statMin.addEventListener('click', () => focusOnVillage('min'));
             
             // Window resize
             window.addEventListener('resize', handleResize);
+            
+            // Map click to close popups
+            map.on('click', function() {
+                map.closePopup();
+                resetHighlightedMarker();
+            });
+        }
+
+        // Handle search input
+        function handleSearch() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const searchResults = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+            
+            if (searchTerm.length < 1) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            const filtered = markers.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) || 
+                item.district.toLowerCase().includes(searchTerm)
+            );
+            
+            searchResults.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                noResults.style.display = 'block';
+                searchResults.appendChild(noResults);
+                searchResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+                
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.innerHTML = `
+                        <div class="result-name">${item.name}</div>
+                        <div class="result-details">
+                            <span class="result-district">${item.district}</span>
+                            <span class="result-population">${item.population}</span>
+                        </div>
+                    `;
+                    div.onclick = () => {
+                        focusOnVillageByName(item.name);
+                        document.getElementById('searchInput').value = item.name;
+                        searchResults.style.display = 'none';
+                        if (isMobile) closeSidebar();
+                    };
+                    searchResults.appendChild(div);
+                });
+                
+                searchResults.style.display = 'block';
+            }
+        }
+
+        // Handle search focus
+        function handleSearchFocus() {
+            const searchResults = document.getElementById('searchResults');
+            const searchInput = document.getElementById('searchInput');
+            
+            if (searchInput.value.length > 0) {
+                searchResults.style.display = 'block';
+            }
         }
 
         // Toggle sidebar on mobile
@@ -1056,8 +1191,21 @@
         // Handle window resize
         function handleResize() {
             isMobile = window.innerWidth <= 768;
+            updateUIForScreenSize();
+            
             if (!isMobile) {
                 closeSidebar();
+            }
+        }
+
+        // Update UI for screen size
+        function updateUIForScreenSize() {
+            if (isMobile) {
+                // Adjust map view for mobile
+                map.setView([-7.72, 113.95], 10);
+            } else {
+                // Adjust map view for desktop
+                map.setView([-7.72, 113.95], 10.5);
             }
         }
 
@@ -1067,6 +1215,7 @@
             if (village) {
                 focusOnVillageByName(village.name);
             }
+            if (isMobile) closeSidebar();
         }
 
         // Focus on village by name
@@ -1075,21 +1224,46 @@
             if (village) {
                 map.setView([village.lat, village.lng], 14);
                 village.marker.openPopup();
-                
-                // Highlight the marker
-                markers.forEach(m => {
-                    m.marker.setStyle({ weight: 1.5, fillOpacity: 0.85 });
+                highlightMarker(village.marker);
+            }
+        }
+
+        // Highlight a marker
+        function highlightMarker(marker) {
+            // Reset previous highlight
+            resetHighlightedMarker();
+            
+            // Apply new highlight
+            marker.setStyle({ 
+                weight: 4, 
+                fillOpacity: 0.95,
+                color: '#3498db'
+            });
+            
+            currentHighlightedMarker = marker;
+        }
+
+        // Reset highlighted marker
+        function resetHighlightedMarker() {
+            if (currentHighlightedMarker) {
+                currentHighlightedMarker.setStyle({ 
+                    weight: 1.5, 
+                    fillOpacity: 0.85,
+                    color: '#2c3e50'
                 });
-                village.marker.setStyle({ weight: 4, fillOpacity: 0.95 });
+                currentHighlightedMarker = null;
             }
         }
 
         // Map control functions
         function resetMapView() {
-            map.setView([-7.72, 113.95], isMobile ? 10 : 10.5);
-            markers.forEach(m => {
-                m.marker.setStyle({ weight: 1.5, fillOpacity: 0.85 });
-            });
+            if (isMobile) {
+                map.setView([-7.72, 113.95], 10);
+            } else {
+                map.setView([-7.72, 113.95], 10.5);
+            }
+            resetHighlightedMarker();
+            map.closePopup();
         }
         
         function zoomIn() {
