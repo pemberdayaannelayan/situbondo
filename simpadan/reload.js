@@ -1,6 +1,6 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
 // File: reload.js
-// Dibuat: 12/1/2026, 14.21.20
+// Dibuat: 12/1/2026, 15.06.16
 // Jumlah Data: 32
 
 window.SIMATA_BACKUP_DATA = [
@@ -291,7 +291,7 @@ window.SIMATA_BACKUP_DATA = [
     "keterangan": ""
   },
   {
-    "id": 1768185361503,
+    "id": "1768185361503",
     "nama": "DARTO",
     "nik": "3512171910560001",
     "whatsapp": "00000000",
@@ -300,7 +300,7 @@ window.SIMATA_BACKUP_DATA = [
     "tahunLahir": "1956",
     "usia": "70",
     "kecamatan": "Bungatan",
-    "desa": "Bungatan",
+    "desa": "Mlandingan Wetan",
     "alatTangkap": "Pukat Cincin",
     "namaKapal": "-",
     "jenisKapal": "-",
