@@ -538,6 +538,10 @@
             line-height: 1;
             margin: 8px 0;
             word-break: break-word; /* Added to prevent overflow */
+            min-height: 60px; /* Ensure enough space for the number */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .total-label {
@@ -715,7 +719,7 @@
             pointer-events: none;
         }
         
-        /* Custom Marker Styles */
+        /* Custom Marker Styles - FIXED HOVER ISSUE */
         .custom-marker {
             background: transparent;
             border: none;
@@ -764,16 +768,13 @@
             font-weight: 600;
             white-space: nowrap;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            display: none;
+            display: none; /* Hidden by default */
             min-width: 70px;
             text-align: center;
             box-shadow: 0 3px 10px rgba(0,0,0,0.2);
             z-index: 1000;
             backdrop-filter: blur(10px);
-        }
-        
-        .marker-icon:hover .marker-label {
-            display: block;
+            pointer-events: none; /* Prevent label from interfering with hover */
         }
         
         /* Overlay */
@@ -919,6 +920,7 @@
             
             .total-number {
                 font-size: 2.2rem;
+                min-height: 70px;
             }
             
             .total-summary {
@@ -962,6 +964,10 @@
             
             .total-summary {
                 padding: 18px;
+            }
+            
+            .total-number {
+                min-height: 65px;
             }
         }
         
@@ -1025,6 +1031,7 @@
             
             .total-number {
                 font-size: 1.6rem; /* Slightly reduced for mobile */
+                min-height: 55px;
             }
         }
         
@@ -1545,16 +1552,33 @@
                 title: `${village.name} - ${village.population} nelayan`
             }).addTo(map);
             
-            // Hover effects
-            marker.on('mouseover', function() {
-                this.getElement().style.transform = 'translate(-50%, -50%) scale(1.2)';
-                this.getElement().style.zIndex = '1000';
-                this.getElement().style.transition = 'transform 0.3s ease';
+            // Store reference to marker element for hover handling
+            const markerElement = marker.getElement();
+            
+            // Hover effects dengan JavaScript
+            markerElement.addEventListener('mouseenter', function() {
+                this.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                this.style.zIndex = '1000';
+                this.style.transition = 'transform 0.3s ease';
+                
+                // Show label
+                const label = this.querySelector('.marker-label');
+                if (label) {
+                    label.style.display = 'block';
+                }
             });
             
-            marker.on('mouseout', function() {
-                this.getElement().style.transform = 'translate(-50%, -50%) scale(1)';
-                this.getElement().style.zIndex = 'auto';
+            markerElement.addEventListener('mouseleave', function() {
+                this.style.transform = 'translate(-50%, -50%) scale(1)';
+                this.style.zIndex = 'auto';
+                
+                // Hide label after a small delay to prevent flickering
+                const label = this.querySelector('.marker-label');
+                if (label) {
+                    setTimeout(() => {
+                        label.style.display = 'none';
+                    }, 100);
+                }
             });
             
             // Popup content without kecamatan/district
