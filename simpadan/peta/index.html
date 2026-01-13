@@ -1139,10 +1139,10 @@
                 </div>
                 <div class="header-badges">
                     <span class="header-badge">
-                        <i class="fas fa-village"></i> 37 Desa
+                        <i class="fas fa-village"></i> 50 Desa
                     </span>
                     <span class="header-badge">
-                        <i class="fas fa-users"></i> 8,089 Nelayan
+                        <i class="fas fa-users"></i> 8,121 Nelayan
                     </span>
                     <span class="header-badge">
                         <i class="fas fa-calendar-alt"></i> Data 2024
@@ -1189,7 +1189,7 @@
                                 <div class="stat-label">
                                     <i class="fas fa-calculator"></i> Rata-rata
                                 </div>
-                                <div class="stat-value" id="avg-village">219</div>
+                                <div class="stat-value" id="avg-village">162</div>
                                 <div class="stat-subtext">Per Desa</div>
                             </div>
                             
@@ -1197,7 +1197,7 @@
                                 <div class="stat-label">
                                     <i class="fas fa-map"></i> Total
                                 </div>
-                                <div class="stat-value">37</div>
+                                <div class="stat-value">50</div>
                                 <div class="stat-subtext">Desa</div>
                             </div>
                         </div>
@@ -1266,7 +1266,7 @@
                             <div class="panel-title">
                                 <i class="fas fa-anchor"></i> Total Nelayan
                             </div>
-                            <div class="total-number" id="total-fishermen">8,089</div>
+                            <div class="total-number" id="total-fishermen">8,121</div>
                             <div class="total-label">Kabupaten Situbondo</div>
                             <div style="margin-top: 10px; font-size: 0.75rem; color: #a0b3e0;">
                                 <i class="fas fa-info-circle"></i> Sumber: Dinas Perikanan
@@ -1333,7 +1333,7 @@
     </div>
 
     <script>
-        // Data lengkap desa
+        // Data lengkap desa (37 desa asli + 13 desa baru = 50 desa)
         const villageData = [
             {name: "Alasmalang", population: 6, lat: -7.68007, lng: 113.98764, district: "Panarukan"},
             {name: "Arjasa", population: 50, lat: -7.717312, lng: 114.123284, district: "Panji"},
@@ -1371,7 +1371,22 @@
             {name: "Tanjung Pecinan", population: 310, lat: -7.63299, lng: 114.03444, district: "Sumbermalang"},
             {name: "Wonorejo", population: 319, lat: -7.9260022, lng: 114.4029630, district: "Sumbermalang"},
             {name: "Wringinanom-Asembagus", population: 85, lat: -7.741020, lng: 114.236404, district: "Sumbermalang"},
-            {name: "Wringinanom-Panarukan", population: 6, lat: -7.706831, lng: 113.970559, district: "Panarukan"}
+            {name: "Wringinanom-Panarukan", population: 6, lat: -7.706831, lng: 113.970559, district: "Panarukan"},
+            
+            // DESA BARU YANG DITAMBAHKAN
+            {name: "Blimbing", population: 1, lat: -7.75464, lng: 113.69923, district: "Besuki"},
+            {name: "Bloro", population: 1, lat: -7.74752, lng: 113.68738, district: "Besuki"},
+            {name: "Jetis", population: 2, lat: -7.75277, lng: 113.70852, district: "Besuki"},
+            {name: "Kalimas", population: 1, lat: -7.74053, lng: 113.69315, district: "Besuki"},
+            {name: "Gudang", population: 1, lat: -7.73151, lng: 113.68361, district: "Asembagus"},
+            {name: "Kertosari", population: 1, lat: -7.75632, lng: 114.20232, district: "Asembagus"},
+            {name: "Kedungdowo", population: 1, lat: -7.74990, lng: 114.14816, district: "Arjasa"},
+            {name: "Trebungan", population: 1, lat: -7.657638, lng: 114.021049, district: "Mangaran"},
+            {name: "Mlandingan Wetan", population: 7, lat: -7.74184, lng: 113.77907, district: "Bungatan"},
+            {name: "Gebangan", population: 3, lat: -7.67342, lng: 114.06525, district: "Kapongan"},
+            {name: "Kendit", population: 7, lat: -7.73140, lng: 113.93788, district: "Kendit"},
+            {name: "Pesanggrahan", population: 2, lat: -7.73829, lng: 114.16554, district: "Jangkar"},
+            {name: "Palangan", population: 4, lat: -7.741132, lng: 114.191562, district: "Jangkar"}
         ];
 
         // Global variables
@@ -1389,6 +1404,9 @@
             initMap();
             setupEventListeners();
             populateVillageSelect();
+            
+            // Update header badges dengan data yang benar
+            updateHeaderBadges();
             
             // Sembunyikan tombol tampilkan legend di awal (karena legend sudah terlihat)
             const showLegendBtn = document.getElementById('showLegendBtn');
@@ -1413,6 +1431,22 @@
             document.getElementById('min-village-name').textContent = minVillage.name;
             document.getElementById('avg-village').textContent = avgPopulation.toLocaleString();
             document.getElementById('total-fishermen').textContent = totalPopulation.toLocaleString();
+            
+            // Update total desa di sidebar
+            document.querySelector('.stat-card:nth-child(4) .stat-value').textContent = villageData.length;
+        }
+
+        // Update header badges
+        function updateHeaderBadges() {
+            const totalVillages = villageData.length;
+            const totalPopulation = villageData.reduce((sum, v) => sum + v.population, 0);
+            
+            // Update badge di header
+            const badges = document.querySelectorAll('.header-badge');
+            if (badges.length >= 2) {
+                badges[0].innerHTML = `<i class="fas fa-village"></i> ${totalVillages} Desa`;
+                badges[1].innerHTML = `<i class="fas fa-users"></i> ${totalPopulation.toLocaleString()} Nelayan`;
+            }
         }
 
         // Calculate village rankings
@@ -1531,7 +1565,7 @@
                         </div>
                         <div class="popup-detail">
                             <span class="popup-label">Peringkat:</span>
-                            <span class="popup-value">#${getVillageRank(village.name)} dari 37 desa</span>
+                            <span class="popup-value">#${getVillageRank(village.name)} dari ${villageData.length} desa</span>
                         </div>
                     </div>
                     <div class="popup-coords">
@@ -1582,7 +1616,7 @@
             document.getElementById('infoPopulation').textContent = village.population.toLocaleString();
             document.getElementById('infoCategory').textContent = category;
             document.getElementById('infoCoords').textContent = `${village.lat.toFixed(5)}, ${village.lng.toFixed(5)}`;
-            document.getElementById('infoRank').textContent = `#${rank} dari 37`;
+            document.getElementById('infoRank').textContent = `#${rank} dari ${villageData.length}`;
             
             // Show info panel
             infoPanel.classList.add('active');
