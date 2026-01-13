@@ -311,7 +311,7 @@
             -webkit-overflow-scrolling: touch;
         }
         
-        /* Panel Styles */
+        /* Panel Styles - FIXED FOR OVERFLOW */
         .panel {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
@@ -319,6 +319,7 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             width: 100%;
             backdrop-filter: blur(10px);
+            overflow: visible; /* Changed from hidden to visible */
         }
         
         .panel-title {
@@ -370,12 +371,14 @@
             font-weight: 700;
             color: white;
             line-height: 1.2;
+            word-break: break-word; /* Added to prevent overflow */
         }
         
         .stat-subtext {
             font-size: 0.7rem;
             color: #7d94d0;
             margin-top: 4px;
+            word-break: break-word; /* Added to prevent overflow */
         }
         
         /* Search Container */
@@ -515,7 +518,7 @@
             color: #c5d5ff;
         }
         
-        /* Total Summary */
+        /* Total Summary - FIXED FOR OVERFLOW */
         .total-summary {
             padding: 16px;
             background: linear-gradient(135deg, rgba(67, 97, 238, 0.15) 0%, rgba(76, 201, 240, 0.15) 100%);
@@ -523,6 +526,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
             width: 100%;
+            overflow: visible; /* Changed from hidden to visible */
         }
         
         .total-number {
@@ -533,6 +537,7 @@
             -webkit-text-fill-color: transparent;
             line-height: 1;
             margin: 8px 0;
+            word-break: break-word; /* Added to prevent overflow */
         }
         
         .total-label {
@@ -915,6 +920,10 @@
             .total-number {
                 font-size: 2.2rem;
             }
+            
+            .total-summary {
+                padding: 18px;
+            }
         }
         
         /* Tablet Styles */
@@ -949,6 +958,10 @@
             
             .header-subtitle {
                 font-size: 0.8rem;
+            }
+            
+            .total-summary {
+                padding: 18px;
             }
         }
         
@@ -1004,6 +1017,14 @@
             .wave-container {
                 width: 50px;
                 height: 50px;
+            }
+            
+            .total-summary {
+                padding: 14px;
+            }
+            
+            .total-number {
+                font-size: 1.6rem; /* Slightly reduced for mobile */
             }
         }
         
@@ -1142,7 +1163,7 @@
                         <i class="fas fa-village"></i> 50 Desa
                     </span>
                     <span class="header-badge">
-                        <i class="fas fa-users"></i> 8,121 Nelayan
+                        <i class="fas fa-users"></i> 8,123 Nelayan
                     </span>
                     <span class="header-badge">
                         <i class="fas fa-calendar-alt"></i> Data 2024
@@ -1266,7 +1287,7 @@
                             <div class="panel-title">
                                 <i class="fas fa-anchor"></i> Total Nelayan
                             </div>
-                            <div class="total-number" id="total-fishermen">8,121</div>
+                            <div class="total-number" id="total-fishermen">8,123</div>
                             <div class="total-label">Kabupaten Situbondo</div>
                             <div style="margin-top: 10px; font-size: 0.75rem; color: #a0b3e0;">
                                 <i class="fas fa-info-circle"></i> Sumber: Dinas Perikanan
@@ -1333,7 +1354,7 @@
     </div>
 
     <script>
-        // Data lengkap desa (37 desa asli + 13 desa baru = 50 desa)
+        // Data lengkap desa dengan tambahan data baru
         const villageData = [
             {name: "Alasmalang", population: 6, lat: -7.68007, lng: 113.98764, district: "Panarukan"},
             {name: "Arjasa", population: 50, lat: -7.717312, lng: 114.123284, district: "Panji"},
@@ -1373,7 +1394,7 @@
             {name: "Wringinanom-Asembagus", population: 85, lat: -7.741020, lng: 114.236404, district: "Sumbermalang"},
             {name: "Wringinanom-Panarukan", population: 6, lat: -7.706831, lng: 113.970559, district: "Panarukan"},
             
-            // DESA BARU YANG DITAMBAHKAN
+            // Data baru yang ditambahkan
             {name: "Blimbing", population: 1, lat: -7.75464, lng: 113.69923, district: "Besuki"},
             {name: "Bloro", population: 1, lat: -7.74752, lng: 113.68738, district: "Besuki"},
             {name: "Jetis", population: 2, lat: -7.75277, lng: 113.70852, district: "Besuki"},
@@ -1405,9 +1426,6 @@
             setupEventListeners();
             populateVillageSelect();
             
-            // Update header badges dengan data yang benar
-            updateHeaderBadges();
-            
             // Sembunyikan tombol tampilkan legend di awal (karena legend sudah terlihat)
             const showLegendBtn = document.getElementById('showLegendBtn');
             showLegendBtn.classList.add('hidden');
@@ -1421,8 +1439,12 @@
             const avgPopulation = Math.round(populations.reduce((a, b) => a + b, 0) / populations.length);
             const totalPopulation = populations.reduce((a, b) => a + b, 0);
             
-            maxVillage = villageData.find(v => v.population === maxPopulation);
-            minVillage = villageData.find(v => v.population === minPopulation);
+            // Find all villages with max and min population (in case of ties)
+            const maxVillages = villageData.filter(v => v.population === maxPopulation);
+            const minVillages = villageData.filter(v => v.population === minPopulation);
+            
+            maxVillage = maxVillages[0];
+            minVillage = minVillages[0];
             
             // Update UI
             document.getElementById('max-village').textContent = maxPopulation.toLocaleString();
@@ -1431,22 +1453,6 @@
             document.getElementById('min-village-name').textContent = minVillage.name;
             document.getElementById('avg-village').textContent = avgPopulation.toLocaleString();
             document.getElementById('total-fishermen').textContent = totalPopulation.toLocaleString();
-            
-            // Update total desa di sidebar
-            document.querySelector('.stat-card:nth-child(4) .stat-value').textContent = villageData.length;
-        }
-
-        // Update header badges
-        function updateHeaderBadges() {
-            const totalVillages = villageData.length;
-            const totalPopulation = villageData.reduce((sum, v) => sum + v.population, 0);
-            
-            // Update badge di header
-            const badges = document.querySelectorAll('.header-badge');
-            if (badges.length >= 2) {
-                badges[0].innerHTML = `<i class="fas fa-village"></i> ${totalVillages} Desa`;
-                badges[1].innerHTML = `<i class="fas fa-users"></i> ${totalPopulation.toLocaleString()} Nelayan`;
-            }
         }
 
         // Calculate village rankings
