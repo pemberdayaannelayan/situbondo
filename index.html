@@ -874,6 +874,15 @@
             background: linear-gradient(135deg, #d97706, #b45309);
         }
         
+        /* Tombol Khusus untuk Reload Data */
+        .btn-reload-data {
+            background: linear-gradient(135deg, #06d6a0, #059669);
+        }
+        
+        .btn-reload-data:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+        
         /* Legend Peta - Desain Baru */
         .peta-legend {
             position: absolute;
@@ -2641,7 +2650,26 @@
                     </a>
                 </div>
 
-                <div class="col-xl-4 col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="310">
+                <!-- MENU BARU: PDF SMARTCONVERT -->
+                <div class="col-xl-4 col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="250">
+                    <a href="https://pdfcandy.com/" target="_blank" class="service-card">
+                        <!-- Tombol Share yang Diperbaiki -->
+                        <div class="share-btn-container">
+                            <button class="share-btn share-btn-copy" data-url="https://pdfcandy.com/" data-title="PDF SMARTCONVERT - Dinas Perikanan Situbondo" data-tooltip="Salin Link">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="share-btn share-btn-whatsapp" data-url="https://pdfcandy.com/" data-title="PDF SMARTCONVERT - Dinas Perikanan Situbondo" data-tooltip="Bagikan via WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </div>
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/pdf-smart.png" alt="Logo PDF SMARTCONVERT" class="menu-logo">
+                        <h4 class="fw-bold mb-3">PDF SMARTCONVERT</h4>
+                        <p class="text-muted">Konversi PDF ke berbagai format (Word, Excel, JPG, dll) dan sebaliknya secara online.</p>
+                        <span class="card-link-text">Buka Aplikasi <i class="fas fa-arrow-right"></i></span>
+                    </a>
+                </div>
+
+                <div class="col-xl-4 col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="320">
                     <a href="#aduan" class="service-card">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/layanan%20info.png" alt="Logo Layanan Aduan" class="menu-logo">
                         <h4 class="fw-bold mb-3">Layanan Aduan</h4>
@@ -2761,6 +2789,10 @@
                             <a href="https://www.dinasperikanansitubondo.com/petabantuan" target="_blank" class="control-btn btn-detail-peta" id="detailDataBtn">
                                 <i class="fas fa-info-circle"></i> <span class="btn-text">Cek Detail Data Peta</span>
                             </a>
+                            <!-- TOMBOL BARU: Reload Data -->
+                            <button class="control-btn btn-reload-data" id="reloadDataBtn">
+                                <i class="fas fa-download"></i> <span class="btn-text">Reload Data</span>
+                            </button>
                             <button class="control-btn" id="reloadBtn">
                                 <i class="fas fa-sync-alt"></i> <span class="btn-text">Update Data</span>
                             </button>
@@ -3227,6 +3259,9 @@
                 // Tombol fullscreen
                 document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
                 
+                // Tombol Reload Data Baru
+                document.getElementById('reloadDataBtn').addEventListener('click', reloadDataFromFile);
+                
                 // Tabs
                 document.querySelectorAll('.tab').forEach(tab => {
                     tab.addEventListener('click', function() {
@@ -3388,6 +3423,90 @@
             }
         }
         
+        // Fungsi untuk reload data dari file eksternal (reload.html atau reload.js)
+        async function reloadDataFromFile() {
+            try {
+                showLoading(true);
+                showNotification('Sedang memuat data dari file eksternal...', 'info');
+                
+                // Coba ambil data dari reload.js terlebih dahulu
+                const response = await fetch('reload.js?t=' + new Date().getTime());
+                if (response.ok) {
+                    const jsContent = await response.text();
+                    
+                    // Coba ekstrak data dari file JavaScript
+                    try {
+                        // Eksekusi kode JavaScript (harus berhati-hati dengan keamanan)
+                        eval(jsContent);
+                        
+                        // Cek apakah ada data yang tersedia
+                        if (typeof RELOAD_DATA !== 'undefined') {
+                            processData(RELOAD_DATA);
+                            showNotification('Data berhasil dimuat dari file reload.js', 'success');
+                        } else {
+                            // Coba parse sebagai JSON jika tidak ada variabel RELOAD_DATA
+                            const jsonMatch = jsContent.match(/const\s+RELOAD_DATA\s*=\s*(\{[\s\S]*?\});/);
+                            if (jsonMatch) {
+                                const data = JSON.parse(jsonMatch[1]);
+                                processData(data);
+                                showNotification('Data berhasil dimuat dari file reload.js', 'success');
+                            } else {
+                                throw new Error('Format data tidak dikenali');
+                            }
+                        }
+                    } catch (evalError) {
+                        console.error('Error parsing data dari reload.js:', evalError);
+                        
+                        // Coba ambil dari reload.html sebagai fallback
+                        await loadReloadHTML();
+                    }
+                } else {
+                    // Jika reload.js tidak ada, coba reload.html
+                    await loadReloadHTML();
+                }
+            } catch (error) {
+                console.error('Error reloading data dari file:', error);
+                showNotification('Gagal memuat data dari file eksternal. Menggunakan data yang tersedia.', 'error');
+                processData(SAMPLE_DATA);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Fungsi untuk load data dari reload.html
+        async function loadReloadHTML() {
+            try {
+                const response = await fetch('reload.html?t=' + new Date().getTime());
+                if (response.ok) {
+                    const htmlContent = await response.text();
+                    
+                    // Coba ekstrak data dari HTML
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlContent, 'text/html');
+                    
+                    // Cari elemen dengan data yang diperlukan
+                    const dataElement = doc.querySelector('#data-content');
+                    if (dataElement) {
+                        const dataText = dataElement.textContent;
+                        try {
+                            const data = JSON.parse(dataText);
+                            processData(data);
+                            showNotification('Data berhasil dimuat dari file reload.html', 'success');
+                        } catch (parseError) {
+                            throw new Error('Format data tidak valid di reload.html');
+                        }
+                    } else {
+                        throw new Error('Tidak ditemukan data di reload.html');
+                    }
+                } else {
+                    throw new Error('File reload.html tidak ditemukan');
+                }
+            } catch (error) {
+                console.error('Error loading reload.html:', error);
+                throw error;
+            }
+        }
+        
         // Fungsi untuk memproses data
         function processData(data) {
             try {
@@ -3422,6 +3541,19 @@
                 
                 // Update charts
                 updateCharts(dataDesa);
+                
+                // Update timestamp
+                const now = new Date();
+                const formattedDate = now.toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                updateElementText('lastUpdate', formattedDate);
+                updateElementText('footerUpdate', formattedDate);
                 
                 // Tampilkan notifikasi sukses
                 if (APP_CONFIG.showNotifications) {
@@ -4549,6 +4681,7 @@
         window.openLightbox = openLightbox;
         window.copyToClipboard = copyToClipboard;
         window.shareViaWhatsApp = shareViaWhatsApp;
+        window.reloadDataFromFile = reloadDataFromFile;
     </script>
 </body>
 </html>
