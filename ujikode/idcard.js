@@ -1,6 +1,6 @@
 // =============================================================
 // idcard.js - SISTEM CETAK ID CARD NELAYAN SIMPADAN TANGKAP
-// Versi: 2.0 - Kompatibel dengan SIMPADAN TANGKAP v5.9
+// Versi: 3.0 - FULLY COMPATIBLE dengan SIMPADAN TANGKAP v5.9
 // =============================================================
 
 // Global variables untuk ID Card
@@ -10,20 +10,39 @@ let idCardProcessing = false;
 /**
  * Fungsi utama untuk menghasilkan ID Card nelayan
  * Dipanggil dari sistem utama saat tombol ID Card diklik
+ * Kompatibel dengan safeGenerateIDCard dari index.html
  */
 function generateIDCard(id) {
+    console.log('🔍 generateIDCard dipanggil dengan ID:', id);
+    
     if (idCardProcessing) {
         showNotification('Sedang memproses ID Card sebelumnya. Mohon tunggu...', 'warning');
         return;
     }
     
+    // Pastikan appData tersedia
+    if (!window.appData || !Array.isArray(window.appData)) {
+        console.error('appData tidak ditemukan atau bukan array');
+        showNotification('Data aplikasi tidak tersedia. Silakan refresh halaman.', 'error');
+        return;
+    }
+    
     // Cari data nelayan berdasarkan ID
-    const nelayanData = window.appData.find(item => item.id == id);
+    console.log('Mencari data nelayan dengan ID:', id);
+    console.log('Jumlah data appData:', window.appData.length);
+    
+    const nelayanData = window.appData.find(item => {
+        console.log('Item ID:', item.id, 'Type:', typeof item.id, 'Target ID:', id, 'Type:', typeof id);
+        return String(item.id) === String(id);
+    });
     
     if (!nelayanData) {
+        console.error('Data nelayan tidak ditemukan untuk ID:', id);
         showNotification('Data nelayan tidak ditemukan!', 'error');
         return;
     }
+    
+    console.log('Data ditemukan:', nelayanData.nama);
     
     // Validasi data required
     if (!nelayanData.nama || !nelayanData.nik) {
@@ -49,16 +68,25 @@ function generateIDCard(id) {
 }
 
 /**
- * Fungsi utama untuk menghasilkan ID Card nelayan
+ * Fungsi alternatif untuk generateIDCard dari modal detail
+ */
+function safeGenerateIDCard(id) {
+    console.log('🛡️ safeGenerateIDCard dipanggil dengan ID:', id);
+    generateIDCard(id);
+}
+
+/**
+ * Fungsi utama untuk menghasilkan ID Card nelayan dengan data lengkap
  */
 function generateSimataIDCard(nelayanData) {
+    console.log('🎨 generateSimataIDCard dipanggil untuk:', nelayanData.nama);
+    
     if (!nelayanData || typeof nelayanData !== 'object') {
         console.error('Data nelayan tidak valid');
         showNotification('Data nelayan tidak valid!', 'error');
         idCardProcessing = false;
-        if (document.getElementById('idcardLoading')) {
-            document.getElementById('idcardLoading').classList.remove('active');
-        }
+        const loadingEl = document.getElementById('idcardLoading');
+        if (loadingEl) loadingEl.classList.remove('active');
         return;
     }
     
@@ -67,15 +95,24 @@ function generateSimataIDCard(nelayanData) {
         if (!nelayanData.nama || !nelayanData.nik) {
             showNotification('Data nama dan NIK harus diisi!', 'error');
             idCardProcessing = false;
-            if (document.getElementById('idcardLoading')) {
-                document.getElementById('idcardLoading').classList.remove('active');
-            }
+            const loadingEl = document.getElementById('idcardLoading');
+            if (loadingEl) loadingEl.classList.remove('active');
+            return;
+        }
+        
+        // Cek ketersediaan library
+        if (typeof jspdf === 'undefined') {
+            console.error('Library jsPDF tidak ditemukan');
+            showNotification('Library PDF tidak tersedia. Pastikan jsPDF dimuat dengan benar.', 'error');
+            idCardProcessing = false;
+            const loadingEl = document.getElementById('idcardLoading');
+            if (loadingEl) loadingEl.classList.remove('active');
             return;
         }
         
         // Buat elemen sementara untuk QR Code
         const qrContainer = document.createElement('div');
-        qrContainer.id = 'idcard-qr-temp';
+        qrContainer.id = 'idcard-qr-temp-' + Date.now();
         qrContainer.style.position = 'absolute';
         qrContainer.style.left = '-9999px';
         qrContainer.style.width = '200px';
@@ -105,6 +142,7 @@ function generateSimataIDCard(nelayanData) {
         
         // Buat QR Code dengan error handling
         try {
+            console.log('Membuat QR Code...');
             new QRCode(qrContainer, {
                 text: qrData,
                 width: 200,
@@ -117,12 +155,14 @@ function generateSimataIDCard(nelayanData) {
             
             // Tunggu QR Code digenerate
             setTimeout(() => {
+                console.log('Memproses PDF...');
                 generateIDCardPDFWithNewLayout(nelayanData, qrContainer);
                 if (document.body.contains(qrContainer)) {
                     document.body.removeChild(qrContainer);
                 }
-                if (document.getElementById('idcardLoading')) {
-                    document.getElementById('idcardLoading').classList.remove('active');
+                const loadingEl = document.getElementById('idcardLoading');
+                if (loadingEl) {
+                    loadingEl.classList.remove('active');
                 }
                 idCardProcessing = false;
             }, 800);
@@ -133,8 +173,9 @@ function generateSimataIDCard(nelayanData) {
             if (document.body.contains(qrContainer)) {
                 document.body.removeChild(qrContainer);
             }
-            if (document.getElementById('idcardLoading')) {
-                document.getElementById('idcardLoading').classList.remove('active');
+            const loadingEl = document.getElementById('idcardLoading');
+            if (loadingEl) {
+                loadingEl.classList.remove('active');
             }
             idCardProcessing = false;
         }
@@ -152,9 +193,11 @@ function generateSimataIDCard(nelayanData) {
 /**
  * Generate PDF untuk ID Card dengan LAYOUT BARU
  */
-async function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
+function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
+    console.log('📄 Membuat PDF ID Card...');
+    
     // Validasi library jsPDF
-    if (typeof jspdf === 'undefined' || typeof jspdf.jsPDF === 'undefined') {
+    if (typeof jspdf === 'undefined') {
         console.error('jsPDF tidak ditemukan');
         showNotification('Library PDF tidak tersedia!', 'error');
         idCardProcessing = false;
@@ -227,7 +270,8 @@ async function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
         currentY += lineHeight;
         
         // NIK
-        doc.text(`NIK: ${nelayanData.nik || ''}`, leftX, currentY);
+        const displayNik = maskData ? maskData(nelayanData.nik) : nelayanData.nik;
+        doc.text(`NIK: ${displayNik || ''}`, leftX, currentY);
         currentY += lineHeight;
         
         // Usia
@@ -392,13 +436,14 @@ async function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
         
         setTimeout(() => {
             try {
+                console.log('Menyimpan file PDF:', fileName);
                 doc.save(fileName);
                 idCardGenerated = true;
                 
                 showNotification(`✅ ID Card ${nelayanData.nama} berhasil dibuat!`, 'success');
             } catch (saveError) {
                 console.error('Error saving PDF:', saveError);
-                showNotification('Gagal menyimpan ID Card. Coba lagi!', 'error');
+                showNotification('Gagal menyimpan ID Card. Silakan coba lagi!', 'error');
             }
         }, 500);
         
@@ -440,7 +485,6 @@ function createFallbackQRCode(doc, x, y, width, height, textX, textY) {
 
 /**
  * Fungsi untuk menghasilkan preview ID Card dalam format HTML
- * (untuk modal preview sebelum mencetak)
  */
 function previewIDCardHTML(nelayanData) {
     if (!nelayanData) return '<div class="alert alert-danger">Data tidak tersedia</div>';
@@ -471,7 +515,7 @@ function previewIDCardHTML(nelayanData) {
         alatTangkapDisplay = alatTangkapDisplay.substring(0, 20) + '...';
     }
     
-    const nikDisplay = nelayanData.nik || '';
+    const nikDisplay = maskData ? maskData(nelayanData.nik) : nelayanData.nik;
     const isPemilikKapal = nelayanData.status === "Pemilik Kapal";
     
     return `
@@ -553,7 +597,7 @@ function batchGenerateIDCards(nelayanIds) {
     showNotification(`Memproses ${nelayanIds.length} ID Card...`, 'info');
     
     const appData = window.appData ? window.appData : [];
-    const selectedNelayan = appData.filter(n => n && n.id && nelayanIds.includes(n.id.toString()));
+    const selectedNelayan = appData.filter(n => n && n.id && nelayanIds.includes(String(n.id)));
     
     if (selectedNelayan.length === 0) {
         showNotification('Data nelayan tidak ditemukan!', 'error');
@@ -704,191 +748,83 @@ function checkRequiredLibraries() {
 }
 
 // ================================
-// FUNGSI VERIFIKASI KIN TANPA SCAN QR CODE
+// FUNGSI NOTIFIKASI (Fallback)
 // ================================
 
 /**
- * Fungsi untuk verifikasi KIN berdasarkan NIK atau kode validasi
- * (Diintegrasikan dengan sistem utama)
+ * Fungsi notifikasi fallback jika tidak tersedia dari sistem utama
  */
-function verifyKIN() {
-    const verifyInput = document.getElementById('verifyInput');
-    if (!verifyInput) {
-        showNotification('Input verifikasi tidak ditemukan!', 'error');
+function showNotification(message, type = 'info') {
+    // Jika fungsi showNotification sudah ada di window, gunakan itu
+    if (window.showNotification && typeof window.showNotification === 'function') {
+        window.showNotification(message, type);
         return;
     }
     
-    const inputValue = verifyInput.value.trim();
-    const verifyLoading = document.getElementById('verifyLoading');
-    const verifyResultContainer = document.getElementById('verifyResultContainer');
-    const verifyButton = document.getElementById('verifyButton');
+    // Fallback: buat notifikasi sederhana
+    console.log(`${type.toUpperCase()}: ${message}`);
     
-    if (!inputValue) {
-        showNotification('Masukkan NIK atau kode validasi terlebih dahulu!', 'error');
-        return;
-    }
-    
-    // Tampilkan loading
-    if (verifyLoading) verifyLoading.style.display = 'block';
-    if (verifyButton) verifyButton.disabled = true;
-    
-    // Simulasi loading
-    setTimeout(() => {
-        const appData = window.appData ? window.appData : [];
+    // Coba gunakan Bootstrap Toast jika tersedia
+    const toastContainer = document.querySelector('.toast-container');
+    if (toastContainer && typeof bootstrap !== 'undefined') {
+        const toastId = 'idcard-toast-' + Date.now();
+        const toastHTML = `
+        <div class="toast notification-toast" id="${toastId}" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">
+                    ${type === 'success' ? '<i class="fas fa-check-circle me-2 text-success"></i>Berhasil' : 
+                      type === 'error' ? '<i class="fas fa-exclamation-circle me-2 text-danger"></i>Error' : 
+                      type === 'warning' ? '<i class="fas fa-exclamation-triangle me-2 text-warning"></i>Peringatan' : 
+                      '<i class="fas fa-info-circle me-2 text-info"></i>Informasi'}
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">${message}</div>
+        </div>
+        `;
         
-        // Cari nelayan berdasarkan NIK atau kode validasi
-        let foundNelayan = null;
-        
-        if (inputValue.length === 16 && /^\d+$/.test(inputValue)) {
-            // Jika input 16 digit angka, cari berdasarkan NIK
-            foundNelayan = appData.find(n => n && n.nik === inputValue);
-        } else {
-            // Jika tidak, cari berdasarkan kode validasi
-            foundNelayan = appData.find(n => n && n.kodeValidasi && n.kodeValidasi.toUpperCase() === inputValue.toUpperCase());
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.getElementById(toastId);
+        if (toastElement) {
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Hapus toast setelah 5 detik
+            setTimeout(() => {
+                if (toastElement && toastElement.parentNode) {
+                    toastElement.parentNode.removeChild(toastElement);
+                }
+            }, 5000);
         }
-        
-        // Sembunyikan loading
-        if (verifyLoading) verifyLoading.style.display = 'none';
-        if (verifyButton) verifyButton.disabled = false;
-        
-        // Tampilkan hasil verifikasi
-        showVerificationResult(foundNelayan, !!foundNelayan, inputValue);
-    }, 1500);
-}
-
-/**
- * Fungsi untuk menampilkan hasil verifikasi
- */
-function showVerificationResult(nelayanData, isValid, input = '') {
-    const verifyResultContainer = document.getElementById('verifyResultContainer');
-    if (!verifyResultContainer) return;
-    
-    if (isValid && nelayanData) {
-        // Format timestamp
-        const now = new Date();
-        const timestamp = now.toLocaleString('id-ID', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        // Tampilkan hasil valid
-        verifyResultContainer.innerHTML = `
-            <div class="verify-result-card verify-result-success">
-                <div class="verify-icon-container verify-success-icon">
-                    <i class="fas fa-check"></i>
-                </div>
-                
-                <h3 class="verify-result-title">✅ KARTU IDENTITAS NELAYAN VALID</h3>
-                
-                <div class="verify-result-message">
-                    <p class="mb-3">Sistem telah memverifikasi bahwa <strong>${nelayanData.nama || 'Nelayan'}</strong> tercatat sebagai nelayan resmi yang terdaftar di Sistem Informasi Pemetaan Data Nelayan Terpadu (SIMPADAN TANGKAP) Dinas Perikanan Kabupaten Situbondo.</p>
-                    
-                    <div class="alert alert-success mb-0">
-                        <i class="fas fa-certificate me-2"></i>
-                        <strong>STATUS VERIFIKASI:</strong> BERHASIL - Data sesuai dan tervalidasi
-                    </div>
-                </div>
-                
-                <div class="verify-details">
-                    <h6 class="fw-bold text-primary mb-3">DETAIL IDENTITAS NELAYAN</h6>
-                    <div class="verify-detail-row">
-                        <span class="verify-detail-label">Nama Lengkap</span>
-                        <span class="verify-detail-value">${nelayanData.nama || '-'}</span>
-                    </div>
-                    <div class="verify-detail-row">
-                        <span class="verify-detail-label">NIK</span>
-                        <span class="verify-detail-value">${nelayanData.nik || '-'}</span>
-                    </div>
-                    <div class="verify-detail-row">
-                        <span class="verify-detail-label">Domisili</span>
-                        <span class="verify-detail-value">${nelayanData.desa || '-'}, ${nelayanData.kecamatan || '-'}</span>
-                    </div>
-                    <div class="verify-detail-row">
-                        <span class="verify-detail-label">Profesi</span>
-                        <span class="verify-detail-value">
-                            <span class="badge ${(nelayanData.profesi || '') === 'Nelayan Penuh Waktu' ? 'badge-profesi-penuh' : (nelayanData.profesi || '') === 'Nelayan Sambilan Utama' ? 'badge-profesi-sambilan-utama' : 'badge-profesi-sambilan-tambahan'}">${nelayanData.profesi || '-'}</span>
-                        </span>
-                    </div>
-                    <div class="verify-detail-row">
-                        <span class="verify-detail-label">Kode Validasi (KIN)</span>
-                        <span class="verify-detail-value fw-bold text-primary">${nelayanData.kodeValidasi || 'Tidak tersedia'}</span>
-                    </div>
-                </div>
-                
-                <div class="verify-timestamp">
-                    <i class="fas fa-clock me-1"></i> Waktu Verifikasi: ${timestamp}
-                </div>
-                
-                <div class="verify-actions">
-                    <button type="button" class="btn btn-primary verify-action-btn" onclick="generateIDCard('${nelayanData.id || ''}')">
-                        <i class="fas fa-id-card me-1"></i> Cetak KIN
-                    </button>
-                    <button type="button" class="btn btn-outline-primary verify-action-btn" onclick="if(window.viewDetail) window.viewDetail('${nelayanData.id || ''}')">
-                        <i class="fas fa-eye me-1"></i> Lihat Detail Lengkap
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        // Scroll ke hasil
-        verifyResultContainer.scrollIntoView({ behavior: 'smooth' });
-        
     } else {
-        // Tampilkan hasil tidak valid
-        verifyResultContainer.innerHTML = `
-            <div class="verify-result-card verify-result-error">
-                <div class="verify-icon-container verify-error-icon">
-                    <i class="fas fa-times"></i>
-                </div>
-                
-                <h3 class="verify-result-title">❌ KARTU IDENTITAS TIDAK TERDAFTAR</h3>
-                
-                <div class="verify-result-message">
-                    <p class="mb-3">Sistem <strong>TIDAK DAPAT</strong> menemukan data nelayan dengan identitas <strong>"${input}"</strong> dalam database Sistem Informasi Pemetaan Data Nelayan Terpadu (SIMPADAN TANGKAP) Dinas Perikanan Kabupaten Situbondo.</p>
-                    
-                    <div class="alert alert-danger mb-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>STATUS VERIFIKASI:</strong> GAGAL - Data tidak ditemukan dalam sistem
-                    </div>
-                </div>
-                
-                <div class="verify-actions">
-                    <button type="button" class="btn btn-danger verify-action-btn" onclick="resetVerification()">
-                        <i class="fas fa-redo me-1"></i> Coba Lagi
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        // Scroll ke hasil
-        verifyResultContainer.scrollIntoView({ behavior: 'smooth' });
+        // Fallback paling dasar: alert
+        alert(message);
     }
-    
-    verifyResultContainer.style.display = 'block';
 }
 
+// ================================
+// MASK DATA HELPER (Fallback)
+// ================================
+
 /**
- * Fungsi untuk reset form verifikasi
+ * Fungsi maskData fallback jika tidak tersedia dari sistem utama
  */
-function resetVerification() {
-    const verifyInput = document.getElementById('verifyInput');
-    const verifyResultContainer = document.getElementById('verifyResultContainer');
+function maskData(data, force = false) {
+    if (!data) return "-";
+    if (data === '00000000') return "Tidak Ada";
     
-    // Reset input
-    if (verifyInput) verifyInput.value = '';
+    // Gunakan privacyMode dari appSettings jika tersedia
+    const privacyMode = window.appSettings ? window.appSettings.privacyMode : true;
     
-    // Sembunyikan hasil
-    if (verifyResultContainer) {
-        verifyResultContainer.style.display = 'none';
-        verifyResultContainer.innerHTML = '';
-    }
+    if (!privacyMode && !force) return data.toString();
     
-    // Fokus ke input
-    if (verifyInput) verifyInput.focus();
+    let str = data.toString();
+    if (str.length <= 4) return str;
+    
+    const maskedLength = Math.min(4, str.length);
+    const visiblePart = str.slice(0, -maskedLength);
+    const maskedPart = '*'.repeat(maskedLength);
+    return visiblePart + maskedPart;
 }
 
 // ================================
@@ -897,7 +833,11 @@ function resetVerification() {
 
 // Periksa ketersediaan library saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ SIMPADAN TANGKAP ID Card Generator loaded');
+    console.log('✅ SIMPADAN TANGKAP ID Card Generator v3.0 loaded');
+    console.log('appData tersedia:', !!window.appData);
+    console.log('appSettings tersedia:', !!window.appSettings);
+    console.log('jspdf tersedia:', typeof jspdf !== 'undefined');
+    console.log('QRCode tersedia:', typeof QRCode !== 'undefined');
     
     // Periksa library yang diperlukan
     const libsAvailable = checkRequiredLibraries();
@@ -1057,6 +997,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Ekspor fungsi ke global scope untuk akses dari file lain
 if (typeof window !== 'undefined') {
     window.generateIDCard = generateIDCard;
+    window.safeGenerateIDCard = safeGenerateIDCard;
     window.generateSimataIDCard = generateSimataIDCard;
     window.previewIDCardHTML = previewIDCardHTML;
     window.batchGenerateIDCards = batchGenerateIDCards;
@@ -1065,8 +1006,9 @@ if (typeof window !== 'undefined') {
     window.getProfesiColor = getProfesiColor;
     window.getStatusColor = getStatusColor;
     window.checkRequiredLibraries = checkRequiredLibraries;
-    window.verifyKIN = verifyKIN;
-    window.resetVerification = resetVerification;
+    window.showNotification = showNotification;
+    window.maskData = maskData;
 }
 
-console.log('✅ SIMPADAN TANGKAP ID Card Generator v2.0 loaded successfully');
+console.log('✅ SIMPADAN TANGKAP ID Card Generator v3.0 siap digunakan');
+console.log('🎯 Fungsi tersedia: generateIDCard, safeGenerateIDCard');
