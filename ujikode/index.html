@@ -146,10 +146,6 @@
         </div>
     </div>
 
-    <!-- SISANYA KODE TETAP SAMA SEPERTI SEBELUMNYA -->
-    <!-- Semua kode dari sini sampai akhir file tetap sama persis -->
-    <!-- Hanya menambahkan dua tombol baru di atas -->
-
     <div class="modal fade" id="welcomeModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content welcome-modal-content">
@@ -2351,7 +2347,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
             }
         }
 
-        // --- FUNGSI GENERATE PDF TABEL DATA ---
+        // --- FUNGSI GENERATE PDF TABEL DATA - DIPERBAIKI ---
         function generateTabelPdf() {
             const filteredData = getFilteredData();
             
@@ -2402,31 +2398,37 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     doc.setFillColor(12, 36, 97);
                     doc.rect(10, 10, pageWidth - 20, 28, 'F');
                     
-                    // Judul utama
+                    // Judul utama - DIPERBAIKI TIDAK TERPOTONG
                     doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
+                    doc.setFontSize(14); // Dikurangi dari 16
                     doc.setFont('helvetica', 'bold');
-                    doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
+                    
+                    // Pisahkan judul menjadi dua baris agar tidak terpotong
+                    const judulLine1 = 'SISTEM MANAJEMEN & PEMETAAN DATA';
+                    const judulLine2 = 'PEMBERDAYAAN NELAYAN TANGKAP';
+                    
+                    doc.text(judulLine1, pageWidth/2, 18, { align: 'center' });
+                    doc.text(judulLine2, pageWidth/2, 24, { align: 'center' });
                     
                     // Subjudul
-                    doc.setFontSize(12);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
+                    doc.setFontSize(11); // Dikurangi dari 12
+                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 30, { align: 'center' });
 
                     // Slogan dengan warna oranye
                     doc.setTextColor(246, 185, 59);
                     doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10);
-                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
+                    doc.setFontSize(9); // Dikurangi dari 10
+                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 35, { align: 'center' });
 
                     // Garis bawah header dengan warna aksen
                     doc.setDrawColor(246, 185, 59);
                     doc.setLineWidth(1.5);
-                    doc.line(20, 38, pageWidth - 20, 38);
+                    doc.line(20, 40, pageWidth - 20, 40);
 
                     // Judul Laporan dengan informasi filter
                     doc.setTextColor(12, 36, 97);
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
+                    doc.setFontSize(16); // Dikurangi dari 18
                     doc.text('LAPORAN TABEL DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
                     
                     // Informasi filter yang aktif
@@ -2449,19 +2451,25 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     // Tambahkan informasi halaman dan jumlah baris
                     filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
                     
-                    doc.setFontSize(10);
+                    doc.setFontSize(9); // Dikurangi dari 10
                     doc.setFont('helvetica', 'normal');
-                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
+                    // Pisahkan filter info jika terlalu panjang
+                    const filterLines = doc.splitTextToSize(filterInfo, pageWidth - 40);
+                    let filterY = 54;
+                    filterLines.forEach(line => {
+                        doc.text(line, pageWidth/2, filterY, { align: 'center' });
+                        filterY += 5;
+                    });
                     
-                    doc.setFontSize(14);
+                    doc.setFontSize(12); // Dikurangi dari 14
                     doc.setFont('helvetica', 'bold');
-                    doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
+                    doc.text('TABEL DATA NELAYAN', pageWidth/2, filterY + 2, { align: 'center' });
                     
-                    doc.setFontSize(10);
+                    doc.setFontSize(9); // Dikurangi dari 10
                     doc.setFont('helvetica', 'normal');
                     const now = new Date();
                     const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, filterY + 8, { align: 'center' });
 
                     // Siapkan data untuk tabel dengan kolom baru
                     const tableRows = pageData.map((d, index) => [
@@ -2478,6 +2486,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     // Tabel Data
                     const tableWidth = pageWidth - 40;
                     const tableStartX = (pageWidth - tableWidth) / 2;
+                    const startY = filterY + 14; // Sesuaikan posisi awal tabel
 
                     doc.autoTable({
                         head: [[
@@ -2491,7 +2500,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                             {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
                         ]],
                         body: tableRows,
-                        startY: 72,
+                        startY: startY,
                         theme: 'grid',
                         tableWidth: tableWidth,
                         margin: { left: tableStartX, right: tableStartX },
@@ -2536,7 +2545,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     });
 
                     // Setelah autoTable, kita atur footer
-                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
+                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : startY + 100;
 
                     // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
                     const separatorY = finalY + 10;
@@ -2986,7 +2995,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
             showNotification(`Ditemukan ${duplicateData.length} data dengan NIK ganda`, 'warning');
         }
 
-        // --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER ---
+        // --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER - DIPERBAIKI ---
         function generateFilteredPdf() {
             const filteredData = getFilteredData();
             
@@ -3049,31 +3058,37 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     doc.setFillColor(12, 36, 97);
                     doc.rect(10, 10, pageWidth - 20, 28, 'F');
                     
-                    // Judul utama
+                    // Judul utama - DIPERBAIKI TIDAK TERPOTONG
                     doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
+                    doc.setFontSize(14); // Dikurangi dari 16
                     doc.setFont('helvetica', 'bold');
-                    doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
+                    
+                    // Pisahkan judul menjadi dua baris agar tidak terpotong
+                    const judulLine1 = 'SISTEM MANAJEMEN & PEMETAAN DATA';
+                    const judulLine2 = 'PEMBERDAYAAN NELAYAN TANGKAP';
+                    
+                    doc.text(judulLine1, pageWidth/2, 18, { align: 'center' });
+                    doc.text(judulLine2, pageWidth/2, 24, { align: 'center' });
                     
                     // Subjudul
-                    doc.setFontSize(12);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
+                    doc.setFontSize(11); // Dikurangi dari 12
+                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 30, { align: 'center' });
 
                     // Slogan dengan warna oranye
                     doc.setTextColor(246, 185, 59);
                     doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10);
-                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
+                    doc.setFontSize(9); // Dikurangi dari 10
+                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 35, { align: 'center' });
 
                     // Garis bawah header dengan warna aksen
                     doc.setDrawColor(246, 185, 59);
                     doc.setLineWidth(1.5);
-                    doc.line(20, 38, pageWidth - 20, 38);
+                    doc.line(20, 40, pageWidth - 20, 40);
 
                     // Judul Laporan dengan informasi filter
                     doc.setTextColor(12, 36, 97);
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
+                    doc.setFontSize(16); // Dikurangi dari 18
                     doc.text('LAPORAN DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
                     
                     // Informasi filter yang aktif
@@ -3096,23 +3111,30 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     // Tambahkan informasi halaman dan jumlah baris
                     filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
                     
-                    doc.setFontSize(10);
+                    doc.setFontSize(9); // Dikurangi dari 10
                     doc.setFont('helvetica', 'normal');
-                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
+                    // Pisahkan filter info jika terlalu panjang
+                    const filterLines = doc.splitTextToSize(filterInfo, pageWidth - 40);
+                    let filterY = 54;
+                    filterLines.forEach(line => {
+                        doc.text(line, pageWidth/2, filterY, { align: 'center' });
+                        filterY += 5;
+                    });
                     
-                    doc.setFontSize(14);
+                    doc.setFontSize(12); // Dikurangi dari 14
                     doc.setFont('helvetica', 'bold');
-                    doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
+                    doc.text('TABEL DATA NELAYAN', pageWidth/2, filterY + 2, { align: 'center' });
                     
-                    doc.setFontSize(10);
+                    doc.setFontSize(9); // Dikurangi dari 10
                     doc.setFont('helvetica', 'normal');
                     const now = new Date();
                     const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, filterY + 8, { align: 'center' });
 
                     // Tabel Data
                     const tableWidth = pageWidth - 40;
                     const tableStartX = (pageWidth - tableWidth) / 2;
+                    const startY = filterY + 14; // Sesuaikan posisi awal tabel
 
                     doc.autoTable({
                         head: [[
@@ -3126,7 +3148,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                             {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
                         ]],
                         body: tableRows,
-                        startY: 72,
+                        startY: startY,
                         theme: 'grid',
                         tableWidth: tableWidth,
                         margin: { left: tableStartX, right: tableStartX },
@@ -3171,7 +3193,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     });
 
                     // Setelah autoTable, kita atur footer
-                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
+                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : startY + 100;
 
                     // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
                     const separatorY = finalY + 10;
@@ -3262,7 +3284,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
             }, 800);
         }
 
-        // --- FUNGSI PRINT DATA ---
+        // --- FUNGSI PRINT DATA - DIPERBAIKI ---
         function printData() {
             const filteredData = getFilteredData();
             
@@ -3363,31 +3385,37 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     doc.setFillColor(12, 36, 97);
                     doc.rect(10, 10, pageWidth - 20, 28, 'F');
                     
-                    // Judul utama
+                    // Judul utama - DIPERBAIKI TIDAK TERPOTONG
                     doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
+                    doc.setFontSize(14); // Dikurangi dari 16
                     doc.setFont('helvetica', 'bold');
-                    doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
+                    
+                    // Pisahkan judul menjadi dua baris agar tidak terpotong
+                    const judulLine1 = 'SISTEM MANAJEMEN & PEMETAAN DATA';
+                    const judulLine2 = 'PEMBERDAYAAN NELAYAN TANGKAP';
+                    
+                    doc.text(judulLine1, pageWidth/2, 18, { align: 'center' });
+                    doc.text(judulLine2, pageWidth/2, 24, { align: 'center' });
                     
                     // Subjudul
-                    doc.setFontSize(12);
-                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
+                    doc.setFontSize(11); // Dikurangi dari 12
+                    doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 30, { align: 'center' });
 
                     // Slogan dengan warna oranye
                     doc.setTextColor(246, 185, 59);
                     doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10);
-                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
+                    doc.setFontSize(9); // Dikurangi dari 10
+                    doc.text('"Situbondo Naik Kelas"', pageWidth/2, 35, { align: 'center' });
 
                     // Garis bawah header dengan warna aksen
                     doc.setDrawColor(246, 185, 59);
                     doc.setLineWidth(1.5);
-                    doc.line(20, 38, pageWidth - 20, 38);
+                    doc.line(20, 40, pageWidth - 20, 40);
 
                     // Judul Laporan dengan informasi filter
                     doc.setTextColor(12, 36, 97);
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
+                    doc.setFontSize(16); // Dikurangi dari 18
                     doc.text('LAPORAN REKAPITULASI DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
                     
                     // Informasi filter yang aktif
@@ -3407,23 +3435,30 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                         filterInfo += filterParts.join(', ');
                     }
                     
-                    doc.setFontSize(10);
+                    doc.setFontSize(9); // Dikurangi dari 10
                     doc.setFont('helvetica', 'normal');
-                    doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
+                    // Pisahkan filter info jika terlalu panjang
+                    const filterLines = doc.splitTextToSize(filterInfo, pageWidth - 40);
+                    let filterY = 54;
+                    filterLines.forEach(line => {
+                        doc.text(line, pageWidth/2, filterY, { align: 'center' });
+                        filterY += 5;
+                    });
                     
-                    doc.setFontSize(14);
+                    doc.setFontSize(12); // Dikurangi dari 14
                     doc.setFont('helvetica', 'bold');
-                    doc.text('REKAPITULASI PER DESA / KELURAHAN', pageWidth/2, 60, { align: 'center' });
+                    doc.text('REKAPITULASI PER DESA / KELURAHAN', pageWidth/2, filterY + 2, { align: 'center' });
                     
-                    doc.setFontSize(10);
+                    doc.setFontSize(9); // Dikurangi dari 10
                     doc.setFont('helvetica', 'normal');
                     const now = new Date();
                     const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+                    doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, filterY + 8, { align: 'center' });
 
                     // Tabel Data dengan kolom baru
                     const tableWidth = pageWidth - 40;
                     const tableStartX = (pageWidth - tableWidth) / 2;
+                    const startY = filterY + 14; // Sesuaikan posisi awal tabel
 
                     doc.autoTable({
                         head: [[
@@ -3437,7 +3472,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                             {content: 'Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
                         ]],
                         body: tableRows,
-                        startY: 72,
+                        startY: startY,
                         theme: 'grid',
                         tableWidth: tableWidth,
                         margin: { left: tableStartX, right: tableStartX },
@@ -3492,7 +3527,7 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                     });
 
                     // Setelah autoTable, kita atur footer
-                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
+                    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : startY + 100;
 
                     // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
                     const separatorY = finalY + 10;
@@ -4607,16 +4642,23 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
                 
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(14); doc.setFont('helvetica', 'bold');
-                doc.text(appSettings.appName.toUpperCase(), 105, 22, { align: 'center' });
+                
+                // Pisahkan judul menjadi dua baris agar tidak terpotong
+                const judulLine1 = 'SISTEM MANAJEMEN & PEMETAAN DATA';
+                const judulLine2 = 'PEMBERDAYAAN NELAYAN TANGKAP';
+                
+                doc.text(judulLine1, 105, 22, { align: 'center' });
+                doc.text(judulLine2, 105, 28, { align: 'center' });
+                
                 doc.setFontSize(16);
-                doc.text('DINAS PERIKANAN', 105, 29, { align: 'center' });
+                doc.text('DINAS PERIKANAN', 105, 36, { align: 'center' });
                 doc.setTextColor(246, 185, 59);
                 doc.setFont('times', 'italic'); doc.setFontSize(12);
-                doc.text('"Situbondo Naik Kelas"', 105, 37, { align: 'center' });
+                doc.text('"Situbondo Naik Kelas"', 105, 42, { align: 'center' });
                 
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(10);
-                doc.text(appSettings.appSubtitle, 105, 45, { align: 'center' });
+                doc.text(appSettings.appSubtitle, 105, 48, { align: 'center' });
                 
                 doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
                 doc.text('BIODATA NELAYAN TERDAFTAR', 105, 65, { align: 'center' });
@@ -5166,9 +5208,12 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
         window.verifyKINAndShow = verifyKINAndShow;
         window.resetVerifyForm = resetVerifyForm;
         window.refreshPage = refreshPage;
-        window.goToPage = goToPage;
-        window.showLoading = showLoading;
-        window.hideLoading = hideLoading;
+        window.viewDetail = viewDetail;
+        window.editData = editData;
+        window.deleteData = deleteData;
+        window.safeGenerateIDCard = safeGenerateIDCard;
+        window.verifyKIN = verifyKIN;
+        window.displayVerifyResult = displayVerifyResult;
     </script>
 </body>
 </html>
