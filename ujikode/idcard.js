@@ -1,6 +1,6 @@
 // =============================================================
 // idcard.js - SISTEM CETAK ID CARD NELAYAN SIMPADAN TANGKAP
-// Versi: 3.0 - FULLY COMPATIBLE dengan SIMPADAN TANGKAP v5.9
+// Versi: 4.0 - FIXED: "Data tidak ditemukan"
 // =============================================================
 
 // Global variables untuk ID Card
@@ -8,12 +8,45 @@ let idCardGenerated = false;
 let idCardProcessing = false;
 
 /**
+ * DEBUG: Log semua data yang tersedia untuk debugging
+ */
+function debugAppData() {
+    console.group('🔍 DEBUG APP DATA');
+    console.log('Window.appData tersedia:', !!window.appData);
+    console.log('Window.appData adalah array:', Array.isArray(window.appData));
+    
+    if (window.appData && Array.isArray(window.appData)) {
+        console.log('Jumlah data nelayan:', window.appData.length);
+        
+        // Tampilkan 5 data pertama untuk inspeksi
+        window.appData.slice(0, 5).forEach((item, index) => {
+            console.log(`Data ${index + 1}:`, {
+                id: item.id,
+                tipeId: typeof item.id,
+                nama: item.nama,
+                nik: item.nik
+            });
+        });
+        
+        // Cek ID unik dan tipe data
+        const idTypes = new Set();
+        window.appData.forEach(item => {
+            idTypes.add(typeof item.id);
+        });
+        console.log('Tipe data ID yang ada:', Array.from(idTypes));
+    }
+    console.groupEnd();
+}
+
+/**
  * Fungsi utama untuk menghasilkan ID Card nelayan
  * Dipanggil dari sistem utama saat tombol ID Card diklik
- * Kompatibel dengan safeGenerateIDCard dari index.html
  */
 function generateIDCard(id) {
-    console.log('🔍 generateIDCard dipanggil dengan ID:', id);
+    console.log('🔍 [IDCard] generateIDCard dipanggil dengan ID:', id, 'Tipe:', typeof id);
+    
+    // Debug: tampilkan semua data yang tersedia
+    debugAppData();
     
     if (idCardProcessing) {
         showNotification('Sedang memproses ID Card sebelumnya. Mohon tunggu...', 'warning');
@@ -21,28 +54,86 @@ function generateIDCard(id) {
     }
     
     // Pastikan appData tersedia
-    if (!window.appData || !Array.isArray(window.appData)) {
-        console.error('appData tidak ditemukan atau bukan array');
+    if (!window.appData || !Array.isArray(window.appData) || window.appData.length === 0) {
+        console.error('❌ [IDCard] appData tidak ditemukan, kosong, atau bukan array');
+        console.log('Window.appData:', window.appData);
         showNotification('Data aplikasi tidak tersedia. Silakan refresh halaman.', 'error');
         return;
     }
     
-    // Cari data nelayan berdasarkan ID
-    console.log('Mencari data nelayan dengan ID:', id);
-    console.log('Jumlah data appData:', window.appData.length);
+    // Cari data nelayan dengan berbagai metode pencarian
+    let nelayanData = null;
     
-    const nelayanData = window.appData.find(item => {
-        console.log('Item ID:', item.id, 'Type:', typeof item.id, 'Target ID:', id, 'Type:', typeof id);
-        return String(item.id) === String(id);
+    // METODE 1: Pencarian eksak dengan konversi tipe data
+    nelayanData = window.appData.find(item => {
+        if (!item || item.id === undefined) return false;
+        
+        // Konversi kedua ID ke string untuk perbandingan
+        const itemIdStr = String(item.id);
+        const searchIdStr = String(id);
+        
+        // Juga coba konversi ke number jika memungkinkan
+        const itemIdNum = Number(item.id);
+        const searchIdNum = Number(id);
+        
+        return itemIdStr === searchIdStr || 
+               (itemIdNum && searchIdNum && itemIdNum === searchIdNum) ||
+               item.id == id; // Double equals untuk konversi otomatis
     });
     
+    // METODE 2: Jika tidak ditemukan, coba cari berdasarkan ID string/number
     if (!nelayanData) {
-        console.error('Data nelayan tidak ditemukan untuk ID:', id);
-        showNotification('Data nelayan tidak ditemukan!', 'error');
+        console.log('⚠️ [IDCard] Metode 1 gagal, mencoba metode 2...');
+        
+        // Coba semua kemungkinan konversi
+        nelayanData = window.appData.find(item => {
+            if (!item) return false;
+            
+            // Cek dengan berbagai format
+            const possibilities = [
+                String(item.id),
+                String(Number(item.id)),
+                item.id,
+                parseInt(item.id),
+                parseFloat(item.id)
+            ];
+            
+            const searchPossibilities = [
+                String(id),
+                String(Number(id)),
+                id,
+                parseInt(id),
+                parseFloat(id)
+            ];
+            
+            return possibilities.some(p => 
+                searchPossibilities.some(sp => 
+                    String(p) === String(sp)
+                )
+            );
+        });
+    }
+    
+    // METODE 3: Jika masih tidak ditemukan, tampilkan semua ID yang ada
+    if (!nelayanData) {
+        console.error('❌ [IDCard] Data tidak ditemukan setelah semua metode');
+        console.log('🔍 ID yang dicari:', id);
+        console.log('📋 Semua ID yang tersedia:');
+        window.appData.forEach((item, index) => {
+            console.log(`  ${index + 1}. ID: "${item.id}" (tipe: ${typeof item.id}), Nama: ${item.nama}`);
+        });
+        
+        showNotification('Data nelayan tidak ditemukan! Pastikan data valid.', 'error');
         return;
     }
     
-    console.log('Data ditemukan:', nelayanData.nama);
+    console.log('✅ [IDCard] Data ditemukan:', nelayanData.nama);
+    console.log('📋 Detail data:', {
+        id: nelayanData.id,
+        tipeId: typeof nelayanData.id,
+        nama: nelayanData.nama,
+        nik: nelayanData.nik
+    });
     
     // Validasi data required
     if (!nelayanData.nama || !nelayanData.nik) {
@@ -68,21 +159,35 @@ function generateIDCard(id) {
 }
 
 /**
- * Fungsi alternatif untuk generateIDCard dari modal detail
+ * Fungsi alternatif untuk generateIDCard dari modal detail dan tabel
  */
 function safeGenerateIDCard(id) {
-    console.log('🛡️ safeGenerateIDCard dipanggil dengan ID:', id);
-    generateIDCard(id);
+    console.log('🛡️ [IDCard] safeGenerateIDCard dipanggil dengan ID:', id, 'Tipe:', typeof id);
+    
+    // Jika id adalah object (data lengkap), ekstrak ID-nya
+    if (typeof id === 'object' && id !== null) {
+        console.log('ℹ️ [IDCard] Parameter adalah object, mengekstrak ID...');
+        const extractedId = id.id || id.ID || id.Id;
+        if (extractedId) {
+            console.log('✅ [IDCard] ID diekstrak:', extractedId);
+            generateIDCard(extractedId);
+        } else {
+            console.error('❌ [IDCard] Tidak dapat mengekstrak ID dari object:', id);
+            showNotification('Format data tidak valid untuk ID Card!', 'error');
+        }
+    } else {
+        generateIDCard(id);
+    }
 }
 
 /**
  * Fungsi utama untuk menghasilkan ID Card nelayan dengan data lengkap
  */
 function generateSimataIDCard(nelayanData) {
-    console.log('🎨 generateSimataIDCard dipanggil untuk:', nelayanData.nama);
+    console.log('🎨 [IDCard] generateSimataIDCard dipanggil untuk:', nelayanData.nama);
     
     if (!nelayanData || typeof nelayanData !== 'object') {
-        console.error('Data nelayan tidak valid');
+        console.error('❌ [IDCard] Data nelayan tidak valid');
         showNotification('Data nelayan tidak valid!', 'error');
         idCardProcessing = false;
         const loadingEl = document.getElementById('idcardLoading');
@@ -102,7 +207,7 @@ function generateSimataIDCard(nelayanData) {
         
         // Cek ketersediaan library
         if (typeof jspdf === 'undefined') {
-            console.error('Library jsPDF tidak ditemukan');
+            console.error('❌ [IDCard] Library jsPDF tidak ditemukan');
             showNotification('Library PDF tidak tersedia. Pastikan jsPDF dimuat dengan benar.', 'error');
             idCardProcessing = false;
             const loadingEl = document.getElementById('idcardLoading');
@@ -128,7 +233,7 @@ function generateSimataIDCard(nelayanData) {
         
         // Periksa apakah QRCode tersedia
         if (typeof QRCode === 'undefined') {
-            console.warn('QRCode library tidak ditemukan, menggunakan fallback');
+            console.warn('⚠️ [IDCard] QRCode library tidak ditemukan, menggunakan fallback');
             generateIDCardPDFWithNewLayout(nelayanData, null);
             if (document.getElementById('idcardLoading')) {
                 document.getElementById('idcardLoading').classList.remove('active');
@@ -142,7 +247,7 @@ function generateSimataIDCard(nelayanData) {
         
         // Buat QR Code dengan error handling
         try {
-            console.log('Membuat QR Code...');
+            console.log('🎯 [IDCard] Membuat QR Code...');
             new QRCode(qrContainer, {
                 text: qrData,
                 width: 200,
@@ -155,7 +260,7 @@ function generateSimataIDCard(nelayanData) {
             
             // Tunggu QR Code digenerate
             setTimeout(() => {
-                console.log('Memproses PDF...');
+                console.log('📄 [IDCard] Memproses PDF...');
                 generateIDCardPDFWithNewLayout(nelayanData, qrContainer);
                 if (document.body.contains(qrContainer)) {
                     document.body.removeChild(qrContainer);
@@ -168,7 +273,7 @@ function generateSimataIDCard(nelayanData) {
             }, 800);
             
         } catch (qrError) {
-            console.warn('Error membuat QR Code:', qrError);
+            console.warn('⚠️ [IDCard] Error membuat QR Code:', qrError);
             generateIDCardPDFWithNewLayout(nelayanData, null);
             if (document.body.contains(qrContainer)) {
                 document.body.removeChild(qrContainer);
@@ -181,7 +286,7 @@ function generateSimataIDCard(nelayanData) {
         }
         
     } catch (error) {
-        console.error('Error generating ID Card:', error);
+        console.error('❌ [IDCard] Error generating ID Card:', error);
         showNotification('Terjadi kesalahan saat membuat ID Card!', 'error');
         idCardProcessing = false;
         
@@ -194,11 +299,11 @@ function generateSimataIDCard(nelayanData) {
  * Generate PDF untuk ID Card dengan LAYOUT BARU
  */
 function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
-    console.log('📄 Membuat PDF ID Card...');
+    console.log('📄 [IDCard] Membuat PDF ID Card...');
     
     // Validasi library jsPDF
     if (typeof jspdf === 'undefined') {
-        console.error('jsPDF tidak ditemukan');
+        console.error('❌ [IDCard] jsPDF tidak ditemukan');
         showNotification('Library PDF tidak tersedia!', 'error');
         idCardProcessing = false;
         return;
@@ -269,9 +374,12 @@ function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
         doc.text(`Nama: ${namaDisplay}`, leftX, currentY);
         currentY += lineHeight;
         
-        // NIK
-        const displayNik = maskData ? maskData(nelayanData.nik) : nelayanData.nik;
-        doc.text(`NIK: ${displayNik || ''}`, leftX, currentY);
+        // NIK - gunakan fungsi maskData jika tersedia
+        let displayNik = nelayanData.nik || '';
+        if (typeof maskData === 'function') {
+            displayNik = maskData(displayNik);
+        }
+        doc.text(`NIK: ${displayNik}`, leftX, currentY);
         currentY += lineHeight;
         
         // Usia
@@ -415,7 +523,7 @@ function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
                     doc.setFont('helvetica', 'bold');
                     doc.text("SCAN VERIFIKASI", 72.5, 52, { align: 'center' });
                 } catch (e) {
-                    console.warn('QR Code gagal ditambahkan:', e);
+                    console.warn('⚠️ [IDCard] QR Code gagal ditambahkan:', e);
                     qrAdded = false;
                 }
             }
@@ -436,19 +544,19 @@ function generateIDCardPDFWithNewLayout(nelayanData, qrContainer) {
         
         setTimeout(() => {
             try {
-                console.log('Menyimpan file PDF:', fileName);
+                console.log('💾 [IDCard] Menyimpan file PDF:', fileName);
                 doc.save(fileName);
                 idCardGenerated = true;
                 
                 showNotification(`✅ ID Card ${nelayanData.nama} berhasil dibuat!`, 'success');
             } catch (saveError) {
-                console.error('Error saving PDF:', saveError);
+                console.error('❌ [IDCard] Error saving PDF:', saveError);
                 showNotification('Gagal menyimpan ID Card. Silakan coba lagi!', 'error');
             }
         }, 500);
         
     } catch (error) {
-        console.error('Error dalam generateIDCardPDFWithNewLayout:', error);
+        console.error('❌ [IDCard] Error dalam generateIDCardPDFWithNewLayout:', error);
         showNotification('Terjadi kesalahan saat membuat PDF!', 'error');
         idCardProcessing = false;
     }
@@ -479,7 +587,7 @@ function createFallbackQRCode(doc, x, y, width, height, textX, textY) {
         doc.setFontSize(4);
         doc.text("SCAN VERIFIKASI", textX, textY, { align: 'center' });
     } catch (error) {
-        console.warn('Gagal membuat fallback QR code:', error);
+        console.warn('⚠️ [IDCard] Gagal membuat fallback QR code:', error);
     }
 }
 
@@ -515,7 +623,12 @@ function previewIDCardHTML(nelayanData) {
         alatTangkapDisplay = alatTangkapDisplay.substring(0, 20) + '...';
     }
     
-    const nikDisplay = maskData ? maskData(nelayanData.nik) : nelayanData.nik;
+    // Gunakan fungsi maskData jika tersedia
+    let nikDisplay = nelayanData.nik || '';
+    if (typeof maskData === 'function') {
+        nikDisplay = maskData(nikDisplay);
+    }
+    
     const isPemilikKapal = nelayanData.status === "Pemilik Kapal";
     
     return `
@@ -740,7 +853,7 @@ function checkRequiredLibraries() {
     }
     
     if (missing.length > 0) {
-        console.warn(`Library yang diperlukan tidak ditemukan: ${missing.join(', ')}`);
+        console.warn(`⚠️ [IDCard] Library yang diperlukan tidak ditemukan: ${missing.join(', ')}`);
         return false;
     }
     
@@ -833,16 +946,20 @@ function maskData(data, force = false) {
 
 // Periksa ketersediaan library saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ SIMPADAN TANGKAP ID Card Generator v3.0 loaded');
-    console.log('appData tersedia:', !!window.appData);
-    console.log('appSettings tersedia:', !!window.appSettings);
-    console.log('jspdf tersedia:', typeof jspdf !== 'undefined');
-    console.log('QRCode tersedia:', typeof QRCode !== 'undefined');
+    console.log('✅ [IDCard] SIMPADAN TANGKAP ID Card Generator v4.0 loaded');
+    console.log('🔍 [IDCard] appData tersedia:', !!window.appData);
+    console.log('🔍 [IDCard] appData adalah array:', Array.isArray(window.appData));
+    console.log('🔍 [IDCard] appSettings tersedia:', !!window.appSettings);
+    console.log('🔍 [IDCard] jspdf tersedia:', typeof jspdf !== 'undefined');
+    console.log('🔍 [IDCard] QRCode tersedia:', typeof QRCode !== 'undefined');
+    
+    // Jalankan debug untuk melihat data yang tersedia
+    debugAppData();
     
     // Periksa library yang diperlukan
     const libsAvailable = checkRequiredLibraries();
     if (!libsAvailable) {
-        console.warn('Beberapa library tidak tersedia. Fitur ID Card mungkin terbatas.');
+        console.warn('⚠️ [IDCard] Beberapa library tidak tersedia. Fitur ID Card mungkin terbatas.');
     }
     
     // Tambahkan style untuk ID Card preview jika belum ada
@@ -1008,7 +1125,9 @@ if (typeof window !== 'undefined') {
     window.checkRequiredLibraries = checkRequiredLibraries;
     window.showNotification = showNotification;
     window.maskData = maskData;
+    window.debugAppData = debugAppData; // Untuk debugging
 }
 
-console.log('✅ SIMPADAN TANGKAP ID Card Generator v3.0 siap digunakan');
-console.log('🎯 Fungsi tersedia: generateIDCard, safeGenerateIDCard');
+console.log('✅ [IDCard] SIMPADAN TANGKAP ID Card Generator v4.0 siap digunakan');
+console.log('🎯 [IDCard] Fungsi tersedia: generateIDCard, safeGenerateIDCard');
+console.log('🔧 [IDCard] Debug: ketik debugAppData() di console untuk melihat data');
