@@ -5215,37 +5215,44 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
         window.verifyKIN = verifyKIN;
         window.displayVerifyResult = displayVerifyResult;
 
-        // Script untuk memastikan idcard.js loaded
+        <!-- Script untuk memastikan idcard.js bekerja -->
+
+// Emergency fallback jika semua gagal
 (function() {
-    console.log('🔄 Memastikan semua script terload...');
+    console.log('🔧 Emergency ID Card System Check...');
     
-    // Check jika safeGenerateIDCard belum tersedia setelah 3 detik
+    // Tunggu 3 detik, lalu cek
     setTimeout(function() {
+        console.log('🔍 Checking ID Card system...');
+        
         if (typeof safeGenerateIDCard === 'undefined') {
-            console.error('❌ safeGenerateIDCard masih undefined setelah 3 detik');
+            console.error('❌ CRITICAL: safeGenerateIDCard is UNDEFINED!');
             
             // Coba load ulang idcard.js
+            console.log('🔄 Attempting to reload idcard.js...');
             const script = document.createElement('script');
-            script.src = 'idcard.js?v=' + Date.now();
+            script.src = 'idcard.js?t=' + Date.now();
             script.onload = function() {
                 console.log('✅ idcard.js reloaded');
                 if (typeof safeGenerateIDCard === 'function') {
-                    console.log('✅ safeGenerateIDCard sekarang tersedia');
+                    console.log('🎉 safeGenerateIDCard is now available!');
+                    alert('Sistem ID Card telah diperbaiki. Silakan coba lagi.');
                 }
             };
             script.onerror = function() {
-                console.error('❌ Gagal reload idcard.js');
-                // Buat fungsi fallback
+                console.error('❌ Failed to reload idcard.js');
+                // Buat fungsi emergency
                 window.safeGenerateIDCard = function(id) {
-                    alert('Sistem ID Card sedang dalam perbaikan.\nSilakan hubungi administrator.');
+                    alert('SISTEM DARURAT: ID Card tidak tersedia.\nID: ' + id + '\nHubungi administrator.');
                 };
             };
             document.head.appendChild(script);
         } else {
-            console.log('✅ safeGenerateIDCard sudah tersedia');
+            console.log('✅ safeGenerateIDCard is available:', typeof safeGenerateIDCard);
         }
     }, 3000);
 })();
+
     </script>
 </body>
 </html>
