@@ -20,9 +20,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- LOAD FILE JAVASCRIPT YANG DIPISAHKAN -->
-    <script src="idcard.js"></script>
-    <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
-    <script src="convert.js"></script>
+<script src="idcard.js"></script>
+<script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
+<script src="convert.js"></script>
     
    
 </head>
@@ -5214,6 +5214,38 @@ window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
         window.safeGenerateIDCard = safeGenerateIDCard;
         window.verifyKIN = verifyKIN;
         window.displayVerifyResult = displayVerifyResult;
+
+        // Script untuk memastikan idcard.js loaded
+(function() {
+    console.log('🔄 Memastikan semua script terload...');
+    
+    // Check jika safeGenerateIDCard belum tersedia setelah 3 detik
+    setTimeout(function() {
+        if (typeof safeGenerateIDCard === 'undefined') {
+            console.error('❌ safeGenerateIDCard masih undefined setelah 3 detik');
+            
+            // Coba load ulang idcard.js
+            const script = document.createElement('script');
+            script.src = 'idcard.js?v=' + Date.now();
+            script.onload = function() {
+                console.log('✅ idcard.js reloaded');
+                if (typeof safeGenerateIDCard === 'function') {
+                    console.log('✅ safeGenerateIDCard sekarang tersedia');
+                }
+            };
+            script.onerror = function() {
+                console.error('❌ Gagal reload idcard.js');
+                // Buat fungsi fallback
+                window.safeGenerateIDCard = function(id) {
+                    alert('Sistem ID Card sedang dalam perbaikan.\nSilakan hubungi administrator.');
+                };
+            };
+            document.head.appendChild(script);
+        } else {
+            console.log('✅ safeGenerateIDCard sudah tersedia');
+        }
+    }, 3000);
+})();
     </script>
 </body>
 </html>
