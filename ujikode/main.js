@@ -2374,220 +2374,6 @@ function printData() {
     }, 800);
 }
 
-// --- FUNGSI ID CARD YANG DISEMPURNAKAN DENGAN DESAIN PROFESIONAL ---
-function generateIDCard(id) {
-    const data = appData.find(item => item.id == id);
-    if (!data) {
-        alert('Data tidak ditemukan!');
-        return;
-    }
-
-    // Tampilkan loading
-    const loadingEl = document.getElementById('idcardLoading');
-    if (loadingEl) loadingEl.style.display = 'flex';
-
-    // Buat PDF dengan ukuran ID Card (85.6mm x 54mm) - ukuran standar ID Card
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: [85.6, 54]
-    });
-
-    // Warna tema
-    const primaryColor = [12, 36, 97]; // Biru tua
-    const secondaryColor = [246, 185, 59]; // Oranye
-    const lightColor = [255, 255, 255]; // Putih
-    const darkColor = [0, 0, 0]; // Hitam
-    const grayColor = [240, 240, 240]; // Abu-abu muda
-
-    // ========== BAGIAN DEPAN ID CARD ==========
-    
-    // Background gradient biru dengan efek profesional
-    doc.setGradient(0, 0, 85.6, 54, 
-        [12, 36, 97], [25, 65, 165], 
-        'linear', [0, 0], [85.6, 54]
-    );
-
-    // Border putih dengan sudut melengkung
-    doc.setDrawColor(lightColor[0], lightColor[1], lightColor[2]);
-    doc.setLineWidth(0.5);
-    doc.roundedRect(2, 2, 81.6, 50, 3, 3, 'S');
-
-    // Header dengan logo dan judul
-    doc.setFillColor(lightColor[0], lightColor[1], lightColor[2]);
-    doc.roundedRect(5, 5, 75.6, 12, 2, 2, 'F');
-    
-    // Logo/Simbol ikan di kiri header
-    doc.setFillColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.circle(10, 11, 4, 'F');
-    doc.setFillColor(lightColor[0], lightColor[1], lightColor[2]);
-    doc.circle(8.5, 10, 1.5, 'F');
-    doc.circle(11.5, 10, 1.5, 'F');
-    doc.ellipse(10, 13, 2, 1, 0, 0, 180, 'F');
-
-    // Judul utama
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.text('DINAS PERIKANAN', 42, 9, { align: 'center' });
-    
-    doc.setFontSize(7);
-    doc.text('KABUPATEN SITUBONDO', 42, 12, { align: 'center' });
-    
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'italic');
-    doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.text('"Situbondo Naik Kelas"', 42, 15, { align: 'center' });
-
-    // Garis pemisah dekoratif
-    doc.setDrawColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.setLineWidth(0.3);
-    doc.line(15, 17, 70.6, 17);
-
-    // Judul ID Card
-    doc.setTextColor(lightColor[0], lightColor[1], lightColor[2]);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text('KARTU IDENTITAS NELAYAN', 42, 22, { align: 'center' });
-
-    // Container data pribadi dengan background putih transparan
-    doc.setFillColor(lightColor[0], lightColor[1], lightColor[2], 0.9);
-    doc.roundedRect(8, 25, 69.6, 22, 2, 2, 'F');
-    
-    // Border container
-    doc.setDrawColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(8, 25, 69.6, 22, 2, 2, 'S');
-
-    // Data pribadi - kiri
-    const leftX = 12;
-    let currentY = 29;
-    const lineHeight = 4;
-
-    // Nama (lebih besar dan bold)
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text(data.nama.toUpperCase(), leftX, currentY);
-    currentY += lineHeight + 2;
-
-    // Garis bawah nama
-    doc.setDrawColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.setLineWidth(0.5);
-    doc.line(leftX, currentY - 1, leftX + 40, currentY - 1);
-    currentY += 2;
-
-    // Data lainnya
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-
-    // Format fungsi untuk menampilkan data
-    const drawDataRow = (label, value, y) => {
-        doc.setFont('helvetica', 'bold');
-        doc.text(label + ':', leftX, y);
-        doc.setFont('helvetica', 'normal');
-        
-        // Potong teks jika terlalu panjang
-        let displayValue = value;
-        if (value && value.length > 30) {
-            displayValue = value.substring(0, 30) + '...';
-        }
-        
-        doc.text(displayValue, leftX + 20, y);
-    };
-
-    drawDataRow('NIK', data.nik, currentY);
-    currentY += lineHeight;
-    
-    drawDataRow('TTL', `${data.tahunLahir} (${data.usia} Thn)`, currentY);
-    currentY += lineHeight;
-    
-    // Alamat dengan penanganan khusus
-    doc.setFont('helvetica', 'bold');
-    doc.text('Alamat:', leftX, currentY);
-    doc.setFont('helvetica', 'normal');
-    
-    const alamat = `${data.desa}, ${data.kecamatan}`;
-    if (alamat.length > 25) {
-        const words = alamat.split(' ');
-        let line1 = '';
-        let line2 = '';
-        
-        for (const word of words) {
-            if ((line1 + ' ' + word).length <= 25) {
-                line1 += (line1 ? ' ' : '') + word;
-            } else {
-                line2 += (line2 ? ' ' : '') + word;
-            }
-        }
-        
-        doc.text(line1, leftX + 20, currentY);
-        if (line2) {
-            doc.text(line2, leftX + 20, currentY + 3);
-            currentY += 3;
-        }
-    } else {
-        doc.text(alamat, leftX + 20, currentY);
-    }
-    currentY += lineHeight;
-
-    drawDataRow('Profesi', data.profesi, currentY);
-    currentY += lineHeight;
-    
-    drawDataRow('Alat Tangkap', data.alatTangkap, currentY);
-
-    // QR Code (kanan) - lebih kecil dan rapi
-    const qrSize = 15;
-    const qrX = 85.6 - qrSize - 12;
-    const qrY = 29;
-
-    // Placeholder QR Code dengan border
-    doc.setFillColor(grayColor[0], grayColor[1], grayColor[2]);
-    doc.roundedRect(qrX - 1, qrY - 1, qrSize + 2, qrSize + 2, 1, 1, 'F');
-    
-    doc.setFillColor(lightColor[0], lightColor[1], lightColor[2]);
-    doc.roundedRect(qrX, qrY, qrSize, qrSize, 1, 1, 'F');
-    
-    // Teks QR Code
-    doc.setFontSize(5);
-    doc.setFont('helvetica', 'italic');
-    doc.setTextColor(150, 150, 150);
-    doc.text('QR Code', qrX + qrSize/2, qrY + qrSize/2 - 1, { align: 'center' });
-    doc.text('Verifikasi', qrX + qrSize/2, qrY + qrSize/2 + 2, { align: 'center' });
-
-    // Kode Validasi di bawah QR Code
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text(data.kodeValidasi || 'N/A', qrX + qrSize/2, qrY + qrSize + 5, { align: 'center' });
-
-    // Garis pemisah horizontal di bagian bawah
-    doc.setDrawColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.setLineWidth(0.3);
-    doc.line(15, 48, 70.6, 48);
-
-    // Footer dengan informasi validasi
-    doc.setFontSize(5);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(lightColor[0], lightColor[1], lightColor[2]);
-    doc.text('ID Card ini berlaku selama terdaftar sebagai nelayan aktif', 42, 51, { align: 'center' });
-    doc.text(`Validasi: ${data.tanggalValidasi}`, 42, 53, { align: 'center' });
-
-    // Simpan file PDF
-    const fileName = `IDCard_${data.nama.replace(/\s+/g, '_')}_${data.kodeValidasi || data.nik}.pdf`;
-    doc.save(fileName);
-
-    // Sembunyikan loading
-    if (loadingEl) loadingEl.style.display = 'none';
-    
-    showNotification(`ID Card untuk ${data.nama} berhasil dibuat`, 'success');
-}
-
-// Ekspos fungsi generateIDCard ke window
-window.generateIDCard = generateIDCard;
-
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', function() {
     try {
@@ -4158,7 +3944,261 @@ function safeGenerateIDCard(id) {
     generateIDCard(id);
 }
 
-// Ekspos fungsi ke window untuk akses global
+// --- FUNGSI ID CARD YANG DISEMPURNAKAN (VERSI PERBAIKAN) ---
+function generateIDCard(id) {
+    const data = appData.find(item => item.id == id);
+    if (!data) {
+        alert('Data tidak ditemukan!');
+        return;
+    }
+
+    // Tampilkan loading
+    const loadingEl = document.getElementById('idcardLoading');
+    if (loadingEl) loadingEl.style.display = 'flex';
+
+    // Buat PDF dengan ukuran ID Card (85.6mm x 54mm) - ukuran standar ID Card
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: [85.6, 54]
+    });
+
+    // Background dengan gradien biru profesional
+    const gradient = doc.context2d.createLinearGradient(0, 0, 85.6, 0);
+    gradient.addColorStop(0, '#0c2461'); // Biru tua
+    gradient.addColorStop(1, '#1e3799'); // Biru lebih terang
+    doc.setFillColor(gradient);
+    doc.rect(0, 0, 85.6, 54, 'F');
+
+    // Area putih untuk konten dengan sudut melengkung dan shadow effect
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(2, 2, 81.6, 50, 3, 3, 'FD');
+
+    // Header ID Card dengan logo dan warna yang lebih profesional
+    doc.setTextColor(12, 36, 97); // Biru tua
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('DINAS PERIKANAN', 42.8, 7, { align: 'center' });
+    doc.text('KABUPATEN SITUBONDO', 42.8, 10, { align: 'center' });
+
+    // Garis pemisah dengan warna aksen emas
+    doc.setDrawColor(246, 185, 59);
+    doc.setLineWidth(0.8);
+    doc.line(10, 12.5, 75.6, 12.5);
+
+    // Judul ID Card dengan efek shadow
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('KARTU IDENTITAS NELAYAN TERDAFTAR', 42.8, 16, { align: 'center' });
+
+    // Container untuk data pribadi (kiri)
+    const leftX = 6;
+    const dataY = 21;
+    const lineHeight = 3.2;
+
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'normal');
+    
+    // Fungsi untuk menampilkan data dengan label
+    const drawData = (label, value, y) => {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6);
+        doc.text(label + ':', leftX, y);
+        
+        // Potong teks jika terlalu panjang
+        let displayValue = value;
+        if (value && value.length > 22) {
+            displayValue = value.substring(0, 22) + '...';
+        }
+        
+        doc.setFont('helvetica', 'normal');
+        doc.text(displayValue, leftX + 18, y);
+    };
+
+    // Garis pemisah vertikal antara data dan QR Code
+    doc.setDrawColor(230, 230, 230);
+    doc.setLineWidth(0.2);
+    doc.line(52, 20, 52, 42);
+
+    // Data pribadi dengan format yang lebih rapi
+    drawData('NAMA', data.nama, dataY);
+    drawData('NIK', data.nik, dataY + lineHeight);
+    drawData('TTL', `${data.tahunLahir} (${data.usia} Thn)`, dataY + lineHeight * 2);
+    
+    // Alamat dengan penanganan multi-line
+    const alamat = `${data.desa}, ${data.kecamatan}`;
+    doc.setFont('helvetica', 'bold');
+    doc.text('ALAMAT:', leftX, dataY + lineHeight * 3);
+    doc.setFont('helvetica', 'normal');
+    
+    if (alamat.length > 22) {
+        // Split alamat menjadi dua baris
+        const words = alamat.split(' ');
+        let line1 = '';
+        let line2 = '';
+        
+        for (const word of words) {
+            if ((line1 + ' ' + word).length <= 22) {
+                line1 += (line1 ? ' ' : '') + word;
+            } else {
+                line2 += (line2 ? ' ' : '') + word;
+            }
+        }
+        
+        doc.text(line1, leftX + 18, dataY + lineHeight * 3);
+        if (line2) {
+            doc.text(line2, leftX + 18, dataY + lineHeight * 3.8);
+        }
+    } else {
+        doc.text(alamat, leftX + 18, dataY + lineHeight * 3);
+    }
+
+    drawData('PROFESI', data.profesi, dataY + lineHeight * 4.5);
+    drawData('ALAT TANGKAP', data.alatTangkap, dataY + lineHeight * 5.5);
+    
+    // Kode Validasi dengan styling khusus
+    doc.setFont('helvetica', 'bold');
+    doc.text('KODE VALIDASI:', leftX, dataY + lineHeight * 6.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(12, 36, 97);
+    doc.text(data.kodeValidasi || '-', leftX + 18, dataY + lineHeight * 6.5);
+    doc.setTextColor(0, 0, 0);
+
+    // QR Code (kanan) - ukuran lebih kecil dan profesional
+    const qrSize = 16; // QR Code 16x16 mm (lebih kecil dari sebelumnya)
+    const qrX = 85.6 - qrSize - 8; // Posisi X: kanan dengan margin 8mm
+    const qrY = 21; // Posisi Y: sejajar dengan data
+
+    // Generate QR Code dengan data minimal
+    const qrCodeData = `KODE:${data.kodeValidasi || 'N/A'}\nNIK:${data.nik}\nNAMA:${data.nama.substring(0, 15)}`;
+    
+    // Buat container sementara untuk QR Code
+    const qrContainer = document.createElement('div');
+    qrContainer.id = 'temp-qr-container-idcard';
+    qrContainer.style.width = qrSize + 'mm';
+    qrContainer.style.height = qrSize + 'mm';
+    qrContainer.style.position = 'absolute';
+    qrContainer.style.left = '-1000px';
+    qrContainer.style.top = '-1000px';
+    document.body.appendChild(qrContainer);
+
+    try {
+        new QRCode(qrContainer, {
+            text: qrCodeData,
+            width: 128, // Resolusi cukup untuk ukuran kecil
+            height: 128,
+            colorDark: "#0c2461", // Warna biru yang sesuai dengan tema
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+
+        // Tunggu QR Code selesai dibuat
+        setTimeout(() => {
+            const qrCanvas = qrContainer.querySelector('canvas');
+            if (qrCanvas) {
+                const imgData = qrCanvas.toDataURL('image/png');
+                
+                // Background putih untuk QR Code
+                doc.setFillColor(255, 255, 255);
+                doc.roundedRect(qrX - 0.5, qrY - 0.5, qrSize + 1, qrSize + 1, 1, 1, 'F');
+                
+                // Border biru tipis di sekitar QR Code
+                doc.setDrawColor(12, 36, 97);
+                doc.setLineWidth(0.3);
+                doc.roundedRect(qrX - 0.5, qrY - 0.5, qrSize + 1, qrSize + 1, 1, 1);
+                
+                // Tambahkan QR Code ke PDF
+                doc.addImage(imgData, 'PNG', qrX, qrY, qrSize, qrSize);
+                
+                // Label di bawah QR Code
+                doc.setFontSize(4);
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(100, 100, 100);
+                doc.text('Pindai untuk verifikasi', qrX + qrSize/2, qrY + qrSize + 2, { align: 'center' });
+            }
+
+            // Hapus elemen sementara
+            document.body.removeChild(qrContainer);
+
+            // Garis pemisah horizontal sebelum footer
+            doc.setDrawColor(230, 230, 230);
+            doc.setLineWidth(0.3);
+            doc.line(6, 44, 79.6, 44);
+
+            // Footer dengan informasi validasi
+            const footerY = 47;
+            doc.setFontSize(5);
+            doc.setFont('helvetica', 'italic');
+            doc.setTextColor(100, 100, 100);
+            doc.text('ID Card ini diterbitkan oleh Dinas Perikanan Kabupaten Situbondo', 42.8, footerY, { align: 'center' });
+
+            // Informasi validasi dan tanggal
+            doc.setFontSize(4.5);
+            doc.text(`Validasi: ${data.tanggalValidasi} | ${data.validator}`, 42.8, footerY + 3, { align: 'center' });
+
+            // Nomor seri/ID unik kecil di pojok kanan bawah
+            doc.setFontSize(3.5);
+            doc.setTextColor(150, 150, 150);
+            const serialNumber = data.kodeValidasi ? data.kodeValidasi.replace('VLD-', '') : data.nik.substring(12);
+            doc.text(`ID: ${serialNumber}`, 80, 52.5, { align: 'right' });
+
+            // Simpan PDF
+            const fileName = `IDCard_${data.nama.replace(/\s+/g, '_').substring(0, 10)}_${data.kodeValidasi || data.nik.substring(12)}.pdf`;
+            doc.save(fileName);
+
+            // Sembunyikan loading
+            if (loadingEl) loadingEl.style.display = 'none';
+            
+            showNotification(`ID Card untuk ${data.nama} berhasil dibuat`, 'success');
+        }, 500);
+    } catch (error) {
+        console.error("Error generating QR code:", error);
+        
+        // Jika QR code error, buat placeholder yang lebih rapi
+        doc.setDrawColor(200, 200, 200);
+        doc.setFillColor(250, 250, 250);
+        doc.roundedRect(qrX, qrY, qrSize, qrSize, 1, 1, 'F');
+        doc.setFontSize(4);
+        doc.setTextColor(150, 150, 150);
+        doc.text('QR Code', qrX + qrSize/2, qrY + qrSize/2 - 2, { align: 'center' });
+        doc.text('tidak tersedia', qrX + qrSize/2, qrY + qrSize/2 + 2, { align: 'center' });
+
+        // Footer
+        const footerY = 47;
+        doc.setFontSize(5);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(100, 100, 100);
+        doc.text('ID Card ini diterbitkan oleh Dinas Perikanan Kabupaten Situbondo', 42.8, footerY, { align: 'center' });
+
+        // Informasi validasi
+        doc.setFontSize(4.5);
+        doc.text(`Validasi: ${data.tanggalValidasi} | ${data.validator}`, 42.8, footerY + 3, { align: 'center' });
+
+        // Simpan PDF
+        const fileName = `IDCard_${data.nama.replace(/\s+/g, '_').substring(0, 10)}_${data.kodeValidasi || data.nik.substring(12)}.pdf`;
+        doc.save(fileName);
+
+        // Sembunyikan loading
+        if (loadingEl) loadingEl.style.display = 'none';
+        
+        showNotification(`ID Card untuk ${data.nama} berhasil dibuat (tanpa QR Code)`, 'success');
+        
+        // Hapus elemen sementara
+        if (document.body.contains(qrContainer)) {
+            document.body.removeChild(qrContainer);
+        }
+    }
+}
+
+// Ekspos fungsi generateIDCard ke window
+window.generateIDCard = generateIDCard;
+
+// --- INISIALISASI TAMBAHAN ---
+// Pastikan fungsi-fungsi yang dipanggil dari event sudah tersedia di scope global
 window.showFishInfoModal = showFishInfoModal;
 window.loadDataByDesa = loadDataByDesa;
 window.setupInputForDesa = setupInputForDesa;
