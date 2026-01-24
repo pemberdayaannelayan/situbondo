@@ -3980,8 +3980,8 @@ function generateIDCard(id) {
     doc.setLineWidth(0.3);
     doc.roundedRect(2.5, 2.5, 80.6, 49, 3, 3);
 
-    // Header ID Card dengan logo dan warna aksen
-    doc.setFillColor(12, 36, 97);
+    // Header ID Card dengan warna biru muda (#4a69bd) - PERUBAHAN DI SINI
+    doc.setFillColor(74, 105, 189);  // Biru muda (#4a69bd)
     doc.roundedRect(2.5, 2.5, 80.6, 10, 3, 3, 'F');
     
     // Teks header dengan warna putih
@@ -4151,11 +4151,7 @@ function generateIDCard(id) {
             // Informasi validasi
             doc.text(`Validasi: ${data.tanggalValidasi} | ${data.validator}`, 42.8, footerY + 2.5, { align: 'center' });
 
-            // Watermark transparan di background
-            doc.setFontSize(20);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(240, 240, 240);
-            doc.text('SIMPADAN', 42.8, 30, { align: 'center', angle: 45 });
+            // SIMPAN PDF - TANPA WATERMARK SIMPADAN (DIHAPUS SESUAI PERMINTAAN)
 
             // Simpan PDF
             const fileName = `IDCard_${data.nama.replace(/\s+/g, '_')}_${data.kodeValidasi || data.nik.substring(0, 8)}.pdf`;
