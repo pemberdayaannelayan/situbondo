@@ -1,5 +1,6 @@
 // =====================================================
-// FILE: main.js - FUNGSI UTAMA APLIKASI
+// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 5.9 FINAL
+// DENGAN FITUR DATA WILAYAH DAN LOADING EFFECT YANG DISEMPURNAKAN
 // =====================================================
 
 // Data ikan yang diperbarui dan dilengkapi
@@ -245,13 +246,12 @@ function migrateOldData() {
     saveData();
 }
 
-// PERBAIKAN: Format terbalik DDMMYYYY
 function generateSecurityCode() {
     const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = now.getFullYear();
-    return `${day}${month}${year}`;
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}${month}${day}`;
 }
 
 function displayCurrentDate() {
@@ -259,7 +259,7 @@ function displayCurrentDate() {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dateString = now.toLocaleDateString('id-ID', options);
     document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-    document.getElementById('passwordHint').innerHTML = `Masukkan kode keamanan untuk mengakses sistem<br><small class="text-warning">Format: DDMMYYYY (contoh: ${generateSecurityCode()})</small>`;
+    document.getElementById('passwordHint').innerHTML = `Masukkan kode keamanan untuk mengakses sistem`;
 }
 
 function maskData(data, force = false) {
@@ -304,6 +304,7 @@ function initDataWilayah() {
             card.classList.add('active');
         }
         
+        // HAPUS TEKS NAMA FILE .js dari template kartu
         card.innerHTML = `
             <div class="wilayah-card-header">
                 <div class="d-flex justify-content-between align-items-center">
@@ -540,6 +541,169 @@ function updateFilterDesaOptions() {
     desaList.forEach(desa => {
         filterDesa.add(new Option(desa, desa));
     });
+}
+
+// --- FUNGSI BACKUP DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
+function backupData() {
+    try {
+        showLoading("Membuat Backup", "Sedang menyimpan data ke file backup. Mohon tunggu...");
+        
+        setTimeout(() => {
+            let dataToBackup = appData;
+            let backupFileName = 'reload.js';
+            let backupContent = '';
+            
+            // Tentukan nama file berdasarkan mode
+            if (currentWilayah.mode === 'desa' && currentWilayah.desaName) {
+                backupFileName = currentWilayah.fileName;
+                
+                // Filter data hanya untuk desa yang dipilih
+                dataToBackup = appData.filter(d => d.desa === currentWilayah.desaName);
+                
+                backupContent = `// DATA NELAYAN DESA ${currentWilayah.desaName.toUpperCase()}
+// File: ${backupFileName}
+// Dibuat: ${new Date().toLocaleString('id-ID')}
+// Jumlah Data: ${dataToBackup.length}
+
+window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
+            } else {
+                backupContent = `// DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
+// File: reload.js
+// Dibuat: ${new Date().toLocaleString('id-ID')}
+// Jumlah Data: ${dataToBackup.length}
+
+window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
+            }
+            
+            // Buat dan download file
+            const blob = new Blob([backupContent], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = backupFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            hideLoading();
+            showNotification(`Backup berhasil: ${backupFileName} (${dataToBackup.length} data)`, 'success');
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Backup error:', error);
+        hideLoading();
+        showNotification('Gagal membuat backup. Silakan coba lagi.', 'error');
+    }
+}
+
+// --- FUNGSI RESTORE DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
+function restoreData() {
+    const fileInput = document.getElementById('restoreFileInput');
+    if (!fileInput.files.length) return;
+    
+    showLoading("Restore Data", "Sedang memproses restore data. Mohon tunggu, proses ini mungkin memerlukan waktu beberapa saat...");
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const content = e.target.result;
+            let restoredData = [];
+            
+            // Coba parse sebagai JSON langsung
+            try {
+                restoredData = JSON.parse(content);
+            } catch (jsonError) {
+                // Jika bukan JSON, coba ekstrak dari JavaScript
+                if (content.includes('SIMATA_BACKUP_DATA')) {
+                    // Ekstrak data dari window.SIMATA_BACKUP_DATA
+                    const match = content.match(/window\.SIMATA_BACKUP_DATA\s*=\s*(\[.*?\]);/s);
+                    if (match) {
+                        restoredData = JSON.parse(match[1]);
+                    } else {
+                        throw new Error('Format data tidak dikenali');
+                    }
+                } else {
+                    throw new Error('File tidak berisi data SIMATA yang valid');
+                }
+            }
+            
+            if (!Array.isArray(restoredData)) {
+                throw new Error('Data harus berupa array');
+            }
+            
+            if (restoredData.length === 0) {
+                hideLoading();
+                showNotification('File tidak berisi data', 'warning');
+                return;
+            }
+            
+            // Merge data lama dengan data baru
+            const existingData = appData;
+            const mergedData = mergeData(existingData, restoredData);
+            
+            const newCount = restoredData.length;
+            const existingCount = existingData.length;
+            const mergedCount = mergedData.length;
+            const replacedCount = existingCount + newCount - mergedCount;
+            const addedCount = mergedCount - existingCount;
+            
+            appData = mergedData;
+            saveData();
+            renderDataTable();
+            updateDashboard();
+            updateFilterDesaOptions();
+            
+            let message = '';
+            if (replacedCount > 0 && addedCount > 0) {
+                message = `Restore berhasil: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
+            } else if (replacedCount > 0) {
+                message = `Restore berhasil: ${replacedCount} data diperbarui`;
+            } else if (addedCount > 0) {
+                message = `Restore berhasil: ${addedCount} data baru ditambahkan`;
+            } else {
+                message = 'Tidak ada data baru untuk di-restore';
+            }
+            
+            hideLoading();
+            showNotification(message, 'success');
+            fileInput.value = '';
+            document.getElementById('restoreDataBtn').disabled = true;
+            
+        } catch (error) {
+            console.error('Restore error:', error);
+            hideLoading();
+            showNotification(`Gagal restore: ${error.message}`, 'error');
+        }
+    };
+    
+    reader.onerror = function() {
+        hideLoading();
+        showNotification('Gagal membaca file', 'error');
+    };
+    
+    reader.readAsText(file);
+}
+
+// --- FUNGSI MERGE DATA ---
+function mergeData(existingData, newData) {
+    // Buat map untuk data yang sudah ada dengan NIK sebagai key
+    const dataMap = new Map();
+    
+    // Tambahkan data yang sudah ada ke map
+    existingData.forEach(item => {
+        dataMap.set(item.nik, item);
+    });
+    
+    // Tambahkan atau timpa data baru
+    newData.forEach(item => {
+        dataMap.set(item.nik, item);
+    });
+    
+    // Kembalikan sebagai array
+    return Array.from(dataMap.values());
 }
 
 // --- FUNGSI RELOAD DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
@@ -979,6 +1143,282 @@ function updateFishOptionsByAPI(api) {
     }
 }
 
+// --- FUNGSI GENERATE PDF TABEL DATA ---
+function generateTabelPdf() {
+    const filteredData = getFilteredData();
+    
+    if (filteredData.length === 0) {
+        showNotification('Tidak ada data untuk dicetak!', 'error');
+        return;
+    }
+    
+    // Ambil data sesuai dengan halaman dan jumlah baris per halaman
+    const start = (currentPage - 1) * appSettings.itemsPerPage;
+    const end = start + appSettings.itemsPerPage;
+    const pageData = filteredData.slice(start, end);
+    
+    // Generate kode unik untuk setiap cetakan
+    const printId = 'SIMPADAN-TANGKAP-TABEL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+    // Generate QR Code untuk tanda tangan
+    document.getElementById('qr-right').innerHTML = "";
+    const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
+    
+    try {
+        new QRCode(document.getElementById("qr-right"), { 
+            text: signatureText, 
+            width: 120, 
+            height: 120,
+            colorDark: "#4a69bd",
+            colorLight: "#ffffff", 
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    } catch (error) {
+        console.error("Error generating QR code:", error);
+    }
+
+    setTimeout(() => {
+        try {
+            const { jsPDF } = window.jspdf;
+            
+            if (typeof jsPDF.API.autoTable !== 'function') {
+                showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
+                return;
+            }
+
+            const doc = new jsPDF('l', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+
+            // Header
+            doc.setFillColor(12, 36, 97);
+            doc.rect(10, 10, pageWidth - 20, 28, 'F');
+            
+            // Judul utama
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
+            
+            // Subjudul
+            doc.setFontSize(12);
+            doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
+
+            // Slogan dengan warna oranye
+            doc.setTextColor(246, 185, 59);
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(10);
+            doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
+
+            // Garis bawah header dengan warna aksen
+            doc.setDrawColor(246, 185, 59);
+            doc.setLineWidth(1.5);
+            doc.line(20, 38, pageWidth - 20, 38);
+
+            // Judul Laporan dengan informasi filter
+            doc.setTextColor(12, 36, 97);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('LAPORAN TABEL DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
+            
+            // Informasi filter yang aktif
+            let filterInfo = "Semua Data";
+            if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
+                filterInfo = "Data Terfilter: ";
+                const filterParts = [];
+                
+                if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
+                if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
+                if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
+                if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
+                if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
+                if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
+                if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
+                
+                filterInfo += filterParts.join(', ');
+            }
+            
+            // Tambahkan informasi halaman dan jumlah baris
+            filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const now = new Date();
+            const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
+            doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+
+            // Siapkan data untuk tabel dengan kolom baru
+            const tableRows = pageData.map((d, index) => [
+                index + 1,
+                d.nama,
+                d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
+                maskData(d.nik),
+                d.desa,
+                d.kecamatan,
+                d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
+                d.kodeValidasi || '-'
+            ]);
+
+            // Tabel Data
+            const tableWidth = pageWidth - 40;
+            const tableStartX = (pageWidth - tableWidth) / 2;
+
+            doc.autoTable({
+                head: [[
+                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
+                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
+                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
+                ]],
+                body: tableRows,
+                startY: 72,
+                theme: 'grid',
+                tableWidth: tableWidth,
+                margin: { left: tableStartX, right: tableStartX },
+                headStyles: { 
+                    fillColor: [12, 36, 97],
+                    textColor: [255, 255, 255], 
+                    fontStyle: 'bold', 
+                    halign: 'center',
+                    fontSize: 8,
+                    cellPadding: 3,
+                    lineWidth: 0.5,
+                    lineColor: [255, 255, 255]
+                },
+                bodyStyles: {
+                    textColor: [0, 0, 0],
+                    fontSize: 8,
+                    fillColor: [255, 255, 255],
+                    cellPadding: 3,
+                    lineWidth: 0.1,
+                    lineColor: [200, 200, 200]
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245]
+                },
+                styles: {
+                    overflow: 'linebreak',
+                    cellPadding: 3,
+                    fontSize: 8,
+                    valign: 'middle',
+                    halign: 'left'
+                },
+                columnStyles: {
+                    0: {cellWidth: 15, halign: 'center'},
+                    1: {cellWidth: 45, halign: 'left'},
+                    2: {cellWidth: 30, halign: 'center'},
+                    3: {cellWidth: 35, halign: 'center'},
+                    4: {cellWidth: 35, halign: 'left'},
+                    5: {cellWidth: 35, halign: 'left'},
+                    6: {cellWidth: 35, halign: 'left'},
+                    7: {cellWidth: 30, halign: 'center'}
+                }
+            });
+
+            // Setelah autoTable, kita atur footer
+            const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
+
+            // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
+            const separatorY = finalY + 10;
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.5);
+            doc.line(20, separatorY, pageWidth - 20, separatorY);
+
+            // Bagian kiri: Validasi elektronik
+            const leftX = 25;
+            const leftY = separatorY + 12;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.setTextColor(12, 36, 97);
+            doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
+            doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
+            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", leftX, leftY + 8);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7);
+            doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
+            doc.setTextColor(230, 126, 34);
+            doc.text("www.dinasperikanansitubondo.com/simpadan", leftX, leftY + 18);
+
+            // Bagian kanan: Tanda tangan dan QR Code
+            const rightX = pageWidth - 85;
+            const rightY = separatorY + 10;
+
+            // PERIODE/TANGGAL
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
+            doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
+            
+            // JABATAN
+            doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
+
+            // QR Code dengan warna biru muda
+            const qrRightCanvas = document.querySelector('#qr-right canvas');
+            if(qrRightCanvas) {
+                try {
+                    const imgRight = qrRightCanvas.toDataURL("image/png");
+                    // QR code 25x25 mm
+                    doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
+                } catch (error) {
+                    console.error("Error adding QR code image:", error);
+                }
+            }
+            
+            // GARIS TANDA TANGAN
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.5);
+            doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
+            
+            // NAMA DAN NIP PEJABAT
+            const nameY = rightY + 45;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
+
+            // FOOTER DENGAN INFORMASI SISTEM
+            const footerY = pageHeight - 15;
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            
+            // Informasi sistem di footer
+            doc.setFontSize(7);
+            const printTime = new Date().toLocaleString('id-ID');
+            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+            doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
+
+            // Simpan file PDF
+            const fileName = `Tabel_Nelayan_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_Halaman${currentPage}_${Date.now()}.pdf`;
+            doc.save(fileName);
+            document.getElementById('qr-right').innerHTML = "";
+            
+            showNotification(`Tabel PDF berhasil dibuat (${pageData.length} data dari halaman ${currentPage})`, 'success');
+            
+        } catch (error) {
+            console.error("Error generating table PDF:", error);
+            showNotification('Gagal membuat PDF tabel. Silakan coba lagi atau periksa konsol browser.', 'error');
+        }
+    }, 800);
+}
+
 // --- FUNGSI BARU: REFRESH HALAMAN ---
 function refreshPage() {
     if (confirm('Apakah Anda yakin ingin me-refresh halaman? Semua perubahan yang belum disimpan akan hilang.')) {
@@ -1338,509 +1778,714 @@ function showDuplicateDataInFilter() {
     showNotification(`Ditemukan ${duplicateData.length} data dengan NIK ganda`, 'warning');
 }
 
-function toggleBulkDeleteBtn() {
-    const checked = document.querySelectorAll('.row-checkbox:checked').length > 0;
-    const btn = document.getElementById('bulkDeleteBtn');
-    if(btn) {
-        if(checked) btn.classList.remove('d-none'); else btn.classList.add('d-none');
-    }
-}
-
-function bulkDeleteData() {
-    const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
-    if(checkedBoxes.length === 0) return;
+// --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER ---
+function generateFilteredPdf() {
+    const filteredData = getFilteredData();
     
-    showLoading("Menghapus Data", `Sedang menghapus ${checkedBoxes.length} data terpilih. Mohon tunggu...`);
-    
-    setTimeout(() => {
-        const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN SENSOR:`);
-        if(userCode === appSettings.securityCodeSensor) {
-            const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
-            appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
-            saveData(); 
-            currentPage = 1; // Reset ke halaman pertama setelah menghapus
-            renderDataTable(); 
-            updateDashboard();
-            updateFilterDesaOptions();
-            hideLoading();
-            showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            if (selectAllCheckbox) selectAllCheckbox.checked = false;
-            checkGlobalDuplicates();
-        } else if (userCode !== null) {
-            hideLoading();
-            alert("Kode keamanan sensor SALAH!");
-        } else {
-            hideLoading();
-        }
-    }, 500);
-}
-
-// --- FUNGSI CORE LOGIC ---
-function handleFormSubmit(e) {
-    e.preventDefault();
-    const form = document.getElementById('inputForm');
-    if (!form) return;
-    
-    // Validasi mode desa
-    if (currentWilayah.mode === 'desa') {
-        const selectedDesa = document.getElementById('desa').value;
-        if (selectedDesa !== currentWilayah.desaName) {
-            showNotification(`Anda harus memilih Desa ${currentWilayah.desaName} untuk input data di mode ini!`, 'error');
-            return;
-        }
-    }
-    
-    const kodeVal = document.getElementById('kodeValidasi').value;
-    if (!kodeVal || kodeVal.trim() === '') {
-        showNotification('Anda WAJIB melakukan GENERATE KODE VALIDASI terlebih dahulu!', 'error');
-        const generateBtn = document.getElementById('generateKodeBtn');
-        if (generateBtn) generateBtn.focus();
+    if (filteredData.length === 0) {
+        showNotification('Tidak ada data untuk dicetak!', 'error');
         return;
     }
-    if (!form.checkValidity()) {
-        e.stopPropagation();
-        form.reportValidity(); 
-        return;
-    }
-
-    const nik = document.getElementById('nik').value;
-    const whatsapp = document.getElementById('whatsapp').value;
-    if(nik.length !== 16) return showNotification('NIK harus 16 digit', 'error');
-    if(!whatsapp.match(/^\d+$/)) return showNotification('WhatsApp hanya angka', 'error');
-
-    let selectedFish = [];
-    document.querySelectorAll('.fish-checkbox:checked').forEach(cb => {
-        if(cb.value === "Lainnya") {
-            const otherVal = document.getElementById('jenisIkanLainnya').value.trim();
-            if(otherVal) selectedFish.push(otherVal);
-        } else {
-            selectedFish.push(cb.value);
-        }
-    });
-    if(selectedFish.length === 0) return showNotification('Pilih minimal satu jenis ikan!', 'error');
-
-    const editId = form.getAttribute('data-edit-id');
-    const duplicateCheck = appData.find(d => d.nik === nik);
-    if (duplicateCheck && (!editId || duplicateCheck.id != editId)) {
-        return showNotification('GAGAL: NIK sudah terdaftar dalam sistem!', 'error');
-    }
-
-    const isOwner = document.getElementById('statusNelayan').value === 'Pemilik Kapal';
-    const formData = {
-        id: editId || Date.now(),
-        nama: document.getElementById('nama').value,
-        nik: nik,
-        whatsapp: whatsapp,
-        profesi: document.getElementById('profesi').value,
-        status: document.getElementById('statusNelayan').value,
-        tahunLahir: document.getElementById('tahunLahir').value,
-        usia: document.getElementById('usia').value,
-        kecamatan: document.getElementById('kecamatan').value,
-        desa: document.getElementById('desa').value,
-        alatTangkap: document.getElementById('alatTangkap').value,
-        namaKapal: isOwner ? document.getElementById('namaKapal').value : '-',
-        jenisKapal: isOwner ? document.getElementById('jenisKapal').value : '-',
-        jenisIkan: selectedFish.join(", "),
-        usahaSampingan: document.getElementById('usahaSampingan').value,
-        tanggalValidasi: document.getElementById('tanggalValidasi').value,
-        validator: document.getElementById('validator').value,
-        driveLink: document.getElementById('driveLink').value,
-        kodeValidasi: document.getElementById('kodeValidasi').value,
-        keterangan: document.getElementById('keterangan').value
-    };
-
-    if (editId) {
-        const index = appData.findIndex(item => item.id == editId);
-        appData[index] = formData;
-        form.removeAttribute('data-edit-id');
-        showNotification('Data berhasil diperbarui', 'success');
-    } else {
-        appData.push(formData);
-        showNotification('Data berhasil disimpan', 'success');
-    }
-
-    saveData();
-    form.reset();
-    const ownerFields = document.getElementById('ownerFields');
-    const desaSelect = document.getElementById('desa');
-    const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
     
-    if (ownerFields) ownerFields.style.display = 'none';
-    if (desaSelect) {
-        desaSelect.innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
-        desaSelect.disabled = true;
-    }
-    if (jenisIkanLainnya) {
-        jenisIkanLainnya.style.display = 'none';
-    }
-    
-    const today = new Date().toISOString().split('T')[0];
-    const tanggalValidasi = document.getElementById('tanggalValidasi');
-    if (tanggalValidasi) tanggalValidasi.value = today;
-    
-    const apiInfo = document.getElementById('apiInfo');
-    const kapalInfo = document.getElementById('kapalInfo');
-    const profesiHelp = document.getElementById('profesiHelp');
-    const apiMappingInfo = document.getElementById('apiMappingInfo');
+    // Ambil data sesuai dengan halaman dan jumlah baris per halaman
+    const start = (currentPage - 1) * appSettings.itemsPerPage;
+    const end = start + appSettings.itemsPerPage;
+    const pageData = filteredData.slice(start, end);
 
-    if (apiInfo) apiInfo.style.display = 'none';
-    if (kapalInfo) kapalInfo.style.display = 'none';
-    if (profesiHelp) profesiHelp.innerHTML = '';
-    if (apiMappingInfo) apiMappingInfo.style.display = 'none';
+    // Siapkan data untuk tabel dengan kolom baru
+    const tableRows = pageData.map((d, index) => [
+        index + 1, 
+        d.nama,
+        d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
+        maskData(d.nik),
+        d.desa,
+        d.kecamatan,
+        d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
+        d.kodeValidasi || '-'
+    ]);
 
-    updateDashboard(); 
-    renderDataTable();
-    updateFilterDesaOptions();
-    const dataTab = document.getElementById('v-pills-data-tab');
-    if (dataTab) dataTab.click();
-    checkGlobalDuplicates();
-}
+    // Generate kode unik untuk setiap cetakan
+    const printId = 'SIMPADAN-TANGKAP-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
 
-function viewDetail(id) {
-    const d = appData.find(item => item.id == id);
-    if(!d) return;
-    currentDetailId = id;
+    // Generate QR Code untuk tanda tangan
+    document.getElementById('qr-right').innerHTML = "";
+    const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
     
-    // Gunakan maskData untuk NIK dan WhatsApp jika privacyMode aktif
-    const displayNik = appSettings.privacyMode ? maskData(d.nik) : d.nik;
-    const displayWa = appSettings.privacyMode ? maskData(d.whatsapp) : d.whatsapp;
-    
-    document.getElementById('d_nama').innerText = d.nama;
-    document.getElementById('d_nik').innerText = displayNik; 
-    document.getElementById('d_usia').innerText = `${d.usia} Tahun (${d.tahunLahir})`;
-    document.getElementById('d_wa').innerText = displayWa;
-    document.getElementById('d_domisili').innerText = `${d.desa}, ${d.kecamatan}`;
-    
-    const profBadge = document.getElementById('d_profesi');
-    profBadge.innerText = d.profesi;
-    
-    let badgeClass = 'bg-primary';
-    if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
-    else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
-    else if(d.profesi === 'Nelayan Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
-    profBadge.className = `badge ${badgeClass}`;
-
-    document.getElementById('d_status').innerText = d.status;
-    document.getElementById('d_alatTangkap').innerText = d.alatTangkap;
-    document.getElementById('d_usaha').innerText = d.usahaSampingan || '-';
-    
-    const fishContainer = document.getElementById('d_ikan');
-    fishContainer.innerHTML = '';
-    if(d.jenisIkan) {
-        d.jenisIkan.split(', ').forEach(fish => {
-            const iconClass = getFishIconClass(fish);
-            fishContainer.innerHTML += `<span class="badge bg-light text-dark border me-1 mb-1"><i class="fas ${iconClass} me-1"></i>${fish}</span>`;
+    try {
+        new QRCode(document.getElementById("qr-right"), { 
+            text: signatureText, 
+            width: 120, 
+            height: 120,
+            colorDark: "#4a69bd",
+            colorLight: "#ffffff", 
+            correctLevel: QRCode.CorrectLevel.M
         });
+    } catch (error) {
+        console.error("Error generating QR code:", error);
     }
-    
-    const kapalCard = document.getElementById('d_kapal_card');
-    if(d.status === 'Pemilik Kapal') {
-        if (kapalCard) kapalCard.style.display = 'block';
-        document.getElementById('d_namaKapal').innerText = d.namaKapal;
-        document.getElementById('d_jenisKapal').innerText = d.jenisKapal;
-    } else {
-        if (kapalCard) kapalCard.style.display = 'none';
-    }
-    document.getElementById('d_tgl_valid').innerText = d.tanggalValidasi;
-    document.getElementById('d_validator').innerText = d.validator;
-    detailModal.show();
+
+    setTimeout(() => {
+        try {
+            const { jsPDF } = window.jspdf;
+            
+            if (typeof jsPDF.API.autoTable !== 'function') {
+                showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
+                return;
+            }
+
+            const doc = new jsPDF('l', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+
+            // Header
+            doc.setFillColor(12, 36, 97);
+            doc.rect(10, 10, pageWidth - 20, 28, 'F');
+            
+            // Judul utama
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
+            
+            // Subjudul
+            doc.setFontSize(12);
+            doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
+
+            // Slogan dengan warna oranye
+            doc.setTextColor(246, 185, 59);
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(10);
+            doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
+
+            // Garis bawah header dengan warna aksen
+            doc.setDrawColor(246, 185, 59);
+            doc.setLineWidth(1.5);
+            doc.line(20, 38, pageWidth - 20, 38);
+
+            // Judul Laporan dengan informasi filter
+            doc.setTextColor(12, 36, 97);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('LAPORAN DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
+            
+            // Informasi filter yang aktif
+            let filterInfo = "Semua Data";
+            if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
+                filterInfo = "Data Terfilter: ";
+                const filterParts = [];
+                
+                if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
+                if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
+                if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
+                if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
+                if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
+                if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
+                if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
+                
+                filterInfo += filterParts.join(', ');
+            }
+            
+            // Tambahkan informasi halaman dan jumlah baris
+            filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const now = new Date();
+            const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
+            doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+
+            // Tabel Data
+            const tableWidth = pageWidth - 40;
+            const tableStartX = (pageWidth - tableWidth) / 2;
+
+            doc.autoTable({
+                head: [[
+                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
+                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
+                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
+                ]],
+                body: tableRows,
+                startY: 72,
+                theme: 'grid',
+                tableWidth: tableWidth,
+                margin: { left: tableStartX, right: tableStartX },
+                headStyles: { 
+                    fillColor: [12, 36, 97],
+                    textColor: [255, 255, 255], 
+                    fontStyle: 'bold', 
+                    halign: 'center',
+                    fontSize: 8,
+                    cellPadding: 3,
+                    lineWidth: 0.5,
+                    lineColor: [255, 255, 255]
+                },
+                bodyStyles: {
+                    textColor: [0, 0, 0],
+                    fontSize: 8,
+                    fillColor: [255, 255, 255],
+                    cellPadding: 3,
+                    lineWidth: 0.1,
+                    lineColor: [200, 200, 200]
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245]
+                },
+                styles: {
+                    overflow: 'linebreak',
+                    cellPadding: 3,
+                    fontSize: 8,
+                    valign: 'middle',
+                    halign: 'left'
+                },
+                columnStyles: {
+                    0: {cellWidth: 15, halign: 'center'},
+                    1: {cellWidth: 45, halign: 'left'},
+                    2: {cellWidth: 30, halign: 'center'},
+                    3: {cellWidth: 35, halign: 'center'},
+                    4: {cellWidth: 35, halign: 'left'},
+                    5: {cellWidth: 35, halign: 'left'},
+                    6: {cellWidth: 35, halign: 'left'},
+                    7: {cellWidth: 30, halign: 'center'}
+                }
+            });
+
+            // Setelah autoTable, kita atur footer
+            const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
+
+            // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
+            const separatorY = finalY + 10;
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.5);
+            doc.line(20, separatorY, pageWidth - 20, separatorY);
+
+            // Bagian kiri: Validasi elektronik
+            const leftX = 25;
+            const leftY = separatorY + 12;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.setTextColor(12, 36, 97);
+            doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
+            doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
+            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", leftX, leftY + 8);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7);
+            doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
+            doc.setTextColor(230, 126, 34);
+            doc.text("www.dinasperikanansitubondo.com/simpadan", leftX, leftY + 18);
+
+            // Bagian kanan: Tanda tangan dan QR Code
+            const rightX = pageWidth - 85;
+            const rightY = separatorY + 10;
+
+            // PERIODE/TANGGAL
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
+            doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
+            
+            // JABATAN
+            doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
+
+            // QR Code dengan warna biru muda
+            const qrRightCanvas = document.querySelector('#qr-right canvas');
+            if(qrRightCanvas) {
+                try {
+                    const imgRight = qrRightCanvas.toDataURL("image/png");
+                    // QR code 25x25 mm
+                    doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
+                } catch (error) {
+                    console.error("Error adding QR code image:", error);
+                }
+            }
+            
+            // GARIS TANDA TANGAN
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.5);
+            doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
+            
+            // NAMA DAN NIP PEJABAT
+            const nameY = rightY + 45;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
+
+            // FOOTER DENGAN INFORMASI SISTEM
+            const footerY = pageHeight - 15;
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            
+            // Informasi sistem di footer
+            doc.setFontSize(7);
+            const printTime = new Date().toLocaleString('id-ID');
+            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+            doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
+
+            // Simpan file PDF
+            const fileName = `Laporan_Nelayan_Terfilter_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_Halaman${currentPage}_${Date.now()}.pdf`;
+            doc.save(fileName);
+            document.getElementById('qr-right').innerHTML = "";
+            
+            showNotification(`Laporan PDF terfilter berhasil dibuat (${pageData.length} data dari halaman ${currentPage})`, 'success');
+            
+        } catch (error) {
+            console.error("Error generating filtered PDF:", error);
+            showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
+        }
+    }, 800);
 }
 
-function editData(id) {
-    const d = appData.find(item => item.id == id);
-    if(!d) return;
-    const form = document.getElementById('inputForm');
-    if (!form) return;
+// --- FUNGSI PRINT DATA ---
+function printData() {
+    const filteredData = getFilteredData();
     
-    form.setAttribute('data-edit-id', id);
-    
-    ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
-     .forEach(key => {
-         const element = document.getElementById(key);
-         if (element) element.value = d[key] || '';
-     });
-
-    const waInput = document.getElementById('whatsapp');
-    const btnWa = document.getElementById('btnNoWA');
-    if(d.whatsapp === '00000000') {
-        if (waInput) {
-            waInput.setAttribute('readonly', true);
-            waInput.removeAttribute('required');
-        }
-        if (btnWa) {
-            btnWa.classList.add('active', 'btn-secondary');
-            btnWa.textContent = "Batal";
-        }
-    } else {
-        if (waInput) {
-            waInput.removeAttribute('readonly');
-            waInput.setAttribute('required', 'required');
-        }
-        if (btnWa) {
-            btnWa.classList.remove('active', 'btn-secondary');
-            btnWa.textContent = "Tidak Ada";
-        }
+    if (filteredData.length === 0) {
+        showNotification('Tidak ada data untuk dicetak!', 'error');
+        return;
     }
 
-    const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
-    if (jenisIkanLainnya) {
-        jenisIkanLainnya.style.display = 'none';
-        jenisIkanLainnya.value = '';
-    }
+    // Hitung statistik per desa dari data terfilter
+    const desaStats = {};
+    filteredData.forEach(d => {
+        const desa = d.desa || "Tidak Diketahui";
+        if (!desaStats[desa]) {
+            desaStats[desa] = { 
+                count: 0, 
+                owner: 0, 
+                abk: 0, 
+                penuhWaktu: 0, 
+                sambilanUtama: 0, 
+                sambilanTambahan: 0 
+            };
+        }
+        desaStats[desa].count++;
+        if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; 
+        else desaStats[desa].abk++;
+        
+        if(d.profesi === 'Nelayan Penuh Waktu') desaStats[desa].penuhWaktu++;
+        else if(d.profesi === 'Nelayan Sambilan Utama') desaStats[desa].sambilanUtama++;
+        else if(d.profesi === 'Nelayan Sambilan Tambahan') desaStats[desa].sambilanTambahan++;
+    });
+
+    // Siapkan data untuk tabel dengan kolom baru
+    const tableRows = Object.keys(desaStats).sort().map((desa, index) => [
+        index + 1, 
+        desa,
+        desaStats[desa].count, 
+        desaStats[desa].owner,
+        desaStats[desa].abk, 
+        desaStats[desa].penuhWaktu, 
+        desaStats[desa].sambilanUtama,
+        desaStats[desa].sambilanTambahan
+    ]);
+
+    // Hitung total dari data terfilter
+    const totalCount = tableRows.reduce((sum, row) => sum + row[2], 0);
+    const totalOwner = tableRows.reduce((sum, row) => sum + row[3], 0);
+    const totalAbk = tableRows.reduce((sum, row) => sum + row[4], 0);
+    const totalPenuhWaktu = tableRows.reduce((sum, row) => sum + row[5], 0);
+    const totalSambilanUtama = tableRows.reduce((sum, row) => sum + row[6], 0);
+    const totalSambilanTambahan = tableRows.reduce((sum, row) => sum + row[7], 0);
+
+    // Tambahkan baris total
+    tableRows.push([
+        "",
+        "TOTAL KESELURUHAN",
+        totalCount,
+        totalOwner,
+        totalAbk,
+        totalPenuhWaktu,
+        totalSambilanUtama,
+        totalSambilanTambahan
+    ]);
+
+    // Generate kode unik untuk setiap cetakan
+    const printId = 'SIMPADAN-TANGKAP-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+    // Generate QR Code untuk tanda tangan
+    document.getElementById('qr-right').innerHTML = "";
+    const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
     
-    // Set alat tangkap dan update daftar ikan
-    const alatTangkap = document.getElementById('alatTangkap');
-    if (alatTangkap) {
-        alatTangkap.value = d.alatTangkap;
-        updateFishOptionsByAPI(d.alatTangkap);
+    try {
+        new QRCode(document.getElementById("qr-right"), { 
+            text: signatureText, 
+            width: 120, 
+            height: 120,
+            colorDark: "#4a69bd",
+            colorLight: "#ffffff", 
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    } catch (error) {
+        console.error("Error generating QR code:", error);
     }
-    
-    // Set ikan yang sudah dipilih setelah daftar diupdate
+
     setTimeout(() => {
-        if(d.jenisIkan) {
-            const savedFish = d.jenisIkan.split(', ');
-            savedFish.forEach(fish => {
-                let found = false;
-                document.querySelectorAll('.fish-checkbox').forEach(cb => {
-                    if(cb.value === fish) { 
-                        cb.checked = true; 
-                        found = true; 
-                    }
-                });
-                if(!found) {
-                    // Jika ikan tidak ada dalam daftar, maka tambahkan ke opsi "Lainnya"
-                    const cbLain = document.getElementById('fish_Lainnya');
-                    if (cbLain) {
-                        cbLain.checked = true;
-                        const inputLain = document.getElementById('jenisIkanLainnya');
-                        if (inputLain) {
-                            inputLain.style.display = 'block';
-                            inputLain.value = fish;
-                        }
+        try {
+            const { jsPDF } = window.jspdf;
+            
+            if (typeof jsPDF.API.autoTable !== 'function') {
+                showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
+                return;
+            }
+
+            const doc = new jsPDF('l', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+
+            // Header
+            doc.setFillColor(12, 36, 97);
+            doc.rect(10, 10, pageWidth - 20, 28, 'F');
+            
+            // Judul utama
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
+            
+            // Subjudul
+            doc.setFontSize(12);
+            doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
+
+            // Slogan dengan warna oranye
+            doc.setTextColor(246, 185, 59);
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(10);
+            doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
+
+            // Garis bawah header dengan warna aksen
+            doc.setDrawColor(246, 185, 59);
+            doc.setLineWidth(1.5);
+            doc.line(20, 38, pageWidth - 20, 38);
+
+            // Judul Laporan dengan informasi filter
+            doc.setTextColor(12, 36, 97);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('LAPORAN REKAPITULASI DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
+            
+            // Informasi filter yang aktif
+            let filterInfo = "Semua Data";
+            if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
+                filterInfo = "Data Terfilter: ";
+                const filterParts = [];
+                
+                if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
+                if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
+                if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
+                if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
+                if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
+                if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
+                if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
+                
+                filterInfo += filterParts.join(', ');
+            }
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('REKAPITULASI PER DESA / KELURAHAN', pageWidth/2, 60, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const now = new Date();
+            const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
+            doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
+
+            // Tabel Data dengan kolom baru
+            const tableWidth = pageWidth - 40;
+            const tableStartX = (pageWidth - tableWidth) / 2;
+
+            doc.autoTable({
+                head: [[
+                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
+                    {content: 'Desa/Kelurahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 50}},
+                    {content: 'Total Nelayan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                    {content: 'Pemilik Kapal', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                    {content: 'ABK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
+                    {content: 'Penuh Waktu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                    {content: 'Sambilan Utama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
+                    {content: 'Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
+                ]],
+                body: tableRows,
+                startY: 72,
+                theme: 'grid',
+                tableWidth: tableWidth,
+                margin: { left: tableStartX, right: tableStartX },
+                headStyles: { 
+                    fillColor: [12, 36, 97],
+                    textColor: [255, 255, 255], 
+                    fontStyle: 'bold', 
+                    halign: 'center',
+                    fontSize: 9,
+                    cellPadding: 4,
+                    lineWidth: 0.5,
+                    lineColor: [255, 255, 255]
+                },
+                bodyStyles: {
+                    textColor: [0, 0, 0],
+                    fontSize: 9,
+                    fillColor: [255, 255, 255],
+                    cellPadding: 4,
+                    lineWidth: 0.1,
+                    lineColor: [200, 200, 200]
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245]
+                },
+                styles: {
+                    overflow: 'linebreak',
+                    cellPadding: 4,
+                    fontSize: 9,
+                    valign: 'middle',
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: {cellWidth: 20, halign: 'center'},
+                    1: {cellWidth: 50, halign: 'left'},
+                    2: {cellWidth: 30, halign: 'center'},
+                    3: {cellWidth: 30, halign: 'center'},
+                    4: {cellWidth: 25, halign: 'center'},
+                    5: {cellWidth: 30, halign: 'center'},
+                    6: {cellWidth: 30, halign: 'center'},
+                    7: {cellWidth: 30, halign: 'center'}
+                },
+                willDrawCell: function(data) {
+                    // Baris total dengan warna kuning
+                    if (data.row.index === tableRows.length - 1) {
+                        data.cell.styles.fillColor = [255, 235, 59];
+                        data.cell.styles.textColor = [0, 0, 0];
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.lineWidth = 0.5;
+                        data.cell.styles.lineColor = [12, 36, 97];
                     }
                 }
             });
-        }
-    }, 100);
 
+            // Setelah autoTable, kita atur footer
+            const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
+
+            // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
+            const separatorY = finalY + 10;
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.5);
+            doc.line(20, separatorY, pageWidth - 20, separatorY);
+
+            // Bagian kiri: Validasi elektronik
+            const leftX = 25;
+            const leftY = separatorY + 12;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.setTextColor(12, 36, 97);
+            doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
+            doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
+            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", leftX, leftY + 8);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7);
+            doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
+            doc.setTextColor(230, 126, 34);
+            doc.text("www.dinasperikanansitubondo.com/simpadan", leftX, leftY + 18);
+
+            // Bagian kanan: Tanda tangan dan QR Code
+            const rightX = pageWidth - 85;
+            const rightY = separatorY + 10;
+
+            // PERIODE/TANGGAL
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
+            doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
+            
+            // JABATAN
+            doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
+
+            // QR Code dengan warna biru muda
+            const qrRightCanvas = document.querySelector('#qr-right canvas');
+            if(qrRightCanvas) {
+                try {
+                    const imgRight = qrRightCanvas.toDataURL("image/png");
+                    // QR code 25x25 mm
+                    doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
+                } catch (error) {
+                    console.error("Error adding QR code image:", error);
+                }
+            }
+            
+            // GARIS TANDA TANGAN
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.5);
+            doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
+            
+            // NAMA DAN NIP PEJABAT
+            const nameY = rightY + 45;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
+
+            // FOOTER DENGAN INFORMASI SISTEM
+            const footerY = pageHeight - 15;
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            
+            // Informasi sistem di footer
+            doc.setFontSize(7);
+            const printTime = new Date().toLocaleString('id-ID');
+            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
+            doc.text(`Total Data Terfilter: ${filteredData.length} records`, pageWidth / 2, footerY + 5, { align: 'center' });
+
+            // Simpan file PDF
+            const fileName = `Laporan_Rekapitulasi_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
+            doc.save(fileName);
+            document.getElementById('qr-right').innerHTML = "";
+            
+            showNotification(`Laporan PDF berhasil dibuat (${filteredData.length} data)`, 'success');
+            
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+            showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
+        }
+    }, 800);
+}
+
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        initializeApp();
+        setupEventListeners();
+        
+        displayCurrentDate();
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('tanggalValidasi').value = today;
+        
+        const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
+        if (isSessionActive) {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            initializeCharts();
+            updateDashboard();
+            renderDataTable();
+        } else {
+            setTimeout(() => {
+                document.getElementById('loginModal').style.display = 'flex';
+            }, 100);
+        }
+
+        if (typeof window.handleHashRouting === 'function') {
+            window.handleHashRouting();
+        }
+
+    } catch (error) {
+        console.error("Initialization Error:", error);
+        showNotification("Terjadi kesalahan sistem saat memuat. Silakan refresh halaman.", 'error');
+    }
+});
+
+function initializeApp() {
+    loadData();
+    loadSettings();
+    migrateOldData();
+    
+    // Inisialisasi Data Wilayah yang disempurnakan
+    initDataWilayah();
+    
+    if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
+        console.log("Data backup terdeteksi. Ready untuk merge/sync.");
+    }
+
+    // Inisialisasi dropdown kecamatan
     const kecSelect = document.getElementById('kecamatan');
     if (kecSelect) {
-        kecSelect.value = d.kecamatan;
-        kecSelect.dispatchEvent(new Event('change'));
+        kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
+        if (typeof SITUBONDO_DATA !== 'undefined') {
+            Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
+        }
     }
     
-    const desaSelect = document.getElementById('desa');
-    if (desaSelect) desaSelect.value = d.desa;
-
-    const statusSelect = document.getElementById('statusNelayan');
-    if (statusSelect) {
-        statusSelect.value = d.status;
-        statusSelect.dispatchEvent(new Event('change'));
+    // Inisialisasi dropdown filter desa
+    const allDesas = new Set();
+    if (typeof SITUBONDO_DATA !== 'undefined') {
+        Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
     }
-
-    if(d.status === 'Pemilik Kapal') {
-        ['namaKapal', 'jenisKapal'].forEach(key => {
-            const element = document.getElementById(key);
-            if (element) element.value = d[key] || '';
+    const filterDesaSelect = document.getElementById('filterDesa');
+    if (filterDesaSelect) {
+        filterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
+        [...allDesas].sort().forEach(d => filterDesaSelect.add(new Option(d, d)));
+    }
+    
+    // Inisialisasi dropdown filter alat tangkap
+    const filterAlatTangkap = document.getElementById('filterAlatTangkap');
+    if (filterAlatTangkap) {
+        filterAlatTangkap.innerHTML = `<option value="">Semua</option>`;
+        Object.keys(API_INFO).forEach(api => filterAlatTangkap.add(new Option(api, api)));
+    }
+    
+    // Inisialisasi dropdown filter jenis kapal
+    const filterJenisKapal = document.getElementById('filterJenisKapal');
+    if (filterJenisKapal) {
+        filterJenisKapal.innerHTML = `<option value="">Semua</option>`;
+        Object.keys(KAPAL_INFO).forEach(kapal => filterJenisKapal.add(new Option(kapal, kapal)));
+    }
+    
+    // Inisialisasi dropdown jenis kapal di form input
+    const jenisKapalSelect = document.getElementById('jenisKapal');
+    if (jenisKapalSelect) {
+        jenisKapalSelect.innerHTML = '<option value="">Pilih Jenis...</option>';
+        Object.keys(KAPAL_INFO).forEach(kapal => {
+            jenisKapalSelect.add(new Option(kapal, kapal));
         });
-        
-        if(d.jenisKapal && KAPAL_INFO[d.jenisKapal]) {
-            const kapalInfo = document.getElementById('kapalInfo');
-            if (kapalInfo) {
-                kapalInfo.style.display = 'block';
-                kapalInfo.innerHTML = `<strong>${d.jenisKapal}:</strong> ${KAPAL_INFO[d.jenisKapal]}`;
-                updateAlatTangkapByKapal();
-            }
-        }
     }
-
-    if(d.alatTangkap && API_INFO[d.alatTangkap]) {
-        const apiInfo = document.getElementById('apiInfo');
-        if (apiInfo) {
-            apiInfo.style.display = 'block';
-            apiInfo.innerHTML = `<strong>${d.alatTangkap}:</strong> ${API_INFO[d.alatTangkap]}`;
-        }
+    
+    // Inisialisasi dropdown alat tangkap di form input
+    const alatTangkapSelect = document.getElementById('alatTangkap');
+    if (alatTangkapSelect) {
+        alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
+        Object.keys(API_INFO).forEach(api => {
+            alatTangkapSelect.add(new Option(api, api));
+        });
     }
-
-    const inputTab = document.getElementById('v-pills-input-tab');
-    if (inputTab) inputTab.click();
-    window.scrollTo(0,0);
-}
-
-function deleteData(id) {
-    showLoading("Menghapus Data", "Sedang memproses penghapusan data. Mohon tunggu...");
     
-    setTimeout(() => {
-        const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk menghapus data:");
-        if(userCode === appSettings.securityCodeSensor) {
-            if(confirm('Yakin menghapus data ini secara permanen?')) {
-                appData = appData.filter(d => d.id != id);
-                saveData(); 
-                
-                // Periksa apakah halaman saat ini akan kosong setelah penghapusan
-                const totalItems = appData.length;
-                const totalPages = Math.ceil(totalItems / appSettings.itemsPerPage);
-                if (currentPage > totalPages && totalPages > 0) {
-                    currentPage = totalPages;
-                }
-                
-                renderDataTable(); 
-                updateDashboard();
-                updateFilterDesaOptions();
-                hideLoading();
-                showNotification('Data berhasil dihapus', 'success');
-                checkGlobalDuplicates();
-            } else {
-                hideLoading();
-            }
-        } else if (userCode !== null) {
-            hideLoading();
-            alert("Kode keamanan sensor SALAH!");
-        } else {
-            hideLoading();
-        }
-    }, 500);
-}
-
-function startDuplicateChecker() {
-    checkGlobalDuplicates();
-    duplicateCheckInterval = setInterval(checkGlobalDuplicates, 15000);
-}
-
-function checkGlobalDuplicates() {
-    const counts = {};
-    let hasDuplicate = false;
-    for (const d of appData) {
-        counts[d.nik] = (counts[d.nik] || 0) + 1;
-        if (counts[d.nik] > 1) { hasDuplicate = true; break; }
-    }
-    const duplicateWarning = document.getElementById('duplicateWarning');
-    if (duplicateWarning) {
-        duplicateWarning.style.display = hasDuplicate ? 'block' : 'none';
-    }
-}
-
-function initializeCharts() {
-    const profesiCanvas = document.getElementById('profesiChart');
-    const kapalCanvas = document.getElementById('kapalChart');
+    updateAppIdentity();
+    updatePrivacyUI();
+    updateWilayahUI();
+    updateWilayahStatusIndicator();
+    startDuplicateChecker();
+    setupInfoTooltips();
+    setupProfesiInfo();
     
-    if (!profesiCanvas || !kapalCanvas) return;
-
-    const profesiCtx = profesiCanvas.getContext('2d');
-    const kapalCtx = kapalCanvas.getContext('2d');
-
-    if (window.profesiChart instanceof Chart) window.profesiChart.destroy();
-    if (window.kapalChart instanceof Chart) window.kapalChart.destroy();
-
-    window.profesiChart = new Chart(profesiCtx, {
-        type: 'doughnut', 
-        data: { labels: [], datasets: [] },
-        options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
-    });
-
-    window.kapalChart = new Chart(kapalCtx, {
-        type: 'bar', 
-        data: { labels: [], datasets: [] },
-        options: { maintainAspectRatio: false, responsive: true, scales: { y: { beginAtZero: true } } }
-    });
+    // Inisialisasi daftar ikan
+    updateFishOptionsByAPI('');
     
-    updateDashboard();
-}
-
-function updateDashboard() {
-    if (!window.profesiChart || !window.kapalChart) return; 
-
-    const totalPenerima = document.getElementById('totalPenerima');
-    const totalPenuhWaktu = document.getElementById('totalPenuhWaktu');
-    const totalPemilik = document.getElementById('totalPemilik');
-    const totalSambilanUtama = document.getElementById('totalSambilanUtama');
-    const totalSambilanTambahan = document.getElementById('totalSambilanTambahan');
-    const totalABK = document.getElementById('totalABK');
-    
-    if (totalPenerima) totalPenerima.textContent = appData.length;
-    const penuhWaktuCount = appData.filter(d => d.profesi === 'Nelayan Penuh Waktu').length;
-    if (totalPenuhWaktu) totalPenuhWaktu.textContent = penuhWaktuCount;
-    if (totalPemilik) totalPemilik.textContent = appData.filter(d => d.status === 'Pemilik Kapal').length;
-    
-    const sambilanUtamaCount = appData.filter(d => d.profesi === 'Nelayan Sambilan Utama').length;
-    if (totalSambilanUtama) totalSambilanUtama.textContent = sambilanUtamaCount;
-    
-    const sambilanTambahanCount = appData.filter(d => d.profesi === 'Nelayan Sambilan Tambahan').length;
-    if (totalSambilanTambahan) totalSambilanTambahan.textContent = sambilanTambahanCount;
-    
-    const abkCount = appData.filter(d => d.status === 'Anak Buah Kapal').length;
-    if (totalABK) totalABK.textContent = abkCount;
-
-    const pData = {};
-    appData.forEach(d => pData[d.profesi] = (pData[d.profesi] || 0) + 1);
-    window.profesiChart.data = {
-        labels: Object.keys(pData),
-        datasets: [{ 
-            data: Object.values(pData), 
-            backgroundColor: ['#0c2461', '#e58e26', '#27ae60', '#4a69bd', '#f6b93b'] 
-        }] 
-    };
-    window.profesiChart.update();
-
-    const kData = {};
-    appData.filter(d => d.status === 'Pemilik Kapal').forEach(d => kData[d.jenisKapal] = (kData[d.jenisKapal] || 0) + 1);
-    window.kapalChart.data = {
-        labels: Object.keys(kData),
-        datasets: [{ label: 'Unit', data: Object.values(kData), backgroundColor: '#4a69bd' }]
-    };
-    window.kapalChart.update();
-}
-
-function saveData() { 
-    localStorage.setItem('nelayanData', JSON.stringify(appData)); 
-}
-
-function saveSettings() { 
-    appSettings.appName = "SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP";
-    localStorage.setItem('nelayanSettings', JSON.stringify(appSettings)); 
-}
-
-function loadData() { 
-    const d = localStorage.getItem('nelayanData'); 
-    if(d) {
-        try {
-            appData = JSON.parse(d); 
-        } catch (e) {
-            console.error("Error loading data:", e);
-            appData = [];
-        }
-    }
-}
-
-function loadSettings() { 
-    const s = localStorage.getItem('nelayanSettings'); 
-    if(s) {
-        try {
-            const loadedSettings = JSON.parse(s);
-            loadedSettings.appName = "SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP";
-            if (!loadedSettings.securityCodeSensor) {
-                loadedSettings.securityCodeSensor = '97531';
-            }
-            // Load data pejabat jika ada
-            if (!loadedSettings.officialName) {
-                loadedSettings.officialName = 'SUGENG PURWO PRIYANTO, S.E, M.M';
-            }
-            if (!loadedSettings.officialNip) {
-                loadedSettings.officialNip = '19761103 200903 1 001';
-            }
-            if (!loadedSettings.officialPosition) {
-                loadedSettings.officialPosition = 'Kepala Bidang Pemberdayaan Nelayan';
-            }
-            // Pastikan itemsPerPage valid (minimal 1)
-            if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
-                loadedSettings.itemsPerPage = 5;
-            }
-            Object.assign(appSettings, loadedSettings);
-        } catch (e) {
-            console.error("Error loading settings:", e);
-        }
-    }
+    // Inisialisasi form pengaturan pejabat
+    loadOfficialData();
 }
 
 function loadOfficialData() {
@@ -1973,7 +2618,7 @@ function setupEventListeners() {
         });
     }
 
-    // Login Form - DIPERBAIKI: menerima format YYYYMMDD dan DDMMYYYY
+    // Login Form
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
@@ -1981,20 +2626,12 @@ function setupEventListeners() {
             const btn = document.getElementById('loginButton');
             const spinner = document.getElementById('loginSpinner');
             const inputCode = document.getElementById('securityCode').value;
-            
-            // Generate kedua format untuk kompatibilitas
-            const now = new Date();
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            
-            const correctCodeForward = `${year}${month}${day}`; // YYYYMMDD
-            const correctCodeReverse = `${day}${month}${year}`; // DDMMYYYY
+            const correctCode = generateSecurityCode();
             
             if (!btn || !spinner) return;
             
-            if (inputCode !== correctCodeForward && inputCode !== correctCodeReverse) {
-                showNotification(`Kode keamanan salah! Format: DDMMYYYY (contoh: ${correctCodeReverse}) atau YYYYMMDD (contoh: ${correctCodeForward})`, 'error');
+            if (inputCode !== correctCode) {
+                showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
                 return;
             }
             
@@ -2566,153 +3203,765 @@ function setupFloatingMenu() {
     }
 }
 
-// --- NOTIFICATION FUNCTION ---
-function showNotification(message, type = 'info') {
-    const toastEl = document.querySelector('.notification-toast');
-    if (!toastEl) return;
+// --- CORE LOGIC FUNCTIONS ---
+function handleFormSubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('inputForm');
+    if (!form) return;
     
+    // Validasi mode desa
+    if (currentWilayah.mode === 'desa') {
+        const selectedDesa = document.getElementById('desa').value;
+        if (selectedDesa !== currentWilayah.desaName) {
+            showNotification(`Anda harus memilih Desa ${currentWilayah.desaName} untuk input data di mode ini!`, 'error');
+            return;
+        }
+    }
+    
+    const kodeVal = document.getElementById('kodeValidasi').value;
+    if (!kodeVal || kodeVal.trim() === '') {
+        showNotification('Anda WAJIB melakukan GENERATE KODE VALIDASI terlebih dahulu!', 'error');
+        const generateBtn = document.getElementById('generateKodeBtn');
+        if (generateBtn) generateBtn.focus();
+        return;
+    }
+    if (!form.checkValidity()) {
+        e.stopPropagation();
+        form.reportValidity(); 
+        return;
+    }
+
+    const nik = document.getElementById('nik').value;
+    const whatsapp = document.getElementById('whatsapp').value;
+    if(nik.length !== 16) return showNotification('NIK harus 16 digit', 'error');
+    if(!whatsapp.match(/^\d+$/)) return showNotification('WhatsApp hanya angka', 'error');
+
+    let selectedFish = [];
+    document.querySelectorAll('.fish-checkbox:checked').forEach(cb => {
+        if(cb.value === "Lainnya") {
+            const otherVal = document.getElementById('jenisIkanLainnya').value.trim();
+            if(otherVal) selectedFish.push(otherVal);
+        } else {
+            selectedFish.push(cb.value);
+        }
+    });
+    if(selectedFish.length === 0) return showNotification('Pilih minimal satu jenis ikan!', 'error');
+
+    const editId = form.getAttribute('data-edit-id');
+    const duplicateCheck = appData.find(d => d.nik === nik);
+    if (duplicateCheck && (!editId || duplicateCheck.id != editId)) {
+        return showNotification('GAGAL: NIK sudah terdaftar dalam sistem!', 'error');
+    }
+
+    const isOwner = document.getElementById('statusNelayan').value === 'Pemilik Kapal';
+    const formData = {
+        id: editId || Date.now(),
+        nama: document.getElementById('nama').value,
+        nik: nik,
+        whatsapp: whatsapp,
+        profesi: document.getElementById('profesi').value,
+        status: document.getElementById('statusNelayan').value,
+        tahunLahir: document.getElementById('tahunLahir').value,
+        usia: document.getElementById('usia').value,
+        kecamatan: document.getElementById('kecamatan').value,
+        desa: document.getElementById('desa').value,
+        alatTangkap: document.getElementById('alatTangkap').value,
+        namaKapal: isOwner ? document.getElementById('namaKapal').value : '-',
+        jenisKapal: isOwner ? document.getElementById('jenisKapal').value : '-',
+        jenisIkan: selectedFish.join(", "),
+        usahaSampingan: document.getElementById('usahaSampingan').value,
+        tanggalValidasi: document.getElementById('tanggalValidasi').value,
+        validator: document.getElementById('validator').value,
+        driveLink: document.getElementById('driveLink').value,
+        kodeValidasi: document.getElementById('kodeValidasi').value,
+        keterangan: document.getElementById('keterangan').value
+    };
+
+    if (editId) {
+        const index = appData.findIndex(item => item.id == editId);
+        appData[index] = formData;
+        form.removeAttribute('data-edit-id');
+        showNotification('Data berhasil diperbarui', 'success');
+    } else {
+        appData.push(formData);
+        showNotification('Data berhasil disimpan', 'success');
+    }
+
+    saveData();
+    form.reset();
+    const ownerFields = document.getElementById('ownerFields');
+    const desaSelect = document.getElementById('desa');
+    const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
+    
+    if (ownerFields) ownerFields.style.display = 'none';
+    if (desaSelect) {
+        desaSelect.innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
+        desaSelect.disabled = true;
+    }
+    if (jenisIkanLainnya) {
+        jenisIkanLainnya.style.display = 'none';
+    }
+    
+    const today = new Date().toISOString().split('T')[0];
+    const tanggalValidasi = document.getElementById('tanggalValidasi');
+    if (tanggalValidasi) tanggalValidasi.value = today;
+    
+    const apiInfo = document.getElementById('apiInfo');
+    const kapalInfo = document.getElementById('kapalInfo');
+    const profesiHelp = document.getElementById('profesiHelp');
+    const apiMappingInfo = document.getElementById('apiMappingInfo');
+
+    if (apiInfo) apiInfo.style.display = 'none';
+    if (kapalInfo) kapalInfo.style.display = 'none';
+    if (profesiHelp) profesiHelp.innerHTML = '';
+    if (apiMappingInfo) apiMappingInfo.style.display = 'none';
+
+    updateDashboard(); 
+    renderDataTable();
+    updateFilterDesaOptions();
+    const dataTab = document.getElementById('v-pills-data-tab');
+    if (dataTab) dataTab.click();
+    checkGlobalDuplicates();
+}
+
+function viewDetail(id) {
+    const d = appData.find(item => item.id == id);
+    if(!d) return;
+    currentDetailId = id;
+    
+    // Gunakan maskData untuk NIK dan WhatsApp jika privacyMode aktif
+    const displayNik = appSettings.privacyMode ? maskData(d.nik) : d.nik;
+    const displayWa = appSettings.privacyMode ? maskData(d.whatsapp) : d.whatsapp;
+    
+    document.getElementById('d_nama').innerText = d.nama;
+    document.getElementById('d_nik').innerText = displayNik; 
+    document.getElementById('d_usia').innerText = `${d.usia} Tahun (${d.tahunLahir})`;
+    document.getElementById('d_wa').innerText = displayWa;
+    document.getElementById('d_domisili').innerText = `${d.desa}, ${d.kecamatan}`;
+    
+    const profBadge = document.getElementById('d_profesi');
+    profBadge.innerText = d.profesi;
+    
+    let badgeClass = 'bg-primary';
+    if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
+    else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
+    else if(d.profesi === 'Nelayan Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
+    profBadge.className = `badge ${badgeClass}`;
+
+    document.getElementById('d_status').innerText = d.status;
+    document.getElementById('d_alatTangkap').innerText = d.alatTangkap;
+    document.getElementById('d_usaha').innerText = d.usahaSampingan || '-';
+    
+    const fishContainer = document.getElementById('d_ikan');
+    fishContainer.innerHTML = '';
+    if(d.jenisIkan) {
+        d.jenisIkan.split(', ').forEach(fish => {
+            const iconClass = getFishIconClass(fish);
+            fishContainer.innerHTML += `<span class="badge bg-light text-dark border me-1 mb-1"><i class="fas ${iconClass} me-1"></i>${fish}</span>`;
+        });
+    }
+    
+    const kapalCard = document.getElementById('d_kapal_card');
+    if(d.status === 'Pemilik Kapal') {
+        if (kapalCard) kapalCard.style.display = 'block';
+        document.getElementById('d_namaKapal').innerText = d.namaKapal;
+        document.getElementById('d_jenisKapal').innerText = d.jenisKapal;
+    } else {
+        if (kapalCard) kapalCard.style.display = 'none';
+    }
+    document.getElementById('d_tgl_valid').innerText = d.tanggalValidasi;
+    document.getElementById('d_validator').innerText = d.validator;
+    detailModal.show();
+}
+
+function downloadSinglePdf(id) {
+    const d = appData.find(item => item.id == id);
+    if(!d) return;
+
+    document.getElementById('qr-right').innerHTML = "";
+    const signatureText = `DOKUMEN SAH\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nRef: ${d.kodeValidasi || 'N/A'}`;
+    new QRCode(document.getElementById("qr-right"), { 
+        text: signatureText, width: 256, height: 256,
+        colorDark: "#0984e3",
+        colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
+    });
+
+    setTimeout(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        
+        doc.setDrawColor(12, 36, 97);
+        doc.setLineWidth(1);
+        doc.rect(10, 10, 190, 277);
+
+        doc.setFillColor(12, 36, 97);
+        doc.rect(10, 10, 190, 40, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+        doc.text(appSettings.appName.toUpperCase(), 105, 22, { align: 'center' });
+        doc.setFontSize(16);
+        doc.text('DINAS PERIKANAN', 105, 29, { align: 'center' });
+        doc.setTextColor(246, 185, 59);
+        doc.setFont('times', 'italic'); doc.setFontSize(12);
+        doc.text('"Situbondo Naik Kelas"', 105, 37, { align: 'center' });
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(10);
+        doc.text(appSettings.appSubtitle, 105, 45, { align: 'center' });
+        
+        doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+        doc.text('BIODATA NELAYAN TERDAFTAR', 105, 65, { align: 'center' });
+        doc.setLineWidth(0.5); doc.line(70, 68, 140, 68);
+
+        let y = 80;
+        const lineHeight = 7;
+        
+        const checkPage = (heightNeeded) => {
+            if (y + heightNeeded > 250) { 
+                doc.addPage();
+                doc.setDrawColor(12, 36, 97); doc.setLineWidth(1); doc.rect(10, 10, 190, 277);
+                y = 30; 
+            }
+        };
+
+        const printLine = (label, value) => {
+            checkPage(lineHeight);
+            doc.setFont('helvetica', 'normal'); doc.text(label, 25, y);
+            doc.setFont('helvetica', 'bold'); 
+            
+            if (label === 'Domisili' || value.length > 50) {
+                const splitText = doc.splitTextToSize(': ' + value, 110);
+                doc.text(splitText, 80, y);
+                y += (splitText.length * 6);
+            } else {
+                doc.text(': ' + value, 80, y);
+                y += lineHeight;
+            }
+        };
+
+        checkPage(30);
+        doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+        doc.rect(20, y-4, 170, 6, 'F');
+        doc.text('I. IDENTITAS PRIBADI', 22, y); y += 12;
+        
+        doc.setFontSize(10);
+        printLine('Nama Lengkap', d.nama);
+        printLine('NIK', d.nik); // Di PDF tetap tampilkan asli
+        printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
+        printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
+        printLine('No. Handphone', d.whatsapp); // Di PDF tetap tampilkan asli
+        y += 8;
+
+        checkPage(30);
+        doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+        doc.rect(20, y-4, 170, 6, 'F');
+        doc.text('II. PROFESI & EKONOMI', 22, y); y += 12;
+
+        doc.setFontSize(10);
+        printLine('Status Profesi', d.profesi);
+        printLine('Posisi Kerja', d.status);
+        printLine('Alat Penangkapan Ikan (API)', d.alatTangkap);
+        printLine('Usaha Sampingan', d.usahaSampingan || '-');
+        y += 8;
+
+        checkPage(30);
+        doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+        doc.rect(20, y-4, 170, 6, 'F');
+        doc.text('III. JENIS IKAN TANGKAPAN UTAMA', 22, y); y += 12;
+
+        doc.setFontSize(10);
+        const fishList = d.jenisIkan ? d.jenisIkan.split(', ') : [];
+        fishList.forEach((fish, idx) => {
+            printLine(`Ikan ${idx + 1}`, fish);
+        });
+        y += 8;
+
+        if(d.status === 'Pemilik Kapal') {
+            checkPage(30);
+            doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+            doc.rect(20, y-4, 170, 6, 'F');
+            doc.text('IV. DATA ASET KAPAL', 22, y); y += 12;
+
+            doc.setFontSize(10);
+            printLine('Nama Kapal', d.namaKapal);
+            printLine('Jenis Kapal', d.jenisKapal);
+        }
+
+        if(y > 210) doc.addPage();
+
+        const footerY = 230; 
+        const sigCenterX = 150; 
+        const leftX = 25;
+
+        doc.setDrawColor(150);
+        doc.setLineWidth(0.5);
+        doc.rect(leftX, footerY, 70, 30);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX + 35, footerY + 6, {align: 'center'});
+        doc.text("SECARA ELEKTRONIK OLEH", leftX + 35, footerY + 10, {align: 'center'});
+        doc.text("SISTEM SATU DATA (SIMPADAN TANGKAP)", leftX + 35, footerY + 14, {align: 'center'});
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.text("Dinas Perikanan Kabupaten Situbondo", leftX + 35, footerY + 20, {align: 'center'});
+        doc.setTextColor(0, 0, 255);
+        doc.text("www.dinasperikanansitubondo.com/simpadan", leftX + 35, footerY + 25, {align: 'center'});
+
+        doc.setFontSize(10); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'normal');
+        const dateStr = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+        doc.text(`Situbondo, ${dateStr}`, sigCenterX, footerY - 5, {align: 'center'});
+        doc.text('Diketahui Oleh :', sigCenterX, footerY, {align: 'center'});
+        doc.setFont('helvetica', 'bold');
+        doc.text(appSettings.officialPosition, sigCenterX, footerY + 5, {align: 'center'});
+
+        const qrRightCanvas = document.querySelector('#qr-right canvas');
+        if(qrRightCanvas) {
+            const imgRight = qrRightCanvas.toDataURL("image/png");
+            doc.addImage(imgRight, 'PNG', sigCenterX - 12.5, footerY + 8, 25, 25); 
+        }
+
+        const nameY = footerY + 38; 
+        doc.text(appSettings.officialName, sigCenterX, nameY, {align: 'center'});
+        doc.setFont('helvetica', 'normal');
+        doc.text(`NIP. ${appSettings.officialNip}`, sigCenterX, nameY + 5, {align: 'center'});
+
+        doc.setFontSize(7); doc.setTextColor(150);
+        doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Ref ID: ${d.kodeValidasi || '-'}`, 105, 285, {align:'center'});
+
+        const totalPages = doc.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            doc.text(`Dokumen ini saling berhubungan - Halaman ${i} dari ${totalPages}`, 105, 292, { align: 'center' });
+        }
+
+        doc.save(`${d.nama}_${d.nik}.pdf`);
+        document.getElementById('qr-right').innerHTML = "";
+
+    }, 500);
+}
+
+function toggleBulkDeleteBtn() {
+    const checked = document.querySelectorAll('.row-checkbox:checked').length > 0;
+    const btn = document.getElementById('bulkDeleteBtn');
+    if(btn) {
+        if(checked) btn.classList.remove('d-none'); else btn.classList.add('d-none');
+    }
+}
+
+function bulkDeleteData() {
+    const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+    if(checkedBoxes.length === 0) return;
+    
+    showLoading("Menghapus Data", `Sedang menghapus ${checkedBoxes.length} data terpilih. Mohon tunggu...`);
+    
+    setTimeout(() => {
+        const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN SENSOR:`);
+        if(userCode === appSettings.securityCodeSensor) {
+            const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
+            appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
+            saveData(); 
+            currentPage = 1; // Reset ke halaman pertama setelah menghapus
+            renderDataTable(); 
+            updateDashboard();
+            updateFilterDesaOptions();
+            hideLoading();
+            showNotification(`${idsToDelete.length} data berhasil dihapus`, 'success');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox) selectAllCheckbox.checked = false;
+            checkGlobalDuplicates();
+        } else if (userCode !== null) {
+            hideLoading();
+            alert("Kode keamanan sensor SALAH!");
+        } else {
+            hideLoading();
+        }
+    }, 500);
+}
+
+function editData(id) {
+    const d = appData.find(item => item.id == id);
+    if(!d) return;
+    const form = document.getElementById('inputForm');
+    if (!form) return;
+    
+    form.setAttribute('data-edit-id', id);
+    
+    ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
+     .forEach(key => {
+         const element = document.getElementById(key);
+         if (element) element.value = d[key] || '';
+     });
+
+    const waInput = document.getElementById('whatsapp');
+    const btnWa = document.getElementById('btnNoWA');
+    if(d.whatsapp === '00000000') {
+        if (waInput) {
+            waInput.setAttribute('readonly', true);
+            waInput.removeAttribute('required');
+        }
+        if (btnWa) {
+            btnWa.classList.add('active', 'btn-secondary');
+            btnWa.textContent = "Batal";
+        }
+    } else {
+        if (waInput) {
+            waInput.removeAttribute('readonly');
+            waInput.setAttribute('required', 'required');
+        }
+        if (btnWa) {
+            btnWa.classList.remove('active', 'btn-secondary');
+            btnWa.textContent = "Tidak Ada";
+        }
+    }
+
+    const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
+    if (jenisIkanLainnya) {
+        jenisIkanLainnya.style.display = 'none';
+        jenisIkanLainnya.value = '';
+    }
+    
+    // Set alat tangkap dan update daftar ikan
+    const alatTangkap = document.getElementById('alatTangkap');
+    if (alatTangkap) {
+        alatTangkap.value = d.alatTangkap;
+        updateFishOptionsByAPI(d.alatTangkap);
+    }
+    
+    // Set ikan yang sudah dipilih setelah daftar diupdate
+    setTimeout(() => {
+        if(d.jenisIkan) {
+            const savedFish = d.jenisIkan.split(', ');
+            savedFish.forEach(fish => {
+                let found = false;
+                document.querySelectorAll('.fish-checkbox').forEach(cb => {
+                    if(cb.value === fish) { 
+                        cb.checked = true; 
+                        found = true; 
+                    }
+                });
+                if(!found) {
+                    // Jika ikan tidak ada dalam daftar, maka tambahkan ke opsi "Lainnya"
+                    const cbLain = document.getElementById('fish_Lainnya');
+                    if (cbLain) {
+                        cbLain.checked = true;
+                        const inputLain = document.getElementById('jenisIkanLainnya');
+                        if (inputLain) {
+                            inputLain.style.display = 'block';
+                            inputLain.value = fish;
+                        }
+                    }
+                }
+            });
+        }
+    }, 100);
+
+    const kecSelect = document.getElementById('kecamatan');
+    if (kecSelect) {
+        kecSelect.value = d.kecamatan;
+        kecSelect.dispatchEvent(new Event('change'));
+    }
+    
+    const desaSelect = document.getElementById('desa');
+    if (desaSelect) desaSelect.value = d.desa;
+
+    const statusSelect = document.getElementById('statusNelayan');
+    if (statusSelect) {
+        statusSelect.value = d.status;
+        statusSelect.dispatchEvent(new Event('change'));
+    }
+
+    if(d.status === 'Pemilik Kapal') {
+        ['namaKapal', 'jenisKapal'].forEach(key => {
+            const element = document.getElementById(key);
+            if (element) element.value = d[key] || '';
+        });
+        
+        if(d.jenisKapal && KAPAL_INFO[d.jenisKapal]) {
+            const kapalInfo = document.getElementById('kapalInfo');
+            if (kapalInfo) {
+                kapalInfo.style.display = 'block';
+                kapalInfo.innerHTML = `<strong>${d.jenisKapal}:</strong> ${KAPAL_INFO[d.jenisKapal]}`;
+                updateAlatTangkapByKapal();
+            }
+        }
+    }
+
+    if(d.alatTangkap && API_INFO[d.alatTangkap]) {
+        const apiInfo = document.getElementById('apiInfo');
+        if (apiInfo) {
+            apiInfo.style.display = 'block';
+            apiInfo.innerHTML = `<strong>${d.alatTangkap}:</strong> ${API_INFO[d.alatTangkap]}`;
+        }
+    }
+
+    const inputTab = document.getElementById('v-pills-input-tab');
+    if (inputTab) inputTab.click();
+    window.scrollTo(0,0);
+}
+
+function deleteData(id) {
+    showLoading("Menghapus Data", "Sedang memproses penghapusan data. Mohon tunggu...");
+    
+    setTimeout(() => {
+        const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk menghapus data:");
+        if(userCode === appSettings.securityCodeSensor) {
+            if(confirm('Yakin menghapus data ini secara permanen?')) {
+                appData = appData.filter(d => d.id != id);
+                saveData(); 
+                
+                // Periksa apakah halaman saat ini akan kosong setelah penghapusan
+                const totalItems = appData.length;
+                const totalPages = Math.ceil(totalItems / appSettings.itemsPerPage);
+                if (currentPage > totalPages && totalPages > 0) {
+                    currentPage = totalPages;
+                }
+                
+                renderDataTable(); 
+                updateDashboard();
+                updateFilterDesaOptions();
+                hideLoading();
+                showNotification('Data berhasil dihapus', 'success');
+                checkGlobalDuplicates();
+            } else {
+                hideLoading();
+            }
+        } else if (userCode !== null) {
+            hideLoading();
+            alert("Kode keamanan sensor SALAH!");
+        } else {
+            hideLoading();
+        }
+    }, 500);
+}
+
+function startDuplicateChecker() {
+    checkGlobalDuplicates();
+    duplicateCheckInterval = setInterval(checkGlobalDuplicates, 15000);
+}
+
+function checkGlobalDuplicates() {
+    const counts = {};
+    let hasDuplicate = false;
+    for (const d of appData) {
+        counts[d.nik] = (counts[d.nik] || 0) + 1;
+        if (counts[d.nik] > 1) { hasDuplicate = true; break; }
+    }
+    const duplicateWarning = document.getElementById('duplicateWarning');
+    if (duplicateWarning) {
+        duplicateWarning.style.display = hasDuplicate ? 'block' : 'none';
+    }
+}
+
+function initializeCharts() {
+    const profesiCanvas = document.getElementById('profesiChart');
+    const kapalCanvas = document.getElementById('kapalChart');
+    
+    if (!profesiCanvas || !kapalCanvas) return;
+
+    const profesiCtx = profesiCanvas.getContext('2d');
+    const kapalCtx = kapalCanvas.getContext('2d');
+
+    if (window.profesiChart instanceof Chart) window.profesiChart.destroy();
+    if (window.kapalChart instanceof Chart) window.kapalChart.destroy();
+
+    window.profesiChart = new Chart(profesiCtx, {
+        type: 'doughnut', 
+        data: { labels: [], datasets: [] },
+        options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
+    });
+
+    window.kapalChart = new Chart(kapalCtx, {
+        type: 'bar', 
+        data: { labels: [], datasets: [] },
+        options: { maintainAspectRatio: false, responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+    
+    updateDashboard();
+}
+
+function updateDashboard() {
+    if (!window.profesiChart || !window.kapalChart) return; 
+
+    const totalPenerima = document.getElementById('totalPenerima');
+    const totalPenuhWaktu = document.getElementById('totalPenuhWaktu');
+    const totalPemilik = document.getElementById('totalPemilik');
+    const totalSambilanUtama = document.getElementById('totalSambilanUtama');
+    const totalSambilanTambahan = document.getElementById('totalSambilanTambahan');
+    const totalABK = document.getElementById('totalABK');
+    
+    if (totalPenerima) totalPenerima.textContent = appData.length;
+    const penuhWaktuCount = appData.filter(d => d.profesi === 'Nelayan Penuh Waktu').length;
+    if (totalPenuhWaktu) totalPenuhWaktu.textContent = penuhWaktuCount;
+    if (totalPemilik) totalPemilik.textContent = appData.filter(d => d.status === 'Pemilik Kapal').length;
+    
+    const sambilanUtamaCount = appData.filter(d => d.profesi === 'Nelayan Sambilan Utama').length;
+    if (totalSambilanUtama) totalSambilanUtama.textContent = sambilanUtamaCount;
+    
+    const sambilanTambahanCount = appData.filter(d => d.profesi === 'Nelayan Sambilan Tambahan').length;
+    if (totalSambilanTambahan) totalSambilanTambahan.textContent = sambilanTambahanCount;
+    
+    const abkCount = appData.filter(d => d.status === 'Anak Buah Kapal').length;
+    if (totalABK) totalABK.textContent = abkCount;
+
+    const pData = {};
+    appData.forEach(d => pData[d.profesi] = (pData[d.profesi] || 0) + 1);
+    window.profesiChart.data = {
+        labels: Object.keys(pData),
+        datasets: [{ 
+            data: Object.values(pData), 
+            backgroundColor: ['#0c2461', '#e58e26', '#27ae60', '#4a69bd', '#f6b93b'] 
+        }] 
+    };
+    window.profesiChart.update();
+
+    const kData = {};
+    appData.filter(d => d.status === 'Pemilik Kapal').forEach(d => kData[d.jenisKapal] = (kData[d.jenisKapal] || 0) + 1);
+    window.kapalChart.data = {
+        labels: Object.keys(kData),
+        datasets: [{ label: 'Unit', data: Object.values(kData), backgroundColor: '#4a69bd' }]
+    };
+    window.kapalChart.update();
+}
+
+function saveData() { 
+    localStorage.setItem('nelayanData', JSON.stringify(appData)); 
+}
+
+function saveSettings() { 
+    appSettings.appName = "SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP";
+    localStorage.setItem('nelayanSettings', JSON.stringify(appSettings)); 
+}
+
+function loadData() { 
+    const d = localStorage.getItem('nelayanData'); 
+    if(d) {
+        try {
+            appData = JSON.parse(d); 
+        } catch (e) {
+            console.error("Error loading data:", e);
+            appData = [];
+        }
+    }
+}
+
+function loadSettings() { 
+    const s = localStorage.getItem('nelayanSettings'); 
+    if(s) {
+        try {
+            const loadedSettings = JSON.parse(s);
+            loadedSettings.appName = "SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP";
+            if (!loadedSettings.securityCodeSensor) {
+                loadedSettings.securityCodeSensor = '97531';
+            }
+            // Load data pejabat jika ada
+            if (!loadedSettings.officialName) {
+                loadedSettings.officialName = 'SUGENG PURWO PRIYANTO, S.E, M.M';
+            }
+            if (!loadedSettings.officialNip) {
+                loadedSettings.officialNip = '19761103 200903 1 001';
+            }
+            if (!loadedSettings.officialPosition) {
+                loadedSettings.officialPosition = 'Kepala Bidang Pemberdayaan Nelayan';
+            }
+            // Pastikan itemsPerPage valid (minimal 1)
+            if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
+                loadedSettings.itemsPerPage = 5;
+            }
+            Object.assign(appSettings, loadedSettings);
+        } catch (e) {
+            console.error("Error loading settings:", e);
+        }
+    }
+}
+
+function exportData(type) {
+    if(appData.length === 0) {
+        showNotification('Tidak ada data', 'error');
+        return;
+    }
+    
+    const dataToExport = appData.map(d => ({
+        ...d, nik: maskData(d.nik), whatsapp: maskData(d.whatsapp)
+    }));
+    const finalData = dataToExport.map(d => ({ ...d, NIK: `'${d.nik}`, WhatsApp: `'${d.whatsapp}` }));
+    
+    if(type === 'xlsx') {
+        try {
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(finalData), "Data Nelayan");
+            XLSX.writeFile(wb, `Nelayan_${appSettings.appSubtitle.slice(0,10)}_${Date.now()}.xlsx`);
+            showNotification('Ekspor Excel berhasil.', 'success');
+        } catch (error) {
+            console.error("Error exporting Excel:", error);
+            showNotification('Gagal mengekspor data Excel', 'error');
+        }
+    }
+}
+
+function sendDataToWhatsapp() {
+    const message = `Yth. Administrator Dinas Perikanan Kabupaten Situbondo,\n\nBerikut kami lampirkan data pembaruan Sistem Satu Data Nelayan dari:\n*${appSettings.appSubtitle}*\n\nTanggal Laporan: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\nTotal Data: ${appData.length} nelayan\n\nData terlampir dalam format reload.js\n\nSalam,\nOperator SIMPADAN TANGKAP`;
+    const url = `https://wa.me/6287865614222?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+}
+
+// --- FUNGSI NOTIFIKASI ---
+function showNotification(message, type = 'info') {
+    const toast = document.querySelector('.notification-toast');
     const toastTitle = document.getElementById('toastTitle');
     const toastMessage = document.getElementById('toastMessage');
     
-    if (toastTitle && toastMessage) {
-        toastTitle.textContent = type === 'success' ? 'Berhasil' : 
-                                type === 'error' ? 'Error' : 
-                                type === 'warning' ? 'Peringatan' : 'Info';
-        
-        toastMessage.textContent = message;
-        
-        // Set warna berdasarkan type
-        const toastHeader = toastEl.querySelector('.toast-header');
-        if (toastHeader) {
-            if (type === 'success') {
-                toastHeader.style.backgroundColor = '#d4edda';
-                toastHeader.style.color = '#155724';
-            } else if (type === 'error') {
-                toastHeader.style.backgroundColor = '#f8d7da';
-                toastHeader.style.color = '#721c24';
-            } else if (type === 'warning') {
-                toastHeader.style.backgroundColor = '#fff3cd';
-                toastHeader.style.color = '#856404';
-            } else {
-                toastHeader.style.backgroundColor = '#d1ecf1';
-                toastHeader.style.color = '#0c5460';
-            }
-        }
-        
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
+    if (!toast || !toastTitle || !toastMessage) return;
+    
+    // Atur warna berdasarkan tipe
+    switch(type) {
+        case 'success':
+            toastTitle.innerHTML = '<i class="fas fa-check-circle me-2 text-success"></i>Berhasil';
+            break;
+        case 'error':
+            toastTitle.innerHTML = '<i class="fas fa-exclamation-circle me-2 text-danger"></i>Error';
+            break;
+        case 'warning':
+            toastTitle.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning"></i>Peringatan';
+            break;
+        default:
+            toastTitle.innerHTML = '<i class="fas fa-info-circle me-2 text-info"></i>Informasi';
+    }
+    
+    toastMessage.textContent = message;
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+}
+
+// --- FUNGSI TAMBAHAN UNTUK KOMPATIBILITAS ---
+function safeGenerateIDCard(id) {
+    if (typeof window.generateIDCard === 'function') {
+        window.generateIDCard(id);
+    } else {
+        showNotification('Fitur ID Card belum tersedia. Pastikan file idcard.js sudah dimuat.', 'error');
     }
 }
 
-// --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', function() {
-    try {
-        initializeApp();
-        setupEventListeners();
-        
-        displayCurrentDate();
-        
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('tanggalValidasi').value = today;
-        
-        const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
-        if (isSessionActive) {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('appContent').style.display = 'block';
-            initializeCharts();
-            updateDashboard();
-            renderDataTable();
-        } else {
-            setTimeout(() => {
-                document.getElementById('loginModal').style.display = 'flex';
-            }, 100);
-        }
-
-        if (typeof window.handleHashRouting === 'function') {
-            window.handleHashRouting();
-        }
-
-    } catch (error) {
-        console.error("Initialization Error:", error);
-        showNotification("Terjadi kesalahan sistem saat memuat. Silakan refresh halaman.", 'error');
-    }
-});
-
-function initializeApp() {
-    loadData();
-    loadSettings();
-    migrateOldData();
-    
-    // Inisialisasi Data Wilayah yang disempurnakan
-    initDataWilayah();
-    
-    if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
-        console.log("Data backup terdeteksi. Ready untuk merge/sync.");
-    }
-
-    // Inisialisasi dropdown kecamatan
-    const kecSelect = document.getElementById('kecamatan');
-    if (kecSelect) {
-        kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
-        if (typeof SITUBONDO_DATA !== 'undefined') {
-            Object.keys(SITUBONDO_DATA).sort().forEach(kec => kecSelect.add(new Option(kec, kec)));
-        }
-    }
-    
-    // Inisialisasi dropdown filter desa
-    const allDesas = new Set();
-    if (typeof SITUBONDO_DATA !== 'undefined') {
-        Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
-    }
-    const filterDesaSelect = document.getElementById('filterDesa');
-    if (filterDesaSelect) {
-        filterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
-        [...allDesas].sort().forEach(d => filterDesaSelect.add(new Option(d, d)));
-    }
-    
-    // Inisialisasi dropdown filter alat tangkap
-    const filterAlatTangkap = document.getElementById('filterAlatTangkap');
-    if (filterAlatTangkap) {
-        filterAlatTangkap.innerHTML = `<option value="">Semua</option>`;
-        Object.keys(API_INFO).forEach(api => filterAlatTangkap.add(new Option(api, api)));
-    }
-    
-    // Inisialisasi dropdown filter jenis kapal
-    const filterJenisKapal = document.getElementById('filterJenisKapal');
-    if (filterJenisKapal) {
-        filterJenisKapal.innerHTML = `<option value="">Semua</option>`;
-        Object.keys(KAPAL_INFO).forEach(kapal => filterJenisKapal.add(new Option(kapal, kapal)));
-    }
-    
-    // Inisialisasi dropdown jenis kapal di form input
-    const jenisKapalSelect = document.getElementById('jenisKapal');
-    if (jenisKapalSelect) {
-        jenisKapalSelect.innerHTML = '<option value="">Pilih Jenis...</option>';
-        Object.keys(KAPAL_INFO).forEach(kapal => {
-            jenisKapalSelect.add(new Option(kapal, kapal));
-        });
-    }
-    
-    // Inisialisasi dropdown alat tangkap di form input
-    const alatTangkapSelect = document.getElementById('alatTangkap');
-    if (alatTangkapSelect) {
-        alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
-        Object.keys(API_INFO).forEach(api => {
-            alatTangkapSelect.add(new Option(api, api));
-        });
-    }
-    
-    updateAppIdentity();
-    updatePrivacyUI();
-    updateWilayahUI();
-    updateWilayahStatusIndicator();
-    startDuplicateChecker();
-    setupInfoTooltips();
-    setupProfesiInfo();
-    
-    // Inisialisasi daftar ikan
-    updateFishOptionsByAPI('');
-    
-    // Inisialisasi form pengaturan pejabat
-    loadOfficialData();
-}
+// --- INISIALISASI TAMBAHAN ---
+// Pastikan fungsi-fungsi yang dipanggil dari event sudah tersedia di scope global
+window.showFishInfoModal = showFishInfoModal;
+window.loadDataByDesa = loadDataByDesa;
+window.setupInputForDesa = setupInputForDesa;
+window.setInputGlobalMode = setInputGlobalMode;
+window.setVerifyExample = setVerifyExample;
+window.verifyKINAndShow = verifyKINAndShow;
+window.verifyKIN = verifyKIN;
+window.resetVerifyForm = resetVerifyForm;
+window.viewDetail = viewDetail;
+window.safeGenerateIDCard = safeGenerateIDCard;
+window.editData = editData;
+window.deleteData = deleteData;
+window.goToPage = goToPage;
+window.toggleBulkDeleteBtn = toggleBulkDeleteBtn;
+window.showDuplicateDataInFilter = showDuplicateDataInFilter;
