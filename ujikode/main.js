@@ -1390,7 +1390,7 @@ function generateTabelPdf() {
             doc.setFontSize(9);
             doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
+    doc.setFontSize(8);
             doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
 
             // FOOTER DENGAN INFORMASI SISTEM
@@ -3964,23 +3964,26 @@ function generateIDCard(id) {
         format: [85.6, 54]
     });
 
-    // Background warna biru tua dengan gradien
-    const gradient = doc.context2d.createLinearGradient(0, 0, 85.6, 54);
-    gradient.addColorStop(0, '#0c2461');  // Biru tua
-    gradient.addColorStop(1, '#1e3799');  // Biru sedikit lebih terang
-    doc.setFillColor('#0c2461');
+    // PERBAIKAN: Background warna abu-abu muda untuk halaman
+    doc.setFillColor(240, 240, 240); // Abu-abu muda (#f0f0f0)
     doc.rect(0, 0, 85.6, 54, 'F');
 
-    // Area putih untuk konten dengan sudut melengkung dan bayangan
+    // Area putih untuk ID Card dengan bayangan
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(2.5, 2.5, 80.6, 49, 3, 3, 'F');
-    
-    // Border biru di sekitar area putih
-    doc.setDrawColor(12, 36, 97);
+    doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.3);
-    doc.roundedRect(2.5, 2.5, 80.6, 49, 3, 3);
-
-    // Header ID Card dengan warna biru muda (#4a69bd) - PERUBAHAN DI SINI
+    
+    // Tambahkan efek bayangan
+    doc.setFillColor(220, 220, 220);
+    doc.roundedRect(3.5, 3.5, 80.6, 49, 3, 3, 'F');
+    
+    // Area utama ID Card (putih)
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(12, 36, 97); // Biru tua untuk border
+    doc.setLineWidth(0.5);
+    doc.roundedRect(2.5, 2.5, 80.6, 49, 3, 3, 'FD'); // FD: Fill and Draw
+    
+    // Header ID Card dengan warna biru muda (#4a69bd)
     doc.setFillColor(74, 105, 189);  // Biru muda (#4a69bd)
     doc.roundedRect(2.5, 2.5, 80.6, 10, 3, 3, 'F');
     
@@ -3996,20 +3999,20 @@ function generateIDCard(id) {
     doc.setLineWidth(0.5);
     doc.line(5, 11, 80, 11);
 
-    // Judul ID Card dengan warna biru
+    // PERBAIKAN: Judul ID Card diturunkan agar tidak tumpang tindih
     doc.setTextColor(12, 36, 97);
     doc.setFontSize(6);
     doc.setFont('helvetica', 'bold');
-    doc.text('KARTU IDENTITAS NELAYAN TERDAFTAR', 42.8, 14, { align: 'center' });
+    doc.text('KARTU IDENTITAS NELAYAN TERDAFTAR', 42.8, 15, { align: 'center' }); // Diturunkan dari 14 ke 15
 
     // Garis dekoratif tipis di bawah judul
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.2);
-    doc.line(15, 15, 70, 15);
+    doc.line(15, 16, 70, 16); // Diturunkan dari 15 ke 16
 
-    // Container untuk data pribadi (kiri)
+    // Container untuk data pribadi (kiri) - posisi lebih ke bawah
     const leftX = 5;
-    const dataY = 18;
+    const dataY = 20; // Diturunkan dari 18 ke 20
     const lineHeight = 3.2;
 
     doc.setFontSize(5.5);
@@ -4086,7 +4089,7 @@ function generateIDCard(id) {
     // QR Code (kanan) - ukuran lebih kecil dan profesional
     const qrSize = 16; // QR Code 16x16 mm (lebih kecil)
     const qrX = 85.6 - qrSize - 8; // Posisi X: kanan dengan margin 8mm
-    const qrY = 18; // Posisi Y: sejajar dengan data
+    const qrY = 20; // Posisi Y: sejajar dengan data (diturunkan dari 18 ke 20)
 
     // Generate QR Code
     const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nDesa: ${data.desa}\nValidasi: ${data.tanggalValidasi}`;
@@ -4138,7 +4141,7 @@ function generateIDCard(id) {
             // Garis pemisah horizontal antara data dan footer
             doc.setDrawColor(220, 220, 220);
             doc.setLineWidth(0.2);
-            const separatorY = 45;
+            const separatorY = 47; // Diturunkan dari 45 ke 47
             doc.line(5, separatorY, 80, separatorY);
 
             // Footer dengan informasi validasi
@@ -4150,8 +4153,6 @@ function generateIDCard(id) {
             
             // Informasi validasi
             doc.text(`Validasi: ${data.tanggalValidasi} | ${data.validator}`, 42.8, footerY + 2.5, { align: 'center' });
-
-            // SIMPAN PDF - TANPA WATERMARK SIMPADAN (DIHAPUS SESUAI PERMINTAAN)
 
             // Simpan PDF
             const fileName = `IDCard_${data.nama.replace(/\s+/g, '_')}_${data.kodeValidasi || data.nik.substring(0, 8)}.pdf`;
@@ -4177,7 +4178,7 @@ function generateIDCard(id) {
         // Garis pemisah horizontal
         doc.setDrawColor(220, 220, 220);
         doc.setLineWidth(0.2);
-        const separatorY = 45;
+        const separatorY = 47; // Diturunkan dari 45 ke 47
         doc.line(5, separatorY, 80, separatorY);
 
         // Footer
