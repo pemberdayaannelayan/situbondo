@@ -1,7 +1,6 @@
 // =====================================================
 // KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.0 FINAL
 // DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
-// REVISI: PERBAIKAN TATA LETAK VALIDASI PADA ID CARD
 // =====================================================
 
 // Data ikan yang diperbarui dan dilengkapi
@@ -2174,7 +2173,7 @@ function printData() {
             // Garis bawah header dengan warna aksen
             doc.setDrawColor(246, 185, 59);
             doc.setLineWidth(1.5);
-    doc.line(20, 38, pageWidth - 20, 38);
+            doc.line(20, 38, pageWidth - 20, 38);
 
             // Judul Laporan dengan informasi filter
             doc.setTextColor(12, 36, 97);
@@ -3945,7 +3944,7 @@ function safeGenerateIDCard(id) {
     generateIDCard(id);
 }
 
-// --- FUNGSI ID CARD YANG DISEMPURNAKAN (REVISI PERBAIKAN TATA LETAK VALIDASI) ---
+// --- FUNGSI ID CARD YANG DISEMPURNAKAN (REVISI PERBAIKAN) ---
 function generateIDCard(id) {
     const data = appData.find(item => item.id == id);
     if (!data) {
@@ -4087,34 +4086,6 @@ function generateIDCard(id) {
     doc.setTextColor(100, 100, 100);
     doc.setFont('helvetica', 'normal');
 
-    // ============================================================
-    // PERBAIKAN: PERIODE VALIDASI DAN VALIDATOR DI BAWAH KODE VALIDASI
-    // ============================================================
-    
-    // Validasi: TANGGAL
-    const validasiY = kodeY + lineHeight * 0.8;
-    doc.text('Validasi:', leftX, validasiY);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(12, 36, 97);
-    doc.text(data.tanggalValidasi || '-', leftX + 18, validasiY);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont('helvetica', 'normal');
-    
-    // Validator: NAMA VALIDATOR
-    const validatorY = validasiY + lineHeight * 0.8;
-    doc.text('Validator:', leftX, validatorY);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(12, 36, 97);
-    
-    // Potong teks validator jika terlalu panjang
-    let validatorText = data.validator || '-';
-    if (validatorText.length > 20) {
-        validatorText = validatorText.substring(0, 20) + '...';
-    }
-    doc.text(validatorText, leftX + 18, validatorY);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont('helvetica', 'normal');
-
     // QR Code (kanan) - ukuran lebih kecil dan profesional
     const qrSize = 16; // QR Code 16x16 mm (lebih kecil)
     const qrX = 85.6 - qrSize - 8; // Posisi X: kanan dengan margin 8mm
@@ -4167,20 +4138,29 @@ function generateIDCard(id) {
             // Hapus elemen sementara
             document.body.removeChild(qrContainer);
 
-            // Garis pemisah horizontal antara data dan footer
+            // PERBAIKAN: Garis pemisah horizontal antara data dan footer - DINAIIKAN ke atas
             doc.setDrawColor(220, 220, 220);
             doc.setLineWidth(0.2);
-            const separatorY = 50; // Ditingkatkan dari 47 ke 50 untuk menampung informasi validasi tambahan
+            const separatorY = 44; // Dinaikkan dari 45 ke 44 (lebih ke atas)
             doc.line(5, separatorY, 80, separatorY);
 
-            // Footer dengan informasi validasi (DIHAPUS karena sudah dipindah ke atas)
-            const footerY = separatorY + 3;
+            // PERBAIKAN: Footer dengan informasi validasi - DINAIIKAN ke atas
+            const footerY = separatorY + 2; // Dinaikkan dari separatorY + 3 ke separatorY + 2
             doc.setFontSize(4);
             doc.setFont('helvetica', 'italic');
             doc.setTextColor(150, 150, 150);
-            doc.text('Kartu ini diterbitkan secara elektronik oleh Sistem Satu Data Nelayan (SIMPADAN TANGKAP)', 42.8, footerY, { align: 'center' });
             
-            // Informasi validasi di footer DIHAPUS karena sudah dipindah ke atas
+            // Perbaikan: Teks footer diatur dengan wrap agar tidak keluar
+            const footerText1 = 'Kartu ini diterbitkan secara elektronik oleh Sistem Satu Data Nelayan (SIMPADAN TANGKAP)';
+            const footerText2 = `Validasi: ${data.tanggalValidasi} | ${data.validator}`;
+            
+            // Split teks jika terlalu panjang
+            const splitFooter1 = doc.splitTextToSize(footerText1, 75);
+            doc.text(splitFooter1, 42.8, footerY, { align: 'center' });
+            
+            // Hitung tinggi teks pertama untuk posisi teks kedua
+            const textHeight1 = splitFooter1.length * 1.5;
+            doc.text(footerText2, 42.8, footerY + textHeight1 + 1, { align: 'center' });
 
             // Simpan PDF
             const fileName = `IDCard_${data.nama.replace(/\s+/g, '_')}_${data.kodeValidasi || data.nik.substring(0, 8)}.pdf`;
@@ -4203,18 +4183,29 @@ function generateIDCard(id) {
         doc.text('QR Code', qrX + qrSize/2, qrY + qrSize/2 - 1, { align: 'center' });
         doc.text('tidak tersedia', qrX + qrSize/2, qrY + qrSize/2 + 1.5, { align: 'center' });
 
-        // Garis pemisah horizontal
+        // PERBAIKAN: Garis pemisah horizontal
         doc.setDrawColor(220, 220, 220);
         doc.setLineWidth(0.2);
-        const separatorY = 50; // Ditingkatkan dari 47 ke 50
+        const separatorY = 44; // Dinaikkan dari 45 ke 44
         doc.line(5, separatorY, 80, separatorY);
 
-        // Footer
-        const footerY = separatorY + 3;
+        // PERBAIKAN: Footer - DINAIIKAN ke atas
+        const footerY = separatorY + 2;
         doc.setFontSize(4);
         doc.setFont('helvetica', 'italic');
         doc.setTextColor(150, 150, 150);
-        doc.text('Kartu ini diterbitkan secara elektronik oleh Sistem Satu Data Nelayan (SIMPADAN TANGKAP)', 42.8, footerY, { align: 'center' });
+        
+        // Perbaikan: Teks footer diatur dengan wrap agar tidak keluar
+        const footerText1 = 'Kartu ini diterbitkan secara elektronik oleh Sistem Satu Data Nelayan (SIMPADAN TANGKAP)';
+        const footerText2 = `Validasi: ${data.tanggalValidasi} | ${data.validator}`;
+        
+        // Split teks jika terlalu panjang
+        const splitFooter1 = doc.splitTextToSize(footerText1, 75);
+        doc.text(splitFooter1, 42.8, footerY, { align: 'center' });
+        
+        // Hitung tinggi teks pertama untuk posisi teks kedua
+        const textHeight1 = splitFooter1.length * 1.5;
+        doc.text(footerText2, 42.8, footerY + textHeight1 + 1, { align: 'center' });
 
         // Simpan PDF
         const fileName = `IDCard_${data.nama.replace(/\s+/g, '_')}_${data.kodeValidasi || data.nik.substring(0, 8)}.pdf`;
