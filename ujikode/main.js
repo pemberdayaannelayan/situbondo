@@ -245,12 +245,13 @@ function migrateOldData() {
     saveData();
 }
 
+// PERBAIKAN: Format terbalik DDMMYYYY
 function generateSecurityCode() {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    return `${year}${month}${day}`;
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    return `${day}${month}${year}`;
 }
 
 function displayCurrentDate() {
@@ -258,7 +259,7 @@ function displayCurrentDate() {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dateString = now.toLocaleDateString('id-ID', options);
     document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-    document.getElementById('passwordHint').innerHTML = `Masukkan kode keamanan untuk mengakses sistem`;
+    document.getElementById('passwordHint').innerHTML = `Masukkan kode keamanan untuk mengakses sistem<br><small class="text-warning">Format: DDMMYYYY (contoh: ${generateSecurityCode()})</small>`;
 }
 
 function maskData(data, force = false) {
@@ -303,7 +304,6 @@ function initDataWilayah() {
             card.classList.add('active');
         }
         
-        // HAPUS TEKS NAMA FILE .js dari template kartu
         card.innerHTML = `
             <div class="wilayah-card-header">
                 <div class="d-flex justify-content-between align-items-center">
@@ -1973,7 +1973,7 @@ function setupEventListeners() {
         });
     }
 
-    // Login Form
+    // Login Form - DIPERBAIKI: menerima format YYYYMMDD dan DDMMYYYY
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
@@ -1981,12 +1981,20 @@ function setupEventListeners() {
             const btn = document.getElementById('loginButton');
             const spinner = document.getElementById('loginSpinner');
             const inputCode = document.getElementById('securityCode').value;
-            const correctCode = generateSecurityCode();
+            
+            // Generate kedua format untuk kompatibilitas
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            
+            const correctCodeForward = `${year}${month}${day}`; // YYYYMMDD
+            const correctCodeReverse = `${day}${month}${year}`; // DDMMYYYY
             
             if (!btn || !spinner) return;
             
-            if (inputCode !== correctCode) {
-                showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
+            if (inputCode !== correctCodeForward && inputCode !== correctCodeReverse) {
+                showNotification(`Kode keamanan salah! Format: DDMMYYYY (contoh: ${correctCodeReverse}) atau YYYYMMDD (contoh: ${correctCodeForward})`, 'error');
                 return;
             }
             
