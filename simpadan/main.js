@@ -1,6 +1,7 @@
 // =====================================================
 // KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.0 FINAL
 // DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
+// REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
 // =====================================================
 
 // Data ikan yang diperbarui dan dilengkapi
@@ -1390,7 +1391,7 @@ function generateTabelPdf() {
             doc.setFontSize(9);
             doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
             doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
+            doc.setFontSize(8);
             doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
 
             // FOOTER DENGAN INFORMASI SISTEM
@@ -3328,9 +3329,9 @@ function viewDetail(id) {
     if(!d) return;
     currentDetailId = id;
     
-    // Gunakan maskData untuk NIK dan WhatsApp jika privacyMode aktif
-    const displayNik = appSettings.privacyMode ? maskData(d.nik) : d.nik;
-    const displayWa = appSettings.privacyMode ? maskData(d.whatsapp) : d.whatsapp;
+    // PERBAIKAN: Selalu gunakan maskData untuk NIK dan WhatsApp jika privacyMode aktif
+    const displayNik = maskData(d.nik);
+    const displayWa = maskData(d.whatsapp);
     
     document.getElementById('d_nama').innerText = d.nama;
     document.getElementById('d_nik').innerText = displayNik; 
@@ -3396,37 +3397,62 @@ function downloadSinglePdf(id) {
         doc.setFillColor(12, 36, 97);
         doc.rect(10, 10, 190, 40, 'F');
         
+        // PERBAIKAN: Format teks judul agar tidak terpotong
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(14); doc.setFont('helvetica', 'bold');
-        doc.text(appSettings.appName.toUpperCase(), 105, 22, { align: 'center' });
-        doc.setFontSize(16);
-        doc.text('DINAS PERIKANAN', 105, 29, { align: 'center' });
+        doc.setFontSize(12); 
+        doc.setFont('helvetica', 'bold');
+        
+        // Judul utama dibagi menjadi 2 baris
+        const titleLines = doc.splitTextToSize('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', 180);
+        let titleY = 18;
+        
+        // Tampilkan judul baris demi baris
+        for (let i = 0; i < titleLines.length; i++) {
+            doc.text(titleLines[i], 105, titleY + (i * 6), { align: 'center' });
+        }
+        
+        // Hitung posisi Y setelah judul
+        const titleEndY = titleY + (titleLines.length * 6);
+        
+        doc.setFontSize(14);
+        doc.text('DINAS PERIKANAN', 105, titleEndY + 5, { align: 'center' });
         doc.setTextColor(246, 185, 59);
-        doc.setFont('times', 'italic'); doc.setFontSize(12);
-        doc.text('"Situbondo Naik Kelas"', 105, 37, { align: 'center' });
+        doc.setFont('times', 'italic'); 
+        doc.setFontSize(12);
+        doc.text('"Situbondo Naik Kelas"', 105, titleEndY + 12, { align: 'center' });
         
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(10);
-        doc.text(appSettings.appSubtitle, 105, 45, { align: 'center' });
+        doc.text(appSettings.appSubtitle, 105, titleEndY + 18, { align: 'center' });
         
-        doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
-        doc.text('BIODATA NELAYAN TERDAFTAR', 105, 65, { align: 'center' });
-        doc.setLineWidth(0.5); doc.line(70, 68, 140, 68);
+        doc.setTextColor(0, 0, 0); 
+        doc.setFont('helvetica', 'bold'); 
+        doc.setFontSize(14);
+        doc.text('BIODATA NELAYAN TERDAFTAR', 105, titleEndY + 30, { align: 'center' });
+        doc.setLineWidth(0.5); 
+        doc.line(70, titleEndY + 33, 140, titleEndY + 33);
 
-        let y = 80;
+        let y = titleEndY + 40;
         const lineHeight = 7;
         
         const checkPage = (heightNeeded) => {
             if (y + heightNeeded > 250) { 
                 doc.addPage();
-                doc.setDrawColor(12, 36, 97); doc.setLineWidth(1); doc.rect(10, 10, 190, 277);
+                doc.setDrawColor(12, 36, 97); 
+                doc.setLineWidth(1); 
+                doc.rect(10, 10, 190, 277);
                 y = 30; 
             }
         };
 
+        // PERBAIKAN: Gunakan maskData untuk NIK dan WhatsApp di PDF
+        const displayNik = maskData(d.nik);
+        const displayWa = maskData(d.whatsapp);
+
         const printLine = (label, value) => {
             checkPage(lineHeight);
-            doc.setFont('helvetica', 'normal'); doc.text(label, 25, y);
+            doc.setFont('helvetica', 'normal'); 
+            doc.text(label, 25, y);
             doc.setFont('helvetica', 'bold'); 
             
             if (label === 'Domisili' || value.length > 50) {
@@ -3440,22 +3466,26 @@ function downloadSinglePdf(id) {
         };
 
         checkPage(30);
-        doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+        doc.setFontSize(11); 
+        doc.setFillColor(230, 230, 230);
         doc.rect(20, y-4, 170, 6, 'F');
-        doc.text('I. IDENTITAS PRIBADI', 22, y); y += 12;
+        doc.text('I. IDENTITAS PRIBADI', 22, y); 
+        y += 12;
         
         doc.setFontSize(10);
         printLine('Nama Lengkap', d.nama);
-        printLine('NIK', d.nik); // Di PDF tetap tampilkan asli
+        printLine('NIK', displayNik); // Gunakan NIK yang sudah disensor
         printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
         printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
-        printLine('No. Handphone', d.whatsapp); // Di PDF tetap tampilkan asli
+        printLine('No. Handphone', displayWa); // Gunakan WhatsApp yang sudah disensor
         y += 8;
 
         checkPage(30);
-        doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+        doc.setFontSize(11); 
+        doc.setFillColor(230, 230, 230);
         doc.rect(20, y-4, 170, 6, 'F');
-        doc.text('II. PROFESI & EKONOMI', 22, y); y += 12;
+        doc.text('II. PROFESI & EKONOMI', 22, y); 
+        y += 12;
 
         doc.setFontSize(10);
         printLine('Status Profesi', d.profesi);
@@ -3465,9 +3495,11 @@ function downloadSinglePdf(id) {
         y += 8;
 
         checkPage(30);
-        doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+        doc.setFontSize(11); 
+        doc.setFillColor(230, 230, 230);
         doc.rect(20, y-4, 170, 6, 'F');
-        doc.text('III. JENIS IKAN TANGKAPAN UTAMA', 22, y); y += 12;
+        doc.text('III. JENIS IKAN TANGKAPAN UTAMA', 22, y); 
+        y += 12;
 
         doc.setFontSize(10);
         const fishList = d.jenisIkan ? d.jenisIkan.split(', ') : [];
@@ -3478,9 +3510,11 @@ function downloadSinglePdf(id) {
 
         if(d.status === 'Pemilik Kapal') {
             checkPage(30);
-            doc.setFontSize(11); doc.setFillColor(230, 230, 230);
+            doc.setFontSize(11); 
+            doc.setFillColor(230, 230, 230);
             doc.rect(20, y-4, 170, 6, 'F');
-            doc.text('IV. DATA ASET KAPAL', 22, y); y += 12;
+            doc.text('IV. DATA ASET KAPAL', 22, y); 
+            y += 12;
 
             doc.setFontSize(10);
             printLine('Nama Kapal', d.namaKapal);
@@ -3510,7 +3544,9 @@ function downloadSinglePdf(id) {
         doc.setTextColor(0, 0, 255);
         doc.text("www.dinasperikanansitubondo.com/simpadan", leftX + 35, footerY + 25, {align: 'center'});
 
-        doc.setFontSize(10); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10); 
+        doc.setTextColor(0,0,0); 
+        doc.setFont('helvetica', 'normal');
         const dateStr = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
         doc.text(`Situbondo, ${dateStr}`, sigCenterX, footerY - 5, {align: 'center'});
         doc.text('Diketahui Oleh :', sigCenterX, footerY, {align: 'center'});
@@ -3528,7 +3564,8 @@ function downloadSinglePdf(id) {
         doc.setFont('helvetica', 'normal');
         doc.text(`NIP. ${appSettings.officialNip}`, sigCenterX, nameY + 5, {align: 'center'});
 
-        doc.setFontSize(7); doc.setTextColor(150);
+        doc.setFontSize(7); 
+        doc.setTextColor(150);
         doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Ref ID: ${d.kodeValidasi || '-'}`, 105, 285, {align:'center'});
 
         const totalPages = doc.getNumberOfPages();
@@ -4036,7 +4073,11 @@ function generateIDCard(id) {
     // Data pribadi dengan warna yang berbeda untuk label dan nilai
     doc.setTextColor(100, 100, 100); // Abu-abu untuk label
     drawData('Nama Lengkap', data.nama, dataY);
-    drawData('NIK', data.nik, dataY + lineHeight);
+    
+    // PERBAIKAN: Gunakan maskData untuk NIK di ID Card
+    const displayNik = maskData(data.nik);
+    drawData('NIK', displayNik, dataY + lineHeight);
+    
     drawData('TTL / Usia', `${data.tahunLahir} (${data.usia} Tahun)`, dataY + lineHeight * 2);
     
     // Alamat dengan penanganan multi-line
