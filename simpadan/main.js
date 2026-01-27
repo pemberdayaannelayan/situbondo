@@ -171,7 +171,7 @@ const DESA_LIST = [
     { name: "Selomukti", file: "selomukti.js" },
     { name: "Banyuglugur", file: "banyuglugur.js" },
     { name: "Wonorejo", file: "wonorejo.js" },
-    { name: "Sumberejo", file: "sumberrejo.js" },
+    { name: "Sumberejo", file: "sumberejo.js" },
     { name: "Jangkar", file: "jangkar.js" },
     { name: "Gadingan", file: "gadingan.js" },
     { name: "Kumbangsari", file: "kumbangsari.js" },
