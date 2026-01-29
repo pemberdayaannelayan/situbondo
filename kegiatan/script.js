@@ -52,8 +52,8 @@ const kegiatanData = [
         "participants": 0,
         "duration": ""
     },
-       {
-    "id": 1769660360938,
+           {
+    "id": 1769662672667,
     "title": "Kerja Bakti Dalam Rangka Persiapan Peresmian Pasar Higienis",
     "date": "2026-01-19",
     "description": "Kerja bakti dalam rangka persiapan peresmian pasar higienes ikan segar mimbo\nyang dihadiri oleh camat banyuputih beserta staf, pemdes sumberanyar dan tim bidang pemberdayaan nelayan dari dinas peternakan dan perikanan kabupaten situbondo.\n",
@@ -64,13 +64,15 @@ const kegiatanData = [
         "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti4.jpeg",
         "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti5.jpeg"
     ],
-    "type": "foto",
-    "category": "pelatihan",
+    "type": "multimedia",
+    "category": "lainnya",
     "location": "Desa Sumberanyar Kecamatan Banyuputih",
     "tags": [
-        "Dinas Peternakan dan Perikanan Kabupaten Situbondo"
+        "Dinas Peternakan & Perikanan"
     ],
-    "youtubeUrls": [],
+    "youtubeUrls": [
+        "https://www.youtube.com/embed/5n4ySz4mEPE"
+    ],
     "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
     "participants": 0,
     "duration": ""
