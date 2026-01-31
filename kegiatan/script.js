@@ -461,9 +461,13 @@ function validateUrl(url) {
     return 'https://dinasperikanansitubondo.com/' + url;
 }
 
-// Fungsi untuk generate pagination
+// Fungsi untuk generate pagination (DIPERBAIKI UNTUK MENANGANI BANYAK HALAMAN)
 function generatePagination(totalPages, currentPage, totalItems) {
     const paginationContainer = document.getElementById('paginationContainer');
+    
+    // Validasi input
+    if (currentPage < 1) currentPage = 1;
+    if (currentPage > totalPages) currentPage = totalPages;
     
     let paginationHtml = `
     <nav aria-label="Navigasi halaman kegiatan">
@@ -479,24 +483,38 @@ function generatePagination(totalPages, currentPage, totalItems) {
     </li>
     `;
     
-    // Page numbers logic
+    // Logika untuk menentukan halaman yang ditampilkan
     const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    let startPage = 1;
+    let endPage = totalPages;
     
-    if (endPage - startPage + 1 < maxVisiblePages) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    if (totalPages > maxVisiblePages) {
+        const halfVisible = Math.floor(maxVisiblePages / 2);
+        if (currentPage <= halfVisible + 1) {
+            startPage = 1;
+            endPage = maxVisiblePages;
+        } else if (currentPage >= totalPages - halfVisible) {
+            startPage = totalPages - maxVisiblePages + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - halfVisible;
+            endPage = currentPage + halfVisible;
+        }
     }
     
+    // Tombol halaman pertama jika diperlukan
     if (startPage > 1) {
         paginationHtml += `
         <li class="page-item">
             <a class="page-link" href="#" onclick="changePage(1); return false;">1</a>
         </li>
-        ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
         `;
+        if (startPage > 2) {
+            paginationHtml += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+        }
     }
     
+    // Tombol halaman
     for (let i = startPage; i <= endPage; i++) {
         paginationHtml += `
         <li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -505,15 +523,19 @@ function generatePagination(totalPages, currentPage, totalItems) {
         `;
     }
     
+    // Tombol halaman terakhir jika diperlukan
     if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            paginationHtml += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+        }
         paginationHtml += `
-        ${endPage < totalPages - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
         <li class="page-item">
             <a class="page-link" href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a>
         </li>
         `;
     }
     
+    // Next button
     paginationHtml += `
     <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
         <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;" aria-label="Berikutnya">
@@ -524,8 +546,8 @@ function generatePagination(totalPages, currentPage, totalItems) {
     
     paginationHtml += `
         </ul>
-        <div class="text-center mt-3">
-            <small class="text-muted">Halaman ${currentPage} dari ${totalPages} • ${totalItems} kegiatan ditemukan</small>
+        <div class="page-info text-center mt-3">
+            <small class="text-muted">Halaman ${currentPage} dari ${totalPages} • Menampilkan ${totalItems} kegiatan</small>
         </div>
     </nav>
     `;
@@ -533,8 +555,14 @@ function generatePagination(totalPages, currentPage, totalItems) {
     paginationContainer.innerHTML = paginationHtml;
 }
 
-// Fungsi untuk mengubah halaman
+// Fungsi untuk mengubah halaman (DIPERBAIKI DENGAN VALIDASI)
 function changePage(page) {
+    const totalPages = Math.ceil(currentFilteredData.length / itemsPerPage);
+    
+    // Validasi halaman
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    
     displayKegiatan(currentFilteredData, page);
     
     // Scroll ke atas dengan smooth
