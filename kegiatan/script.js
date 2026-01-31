@@ -106,6 +106,35 @@ const kegiatanData = [
     "participants": 0,
     "duration": ""
 },
+        {
+    "id": 1769874483619,
+    "title": "Rapat Koordinasi Inovasi Bidang Pemberdayaan Nelayan",
+    "date": "2026-01-29",
+    "description": "Rapat koordinasi inovasi aplikasi SIMPADAN TANGKAP oleh bidang pemberdayaan nelayan bersama Ketua BIPPD Situbondo",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-rapat.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat3.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat4.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat2.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-ketuabippd-rapat.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat1.jpeg"
+    ],
+    "type": "foto",
+    "category": "lainnya",
+    "location": "Aula Dinas Peternakan Dan Perikanan Kabupaten Situbondo",
+    "tags": [
+        "Rapat Koordinasi",
+        "BIPPD Situbondo",
+        "Bidang Pemberdayaan Nelayan",
+        "Inovasi",
+        "Aplikasi",
+        "SIMPADAN TANGKAP"
+    ],
+    "youtubeUrls": [],
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat-koordinasi-inovasi-bidang-pemberdayaan-nelayan.html",
+    "participants": 0,
+    "duration": ""
+},
     
 ];
 
