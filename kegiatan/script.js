@@ -77,6 +77,36 @@ const kegiatanData = [
         "participants": 0,
         "duration": ""
     },
+
+        {
+    "id": 1769867753695,
+    "title": "Penyerahan Bantuan Dan Pelebelan Mesin Pompa Air",
+    "date": "2026-01-21",
+    "description": "Penyerahan dan pelebelan mesin pompa air kepada pengelola TPI. \nKegiatan terseebut dilaksanakan pada 21 dan 22 januari 2026.\nTgl 21 januari 2026 di serahkan ke pengelola TPI Besuki di Desa Pesisir Kecamatan Besuki\ndan tgl 22 januari 2026 di serahkan ke pengelola TPI Pandean di Desa wonorejo Kecamatan Banyuputih. \n",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20besuki.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%202%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%203%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%20diskusi%201.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%20memberikan%20arahan.jpeg"
+    ],
+    "type": "foto",
+    "category": "bantuan",
+    "location": "Desa Pesisir Kecamatan Besuki dan Desa Wonorejo Kecamatan Banyuputih",
+    "tags": [
+        "Bantuan",
+        "Dinas Peternakan Dan Perikanan Situbondo",
+        "Pemerintah Kabupaten Situbondo",
+        "Pengelola TPI Pandean",
+        "Pengelola TPI Besuki"
+    ],
+    "youtubeUrls": [],
+    "url": "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%202%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
+    "participants": 0,
+    "duration": ""
+},
+    
 ];
 
 // Inisialisasi AOS Animation
