@@ -106,6 +106,34 @@ const kegiatanData = [
     "participants": 0,
     "duration": ""
 },
+
+        {
+    "id": 1769879835754,
+    "title": "Verifikasi dan Validasi Kelompok Nelayan Calon Penerima Bantuan Hibah",
+    "date": "2026-01-22",
+    "description": "Melakukan pendapingan Dinas Kelautan Dan Perikanan Provinsi Jawa Timur dalam verifikasi validasi kelompok nelayan calon penerima hibah bantuan  provinsi Tahun Anggaran 2026",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-dkp-kelompok-nelayan.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-dkp-beri-arahan.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-dkp-verifikasi-validasi-2.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-dkp-verifikasi-validasi.jpeg"
+    ],
+    "type": "foto",
+    "category": "bantuan",
+    "location": "Desa Lamongan Kecamatan Arjasa",
+    "tags": [
+        "Dinas Kelautan Dan Perikanan Provinsi Jawa Timur",
+        "Bidang Pemberdayaan Nelayan",
+        "Bantuan Hibah",
+        "Kelompok Nelayan",
+        "Penyuluh Perikanan Situbondo"
+    ],
+    "youtubeUrls": [],
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/mendampingi-dkp-jatim-verval-kelompok-nelayan.html",
+    "participants": 0,
+    "duration": ""
+},
+    
         {
     "id": 1769874483619,
     "title": "Rapat Koordinasi Inovasi Bidang Pemberdayaan Nelayan",
