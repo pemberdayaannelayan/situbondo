@@ -1,1947 +1,1058 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+// Data kegiatan dengan properti 'url' untuk halaman detail
+const kegiatanData = [
+    {
+        "id": 1764988551018,
+        "title": "Pelatihan Teknologi Penangkapan Ikan dan Perawatan Jaring Ikan untuk Nelayan Situbondo",
+        "date": "2025-11-10",
+        "description": "Pelatihan ini merupakan bentuk komitmen pemerintah daerah dalam meningkatkan kapasitas nelayan tradisional melalui transfer teknologi dan pengetahuan. Dengan pendekatan praktis dan interaktif, kegiatan berhasil memberikan keterampilan nyata yang langsung dapat diterapkan nelayan dalam operasional penangkapan ikan sehari-hari, sekaligus mendukung keberlanjutan sumber daya perikanan di wilayah Situbondo.",
+        "images": [
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/gambar4.jpeg"
+        ],
+        "type": "multimedia",
+        "category": "pelatihan",
+        "location": "Cafe Besuki Tempo Doloe",
+        "tags": [
+            "Nelayan Situbondo",
+            "Situbondo Naik Kelas",
+            "Bantuan Jaring",
+            "Dinas Peternakan dan Perikanan",
+            "Bidang Pemberdayaan Nelayan",
+            "Cafe Besuki Tempo Doloe"
+        ],
+        "youtubeUrls": [
+            "https://www.youtube.com/embed/6TbwAzsGcpM"
+        ],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1764993106377,
+        "title": "Pendampingan Penenggelaman Fish Apartment",
+        "date": "2025-11-26",
+        "description": "Program pendampingan penenggelaman fish apartment merupakan inisiatif konservasi perairan yang mengedepankan pendekatan partisipatif masyarakat. Kegiatan ini menekankan transfer pengetahuan teknis kepada nelayan lokal dalam pemasangan artificial reef, dengan tujuan menciptakan habitat baru bagi biota laut dan mengurangi tekanan penangkapan di area tradisional.",
+        "images": [
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto7.jpeg"
+        ],
+        "type": "foto",
+        "category": "konservasi",
+        "location": "Desa Pasir Putih dan Desa Kalianget",
+        "tags": [
+            "Fist Apartment",
+            "Rumah Ikan Buatan",
+            "Artificial Reef",
+            "Konservasi Perairan",
+            "Ekosistem Laut",
+            "Penenggelaman Modul Ikan",
+            "Rehabilitasi Sumber daya Ikan",
+            "Terumbu Buatan"
+        ],
+        "youtubeUrls": [],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1769662672667,
+        "title": "Kerja Bakti Dalam Rangka Persiapan Peresmian Pasar Higienis",
+        "date": "2026-01-19",
+        "description": "Kerja bakti dalam rangka persiapan peresmian pasar higienes ikan segar mimbo yang dihadiri oleh camat banyuputih beserta staf, pemdes sumberanyar dan tim bidang pemberdayaan nelayan dari dinas peternakan dan perikanan kabupaten situbondo.",
+        "images": [
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti3.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti4.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti5.jpeg"
+        ],
+        "type": "multimedia",
+        "category": "lainnya",
+        "location": "Desa Sumberanyar Kecamatan Banyuputih",
+        "tags": [
+            "Dinas Peternakan & Perikanan"
+        ],
+        "youtubeUrls": [
+            "https://www.youtube.com/embed/5n4ySz4mEPE"
+        ],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
+        "participants": 0,
+        "duration": ""
+    },
+];
+
+// Inisialisasi AOS Animation
+AOS.init({
+    once: true,
+    offset: 100,
+    duration: 800,
+    easing: 'ease-out-cubic',
+    delay: 100
+});
+
+// Variabel Global
+let currentPage = 1;
+const itemsPerPage = 6;
+let currentFilteredData = [...kegiatanData];
+let isAuthenticated = false;
+const ADMIN_PASSWORD = "19450817";
+
+// Inisialisasi saat DOM siap
+document.addEventListener('DOMContentLoaded', function() {
+    // Set tahun di footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
     
-    <title>Galeri Kegiatan - Dinas Perikanan Situbondo</title>
-    <meta name="description" content="Portal dokumentasi kegiatan Bidang Pemberdayaan Nelayan Dinas Perikanan Kabupaten Situbondo. Jelajahi berbagai program pemberdayaan nelayan.">
-    <meta name="theme-color" content="#0284c7">
-    <meta name="keywords" content="kegiatan nelayan, dokumentasi perikanan, situbondo, dinas perikanan, pemberdayaan nelayan">
-    <link rel="canonical" href="https://www.dinasperikanansitubondo.com/kegiatan/">
-
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Satisfy&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.0/css/lightgallery-bundle.min.css">
-
-    <style>
-        :root {
-            --primary: #0284c7;
-            --primary-dark: #0c4a6e;
-            --primary-light: #e0f2fe;
-            --secondary: #38bdf8;
-            --accent: #f59e0b;
-            --accent-dark: #d97706;
-            --accent-light: #fef3c7;
-            --light-bg: #f8fafc;
-            --card-bg: #ffffff;
-            --white: #ffffff;
-            --text-main: #0f172a;
-            --text-sub: #475569;
-            --border-color: #e2e8f0;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --multimedia: #8B5CF6;
-            --multimedia-dark: #7C3AED;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 50px rgba(2, 132, 199, 0.15);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --radius-full: 50px;
-            --font-head: 'Outfit', sans-serif;
-            --font-body: 'Plus Jakarta Sans', sans-serif;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-body);
-            color: var(--text-sub);
-            background-color: var(--light-bg);
-            overflow-x: hidden;
-            line-height: 1.6;
-            scroll-behavior: smooth;
-            -webkit-text-size-adjust: 100%;
-            text-size-adjust: 100%;
-        }
-
-        h1, h2, h3, h4, h5, h6, .navbar-brand {
-            font-family: var(--font-head);
-            color: var(--text-main);
-            font-weight: 700;
-            line-height: 1.3;
-        }
-
-        p {
-            margin-bottom: 1rem;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition);
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .container {
-            max-width: 1200px;
-            padding-left: 15px;
-            padding-right: 15px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* ===== NAVBAR IMPROVED ===== */
-        .navbar {
-            padding: 10px 0;
-            background: rgba(255, 255, 255, 0.98) !important;
-            backdrop-filter: blur(15px);
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            z-index: 1030;
-            border-bottom: 1px solid rgba(2, 132, 199, 0.1);
-        }
-
-        .navbar.scrolled {
-            box-shadow: var(--shadow-lg);
-            background: rgba(255, 255, 255, 0.98) !important;
-            padding: 6px 0;
-        }
-
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 5px 0;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .navbar-brand img {
-            height: 45px;
-            width: auto;
-            object-fit: contain;
-            transition: transform 0.4s ease;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-
-        .navbar-brand:hover img {
-            transform: scale(1.05) rotate(2deg);
-        }
-
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-            text-align: center;
-        }
-
-        .brand-text h5 {
-            font-weight: 800;
-            margin: 0;
-            color: var(--primary-dark);
-            letter-spacing: -0.3px;
-            font-size: 1rem;
-        }
-
-        .brand-text span {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--primary);
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-        }
-
-        .navbar-nav {
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            width: 100%;
-        }
-
-        .nav-item {
-            margin: 2px 0;
-            width: 100%;
-        }
-
-        .nav-link {
-            font-weight: 600;
-            color: var(--text-main) !important;
-            padding: 10px 15px !important;
-            border-radius: var(--radius-md);
-            transition: var(--transition);
-            position: relative;
-            font-size: 0.9rem;
-            display: inline-block;
-            width: 100%;
-            max-width: 200px;
-            margin: 0 auto;
-        }
-
-        .nav-link:hover {
-            color: var(--primary) !important;
-            background: var(--primary-light);
-            transform: translateY(-1px);
-        }
-
-        .nav-link.active {
-            color: var(--primary) !important;
-            background: var(--primary-light);
-            font-weight: 700;
-        }
-
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 3px;
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
-        .btn-cta {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 10px 20px;
-            border-radius: var(--radius-full);
-            border: none;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.25);
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 0.9rem;
-            margin: 5px auto;
-            max-width: 200px;
-            width: 100%;
-        }
-
-        .btn-cta:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(2, 132, 199, 0.35);
-            color: white;
-        }
-
-        .navbar-toggler {
-            border: none;
-            padding: 8px 10px;
-            border-radius: var(--radius-sm);
-            background: var(--primary-light);
-            margin: 0 auto;
-            display: block;
-        }
-
-        .navbar-toggler:focus {
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
-        }
-
-        /* ===== HERO SECTION IMPROVED ===== */
-        .hero-section-kegiatan {
-            min-height: 70vh;
-            background: linear-gradient(135deg, rgba(2, 132, 199, 0.9) 0%, rgba(12, 74, 110, 0.95) 100%), 
-                        url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: scroll;
-            position: relative;
-            display: flex;
-            align-items: center;
-            padding: 120px 0 70px;
-            overflow: hidden;
-        }
-
-        .hero-section-kegiatan::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            background: linear-gradient(to top, var(--light-bg), transparent);
-            z-index: 1;
-        }
-
-        .hero-content-kegiatan {
-            position: relative;
-            z-index: 2;
-            color: white;
-            text-align: center;
-            padding: 0 15px;
-        }
-
-        .hero-badge-kegiatan {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            color: white;
-            padding: 8px 20px;
-            border-radius: var(--radius-full);
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin: 0 auto 25px;
-            font-size: 0.85rem;
-            animation: pulse 2s infinite;
-            max-width: 300px;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-        }
-
-        .hero-content-kegiatan h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            color: white;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            line-height: 1.2;
-            padding: 0 10px;
-        }
-
-        .hero-content-kegiatan p {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin: 0 auto 25px;
-            line-height: 1.6;
-            max-width: 100%;
-            padding: 0 15px;
-        }
-
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 30px;
-            padding: 0 10px;
-        }
-
-        .stat-item {
-            text-align: center;
-            position: relative;
-            padding: 0 10px;
-            min-width: 120px;
-        }
-
-        .stat-item:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            right: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 1px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .stat-number {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: white;
-            display: block;
-            line-height: 1;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            font-family: var(--font-head);
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.85);
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        /* ===== TOMBOL GENERATOR IMPROVED ===== */
-        .btn-generator-circle {
-            position: relative;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
-            overflow: hidden;
-            margin: 10px auto;
-            z-index: 10;
-        }
-
-        .btn-generator-circle::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 55px;
-            height: 55px;
-            background: conic-gradient(
-                transparent,
-                rgba(255, 255, 255, 0.6),
-                transparent 30%
-            );
-            transform: translate(-50%, -50%) rotate(0deg);
-            animation: radar-rotate 3s linear infinite;
-            border-radius: 50%;
-            z-index: -1;
-        }
-
-        .btn-generator-circle::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 50%;
-            z-index: -1;
-        }
-
-        @keyframes radar-rotate {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        .btn-generator-circle:hover {
-            transform: scale(1.1) rotate(15deg);
-            box-shadow: 0 8px 25px rgba(2, 132, 199, 0.5);
-        }
-
-        .btn-generator-circle:hover::before {
-            animation: radar-rotate 1.5s linear infinite;
-        }
-
-        .btn-generator-circle .fa-cogs {
-            animation: gear-rotate 5s linear infinite;
-        }
-
-        @keyframes gear-rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ===== FILTER SECTION IMPROVED ===== */
-        .filter-section {
-            background: white;
-            padding: 40px 0 20px;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            z-index: 5;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .filter-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            padding: 25px 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            margin: 0 auto;
-            max-width: 100%;
-        }
-
-        .filter-card:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .filter-label {
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .form-select-custom, .form-input-custom {
-            background-color: white;
-            border: 2px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px 15px;
-            border-radius: var(--radius-md);
-            font-weight: 500;
-            transition: var(--transition);
-            font-size: 0.9rem;
-            width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .form-select-custom:focus, .form-input-custom:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-            outline: none;
-            transform: translateY(-1px);
-        }
-
-        .btn-filter {
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-            color: white;
-            font-weight: 700;
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            border: none;
-            transition: var(--transition);
-            width: 100%;
-            max-width: 250px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            margin: 0 auto 10px;
-        }
-
-        .btn-filter:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25);
-        }
-
-        .btn-reset {
-            background: transparent;
-            color: var(--text-sub);
-            font-weight: 600;
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            border: 2px solid var(--border-color);
-            transition: var(--transition);
-            width: 100%;
-            max-width: 250px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            margin: 0 auto;
-        }
-
-        .btn-reset:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        /* ===== KEGIATAN SECTION IMPROVED ===== */
-        .kegiatan-section {
-            padding: 60px 0;
-            background-color: var(--light-bg);
-            position: relative;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 0 15px;
-        }
-
-        .section-header span {
-            color: var(--primary);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-size: 0.85rem;
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        .section-header h2 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary-dark);
-            margin-bottom: 15px;
-            line-height: 1.2;
-        }
-
-        .section-divider {
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
-            margin: 0 auto 20px;
-            border-radius: 2px;
-        }
-
-        /* KEGIATAN CARD IMPROVED */
-        .kegiatan-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            height: 100%;
-            margin-bottom: 25px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            max-width: 350px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .kegiatan-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
-            border-color: var(--primary-light);
-        }
-
-        .kegiatan-img-container {
-            position: relative;
-            overflow: hidden;
-            height: 200px;
-            flex-shrink: 0;
-        }
-
-        .kegiatan-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .kegiatan-card:hover .kegiatan-img {
-            transform: scale(1.08);
-        }
-
-        .kegiatan-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            color: white;
-            padding: 6px 15px;
-            border-radius: var(--radius-full);
-            font-weight: 700;
-            font-size: 0.8rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 120px;
-            text-align: center;
-        }
-
-        .kegiatan-badge.youtube {
-            background: linear-gradient(135deg, #FF0000, #CC0000);
-        }
-
-        .kegiatan-badge.foto {
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-        }
-
-        .kegiatan-badge.multimedia {
-            background: linear-gradient(135deg, var(--multimedia), var(--multimedia-dark));
-        }
-
-        .kegiatan-content {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .kegiatan-date {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 12px;
-            font-size: 0.85rem;
-            text-align: center;
-        }
-
-        .kegiatan-title {
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            min-height: 52px;
-            text-align: center;
-        }
-
-        .kegiatan-desc {
-            color: var(--text-sub);
-            margin-bottom: 15px;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            flex-grow: 1;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        .kegiatan-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-
-        .kegiatan-tag {
-            background: var(--primary-light);
-            color: var(--primary-dark);
-            padding: 5px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-            border: 1px solid rgba(2, 132, 199, 0.2);
-            transition: var(--transition);
-        }
-
-        .kegiatan-tag:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .btn-kegiatan {
-            background: transparent;
-            color: var(--primary);
-            font-weight: 700;
-            padding: 10px 20px;
-            border-radius: var(--radius-md);
-            border: 2px solid var(--primary);
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            margin: 10px auto 0;
-            max-width: 200px;
-            width: 100%;
-        }
-
-        .btn-kegiatan:hover {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.2);
-        }
-
-        /* ===== LOADING & EMPTY STATE IMPROVED ===== */
-        #loading {
-            display: none;
-            text-align: center;
-            padding: 40px 15px;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--light-bg);
-            border-top: 4px solid var(--primary);
-            border-right: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 50px 15px;
-            display: none;
-        }
-
-        .empty-state-icon {
-            font-size: 3.5rem;
-            color: #cbd5e1;
-            margin-bottom: 20px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .empty-state h4 {
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .empty-state p {
-            color: var(--text-sub);
-            max-width: 100%;
-            margin: 0 auto 20px;
-            font-size: 0.95rem;
-            padding: 0 15px;
-        }
-
-        /* ===== PAGINATION IMPROVED ===== */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 40px;
-            padding: 0 15px;
-        }
-
-        .pagination {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            justify-content: center;
-        }
-
-        .page-item {
-            margin: 0;
-        }
-
-        .page-link {
-            color: var(--primary);
-            font-weight: 600;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md) !important;
-            padding: 8px 14px;
-            transition: var(--transition);
-            font-size: 0.9rem;
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .page-link:hover {
-            background: var(--primary-light);
-            color: var(--primary-dark);
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .page-item.active .page-link {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
-        }
-
-        .page-item.disabled .page-link {
-            color: #94a3b8;
-            border-color: var(--border-color);
-            background: #f8fafc;
-        }
-
-        /* ===== MODAL IMPROVED ===== */
-        .modal-content {
-            border-radius: var(--radius-lg);
-            border: none;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            max-width: 95%;
-            margin: 10px auto;
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 20px 25px;
-            border-bottom: none;
-            text-align: center;
-        }
-
-        .modal-title {
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: white;
-            width: 100%;
-            text-align: center;
-        }
-
-        .btn-close {
-            background: rgba(255, 255, 255, 0.2) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
-            opacity: 0.8;
-            transition: var(--transition);
-            padding: 10px;
-            position: absolute;
-            right: 15px;
-            top: 15px;
-        }
-
-        .btn-close:hover {
-            opacity: 1;
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            padding: 25px 20px;
-            text-align: center;
-        }
-
-        .kegiatan-modal-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
-            margin: 0 auto 15px;
-            max-width: 100%;
-        }
-
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
-            padding: 20px 25px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        /* Carousel Styles for Multi-Image */
-        .carousel-item img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: var(--radius-md);
-            margin: 0 auto;
-        }
-
-        .carousel-indicators {
-            bottom: -30px;
-        }
-
-        .carousel-indicators button {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #94a3b8;
-        }
-
-        .carousel-indicators button.active {
-            background-color: var(--primary);
-        }
-
-        /* Generator Modal Styles */
-        .generator-form-group {
-            margin-bottom: 1.2rem;
+    // Hitung dan set statistik
+    calculateAndSetStatistics();
+    
+    // Tampilkan semua kegiatan saat pertama kali dimuat
+    displayKegiatan(kegiatanData, currentPage);
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Setup navbar scroll effect
+    setupNavbarScroll();
+    
+    // Setup scroll to top button
+    setupScrollToTop();
+    
+    // Setup tahun filter (dinamis)
+    setupYearFilter();
+    
+    // Setup password protection untuk generator
+    setupPasswordProtection();
+    
+    // Setup modal event listeners
+    setupModalEvents();
+});
+
+// Setup modal event listeners
+function setupModalEvents() {
+    const modalElement = document.getElementById('kegiatanModal');
+    
+    modalElement.addEventListener('shown.bs.modal', function() {
+        // Reset carousel setiap kali modal ditampilkan
+        const carousel = modalElement.querySelector('#modalCarousel');
+        if (carousel) {
+            const bsCarousel = new bootstrap.Carousel(carousel);
+            bsCarousel.to(0);
+        }
+    });
+    
+    modalElement.addEventListener('hidden.bs.modal', function() {
+        // Reset modal content
+        const carouselInner = document.getElementById('modalCarouselInner');
+        if (carouselInner) carouselInner.innerHTML = '';
+        
+        const videoList = document.getElementById('modalVideoList');
+        if (videoList) videoList.innerHTML = '';
+    });
+}
+
+// Fungsi untuk menghitung dan menampilkan statistik
+function calculateAndSetStatistics() {
+    // Total kegiatan
+    document.getElementById('totalKegiatan').textContent = kegiatanData.length;
+    
+    // Total tahun aktif (unik)
+    const tahunUnik = [...new Set(kegiatanData.map(k => new Date(k.date).getFullYear()))];
+    document.getElementById('totalTahun').textContent = tahunUnik.length;
+    
+    // Total lokasi (unik)
+    const lokasiUnik = [...new Set(kegiatanData.map(k => k.location))];
+    document.getElementById('totalLokasi').textContent = lokasiUnik.length;
+    
+    // Total tags (semua tag unik)
+    const semuaTags = kegiatanData.flatMap(k => k.tags);
+    const tagUnik = [...new Set(semuaTags)];
+    document.getElementById('totalTags').textContent = tagUnik.length;
+}
+
+// Fungsi untuk menampilkan kegiatan (DIPERBAIKI)
+function displayKegiatan(data, page = 1) {
+    const container = document.getElementById('kegiatanContainer');
+    const loading = document.getElementById('loading');
+    const emptyState = document.getElementById('emptyState');
+    const paginationContainer = document.getElementById('paginationContainer');
+    
+    // Simpan data yang difilter
+    currentFilteredData = [...data];
+    
+    // Tampilkan loading
+    loading.style.display = 'block';
+    container.innerHTML = '';
+    paginationContainer.innerHTML = '';
+    emptyState.style.display = 'none';
+    
+    // Simulasi loading dengan setTimeout
+    setTimeout(() => {
+        loading.style.display = 'none';
+        
+        if (data.length === 0) {
+            emptyState.style.display = 'block';
+            return;
         }
         
-        .preview-box {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e1;
-            padding: 15px;
-            border-radius: var(--radius-md);
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        .code-output {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 12px;
-            border-radius: var(--radius-md);
-            font-family: monospace;
-            font-size: 0.8rem;
-            max-height: 180px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-
-        /* Password Modal Styles */
-        .password-modal .modal-content {
-            max-width: 350px;
-            margin: 0 auto;
-        }
-
-        .password-input-group {
-            position: relative;
-            margin: 0 auto;
-            max-width: 300px;
-        }
-
-        .password-input-group .form-control {
-            padding-right: 40px;
-            letter-spacing: 2px;
-            font-family: monospace;
-            text-align: center;
-        }
-
-        .password-input-group .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-sub);
-            cursor: pointer;
-            z-index: 5;
-        }
-
-        /* Video Container Styles */
-        .video-iframe-container {
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            margin: 0 auto 15px;
-            max-width: 100%;
-        }
-
-        .video-iframe-container:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        /* Media Counter */
-        .media-counter {
-            font-size: 0.65rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 6px;
-            border-radius: 10px;
-            margin-left: 5px;
-        }
-
-        /* ===== FOOTER IMPROVED ===== */
-        footer {
-            background-color: var(--primary-dark);
-            color: #cbd5e1;
-            padding-top: 0;
-            position: relative;
-            margin-top: 60px;
-            text-align: center;
-        }
-
-        .footer-wave {
-            background-color: white;
-        }
-
-        .footer-wave svg {
-            display: block;
-            width: 100%;
-            height: 60px;
-            fill: var(--primary-dark);
-        }
-
-        .footer-content {
-            padding: 50px 0 30px;
-        }
-
-        footer h5 {
-            color: white;
-            font-weight: 700;
-            margin-bottom: 20px;
-            position: relative;
-            display: inline-block;
-            font-size: 1.1rem;
-            text-align: center;
-            width: 100%;
-        }
-
-        footer h5::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: -8px;
-            width: 40px;
-            height: 3px;
-            background-color: var(--accent);
-            border-radius: 2px;
-        }
-
-        .footer-links {
-            list-style: none;
-            padding: 0;
-            text-align: center;
-        }
-
-        .footer-links li {
-            margin-bottom: 10px;
-        }
-
-        .footer-links a {
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 5px 0;
-            margin: 0 auto;
-            max-width: 200px;
-        }
-
-        .footer-links a:hover {
-            color: var(--secondary);
-            padding-left: 5px;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            text-align: left;
-            max-width: 300px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .contact-icon {
-            background: rgba(255, 255, 255, 0.1);
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--secondary);
-            flex-shrink: 0;
-            transition: var(--transition);
-        }
-
-        .contact-item:hover .contact-icon {
-            background: rgba(56, 189, 248, 0.2);
-            transform: translateY(-3px);
-        }
-
-        .copyright {
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 20px 0;
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.85rem;
-        }
-
-        /* ===== SCROLL TO TOP BUTTON ===== */
-        .scroll-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
-            transition: var(--transition);
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .scroll-to-top.show {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .scroll-to-top:hover {
-            background: linear-gradient(135deg, var(--primary-dark), #083344);
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
-        }
-
-        /* ===== RESPONSIVE DESIGN ===== */
-        @media (min-width: 576px) {
-            .navbar-brand {
-                justify-content: flex-start;
-                width: auto;
-                margin: 0;
-            }
-            
-            .navbar-nav {
-                justify-content: flex-end;
-                width: auto;
-            }
-            
-            .nav-item {
-                width: auto;
-                margin: 0 4px;
-            }
-            
-            .nav-link {
-                width: auto;
-                max-width: none;
-            }
-            
-            .btn-cta {
-                margin: 0;
-                width: auto;
-                max-width: none;
-            }
-            
-            .hero-content-kegiatan h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero-badge-kegiatan {
-                font-size: 0.9rem;
-            }
-            
-            .kegiatan-card {
-                max-width: 100%;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .hero-section-kegiatan {
-                padding: 140px 0 80px;
-                min-height: 75vh;
-            }
-            
-            .hero-content-kegiatan h1 {
-                font-size: 2.8rem;
-            }
-            
-            .hero-content-kegiatan p {
-                font-size: 1.1rem;
-            }
-            
-            .section-header h2 {
-                font-size: 2.2rem;
-            }
-            
-            .kegiatan-title {
-                font-size: 1.2rem;
-            }
-            
-            .modal-lg {
-                max-width: 90%;
-            }
-            
-            .contact-item {
-                justify-content: flex-start;
-                margin-left: 0;
-                margin-right: 0;
-            }
-            
-            footer h5 {
-                text-align: left;
-            }
-            
-            footer h5::after {
-                left: 0;
-                transform: none;
-            }
-            
-            .footer-links {
-                text-align: left;
-            }
-            
-            .footer-links a {
-                justify-content: flex-start;
-                margin: 0;
-            }
-        }
-
-        @media (min-width: 992px) {
-            .hero-section-kegiatan {
-                padding: 160px 0 100px;
-                min-height: 85vh;
-            }
-            
-            .hero-content-kegiatan h1 {
-                font-size: 3.2rem;
-            }
-            
-            .hero-content-kegiatan p {
-                font-size: 1.2rem;
-            }
-            
-            .section-header h2 {
-                font-size: 2.5rem;
-            }
-            
-            .kegiatan-title {
-                font-size: 1.3rem;
-            }
-            
-            .nav-link {
-                padding: 8px 16px !important;
-            }
-            
-            .btn-cta {
-                padding: 10px 28px;
-            }
-            
-            .filter-card {
-                padding: 30px;
-            }
-        }
-
-        /* ===== UTILITY CLASSES ===== */
-        .text-gradient {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .bg-gradient {
-            background: linear-gradient(135deg, var(--primary-light), #dbeafe);
-        }
-
-        .letter-spacing-1 {
-            letter-spacing: 1px;
-        }
-
-        .letter-spacing-2 {
-            letter-spacing: 2px;
-        }
-
-        .fw-semibold {
-            font-weight: 600;
-        }
-
-        .text-shadow {
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .hover-lift {
-            transition: var(--transition);
-        }
-
-        .hover-lift:hover {
-            transform: translateY(-5px);
-        }
-
-        .opacity-75 {
-            opacity: 0.75;
-        }
-
-        .opacity-90 {
-            opacity: 0.9;
-        }
-
-        /* Center Alignment Classes */
-        .mobile-center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
+        // Hitung pagination
+        const totalPages = Math.ceil(data.length / itemsPerPage);
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedData = data.slice(startIndex, endIndex);
         
-        .text-center-mobile {
-            text-align: center;
-        }
-
-        /* Shake Animation for Password Error */
-        .shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        // Generate HTML untuk setiap kegiatan
+        let html = '';
         
-        @keyframes shake {
-            10%, 90% { transform: translateX(-1px); }
-            20%, 80% { transform: translateX(2px); }
-            30%, 50%, 70% { transform: translateX(-3px); }
-            40%, 60% { transform: translateX(3px); }
-        }
-    </style>
-</head>
-<body>
+        paginatedData.forEach((kegiatan, index) => {
+            const date = new Date(kegiatan.date);
+            const formattedDate = date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            const bulan = String(date.getMonth() + 1).padStart(2, '0');
+            const tahun = date.getFullYear();
+            
+            // Delay untuk animasi bertahap
+            const animationDelay = (index % 3) * 100;
 
-    <button class="scroll-to-top" id="scrollToTopBtn">
-        <i class="fas fa-chevron-up"></i>
-    </button>
+            // Logic untuk menentukan gambar utama
+            let mainImage = kegiatan.images && kegiatan.images.length > 0 
+                ? kegiatan.images[0] 
+                : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop';
 
-    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2 gap-md-3" href="https://www.dinasperikanansitubondo.com">
-                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" alt="Logo Dinas Perikanan Situbondo">
-                <div class="brand-text d-flex flex-column">
-                    <h5>DINAS PERIKANAN</h5>
-                    <span>KAB. SITUBONDO</span>
-                </div>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center gap-1 gap-lg-2">
-                    <li class="nav-item">
-                        <a class="nav-link text-center" href="https://www.dinasperikanansitubondo.com">Beranda</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-center" href="https://www.dinasperikanansitubondo.com#layanan">Layanan</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-center" href="https://www.dinasperikanansitubondo.com/simata" target="_blank">SIMATA</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active text-center" href="https://www.dinasperikanansitubondo.com/kegiatan/">Dokumentasi Kegiatan</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-center" href="https://www.dinasperikanansitubondo.com#aduan">Pengaduan</a>
-                    </li>
-                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-cta text-center">
-                            <i class="fas fa-phone-alt me-1"></i> Hubungi Kami
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <section class="hero-section-kegiatan">
-        <div class="container hero-content-kegiatan">
-            <div class="row justify-content-center">
-                <div class="col-lg-9 col-md-10" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="hero-badge-kegiatan">
-                        <i class="fas fa-images"></i> 
-                        <span>Portal Dokumentasi Kegiatan</span>
+            // Logic untuk peserta (Dinamis, tidak hardcode 50)
+            let participantHtml = '';
+            if (kegiatan.participants && kegiatan.participants > 0) {
+                participantHtml = `
+                    <span class="ms-2">
+                        <i class="fas fa-users me-1"></i>${kegiatan.participants} peserta
+                    </span>`;
+            } else {
+                participantHtml = `
+                    <span class="ms-2">
+                        <i class="fas fa-globe me-1"></i>Umum
+                    </span>`;
+            }
+            
+            // Tentukan jenis media dan teks tombol
+            let buttonIcon = 'fa-eye';
+            let buttonText = 'Lihat Detail';
+            
+            if (kegiatan.type === 'youtube' || (kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0)) {
+                buttonIcon = 'fa-play-circle';
+                buttonText = 'Tonton Video';
+            } else if (kegiatan.type === 'multimedia' || (kegiatan.images && kegiatan.images.length > 0 && kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0)) {
+                buttonIcon = 'fa-photo-video';
+                buttonText = 'Lihat Media';
+            }
+            
+            // Validasi URL untuk mencegah error
+            const detailUrl = validateUrl(kegiatan.url);
+            
+            // Generate Card dengan tombol baru
+            html += `
+            <div class="col-lg-4 col-md-6" 
+                 data-aos="fade-up" 
+                 data-aos-delay="${animationDelay}"
+                 data-bulan="${bulan}" 
+                 data-tahun="${tahun}"
+                 data-category="${kegiatan.category}">
+                <div class="kegiatan-card hover-lift">
+                    <div class="kegiatan-img-container">
+                        <img src="${mainImage}" 
+                             class="kegiatan-img" 
+                             alt="${kegiatan.title}"
+                             loading="lazy"
+                             onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
                     </div>
-                    <h1 class="display-3 fw-bold mb-4 text-white">Galeri Kegiatan Pemberdayaan Nelayan</h1>
-                    <p class="lead mb-5 text-white opacity-90">Jelajahi dokumentasi lengkap program, pelatihan, dan kegiatan pemberdayaan nelayan Kabupaten Situbondo. Setiap momen menceritakan perjalanan dan pencapaian para pelaku perikanan kita.</p>
-                    
-                    <div class="hero-stats" data-aos="fade-up" data-aos-delay="200" data-aos-duration="800">
-                        <div class="stat-item">
-                            <span class="stat-number" id="totalKegiatan">12</span>
-                            <span class="stat-label">Total Kegiatan</span>
+                    <div class="kegiatan-content">
+                        <div class="kegiatan-date">
+                            <i class="fas fa-calendar-alt"></i> ${formattedDate}
+                            ${participantHtml}
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number" id="totalTahun">2</span>
-                            <span class="stat-label">Tahun Aktif</span>
+                        <h3 class="kegiatan-title">${kegiatan.title}</h3>
+                        <p class="kegiatan-desc">${kegiatan.description}</p>
+                        
+                        <div class="kegiatan-tags">
+                            ${kegiatan.tags.slice(0, 3).map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
+                            ${kegiatan.tags.length > 3 ? `<span class="kegiatan-tag">+${kegiatan.tags.length - 3}</span>` : ''}
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number" id="totalLokasi">8</span>
-                            <span class="stat-label">Lokasi Kegiatan</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number" id="totalTags">32</span>
-                            <span class="stat-label">Kategori Tag</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="filter-section">
-        <div class="container">
-            <div class="filter-card" data-aos="fade-up" data-aos-duration="800">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
-                    <h4 class="text-primary mb-0 text-center text-md-start">
-                        <i class="fas fa-filter me-2"></i> Filter & Pencarian Kegiatan
-                    </h4>
-                    <button class="btn-generator-circle" id="btnGenerator" title="Generator Script Konten">
-                        <i class="fas fa-cogs"></i>
-                    </button>
-                </div>
-                <div class="row g-4 align-items-end">
-                    <div class="col-lg-3 col-md-6">
-                        <label class="filter-label">
-                            <i class="fas fa-calendar-alt"></i> Pilih Bulan
-                        </label>
-                        <select class="form-select form-select-custom" id="filterBulan">
-                            <option value="">Semua Bulan</option>
-                            <option value="01">Januari</option>
-                            <option value="02">Februari</option>
-                            <option value="03">Maret</option>
-                            <option value="04">April</option>
-                            <option value="05">Mei</option>
-                            <option value="06">Juni</option>
-                            <option value="07">Juli</option>
-                            <option value="08">Agustus</option>
-                            <option value="09">September</option>
-                            <option value="10">Oktober</option>
-                            <option value="11">November</option>
-                            <option value="12">Desember</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <label class="filter-label">
-                            <i class="fas fa-calendar"></i> Pilih Tahun
-                        </label>
-                        <select class="form-select form-select-custom" id="filterTahun">
-                            <option value="">Semua Tahun</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-4 col-md-8">
-                        <label class="filter-label">
-                            <i class="fas fa-search"></i> Cari Kegiatan
-                        </label>
-                        <div class="input-group">
-                            <input type="text" class="form-control form-input-custom" id="filterKeyword" placeholder="Masukkan kata kunci judul, deskripsi, atau lokasi...">
-                            <button class="btn btn-outline-primary" type="button" id="btnSearch">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 d-flex flex-column gap-2">
-                        <button class="btn btn-filter" id="btnFilter">
-                            <i class="fas fa-filter me-2"></i> Terapkan
-                        </button>
-                        <button class="btn btn-reset" id="btnReset">
-                            <i class="fas fa-redo me-2"></i> Reset
-                        </button>
-                    </div>
-                </div>
-                <div class="mt-4 pt-3 border-top">
-                    <div class="d-flex flex-column flex-md-row flex-wrap gap-2 align-items-center justify-content-center">
-                        <small class="text-muted text-center">
-                            <i class="fas fa-info-circle me-1"></i> Tips: Gunakan filter untuk menemukan kegiatan spesifik
-                        </small>
-                        <div class="mt-2 mt-md-0">
-                            <span class="badge bg-primary me-2">
-                                <i class="fas fa-camera me-1"></i> Foto
-                            </span>
-                            <span class="badge bg-danger me-2">
-                                <i class="fab fa-youtube me-1"></i> Video
-                            </span>
-                            <span class="badge bg-purple">
-                                <i class="fas fa-photo-video me-1"></i> Multimedia
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="kegiatan-section">
-        <div class="container">
-            <div class="section-header" data-aos="fade-up" data-aos-duration="800">
-                <span class="text-primary fw-bold text-uppercase letter-spacing-2">Dokumentasi Terbaru</span>
-                <h2 class="display-5 mt-2">Kegiatan Nelayan Situbondo</h2>
-                <div class="section-divider"></div>
-                <p class="text-muted mx-auto" style="max-width: 700px;">
-                    Jelajahi berbagai kegiatan pemberdayaan nelayan yang telah dilaksanakan oleh Dinas Perikanan Kabupaten Situbondo
-                </p>
-            </div>
-
-            <div id="loading">
-                <div class="spinner"></div>
-                <h5 class="text-primary fw-bold mt-4">Memuat Kegiatan...</h5>
-                <p class="text-muted">Sedang mengambil data dokumentasi kegiatan</p>
-            </div>
-
-            <div id="kegiatanContainer" class="row g-4 justify-content-center"></div>
-
-            <div id="emptyState" class="empty-state">
-                <div class="empty-state-icon">
-                    <i class="fas fa-images"></i>
-                </div>
-                <h4 class="fw-bold mb-3">Tidak ada kegiatan ditemukan</h4>
-                <p class="mb-4">Coba gunakan kata kunci yang berbeda atau reset filter untuk melihat semua kegiatan</p>
-                <button class="btn btn-cta" id="btnResetEmpty">
-                    <i class="fas fa-redo me-2"></i> Reset Filter
-                </button>
-            </div>
-
-            <div class="pagination-container" id="paginationContainer"></div>
-        </div>
-    </section>
-
-    <!-- Modal Password untuk Generator -->
-    <div class="modal fade password-modal" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="passwordModalLabel">
-                        <i class="fas fa-lock me-2"></i> Akses Admin Generator
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
-                        <i class="fas fa-info-circle me-3 fs-4"></i>
-                        <div>
-                            <strong>Fitur Terbatas</strong><br>
-                            Hanya administrator yang diizinkan mengakses generator script.
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="adminPassword" class="form-label fw-bold text-center w-100">Masukkan Kode Keamanan</label>
-                        <div class="password-input-group">
-                            <input type="password" class="form-control" id="adminPassword" placeholder="Masukkan kode 8 digit">
-                            <button type="button" class="toggle-password" id="togglePassword">
+                        
+                        <div class="card-buttons">
+                            <a href="${detailUrl}" class="btn-card-detail" target="_blank" onclick="event.stopPropagation();">
+                                <i class="fas ${buttonIcon} me-2"></i>
+                                ${buttonText}
+                            </a>
+                            <button class="btn-card-preview" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})" title="Quick Preview">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
-                        <div class="form-text text-center">
-                            <i class="fas fa-shield-alt me-1"></i> Kode keamanan diberikan kepada administrator terautorisasi
-                        </div>
-                    </div>
-                    
-                    <div class="alert alert-warning d-none" id="passwordError">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <span id="errorMessage">Kode keamanan salah. Coba lagi.</span>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i> Batal
-                    </button>
-                    <button type="button" class="btn btn-primary" id="btnVerifyPassword">
-                        <i class="fas fa-key me-2"></i> Verifikasi
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Detail Kegiatan -->
-    <div class="modal fade" id="kegiatanModal" tabindex="-1" aria-labelledby="kegiatanModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="kegiatanModalTitle"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row g-4">
-                        <div class="col-lg-6">
-                            <!-- Carousel untuk Multiple Images -->
-                            <div id="carouselContainer" style="display: none;">
-                                <div id="modalCarousel" class="carousel slide" data-bs-ride="carousel">
-                                    <div class="carousel-inner" id="modalCarouselInner"></div>
-                                    <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel" data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Previous</span>
-                                    </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel" data-bs-slide="next">
-                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Next</span>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Container untuk Multiple Videos -->
-                            <div id="modalVideoContainer" style="display: none;">
-                                <h6 class="fw-bold mt-4 mb-3 text-danger">
-                                    <i class="fab fa-youtube me-2"></i> Video Dokumentasi
-                                </h6>
-                                <div class="row" id="modalVideoList">
-                                    <!-- Video akan ditampilkan di sini -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-3 mb-3">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="fas fa-calendar-alt text-primary"></i>
-                                    <span id="modalDate" class="fw-bold"></span>
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="fas fa-map-marker-alt text-primary"></i>
-                                    <span id="modalLocation" class="fw-semibold"></span>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-4 text-center">
-                                <span class="badge bg-primary me-2" id="modalCategory"></span>
-                                <span class="badge bg-success me-2">
-                                    <i class="fas fa-users me-1"></i>
-                                    <span id="modalParticipants"></span> Peserta
-                                </span>
-                                <span class="badge bg-warning text-dark">
-                                    <i class="fas fa-clock me-1"></i>
-                                    <span id="modalDuration"></span>
-                                </span>
-                            </div>
-                            
-                            <div id="modalTags" class="kegiatan-tags mb-4"></div>
-                            
-                            <h6 class="fw-bold mb-3 text-primary text-center">
-                                <i class="fas fa-align-left me-2"></i> Deskripsi Kegiatan
-                            </h6>
-                            <p id="modalDescription" class="mb-4 text-center"></p>
-                            
-                            <div class="alert alert-primary" role="alert">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="fas fa-info-circle"></i>
-                                    <small>Untuk informasi lebih detail tentang kegiatan ini, silakan hubungi Dinas Perikanan Situbondo.</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i> Tutup
-                    </button>
-                    <a href="#" id="modalDetailLink" class="btn btn-primary" target="_blank">
-                        <i class="fas fa-external-link-alt me-2"></i> Lihat Halaman Detail
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Generator Script -->
-    <div class="modal fade" id="generatorModal" tabindex="-1" aria-labelledby="generatorModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="generatorModalLabel">
-                        <i class="fas fa-code me-2"></i> Generator Script Konten Kegiatan
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-lg-6 border-end">
-                            <form id="contentForm">
-                                <div class="row g-3">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Judul Kegiatan</label>
-                                        <input type="text" class="form-control" id="genTitle" placeholder="Contoh: Pelatihan Pengolahan Ikan..." required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">Tanggal</label>
-                                        <input type="date" class="form-control" id="genDate" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">Kategori</label>
-                                        <select class="form-select" id="genCategory">
-                                            <option value="pelatihan">Pelatihan</option>
-                                            <option value="bantuan">Bantuan</option>
-                                            <option value="konservasi">Konservasi</option>
-                                            <option value="sosialisasi">Sosialisasi</option>
-                                            <option value="budidaya">Budidaya</option>
-                                            <option value="kunjungan">Kunjungan</option>
-                                            <option value="festival">Festival</option>
-                                            <option value="lainnya">Lainnya</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Lokasi</label>
-                                        <input type="text" class="form-control" id="genLocation" placeholder="Contoh: Balai Desa..." required>
-                                    </div>
-                                    
-                                    <!-- Bagian Multiple Images -->
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">
-                                            <i class="fas fa-images me-1"></i> URL Gambar (Multiple)
-                                        </label>
-                                        <textarea class="form-control" id="genImages" rows="3" 
-                                                  placeholder="Masukkan URL gambar. Pisahkan dengan baris baru (Enter) jika lebih dari satu.&#10;Contoh:&#10;https://images.unsplash.com/photo-xxxx&#10;https://images.unsplash.com/photo-yyyy"></textarea>
-                                        <div class="form-text">
-                                            <i class="fas fa-info-circle me-1"></i> Gambar pertama akan menjadi thumbnail
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Bagian Multiple Videos -->
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">
-                                            <i class="fab fa-youtube me-1"></i> URL Video YouTube (Multiple)
-                                        </label>
-                                        <textarea class="form-control" id="genVideos" rows="3" 
-                                                  placeholder="Masukkan URL video YouTube. Pisahkan dengan baris baru.&#10;Format yang didukung:&#10;https://youtu.be/VIDEO_ID&#10;https://www.youtube.com/watch?v=VIDEO_ID&#10;https://www.youtube.com/embed/VIDEO_ID"></textarea>
-                                        <div class="form-text">
-                                            <i class="fas fa-lightbulb me-1"></i> Sistem akan otomatis mendeteksi jika Anda memasukkan gambar dan video (Multimedia)
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">URL Halaman Detail</label>
-                                        <input type="url" class="form-control" id="genDetailUrl" placeholder="https://www.dinasperikanansitubondo.com/kegiatan/detail/..." required>
-                                        <div class="form-text">
-                                            <i class="fas fa-link me-1"></i> URL lengkap untuk halaman detail kegiatan
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Deskripsi</label>
-                                        <textarea class="form-control" id="genDesc" rows="3" placeholder="Deskripsi lengkap kegiatan..." required></textarea>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold">Tags (Pisahkan dengan koma)</label>
-                                        <input type="text" class="form-control" id="genTags" placeholder="nelayan, bantuan, situbondo, perikanan">
-                                    </div>
-                                </div>
-                                <div class="mt-4 d-grid gap-2">
-                                    <button type="button" class="btn btn-primary" onclick="generatePreview()">
-                                        <i class="fas fa-eye me-2"></i> Generate & Preview
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" onclick="clearGeneratorForm()">
-                                        <i class="fas fa-redo me-2"></i> Reset Form
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="col-lg-6 bg-light p-4 rounded">
-                            <h6 class="fw-bold mb-3">Preview Tampilan Card</h6>
-                            <div id="previewCardContainer" class="mb-4">
-                                <div class="text-center text-muted py-5 border rounded bg-white">
-                                    <i class="fas fa-image fa-3x mb-3 text-secondary"></i>
-                                    <p>Klik tombol Generate untuk melihat preview</p>
-                                </div>
-                            </div>
-
-                            <h6 class="fw-bold mb-2">Kode Script (Siap Paste)</h6>
-                            <p class="small text-muted mb-2 text-center">
-                                <i class="fas fa-clipboard-check me-1"></i> 
-                                Salin kode di bawah ini dan paste ke dalam array <code>kegiatanData</code> di file <code>script.js</code>.
-                            </p>
-                            <div class="code-output-wrapper mb-3">
-                                <pre class="code-output" id="codeOutput">// Kode akan muncul di sini...</pre>
-                                <div class="text-center">
-                                    <button class="btn btn-sm btn-outline-secondary mt-2" onclick="document.getElementById('codeOutput').textContent='// Kode akan muncul di sini...';">
-                                        <i class="fas fa-trash me-1"></i> Clear Code
-                                    </button>
-                                </div>
-                            </div>
-                            <button class="btn btn-success w-100" onclick="copyToClipboard()">
-                                <i class="fas fa-copy me-2"></i> Salin Kode ke Clipboard
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <footer>
-        <div class="footer-wave">
-            <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-                <path fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-            </svg>
-        </div>
-        <div class="container footer-content">
-            <div class="row gy-5">
-                <div class="col-lg-5 col-md-12 text-center text-md-start">
-                    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center justify-content-md-start gap-3 mb-4">
-                        <div class="bg-primary p-3 rounded-circle">
-                            <i class="fas fa-ship fa-2x text-white"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-white mb-0 fw-bold">DINAS PERIKANAN</h4>
-                            <small class="text-white-50" style="letter-spacing: 2px;">KABUPATEN SITUBONDO</small>
-                        </div>
-                    </div>
-                    <p class="pe-lg-5" style="line-height: 1.8;">
-                        Berkontribusi aktif dalam memajukan sektor perikanan tangkap dan memberdayakan masyarakat pesisir Situbondo melalui berbagai program inovatif dan berkelanjutan.
-                    </p>
-                    <div class="d-flex gap-3 mt-4 justify-content-center justify-content-md-start">
-                        <a href="#" class="btn btn-outline-light btn-sm">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-light btn-sm">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-light btn-sm">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-light btn-sm">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h5>Tautan Cepat</h5>
-                    <ul class="footer-links mt-4">
-                        <li><a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2"></i> Beranda</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com/simata" target="_blank"><i class="fas fa-mobile-alt me-2"></i> SIMATA</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com/kegiatan/"><i class="fas fa-images me-2"></i> Dokumentasi</a></li>
-                        <li><a href="https://situbondokab.go.id/" target="_blank"><i class="fas fa-university me-2"></i> Pemkab Situbondo</a></li>
-                        <li><a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i> Pengaduan</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <h5>Kontak Kami</h5>
-                    <div class="mt-4">
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <div>
-                                <span class="d-block text-white fw-bold">Alamat Kantor</span>
-                                <small>Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur</small>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fab fa-whatsapp"></i>
-                            </div>
-                            <div>
-                                <span class="d-block text-white fw-bold">WhatsApp Admin</span>
-                                <small>0878 6561 4222</small>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div>
-                                <span class="d-block text-white fw-bold">Email</span>
-                                <small>info@dinasperikanansitubondo.com</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        
+        // Tambahkan event listener untuk klik card (untuk membuka modal)
+        document.querySelectorAll('.kegiatan-card').forEach((card, index) => {
+            card.addEventListener('click', function(e) {
+                // Cegah jika yang diklik adalah link atau button
+                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || 
+                    e.target.closest('a') || e.target.closest('button')) {
+                    return;
+                }
+                
+                const kegiatan = paginatedData[index];
+                if (kegiatan) {
+                    showKegiatanDetail(kegiatan.id);
+                }
+            });
+        });
+        
+        // Generate pagination jika diperlukan
+        if (totalPages > 1) {
+            generatePagination(totalPages, page, data.length);
+        } else {
+            paginationContainer.innerHTML = `
+            <div class="text-center">
+                <small class="text-muted">Menampilkan ${data.length} kegiatan</small>
             </div>
-        </div>
-        <div class="copyright">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-md-start text-center mb-3 mb-md-0">
-                        &copy; <span id="currentYear">2025</span> <strong>Dinas Perikanan Situbondo</strong>. Hak Cipta Dilindungi.
-                    </div>
-                    <div class="col-md-6 text-md-end text-center">
-                        <small>Dibuat dengan <i class="fas fa-heart text-danger"></i> untuk Nelayan Situbondo</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+            `;
+        }
+        
+        currentPage = page;
+        
+    }, 500);
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.0/lightgallery.umd.min.js"></script>
+// Fungsi validasi URL (DIPERBAIKI)
+function validateUrl(url) {
+    if (!url) return '#';
     
-    <script src="script.js"></script>
-</body>
-</html>
+    // Jika URL sudah lengkap
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+    
+    // Jika dimulai dengan www.
+    if (url.startsWith('www.')) {
+        return 'https://' + url;
+    }
+    
+    // Jika URL relatif
+    if (url.startsWith('/')) {
+        return 'https://dinasperikanansitubondo.com' + url;
+    }
+    
+    // Default
+    return 'https://dinasperikanansitubondo.com/' + url;
+}
+
+// Fungsi untuk generate pagination
+function generatePagination(totalPages, currentPage, totalItems) {
+    const paginationContainer = document.getElementById('paginationContainer');
+    
+    let paginationHtml = `
+    <nav aria-label="Navigasi halaman kegiatan">
+        <ul class="pagination">
+    `;
+    
+    // Previous button
+    paginationHtml += `
+    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" aria-label="Sebelumnya">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+    </li>
+    `;
+    
+    // Page numbers logic
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+        paginationHtml += `
+        <li class="page-item">
+            <a class="page-link" href="#" onclick="changePage(1); return false;">1</a>
+        </li>
+        ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+        `;
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHtml += `
+        <li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+        </li>
+        `;
+    }
+    
+    if (endPage < totalPages) {
+        paginationHtml += `
+        ${endPage < totalPages - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+        <li class="page-item">
+            <a class="page-link" href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a>
+        </li>
+        `;
+    }
+    
+    paginationHtml += `
+    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;" aria-label="Berikutnya">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </li>
+    `;
+    
+    paginationHtml += `
+        </ul>
+        <div class="text-center mt-3">
+            <small class="text-muted">Halaman ${currentPage} dari ${totalPages} • ${totalItems} kegiatan ditemukan</small>
+        </div>
+    </nav>
+    `;
+    
+    paginationContainer.innerHTML = paginationHtml;
+}
+
+// Fungsi untuk mengubah halaman
+function changePage(page) {
+    displayKegiatan(currentFilteredData, page);
+    
+    // Scroll ke atas dengan smooth
+    const sectionTop = document.querySelector('.kegiatan-section').offsetTop - 120;
+    window.scrollTo({
+        top: sectionTop,
+        behavior: 'smooth'
+    });
+}
+
+// Fungsi filter kegiatan
+function filterKegiatan() {
+    const bulan = document.getElementById('filterBulan').value;
+    const tahun = document.getElementById('filterTahun').value;
+    const keyword = document.getElementById('filterKeyword').value.toLowerCase().trim();
+    
+    let filtered = kegiatanData;
+    
+    // Filter berdasarkan bulan
+    if (bulan) {
+        filtered = filtered.filter(kegiatan => {
+            const date = new Date(kegiatan.date);
+            const kegiatanBulan = String(date.getMonth() + 1).padStart(2, '0');
+            return kegiatanBulan === bulan;
+        });
+    }
+    
+    // Filter berdasarkan tahun
+    if (tahun) {
+        filtered = filtered.filter(kegiatan => {
+            const date = new Date(kegiatan.date);
+            const kegiatanTahun = date.getFullYear();
+            return kegiatanTahun === parseInt(tahun);
+        });
+    }
+    
+    // Filter berdasarkan keyword
+    if (keyword) {
+        filtered = filtered.filter(kegiatan => {
+            const searchText = `
+                ${kegiatan.title.toLowerCase()}
+                ${kegiatan.description.toLowerCase()}
+                ${kegiatan.tags.join(' ').toLowerCase()}
+                ${kegiatan.location.toLowerCase()}
+                ${kegiatan.category ? kegiatan.category.toLowerCase() : ''}
+            `;
+            return searchText.includes(keyword);
+        });
+    }
+    
+    // Reset ke halaman pertama
+    currentPage = 1;
+    
+    // Tampilkan hasil filter
+    displayKegiatan(filtered, currentPage);
+    
+    // Update URL hash dengan filter
+    updateFilterHash(bulan, tahun, keyword);
+}
+
+// Fungsi reset filter
+function resetFilter() {
+    document.getElementById('filterBulan').value = '';
+    document.getElementById('filterTahun').value = '';
+    document.getElementById('filterKeyword').value = '';
+    
+    currentPage = 1;
+    displayKegiatan(kegiatanData, currentPage);
+    window.location.hash = '';
+}
+
+// Fungsi untuk mengupdate hash URL dengan filter
+function updateFilterHash(bulan, tahun, keyword) {
+    const params = new URLSearchParams();
+    if (bulan) params.set('bulan', bulan);
+    if (tahun) params.set('tahun', tahun);
+    if (keyword) params.set('q', keyword);
+    
+    const hash = params.toString() ? `filter?${params.toString()}` : '';
+    window.location.hash = hash;
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    document.getElementById('btnFilter').addEventListener('click', filterKegiatan);
+    document.getElementById('btnReset').addEventListener('click', resetFilter);
+    document.getElementById('btnResetEmpty').addEventListener('click', resetFilter);
+    document.getElementById('btnSearch').addEventListener('click', filterKegiatan);
+    
+    // Enter key untuk search
+    document.getElementById('filterKeyword').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            filterKegiatan();
+        }
+    });
+}
+
+// Setup navbar scroll effect
+function setupNavbarScroll() {
+    const nav = document.getElementById('mainNav');
+    
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+}
+
+// Setup scroll to top button
+function setupScrollToTop() {
+    const scrollBtn = document.getElementById('scrollToTopBtn');
+    
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 300) {
+            scrollBtn.classList.add('show');
+        } else {
+            scrollBtn.classList.remove('show');
+        }
+    });
+    
+    scrollBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+// Setup year filter options (dinamis 90 tahun ke depan)
+function setupYearFilter() {
+    const tahunSelect = document.getElementById('filterTahun');
+    const tahunSekarang = new Date().getFullYear();
+    const tahunMulai = 2024;
+    const tahunAkhir = tahunSekarang + 90;
+    
+    // Clear existing options except first
+    while (tahunSelect.options.length > 1) {
+        tahunSelect.remove(1);
+    }
+
+    // Tambahkan opsi tahun dari 2024 hingga 90 tahun ke depan
+    for (let tahun = tahunAkhir; tahun >= tahunMulai; tahun--) {
+        const option = document.createElement('option');
+        option.value = tahun;
+        option.textContent = tahun;
+        tahunSelect.appendChild(option);
+    }
+}
+
+// Setup password protection untuk generator
+function setupPasswordProtection() {
+    const btnGenerator = document.getElementById('btnGenerator');
+    const btnVerifyPassword = document.getElementById('btnVerifyPassword');
+    const adminPasswordInput = document.getElementById('adminPassword');
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordError = document.getElementById('passwordError');
+    
+    btnGenerator.addEventListener('click', function() {
+        if (isAuthenticated) {
+            const generatorModal = new bootstrap.Modal(document.getElementById('generatorModal'));
+            generatorModal.show();
+        } else {
+            const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+            passwordModal.show();
+        }
+    });
+    
+    togglePasswordBtn.addEventListener('click', function() {
+        const type = adminPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        adminPasswordInput.setAttribute('type', type);
+        togglePasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+    
+    btnVerifyPassword.addEventListener('click', function() {
+        const password = adminPasswordInput.value.trim();
+        
+        if (password === ADMIN_PASSWORD) {
+            isAuthenticated = true;
+            passwordError.classList.add('d-none');
+            
+            const passwordModal = bootstrap.Modal.getInstance(document.getElementById('passwordModal'));
+            passwordModal.hide();
+            
+            adminPasswordInput.value = '';
+            
+            setTimeout(() => {
+                const generatorModal = new bootstrap.Modal(document.getElementById('generatorModal'));
+                generatorModal.show();
+            }, 300);
+            
+            showToast('Akses diberikan!', 'Anda sekarang dapat mengakses generator script.', 'success');
+        } else {
+            passwordError.classList.remove('d-none');
+            document.getElementById('errorMessage').textContent = 'Kode keamanan salah. Coba lagi.';
+            adminPasswordInput.value = '';
+            adminPasswordInput.focus();
+            
+            adminPasswordInput.classList.add('shake');
+            setTimeout(() => {
+                adminPasswordInput.classList.remove('shake');
+            }, 500);
+        }
+    });
+    
+    adminPasswordInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            btnVerifyPassword.click();
+        }
+    });
+    
+    document.getElementById('passwordModal').addEventListener('hidden.bs.modal', function() {
+        adminPasswordInput.value = '';
+        passwordError.classList.add('d-none');
+        adminPasswordInput.setAttribute('type', 'password');
+        togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
+    });
+}
+
+// Fungsi untuk menampilkan toast notification
+function showToast(title, message, type = 'info') {
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+    <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0 position-fixed" style="bottom: 20px; right: 20px; z-index: 1090;" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <strong>${title}</strong><br>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', toastHtml);
+    
+    const toastEl = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+    
+    toastEl.addEventListener('hidden.bs.toast', function() {
+        toastEl.remove();
+    });
+}
+
+// Fungsi untuk menampilkan detail kegiatan di modal (DIPERBAIKI)
+function showKegiatanDetail(id) {
+    const kegiatan = kegiatanData.find(k => k.id === id);
+    if (!kegiatan) {
+        showToast('Kegiatan tidak ditemukan', 'Data kegiatan tidak tersedia', 'warning');
+        return;
+    }
+    
+    const date = new Date(kegiatan.date);
+    const formattedDate = date.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+    
+    // Update text content
+    document.getElementById('kegiatanModalTitle').textContent = kegiatan.title;
+    document.getElementById('modalDate').textContent = formattedDate;
+    document.getElementById('modalCategory').textContent = kegiatan.category.charAt(0).toUpperCase() + kegiatan.category.slice(1);
+    document.getElementById('modalLocation').textContent = kegiatan.location;
+    document.getElementById('modalDescription').textContent = kegiatan.description;
+    
+    // Validasi dan set URL
+    const validUrl = validateUrl(kegiatan.url);
+    const modalDetailLink = document.getElementById('modalDetailLink');
+    modalDetailLink.href = validUrl;
+    
+    // Pastikan link terbuka di tab baru
+    modalDetailLink.target = '_blank';
+    
+    // Update participants and duration jika ada
+    if (kegiatan.participants && kegiatan.participants > 0) {
+        document.getElementById('modalParticipants').textContent = kegiatan.participants;
+        document.getElementById('modalParticipants').parentElement.style.display = 'inline-block';
+    } else {
+        document.getElementById('modalParticipants').parentElement.style.display = 'none';
+    }
+    
+    if (kegiatan.duration) {
+        document.getElementById('modalDuration').textContent = kegiatan.duration;
+        document.getElementById('modalDuration').parentElement.style.display = 'inline-block';
+    } else {
+        document.getElementById('modalDuration').parentElement.style.display = 'none';
+    }
+    
+    // Update tags
+    const tagsContainer = document.getElementById('modalTags');
+    tagsContainer.innerHTML = kegiatan.tags.map(tag => 
+        `<span class="kegiatan-tag">${tag}</span>`
+    ).join('');
+    
+    // Update media containers
+    const carouselContainer = document.getElementById('carouselContainer');
+    const videoContainer = document.getElementById('modalVideoContainer');
+    const carouselInner = document.getElementById('modalCarouselInner');
+    const videoList = document.getElementById('modalVideoList');
+    
+    // Reset containers
+    carouselContainer.style.display = 'none';
+    videoContainer.style.display = 'none';
+    carouselInner.innerHTML = '';
+    videoList.innerHTML = '';
+    
+    // Tampilkan gambar jika ada
+    if (kegiatan.images && kegiatan.images.length > 0) {
+        carouselContainer.style.display = 'block';
+        
+        kegiatan.images.forEach((img, index) => {
+            const activeClass = index === 0 ? 'active' : '';
+            carouselInner.innerHTML += `
+                <div class="carousel-item ${activeClass}">
+                    <img src="${img}" class="d-block w-100 modal-img" alt="Dokumentasi ${index + 1}" 
+                         onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
+                </div>
+            `;
+        });
+        
+        // Tambahkan indicators jika lebih dari 1 gambar
+        if (kegiatan.images.length > 1) {
+            let indicatorsHtml = '<div class="carousel-indicators">';
+            kegiatan.images.forEach((_, index) => {
+                indicatorsHtml += `<button type="button" data-bs-target="#modalCarousel" data-bs-slide-to="${index}" class="${index === 0 ? 'active' : ''}" aria-label="Slide ${index + 1}"></button>`;
+            });
+            indicatorsHtml += '</div>';
+            carouselInner.insertAdjacentHTML('beforebegin', indicatorsHtml);
+        }
+    }
+    
+    // Tampilkan video jika ada
+    if (kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0) {
+        videoContainer.style.display = 'block';
+        
+        kegiatan.youtubeUrls.forEach((url, index) => {
+            const videoId = extractYouTubeId(url);
+            
+            if (videoId) {
+                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                
+                videoList.innerHTML += `
+                    <div class="col-md-${kegiatan.youtubeUrls.length > 1 ? '6' : '12'} mb-3">
+                        <div class="ratio ratio-16x9 video-iframe-container">
+                            <iframe src="${embedUrl}" 
+                                    title="Video ${index + 1} - ${kegiatan.title}"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="text-center mt-2">
+                            <a href="${watchUrl}" target="_blank" class="btn btn-sm btn-outline-danger">
+                                <i class="fab fa-youtube me-1"></i> Tonton di YouTube
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('kegiatanModal'));
+    modal.show();
+}
+
+// Helper function untuk extract YouTube ID
+function extractYouTubeId(url) {
+    if (!url) return null;
+    
+    // Handle embed URL
+    if (url.includes('youtube.com/embed/')) {
+        return url.split('/embed/')[1].split('?')[0];
+    }
+    
+    // Handle youtu.be URL
+    if (url.includes('youtu.be/')) {
+        return url.split('youtu.be/')[1].split('?')[0];
+    }
+    
+    // Handle watch URL
+    if (url.includes('youtube.com/watch?v=')) {
+        return url.split('v=')[1].split('&')[0];
+    }
+    
+    // Handle youtu.be with parameters
+    if (url.includes('youtu.be/') && url.includes('?')) {
+        return url.split('youtu.be/')[1].split('?')[0];
+    }
+    
+    return null;
+}
+
+// ==========================================
+// GENERATOR SCRIPT FEATURES - DIPERBAIKI
+// ==========================================
+
+// Fungsi untuk Generate dan Preview
+function generatePreview() {
+    if (!isAuthenticated) {
+        showToast('Akses Ditolak', 'Silakan login terlebih dahulu untuk mengakses generator.', 'warning');
+        const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        passwordModal.show();
+        return;
+    }
+    
+    // Ambil data dari form
+    const title = document.getElementById('genTitle').value;
+    const date = document.getElementById('genDate').value;
+    const category = document.getElementById('genCategory').value;
+    const location = document.getElementById('genLocation').value;
+    const imagesRaw = document.getElementById('genImages').value;
+    const videosRaw = document.getElementById('genVideos').value;
+    const detailUrl = document.getElementById('genDetailUrl').value;
+    const desc = document.getElementById('genDesc').value;
+    const tagsRaw = document.getElementById('genTags').value;
+
+    // Validasi
+    if(!title || !date || !desc || !detailUrl) {
+        showToast('Data Tidak Lengkap', 'Mohon lengkapi Judul, Tanggal, Deskripsi, dan URL Detail.', 'warning');
+        return;
+    }
+
+    // Process Images
+    const imagesList = imagesRaw.split('\n')
+        .map(url => url.trim())
+        .filter(url => url !== '' && (url.startsWith('http') || url.startsWith('https')))
+        .map(url => url.includes('?') ? url.split('?')[0] : url);
+
+    // Process Videos dengan extract YouTube ID
+    const videosList = videosRaw.split('\n')
+        .map(url => url.trim())
+        .filter(url => url !== '' && (url.includes('youtube') || url.includes('youtu.be')))
+        .map(url => {
+            const videoId = extractYouTubeId(url);
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+            return url;
+        })
+        .filter(url => url !== null && url.includes('youtube.com/embed/'));
+
+    // Tentukan type berdasarkan konten
+    let type = 'foto';
+    if (videosList.length > 0 && imagesList.length > 0) {
+        type = 'multimedia';
+    } else if (videosList.length > 0) {
+        type = 'youtube';
+    }
+
+    // Buat Object Data
+    const newData = {
+        id: Date.now(),
+        title: title,
+        date: date,
+        description: desc,
+        images: imagesList.length > 0 ? imagesList : [],
+        type: type,
+        category: category,
+        location: location,
+        tags: tagsRaw.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
+        youtubeUrls: videosList.length > 0 ? videosList : [],
+        url: detailUrl,
+        participants: 0,
+        duration: ""
+    };
+
+    // Render Preview Card
+    renderPreviewCard(newData);
+
+    // Generate Code String
+    const jsonString = JSON.stringify(newData, null, 4);
+    const cleanCode = `    ${jsonString},`;
+    
+    document.getElementById('codeOutput').textContent = cleanCode;
+    
+    // Tampilkan statistik media
+    const imageCount = imagesList.length;
+    const videoCount = videosList.length;
+    showToast('Preview Berhasil!', `${imageCount} gambar dan ${videoCount} video telah diproses. URL Detail: ${detailUrl}`, 'success');
+}
+
+// Fungsi Render Preview Card di dalam Modal Generator
+function renderPreviewCard(data) {
+    const container = document.getElementById('previewCardContainer');
+    
+    // Format Date
+    const date = new Date(data.date);
+    const formattedDate = date.toLocaleDateString('id-ID', {
+        day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    // Participants Logic
+    let participantHtml = '';
+    if (data.participants && data.participants > 0) {
+        participantHtml = `<span class="ms-2"><i class="fas fa-users me-1"></i>${data.participants} peserta</span>`;
+    } else {
+        participantHtml = `<span class="ms-2"><i class="fas fa-globe me-1"></i>Umum</span>`;
+    }
+
+    // Tentukan button icon dan text
+    let buttonIcon = 'fa-eye';
+    let buttonText = 'Lihat Detail';
+    
+    if (data.type === 'youtube') {
+        buttonIcon = 'fa-play-circle';
+        buttonText = 'Tonton Video';
+    } else if (data.type === 'multimedia') {
+        buttonIcon = 'fa-photo-video';
+        buttonText = 'Lihat Media';
+    }
+    
+    const imageCount = data.images ? data.images.length : 0;
+    const videoCount = data.youtubeUrls ? data.youtubeUrls.length : 0;
+
+    const html = `
+        <div class="kegiatan-card" style="max-width: 400px; margin: 0 auto;">
+            <div class="kegiatan-img-container">
+                <img src="${data.images && data.images[0] ? data.images[0] : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'}" 
+                     class="kegiatan-img" alt="${data.title}" 
+                     onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
+            </div>
+            <div class="kegiatan-content">
+                <div class="kegiatan-date">
+                    <i class="fas fa-calendar-alt"></i> ${formattedDate}
+                    ${participantHtml}
+                </div>
+                <h3 class="kegiatan-title" style="font-size: 1.2rem;">${data.title}</h3>
+                <p class="kegiatan-desc" style="font-size: 0.9rem;">${data.description}</p>
+                <div class="kegiatan-tags">
+                    ${data.tags.map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
+                </div>
+                <div class="card-buttons">
+                    <a href="${validateUrl(data.url)}" class="btn-card-detail" target="_blank">
+                        <i class="fas ${buttonIcon} me-2"></i>
+                        ${buttonText}
+                    </a>
+                    <button class="btn-card-preview" onclick="alert('Ini adalah preview. Di halaman utama, tombol ini akan membuka modal detail.')" title="Quick Preview">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="mt-3 text-center text-muted small">
+                    <i class="fas fa-images me-1"></i> ${imageCount} gambar | 
+                    <i class="fab fa-youtube me-1"></i> ${videoCount} video
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
+// Fungsi Copy to Clipboard
+function copyToClipboard() {
+    const codeText = document.getElementById('codeOutput').textContent;
+    if(codeText.includes("// Kode akan muncul")) {
+        showToast('Tidak Ada Kode', 'Silakan generate preview terlebih dahulu.', 'warning');
+        return;
+    }
+
+    navigator.clipboard.writeText(codeText).then(() => {
+        showToast('Kode Disalin!', 'Script berhasil disalin ke clipboard. Paste ke dalam file script.js.', 'success');
+    }).catch(err => {
+        console.error('Gagal menyalin: ', err);
+        showToast('Gagal Menyalin', 'Terjadi kesalahan saat menyalin kode.', 'danger');
+    });
+}
+
+// Fungsi untuk memuat filter dari URL hash
+function loadFilterFromHash() {
+    if (window.location.hash.includes('filter?')) {
+        const hashParams = window.location.hash.split('?')[1];
+        const params = new URLSearchParams(hashParams);
+        
+        const bulan = params.get('bulan');
+        const tahun = params.get('tahun');
+        const keyword = params.get('q');
+        
+        if (bulan) document.getElementById('filterBulan').value = bulan;
+        if (tahun) document.getElementById('filterTahun').value = tahun;
+        if (keyword) document.getElementById('filterKeyword').value = keyword;
+        
+        if (bulan || tahun || keyword) {
+            setTimeout(filterKegiatan, 100);
+        }
+    }
+}
+
+// Fungsi untuk membersihkan form generator
+function clearGeneratorForm() {
+    document.getElementById('genTitle').value = '';
+    document.getElementById('genDate').value = '';
+    document.getElementById('genCategory').value = 'pelatihan';
+    document.getElementById('genLocation').value = '';
+    document.getElementById('genImages').value = '';
+    document.getElementById('genVideos').value = '';
+    document.getElementById('genDetailUrl').value = '';
+    document.getElementById('genDesc').value = '';
+    document.getElementById('genTags').value = '';
+    
+    document.getElementById('previewCardContainer').innerHTML = `
+        <div class="text-center text-muted py-5 border rounded bg-white">
+            <i class="fas fa-image fa-3x mb-3 text-secondary"></i>
+            <p>Klik tombol Generate untuk melihat preview</p>
+        </div>
+    `;
+    
+    document.getElementById('codeOutput').textContent = '// Kode akan muncul di sini...';
+}
+
+// Panggil fungsi untuk memuat filter dari hash saat halaman dimuat
+setTimeout(loadFilterFromHash, 500);
+
+// Event listener untuk modal generator saat ditutup
+document.getElementById('generatorModal').addEventListener('hidden.bs.modal', clearGeneratorForm);
+
+// Export global functions
+window.changePage = changePage;
+window.filterKegiatan = filterKegiatan;
+window.resetFilter = resetFilter;
+window.showKegiatanDetail = showKegiatanDetail;
+window.generatePreview = generatePreview;
+window.copyToClipboard = copyToClipboard;
+window.clearGeneratorForm = clearGeneratorForm;
+window.extractYouTubeId = extractYouTubeId;
+window.validateUrl = validateUrl;
