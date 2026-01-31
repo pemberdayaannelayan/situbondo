@@ -52,34 +52,31 @@ const kegiatanData = [
         "participants": 0,
         "duration": ""
     },
-           {
-    "id": 1769662672667,
-    "title": "Kerja Bakti Dalam Rangka Persiapan Peresmian Pasar Higienis",
-    "date": "2026-01-19",
-    "description": "Kerja bakti dalam rangka persiapan peresmian pasar higienes ikan segar mimbo\nyang dihadiri oleh camat banyuputih beserta staf, pemdes sumberanyar dan tim bidang pemberdayaan nelayan dari dinas peternakan dan perikanan kabupaten situbondo.\n",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti3.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti4.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti5.jpeg"
-    ],
-    "type": "multimedia",
-    "category": "lainnya",
-    "location": "Desa Sumberanyar Kecamatan Banyuputih",
-    "tags": [
-        "Dinas Peternakan & Perikanan"
-    ],
-    "youtubeUrls": [
-        "https://www.youtube.com/embed/5n4ySz4mEPE"
-    ],
-    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
-    "participants": 0,
-    "duration": ""
-},
-    
-    
-    // Tambahkan data kegiatan lainnya di sini...
+    {
+        "id": 1769662672667,
+        "title": "Kerja Bakti Dalam Rangka Persiapan Peresmian Pasar Higienis",
+        "date": "2026-01-19",
+        "description": "Kerja bakti dalam rangka persiapan peresmian pasar higienes ikan segar mimbo yang dihadiri oleh camat banyuputih beserta staf, pemdes sumberanyar dan tim bidang pemberdayaan nelayan dari dinas peternakan dan perikanan kabupaten situbondo.",
+        "images": [
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti3.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti4.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti5.jpeg"
+        ],
+        "type": "multimedia",
+        "category": "lainnya",
+        "location": "Desa Sumberanyar Kecamatan Banyuputih",
+        "tags": [
+            "Dinas Peternakan & Perikanan"
+        ],
+        "youtubeUrls": [
+            "https://www.youtube.com/embed/5n4ySz4mEPE"
+        ],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
+        "participants": 0,
+        "duration": ""
+    },
 ];
 
 // Inisialisasi AOS Animation
@@ -237,17 +234,14 @@ function displayKegiatan(data, page = 1) {
                     </span>`;
             }
             
-            // Tentukan jenis media (TIDAK DITAMPILKAN SEBAGAI BADGE LAGI)
-            let mediaType = kegiatan.type;
+            // Tentukan jenis media dan teks tombol
             let buttonIcon = 'fa-eye';
             let buttonText = 'Lihat Detail';
             
             if (kegiatan.type === 'youtube' || (kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0)) {
-                mediaType = 'youtube';
                 buttonIcon = 'fa-play-circle';
                 buttonText = 'Tonton Video';
             } else if (kegiatan.type === 'multimedia' || (kegiatan.images && kegiatan.images.length > 0 && kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0)) {
-                mediaType = 'multimedia';
                 buttonIcon = 'fa-photo-video';
                 buttonText = 'Lihat Media';
             }
@@ -255,7 +249,7 @@ function displayKegiatan(data, page = 1) {
             // Validasi URL untuk mencegah error
             const detailUrl = validateUrl(kegiatan.url);
             
-            // Generate Card (TANPA BADGE)
+            // Generate Card dengan tombol baru
             html += `
             <div class="col-lg-4 col-md-6" 
                  data-aos="fade-up" 
@@ -270,7 +264,6 @@ function displayKegiatan(data, page = 1) {
                              alt="${kegiatan.title}"
                              loading="lazy"
                              onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
-                        <!-- BADGE DIHAPUS dari sini -->
                     </div>
                     <div class="kegiatan-content">
                         <div class="kegiatan-date">
@@ -285,13 +278,13 @@ function displayKegiatan(data, page = 1) {
                             ${kegiatan.tags.length > 3 ? `<span class="kegiatan-tag">+${kegiatan.tags.length - 3}</span>` : ''}
                         </div>
                         
-                        <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
-                            <a href="${detailUrl}" class="btn-kegiatan" target="_blank" onclick="event.stopPropagation();">
+                        <div class="card-buttons">
+                            <a href="${detailUrl}" class="btn-card-detail" target="_blank" onclick="event.stopPropagation();">
                                 <i class="fas ${buttonIcon} me-2"></i>
                                 ${buttonText}
                             </a>
-                            <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})">
-                                <i class="fas fa-info-circle"></i>
+                            <button class="btn-card-preview" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})" title="Quick Preview">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -919,7 +912,7 @@ function generatePreview() {
     showToast('Preview Berhasil!', `${imageCount} gambar dan ${videoCount} video telah diproses. URL Detail: ${detailUrl}`, 'success');
 }
 
-// Fungsi Render Preview Card di dalam Modal Generator (TANPA BADGE)
+// Fungsi Render Preview Card di dalam Modal Generator
 function renderPreviewCard(data) {
     const container = document.getElementById('previewCardContainer');
     
@@ -958,7 +951,6 @@ function renderPreviewCard(data) {
                 <img src="${data.images && data.images[0] ? data.images[0] : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'}" 
                      class="kegiatan-img" alt="${data.title}" 
                      onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
-                <!-- BADGE DIHAPUS -->
             </div>
             <div class="kegiatan-content">
                 <div class="kegiatan-date">
@@ -970,16 +962,18 @@ function renderPreviewCard(data) {
                 <div class="kegiatan-tags">
                     ${data.tags.map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
                 </div>
-                <div class="mt-3">
-                    <a href="${validateUrl(data.url)}" class="btn btn-sm btn-outline-primary w-100" target="_blank">
+                <div class="card-buttons">
+                    <a href="${validateUrl(data.url)}" class="btn-card-detail" target="_blank">
                         <i class="fas ${buttonIcon} me-2"></i>
                         ${buttonText}
                     </a>
+                    <button class="btn-card-preview" onclick="alert('Ini adalah preview. Di halaman utama, tombol ini akan membuka modal detail.')" title="Quick Preview">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
-                <div class="mt-2 text-center text-muted small">
+                <div class="mt-3 text-center text-muted small">
                     <i class="fas fa-images me-1"></i> ${imageCount} gambar | 
-                    <i class="fab fa-youtube me-1"></i> ${videoCount} video |
-                    <i class="fas fa-link me-1"></i> URL Detail: <a href="${validateUrl(data.url)}" target="_blank">Link</a>
+                    <i class="fab fa-youtube me-1"></i> ${videoCount} video
                 </div>
             </div>
         </div>
