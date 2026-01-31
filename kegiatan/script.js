@@ -23,8 +23,8 @@ const kegiatanData = [
             "https://www.youtube.com/embed/6TbwAzsGcpM"
         ],
         "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html",
-        "participants": 45,
-        "duration": "4 jam"
+        "participants": 0,
+        "duration": ""
     },
     {
         "id": 1764993106377,
@@ -32,14 +32,13 @@ const kegiatanData = [
         "date": "2025-11-26",
         "description": "Program pendampingan penenggelaman fish apartment merupakan inisiatif konservasi perairan yang mengedepankan pendekatan partisipatif masyarakat. Kegiatan ini menekankan transfer pengetahuan teknis kepada nelayan lokal dalam pemasangan artificial reef, dengan tujuan menciptakan habitat baru bagi biota laut dan mengurangi tekanan penangkapan di area tradisional.",
         "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto7.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto8.jpeg"
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto7.jpeg"
         ],
         "type": "foto",
         "category": "konservasi",
         "location": "Desa Pasir Putih dan Desa Kalianget",
         "tags": [
-            "Fish Apartment",
+            "Fist Apartment",
             "Rumah Ikan Buatan",
             "Artificial Reef",
             "Konservasi Perairan",
@@ -49,260 +48,38 @@ const kegiatanData = [
             "Terumbu Buatan"
         ],
         "youtubeUrls": [],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fish-apartment.html",
-        "participants": 32,
-        "duration": "6 jam"
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html",
+        "participants": 0,
+        "duration": ""
     },
-    {
-        "id": 1764995001234,
-        "title": "Sosialisasi Program Bantuan Peralatan Tangkap Nelayan",
-        "date": "2025-10-15",
-        "description": "Sosialisasi program bantuan peralatan tangkap ikan modern kepada nelayan tradisional Situbondo. Program ini bertujuan meningkatkan efektivitas dan efisiensi penangkapan ikan sekaligus mengurangi dampak negatif terhadap ekosistem laut.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/oktober/sosialisasi1.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/oktober/sosialisasi2.jpeg"
-        ],
-        "type": "foto",
-        "category": "bantuan",
-        "location": "Balai Desa Panarukan",
-        "tags": [
-            "Bantuan Peralatan",
-            "Nelayan Tradisional",
-            "Alat Tangkap Modern",
-            "Situbondo",
-            "Dinas Perikanan"
-        ],
-        "youtubeUrls": [],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/oktober/sosialisasi-bantuan-peralatan.html",
-        "participants": 78,
-        "duration": "3 jam"
-    },
-    {
-        "id": 1764996005678,
-        "title": "Pelatihan Pengolahan Hasil Perikanan bagi Kelompok Ibu-Ibu Nelayan",
-        "date": "2025-09-20",
-        "description": "Pelatihan pengolahan ikan menjadi berbagai produk bernilai ekonomi tinggi seperti bakso ikan, nugget ikan, dan abon ikan. Kegiatan ini memberdayakan ibu-ibu nelayan untuk menambah penghasilan keluarga.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/september/pengolahan1.jpeg"
-        ],
-        "type": "multimedia",
-        "category": "pelatihan",
-        "location": "UMKM Center Situbondo",
-        "tags": [
-            "Pengolahan Ikan",
-            "Ibu-Ibu Nelayan",
-            "Produk Olahan",
-            "Ekonomi Kreatif",
-            "Pemberdayaan Perempuan"
-        ],
-        "youtubeUrls": [
-            "https://www.youtube.com/embed/xY6zV7GcpM"
-        ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/september/pelatihan-pengolahan-ikan.html",
-        "participants": 56,
-        "duration": "8 jam"
-    },
-    {
-        "id": 1764997008912,
-        "title": "Monitoring dan Evaluasi Tambak Udang Vaname",
-        "date": "2025-08-05",
-        "description": "Kegiatan monitoring dan evaluasi budidaya udang vaname di tambak-tambak rakyat wilayah Situbondo. Tim ahli memberikan pendampingan teknis untuk meningkatkan produktivitas dan mengurangi resiko kegagalan panen.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/agustus/tambak1.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/agustus/tambak2.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/agustus/tambak3.jpeg"
-        ],
-        "type": "foto",
-        "category": "budidaya",
-        "location": "Tambak Rakyat Panarukan dan Mangaran",
-        "tags": [
-            "Udang Vaname",
-            "Budidaya Udang",
-            "Monitoring Tambak",
-            "Teknologi Budidaya",
-            "Situbondo"
-        ],
-        "youtubeUrls": [],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/agustus/monitoring-tambak-udang.html",
-        "participants": 24,
-        "duration": "5 jam"
-    },
-    {
-        "id": 1764998003456,
-        "title": "Penanaman Mangrove bersama Komunitas Nelayan Muda",
-        "date": "2025-07-18",
-        "description": "Aksi penanaman 5000 bibit mangrove di pesisir pantai Situbondo yang melibatkan komunitas nelayan muda. Kegiatan ini bertujuan merehabilitasi ekosistem pesisir dan meningkatkan kesadaran lingkungan generasi muda.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/juli/mangrove1.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/juli/mangrove2.jpeg"
-        ],
-        "type": "multimedia",
-        "category": "konservasi",
-        "location": "Pesisir Pantai Pasir Putih",
-        "tags": [
-            "Mangrove",
-            "Konservasi Pesisir",
-            "Nelayan Muda",
-            "Rehabilitasi Ekosistem",
-            "Lingkungan Hidup"
-        ],
-        "youtubeUrls": [
-            "https://www.youtube.com/embed/yZ7zV8GcpM"
-        ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/juli/penanaman-mangrove.html",
-        "participants": 120,
-        "duration": "6 jam"
-    },
-    {
-        "id": 1764999007890,
-        "title": "Bantuan Kapal dan Mesin Tempel untuk Nelayan",
-        "date": "2025-06-22",
-        "description": "Penyerahan bantuan kapal ikan dan mesin tempel kepada nelayan yang terdampak cuaca ekstrim. Program ini merupakan bentuk kepedulian pemerintah terhadap kelangsungan usaha perikanan tangkap.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/juni/bantukapal1.jpeg"
-        ],
-        "type": "foto",
-        "category": "bantuan",
-        "location": "Dermaga Muncar",
-        "tags": [
-            "Bantuan Kapal",
-            "Mesin Tempel",
-            "Nelayan Terdampak",
-            "Bantuan Pemerintah",
-            "Perikanan Tangkap"
-        ],
-        "youtubeUrls": [],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/juni/bantuan-kapal-mesin.html",
-        "participants": 65,
-        "duration": "3 jam"
-    },
-    {
-        "id": 1765000001234,
-        "title": "Workshop Pemasaran Digital Produk Perikanan",
-        "date": "2025-05-30",
-        "description": "Pelatihan pemasaran digital untuk produk perikanan menggunakan platform e-commerce dan media sosial. Workshop ini membantu pelaku usaha perikanan menjangkau pasar yang lebih luas.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/mei/digital1.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/mei/digital2.jpeg"
-        ],
-        "type": "youtube",
-        "category": "pelatihan",
-        "location": "Lab Komputer SMKN 1 Situbondo",
-        "tags": [
-            "Pemasaran Digital",
-            "E-commerce",
-            "Media Sosial",
-            "UMKM Perikanan",
-            "Digitalisasi"
-        ],
-        "youtubeUrls": [
-            "https://www.youtube.com/embed/zA8zV9GcpM",
-            "https://www.youtube.com/embed/aB9zV0GcpM"
-        ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/mei/workshop-digital.html",
-        "participants": 42,
-        "duration": "8 jam"
-    },
-    {
-        "id": 1765001005678,
-        "title": "Pelepasan Tukik (Anak Penyu) di Pantai Pasir Putih",
-        "date": "2025-04-10",
-        "description": "Kegiatan konservasi penyu dengan melepas 150 ekor tukik (anak penyu) jenis lekang ke habitat alaminya. Kegiatan ini melibatkan siswa sekolah dan masyarakat pesisir.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/april/tukik1.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/april/tukik2.jpeg"
-        ],
-        "type": "multimedia",
-        "category": "konservasi",
-        "location": "Pantai Pasir Putih",
-        "tags": [
-            "Konservasi Penyu",
-            "Tukik",
-            "Pelepasan Penyu",
-            "Edukasi Lingkungan",
-            "Siswa Sekolah"
-        ],
-        "youtubeUrls": [
-            "https://www.youtube.com/embed/bC1zV2GcpM"
-        ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/april/pelepasan-tukik.html",
-        "participants": 85,
-        "duration": "2 jam"
-    },
-    {
-        "id": 1765002009012,
-        "title": "Festival Kuliner Ikan Situbondo 2025",
-        "date": "2025-03-25",
-        "description": "Festival kuliner ikan tahunan yang menampilkan berbagai kreasi masakan berbahan dasar ikan laut. Acara ini bertujuan mempromosikan konsumsi ikan dan mengembangkan wisata kuliner lokal.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/maret/festival1.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/maret/festival2.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/maret/festival3.jpeg"
-        ],
-        "type": "multimedia",
-        "category": "festival",
-        "location": "Alun-alun Situbondo",
-        "tags": [
-            "Festival Kuliner",
-            "Wisata Kuliner",
-            "Promosi Ikan",
-            "Kreasi Masakan",
-            "Event Tahunan"
-        ],
-        "youtubeUrls": [
-            "https://www.youtube.com/embed/cD2zV3GcpM",
-            "https://www.youtube.com/embed/dE3zV4GcpM"
-        ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/maret/festival-kuliner-ikan.html",
-        "participants": 500,
-        "duration": "2 hari"
-    },
-    {
-        "id": 1765003003456,
-        "title": "Pelatihan Keselamatan Berlayar untuk Nelayan",
-        "date": "2025-02-14",
-        "description": "Pelatihan keselamatan berlayar dan penggunaan alat keselamatan di laut. Materi meliputi teknik bertahan hidup di laut, penggunaan life jacket, dan komunikasi darurat.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/februari/keselamatan1.jpeg"
-        ],
-        "type": "foto",
-        "category": "pelatihan",
-        "location": "Pantai Cemara",
-        "tags": [
-            "Keselamatan Berlayar",
-            "Alat Keselamatan",
-            "Nelayan Aman",
-            "Bertahan Hidup",
-            "Safety First"
-        ],
-        "youtubeUrls": [],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/februari/pelatihan-keselamatan.html",
-        "participants": 38,
-        "duration": "5 jam"
-    },
-    {
-        "id": 1765004007890,
-        "title": "Kunjungan Kerja Ke Gubernur Jawa Timur",
-        "date": "2025-01-08",
-        "description": "Kunjungan kerja Dinas Perikanan Situbondo ke Gubernur Jawa Timur untuk koordinasi program pengembangan perikanan dan pembahasan anggaran tahun 2025.",
-        "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/januari/kunjungan1.jpeg"
-        ],
-        "type": "foto",
-        "category": "kunjungan",
-        "location": "Kantor Gubernur Jawa Timur, Surabaya",
-        "tags": [
-            "Kunjungan Kerja",
-            "Koordinasi Program",
-            "Gubernur Jatim",
-            "Pengembangan Perikanan",
-            "Anggaran 2025"
-        ],
-        "youtubeUrls": [],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/januari/kunjungan-gubernur.html",
-        "participants": 15,
-        "duration": "4 jam"
-    }
+           {
+    "id": 1769662672667,
+    "title": "Kerja Bakti Dalam Rangka Persiapan Peresmian Pasar Higienis",
+    "date": "2026-01-19",
+    "description": "Kerja bakti dalam rangka persiapan peresmian pasar higienes ikan segar mimbo\nyang dihadiri oleh camat banyuputih beserta staf, pemdes sumberanyar dan tim bidang pemberdayaan nelayan dari dinas peternakan dan perikanan kabupaten situbondo.\n",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti3.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti4.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti5.jpeg"
+    ],
+    "type": "multimedia",
+    "category": "lainnya",
+    "location": "Desa Sumberanyar Kecamatan Banyuputih",
+    "tags": [
+        "Dinas Peternakan & Perikanan"
+    ],
+    "youtubeUrls": [
+        "https://www.youtube.com/embed/5n4ySz4mEPE"
+    ],
+    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
+    "participants": 0,
+    "duration": ""
+},
+    
+    
+    // Tambahkan data kegiatan lainnya di sini...
 ];
 
 // Inisialisasi AOS Animation
@@ -478,7 +255,7 @@ function displayKegiatan(data, page = 1) {
             // Validasi URL untuk mencegah error
             const detailUrl = validateUrl(kegiatan.url);
             
-            // Generate Card dengan tombol yang lebih baik
+            // Generate Card (TANPA BADGE)
             html += `
             <div class="col-lg-4 col-md-6" 
                  data-aos="fade-up" 
@@ -493,6 +270,7 @@ function displayKegiatan(data, page = 1) {
                              alt="${kegiatan.title}"
                              loading="lazy"
                              onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
+                        <!-- BADGE DIHAPUS dari sini -->
                     </div>
                     <div class="kegiatan-content">
                         <div class="kegiatan-date">
@@ -512,7 +290,7 @@ function displayKegiatan(data, page = 1) {
                                 <i class="fas ${buttonIcon} me-2"></i>
                                 ${buttonText}
                             </a>
-                            <button class="btn-info-card" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})" title="Detail kegiatan">
+                            <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})">
                                 <i class="fas fa-info-circle"></i>
                             </button>
                         </div>
@@ -1141,7 +919,7 @@ function generatePreview() {
     showToast('Preview Berhasil!', `${imageCount} gambar dan ${videoCount} video telah diproses. URL Detail: ${detailUrl}`, 'success');
 }
 
-// Fungsi Render Preview Card di dalam Modal Generator (Dengan Tombol yang Bagus)
+// Fungsi Render Preview Card di dalam Modal Generator (TANPA BADGE)
 function renderPreviewCard(data) {
     const container = document.getElementById('previewCardContainer');
     
@@ -1180,6 +958,7 @@ function renderPreviewCard(data) {
                 <img src="${data.images && data.images[0] ? data.images[0] : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'}" 
                      class="kegiatan-img" alt="${data.title}" 
                      onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
+                <!-- BADGE DIHAPUS -->
             </div>
             <div class="kegiatan-content">
                 <div class="kegiatan-date">
@@ -1192,7 +971,7 @@ function renderPreviewCard(data) {
                     ${data.tags.map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
                 </div>
                 <div class="mt-3">
-                    <a href="${validateUrl(data.url)}" class="btn-kegiatan w-100" target="_blank">
+                    <a href="${validateUrl(data.url)}" class="btn btn-sm btn-outline-primary w-100" target="_blank">
                         <i class="fas ${buttonIcon} me-2"></i>
                         ${buttonText}
                     </a>
