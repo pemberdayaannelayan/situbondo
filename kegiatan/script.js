@@ -52,33 +52,6 @@ const kegiatanData = [
         "participants": 0,
         "duration": ""
     },
-           {
-    "id": 1769662672667,
-    "title": "Kerja Bakti Dalam Rangka Persiapan Peresmian Pasar Higienis",
-    "date": "2026-01-19",
-    "description": "Kerja bakti dalam rangka persiapan peresmian pasar higienes ikan segar mimbo\nyang dihadiri oleh camat banyuputih beserta staf, pemdes sumberanyar dan tim bidang pemberdayaan nelayan dari dinas peternakan dan perikanan kabupaten situbondo.\n",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti3.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti4.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti5.jpeg"
-    ],
-    "type": "multimedia",
-    "category": "lainnya",
-    "location": "Desa Sumberanyar Kecamatan Banyuputih",
-    "tags": [
-        "Dinas Peternakan & Perikanan"
-    ],
-    "youtubeUrls": [
-        "https://www.youtube.com/embed/5n4ySz4mEPE"
-    ],
-    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
-    "participants": 0,
-    "duration": ""
-},
-    
-    
     // Tambahkan data kegiatan lainnya di sini...
 ];
 
@@ -255,7 +228,7 @@ function displayKegiatan(data, page = 1) {
             // Validasi URL untuk mencegah error
             const detailUrl = validateUrl(kegiatan.url);
             
-            // Generate Card (TANPA BADGE)
+            // Generate Card dengan tombol yang lebih baik
             html += `
             <div class="col-lg-4 col-md-6" 
                  data-aos="fade-up" 
@@ -270,7 +243,6 @@ function displayKegiatan(data, page = 1) {
                              alt="${kegiatan.title}"
                              loading="lazy"
                              onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
-                        <!-- BADGE DIHAPUS dari sini -->
                     </div>
                     <div class="kegiatan-content">
                         <div class="kegiatan-date">
@@ -290,7 +262,7 @@ function displayKegiatan(data, page = 1) {
                                 <i class="fas ${buttonIcon} me-2"></i>
                                 ${buttonText}
                             </a>
-                            <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})">
+                            <button class="btn-info-card" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})" title="Detail kegiatan">
                                 <i class="fas fa-info-circle"></i>
                             </button>
                         </div>
@@ -919,7 +891,7 @@ function generatePreview() {
     showToast('Preview Berhasil!', `${imageCount} gambar dan ${videoCount} video telah diproses. URL Detail: ${detailUrl}`, 'success');
 }
 
-// Fungsi Render Preview Card di dalam Modal Generator (TANPA BADGE)
+// Fungsi Render Preview Card di dalam Modal Generator (Dengan Tombol yang Bagus)
 function renderPreviewCard(data) {
     const container = document.getElementById('previewCardContainer');
     
@@ -958,7 +930,6 @@ function renderPreviewCard(data) {
                 <img src="${data.images && data.images[0] ? data.images[0] : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'}" 
                      class="kegiatan-img" alt="${data.title}" 
                      onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
-                <!-- BADGE DIHAPUS -->
             </div>
             <div class="kegiatan-content">
                 <div class="kegiatan-date">
@@ -971,7 +942,7 @@ function renderPreviewCard(data) {
                     ${data.tags.map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
                 </div>
                 <div class="mt-3">
-                    <a href="${validateUrl(data.url)}" class="btn btn-sm btn-outline-primary w-100" target="_blank">
+                    <a href="${validateUrl(data.url)}" class="btn-kegiatan w-100" target="_blank">
                         <i class="fas ${buttonIcon} me-2"></i>
                         ${buttonText}
                     </a>
