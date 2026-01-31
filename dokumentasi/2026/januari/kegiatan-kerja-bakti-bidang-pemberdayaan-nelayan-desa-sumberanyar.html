@@ -49,6 +49,7 @@
             background-color: var(--light-gray);
             position: relative;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -64,6 +65,7 @@
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
             padding: 1rem 0;
             transition: all 0.3s ease;
+            z-index: 1030;
         }
 
         .navbar-brand {
@@ -833,6 +835,12 @@
             .footer {
                 padding: 60px 0 30px;
             }
+            
+            .btn-download, .btn-share {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -870,6 +878,17 @@
             .pdf-auth-content {
                 padding: 25px;
             }
+            
+            .action-buttons .d-flex {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .action-buttons .btn-download,
+            .action-buttons .btn-share {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 576px) {
@@ -895,12 +914,135 @@
                 font-size: 1.2rem;
             }
             
-            .action-buttons .btn-download,
-            .action-buttons .btn-share {
-                width: 100%;
-                justify-content: center;
-                margin-bottom: 10px;
-                padding: 14px 20px;
+            .content-box {
+                padding: 20px;
+            }
+            
+            .highlight-box {
+                padding: 15px;
+            }
+            
+            .gallery-item {
+                height: 200px;
+            }
+            
+            .video-section, .speakers-section, .modules-section, .gallery-section {
+                padding: 50px 0;
+            }
+            
+            .footer {
+                padding: 40px 0 20px;
+            }
+            
+            .footer h5 {
+                font-size: 1.1rem;
+            }
+            
+            .navbar-brand img {
+                height: 40px;
+            }
+            
+            .brand-text h5 {
+                font-size: 0.95rem;
+            }
+            
+            .brand-text span {
+                font-size: 0.65rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.9rem;
+            }
+            
+            .pdf-auth-content {
+                padding: 20px;
+            }
+            
+            .auth-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .modal-content {
+                margin: 10px;
+            }
+            
+            .pdf-preview-content {
+                padding: 15px;
+            }
+            
+            .pdf-preview {
+                padding: 20px;
+            }
+            
+            /* Fix untuk konten yang overflow di mobile */
+            .container, .container-fluid {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            
+            .row {
+                margin-left: -8px;
+                margin-right: -8px;
+            }
+            
+            .col, [class*="col-"] {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            
+            /* Perbaiki tombol navbar */
+            .navbar-collapse {
+                background: white;
+                border-radius: 10px;
+                padding: 15px;
+                margin-top: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+            
+            /* Perbaiki layout untuk info cards di hero */
+            .hero-section .row.g-4 {
+                margin-left: -8px;
+                margin-right: -8px;
+            }
+            
+            .hero-section .col-md-4 {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+        }
+        
+        /* Tambahan untuk perangkat sangat kecil */
+        @media (max-width: 375px) {
+            .hero-section h1 {
+                font-size: 1.4rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
+            
+            .btn-download, .btn-share {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .speaker-name {
+                font-size: 1.1rem;
+            }
+            
+            .speaker-role {
+                font-size: 0.9rem;
+                padding: 6px 15px;
+            }
+        }
+        
+        /* Fix untuk iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            .hero-section {
+                background-attachment: scroll;
             }
         }
     </style>
@@ -1012,7 +1154,7 @@
                 </div>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
             </button>
             
@@ -1423,7 +1565,9 @@
                         </div>
                     </div>
                 </div>
-           </section>
+            </div>
+        </div>
+    </section>
 
     <!-- Video Section -->
     <section class="video-section">
@@ -1716,26 +1860,20 @@
         let lockoutTime = 0;
         const lockoutDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
         
-        // Generate dynamic security code based on date (DDMMYYYY format)
-        // This is the SECRET code that only authorized personnel should know
-        // It changes daily based on the date
+        // PERBAIKAN: Generate security code berdasarkan format DDMMYYYY tanpa transformasi
         function generateSecurityCode() {
             const now = new Date();
             const day = String(now.getDate()).padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
             
-            // Create base code from date
-            const baseCode = day + month + year;
+            // Format: DDMMYYYY
+            const securityCode = day + month + year;
             
-            // Optional: Add a simple transformation to make it less obvious
-            // This is just an example - in production, use a more secure method
-            const transformedCode = baseCode.split('').map(char => {
-                const num = parseInt(char);
-                return ((num + 3) % 10).toString();
-            }).join('');
+            // Debug: tampilkan kode di console (hapus di production)
+            console.log('Kode keamanan hari ini:', securityCode, ' (Tanggal:', now.toLocaleDateString('id-ID'), ')');
             
-            return transformedCode;
+            return securityCode;
         }
 
         // Check if user is locked out
@@ -1794,7 +1932,11 @@
             document.getElementById('securityCodeInput').classList.remove('is-invalid');
             
             // Update attempts counter
-            document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
+            const attemptsLeft = maxAttempts - currentAttempts;
+            document.getElementById('attemptsLeft').textContent = attemptsLeft;
+            
+            // Tampilkan kode saat ini di console untuk debugging
+            console.log('Kode yang seharusnya:', generateSecurityCode());
             
             // Show modal
             document.getElementById('pdfAuthModal').style.display = 'flex';
@@ -1835,6 +1977,7 @@
                 return;
             }
             
+            // PERBAIKAN: Hilangkan transformasi - bandingkan langsung dengan kode asli
             if (userInput === correctCode) {
                 // Code is correct - reset attempts
                 currentAttempts = 0;
@@ -2283,7 +2426,7 @@
             }
         }
 
-        // Fix for footer positioning
+        // Fix untuk footer positioning
         function fixFooterPosition() {
             const footer = document.querySelector('.footer');
             const bodyHeight = document.body.offsetHeight;
@@ -2322,6 +2465,47 @@
         document.getElementById('securityCodeInput').addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
+        
+        // PERBAIKAN: Fungsi untuk mengatasi masalah input di mobile
+        document.getElementById('securityCodeInput').addEventListener('focus', function() {
+            // Scroll ke input field di mobile
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+        });
+        
+        // PERBAIKAN: Fungsi untuk menangani resize window dengan lebih baik
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                // Reinitialize AOS setelah resize
+                AOS.refresh();
+                fixFooterPosition();
+            }, 250);
+        });
+        
+        // PERBAIKAN: Untuk mobile, buat tombol navbar lebih mudah diklik
+        document.querySelector('.navbar-toggler').addEventListener('click', function() {
+            // Tambahkan sedikit delay untuk memastikan dropdown terbuka
+            setTimeout(function() {
+                if (window.innerWidth <= 768) {
+                    const navbarCollapse = document.getElementById('navbarNav');
+                    if (navbarCollapse.classList.contains('show')) {
+                        // Scroll sedikit ke bawah untuk melihat menu
+                        window.scrollBy(0, 100);
+                    }
+                }
+            }, 300);
+        });
+        
+        // Debug: tampilkan kode keamanan saat ini di console
+        console.log('=================================');
+        console.log('DEBUG: Kode keamanan untuk hari ini (DDMMYYYY):', generateSecurityCode());
+        console.log('Tanggal saat ini:', new Date().toLocaleDateString('id-ID'));
+        console.log('=================================');
     </script>
 </body>
 </html>
