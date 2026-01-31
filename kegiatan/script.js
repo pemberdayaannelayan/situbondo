@@ -133,7 +133,31 @@ const kegiatanData = [
     "participants": 0,
     "duration": ""
 },
-    
+        {
+    "id": 1769882359563,
+    "title": "Penyerahan Bantuan Sosial Kepada Masyarakat Korban Banjir",
+    "date": "2026-01-26",
+    "description": "Dinas Peternakan dan Perikanan Situbondo memberikan bantuan sosial kepada masyarakat korban banjir di wilayah Besuki",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-penyerahan-bantuan-sosial-korban-banjir-besuki.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-bpbd-situbondo-1.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-bersama-bpbd-situbondo.jpeg"
+    ],
+    "type": "foto",
+    "category": "bantuan",
+    "location": "Kecamatan Besuki",
+    "tags": [
+        "Dinas Kelautan Dan Perikanan Provinsi Jawa Timur",
+        "Bidang Pemberdayaan Nelayan",
+        "Bantuan Sosial",
+        "Kelompok Nelayan",
+        "Korban Banjir"
+    ],
+    "youtubeUrls": [],
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-sosial-kepada-masyarakat-korban-banjir-besuki.html",
+    "participants": 0,
+    "duration": ""
+},
         {
     "id": 1769874483619,
     "title": "Rapat Koordinasi Inovasi Bidang Pemberdayaan Nelayan",
