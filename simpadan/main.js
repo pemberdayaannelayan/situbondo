@@ -1,47 +1,47 @@
 // =====================================================
-// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.1 FINAL
-// DENGAN FITUR INPUT ALAMAT YANG DISEMPURNAKAN
-// REVISI: TAMBAHAN INPUT FORM ALAMAT LENGKAP
+// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.0 FINAL
+// DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
+// REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
 // =====================================================
 
-// Data ikan yang diperbarui dan dilengkapi
+// Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
 const FISH_CATEGORIES = {
     "Demersal": [
-        {name: "Ikan Mangla (Pomadasys spp.)", latin: "Pomadasys spp.", desc: "Ikan demersal yang hidup di dasar berpasir, sering ditemukan di perairan tropis. Dagingnya putih dan gurih."},
-        {name: "Ikan Sebelah (Pleuronectiformes)", latin: "Pleuronectiformes", desc: "Ikan pipih dengan kedua mata di satu sisi tubuh. Hidup di dasar laut berpasir atau berlumpur."},
-        {name: "Ikan Lidah (Cynoglossus spp.)", latin: "Cynoglossus spp.", desc: "Bentuk pipih memanjang seperti lidah, hidup di dasar berlumpur. Populer untuk konsumsi lokal."},
-        {name: "Ikan Petek (Leiognathus spp.)", latin: "Leiognathus spp.", desc: "Ikan kecil berwarna keperakan, hidup di dasar perairan dangkal. Sering digunakan sebagai umpan."},
-        {name: "Ikan Duri (Arius spp.)", latin: "Arius spp.", desc: "Memiliki duri tajam di siripnya. Hidup di dasar berlumpur, dagingnya lembut bertekstur."},
-        {name: "Ikan Kerapu (Epinephelus spp.)", latin: "Epinephelus spp.", desc: "Ikan demersal yang hidup di karang. Bernilai ekonomi tinggi dengan daging padat."},
-        {name: "Ikan Kakap Merah (Lutjanus spp.)", latin: "Lutjanus spp.", desc: "Ikan demersal berwarna merah, hidup di karang. Salah satu ikan komersial penting."},
-        {name: "Ikan Sembilang (Plotosus canius)", latin: "Plotosus canius", desc: "Ikan demersal bertubuh panjang, hidup di dasar berlumpur. Memiliki bisa pada duri siripnya."},
-        {name: "Ikan Biji Nangka (Upeneus spp.)", latin: "Upeneus spp.", desc: "Ikan demersal kecil dengan sungut di mulut. Hidup di dasar berpasir."},
-        {name: "Ikan Kurisi (Nemipterus spp.)", latin: "Nemipterus spp.", desc: "Ikan demersal dengan ekor bercabang, hidup di dasar berpasir. Warna tubuh merah muda."},
-        {name: "Ikan Togek / Mendut (Star Triggerfish)", latin: "Abalistes stellaris", desc: "Ikan demersal dengan tubuh pipih dan sirip punggung yang khas. Hidup di dasar berpasir atau berlumpur, sering ditemukan di perairan tropis. Dikenal dengan pola bintang di tubuhnya."}
+        {name: "Ikan Mangla (Pomadasys spp.)", latin: "Pomadasys spp."},
+        {name: "Ikan Sebelah (Pleuronectiformes)", latin: "Pleuronectiformes"},
+        {name: "Ikan Lidah (Cynoglossus spp.)", latin: "Cynoglossus spp."},
+        {name: "Ikan Petek (Leiognathus spp.)", latin: "Leiognathus spp."},
+        {name: "Ikan Duri (Arius spp.)", latin: "Arius spp."},
+        {name: "Ikan Kerapu (Epinephelus spp.)", latin: "Epinephelus spp."},
+        {name: "Ikan Kakap Merah (Lutjanus spp.)", latin: "Lutjanus spp."},
+        {name: "Ikan Sembilang (Plotosus canius)", latin: "Plotosus canius"},
+        {name: "Ikan Biji Nangka (Upeneus spp.)", latin: "Upeneus spp."},
+        {name: "Ikan Kurisi (Nemipterus spp.)", latin: "Nemipterus spp."},
+        {name: "Ikan Togek / Mendut (Star Triggerfish)", latin: "Abalistes stellaris"}
     ],
     "Pelagis Kecil": [
-        {name: "Ikan Tembang (Sardinella gibbosa)", latin: "Sardinella gibbosa", desc: "Ikan pelagis kecil yang hidup dalam kawanan besar. Tubuh ramping, sering diawetkan."},
-        {name: "Ikan Kembung Lelaki & Perempuan (Rastrelliger spp.)", latin: "Rastrelliger spp.", desc: "Ikan pelagis kecil dengan tubuh pipih. Salah satu ikan ekonomis penting di Indonesia."},
-        {name: "Ikan Selar Kuning (Selaroides leptolepis)", latin: "Selaroides leptolepis", desc: "Ikan kecil berwarna kuning keperakan. Hidup dalam gerombolan di perairan pantai."},
-        {name: "Ikan Layang (Decapterus spp.)", latin: "Decapterus spp.", desc: "Ikan pelagis kecil dengan tubuh memanjang. Sering digunakan untuk pindang dan kalengan."},
-        {name: "Ikan Teri (Stolephorus spp.)", latin: "Stolephorus spp.", desc: "Ikan terkecil dalam kelompok pelagis. Biasanya dikeringkan atau diolah menjadi terasi."},
-        {name: "Ikan Japuh (Caranx spp.)", latin: "Caranx spp.", desc: "Ikan pelagis kecil dengan tubuh agak tinggi. Hidup dalam kawanan di perairan pantai."},
-        {name: "Ikan Lemuru (Sardinella lemuru)", latin: "Sardinella lemuru", desc: "Ikan pelagis kecil khusus di Selat Bali. Bahan utama industri pengalengan."},
-        {name: "Ikan Bentong (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil dengan tubuh pipih. Cepat berenang dalam kawanan besar."},
-        {name: "Ikan Banyar (Carangoides spp.)", latin: "Carangoides spp.", desc: "Ikan pelagis kecil dengan bentuk tubuh ramping. Hidup di perairan pantai."},
-        {name: "Ikan Banyar Mata Besar (Megalaspis cordyla)", latin: "Megalaspis cordyla", desc: "Ikan pelagis kecil dengan mata besar. Aktif pada malam hari."}
+        {name: "Ikan Tembang (Sardinella gibbosa)", latin: "Sardinella gibbosa"},
+        {name: "Ikan Kembung Lelaki & Perempuan (Rastrelliger spp.)", latin: "Rastrelliger spp."},
+        {name: "Ikan Selar Kuning (Selaroides leptolepis)", latin: "Selaroides leptolepis"},
+        {name: "Ikan Layang (Decapterus spp.)", latin: "Decapterus spp."},
+        {name: "Ikan Teri (Stolephorus spp.)", latin: "Stolephorus spp."},
+        {name: "Ikan Japuh (Caranx spp.)", latin: "Caranx spp."},
+        {name: "Ikan Lemuru (Sardinella lemuru)", latin: "Sardinella lemuru"},
+        {name: "Ikan Bentong (Megalaspis cordyla)", latin: "Megalaspis cordyla"},
+        {name: "Ikan Banyar (Carangoides spp.)", latin: "Carangoides spp."},
+        {name: "Ikan Banyar Mata Besar (Megalaspis cordyla)", latin: "Megalaspis cordyla"}
     ],
     "Pelagis Besar": [
-        {name: "Ikan Tongkol (Euthynnus affinis)", latin: "Euthynnus affinis", desc: "Ikan pelagis besar yang bermigrasi. Dagingnya padat, sering dibuat abon atau pindang."},
-        {name: "Ikan Cakalang (Katsuwonus pelamis)", latin: "Katsuwonus pelamis", desc: "Ikan pelagis besar berwarna biru metalik. Bahan utama tuna kalengan."},
-        {name: "Ikan Tenggiri (Scomberomorus commerson)", latin: "Scomberomorus commerson", desc: "Ikan pelagis besar dengan tubuh memanjang. Dagingnya lembut untuk pempek."},
-        {name: "Ikan Tuna Sirip Kuning (Thunnus albacares)", latin: "Thunnus albacares", desc: "Ikan pelagis besar bernilai tinggi. Siripnya berwarna kuning cerah."},
-        {name: "Ikan Tuna Mata Besar (Thunnus obesus)", latin: "Thunnus obesus", desc: "Ikan pelagis besar dengan mata besar. Hidup di perairan dalam."},
-        {name: "Ikan Layur (Trichiurus lepturus)", latin: "Trichiurus lepturus", desc: "Ikan pelagis besar bertubuh panjang seperti pita. Dagingnya renyah."},
-        {name: "Ikan Todak (Xiphias gladius)", latin: "Xiphias gladius", desc: "Ikan pelagis besar dengan moncong panjang seperti pedang. Perenang cepat."},
-        {name: "Ikan Lemadang (Coryphaena hippurus)", latin: "Coryphaena hippurus", desc: "Ikan pelagis besar dengan warna tubuh cerah. Sering ditemukan di perairan hangat."},
-        {name: "Ikan Marlin (Makaira spp.)", latin: "Makaira spp.", desc: "Ikan pelagis besar dengan moncong panjang. Target favorit pemancing olahraga."},
-        {name: "Ikan Cucut (Carcharhinus limbatus)", latin: "Carcharhinus limbatus", desc: "Hiu permukaan dengan sirip hitam. Hidup di perairan pantai."}
+        {name: "Ikan Tongkol (Euthynnus affinis)", latin: "Euthynnus affinis"},
+        {name: "Ikan Cakalang (Katsuwonus pelamis)", latin: "Katsuwonus pelamis"},
+        {name: "Ikan Tenggiri (Scomberomorus commerson)", latin: "Scomberomorus commerson"},
+        {name: "Ikan Tuna Sirip Kuning (Thunnus albacares)", latin: "Thunnus albacares"},
+        {name: "Ikan Tuna Mata Besar (Thunnus obesus)", latin: "Thunnus obesus"},
+        {name: "Ikan Layur (Trichiurus lepturus)", latin: "Trichiurus lepturus"},
+        {name: "Ikan Todak (Xiphias gladius)", latin: "Xiphias gladius"},
+        {name: "Ikan Lemadang (Coryphaena hippurus)", latin: "Coryphaena hippurus"},
+        {name: "Ikan Marlin (Makaira spp.)", latin: "Makaira spp."},
+        {name: "Ikan Cucut (Carcharhinus limbatus)", latin: "Carcharhinus limbatus"}
     ]
 };
 
@@ -55,7 +55,6 @@ for (const category in FISH_CATEGORIES) {
         FISH_TYPES.push(fish.name);
         FISH_DETAILS[fish.name] = {
             latin: fish.latin,
-            desc: fish.desc,
             category: category
         };
     });
@@ -86,34 +85,34 @@ const API_FISH_MAPPING = {
     "Lainnya": ["Demersal", "Pelagis Kecil", "Pelagis Besar"]
 };
 
-// Mapping informasi alat tangkap
+// Mapping informasi alat tangkap (disingkat)
 const API_INFO = {
-    "Pukat Cincin": "Alat tangkap berupa jaring besar berbentuk cincin yang ditarik mengelilingi gerombolan ikan. Efektif untuk menangkap ikan pelagis besar seperti tuna, cakalang, dan tongkol. Biasanya dioperasikan oleh kapal berukuran sedang hingga besar.",
-    "Pukat Tarik": "Jaring berbentuk kerucut yang ditarik oleh kapal di permukaan atau pertengahan air. Cocok untuk menangkap ikan pelagis kecil seperti teri, lemuru, dan kembung. Memerlukan kapal dengan mesin yang kuat.",
-    "Pancing Ulur": "Pancing dengan sistem ulur (handline) yang dioperasikan secara manual. Digunakan untuk menangkap ikan dasar seperti kerapu, kakap, dan ikan demersal lainnya. Cocok untuk perairan karang.",
-    "Jaring Insang (gill net)": "Jaring yang dipasang diam di air, ikan yang berenang akan tersangkut insangnya. Cocok untuk berbagai jenis ikan mulai dari demersal hingga pelagis kecil. Efektif di perairan tenang.",
-    "Jaring Angkat (lift net)": "Jaring berbentuk persegi yang diturunkan ke air lalu diangkat cepat. Efektif untuk ikan permukaan seperti teri dan ikan pelagis kecil. Biasanya menggunakan lampu untuk menarik ikan.",
-    "Pancing": "Alat tangkap tradisional menggunakan mata pancing dan umpan. Fleksibel untuk berbagai jenis ikan. Termasuk pancing tonda, pancing rawai, dan pancing tangan.",
-    "Perangkap Bubu": "Perangkap berbentuk kurungan untuk menjebak ikan. Umum untuk menangkap ikan karang, udang, dan kepiting. Terbuat dari bambu atau jaring.",
-    "Lainnya": "Alat tangkap lain yang tidak termasuk dalam kategori di atas seperti sero, jermal, atau alat tradisional setempat."
+    "Pukat Cincin": "Alat tangkap untuk ikan pelagis besar",
+    "Pukat Tarik": "Alat tangkap untuk ikan pelagis kecil",
+    "Pancing Ulur": "Alat tangkap untuk ikan dasar",
+    "Jaring Insang (gill net)": "Alat tangkap untuk berbagai jenis ikan",
+    "Jaring Angkat (lift net)": "Alat tangkap untuk ikan permukaan",
+    "Pancing": "Alat tangkap tradisional",
+    "Perangkap Bubu": "Alat tangkap berupa perangkap",
+    "Lainnya": "Alat tangkap lainnya"
 };
 
-// Mapping informasi perahu
+// Mapping informasi perahu (disingkat)
 const KAPAL_INFO = {
-    "Perahu Jukung": "Perahu tradisional kayu kecil, umumnya tanpa mesin atau bermesin kecil (5-15 PK). Cocok untuk perairan tenang dan dekat pantai (0-5 mil). Biasanya digunakan untuk pancing, perangkap bubu, dan jaring insang. Kapasitas 1-3 orang.",
-    "Perahu Mayang": "Perahu tradisional yang lebih besar dari jukung, biasanya bermesin tempel (15-40 PK). Untuk penangkapan di perairan sedang (5-12 mil). Cocok untuk pukat tarik, jaring insang, dan jaring angkat. Kapasitas 3-5 orang.",
-    "Perahu Slerek": "Perahu khas Situbondo dengan bentuk ramping, biasanya menggunakan layar atau mesin kecil (10-30 PK). Untuk operasi dekat pantai (0-8 mil). Cocok untuk pukat cincin dan jaring angkat. Kapasitas 2-4 orang.",
-    "Perahu Insang": "Perahu khusus untuk operasi jaring insang (gill net), dilengkapi dengan sistem pemasangan jaring. Mesin 20-50 PK. Untuk perairan pantai hingga sedang (5-15 mil). Kapasitas 2-3 orang.",
-    "Perahu Jaring Angkat": "Perahu dengan sistem derek untuk mengoperasikan jaring angkat (lift net). Biasanya memiliki lampu untuk menarik ikan. Mesin 30-60 PK. Untuk perairan pantai (0-10 mil). Kapasitas 3-6 orang.",
-    "Perahu Pancing": "Perahu yang didesain khusus untuk operasi pancing, baik handline maupun rawai. Dilengkapi dengan tempat pancing dan penyimpanan hasil. Mesin 15-40 PK. Untuk berbagai jenis perairan. Kapasitas 2-4 orang.",
-    "Perahu Pukat Tarik": "Perahu yang dilengkapi dengan sistem penarik pukat (trawl net) untuk menangkap ikan di dasar laut. Biasanya berukuran sedang hingga besar dengan mesin yang kuat (40-100 PK). Untuk perairan sedang hingga lepas pantai (10-30 mil). Kapasitas 4-8 orang.",
-    "Lainnya": "Jenis kapal lain yang tidak termasuk dalam kategori di atas seperti kapal motor besar, perahu fiberglass modern, atau kapal dengan spesifikasi khusus."
+    "Perahu Jukung": "Perahu tradisional kecil",
+    "Perahu Mayang": "Perahu tradisional sedang",
+    "Perahu Slerek": "Perahu khas Situbondo",
+    "Perahu Insang": "Perahu untuk jaring insang",
+    "Perahu Jaring Angkat": "Perahu untuk jaring angkat",
+    "Perahu Pancing": "Perahu untuk pancing",
+    "Perahu Pukat Tarik": "Perahu untuk pukat tarik",
+    "Lainnya": "Jenis kapal lainnya"
 };
 
 const PROFESI_INFO = {
-    "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama dan tidak memiliki pekerjaan lain. Biasanya melaut setiap hari atau sesuai musim tangkap.",
-    "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan namun memberikan kontribusi pendapatan yang signifikan (lebih dari 50% pendapatan).",
-    "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan hanya pada musim tertentu atau sebagai pekerjaan tambahan (kurang dari 50% pendapatan)."
+    "Nelayan Penuh Waktu": "Nelayan yang bekerja sebagai penangkap ikan sebagai mata pencaharian utama",
+    "Nelayan Sambilan Utama": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan sampingan utama",
+    "Nelayan Sambilan Tambahan": "Nelayan yang bekerja sebagai penangkap ikan sebagai pekerjaan tambahan"
 };
 
 // Data wilayah Situbondo untuk dropdown
@@ -206,7 +205,6 @@ let currentFilter = {};
 const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
 const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
 const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
-const fishInfoModal = new bootstrap.Modal(document.getElementById('fishInfoModal'));
 const modalDataWilayah = new bootstrap.Modal(document.getElementById('modalDataWilayah'));
 
 const PROFESI_MAPPING = {
@@ -242,22 +240,6 @@ function migrateOldData() {
     appData.forEach(item => {
         if (PROFESI_MAPPING[item.profesi]) {
             item.profesi = PROFESI_MAPPING[item.profesi];
-        }
-        // Tambahkan field alamatDetail jika belum ada untuk kompatibilitas
-        if (!item.hasOwnProperty('alamatDetail')) {
-            item.alamatDetail = '';
-        }
-        // Tambahkan field alamatRTRW jika belum ada untuk kompatibilitas
-        if (!item.hasOwnProperty('alamatRTRW')) {
-            item.alamatRTRW = '';
-        }
-        // Tambahkan field alamatDusun jika belum ada untuk kompatibilitas
-        if (!item.hasOwnProperty('alamatDusun')) {
-            item.alamatDusun = '';
-        }
-        // Tambahkan field alamatJalan jika belum ada untuk kompatibilitas
-        if (!item.hasOwnProperty('alamatJalan')) {
-            item.alamatJalan = '';
         }
     });
     saveData();
@@ -442,8 +424,6 @@ function loadDataByDesa(desaName, fileName) {
                     try {
                         // Ganti data dengan data baru dari desa
                         appData = window.SIMATA_BACKUP_DATA;
-                        // Pastikan data memiliki field alamat yang baru
-                        migrateOldData();
                         saveData();
                         renderDataTable();
                         updateDashboard();
@@ -658,14 +638,6 @@ function restoreData() {
                 return;
             }
             
-            // Pastikan data yang direstore memiliki field alamat yang baru
-            restoredData.forEach(item => {
-                if (!item.hasOwnProperty('alamatDetail')) item.alamatDetail = '';
-                if (!item.hasOwnProperty('alamatRTRW')) item.alamatRTRW = '';
-                if (!item.hasOwnProperty('alamatDusun')) item.alamatDusun = '';
-                if (!item.hasOwnProperty('alamatJalan')) item.alamatJalan = '';
-            });
-            
             // Merge data lama dengan data baru
             const existingData = appData;
             const mergedData = mergeData(existingData, restoredData);
@@ -752,8 +724,6 @@ function handleReloadRepo() {
                 try {
                     // Ganti data dengan data baru
                     appData = window.SIMATA_BACKUP_DATA;
-                    // Pastikan data memiliki field alamat yang baru
-                    migrateOldData();
                     saveData();
                     renderDataTable();
                     updateDashboard();
@@ -858,12 +828,6 @@ function displayVerifyResult(result) {
         title.textContent = 'VERIFIKASI BERHASIL';
         subtitle.textContent = result.message;
         
-        // Format alamat lengkap
-        let alamatLengkap = data.desa + ', ' + data.kecamatan;
-        if (data.alamatDetail) {
-            alamatLengkap = data.alamatDetail + ', ' + alamatLengkap;
-        }
-        
         // Isi konten
         content.innerHTML = `
             <div class="col-md-6">
@@ -882,8 +846,8 @@ function displayVerifyResult(result) {
                     </div>
                 </div>
                 <div class="verify-result-item">
-                    <div class="verify-result-label">Alamat Lengkap</div>
-                    <div class="verify-result-value">${alamatLengkap}</div>
+                    <div class="verify-result-label">Domisili</div>
+                    <div class="verify-result-value">${data.desa}, ${data.kecamatan}</div>
                 </div>
             </div>
             <div class="col-md-6">
@@ -1072,11 +1036,6 @@ function resetVerifyForm() {
     setVerifyExample('kin');
 }
 
-// Fungsi untuk menampilkan modal info ikan
-function showFishInfoModal() {
-    fishInfoModal.show();
-}
-
 // --- FUNGSI BARU: MAPPING KAPAL DAN ALAT TANGKAP ---
 function updateAlatTangkapByKapal() {
     const jenisKapal = document.getElementById('jenisKapal').value;
@@ -1153,7 +1112,6 @@ function updateFishOptionsByAPI(api) {
             <div class="fish-info-box">
                 <div class="fish-info-title">${fish}</div>
                 <div class="fish-info-latin">${fishInfo.latin}</div>
-                <div class="fish-info-desc">${fishInfo.desc || ''}</div>
             </div>
             ` : ''}
         </label>`;
@@ -1575,8 +1533,7 @@ function getFilteredData() {
             d.nik.includes(search) || 
             (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
             d.desa.toLowerCase().includes(search) ||
-            d.kecamatan.toLowerCase().includes(search) ||
-            (d.alamatDetail && d.alamatDetail.toLowerCase().includes(search))
+            d.kecamatan.toLowerCase().includes(search)
         );
     }
     
@@ -1625,8 +1582,7 @@ function renderDataTable() {
             d.nik.includes(search) || 
             (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
             d.desa.toLowerCase().includes(search) ||
-            d.kecamatan.toLowerCase().includes(search) ||
-            (d.alamatDetail && d.alamatDetail.toLowerCase().includes(search))
+            d.kecamatan.toLowerCase().includes(search)
         );
     }
     
@@ -2242,7 +2198,7 @@ function printData() {
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
             doc.text('REKAPITULASI PER DESA / KELURAHAN', pageWidth/2, 60, { align: 'center' });
-            
+    
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             const now = new Date();
@@ -2799,10 +2755,6 @@ function setupEventListeners() {
                 const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
                 const waInput = document.getElementById('whatsapp');
                 const btnWa = document.getElementById('btnNoWA');
-                const alamatDetailInput = document.getElementById('alamatDetail');
-                const alamatRTRWInput = document.getElementById('alamatRTRW');
-                const alamatDusunInput = document.getElementById('alamatDusun');
-                const alamatJalanInput = document.getElementById('alamatJalan');
                 
                 if (ownerFields) ownerFields.style.display = 'none';
                 if (usiaInput) usiaInput.value = '';
@@ -2828,12 +2780,6 @@ function setupEventListeners() {
                     btnWa.classList.add('btn-outline-secondary');
                     btnWa.textContent = "Tidak Ada";
                 }
-                
-                // Reset field alamat
-                if (alamatDetailInput) alamatDetailInput.value = '';
-                if (alamatRTRWInput) alamatRTRWInput.value = '';
-                if (alamatDusunInput) alamatDusunInput.value = '';
-                if (alamatJalanInput) alamatJalanInput.value = '';
                 
                 const apiInfo = document.getElementById('apiInfo');
                 const kapalInfo = document.getElementById('kapalInfo');
@@ -3311,11 +3257,6 @@ function handleFormSubmit(e) {
         usia: document.getElementById('usia').value,
         kecamatan: document.getElementById('kecamatan').value,
         desa: document.getElementById('desa').value,
-        // TAMBAHAN: Field alamat baru
-        alamatDetail: document.getElementById('alamatDetail').value,
-        alamatRTRW: document.getElementById('alamatRTRW').value,
-        alamatDusun: document.getElementById('alamatDusun').value,
-        alamatJalan: document.getElementById('alamatJalan').value,
         alatTangkap: document.getElementById('alatTangkap').value,
         namaKapal: isOwner ? document.getElementById('namaKapal').value : '-',
         jenisKapal: isOwner ? document.getElementById('jenisKapal').value : '-',
@@ -3343,10 +3284,6 @@ function handleFormSubmit(e) {
     const ownerFields = document.getElementById('ownerFields');
     const desaSelect = document.getElementById('desa');
     const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
-    const alamatDetailInput = document.getElementById('alamatDetail');
-    const alamatRTRWInput = document.getElementById('alamatRTRW');
-    const alamatDusunInput = document.getElementById('alamatDusun');
-    const alamatJalanInput = document.getElementById('alamatJalan');
     
     if (ownerFields) ownerFields.style.display = 'none';
     if (desaSelect) {
@@ -3356,12 +3293,6 @@ function handleFormSubmit(e) {
     if (jenisIkanLainnya) {
         jenisIkanLainnya.style.display = 'none';
     }
-    
-    // Reset field alamat
-    if (alamatDetailInput) alamatDetailInput.value = '';
-    if (alamatRTRWInput) alamatRTRWInput.value = '';
-    if (alamatDusunInput) alamatDusunInput.value = '';
-    if (alamatJalanInput) alamatJalanInput.value = '';
     
     const today = new Date().toISOString().split('T')[0];
     const tanggalValidasi = document.getElementById('tanggalValidasi');
@@ -3398,35 +3329,7 @@ function viewDetail(id) {
     document.getElementById('d_nik').innerText = displayNik; 
     document.getElementById('d_usia').innerText = `${d.usia} Tahun (${d.tahunLahir})`;
     document.getElementById('d_wa').innerText = displayWa;
-    
-    // Format alamat lengkap untuk ditampilkan
-    let alamatLengkap = `${d.desa}, ${d.kecamatan}`;
-    if (d.alamatDetail) {
-        alamatLengkap = d.alamatDetail + ', ' + alamatLengkap;
-    }
-    
-    document.getElementById('d_domisili').innerText = alamatLengkap;
-    
-    // Tampilkan detail alamat tambahan jika ada
-    const detailAlamatContainer = document.getElementById('d_detail_alamat');
-    if (detailAlamatContainer) {
-        let detailAlamatHTML = '';
-        if (d.alamatRTRW) {
-            detailAlamatHTML += `<div><strong>RT/RW:</strong> ${d.alamatRTRW}</div>`;
-        }
-        if (d.alamatDusun) {
-            detailAlamatHTML += `<div><strong>Dusun:</strong> ${d.alamatDusun}</div>`;
-        }
-        if (d.alamatJalan) {
-            detailAlamatHTML += `<div><strong>Jalan:</strong> ${d.alamatJalan}</div>`;
-        }
-        if (detailAlamatHTML) {
-            detailAlamatContainer.innerHTML = detailAlamatHTML;
-            detailAlamatContainer.style.display = 'block';
-        } else {
-            detailAlamatContainer.style.display = 'none';
-        }
-    }
+    document.getElementById('d_domisili').innerText = `${d.desa}, ${d.kecamatan}`;
     
     const profBadge = document.getElementById('d_profesi');
     profBadge.innerText = d.profesi;
@@ -3565,14 +3468,7 @@ function downloadSinglePdf(id) {
         printLine('Nama Lengkap', d.nama);
         printLine('NIK', displayNik); // Gunakan NIK yang sudah disensor
         printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
-        
-        // Format alamat lengkap untuk PDF
-        let alamatLengkap = `${d.desa}, ${d.kecamatan}`;
-        if (d.alamatDetail) {
-            alamatLengkap = d.alamatDetail + ', ' + alamatLengkap;
-        }
-        
-        printLine('Alamat Lengkap', alamatLengkap);
+        printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
         printLine('No. Handphone', displayWa); // Gunakan WhatsApp yang sudah disensor
         y += 8;
 
@@ -3724,23 +3620,11 @@ function editData(id) {
     
     form.setAttribute('data-edit-id', id);
     
-    // Field yang sudah ada
     ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
      .forEach(key => {
          const element = document.getElementById(key);
          if (element) element.value = d[key] || '';
      });
-
-    // TAMBAHAN: Field alamat baru
-    const alamatDetail = document.getElementById('alamatDetail');
-    const alamatRTRW = document.getElementById('alamatRTRW');
-    const alamatDusun = document.getElementById('alamatDusun');
-    const alamatJalan = document.getElementById('alamatJalan');
-    
-    if (alamatDetail) alamatDetail.value = d.alamatDetail || '';
-    if (alamatRTRW) alamatRTRW.value = d.alamatRTRW || '';
-    if (alamatDusun) alamatDusun.value = d.alamatDusun || '';
-    if (alamatJalan) alamatJalan.value = d.alamatJalan || '';
 
     const waInput = document.getElementById('whatsapp');
     const btnWa = document.getElementById('btnNoWA');
@@ -3987,8 +3871,6 @@ function loadData() {
     if(d) {
         try {
             appData = JSON.parse(d); 
-            // Pastikan data memiliki field alamat yang baru
-            migrateOldData();
         } catch (e) {
             console.error("Error loading data:", e);
             appData = [];
@@ -4035,15 +3917,7 @@ function exportData(type) {
     const dataToExport = appData.map(d => ({
         ...d, nik: maskData(d.nik), whatsapp: maskData(d.whatsapp)
     }));
-    const finalData = dataToExport.map(d => ({ 
-        ...d, 
-        NIK: `'${d.nik}`, 
-        WhatsApp: `'${d.whatsapp}`,
-        Alamat_Lengkap: d.alamatDetail || '',
-        RT_RW: d.alamatRTRW || '',
-        Dusun: d.alamatDusun || '',
-        Jalan: d.alamatJalan || ''
-    }));
+    const finalData = dataToExport.map(d => ({ ...d, NIK: `'${d.nik}`, WhatsApp: `'${d.whatsapp}` }));
     
     if(type === 'xlsx') {
         try {
@@ -4198,12 +4072,8 @@ function generateIDCard(id) {
     
     drawData('TTL / Usia', `${data.tahunLahir} (${data.usia} Tahun)`, dataY + lineHeight * 2);
     
-    // Alamat dengan penanganan multi-line - TAMBAHAN: alamatDetail
-    let alamat = `${data.desa}, ${data.kecamatan}`;
-    if (data.alamatDetail) {
-        alamat = data.alamatDetail + ', ' + alamat;
-    }
-    
+    // Alamat dengan penanganan multi-line
+    const alamat = `${data.desa}, ${data.kecamatan}`;
     doc.text('Alamat:', leftX, dataY + lineHeight * 3);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(12, 36, 97); // Biru untuk nilai
@@ -4255,7 +4125,7 @@ function generateIDCard(id) {
     const qrY = 20; // Posisi Y: sejajar dengan data (diturunkan dari 18 ke 20)
 
     // Generate QR Code
-    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nAlamat: ${alamat}\nValidasi: ${data.tanggalValidasi}`;
+    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nDesa: ${data.desa}\nValidasi: ${data.tanggalValidasi}`;
     
     // Buat container sementara untuk QR Code
     const qrContainer = document.createElement('div');
@@ -4391,7 +4261,6 @@ window.generateIDCard = generateIDCard;
 
 // --- INISIALISASI TAMBAHAN ---
 // Pastikan fungsi-fungsi yang dipanggil dari event sudah tersedia di scope global
-window.showFishInfoModal = showFishInfoModal;
 window.loadDataByDesa = loadDataByDesa;
 window.setupInputForDesa = setupInputForDesa;
 window.setInputGlobalMode = setInputGlobalMode;
