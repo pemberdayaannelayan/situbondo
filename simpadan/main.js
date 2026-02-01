@@ -3,6 +3,7 @@
 // DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
 // REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
 // TAMBAHAN: FITUR ALAMAT SEBELUM KECAMATAN
+// REVISI ID CARD: PERUBAHAN FORMAT PROFESI DAN ALAT TANGKAP
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -4090,15 +4091,18 @@ function generateIDCard(id) {
 
     // Data pribadi dengan warna yang berbeda untuk label dan nilai
     doc.setTextColor(100, 100, 100); // Abu-abu untuk label
-    drawData('Nama Lengkap', data.nama, dataY);
     
-    // PERBAIKAN: Gunakan maskData untuk NIK di ID Card
+    // Baris 1: Nama Lengkap
+    drawData('Nama Lengkap', data.nama, dataY, true);
+    
+    // Baris 2: NIK (dengan mask data)
     const displayNik = maskData(data.nik);
     drawData('NIK', displayNik, dataY + lineHeight);
     
+    // Baris 3: TTL / Usia
     drawData('TTL / Usia', `${data.tahunLahir} (${data.usia} Tahun)`, dataY + lineHeight * 2);
     
-    // Alamat dengan penanganan multi-line - TAMBAHAN
+    // Baris 4: Alamat
     doc.text('Alamat:', leftX, dataY + lineHeight * 3);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(12, 36, 97); // Biru untuk nilai
@@ -4127,10 +4131,31 @@ function generateIDCard(id) {
     }
     doc.setTextColor(100, 100, 100); // Kembali ke abu-abu untuk label berikutnya
 
-    drawData('Profesi', data.profesi, dataY + lineHeight * 4.3);
-    drawData('Alat Tangkap', data.alatTangkap, dataY + lineHeight * 5.3);
+    // REVISI: Baris 5: Domisili (menggantikan Profesi)
+    doc.text('Domisili:', leftX, dataY + lineHeight * 4.3);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(12, 36, 97);
+    doc.text(`${data.desa}, ${data.kecamatan}`, leftX + 18, dataY + lineHeight * 4.3);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
     
-    // Kode Validasi dengan styling khusus dan posisi yang tidak tertindih
+    // REVISI: Baris 6: Status Pekerjaan (menggantikan Alat Tangkap)
+    doc.text('Status Pekerjaan:', leftX, dataY + lineHeight * 5.3);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(12, 36, 97);
+    
+    // Tentukan warna berdasarkan status
+    if (data.status === 'Pemilik Kapal') {
+        doc.setTextColor(41, 128, 185); // Biru untuk Pemilik Kapal
+    } else {
+        doc.setTextColor(39, 174, 96); // Hijau untuk Anak Buah Kapal
+    }
+    
+    doc.text(data.status, leftX + 18, dataY + lineHeight * 5.3);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont('helvetica', 'normal');
+    
+    // Baris 7: Kode Validasi dengan styling khusus
     const kodeY = dataY + lineHeight * 6.3;
     doc.text('Kode Validasi:', leftX, kodeY);
     doc.setFont('helvetica', 'bold');
@@ -4151,7 +4176,7 @@ function generateIDCard(id) {
     const qrY = 20; // Posisi Y: sejajar dengan data (diturunkan dari 18 ke 20)
 
     // Generate QR Code
-    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nAlamat: ${data.alamat || data.desa}\nDesa: ${data.desa}\nValidasi: ${data.tanggalValidasi}`;
+    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nAlamat: ${data.alamat || data.desa}\nDesa: ${data.desa}\nStatus: ${data.status}\nValidasi: ${data.tanggalValidasi}`;
     
     // Buat container sementara untuk QR Code
     const qrContainer = document.createElement('div');
