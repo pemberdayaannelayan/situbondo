@@ -8,6 +8,7 @@
 // PERBAIKAN TAMBAHAN: 
 // 1. FITUR FILTER DATA GANDA YANG LEBIH KETAT
 // 2. INPUT OTOMATIS HURUF KAPITAL UNTUK NAMA DAN ALAMAT
+// 3. FITUR MEMUAT DATA PER KECAMATAN
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -183,6 +184,27 @@ const DESA_LIST = [
     { name: "Paowan", file: "paowan.js" }
 ];
 
+// Daftar kecamatan untuk fitur Data Kecamatan
+const KECAMATAN_LIST = [
+    { name: "Arjasa", file: "Kecamatan-Arjasa.js" },
+    { name: "Asembagus", file: "Kecamatan-Asembagus.js" },
+    { name: "Banyuglugur", file: "Kecamatan-Banyuglugur.js" },
+    { name: "Banyuputih", file: "Kecamatan-Banyuputih.js" },
+    { name: "Besuki", file: "Kecamatan-Besuki.js" },
+    { name: "Bungatan", file: "Kecamatan-Bungatan.js" },
+    { name: "Jangkar", file: "Kecamatan-Jangkar.js" },
+    { name: "Jatibanteng", file: "Kecamatan-Jatibanteng.js" },
+    { name: "Kapongan", file: "Kecamatan-Kapongan.js" },
+    { name: "Kendit", file: "Kecamatan-Kendit.js" },
+    { name: "Mangaran", file: "Kecamatan-Mangaran.js" },
+    { name: "Mlandingan", file: "Kecamatan-Mlandingan.js" },
+    { name: "Panarukan", file: "Kecamatan-Panarukan.js" },
+    { name: "Panji", file: "Kecamatan-Panji.js" },
+    { name: "Situbondo", file: "Kecamatan-Situbondo.js" },
+    { name: "Suboh", file: "Kecamatan-Suboh.js" },
+    { name: "Sumbermalang", file: "Kecamatan-Sumbermalang.js" }
+];
+
 // --- GLOBAL VARIABLES ---
 let appData = [];
 let appSettings = {
@@ -198,8 +220,9 @@ let appSettings = {
 
 // Variabel baru untuk fitur Data Wilayah
 let currentWilayah = {
-    mode: 'global', // 'global' atau 'desa'
+    mode: 'global', // 'global', 'desa', atau 'kecamatan'
     desaName: null,
+    kecamatanName: null,
     fileName: 'reload.js'
 };
 
@@ -300,6 +323,72 @@ function initDataWilayah() {
     
     container.innerHTML = '';
     
+    // Tambahkan tab untuk memilih antara Desa dan Kecamatan
+    const tabContainer = document.createElement('div');
+    tabContainer.className = 'wilayah-tab-container mb-4';
+    tabContainer.innerHTML = `
+        <div class="btn-group w-100" role="group">
+            <button type="button" class="btn btn-outline-primary active" id="tabDesa">
+                <i class="fas fa-village"></i> Data Desa
+            </button>
+            <button type="button" class="btn btn-outline-success" id="tabKecamatan">
+                <i class="fas fa-map"></i> Data Kecamatan
+            </button>
+        </div>
+    `;
+    
+    container.appendChild(tabContainer);
+    
+    // Container untuk desa
+    const desaContainer = document.createElement('div');
+    desaContainer.id = 'desaContainer';
+    desaContainer.className = 'wilayah-content-container active';
+    
+    // Container untuk kecamatan
+    const kecamatanContainer = document.createElement('div');
+    kecamatanContainer.id = 'kecamatanContainer';
+    kecamatanContainer.className = 'wilayah-content-container';
+    kecamatanContainer.style.display = 'none';
+    
+    container.appendChild(desaContainer);
+    container.appendChild(kecamatanContainer);
+    
+    // Inisialisasi data desa
+    initDesaCards();
+    
+    // Inisialisasi data kecamatan
+    initKecamatanCards();
+    
+    // Event listener untuk tab
+    document.getElementById('tabDesa').addEventListener('click', function() {
+        document.getElementById('tabDesa').classList.add('active');
+        document.getElementById('tabKecamatan').classList.remove('active');
+        document.getElementById('desaContainer').style.display = 'block';
+        document.getElementById('kecamatanContainer').style.display = 'none';
+    });
+    
+    document.getElementById('tabKecamatan').addEventListener('click', function() {
+        document.getElementById('tabKecamatan').classList.add('active');
+        document.getElementById('tabDesa').classList.remove('active');
+        document.getElementById('desaContainer').style.display = 'none';
+        document.getElementById('kecamatanContainer').style.display = 'block';
+    });
+    
+    // Update total desa dan kecamatan count
+    document.getElementById('totalDesaCount').textContent = DESA_LIST.length;
+    document.getElementById('totalKecamatanCount').textContent = KECAMATAN_LIST.length;
+    
+    // Update status indicator
+    updateWilayahStatusIndicator();
+}
+
+// Fungsi untuk inisialisasi kartu desa
+function initDesaCards() {
+    const desaContainer = document.getElementById('desaContainer');
+    if (!desaContainer) return;
+    
+    desaContainer.innerHTML = '';
+    
     // Urutkan desa berdasarkan nama
     const sortedDesa = [...DESA_LIST].sort((a, b) => a.name.localeCompare(b.name));
     
@@ -342,14 +431,64 @@ function initDataWilayah() {
             </div>
         `;
         
-        container.appendChild(card);
+        desaContainer.appendChild(card);
     });
+}
+
+// Fungsi untuk inisialisasi kartu kecamatan
+function initKecamatanCards() {
+    const kecamatanContainer = document.getElementById('kecamatanContainer');
+    if (!kecamatanContainer) return;
     
-    // Update total desa count
-    document.getElementById('totalDesaCount').textContent = sortedDesa.length;
+    kecamatanContainer.innerHTML = '';
     
-    // Update status indicator
-    updateWilayahStatusIndicator();
+    // Urutkan kecamatan berdasarkan nama
+    const sortedKecamatan = [...KECAMATAN_LIST].sort((a, b) => a.name.localeCompare(b.name));
+    
+    // Tambahkan kartu untuk setiap kecamatan
+    sortedKecamatan.forEach(kecamatan => {
+        const card = document.createElement('div');
+        card.className = 'wilayah-card kecamatan-card';
+        
+        // Cek jika ini kecamatan yang sedang aktif
+        if (currentWilayah.mode === 'kecamatan' && currentWilayah.kecamatanName === kecamatan.name) {
+            card.classList.add('active');
+        }
+        
+        // Hitung jumlah desa dalam kecamatan ini
+        const desaCount = SITUBONDO_DATA[kecamatan.name] ? SITUBONDO_DATA[kecamatan.name].length : 0;
+        
+        card.innerHTML = `
+            <div class="wilayah-card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-map me-2"></i>
+                        <strong>KEC. ${kecamatan.name.toUpperCase()}</strong>
+                    </div>
+                    ${currentWilayah.mode === 'kecamatan' && currentWilayah.kecamatanName === kecamatan.name ? 
+                        '<span class="badge bg-success">Aktif</span>' : ''}
+                </div>
+            </div>
+            <div class="wilayah-card-body">
+                <div class="wilayah-info-badge">
+                    <i class="fas fa-database me-1"></i> ${desaCount} Desa
+                </div>
+                
+                <div class="wilayah-actions">
+                    <button class="btn wilayah-btn wilayah-btn-load" onclick="loadDataByKecamatan('${kecamatan.name}', '${kecamatan.file}')">
+                        <i class="fas fa-database"></i>
+                        <span>Muat Data</span>
+                    </button>
+                    <button class="btn wilayah-btn wilayah-btn-input" onclick="setupInputForKecamatan('${kecamatan.name}')">
+                        <i class="fas fa-plus"></i>
+                        <span>Input Data</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        kecamatanContainer.appendChild(card);
+    });
 }
 
 // Fungsi untuk mendapatkan kecamatan dari nama desa
@@ -373,6 +512,7 @@ function setupInputForDesa(desaName) {
     // Set mode wilayah ke desa
     currentWilayah.mode = 'desa';
     currentWilayah.desaName = desaName;
+    currentWilayah.kecamatanName = null;
     currentWilayah.fileName = DESA_LIST.find(d => d.name === desaName)?.file || `${desaName.toLowerCase()}.js`;
     
     // Update UI wilayah
@@ -408,6 +548,40 @@ function setupInputForDesa(desaName) {
     }
 }
 
+// Fungsi untuk setup input data berdasarkan kecamatan
+function setupInputForKecamatan(kecamatanName) {
+    // Tutup modal Data Wilayah
+    modalDataWilayah.hide();
+    
+    // Set mode wilayah ke kecamatan
+    currentWilayah.mode = 'kecamatan';
+    currentWilayah.kecamatanName = kecamatanName;
+    currentWilayah.desaName = null;
+    currentWilayah.fileName = KECAMATAN_LIST.find(k => k.name === kecamatanName)?.file || `Kecamatan-${kecamatanName}.js`;
+    
+    // Update UI wilayah
+    updateWilayahUI();
+    updateWilayahStatusIndicator();
+    
+    // Buka tab Input Data
+    document.getElementById('v-pills-input-tab').click();
+    
+    // Atur dropdown kecamatan
+    const kecSelect = document.getElementById('kecamatan');
+    if (kecSelect) {
+        kecSelect.value = kecamatanName;
+        // Trigger change event untuk memuat desa
+        kecSelect.dispatchEvent(new Event('change'));
+        
+        // Focus ke field nama
+        setTimeout(() => {
+            document.getElementById('nama').focus();
+            showNotification(`Mode input data untuk Kecamatan ${kecamatanName} telah diaktifkan. Data yang diinput akan otomatis tersimpan untuk kecamatan ini.`, 'success');
+        }, 500);
+    }
+}
+
+// Fungsi untuk memuat data berdasarkan desa
 function loadDataByDesa(desaName, fileName) {
     if (confirm(`Anda akan memuat data dari Desa ${desaName}. Data saat ini akan digantikan. Lanjutkan?`)) {
         showLoading("Memuat Data Desa", `Sedang memproses data dari Desa ${desaName}. Mohon tunggu...`);
@@ -415,6 +589,7 @@ function loadDataByDesa(desaName, fileName) {
         // Reset currentWilayah
         currentWilayah.mode = 'desa';
         currentWilayah.desaName = desaName;
+        currentWilayah.kecamatanName = null;
         currentWilayah.fileName = fileName;
         
         // Update UI
@@ -460,7 +635,68 @@ function loadDataByDesa(desaName, fileName) {
         script.onerror = function() {
             console.error(`Gagal memuat file ${fileName}`);
             hideLoading();
-            showNotification(`Maaf, Desa Tersebut Masih Belum Ada Data Di SIMPADAN TANGKAP`, 'error');
+            showNotification(`Maaf, Desa ${desaName} Masih Belum Ada Data Di SIMPADAN TANGKAP`, 'error');
+        };
+        
+        document.head.appendChild(script);
+    }
+}
+
+// Fungsi untuk memuat data berdasarkan kecamatan
+function loadDataByKecamatan(kecamatanName, fileName) {
+    if (confirm(`Anda akan memuat data dari Kecamatan ${kecamatanName}. Data saat ini akan digantikan. Lanjutkan?`)) {
+        showLoading("Memuat Data Kecamatan", `Sedang memproses data dari Kecamatan ${kecamatanName}. Mohon tunggu...`);
+        
+        // Reset currentWilayah
+        currentWilayah.mode = 'kecamatan';
+        currentWilayah.kecamatanName = kecamatanName;
+        currentWilayah.desaName = null;
+        currentWilayah.fileName = fileName;
+        
+        // Update UI
+        updateWilayahUI();
+        updateWilayahStatusIndicator();
+        
+        // Load data dari file JavaScript
+        const script = document.createElement('script');
+        script.src = fileName + '?t=' + new Date().getTime();
+        
+        script.onload = function() {
+            console.log(`File ${fileName} berhasil dimuat`);
+            
+            // Beri waktu untuk pemrosesan
+            setTimeout(() => {
+                if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
+                    try {
+                        // Ganti data dengan data baru dari kecamatan
+                        appData = window.SIMATA_BACKUP_DATA;
+                        saveData();
+                        renderDataTable();
+                        updateDashboard();
+                        
+                        hideLoading();
+                        showNotification(`Data dari Kecamatan ${kecamatanName} berhasil dimuat (${appData.length} data)`, 'success');
+                        modalDataWilayah.hide();
+                        
+                        // Update filter desa
+                        updateFilterDesaOptions();
+                        
+                    } catch (error) {
+                        console.error('Error memuat data kecamatan:', error);
+                        hideLoading();
+                        showNotification('Gagal memuat data dari kecamatan. Format data tidak valid.', 'error');
+                    }
+                } else {
+                    hideLoading();
+                    showNotification(`Data Nelayan Tidak Tersedia di Kecamatan ${kecamatanName}`, 'warning');
+                }
+            }, 500);
+        };
+        
+        script.onerror = function() {
+            console.error(`Gagal memuat file ${fileName}`);
+            hideLoading();
+            showNotification(`Maaf, Data Tidak Ditemukan Di SIMPADAN TANGKAP untuk Kecamatan ${kecamatanName}`, 'error');
         };
         
         document.head.appendChild(script);
@@ -471,6 +707,7 @@ function setInputGlobalMode() {
     if (confirm('Anda akan beralih ke mode Input Global. Data saat ini akan tetap tersimpan. Lanjutkan?')) {
         currentWilayah.mode = 'global';
         currentWilayah.desaName = null;
+        currentWilayah.kecamatanName = null;
         currentWilayah.fileName = 'reload.js';
         
         // Reload data dari reload.js
@@ -500,6 +737,18 @@ function updateWilayahUI() {
         }
         if (desaWarning) desaWarning.classList.remove('d-none');
         if (submitFormBtn) submitFormBtn.disabled = false;
+    } else if (currentWilayah.mode === 'kecamatan') {
+        if (badge) {
+            badge.innerHTML = `Wilayah: Kecamatan ${currentWilayah.kecamatanName}`;
+            badge.className = 'badge bg-success';
+        }
+        if (info) info.textContent = `Mode Kecamatan: Data dari ${currentWilayah.fileName}. Input data untuk kecamatan ${currentWilayah.kecamatanName}.`;
+        if (inputModeBadge) {
+            inputModeBadge.textContent = `Mode: Kecamatan ${currentWilayah.kecamatanName}`;
+            inputModeBadge.className = 'badge bg-success float-end';
+        }
+        if (desaWarning) desaWarning.classList.add('d-none');
+        if (submitFormBtn) submitFormBtn.disabled = false;
     } else {
         if (badge) {
             badge.innerHTML = 'Wilayah: Global (reload.js)';
@@ -522,7 +771,10 @@ function updateWilayahStatusIndicator() {
     
     if (currentWilayah.mode === 'desa') {
         indicator.className = 'wilayah-status-indicator wilayah-status-desa';
-        indicator.innerHTML = `<i class="fas fa-map-marker-alt"></i><span>Mode Desa: ${currentWilayah.desaName || '-'}</span>`;
+        indicator.innerHTML = `<i class="fas fa-village"></i><span>Mode Desa: ${currentWilayah.desaName || '-'}</span>`;
+    } else if (currentWilayah.mode === 'kecamatan') {
+        indicator.className = 'wilayah-status-indicator wilayah-status-kecamatan';
+        indicator.innerHTML = `<i class="fas fa-map"></i><span>Mode Kecamatan: ${currentWilayah.kecamatanName || '-'}</span>`;
     } else {
         indicator.className = 'wilayah-status-indicator wilayah-status-global';
         indicator.innerHTML = `<i class="fas fa-globe"></i><span>Mode Global</span>`;
@@ -569,6 +821,18 @@ function backupData() {
                 dataToBackup = appData.filter(d => d.desa === currentWilayah.desaName);
                 
                 backupContent = `// DATA NELAYAN DESA ${currentWilayah.desaName.toUpperCase()}
+// File: ${backupFileName}
+// Dibuat: ${new Date().toLocaleString('id-ID')}
+// Jumlah Data: ${dataToBackup.length}
+
+window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
+            } else if (currentWilayah.mode === 'kecamatan' && currentWilayah.kecamatanName) {
+                backupFileName = currentWilayah.fileName;
+                
+                // Filter data hanya untuk kecamatan yang dipilih
+                dataToBackup = appData.filter(d => d.kecamatan === currentWilayah.kecamatanName);
+                
+                backupContent = `// DATA NELAYAN KECAMATAN ${currentWilayah.kecamatanName.toUpperCase()}
 // File: ${backupFileName}
 // Dibuat: ${new Date().toLocaleString('id-ID')}
 // Jumlah Data: ${dataToBackup.length}
@@ -825,7 +1089,8 @@ function handleReloadRepo() {
     showLoading("Sinkronisasi Data", "Sedang melakukan sinkronisasi data dari server. Mohon tunggu, proses ini mungkin memerlukan waktu beberapa saat...");
     
     // Tentukan file yang akan dimuat berdasarkan mode
-    const fileName = currentWilayah.mode === 'desa' ? currentWilayah.fileName : 'reload.js';
+    const fileName = currentWilayah.mode === 'desa' ? currentWilayah.fileName : 
+                    currentWilayah.mode === 'kecamatan' ? currentWilayah.fileName : 'reload.js';
     
     // Coba load ulang file
     const script = document.createElement('script');
@@ -865,7 +1130,7 @@ function handleReloadRepo() {
                 }
             } else {
                 hideLoading();
-                showNotification(`Tidak ada data yang ditemukan di file ${fileName}`, 'warning');
+                showNotification(`Data Nelayan Tidak Tersedia`, 'warning');
             }
         }, 500);
     };
@@ -2950,7 +3215,7 @@ function setupEventListeners() {
         });
     }
 
-    // Form Submit - DIPERBAIKI untuk validasi mode desa
+    // Form Submit - DIPERBAIKI untuk validasi mode desa dan kecamatan
     const inputForm = document.getElementById('inputForm');
     if (inputForm) {
         inputForm.addEventListener('submit', handleFormSubmit);
@@ -3114,8 +3379,8 @@ function setupEventListeners() {
             let visibleCount = 0;
             
             cards.forEach(card => {
-                const desaName = card.querySelector('strong').textContent.toLowerCase();
-                if (desaName.includes(searchTerm)) {
+                const name = card.querySelector('strong').textContent.toLowerCase();
+                if (name.includes(searchTerm)) {
                     card.style.display = 'block';
                     visibleCount++;
                 } else {
@@ -3124,14 +3389,17 @@ function setupEventListeners() {
             });
             
             const emptyState = document.getElementById('wilayahEmptyState');
-            const cardsContainer = document.getElementById('wilayahCardsContainer');
+            const desaContainer = document.getElementById('desaContainer');
+            const kecamatanContainer = document.getElementById('kecamatanContainer');
             
             if (visibleCount === 0 && searchTerm.trim() !== '') {
-                emptyState.classList.remove('d-none');
-                cardsContainer.classList.add('d-none');
+                if (emptyState) emptyState.classList.remove('d-none');
+                if (desaContainer) desaContainer.classList.add('d-none');
+                if (kecamatanContainer) kecamatanContainer.classList.add('d-none');
             } else {
-                emptyState.classList.add('d-none');
-                cardsContainer.classList.remove('d-none');
+                if (emptyState) emptyState.classList.add('d-none');
+                if (desaContainer) desaContainer.classList.remove('d-none');
+                if (kecamatanContainer) kecamatanContainer.classList.remove('d-none');
             }
         });
     }
@@ -3419,6 +3687,15 @@ function handleFormSubmit(e) {
         const selectedDesa = document.getElementById('desa').value;
         if (selectedDesa !== currentWilayah.desaName) {
             showNotification(`Anda harus memilih Desa ${currentWilayah.desaName} untuk input data di mode ini!`, 'error');
+            return;
+        }
+    }
+    
+    // Validasi mode kecamatan
+    if (currentWilayah.mode === 'kecamatan') {
+        const selectedKecamatan = document.getElementById('kecamatan').value;
+        if (selectedKecamatan !== currentWilayah.kecamatanName) {
+            showNotification(`Anda harus memilih Kecamatan ${currentWilayah.kecamatanName} untuk input data di mode ini!`, 'error');
             return;
         }
     }
@@ -4529,7 +4806,9 @@ window.generateIDCard = generateIDCard;
 // --- INISIALISASI TAMBAHAN ---
 // Pastikan fungsi-fungsi yang dipanggil dari event sudah tersedia di scope global
 window.loadDataByDesa = loadDataByDesa;
+window.loadDataByKecamatan = loadDataByKecamatan;
 window.setupInputForDesa = setupInputForDesa;
+window.setupInputForKecamatan = setupInputForKecamatan;
 window.setInputGlobalMode = setInputGlobalMode;
 window.setVerifyExample = setVerifyExample;
 window.verifyKINAndShow = verifyKINAndShow;
