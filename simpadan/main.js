@@ -4,6 +4,7 @@
 // REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
 // TAMBAHAN: FITUR ALAMAT SEBELUM KECAMATAN
 // REVISI ID CARD: PERUBAHAN FORMAT PROFESI DAN ALAT TANGKAP
+// PERBAIKAN: TAMBAHAN INFORMASI VALIDASI DI QRCODE ID CARD
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -997,7 +998,7 @@ function showAllKIN() {
                     </td>
                     <td class="font-monospace">${maskData(d.nik)}</td>
                     <td>
-                        <div class="small">${data.alamat || '-'}</div>
+                        <div class="small">${d.alamat || '-'}</div>
                         <div class="small">${d.desa}</div>
                         <div class="small text-muted">${d.kecamatan}</div>
                     </td>
@@ -4175,8 +4176,8 @@ function generateIDCard(id) {
     const qrX = 85.6 - qrSize - 8; // Posisi X: kanan dengan margin 8mm
     const qrY = 20; // Posisi Y: sejajar dengan data (diturunkan dari 18 ke 20)
 
-    // Generate QR Code
-    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nAlamat: ${data.alamat || data.desa}\nDesa: ${data.desa}\nStatus: ${data.status}\nValidasi: ${data.tanggalValidasi}`;
+    // PERBAIKAN: Generate QR Code dengan informasi validasi dan link website
+    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nAlamat: ${data.alamat || data.desa}\nDesa: ${data.desa}\nStatus: ${data.status}\nValidasi: ${data.tanggalValidasi}\n\n=== INFORMASI VALIDASI ===\nData ini VALID dan terdaftar secara resmi\npada Sistem Satu Data Nelayan (SIMPADAN TANGKAP)\nDinas Perikanan Kabupaten Situbondo\n\nUntuk verifikasi keaslian ID Card ini,\nkunjungi:\nwww.dinasperikanansitubondo.com/simpadan`;
     
     // Buat container sementara untuk QR Code
     const qrContainer = document.createElement('div');
@@ -4212,11 +4213,11 @@ function generateIDCard(id) {
                 // Tambahkan QR Code ke PDF
                 doc.addImage(imgData, 'PNG', qrX, qrY, qrSize, qrSize);
                 
-                // Label di bawah QR Code
+                // PERBAIKAN: Label di bawah QR Code diperbarui
                 doc.setFontSize(4);
                 doc.setFont('helvetica', 'italic');
                 doc.setTextColor(100, 100, 100);
-                doc.text('Pindai untuk verifikasi', qrX + qrSize/2, qrY + qrSize + 2, { align: 'center' });
+                doc.text('Pindai untuk verifikasi keaslian', qrX + qrSize/2, qrY + qrSize + 2, { align: 'center' });
             }
 
             // Hapus elemen sementara
