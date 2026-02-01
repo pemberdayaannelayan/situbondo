@@ -2,6 +2,7 @@
 // KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.0 FINAL
 // DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
 // REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
+// TAMBAHAN: FITUR ALAMAT SEBELUM KECAMATAN
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -240,6 +241,10 @@ function migrateOldData() {
     appData.forEach(item => {
         if (PROFESI_MAPPING[item.profesi]) {
             item.profesi = PROFESI_MAPPING[item.profesi];
+        }
+        // Tambahkan field alamat jika belum ada
+        if (!item.hasOwnProperty('alamat')) {
+            item.alamat = '';
         }
     });
     saveData();
@@ -846,6 +851,10 @@ function displayVerifyResult(result) {
                     </div>
                 </div>
                 <div class="verify-result-item">
+                    <div class="verify-result-label">Alamat Lengkap</div>
+                    <div class="verify-result-value">${data.alamat || '-'}</div>
+                </div>
+                <div class="verify-result-item">
                     <div class="verify-result-label">Domisili</div>
                     <div class="verify-result-value">${data.desa}, ${data.kecamatan}</div>
                 </div>
@@ -987,6 +996,7 @@ function showAllKIN() {
                     </td>
                     <td class="font-monospace">${maskData(d.nik)}</td>
                     <td>
+                        <div class="small">${data.alamat || '-'}</div>
                         <div class="small">${d.desa}</div>
                         <div class="small text-muted">${d.kecamatan}</div>
                     </td>
@@ -1253,6 +1263,7 @@ function generateTabelPdf() {
                 d.nama,
                 d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
                 maskData(d.nik),
+                d.alamat || '-',
                 d.desa,
                 d.kecamatan,
                 d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
@@ -1269,6 +1280,7 @@ function generateTabelPdf() {
                     {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
                     {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
                     {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 50}},
                     {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
                     {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
                     {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
@@ -1312,10 +1324,11 @@ function generateTabelPdf() {
                     1: {cellWidth: 45, halign: 'left'},
                     2: {cellWidth: 30, halign: 'center'},
                     3: {cellWidth: 35, halign: 'center'},
-                    4: {cellWidth: 35, halign: 'left'},
+                    4: {cellWidth: 50, halign: 'left'},
                     5: {cellWidth: 35, halign: 'left'},
                     6: {cellWidth: 35, halign: 'left'},
-                    7: {cellWidth: 30, halign: 'center'}
+                    7: {cellWidth: 35, halign: 'left'},
+                    8: {cellWidth: 30, halign: 'center'}
                 }
             });
 
@@ -1533,7 +1546,8 @@ function getFilteredData() {
             d.nik.includes(search) || 
             (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
             d.desa.toLowerCase().includes(search) ||
-            d.kecamatan.toLowerCase().includes(search)
+            d.kecamatan.toLowerCase().includes(search) ||
+            (d.alamat && d.alamat.toLowerCase().includes(search))
         );
     }
     
@@ -1582,7 +1596,8 @@ function renderDataTable() {
             d.nik.includes(search) || 
             (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
             d.desa.toLowerCase().includes(search) ||
-            d.kecamatan.toLowerCase().includes(search)
+            d.kecamatan.toLowerCase().includes(search) ||
+            (d.alamat && d.alamat.toLowerCase().includes(search))
         );
     }
     
@@ -1659,6 +1674,7 @@ function renderDataTable() {
                     <div class="fw-bold text-dark text-wrap">${d.nama}</div>
                     <div class="small font-monospace text-muted">${displayNik} ${isDuplicate ? '<span class="text-danger fw-bold ms-1">(!)</span>' : ''}</div>
                     <div class="small text-muted text-wrap mt-1"><i class="fas fa-map-marker-alt me-1"></i>${d.kecamatan}, ${d.desa}</div>
+                    ${d.alamat ? `<div class="small text-muted text-wrap mt-1"><i class="fas fa-home me-1"></i>${d.alamat.substring(0, 50)}${d.alamat.length > 50 ? '...' : ''}</div>` : ''}
                 </td>
                 <td class="col-contact-cell">${contactDisplay}</td>
                 <td class="col-status-cell"><span class="badge ${badgeClass} border">${d.profesi}</span><br><small class="text-muted">${d.status}</small></td>
@@ -1790,6 +1806,7 @@ function generateFilteredPdf() {
         d.nama,
         d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
         maskData(d.nik),
+        d.alamat || '-',
         d.desa,
         d.kecamatan,
         d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
@@ -1904,6 +1921,7 @@ function generateFilteredPdf() {
                     {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
                     {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
                     {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 50}},
                     {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
                     {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
                     {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
@@ -1947,10 +1965,11 @@ function generateFilteredPdf() {
                     1: {cellWidth: 45, halign: 'left'},
                     2: {cellWidth: 30, halign: 'center'},
                     3: {cellWidth: 35, halign: 'center'},
-                    4: {cellWidth: 35, halign: 'left'},
+                    4: {cellWidth: 50, halign: 'left'},
                     5: {cellWidth: 35, halign: 'left'},
                     6: {cellWidth: 35, halign: 'left'},
-                    7: {cellWidth: 30, halign: 'center'}
+                    7: {cellWidth: 35, halign: 'left'},
+                    8: {cellWidth: 30, halign: 'center'}
                 }
             });
 
@@ -2755,9 +2774,11 @@ function setupEventListeners() {
                 const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
                 const waInput = document.getElementById('whatsapp');
                 const btnWa = document.getElementById('btnNoWA');
+                const alamatInput = document.getElementById('alamat');
                 
                 if (ownerFields) ownerFields.style.display = 'none';
                 if (usiaInput) usiaInput.value = '';
+                if (alamatInput) alamatInput.value = '';
                 if (desaSelect) {
                     desaSelect.disabled = true;
                     desaSelect.innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
@@ -3255,6 +3276,7 @@ function handleFormSubmit(e) {
         status: document.getElementById('statusNelayan').value,
         tahunLahir: document.getElementById('tahunLahir').value,
         usia: document.getElementById('usia').value,
+        alamat: document.getElementById('alamat').value, // TAMBAHAN: Field alamat
         kecamatan: document.getElementById('kecamatan').value,
         desa: document.getElementById('desa').value,
         alatTangkap: document.getElementById('alatTangkap').value,
@@ -3284,8 +3306,10 @@ function handleFormSubmit(e) {
     const ownerFields = document.getElementById('ownerFields');
     const desaSelect = document.getElementById('desa');
     const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
+    const alamatInput = document.getElementById('alamat');
     
     if (ownerFields) ownerFields.style.display = 'none';
+    if (alamatInput) alamatInput.value = '';
     if (desaSelect) {
         desaSelect.innerHTML = `<option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>`;
         desaSelect.disabled = true;
@@ -3329,6 +3353,7 @@ function viewDetail(id) {
     document.getElementById('d_nik').innerText = displayNik; 
     document.getElementById('d_usia').innerText = `${d.usia} Tahun (${d.tahunLahir})`;
     document.getElementById('d_wa').innerText = displayWa;
+    document.getElementById('d_alamat').innerText = d.alamat || '-'; // TAMBAHAN: Tampilkan alamat
     document.getElementById('d_domisili').innerText = `${d.desa}, ${d.kecamatan}`;
     
     const profBadge = document.getElementById('d_profesi');
@@ -3447,7 +3472,7 @@ function downloadSinglePdf(id) {
             doc.text(label, 25, y);
             doc.setFont('helvetica', 'bold'); 
             
-            if (label === 'Domisili' || value.length > 50) {
+            if (label === 'Alamat' || label === 'Domisili' || value.length > 50) {
                 const splitText = doc.splitTextToSize(': ' + value, 110);
                 doc.text(splitText, 80, y);
                 y += (splitText.length * 6);
@@ -3468,6 +3493,7 @@ function downloadSinglePdf(id) {
         printLine('Nama Lengkap', d.nama);
         printLine('NIK', displayNik); // Gunakan NIK yang sudah disensor
         printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
+        printLine('Alamat Lengkap', d.alamat || '-'); // TAMBAHAN: Alamat
         printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
         printLine('No. Handphone', displayWa); // Gunakan WhatsApp yang sudah disensor
         y += 8;
@@ -3620,7 +3646,7 @@ function editData(id) {
     
     form.setAttribute('data-edit-id', id);
     
-    ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
+    ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alamat', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
      .forEach(key => {
          const element = document.getElementById(key);
          if (element) element.value = d[key] || '';
@@ -4072,15 +4098,15 @@ function generateIDCard(id) {
     
     drawData('TTL / Usia', `${data.tahunLahir} (${data.usia} Tahun)`, dataY + lineHeight * 2);
     
-    // Alamat dengan penanganan multi-line
-    const alamat = `${data.desa}, ${data.kecamatan}`;
+    // Alamat dengan penanganan multi-line - TAMBAHAN
     doc.text('Alamat:', leftX, dataY + lineHeight * 3);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(12, 36, 97); // Biru untuk nilai
     
-    if (alamat.length > 25) {
+    const alamatText = data.alamat || `${data.desa}, ${data.kecamatan}`;
+    if (alamatText.length > 25) {
         // Split alamat menjadi dua baris
-        const words = alamat.split(' ');
+        const words = alamatText.split(' ');
         let line1 = '';
         let line2 = '';
         
@@ -4097,7 +4123,7 @@ function generateIDCard(id) {
             doc.text(line2, leftX + 18, dataY + lineHeight * 3.7);
         }
     } else {
-        doc.text(alamat, leftX + 18, dataY + lineHeight * 3);
+        doc.text(alamatText, leftX + 18, dataY + lineHeight * 3);
     }
     doc.setTextColor(100, 100, 100); // Kembali ke abu-abu untuk label berikutnya
 
@@ -4125,7 +4151,7 @@ function generateIDCard(id) {
     const qrY = 20; // Posisi Y: sejajar dengan data (diturunkan dari 18 ke 20)
 
     // Generate QR Code
-    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nDesa: ${data.desa}\nValidasi: ${data.tanggalValidasi}`;
+    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nAlamat: ${data.alamat || data.desa}\nDesa: ${data.desa}\nValidasi: ${data.tanggalValidasi}`;
     
     // Buat container sementara untuk QR Code
     const qrContainer = document.createElement('div');
