@@ -2,7 +2,7 @@
  * SIMATA CONVERT DATA TOOL - VERSI DISEMPURNAKAN
  * Konversi data antara format Excel (.xlsx) dan reload.js dengan fitur Impor Data Cepat
  * Developer: Dinas Perikanan Kabupaten Situbondo
- * Version: 2.1 - Fitur Impor Data Cerdas dengan Validasi Lengkap
+ * Version: 2.2 - Support Field Alamat Lengkap
  * Fixed Version: GitHub Compatible
  */
 
@@ -847,6 +847,7 @@ function convertExcelToReload() {
                                 <tr>
                                     <th>No</th>
                                     <th>Nama</th>
+                                    <th>Alamat</th>
                                     <th>NIK</th>
                                     <th>Profesi</th>
                                     <th>Status</th>
@@ -858,6 +859,7 @@ function convertExcelToReload() {
                                     <tr>
                                         <td>${index + 1}</td>
                                         <td>${item.nama || '-'}</td>
+                                        <td>${item.alamat ? (item.alamat.length > 30 ? item.alamat.substring(0, 30) + '...' : item.alamat) : '-'}</td>
                                         <td>${item.nik ? item.nik.substring(0, 8) + '****' : '-'}</td>
                                         <td><span class="badge ${getProfesiBadgeClass(item.profesi)}">${item.profesi || '-'}</span></td>
                                         <td>${item.status || '-'}</td>
@@ -934,12 +936,13 @@ function downloadTemplate() {
             throw new Error('XLSX library tidak tersedia. Pastikan library xlsx telah dimuat.');
         }
         
-        // Buat template Excel
+        // Buat template Excel dengan kolom alamat
         const templateData = [
             {
                 'nama': 'CONTOH: Ahmad Susanto',
                 'nik': 'CONTOH: 3501010101010001',
                 'whatsapp': 'CONTOH: 081234567890',
+                'alamat': 'CONTOH: Jl. Raya Situbondo No. 123, RT 01 RW 02, Dusun Krajan',
                 'profesi': 'CONTOH: Nelayan Penuh Waktu',
                 'status': 'CONTOH: Pemilik Kapal',
                 'tahunLahir': 'CONTOH: 1985',
@@ -958,6 +961,7 @@ function downloadTemplate() {
                 'nama': 'CONTOH: Budi Santoso',
                 'nik': '3501010101010002',
                 'whatsapp': '081234567891',
+                'alamat': 'Jl. Raya Panarukan No. 45, RT 03 RW 01, Dusun Sumberejo',
                 'profesi': 'Nelayan Sambilan Utama',
                 'status': 'Anak Buah Kapal',
                 'tahunLahir': '1990',
@@ -986,21 +990,22 @@ function downloadTemplate() {
             ['1. nama', 'Nama lengkap sesuai KTP'],
             ['2. nik', '16 digit NIK (contoh: 3501010101010001)'],
             ['3. whatsapp', 'Nomor handphone aktif (contoh: 081234567890)'],
-            ['4. profesi', 'Pilihan: Nelayan Penuh Waktu, Nelayan Sambilan Utama, Nelayan Sambilan Tambahan'],
-            ['5. status', 'Pilihan: Pemilik Kapal, Anak Buah Kapal'],
-            ['6. tahunLahir', 'Tahun lahir (contoh: 1985)'],
-            ['7. kecamatan', 'Nama kecamatan (sesuai daftar)'],
-            ['8. desa', 'Nama desa/kelurahan (sesuai daftar)'],
-            ['9. alatTangkap', 'Alat Penangkapan Ikan (contoh: Pukat Cincin, Pancing, dll)'],
-            ['10. jenisIkan', 'Jenis ikan yang ditangkap, pisahkan dengan koma (contoh: Ikan Tongkol, Ikan Kembung)'],
+            ['4. alamat', 'Alamat lengkap (contoh: Jl. Raya Situbondo No. 123, RT 01 RW 02, Dusun Krajan)'],
+            ['5. profesi', 'Pilihan: Nelayan Penuh Waktu, Nelayan Sambilan Utama, Nelayan Sambilan Tambahan'],
+            ['6. status', 'Pilihan: Pemilik Kapal, Anak Buah Kapal'],
+            ['7. tahunLahir', 'Tahun lahir (contoh: 1985)'],
+            ['8. kecamatan', 'Nama kecamatan (sesuai daftar)'],
+            ['9. desa', 'Nama desa/kelurahan (sesuai daftar)'],
+            ['10. alatTangkap', 'Alat Penangkapan Ikan (contoh: Pukat Cincin, Pancing, dll)'],
+            ['11. jenisIkan', 'Jenis ikan yang ditangkap, pisahkan dengan koma (contoh: Ikan Tongkol, Ikan Kembung)'],
             [''],
             ['KOLOM OPSIONAL (bisa dikosongkan):', ''],
-            ['11. namaKapal', 'Nama kapal (hanya untuk Pemilik Kapal)'],
-            ['12. jenisKapal', 'Jenis kapal (contoh: Perahu Jukung, Perahu Mayang, dll)'],
-            ['13. usahaSampingan', 'Usaha sampingan (contoh: Warung, Ternak)'],
-            ['14. tanggalValidasi', 'Format: YYYY-MM-DD (contoh: 2025-01-15)'],
-            ['15. validator', 'Nama petugas validator'],
-            ['16. keterangan', 'Keterangan tambahan'],
+            ['12. namaKapal', 'Nama kapal (hanya untuk Pemilik Kapal)'],
+            ['13. jenisKapal', 'Jenis kapal (contoh: Perahu Jukung, Perahu Mayang, dll)'],
+            ['14. usahaSampingan', 'Usaha sampingan (contoh: Warung, Ternak)'],
+            ['15. tanggalValidasi', 'Format: YYYY-MM-DD (contoh: 2025-01-15)'],
+            ['16. validator', 'Nama petugas validator'],
+            ['17. keterangan', 'Keterangan tambahan'],
             [''],
             ['CATATAN PENTING:', ''],
             ['- Hapus baris contoh (baris 1 dan 2) sebelum mengisi data asli'],
@@ -1009,6 +1014,7 @@ function downloadTemplate() {
             ['- Pastikan format tanggal sesuai YYYY-MM-DD'],
             ['- NIK harus 16 digit angka'],
             ['- Kolom profesi dan status harus sesuai pilihan yang tersedia'],
+            ['- Kolom alamat harus diisi dengan alamat lengkap (jalan, RT/RW, dusun)'],
             [''],
             ['SETELAH PENGISIAN:', ''],
             ['1. Simpan file Excel'],
@@ -1092,6 +1098,9 @@ function showImportConfirmation(data) {
     // Hitung data tidak lengkap
     const incompleteData = data.filter(d => !d.isComplete).length;
     
+    // Hitung data dengan alamat lengkap
+    const alamatLengkap = data.filter(d => d.alamat && d.alamat.trim().length > 10).length;
+    
     // Hitung duplikasi NIK dalam data yang akan diimpor
     const duplicateInImport = getDuplicateNiks(data).size;
     
@@ -1113,8 +1122,8 @@ function showImportConfirmation(data) {
             <div class="stat-label">Penuh Waktu</div>
         </div>
         <div class="stat-box">
-            <div class="stat-value">${sambilanUtama + sambilanTambahan}</div>
-            <div class="stat-label">Sambilan</div>
+            <div class="stat-value">${alamatLengkap}</div>
+            <div class="stat-label">Alamat Lengkap</div>
         </div>
         <div class="stat-box">
             <div class="stat-value">${incompleteData}</div>
@@ -1164,11 +1173,17 @@ function processImport() {
         let added = 0;
         let updated = 0;
         let incompleteCount = 0;
+        let alamatKosong = 0;
         
         newData.forEach(newItem => {
             // Hitung data tidak lengkap
             if (!newItem.isComplete) {
                 incompleteCount++;
+            }
+            
+            // Hitung data dengan alamat kosong
+            if (!newItem.alamat || newItem.alamat.trim().length < 5) {
+                alamatKosong++;
             }
             
             const existingIndex = mergedData.findIndex(d => d.nik === newItem.nik);
@@ -1223,6 +1238,7 @@ function processImport() {
                     <div><strong>Total Data Sistem:</strong> ${mergedData.length} records</div>
                     <div><strong>Duplikasi Ditemukan:</strong> ${duplicateNiks.size} NIK</div>
                     <div><strong>Data Tidak Lengkap:</strong> ${incompleteCount} records</div>
+                    <div><strong>Alamat Kosong/Kurang Lengkap:</strong> ${alamatKosong} records</div>
                 </div>
             </div>
             
@@ -1234,6 +1250,18 @@ function processImport() {
                     <li>Data yang tidak lengkap akan ditandai dengan <span class="badge bg-warning">warna kuning</span> di tabel</li>
                     <li>Lengkapi data melalui menu <strong>Edit Data</strong></li>
                     <li>Sistem akan terus mengingatkan hingga data lengkap</li>
+                </ul>
+            </div>
+            ` : ''}
+            
+            ${alamatKosong > 0 ? `
+            <div class="alert alert-warning">
+                <i class="fas fa-home me-2"></i>
+                <strong>Data Alamat Tidak Lengkap:</strong> ${alamatKosong} data memiliki alamat yang kosong atau kurang lengkap.
+                <ul class="mt-2 mb-1">
+                    <li>Alamat lengkap diperlukan untuk pemetaan dan validasi data</li>
+                    <li>Lengkapi alamat melalui menu <strong>Edit Data</strong></li>
+                    <li>Format alamat: Jalan, RT/RW, Dusun, Nomor Rumah</li>
                 </ul>
             </div>
             ` : ''}
@@ -1255,6 +1283,7 @@ function processImport() {
                 <ol style="padding-left: 20px;">
                     <li>Periksa data di menu <strong>Data Nelayan</strong></li>
                     ${incompleteCount > 0 ? '<li>Lengkapi data yang masih kosong melalui menu <strong>Edit Data</strong></li>' : ''}
+                    ${alamatKosong > 0 ? '<li>Lengkapi alamat melalui menu <strong>Edit Data</strong></li>' : ''}
                     ${duplicateNiks.size > 0 ? '<li>Cek data duplikasi di menu <strong>Filter & Validasi</strong> → <strong>Cek Data Ganda</strong></li>' : ''}
                     <li>Validasi data melalui menu <strong>Filter & Validasi</strong></li>
                     <li>Cetak ID Card untuk data yang sudah lengkap</li>
@@ -1287,6 +1316,12 @@ function processImport() {
             localStorage.setItem('simata_incomplete_count', incompleteCount.toString());
         }
         
+        // Simpan notifikasi untuk data alamat tidak lengkap
+        if (alamatKosong > 0) {
+            localStorage.setItem('simata_alamat_kosong', 'true');
+            localStorage.setItem('simata_alamat_kosong_count', alamatKosong.toString());
+        }
+        
         // Simpan notifikasi untuk data ganda
         if (duplicateNiks.size > 0) {
             localStorage.setItem('simata_duplicate_data', 'true');
@@ -1305,6 +1340,9 @@ function processImport() {
                 if (incompleteCount > 0) {
                     window.showNotification(`⚠️ ${incompleteCount} data tidak lengkap. Harap lengkapi melalui menu Edit Data.`, 'warning');
                 }
+                if (alamatKosong > 0) {
+                    window.showNotification(`🏠 ${alamatKosong} data memiliki alamat tidak lengkap. Harap lengkapi alamat melalui menu Edit Data.`, 'warning');
+                }
                 if (duplicateNiks.size > 0) {
                     window.showNotification(`⚠️ ${duplicateNiks.size} data duplikasi ditemukan. Harap periksa di menu Filter & Validasi.`, 'error');
                 }
@@ -1319,15 +1357,15 @@ function processImport() {
 }
 
 /**
- * Validasi dan konversi data Excel
+ * Validasi dan konversi data Excel - DIPERBARUI untuk support field alamat
  */
 function validateAndConvertExcelData(excelData) {
     const convertedData = [];
     const errors = [];
     const warnings = [];
     
-    // Kolom wajib untuk data lengkap
-    const requiredFields = ['nama', 'nik', 'whatsapp', 'profesi', 'status', 'tahunLahir', 'kecamatan', 'desa', 'alatTangkap'];
+    // Kolom wajib untuk data lengkap - DITAMBAHKAN alamat
+    const requiredFields = ['nama', 'nik', 'whatsapp', 'alamat', 'profesi', 'status', 'tahunLahir', 'kecamatan', 'desa', 'alatTangkap'];
     
     excelData.forEach((row, index) => {
         try {
@@ -1369,7 +1407,7 @@ function validateAndConvertExcelData(excelData) {
                 warnings.push(`Baris ${index + 2}: Status "${status}" tidak valid, diubah menjadi "Anak Buah Kapal"`);
             }
             
-            // Default values
+            // Default values dengan DUKUNGAN ALAMAT
             const convertedRow = {
                 id: id,
                 nama: String(row.nama || '').trim(),
@@ -1381,6 +1419,7 @@ function validateAndConvertExcelData(excelData) {
                 usia: usia,
                 kecamatan: String(row.kecamatan || '').trim(),
                 desa: String(row.desa || '').trim(),
+                alamat: String(row.alamat || row['alamat lengkap'] || row.address || '').trim(), // DUKUNGAN ALAMAT
                 alatTangkap: String(row.alatTangkap || row.API || 'Pancing').trim(),
                 namaKapal: String(row.namaKapal || '').trim(),
                 jenisKapal: String(row.jenisKapal || '').trim(),
@@ -1394,13 +1433,14 @@ function validateAndConvertExcelData(excelData) {
                 importDate: new Date().toISOString()
             };
             
-            // Cek kolom wajib untuk kelengkapan data
+            // Cek kolom wajib untuk kelengkapan data - DITAMBAHKAN validasi alamat
             const missingFields = [];
             requiredFields.forEach(field => {
                 const value = convertedRow[field];
                 if (!value || value.toString().trim() === '' || 
                     (field === 'whatsapp' && value === '00000000') ||
-                    (field === 'tahunLahir' && (value < 1900 || value > currentYear))) {
+                    (field === 'tahunLahir' && (value < 1900 || value > currentYear)) ||
+                    (field === 'alamat' && value.trim().length < 5)) { // Validasi alamat minimal 5 karakter
                     missingFields.push(field);
                 }
             });
@@ -1417,6 +1457,11 @@ function validateAndConvertExcelData(excelData) {
             // Tambahkan pesan warning jika ada field yang tidak lengkap
             if (missingFields.length > 0) {
                 convertedRow.keterangan += ` | Data tidak lengkap: ${missingFields.join(', ')}`;
+            }
+            
+            // Tambahkan pesan khusus untuk alamat tidak lengkap
+            if (!convertedRow.alamat || convertedRow.alamat.trim().length < 5) {
+                convertedRow.keterangan += ` | Alamat tidak lengkap`;
             }
             
             convertedData.push(convertedRow);
@@ -1632,5 +1677,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.handleImportFileSelect = handleImportFileSelect;
     window.showIncompleteData = showIncompleteData;
     
-    console.log('✅ SIMATA Convert Data Tool v2.1 loaded successfully');
+    console.log('✅ SIMATA Convert Data Tool v2.2 loaded successfully (Support Field Alamat)');
 });
