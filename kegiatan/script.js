@@ -148,10 +148,10 @@ const kegiatanData = [
     "category": "bantuan",
     "location": "Kecamatan Besuki",
     "tags": [
-        "Dinas Kelautan Dan Perikanan Provinsi Jawa Timur",
+        "Dinas Peternakan Dan Perikanan Situbondo",
         "Bidang Pemberdayaan Nelayan",
+        "Dinas Sosial",
         "Bantuan Sosial",
-        "Kelompok Nelayan",
         "Korban Banjir"
     ],
     "youtubeUrls": [],
