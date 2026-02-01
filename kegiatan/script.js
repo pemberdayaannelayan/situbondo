@@ -1,3 +1,4 @@
+
 // Data kegiatan dengan properti 'url' untuk halaman detail
 const kegiatanData = [
     {
@@ -147,11 +148,10 @@ const kegiatanData = [
     "category": "bantuan",
     "location": "Kecamatan Besuki",
     "tags": [
-        "Dinas Peternakan Dan Perikanan Situbondo",
+        "Dinas Kelautan Dan Perikanan Provinsi Jawa Timur",
         "Bidang Pemberdayaan Nelayan",
-        "Dinas Sosial Situbondo"
         "Bantuan Sosial",
-        "Besuki",
+        "Kelompok Nelayan",
         "Korban Banjir"
     ],
     "youtubeUrls": [],
