@@ -1,10 +1,13 @@
 // =====================================================
-// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.0 FINAL
+// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.0 FINAL REVISI
 // DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
 // REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
 // TAMBAHAN: FITUR ALAMAT SEBELUM KECAMATAN
 // REVISI ID CARD: PERUBAHAN FORMAT PROFESI DAN ALAT TANGKAP
 // PERBAIKAN: TAMBAHAN INFORMASI VALIDASI DI QRCODE ID CARD
+// PERBAIKAN TAMBAHAN: 
+// 1. FITUR FILTER DATA GANDA YANG LEBIH KETAT
+// 2. INPUT OTOMATIS HURUF KAPITAL UNTUK NAMA DAN ALAMAT
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -645,9 +648,36 @@ function restoreData() {
                 return;
             }
             
-            // Merge data lama dengan data baru
+            // --- PERBAIKAN: VALIDASI DATA GANDA YANG LEBIH KETAT ---
+            // Cek duplikasi NIK dan nama dalam data yang akan di-restore
+            const duplicateCheck = validateDataDuplicates(restoredData);
+            if (duplicateCheck.hasDuplicates) {
+                const confirmed = confirm(
+                    `Ditemukan ${duplicateCheck.duplicateCount} data duplikat dalam file restore.\n` +
+                    `Duplikat berdasarkan NIK dan nama yang sama akan ditolak.\n` +
+                    `Lanjutkan restore dengan melewatkan data duplikat?`
+                );
+                
+                if (!confirmed) {
+                    hideLoading();
+                    showNotification('Restore dibatalkan oleh pengguna', 'warning');
+                    return;
+                }
+                
+                // Filter data duplikat dari restoredData
+                const uniqueData = filterDuplicateData(restoredData);
+                restoredData = uniqueData.filteredData;
+                
+                showNotification(
+                    `${duplicateCheck.duplicateCount} data duplikat telah difilter. ` +
+                    `Akan di-restore ${restoredData.length} data unik.`, 
+                    'warning'
+                );
+            }
+            
+            // Merge data lama dengan data baru (hanya data unik)
             const existingData = appData;
-            const mergedData = mergeData(existingData, restoredData);
+            const mergedData = mergeDataWithDuplicateCheck(existingData, restoredData);
             
             const newCount = restoredData.length;
             const existingCount = existingData.length;
@@ -655,6 +685,7 @@ function restoreData() {
             const replacedCount = existingCount + newCount - mergedCount;
             const addedCount = mergedCount - existingCount;
             
+            // Simpan data yang telah dimerge
             appData = mergedData;
             saveData();
             renderDataTable();
@@ -692,23 +723,101 @@ function restoreData() {
     reader.readAsText(file);
 }
 
-// --- FUNGSI MERGE DATA ---
-function mergeData(existingData, newData) {
-    // Buat map untuk data yang sudah ada dengan NIK sebagai key
+// --- FUNGSI VALIDASI DATA GANDA YANG LEBIH KETAT ---
+function validateDataDuplicates(dataArray) {
+    const seen = new Set();
+    const duplicates = [];
+    
+    dataArray.forEach((item, index) => {
+        // Buat key unik berdasarkan NIK dan NAMA (dalam uppercase)
+        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
+        
+        if (seen.has(key)) {
+            duplicates.push({
+                index: index,
+                nik: item.nik,
+                nama: item.nama,
+                key: key
+            });
+        } else {
+            seen.add(key);
+        }
+    });
+    
+    return {
+        hasDuplicates: duplicates.length > 0,
+        duplicateCount: duplicates.length,
+        duplicates: duplicates
+    };
+}
+
+// Fungsi untuk filter data duplikat
+function filterDuplicateData(dataArray) {
+    const seen = new Set();
+    const filteredData = [];
+    const removedDuplicates = [];
+    
+    dataArray.forEach(item => {
+        // Buat key unik berdasarkan NIK dan NAMA (dalam uppercase)
+        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
+        
+        if (!seen.has(key)) {
+            seen.add(key);
+            filteredData.push(item);
+        } else {
+            removedDuplicates.push({
+                nik: item.nik,
+                nama: item.nama,
+                key: key
+            });
+        }
+    });
+    
+    return {
+        filteredData: filteredData,
+        removedCount: removedDuplicates.length,
+        removedDuplicates: removedDuplicates
+    };
+}
+
+// --- FUNGSI MERGE DATA DENGAN VALIDASI DUPLIKAT ---
+function mergeDataWithDuplicateCheck(existingData, newData) {
+    // Buat map untuk data yang sudah ada dengan key NIK_NAMA
     const dataMap = new Map();
     
     // Tambahkan data yang sudah ada ke map
     existingData.forEach(item => {
-        dataMap.set(item.nik, item);
+        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
+        dataMap.set(key, item);
     });
     
-    // Tambahkan atau timpa data baru
+    // Tambahkan data baru, lewati jika sudah ada
+    const skippedData = [];
     newData.forEach(item => {
-        dataMap.set(item.nik, item);
+        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
+        if (!dataMap.has(key)) {
+            dataMap.set(key, item);
+        } else {
+            skippedData.push({
+                nik: item.nik,
+                nama: item.nama,
+                reason: 'Data dengan NIK dan nama yang sama sudah ada'
+            });
+        }
     });
+    
+    // Log data yang dilewati (untuk debugging)
+    if (skippedData.length > 0) {
+        console.log('Data yang dilewati saat merge:', skippedData);
+    }
     
     // Kembalikan sebagai array
     return Array.from(dataMap.values());
+}
+
+// --- FUNGSI MERGE DATA (untuk kompatibilitas) ---
+function mergeData(existingData, newData) {
+    return mergeDataWithDuplicateCheck(existingData, newData);
 }
 
 // --- FUNGSI RELOAD DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
@@ -729,15 +838,25 @@ function handleReloadRepo() {
         setTimeout(() => {
             if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
                 try {
-                    // Ganti data dengan data baru
-                    appData = window.SIMATA_BACKUP_DATA;
+                    // Validasi data duplikat sebelum mengganti data
+                    const duplicateCheck = validateDataDuplicates(window.SIMATA_BACKUP_DATA);
+                    if (duplicateCheck.hasDuplicates) {
+                        console.warn(`File ${fileName} mengandung ${duplicateCheck.duplicateCount} data duplikat`);
+                        showNotification(`Peringatan: File mengandung data duplikat. Data duplikat akan difilter.`, 'warning');
+                    }
+                    
+                    // Filter data duplikat
+                    const uniqueData = filterDuplicateData(window.SIMATA_BACKUP_DATA);
+                    
+                    // Ganti data dengan data baru yang sudah difilter
+                    appData = uniqueData.filteredData;
                     saveData();
                     renderDataTable();
                     updateDashboard();
                     updateFilterDesaOptions();
                     
                     hideLoading();
-                    showNotification(`Data berhasil disinkronisasi dari ${fileName} (${appData.length} data)`, 'success');
+                    showNotification(`Data berhasil disinkronisasi dari ${fileName} (${appData.length} data, ${uniqueData.removedCount} duplikat difilter)`, 'success');
                     
                 } catch (error) {
                     console.error('Reload error:', error);
@@ -1767,14 +1886,30 @@ function resetFilter() {
     showNotification('Filter direset, menampilkan semua data', 'info');
 }
 
+// --- FUNGSI PERBAIKAN: FILTER DATA GANDA YANG LEBIH KETAT ---
 function showDuplicateDataInFilter() {
-    // Hitung data duplikat
-    const counts = {};
-    appData.forEach(d => counts[d.nik] = (counts[d.nik] || 0) + 1);
-    const duplicateData = appData.filter(d => counts[d.nik] > 1);
+    // Hitung data duplikat berdasarkan NIK dan NAMA (uppercase)
+    const duplicateMap = new Map();
+    const duplicates = [];
     
-    if (duplicateData.length === 0) {
-        showNotification('Tidak ditemukan data NIK ganda. Data sudah bersih!', 'success');
+    appData.forEach(d => {
+        const key = `${d.nik}_${d.nama ? d.nama.toUpperCase().trim() : ''}`;
+        if (duplicateMap.has(key)) {
+            duplicateMap.get(key).push(d);
+        } else {
+            duplicateMap.set(key, [d]);
+        }
+    });
+    
+    // Filter hanya yang memiliki lebih dari 1 data (duplikat)
+    duplicateMap.forEach((items, key) => {
+        if (items.length > 1) {
+            duplicates.push(...items);
+        }
+    });
+    
+    if (duplicates.length === 0) {
+        showNotification('Tidak ditemukan data NIK dan nama ganda. Data sudah bersih!', 'success');
         return;
     }
     
@@ -1782,10 +1917,13 @@ function showDuplicateDataInFilter() {
     currentFilter = { duplicate: true };
     currentPage = 1;
     
+    // Simpan data duplikat untuk ditampilkan
+    window.duplicateDataForDisplay = duplicates;
+    
     // Render ulang tabel
     renderDataTable();
     
-    showNotification(`Ditemukan ${duplicateData.length} data dengan NIK ganda`, 'warning');
+    showNotification(`Ditemukan ${duplicates.length} data dengan NIK dan nama ganda`, 'warning');
 }
 
 // --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER ---
@@ -2499,6 +2637,58 @@ function initializeApp() {
     
     // Inisialisasi form pengaturan pejabat
     loadOfficialData();
+    
+    // --- PERBAIKAN: INISIALISASI INPUT OTOMATIS HURUF KAPITAL ---
+    setupAutoUppercaseInputs();
+}
+
+// --- FUNGSI PERBAIKAN: SETUP INPUT OTOMATIS HURUF KAPITAL ---
+function setupAutoUppercaseInputs() {
+    // Input Nama - otomatis huruf kapital
+    const namaInput = document.getElementById('nama');
+    if (namaInput) {
+        namaInput.addEventListener('input', function() {
+            // Simpan posisi cursor
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            
+            // Ubah ke huruf kapital
+            this.value = this.value.toUpperCase();
+            
+            // Kembalikan posisi cursor
+            this.setSelectionRange(start, end);
+        });
+        
+        // Juga untuk event paste
+        namaInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                this.value = this.value.toUpperCase();
+            }, 10);
+        });
+    }
+    
+    // Input Alamat - otomatis huruf kapital
+    const alamatInput = document.getElementById('alamat');
+    if (alamatInput) {
+        alamatInput.addEventListener('input', function() {
+            // Simpan posisi cursor
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            
+            // Ubah ke huruf kapital
+            this.value = this.value.toUpperCase();
+            
+            // Kembalikan posisi cursor
+            this.setSelectionRange(start, end);
+        });
+        
+        // Juga untuk event paste
+        alamatInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                this.value = this.value.toUpperCase();
+            }, 10);
+        });
+    }
 }
 
 function loadOfficialData() {
@@ -3263,22 +3453,39 @@ function handleFormSubmit(e) {
     if(selectedFish.length === 0) return showNotification('Pilih minimal satu jenis ikan!', 'error');
 
     const editId = form.getAttribute('data-edit-id');
-    const duplicateCheck = appData.find(d => d.nik === nik);
-    if (duplicateCheck && (!editId || duplicateCheck.id != editId)) {
-        return showNotification('GAGAL: NIK sudah terdaftar dalam sistem!', 'error');
+    
+    // --- PERBAIKAN: VALIDASI DATA GANDA YANG LEBIH KETAT ---
+    // Gunakan NIK dan NAMA (dalam uppercase) untuk pengecekan duplikasi
+    const nama = document.getElementById('nama').value.toUpperCase();
+    
+    // Cari data dengan NIK dan NAMA yang sama
+    const duplicateCheck = appData.find(d => 
+        d.nik === nik && 
+        d.nama.toUpperCase() === nama && 
+        (!editId || d.id != editId) // Kecualikan data yang sedang diedit
+    );
+    
+    if (duplicateCheck) {
+        return showNotification(
+            `GAGAL: Data dengan NIK ${nik} dan nama ${nama} sudah terdaftar dalam sistem!\n` +
+            `Pemilik: ${duplicateCheck.nama} - ${duplicateCheck.desa}, ${duplicateCheck.kecamatan}`, 
+            'error'
+        );
     }
 
     const isOwner = document.getElementById('statusNelayan').value === 'Pemilik Kapal';
+    
+    // --- PERBAIKAN: SIMPAN NAMA DAN ALAMAT DALAM HURUF KAPITAL ---
     const formData = {
         id: editId || Date.now(),
-        nama: document.getElementById('nama').value,
+        nama: nama, // Sudah dalam uppercase dari event listener
         nik: nik,
         whatsapp: whatsapp,
         profesi: document.getElementById('profesi').value,
         status: document.getElementById('statusNelayan').value,
         tahunLahir: document.getElementById('tahunLahir').value,
         usia: document.getElementById('usia').value,
-        alamat: document.getElementById('alamat').value, // TAMBAHAN: Field alamat
+        alamat: document.getElementById('alamat').value.toUpperCase(), // Konversi ke uppercase
         kecamatan: document.getElementById('kecamatan').value,
         desa: document.getElementById('desa').value,
         alatTangkap: document.getElementById('alatTangkap').value,
@@ -3648,6 +3855,7 @@ function editData(id) {
     
     form.setAttribute('data-edit-id', id);
     
+    // Set nilai form (nama dan alamat tetap dalam format asli)
     ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alamat', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
      .forEach(key => {
          const element = document.getElementById(key);
@@ -3802,12 +4010,19 @@ function startDuplicateChecker() {
 }
 
 function checkGlobalDuplicates() {
-    const counts = {};
+    const duplicateMap = new Map();
     let hasDuplicate = false;
+    
     for (const d of appData) {
-        counts[d.nik] = (counts[d.nik] || 0) + 1;
-        if (counts[d.nik] > 1) { hasDuplicate = true; break; }
+        const key = `${d.nik}_${d.nama.toUpperCase()}`;
+        if (duplicateMap.has(key)) {
+            hasDuplicate = true;
+            break;
+        } else {
+            duplicateMap.set(key, d);
+        }
     }
+    
     const duplicateWarning = document.getElementById('duplicateWarning');
     if (duplicateWarning) {
         duplicateWarning.style.display = hasDuplicate ? 'block' : 'none';
