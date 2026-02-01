@@ -318,61 +318,11 @@ function getFishIconClass(fishName) {
 
 // --- FUNGSI DATA WILAYAH YANG DISEMPURNAKAN ---
 function initDataWilayah() {
-    const container = document.getElementById('wilayahCardsContainer');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    // Tambahkan tab untuk memilih antara Desa dan Kecamatan
-    const tabContainer = document.createElement('div');
-    tabContainer.className = 'wilayah-tab-container mb-4';
-    tabContainer.innerHTML = `
-        <div class="btn-group w-100" role="group">
-            <button type="button" class="btn btn-outline-primary active" id="tabDesa">
-                <i class="fas fa-village"></i> Data Desa
-            </button>
-            <button type="button" class="btn btn-outline-success" id="tabKecamatan">
-                <i class="fas fa-map"></i> Data Kecamatan
-            </button>
-        </div>
-    `;
-    
-    container.appendChild(tabContainer);
-    
-    // Container untuk desa
-    const desaContainer = document.createElement('div');
-    desaContainer.id = 'desaContainer';
-    desaContainer.className = 'wilayah-content-container active';
-    
-    // Container untuk kecamatan
-    const kecamatanContainer = document.createElement('div');
-    kecamatanContainer.id = 'kecamatanContainer';
-    kecamatanContainer.className = 'wilayah-content-container';
-    kecamatanContainer.style.display = 'none';
-    
-    container.appendChild(desaContainer);
-    container.appendChild(kecamatanContainer);
-    
     // Inisialisasi data desa
     initDesaCards();
     
     // Inisialisasi data kecamatan
     initKecamatanCards();
-    
-    // Event listener untuk tab
-    document.getElementById('tabDesa').addEventListener('click', function() {
-        document.getElementById('tabDesa').classList.add('active');
-        document.getElementById('tabKecamatan').classList.remove('active');
-        document.getElementById('desaContainer').style.display = 'block';
-        document.getElementById('kecamatanContainer').style.display = 'none';
-    });
-    
-    document.getElementById('tabKecamatan').addEventListener('click', function() {
-        document.getElementById('tabKecamatan').classList.add('active');
-        document.getElementById('tabDesa').classList.remove('active');
-        document.getElementById('desaContainer').style.display = 'none';
-        document.getElementById('kecamatanContainer').style.display = 'block';
-    });
     
     // Update total desa dan kecamatan count
     document.getElementById('totalDesaCount').textContent = DESA_LIST.length;
@@ -384,7 +334,7 @@ function initDataWilayah() {
 
 // Fungsi untuk inisialisasi kartu desa
 function initDesaCards() {
-    const desaContainer = document.getElementById('desaContainer');
+    const desaContainer = document.getElementById('wilayahDesaCardsContainer');
     if (!desaContainer) return;
     
     desaContainer.innerHTML = '';
@@ -437,7 +387,7 @@ function initDesaCards() {
 
 // Fungsi untuk inisialisasi kartu kecamatan
 function initKecamatanCards() {
-    const kecamatanContainer = document.getElementById('kecamatanContainer');
+    const kecamatanContainer = document.getElementById('wilayahKecamatanCardsContainer');
     if (!kecamatanContainer) return;
     
     kecamatanContainer.innerHTML = '';
@@ -3361,10 +3311,19 @@ function setupEventListeners() {
         });
     }
 
-    // Tombol Global Mode di modal
+    // Tombol Global Mode di modal (tab desa)
     const btnGlobalMode = document.getElementById('btnGlobalMode');
     if (btnGlobalMode) {
         btnGlobalMode.addEventListener('click', function() {
+            modalDataWilayah.hide();
+            setInputGlobalMode();
+        });
+    }
+
+    // Tombol Global Mode di modal (tab kecamatan)
+    const btnGlobalModeKecamatan = document.getElementById('btnGlobalModeKecamatan');
+    if (btnGlobalModeKecamatan) {
+        btnGlobalModeKecamatan.addEventListener('click', function() {
             modalDataWilayah.hide();
             setInputGlobalMode();
         });
@@ -3375,7 +3334,24 @@ function setupEventListeners() {
     if (searchWilayah) {
         searchWilayah.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
-            const cards = document.querySelectorAll('.wilayah-card');
+            
+            // Cek tab mana yang aktif
+            const activeTab = document.querySelector('#wilayahTabs .nav-link.active');
+            if (!activeTab) return;
+            
+            let cardSelector, emptyStateId, containerId;
+            
+            if (activeTab.id === 'desa-tab') {
+                cardSelector = '#wilayahDesaCardsContainer .wilayah-card';
+                emptyStateId = 'wilayahDesaEmptyState';
+                containerId = 'wilayahDesaCardsContainer';
+            } else {
+                cardSelector = '#wilayahKecamatanCardsContainer .wilayah-card';
+                emptyStateId = 'wilayahKecamatanEmptyState';
+                containerId = 'wilayahKecamatanCardsContainer';
+            }
+            
+            const cards = document.querySelectorAll(cardSelector);
             let visibleCount = 0;
             
             cards.forEach(card => {
@@ -3388,18 +3364,15 @@ function setupEventListeners() {
                 }
             });
             
-            const emptyState = document.getElementById('wilayahEmptyState');
-            const desaContainer = document.getElementById('desaContainer');
-            const kecamatanContainer = document.getElementById('kecamatanContainer');
+            const emptyState = document.getElementById(emptyStateId);
+            const container = document.getElementById(containerId);
             
             if (visibleCount === 0 && searchTerm.trim() !== '') {
                 if (emptyState) emptyState.classList.remove('d-none');
-                if (desaContainer) desaContainer.classList.add('d-none');
-                if (kecamatanContainer) kecamatanContainer.classList.add('d-none');
+                if (container) container.classList.add('d-none');
             } else {
                 if (emptyState) emptyState.classList.add('d-none');
-                if (desaContainer) desaContainer.classList.remove('d-none');
-                if (kecamatanContainer) kecamatanContainer.classList.remove('d-none');
+                if (container) container.classList.remove('d-none');
             }
         });
     }
