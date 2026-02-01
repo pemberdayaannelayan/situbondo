@@ -1,7 +1,7 @@
 // =====================================================
-// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.0 FINAL
-// DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
-// REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
+// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.1 FINAL
+// DENGAN FITUR INPUT ALAMAT YANG DISEMPURNAKAN
+// REVISI: TAMBAHAN INPUT FORM ALAMAT LENGKAP
 // =====================================================
 
 // Data ikan yang diperbarui dan dilengkapi
@@ -243,6 +243,22 @@ function migrateOldData() {
         if (PROFESI_MAPPING[item.profesi]) {
             item.profesi = PROFESI_MAPPING[item.profesi];
         }
+        // Tambahkan field alamatDetail jika belum ada untuk kompatibilitas
+        if (!item.hasOwnProperty('alamatDetail')) {
+            item.alamatDetail = '';
+        }
+        // Tambahkan field alamatRTRW jika belum ada untuk kompatibilitas
+        if (!item.hasOwnProperty('alamatRTRW')) {
+            item.alamatRTRW = '';
+        }
+        // Tambahkan field alamatDusun jika belum ada untuk kompatibilitas
+        if (!item.hasOwnProperty('alamatDusun')) {
+            item.alamatDusun = '';
+        }
+        // Tambahkan field alamatJalan jika belum ada untuk kompatibilitas
+        if (!item.hasOwnProperty('alamatJalan')) {
+            item.alamatJalan = '';
+        }
     });
     saveData();
 }
@@ -426,6 +442,8 @@ function loadDataByDesa(desaName, fileName) {
                     try {
                         // Ganti data dengan data baru dari desa
                         appData = window.SIMATA_BACKUP_DATA;
+                        // Pastikan data memiliki field alamat yang baru
+                        migrateOldData();
                         saveData();
                         renderDataTable();
                         updateDashboard();
@@ -640,6 +658,14 @@ function restoreData() {
                 return;
             }
             
+            // Pastikan data yang direstore memiliki field alamat yang baru
+            restoredData.forEach(item => {
+                if (!item.hasOwnProperty('alamatDetail')) item.alamatDetail = '';
+                if (!item.hasOwnProperty('alamatRTRW')) item.alamatRTRW = '';
+                if (!item.hasOwnProperty('alamatDusun')) item.alamatDusun = '';
+                if (!item.hasOwnProperty('alamatJalan')) item.alamatJalan = '';
+            });
+            
             // Merge data lama dengan data baru
             const existingData = appData;
             const mergedData = mergeData(existingData, restoredData);
@@ -726,6 +752,8 @@ function handleReloadRepo() {
                 try {
                     // Ganti data dengan data baru
                     appData = window.SIMATA_BACKUP_DATA;
+                    // Pastikan data memiliki field alamat yang baru
+                    migrateOldData();
                     saveData();
                     renderDataTable();
                     updateDashboard();
@@ -830,6 +858,12 @@ function displayVerifyResult(result) {
         title.textContent = 'VERIFIKASI BERHASIL';
         subtitle.textContent = result.message;
         
+        // Format alamat lengkap
+        let alamatLengkap = data.desa + ', ' + data.kecamatan;
+        if (data.alamatDetail) {
+            alamatLengkap = data.alamatDetail + ', ' + alamatLengkap;
+        }
+        
         // Isi konten
         content.innerHTML = `
             <div class="col-md-6">
@@ -848,8 +882,8 @@ function displayVerifyResult(result) {
                     </div>
                 </div>
                 <div class="verify-result-item">
-                    <div class="verify-result-label">Domisili</div>
-                    <div class="verify-result-value">${data.desa}, ${data.kecamatan}</div>
+                    <div class="verify-result-label">Alamat Lengkap</div>
+                    <div class="verify-result-value">${alamatLengkap}</div>
                 </div>
             </div>
             <div class="col-md-6">
@@ -1541,7 +1575,8 @@ function getFilteredData() {
             d.nik.includes(search) || 
             (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
             d.desa.toLowerCase().includes(search) ||
-            d.kecamatan.toLowerCase().includes(search)
+            d.kecamatan.toLowerCase().includes(search) ||
+            (d.alamatDetail && d.alamatDetail.toLowerCase().includes(search))
         );
     }
     
@@ -1590,7 +1625,8 @@ function renderDataTable() {
             d.nik.includes(search) || 
             (d.namaKapal && d.namaKapal.toLowerCase().includes(search)) ||
             d.desa.toLowerCase().includes(search) ||
-            d.kecamatan.toLowerCase().includes(search)
+            d.kecamatan.toLowerCase().includes(search) ||
+            (d.alamatDetail && d.alamatDetail.toLowerCase().includes(search))
         );
     }
     
@@ -2763,6 +2799,10 @@ function setupEventListeners() {
                 const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
                 const waInput = document.getElementById('whatsapp');
                 const btnWa = document.getElementById('btnNoWA');
+                const alamatDetailInput = document.getElementById('alamatDetail');
+                const alamatRTRWInput = document.getElementById('alamatRTRW');
+                const alamatDusunInput = document.getElementById('alamatDusun');
+                const alamatJalanInput = document.getElementById('alamatJalan');
                 
                 if (ownerFields) ownerFields.style.display = 'none';
                 if (usiaInput) usiaInput.value = '';
@@ -2788,6 +2828,12 @@ function setupEventListeners() {
                     btnWa.classList.add('btn-outline-secondary');
                     btnWa.textContent = "Tidak Ada";
                 }
+                
+                // Reset field alamat
+                if (alamatDetailInput) alamatDetailInput.value = '';
+                if (alamatRTRWInput) alamatRTRWInput.value = '';
+                if (alamatDusunInput) alamatDusunInput.value = '';
+                if (alamatJalanInput) alamatJalanInput.value = '';
                 
                 const apiInfo = document.getElementById('apiInfo');
                 const kapalInfo = document.getElementById('kapalInfo');
@@ -3265,6 +3311,11 @@ function handleFormSubmit(e) {
         usia: document.getElementById('usia').value,
         kecamatan: document.getElementById('kecamatan').value,
         desa: document.getElementById('desa').value,
+        // TAMBAHAN: Field alamat baru
+        alamatDetail: document.getElementById('alamatDetail').value,
+        alamatRTRW: document.getElementById('alamatRTRW').value,
+        alamatDusun: document.getElementById('alamatDusun').value,
+        alamatJalan: document.getElementById('alamatJalan').value,
         alatTangkap: document.getElementById('alatTangkap').value,
         namaKapal: isOwner ? document.getElementById('namaKapal').value : '-',
         jenisKapal: isOwner ? document.getElementById('jenisKapal').value : '-',
@@ -3292,6 +3343,10 @@ function handleFormSubmit(e) {
     const ownerFields = document.getElementById('ownerFields');
     const desaSelect = document.getElementById('desa');
     const jenisIkanLainnya = document.getElementById('jenisIkanLainnya');
+    const alamatDetailInput = document.getElementById('alamatDetail');
+    const alamatRTRWInput = document.getElementById('alamatRTRW');
+    const alamatDusunInput = document.getElementById('alamatDusun');
+    const alamatJalanInput = document.getElementById('alamatJalan');
     
     if (ownerFields) ownerFields.style.display = 'none';
     if (desaSelect) {
@@ -3301,6 +3356,12 @@ function handleFormSubmit(e) {
     if (jenisIkanLainnya) {
         jenisIkanLainnya.style.display = 'none';
     }
+    
+    // Reset field alamat
+    if (alamatDetailInput) alamatDetailInput.value = '';
+    if (alamatRTRWInput) alamatRTRWInput.value = '';
+    if (alamatDusunInput) alamatDusunInput.value = '';
+    if (alamatJalanInput) alamatJalanInput.value = '';
     
     const today = new Date().toISOString().split('T')[0];
     const tanggalValidasi = document.getElementById('tanggalValidasi');
@@ -3337,7 +3398,35 @@ function viewDetail(id) {
     document.getElementById('d_nik').innerText = displayNik; 
     document.getElementById('d_usia').innerText = `${d.usia} Tahun (${d.tahunLahir})`;
     document.getElementById('d_wa').innerText = displayWa;
-    document.getElementById('d_domisili').innerText = `${d.desa}, ${d.kecamatan}`;
+    
+    // Format alamat lengkap untuk ditampilkan
+    let alamatLengkap = `${d.desa}, ${d.kecamatan}`;
+    if (d.alamatDetail) {
+        alamatLengkap = d.alamatDetail + ', ' + alamatLengkap;
+    }
+    
+    document.getElementById('d_domisili').innerText = alamatLengkap;
+    
+    // Tampilkan detail alamat tambahan jika ada
+    const detailAlamatContainer = document.getElementById('d_detail_alamat');
+    if (detailAlamatContainer) {
+        let detailAlamatHTML = '';
+        if (d.alamatRTRW) {
+            detailAlamatHTML += `<div><strong>RT/RW:</strong> ${d.alamatRTRW}</div>`;
+        }
+        if (d.alamatDusun) {
+            detailAlamatHTML += `<div><strong>Dusun:</strong> ${d.alamatDusun}</div>`;
+        }
+        if (d.alamatJalan) {
+            detailAlamatHTML += `<div><strong>Jalan:</strong> ${d.alamatJalan}</div>`;
+        }
+        if (detailAlamatHTML) {
+            detailAlamatContainer.innerHTML = detailAlamatHTML;
+            detailAlamatContainer.style.display = 'block';
+        } else {
+            detailAlamatContainer.style.display = 'none';
+        }
+    }
     
     const profBadge = document.getElementById('d_profesi');
     profBadge.innerText = d.profesi;
@@ -3476,7 +3565,14 @@ function downloadSinglePdf(id) {
         printLine('Nama Lengkap', d.nama);
         printLine('NIK', displayNik); // Gunakan NIK yang sudah disensor
         printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
-        printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
+        
+        // Format alamat lengkap untuk PDF
+        let alamatLengkap = `${d.desa}, ${d.kecamatan}`;
+        if (d.alamatDetail) {
+            alamatLengkap = d.alamatDetail + ', ' + alamatLengkap;
+        }
+        
+        printLine('Alamat Lengkap', alamatLengkap);
         printLine('No. Handphone', displayWa); // Gunakan WhatsApp yang sudah disensor
         y += 8;
 
@@ -3628,11 +3724,23 @@ function editData(id) {
     
     form.setAttribute('data-edit-id', id);
     
+    // Field yang sudah ada
     ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
      .forEach(key => {
          const element = document.getElementById(key);
          if (element) element.value = d[key] || '';
      });
+
+    // TAMBAHAN: Field alamat baru
+    const alamatDetail = document.getElementById('alamatDetail');
+    const alamatRTRW = document.getElementById('alamatRTRW');
+    const alamatDusun = document.getElementById('alamatDusun');
+    const alamatJalan = document.getElementById('alamatJalan');
+    
+    if (alamatDetail) alamatDetail.value = d.alamatDetail || '';
+    if (alamatRTRW) alamatRTRW.value = d.alamatRTRW || '';
+    if (alamatDusun) alamatDusun.value = d.alamatDusun || '';
+    if (alamatJalan) alamatJalan.value = d.alamatJalan || '';
 
     const waInput = document.getElementById('whatsapp');
     const btnWa = document.getElementById('btnNoWA');
@@ -3879,6 +3987,8 @@ function loadData() {
     if(d) {
         try {
             appData = JSON.parse(d); 
+            // Pastikan data memiliki field alamat yang baru
+            migrateOldData();
         } catch (e) {
             console.error("Error loading data:", e);
             appData = [];
@@ -3925,7 +4035,15 @@ function exportData(type) {
     const dataToExport = appData.map(d => ({
         ...d, nik: maskData(d.nik), whatsapp: maskData(d.whatsapp)
     }));
-    const finalData = dataToExport.map(d => ({ ...d, NIK: `'${d.nik}`, WhatsApp: `'${d.whatsapp}` }));
+    const finalData = dataToExport.map(d => ({ 
+        ...d, 
+        NIK: `'${d.nik}`, 
+        WhatsApp: `'${d.whatsapp}`,
+        Alamat_Lengkap: d.alamatDetail || '',
+        RT_RW: d.alamatRTRW || '',
+        Dusun: d.alamatDusun || '',
+        Jalan: d.alamatJalan || ''
+    }));
     
     if(type === 'xlsx') {
         try {
@@ -4080,8 +4198,12 @@ function generateIDCard(id) {
     
     drawData('TTL / Usia', `${data.tahunLahir} (${data.usia} Tahun)`, dataY + lineHeight * 2);
     
-    // Alamat dengan penanganan multi-line
-    const alamat = `${data.desa}, ${data.kecamatan}`;
+    // Alamat dengan penanganan multi-line - TAMBAHAN: alamatDetail
+    let alamat = `${data.desa}, ${data.kecamatan}`;
+    if (data.alamatDetail) {
+        alamat = data.alamatDetail + ', ' + alamat;
+    }
+    
     doc.text('Alamat:', leftX, dataY + lineHeight * 3);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(12, 36, 97); // Biru untuk nilai
@@ -4133,7 +4255,7 @@ function generateIDCard(id) {
     const qrY = 20; // Posisi Y: sejajar dengan data (diturunkan dari 18 ke 20)
 
     // Generate QR Code
-    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nDesa: ${data.desa}\nValidasi: ${data.tanggalValidasi}`;
+    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nAlamat: ${alamat}\nValidasi: ${data.tanggalValidasi}`;
     
     // Buat container sementara untuk QR Code
     const qrContainer = document.createElement('div');
