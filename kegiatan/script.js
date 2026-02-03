@@ -188,6 +188,41 @@ const kegiatanData = [
     "participants": 0,
     "duration": ""
 },
+        {
+    "id": 1770129927157,
+    "title": "Acara Selametan Petik Laut Desa Ketah",
+    "date": "2026-02-02",
+    "description": "Menghadiri undangan acara selametan petik laut des ketah kecamatan suboh yang dimeriahkan oleh beberapa hiburan tradisional",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-para-pejabat-dipetiklaut.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-dan-staf-diperahu-sesajen.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/petiklaut5.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/petiklaut3.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/petiklaut1.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-ludruk.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-1.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-2.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-3.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-4.jpeg"
+    ],
+    "type": "multimedia",
+    "category": "festival",
+    "location": "Desa Ketah Kecamatan Suboh",
+    "tags": [
+        "Petik Laut",
+        "Budaya",
+        "Ludruk",
+        "Lokal",
+        "Kesenian",
+        "Nelayan"
+    ],
+    "youtubeUrls": [
+        "https://www.youtube.com/embed/AHszqcgzn3M"
+    ],
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/selametan-petik-laut-desa-ketah.html",
+    "participants": 0,
+    "duration": ""
+},
     
 ];
 
