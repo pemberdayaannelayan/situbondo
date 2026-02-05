@@ -223,11 +223,11 @@ const kegiatanData = [
     "participants": 0,
     "duration": ""
 },
-        {
-    "id": 1770283643350,
+            {
+    "id": 1770289166745,
     "title": "Pemusnahan Aligator Ikan Invasif",
     "date": "2026-02-05",
-    "description": "Pemusnahan aligator ikan invasif oleh Dinas Peternakan Dan Perikanan Kabupaten Situbondo Bersama SDKP Benoa",
+    "description": "Pemusnahan aligator ikan invasif oleh Dinas Peternakan Dan Perikanan Kabupaten Situbondo bersama SDKP Benoa",
     "images": [
         "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-tim-bersama-aligator-sebelum-dikubur.jpeg",
         "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-penandatanganan-berkas-penyerahan-aligator.jpeg",
@@ -240,14 +240,15 @@ const kegiatanData = [
     "category": "lainnya",
     "location": "Kelurahan Patokan Kabupaten Situbondo",
     "tags": [
-        "SDKP BENOA",
         "Aligator",
+        "Ikan Invasif",
+        "Kementerian Kelautan Dan Perikanan",
         "Dinas Peternakan Dan Perikanan",
         "Situbondo",
-        "Kementerian Kelautan Dan  Perikanan"
+        "SDKP Benoa"
     ],
     "youtubeUrls": [
-        "https://www.youtube.com/embed/7MulU9u6N_Y"
+        "https://www.youtube.com/embed/MBvFf_bLcCk"
     ],
     "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/pemusnahan-aligator-ikan-invasif.html",
     "participants": 0,
