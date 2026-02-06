@@ -11,8 +11,6 @@
 // 3. FITUR MEMUAT DATA PER KECAMATAN
 // REVISI CETAK PDF: MENGHAPUS KOLOM NAMA PERAHU DAN KODE VALIDASI
 // PERBAIKAN CETAK PDF: TABEL TIDAK MELEBIHI BATAS HALAMAN
-// REVISI PENGATURAN SISTEM: TAMBAHAN FITUR KEAMANAN MENU INPUT DATA DAN DATA NELAYAN
-// PERBAIKAN LOGIN: FIX KONFLIK EVENT LISTENER DENGAN FITUR KEAMANAN BARU
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -219,16 +217,7 @@ let appSettings = {
     securityCodeSensor: '97531',
     officialName: 'SUGENG PURWO PRIYANTO, S.E, M.M',
     officialNip: '19761103 200903 1 001',
-    officialPosition: 'Kepala Bidang Pemberdayaan Nelayan',
-    // FITUR BARU: Pengaturan keamanan menu
-    inputDataSecurity: {
-        enabled: true,
-        password: '666666'
-    },
-    dataMenuSecurity: {
-        enabled: true,
-        password: '999999'
-    }
+    officialPosition: 'Kepala Bidang Pemberdayaan Nelayan'
 };
 
 // Variabel baru untuk fitur Data Wilayah
@@ -248,11 +237,6 @@ const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
 const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
 const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
 const modalDataWilayah = new bootstrap.Modal(document.getElementById('modalDataWilayah'));
-
-// MODAL BARU: Keamanan Menu Input Data
-const inputSecurityModal = new bootstrap.Modal(document.getElementById('inputSecurityModal'));
-// MODAL BARU: Keamanan Menu Data Nelayan
-const dataMenuSecurityModal = new bootstrap.Modal(document.getElementById('dataMenuSecurityModal'));
 
 const PROFESI_MAPPING = {
     "Penuh Waktu": "Nelayan Penuh Waktu",
@@ -301,8 +285,7 @@ function generateSecurityCode() {
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    // PERBAIKAN: Gunakan format DDMMYYYY (periode terbalik)
-    return `${day}${month}${year}`;
+    return `${year}${month}${day}`;
 }
 
 function displayCurrentDate() {
@@ -489,7 +472,7 @@ function setupInputForDesa(desaName) {
     updateWilayahStatusIndicator();
     
     // Buka tab Input Data
-    openTabSafely('v-pills-input-tab');
+    document.getElementById('v-pills-input-tab').click();
     
     // Atur dropdown kecamatan dan desa
     if (kecamatan) {
@@ -533,7 +516,7 @@ function setupInputForKecamatan(kecamatanName) {
     updateWilayahStatusIndicator();
     
     // Buka tab Input Data
-    openTabSafely('v-pills-input-tab');
+    document.getElementById('v-pills-input-tab').click();
     
     // Atur dropdown kecamatan
     const kecSelect = document.getElementById('kecamatan');
@@ -2862,337 +2845,6 @@ function initializeApp() {
     
     // --- PERBAIKAN: INISIALISASI INPUT OTOMATIS HURUF KAPITAL ---
     setupAutoUppercaseInputs();
-    
-    // --- INISIALISASI PENGATURAN KEAMANAN BARU ---
-    initSecuritySettings();
-}
-
-// --- FUNGSI BARU: INISIALISASI PENGATURAN KEAMANAN ---
-function initSecuritySettings() {
-    // Load data keamanan ke form
-    loadSecuritySettings();
-    
-    // Setup toggle untuk keamanan input data
-    const inputSecurityToggle = document.getElementById('inputSecurityToggle');
-    if (inputSecurityToggle) {
-        inputSecurityToggle.checked = appSettings.inputDataSecurity.enabled;
-        updateInputSecurityUI();
-    }
-    
-    // Setup toggle untuk keamanan menu data nelayan
-    const dataMenuSecurityToggle = document.getElementById('dataMenuSecurityToggle');
-    if (dataMenuSecurityToggle) {
-        dataMenuSecurityToggle.checked = appSettings.dataMenuSecurity.enabled;
-        updateDataMenuSecurityUI();
-    }
-    
-    // Setup password toggle untuk form keamanan
-    setupSecurityPasswordToggles();
-}
-
-function loadSecuritySettings() {
-    // Load data keamanan ke form
-    const currentInputPassword = document.getElementById('currentInputPassword');
-    const newInputPassword = document.getElementById('newInputPassword');
-    const confirmInputPassword = document.getElementById('confirmInputPassword');
-    
-    const currentDataMenuPassword = document.getElementById('currentDataMenuPassword');
-    const newDataMenuPassword = document.getElementById('newDataMenuPassword');
-    const confirmDataMenuPassword = document.getElementById('confirmDataMenuPassword');
-    
-    if (currentInputPassword) currentInputPassword.value = '';
-    if (newInputPassword) newInputPassword.value = '';
-    if (confirmInputPassword) confirmInputPassword.value = '';
-    
-    if (currentDataMenuPassword) currentDataMenuPassword.value = '';
-    if (newDataMenuPassword) newDataMenuPassword.value = '';
-    if (confirmDataMenuPassword) confirmDataMenuPassword.value = '';
-}
-
-function setupSecurityPasswordToggles() {
-    // Setup toggle untuk password input data security
-    const inputPasswordToggles = document.querySelectorAll('.input-password-toggle');
-    inputPasswordToggles.forEach(toggle => {
-        toggle.addEventListener('click', function() {
-            const inputId = this.getAttribute('data-target');
-            const input = document.getElementById(inputId);
-            const icon = this.querySelector('i');
-            
-            if (!input || !icon) return;
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-                this.title = "Sembunyikan password";
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-                this.title = "Lihat password";
-            }
-        });
-    });
-    
-    // Setup toggle untuk password data menu security
-    const dataMenuPasswordToggles = document.querySelectorAll('.data-menu-password-toggle');
-    dataMenuPasswordToggles.forEach(toggle => {
-        toggle.addEventListener('click', function() {
-            const inputId = this.getAttribute('data-target');
-            const input = document.getElementById(inputId);
-            const icon = this.querySelector('i');
-            
-            if (!input || !icon) return;
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-                this.title = "Sembunyikan password";
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-                this.title = "Lihat password";
-            }
-        });
-    });
-}
-
-function updateInputSecurityUI() {
-    const inputSecurityToggle = document.getElementById('inputSecurityToggle');
-    const inputSecurityStatus = document.getElementById('inputSecurityStatus');
-    const inputSecurityText = document.getElementById('inputSecurityText');
-    
-    if (!inputSecurityToggle || !inputSecurityStatus || !inputSecurityText) return;
-    
-    if (appSettings.inputDataSecurity.enabled) {
-        inputSecurityStatus.innerHTML = "Status: <span class='text-success'>Aktif (Dilindungi)</span>";
-        inputSecurityStatus.className = "mt-2 small fw-bold";
-        inputSecurityText.innerHTML = "Keamanan: ON";
-        inputSecurityText.className = "badge bg-success me-2";
-    } else {
-        inputSecurityStatus.innerHTML = "Status: <span class='text-danger'>Non-Aktif (Tidak Dilindungi)</span>";
-        inputSecurityStatus.className = "mt-2 small fw-bold";
-        inputSecurityText.innerHTML = "Keamanan: OFF";
-        inputSecurityText.className = "badge bg-danger me-2";
-    }
-}
-
-function updateDataMenuSecurityUI() {
-    const dataMenuSecurityToggle = document.getElementById('dataMenuSecurityToggle');
-    const dataMenuSecurityStatus = document.getElementById('dataMenuSecurityStatus');
-    const dataMenuSecurityText = document.getElementById('dataMenuSecurityText');
-    
-    if (!dataMenuSecurityToggle || !dataMenuSecurityStatus || !dataMenuSecurityText) return;
-    
-    if (appSettings.dataMenuSecurity.enabled) {
-        dataMenuSecurityStatus.innerHTML = "Status: <span class='text-success'>Aktif (Dilindungi)</span>";
-        dataMenuSecurityStatus.className = "mt-2 small fw-bold";
-        dataMenuSecurityText.innerHTML = "Keamanan: ON";
-        dataMenuSecurityText.className = "badge bg-success me-2";
-    } else {
-        dataMenuSecurityStatus.innerHTML = "Status: <span class='text-danger'>Non-Aktif (Tidak Dilindungi)</span>";
-        dataMenuSecurityStatus.className = "mt-2 small fw-bold";
-        dataMenuSecurityText.innerHTML = "Keamanan: OFF";
-        dataMenuSecurityText.className = "badge bg-danger me-2";
-    }
-}
-
-// --- FUNGSI BARU: VALIDASI KEAMANAN MENU ---
-function checkInputDataSecurity() {
-    // Jika keamanan tidak aktif, langsung izinkan akses
-    if (!appSettings.inputDataSecurity.enabled) {
-        return true;
-    }
-    
-    // Tampilkan modal keamanan
-    inputSecurityModal.show();
-    
-    // Reset form
-    const inputSecurityCode = document.getElementById('inputSecurityCode');
-    if (inputSecurityCode) {
-        inputSecurityCode.value = '';
-        inputSecurityCode.focus();
-    }
-    
-    // Kembalikan false karena butuh validasi
-    return false;
-}
-
-function checkDataMenuSecurity() {
-    // Jika keamanan tidak aktif, langsung izinkan akses
-    if (!appSettings.dataMenuSecurity.enabled) {
-        return true;
-    }
-    
-    // Tampilkan modal keamanan
-    dataMenuSecurityModal.show();
-    
-    // Reset form
-    const dataMenuSecurityCode = document.getElementById('dataMenuSecurityCode');
-    if (dataMenuSecurityCode) {
-        dataMenuSecurityCode.value = '';
-        dataMenuSecurityCode.focus();
-    }
-    
-    // Kembalikan false karena butuh validasi
-    return false;
-}
-
-function verifyInputSecurity() {
-    const inputCode = document.getElementById('inputSecurityCode').value;
-    const correctCode = appSettings.inputDataSecurity.password;
-    
-    if (!inputCode) {
-        showNotification('Masukkan kode keamanan untuk mengakses menu Input Data!', 'error');
-        return;
-    }
-    
-    if (inputCode !== correctCode) {
-        showNotification('Kode keamanan salah! Periksa kembali.', 'error');
-        return;
-    }
-    
-    // Tutup modal dan izinkan akses
-    inputSecurityModal.hide();
-    
-    // Buka tab Input Data
-    openTabSafely('v-pills-input-tab');
-    
-    showNotification('Keamanan terverifikasi. Akses menu Input Data diizinkan.', 'success');
-}
-
-function verifyDataMenuSecurity() {
-    const inputCode = document.getElementById('dataMenuSecurityCode').value;
-    const correctCode = appSettings.dataMenuSecurity.password;
-    
-    if (!inputCode) {
-        showNotification('Masukkan kode keamanan untuk mengakses menu Data Nelayan!', 'error');
-        return;
-    }
-    
-    if (inputCode !== correctCode) {
-        showNotification('Kode keamanan salah! Periksa kembali.', 'error');
-        return;
-    }
-    
-    // Tutup modal dan izinkan akses
-    dataMenuSecurityModal.hide();
-    
-    // Buka tab Data Nelayan
-    openTabSafely('v-pills-data-tab');
-    
-    showNotification('Keamanan terverifikasi. Akses menu Data Nelayan diizinkan.', 'success');
-}
-
-// --- FUNGSI BARU: PENGATURAN KEAMANAN ---
-function toggleInputSecurity() {
-    const toggle = document.getElementById('inputSecurityToggle');
-    if (!toggle) return;
-    
-    if (toggle.checked) {
-        // Aktifkan keamanan
-        appSettings.inputDataSecurity.enabled = true;
-        showNotification('Keamanan menu Input Data diaktifkan', 'success');
-    } else {
-        // Nonaktifkan keamanan
-        appSettings.inputDataSecurity.enabled = false;
-        showNotification('Keamanan menu Input Data dinonaktifkan', 'warning');
-    }
-    
-    saveSettings();
-    updateInputSecurityUI();
-}
-
-function toggleDataMenuSecurity() {
-    const toggle = document.getElementById('dataMenuSecurityToggle');
-    if (!toggle) return;
-    
-    if (toggle.checked) {
-        // Aktifkan keamanan
-        appSettings.dataMenuSecurity.enabled = true;
-        showNotification('Keamanan menu Data Nelayan diaktifkan', 'success');
-    } else {
-        // Nonaktifkan keamanan
-        appSettings.dataMenuSecurity.enabled = false;
-        showNotification('Keamanan menu Data Nelayan dinonaktifkan', 'warning');
-    }
-    
-    saveSettings();
-    updateDataMenuSecurityUI();
-}
-
-function updateInputSecurityPassword() {
-    const currentPassword = document.getElementById('currentInputPassword').value;
-    const newPassword = document.getElementById('newInputPassword').value;
-    const confirmPassword = document.getElementById('confirmInputPassword').value;
-    
-    if (!currentPassword || !newPassword || !confirmPassword) {
-        showNotification('Harap isi semua field password!', 'error');
-        return;
-    }
-    
-    if (currentPassword !== appSettings.inputDataSecurity.password) {
-        showNotification('Password saat ini salah!', 'error');
-        return;
-    }
-    
-    if (newPassword.length < 6) {
-        showNotification('Password baru minimal 6 digit!', 'error');
-        return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-        showNotification('Konfirmasi password baru tidak cocok!', 'error');
-        return;
-    }
-    
-    appSettings.inputDataSecurity.password = newPassword;
-    saveSettings();
-    
-    // Reset form
-    document.getElementById('currentInputPassword').value = '';
-    document.getElementById('newInputPassword').value = '';
-    document.getElementById('confirmInputPassword').value = '';
-    
-    showNotification('Password keamanan menu Input Data berhasil diperbarui!', 'success');
-}
-
-function updateDataMenuSecurityPassword() {
-    const currentPassword = document.getElementById('currentDataMenuPassword').value;
-    const newPassword = document.getElementById('newDataMenuPassword').value;
-    const confirmPassword = document.getElementById('confirmDataMenuPassword').value;
-    
-    if (!currentPassword || !newPassword || !confirmPassword) {
-        showNotification('Harap isi semua field password!', 'error');
-        return;
-    }
-    
-    if (currentPassword !== appSettings.dataMenuSecurity.password) {
-        showNotification('Password saat ini salah!', 'error');
-        return;
-    }
-    
-    if (newPassword.length < 6) {
-        showNotification('Password baru minimal 6 digit!', 'error');
-        return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-        showNotification('Konfirmasi password baru tidak cocok!', 'error');
-        return;
-    }
-    
-    appSettings.dataMenuSecurity.password = newPassword;
-    saveSettings();
-    
-    // Reset form
-    document.getElementById('currentDataMenuPassword').value = '';
-    document.getElementById('newDataMenuPassword').value = '';
-    document.getElementById('confirmDataMenuPassword').value = '';
-    
-    showNotification('Password keamanan menu Data Nelayan berhasil diperbarui!', 'success');
 }
 
 // --- FUNGSI PERBAIKAN: SETUP INPUT OTOMATIS HURUF KAPITAL ---
@@ -3242,16 +2894,6 @@ function setupAutoUppercaseInputs() {
             }, 10);
         });
     }
-}
-
-// --- FUNGSI BARU: MEMBUKA TAB DENGAN AMAN ---
-function openTabSafely(tabId) {
-    const tabElement = document.getElementById(tabId);
-    if (!tabElement) return;
-    
-    // Gunakan Bootstrap's Tab API untuk membuka tab
-    const tab = new bootstrap.Tab(tabElement);
-    tab.show();
 }
 
 function loadOfficialData() {
@@ -3384,13 +3026,40 @@ function setupEventListeners() {
         });
     }
 
-    // Login Form - PERBAIKAN: Gunakan proper addEventListener tanpa bentrok
+    // Login Form
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        // Hapus event listener lama jika ada
-        loginForm.removeEventListener('submit', handleLoginSubmit);
-        // Tambah event listener baru
-        loginForm.addEventListener('submit', handleLoginSubmit);
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginButton');
+            const spinner = document.getElementById('loginSpinner');
+            const inputCode = document.getElementById('securityCode').value;
+            const correctCode = generateSecurityCode();
+            
+            if (!btn || !spinner) return;
+            
+            if (inputCode !== correctCode) {
+                showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+            btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
+            
+            setTimeout(() => {
+                sessionStorage.setItem('simata_session', 'active');
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block';
+                initializeCharts();
+                updateDashboard();
+                renderDataTable();
+                loginSuccessModal.show();
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+                btn.innerHTML = 'BUKA DASHBOARD';
+            }, 1200);
+        });
     }
 
     // Continue to Dashboard
@@ -3918,114 +3587,7 @@ function setupEventListeners() {
         });
     }
 
-    // --- EVENT LISTENER BARU: PENGATURAN KEAMANAN MENU ---
-    
-    // Toggle keamanan input data
-    const inputSecurityToggle = document.getElementById('inputSecurityToggle');
-    if (inputSecurityToggle) {
-        inputSecurityToggle.addEventListener('change', toggleInputSecurity);
-    }
-    
-    // Toggle keamanan menu data nelayan
-    const dataMenuSecurityToggle = document.getElementById('dataMenuSecurityToggle');
-    if (dataMenuSecurityToggle) {
-        dataMenuSecurityToggle.addEventListener('change', toggleDataMenuSecurity);
-    }
-    
-    // Form update password input data security
-    const inputSecurityForm = document.getElementById('inputSecurityForm');
-    if (inputSecurityForm) {
-        inputSecurityForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            updateInputSecurityPassword();
-        });
-    }
-    
-    // Form update password data menu security
-    const dataMenuSecurityForm = document.getElementById('dataMenuSecurityForm');
-    if (dataMenuSecurityForm) {
-        dataMenuSecurityForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            updateDataMenuSecurityPassword();
-        });
-    }
-    
-    // Validasi keamanan input data
-    const verifyInputSecurityBtn = document.getElementById('verifyInputSecurityBtn');
-    if (verifyInputSecurityBtn) {
-        verifyInputSecurityBtn.addEventListener('click', verifyInputSecurity);
-    }
-    
-    // Validasi keamanan menu data nelayan
-    const verifyDataMenuSecurityBtn = document.getElementById('verifyDataMenuSecurityBtn');
-    if (verifyDataMenuSecurityBtn) {
-        verifyDataMenuSecurityBtn.addEventListener('click', verifyDataMenuSecurity);
-    }
-    
-    // Event listener untuk tab Input Data dengan validasi keamanan - PERBAIKAN
-    const inputDataTab = document.getElementById('v-pills-input-tab');
-    if (inputDataTab) {
-        inputDataTab.addEventListener('click', function(e) {
-            // Cek apakah keamanan aktif
-            if (appSettings.inputDataSecurity.enabled) {
-                e.preventDefault();
-                e.stopPropagation();
-                inputSecurityModal.show();
-            }
-        });
-    }
-    
-    // Event listener untuk tab Data Nelayan dengan validasi keamanan - PERBAIKAN
-    const dataTab = document.getElementById('v-pills-data-tab');
-    if (dataTab) {
-        dataTab.addEventListener('click', function(e) {
-            // Cek apakah keamanan aktif
-            if (appSettings.dataMenuSecurity.enabled) {
-                e.preventDefault();
-                e.stopPropagation();
-                dataMenuSecurityModal.show();
-            }
-        });
-    }
-
     setupFloatingMenu();
-}
-
-// --- FUNGSI LOGIN TERPISAH UNTUK MENGHINDARI KONFLIK ---
-function handleLoginSubmit(e) {
-    e.preventDefault();
-    const btn = document.getElementById('loginButton');
-    const spinner = document.getElementById('loginSpinner');
-    const inputCode = document.getElementById('securityCode').value;
-    const correctCode = generateSecurityCode();
-    
-    if (!btn || !spinner) return;
-    
-    // Debugging: Tampilkan kode yang dihasilkan dan dimasukkan
-    console.log('Kode dimasukkan:', inputCode);
-    console.log('Kode yang benar:', correctCode);
-    
-    if (inputCode !== correctCode) {
-        showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
-        return;
-    }
-    
-    btn.disabled = true;
-    spinner.classList.remove('d-none');
-    btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
-    
-    setTimeout(() => {
-        sessionStorage.setItem('simata_session', 'active');
-        document.getElementById('loginModal').style.display = 'none';
-        document.getElementById('appContent').style.display = 'block';
-        initializeCharts();
-        updateDashboard();
-        renderDataTable();
-        loginSuccessModal.show();
-        btn.disabled = false;
-        spinner.classList.add('d-none');
-        btn.innerHTML = 'BUKA DASHBOARD';
-    }, 1200);
 }
 
 function setupFloatingMenu() {
@@ -4222,7 +3784,8 @@ function handleFormSubmit(e) {
     updateDashboard(); 
     renderDataTable();
     updateFilterDesaOptions();
-    openTabSafely('v-pills-data-tab');
+    const dataTab = document.getElementById('v-pills-data-tab');
+    if (dataTab) dataTab.click();
     checkGlobalDuplicates();
 }
 
@@ -4641,7 +4204,8 @@ function editData(id) {
         }
     }
 
-    openTabSafely('v-pills-input-tab');
+    const inputTab = document.getElementById('v-pills-input-tab');
+    if (inputTab) inputTab.click();
     window.scrollTo(0,0);
 }
 
@@ -4820,22 +4384,6 @@ function loadSettings() {
             if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
                 loadedSettings.itemsPerPage = 5;
             }
-            
-            // Load pengaturan keamanan baru jika ada
-            if (!loadedSettings.inputDataSecurity) {
-                loadedSettings.inputDataSecurity = {
-                    enabled: true,
-                    password: '666666'
-                };
-            }
-            
-            if (!loadedSettings.dataMenuSecurity) {
-                loadedSettings.dataMenuSecurity = {
-                    enabled: true,
-                    password: '999999'
-                };
-            }
-            
             Object.assign(appSettings, loadedSettings);
         } catch (e) {
             console.error("Error loading settings:", e);
@@ -5236,10 +4784,3 @@ window.deleteData = deleteData;
 window.goToPage = goToPage;
 window.toggleBulkDeleteBtn = toggleBulkDeleteBtn;
 window.showDuplicateDataInFilter = showDuplicateDataInFilter;
-// Fungsi baru untuk keamanan menu
-window.toggleInputSecurity = toggleInputSecurity;
-window.toggleDataMenuSecurity = toggleDataMenuSecurity;
-window.updateInputSecurityPassword = updateInputSecurityPassword;
-window.updateDataMenuSecurityPassword = updateDataMenuSecurityPassword;
-window.verifyInputSecurity = verifyInputSecurity;
-window.verifyDataMenuSecurity = verifyDataMenuSecurity;
