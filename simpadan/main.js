@@ -11,7 +11,7 @@
 // 3. FITUR MEMUAT DATA PER KECAMATAN
 // REVISI CETAK PDF: MENGHAPUS KOLOM NAMA PERAHU DAN KODE VALIDASI
 // PERBAIKAN CETAK PDF: TABEL TIDAK MELEBIHI BATAS HALAMAN
-// TAMBAHAN FITUR: PENGATURAN KEAMANAN SISTEM
+// PERBAIKAN KEAMANAN: TAMBAHAN PASSWORD UNTUK MENU INPUT DATA DAN DATA NELAYAN
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -219,11 +219,9 @@ let appSettings = {
     officialName: 'SUGENG PURWO PRIYANTO, S.E, M.M',
     officialNip: '19761103 200903 1 001',
     officialPosition: 'Kepala Bidang Pemberdayaan Nelayan',
-    // TAMBAHAN: Pengaturan keamanan baru
-    inputDataPassword: '666666',
-    inputDataPasswordEnabled: true,
-    dataMenuPassword: '999999',
-    dataMenuPasswordEnabled: true
+    // Password baru untuk keamanan menu
+    passwordInputData: '6666666',
+    passwordDataNelayan: '999999'
 };
 
 // Variabel baru untuk fitur Data Wilayah
@@ -243,14 +241,20 @@ const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
 const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
 const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
 const modalDataWilayah = new bootstrap.Modal(document.getElementById('modalDataWilayah'));
-// TAMBAHAN: Modal untuk keamanan
-const modalInputPassword = new bootstrap.Modal(document.getElementById('modalInputPassword'));
-const modalDataMenuPassword = new bootstrap.Modal(document.getElementById('modalDataMenuPassword'));
+
+// Modal untuk autentikasi menu (akan dibuat secara dinamis)
+let menuAuthModal = null;
 
 const PROFESI_MAPPING = {
     "Penuh Waktu": "Nelayan Penuh Waktu",
     "Sambilan Utama": "Nelayan Sambilan Utama",
     "Sambilan Tambahan": "Nelayan Sambilan Tambahan"
+};
+
+// Status autentikasi menu
+let menuAuthStatus = {
+    inputData: false,
+    dataNelayan: false
 };
 
 // Ekspos variabel ke window untuk akses dari file lain
@@ -269,6 +273,185 @@ function showLoading(title = "Memproses Data", message = "Mohon tunggu, sistem s
 function hideLoading() {
     document.getElementById('loadingModal').style.display = 'none';
     document.body.style.overflow = 'auto'; // Mengembalikan scroll
+}
+
+// --- FUNGSI KEAMANAN MENU BARU ---
+function initMenuAuthModal() {
+    // Cek apakah modal sudah ada
+    if (!document.getElementById('menuAuthModal')) {
+        // Buat modal autentikasi menu
+        const modalHTML = `
+        <div class="modal fade" id="menuAuthModal" tabindex="-1" aria-labelledby="menuAuthModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="menuAuthModalLabel">Autentikasi Menu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="menuAuthPassword" class="form-label">Masukkan Password</label>
+                            <input type="password" class="form-control" id="menuAuthPassword" placeholder="Password" autocomplete="off">
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Masukkan password untuk mengakses menu ini.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary" id="menuAuthSubmit">Masuk</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        // Tambahkan modal ke body
+        const modalDiv = document.createElement('div');
+        modalDiv.innerHTML = modalHTML;
+        document.body.appendChild(modalDiv);
+        
+        // Inisialisasi modal Bootstrap
+        menuAuthModal = new bootstrap.Modal(document.getElementById('menuAuthModal'));
+        
+        // Setup event listener untuk tombol submit
+        document.getElementById('menuAuthSubmit').addEventListener('click', handleMenuAuthSubmit);
+        
+        // Setup event listener untuk tekan Enter di input password
+        document.getElementById('menuAuthPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleMenuAuthSubmit();
+            }
+        });
+    } else {
+        // Modal sudah ada, inisialisasi ulang
+        menuAuthModal = new bootstrap.Modal(document.getElementById('menuAuthModal'));
+    }
+}
+
+function showMenuAuth(menuType, menuName) {
+    // Simpan tipe menu yang diminta
+    document.getElementById('menuAuthModal').setAttribute('data-menu-type', menuType);
+    document.getElementById('menuAuthModal').setAttribute('data-menu-name', menuName);
+    
+    // Update judul modal
+    document.getElementById('menuAuthModalLabel').textContent = `Autentikasi Menu ${menuName}`;
+    
+    // Reset input password
+    document.getElementById('menuAuthPassword').value = '';
+    
+    // Tampilkan modal
+    menuAuthModal.show();
+    
+    // Focus ke input password
+    setTimeout(() => {
+        document.getElementById('menuAuthPassword').focus();
+    }, 500);
+}
+
+function handleMenuAuthSubmit() {
+    const password = document.getElementById('menuAuthPassword').value;
+    const menuType = document.getElementById('menuAuthModal').getAttribute('data-menu-type');
+    const menuName = document.getElementById('menuAuthModal').getAttribute('data-menu-name');
+    
+    let correctPassword = '';
+    if (menuType === 'input') {
+        correctPassword = appSettings.passwordInputData;
+    } else if (menuType === 'data') {
+        correctPassword = appSettings.passwordDataNelayan;
+    }
+    
+    if (password === correctPassword) {
+        // Autentikasi berhasil
+        menuAuthStatus[menuType === 'input' ? 'inputData' : 'dataNelayan'] = true;
+        
+        // Simpan di sessionStorage agar bertahan selama sesi browser
+        sessionStorage.setItem(`menu_auth_${menuType}`, 'true');
+        
+        // Tutup modal
+        menuAuthModal.hide();
+        
+        // Tampilkan notifikasi
+        showNotification(`Autentikasi berhasil! Mengakses menu ${menuName}`, 'success');
+        
+        // Buka menu yang dimaksud
+        if (menuType === 'input') {
+            // Buka tab Input Data
+            document.getElementById('v-pills-input-tab').click();
+        } else if (menuType === 'data') {
+            // Buka tab Data Nelayan
+            document.getElementById('v-pills-data-tab').click();
+        }
+    } else {
+        // Password salah
+        showNotification('Password salah! Silakan coba lagi.', 'error');
+        document.getElementById('menuAuthPassword').value = '';
+        document.getElementById('menuAuthPassword').focus();
+    }
+}
+
+function checkMenuAuth(menuType) {
+    // Cek apakah sudah login ke sistem
+    const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
+    if (!isSessionActive) {
+        return false;
+    }
+    
+    // Cek apakah sudah terautentikasi untuk menu ini
+    if (menuType === 'input' && menuAuthStatus.inputData) {
+        return true;
+    }
+    if (menuType === 'data' && menuAuthStatus.dataNelayan) {
+        return true;
+    }
+    
+    // Cek sessionStorage
+    const sessionAuth = sessionStorage.getItem(`menu_auth_${menuType}`);
+    if (sessionAuth === 'true') {
+        menuAuthStatus[menuType === 'input' ? 'inputData' : 'dataNelayan'] = true;
+        return true;
+    }
+    
+    return false;
+}
+
+function setupMenuAuthListeners() {
+    // Event listener untuk menu Input Data
+    const inputDataTab = document.getElementById('v-pills-input-tab');
+    if (inputDataTab) {
+        inputDataTab.addEventListener('click', function(e) {
+            // Cek apakah sudah terautentikasi
+            if (!checkMenuAuth('input')) {
+                e.preventDefault();
+                e.stopPropagation();
+                showMenuAuth('input', 'Input Data');
+            }
+        });
+    }
+    
+    // Event listener untuk menu Data Nelayan
+    const dataNelayanTab = document.getElementById('v-pills-data-tab');
+    if (dataNelayanTab) {
+        dataNelayanTab.addEventListener('click', function(e) {
+            // Cek apakah sudah terautentikasi
+            if (!checkMenuAuth('data')) {
+                e.preventDefault();
+                e.stopPropagation();
+                showMenuAuth('data', 'Data Nelayan');
+            }
+        });
+    }
+}
+
+function resetMenuAuth() {
+    // Reset status autentikasi menu
+    menuAuthStatus.inputData = false;
+    menuAuthStatus.dataNelayan = false;
+    
+    // Hapus dari sessionStorage
+    sessionStorage.removeItem('menu_auth_input');
+    sessionStorage.removeItem('menu_auth_data');
 }
 
 // --- FUNGSI UTAMA ---
@@ -480,8 +663,12 @@ function setupInputForDesa(desaName) {
     updateWilayahUI();
     updateWilayahStatusIndicator();
     
-    // Buka tab Input Data dengan pengecekan keamanan
-    checkAndOpenInputData();
+    // Buka tab Input Data (dengan cek autentikasi)
+    if (checkMenuAuth('input')) {
+        document.getElementById('v-pills-input-tab').click();
+    } else {
+        showMenuAuth('input', 'Input Data');
+    }
     
     // Atur dropdown kecamatan dan desa
     if (kecamatan) {
@@ -524,8 +711,12 @@ function setupInputForKecamatan(kecamatanName) {
     updateWilayahUI();
     updateWilayahStatusIndicator();
     
-    // Buka tab Input Data dengan pengecekan keamanan
-    checkAndOpenInputData();
+    // Buka tab Input Data (dengan cek autentikasi)
+    if (checkMenuAuth('input')) {
+        document.getElementById('v-pills-input-tab').click();
+    } else {
+        showMenuAuth('input', 'Input Data');
+    }
     
     // Atur dropdown kecamatan
     const kecSelect = document.getElementById('kecamatan');
@@ -2740,209 +2931,6 @@ function printData() {
     }, 800);
 }
 
-// --- TAMBAHAN: FUNGSI KEAMANAN BARU ---
-
-// Fungsi untuk mengecek dan membuka Input Data dengan keamanan
-function checkAndOpenInputData() {
-    if (appSettings.inputDataPasswordEnabled) {
-        // Tampilkan modal password untuk input data
-        document.getElementById('inputPasswordInput').value = '';
-        modalInputPassword.show();
-    } else {
-        // Langsung buka tab input data
-        document.getElementById('v-pills-input-tab').click();
-    }
-}
-
-// Fungsi untuk mengecek dan membuka Data Nelayan dengan keamanan
-function checkAndOpenDataMenu() {
-    if (appSettings.dataMenuPasswordEnabled) {
-        // Tampilkan modal password untuk data nelayan
-        document.getElementById('dataMenuPasswordInput').value = '';
-        modalDataMenuPassword.show();
-    } else {
-        // Langsung buka tab data nelayan
-        document.getElementById('v-pills-data-tab').click();
-    }
-}
-
-// Fungsi untuk verifikasi password input data
-function verifyInputPassword() {
-    const password = document.getElementById('inputPasswordInput').value;
-    if (password === appSettings.inputDataPassword) {
-        modalInputPassword.hide();
-        document.getElementById('v-pills-input-tab').click();
-        showNotification('Password input data benar! Akses diberikan.', 'success');
-    } else {
-        showNotification('Password input data salah! Coba lagi.', 'error');
-        document.getElementById('inputPasswordInput').focus();
-        document.getElementById('inputPasswordInput').value = '';
-    }
-}
-
-// Fungsi untuk verifikasi password data nelayan
-function verifyDataMenuPassword() {
-    const password = document.getElementById('dataMenuPasswordInput').value;
-    if (password === appSettings.dataMenuPassword) {
-        modalDataMenuPassword.hide();
-        document.getElementById('v-pills-data-tab').click();
-        showNotification('Password data nelayan benar! Akses diberikan.', 'success');
-    } else {
-        showNotification('Password data nelayan salah! Coba lagi.', 'error');
-        document.getElementById('dataMenuPasswordInput').focus();
-        document.getElementById('dataMenuPasswordInput').value = '';
-    }
-}
-
-// Fungsi untuk toggle password visibility
-function togglePasswordVisibility(inputId, iconId) {
-    const input = document.getElementById(inputId);
-    const icon = document.getElementById(iconId);
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    }
-}
-
-// Fungsi untuk mengubah password input data
-function updateInputPassword() {
-    const currentPassword = document.getElementById('currentInputPassword').value;
-    const newPassword = document.getElementById('newInputPassword').value;
-    const confirmPassword = document.getElementById('confirmInputPassword').value;
-    
-    if (currentPassword !== appSettings.inputDataPassword) {
-        showNotification('Password saat ini salah!', 'error');
-        return;
-    }
-    
-    if (newPassword.length < 6) {
-        showNotification('Password baru minimal 6 karakter!', 'error');
-        return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-        showNotification('Konfirmasi password tidak cocok!', 'error');
-        return;
-    }
-    
-    appSettings.inputDataPassword = newPassword;
-    saveSettings();
-    
-    // Reset form
-    document.getElementById('currentInputPassword').value = '';
-    document.getElementById('newInputPassword').value = '';
-    document.getElementById('confirmInputPassword').value = '';
-    
-    showNotification('Password input data berhasil diperbarui!', 'success');
-}
-
-// Fungsi untuk mengubah password data nelayan
-function updateDataMenuPassword() {
-    const currentPassword = document.getElementById('currentDataMenuPassword').value;
-    const newPassword = document.getElementById('newDataMenuPassword').value;
-    const confirmPassword = document.getElementById('confirmDataMenuPassword').value;
-    
-    if (currentPassword !== appSettings.dataMenuPassword) {
-        showNotification('Password saat ini salah!', 'error');
-        return;
-    }
-    
-    if (newPassword.length < 6) {
-        showNotification('Password baru minimal 6 karakter!', 'error');
-        return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-        showNotification('Konfirmasi password tidak cocok!', 'error');
-        return;
-    }
-    
-    appSettings.dataMenuPassword = newPassword;
-    saveSettings();
-    
-    // Reset form
-    document.getElementById('currentDataMenuPassword').value = '';
-    document.getElementById('newDataMenuPassword').value = '';
-    document.getElementById('confirmDataMenuPassword').value = '';
-    
-    showNotification('Password data nelayan berhasil diperbarui!', 'success');
-}
-
-// Fungsi untuk toggle enable/disable input data password
-function toggleInputPasswordEnabled() {
-    const toggle = document.getElementById('inputPasswordToggle');
-    appSettings.inputDataPasswordEnabled = toggle.checked;
-    saveSettings();
-    
-    const statusText = document.getElementById('inputPasswordStatus');
-    if (toggle.checked) {
-        statusText.textContent = 'AKTIF (ON)';
-        statusText.className = 'text-success fw-bold';
-        showNotification('Keamanan input data diaktifkan!', 'success');
-    } else {
-        statusText.textContent = 'NON-AKTIF (OFF)';
-        statusText.className = 'text-danger fw-bold';
-        showNotification('Keamanan input data dinonaktifkan!', 'warning');
-    }
-}
-
-// Fungsi untuk toggle enable/disable data menu password
-function toggleDataMenuPasswordEnabled() {
-    const toggle = document.getElementById('dataMenuPasswordToggle');
-    appSettings.dataMenuPasswordEnabled = toggle.checked;
-    saveSettings();
-    
-    const statusText = document.getElementById('dataMenuPasswordStatus');
-    if (toggle.checked) {
-        statusText.textContent = 'AKTIF (ON)';
-        statusText.className = 'text-success fw-bold';
-        showNotification('Keamanan data nelayan diaktifkan!', 'success');
-    } else {
-        statusText.textContent = 'NON-AKTIF (OFF)';
-        statusText.className = 'text-danger fw-bold';
-        showNotification('Keamanan data nelayan dinonaktifkan!', 'warning');
-    }
-}
-
-// Fungsi untuk inisialisasi pengaturan keamanan di UI
-function initializeSecuritySettings() {
-    // Input Data Password
-    const inputPasswordToggle = document.getElementById('inputPasswordToggle');
-    const inputPasswordStatus = document.getElementById('inputPasswordStatus');
-    
-    if (inputPasswordToggle && inputPasswordStatus) {
-        inputPasswordToggle.checked = appSettings.inputDataPasswordEnabled;
-        if (appSettings.inputDataPasswordEnabled) {
-            inputPasswordStatus.textContent = 'AKTIF (ON)';
-            inputPasswordStatus.className = 'text-success fw-bold';
-        } else {
-            inputPasswordStatus.textContent = 'NON-AKTIF (OFF)';
-            inputPasswordStatus.className = 'text-danger fw-bold';
-        }
-    }
-    
-    // Data Menu Password
-    const dataMenuPasswordToggle = document.getElementById('dataMenuPasswordToggle');
-    const dataMenuPasswordStatus = document.getElementById('dataMenuPasswordStatus');
-    
-    if (dataMenuPasswordToggle && dataMenuPasswordStatus) {
-        dataMenuPasswordToggle.checked = appSettings.dataMenuPasswordEnabled;
-        if (appSettings.dataMenuPasswordEnabled) {
-            dataMenuPasswordStatus.textContent = 'AKTIF (ON)';
-            dataMenuPasswordStatus.className = 'text-success fw-bold';
-        } else {
-            dataMenuPasswordStatus.textContent = 'NON-AKTIF (OFF)';
-            dataMenuPasswordStatus.className = 'text-danger fw-bold';
-        }
-    }
-}
-
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', function() {
     try {
@@ -2961,6 +2949,14 @@ document.addEventListener('DOMContentLoaded', function() {
             initializeCharts();
             updateDashboard();
             renderDataTable();
+            
+            // Periksa autentikasi menu dari sessionStorage saat aplikasi dimuat
+            if (sessionStorage.getItem('menu_auth_input') === 'true') {
+                menuAuthStatus.inputData = true;
+            }
+            if (sessionStorage.getItem('menu_auth_data') === 'true') {
+                menuAuthStatus.dataNelayan = true;
+            }
         } else {
             setTimeout(() => {
                 document.getElementById('loginModal').style.display = 'flex';
@@ -2984,6 +2980,9 @@ function initializeApp() {
     
     // Inisialisasi Data Wilayah yang disempurnakan
     initDataWilayah();
+    
+    // Inisialisasi modal autentikasi menu
+    initMenuAuthModal();
     
     if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
         console.log("Data backup terdeteksi. Ready untuk merge/sync.");
@@ -3055,11 +3054,11 @@ function initializeApp() {
     // Inisialisasi form pengaturan pejabat
     loadOfficialData();
     
-    // Inisialisasi pengaturan keamanan
-    initializeSecuritySettings();
-    
     // --- PERBAIKAN: INISIALISASI INPUT OTOMATIS HURUF KAPITAL ---
     setupAutoUppercaseInputs();
+    
+    // Setup event listener untuk autentikasi menu
+    setupMenuAuthListeners();
 }
 
 // --- FUNGSI PERBAIKAN: SETUP INPUT OTOMATIS HURUF KAPITAL ---
@@ -3597,37 +3596,6 @@ function setupEventListeners() {
         });
     }
 
-    // TAMBAHAN: Event Listener untuk keamanan Input Data
-    const inputPasswordBtn = document.getElementById('inputPasswordBtn');
-    if (inputPasswordBtn) {
-        inputPasswordBtn.addEventListener('click', verifyInputPassword);
-    }
-    
-    // TAMBAHAN: Event Listener untuk keamanan Data Menu
-    const dataMenuPasswordBtn = document.getElementById('dataMenuPasswordBtn');
-    if (dataMenuPasswordBtn) {
-        dataMenuPasswordBtn.addEventListener('click', verifyDataMenuPassword);
-    }
-    
-    // TAMBAHAN: Event Listener untuk modal password (Enter key)
-    const inputPasswordInput = document.getElementById('inputPasswordInput');
-    if (inputPasswordInput) {
-        inputPasswordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verifyInputPassword();
-            }
-        });
-    }
-    
-    const dataMenuPasswordInput = document.getElementById('dataMenuPasswordInput');
-    if (dataMenuPasswordInput) {
-        dataMenuPasswordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verifyDataMenuPassword();
-            }
-        });
-    }
-
     // Refresh Halaman Button
     const refreshBtn = document.getElementById('btn-refresh-page');
     if (refreshBtn) {
@@ -3668,33 +3636,14 @@ function setupEventListeners() {
                 showLoading("Membuat Backup", "Sedang membuat backup data sebelum keluar. Mohon tunggu...");
                 setTimeout(() => {
                     sessionStorage.removeItem('simata_session');
+                    // Reset autentikasi menu saat logout
+                    resetMenuAuth();
                     backupData();
                     setTimeout(() => {
                         hideLoading();
                         location.reload();
                     }, 2000);
                 }, 500);
-            }
-        });
-    }
-
-    // TAMBAHAN: Event Listener untuk tab Input Data dan Data Nelayan dengan keamanan
-    const inputDataTab = document.getElementById('v-pills-input-tab');
-    if (inputDataTab) {
-        inputDataTab.addEventListener('click', function(e) {
-            if (appSettings.inputDataPasswordEnabled) {
-                e.preventDefault();
-                checkAndOpenInputData();
-            }
-        });
-    }
-    
-    const dataTab = document.getElementById('v-pills-data-tab');
-    if (dataTab) {
-        dataTab.addEventListener('click', function(e) {
-            if (appSettings.dataMenuPasswordEnabled) {
-                e.preventDefault();
-                checkAndOpenDataMenu();
             }
         });
     }
@@ -3852,36 +3801,6 @@ function setupEventListeners() {
             document.getElementById('confirmSensorCode').value = '';
             showNotification('Kode keamanan sensor berhasil diperbarui!', 'success');
         });
-    }
-    
-    // TAMBAHAN: Form Input Data Password
-    const inputPasswordForm = document.getElementById('inputPasswordForm');
-    if (inputPasswordForm) {
-        inputPasswordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            updateInputPassword();
-        });
-    }
-    
-    // TAMBAHAN: Form Data Menu Password
-    const dataMenuPasswordForm = document.getElementById('dataMenuPasswordForm');
-    if (dataMenuPasswordForm) {
-        dataMenuPasswordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            updateDataMenuPassword();
-        });
-    }
-    
-    // TAMBAHAN: Toggle Input Password
-    const inputPasswordToggle = document.getElementById('inputPasswordToggle');
-    if (inputPasswordToggle) {
-        inputPasswordToggle.addEventListener('change', toggleInputPasswordEnabled);
-    }
-    
-    // TAMBAHAN: Toggle Data Menu Password
-    const dataMenuPasswordToggle = document.getElementById('dataMenuPasswordToggle');
-    if (dataMenuPasswordToggle) {
-        dataMenuPasswordToggle.addEventListener('change', toggleDataMenuPasswordEnabled);
     }
 
     setupFloatingMenu();
@@ -4677,22 +4596,16 @@ function loadSettings() {
             if (!loadedSettings.officialPosition) {
                 loadedSettings.officialPosition = 'Kepala Bidang Pemberdayaan Nelayan';
             }
-            // TAMBAHAN: Load pengaturan keamanan baru
-            if (!loadedSettings.inputDataPassword) {
-                loadedSettings.inputDataPassword = '666666';
-            }
-            if (typeof loadedSettings.inputDataPasswordEnabled === 'undefined') {
-                loadedSettings.inputDataPasswordEnabled = true;
-            }
-            if (!loadedSettings.dataMenuPassword) {
-                loadedSettings.dataMenuPassword = '999999';
-            }
-            if (typeof loadedSettings.dataMenuPasswordEnabled === 'undefined') {
-                loadedSettings.dataMenuPasswordEnabled = true;
-            }
             // Pastikan itemsPerPage valid (minimal 1)
             if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
                 loadedSettings.itemsPerPage = 5;
+            }
+            // Load password untuk menu jika ada
+            if (!loadedSettings.passwordInputData) {
+                loadedSettings.passwordInputData = '6666666';
+            }
+            if (!loadedSettings.passwordDataNelayan) {
+                loadedSettings.passwordDataNelayan = '999999';
             }
             Object.assign(appSettings, loadedSettings);
         } catch (e) {
@@ -5075,15 +4988,6 @@ function generateIDCard(id) {
 
 // Ekspos fungsi generateIDCard ke window
 window.generateIDCard = generateIDCard;
-
-// Ekspos fungsi-fungsi keamanan ke window
-window.verifyInputPassword = verifyInputPassword;
-window.verifyDataMenuPassword = verifyDataMenuPassword;
-window.togglePasswordVisibility = togglePasswordVisibility;
-window.updateInputPassword = updateInputPassword;
-window.updateDataMenuPassword = updateDataMenuPassword;
-window.toggleInputPasswordEnabled = toggleInputPasswordEnabled;
-window.toggleDataMenuPasswordEnabled = toggleDataMenuPasswordEnabled;
 
 // --- INISIALISASI TAMBAHAN ---
 // Pastikan fungsi-fungsi yang dipanggil dari event sudah tersedia di scope global
