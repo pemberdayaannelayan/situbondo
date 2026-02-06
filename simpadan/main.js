@@ -9,6 +9,7 @@
 // 1. FITUR FILTER DATA GANDA YANG LEBIH KETAT
 // 2. INPUT OTOMATIS HURUF KAPITAL UNTUK NAMA DAN ALAMAT
 // 3. FITUR MEMUAT DATA PER KECAMATAN
+// REVISI CETAK PDF: MENGHAPUS KOLOM NAMA PERAHU DAN KODE VALIDASI
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -1594,6 +1595,7 @@ function generateTabelPdf() {
             doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
 
             // Siapkan data untuk tabel dengan kolom baru
+            // PERBAIKAN: Hanya 7 kolom (No, Nama, Nomor HP, NIK, Alamat, Desa, Kecamatan)
             const tableRows = pageData.map((d, index) => [
                 index + 1,
                 d.nama,
@@ -1601,9 +1603,8 @@ function generateTabelPdf() {
                 maskData(d.nik),
                 d.alamat || '-',
                 d.desa,
-                d.kecamatan,
-                d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
-                d.kodeValidasi || '-'
+                d.kecamatan
+                // Kolom Nama Perahu dan Kode Validasi dihapus sesuai permintaan
             ]);
 
             // Tabel Data
@@ -1612,15 +1613,13 @@ function generateTabelPdf() {
 
             doc.autoTable({
                 head: [[
-                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
-                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
-                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 50}},
-                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
+                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
+                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 60}},
+                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
+                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 65}},
+                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
+                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}}
                 ]],
                 body: tableRows,
                 startY: 72,
@@ -1656,15 +1655,13 @@ function generateTabelPdf() {
                     halign: 'left'
                 },
                 columnStyles: {
-                    0: {cellWidth: 15, halign: 'center'},
-                    1: {cellWidth: 45, halign: 'left'},
-                    2: {cellWidth: 30, halign: 'center'},
-                    3: {cellWidth: 35, halign: 'center'},
-                    4: {cellWidth: 50, halign: 'left'},
-                    5: {cellWidth: 35, halign: 'left'},
-                    6: {cellWidth: 35, halign: 'left'},
-                    7: {cellWidth: 35, halign: 'left'},
-                    8: {cellWidth: 30, halign: 'center'}
+                    0: {cellWidth: 20, halign: 'center'},
+                    1: {cellWidth: 60, halign: 'left'},
+                    2: {cellWidth: 35, halign: 'center'},
+                    3: {cellWidth: 40, halign: 'center'},
+                    4: {cellWidth: 65, halign: 'left'},
+                    5: {cellWidth: 40, halign: 'left'},
+                    6: {cellWidth: 40, halign: 'left'}
                 }
             });
 
@@ -2156,6 +2153,7 @@ function generateFilteredPdf() {
     const pageData = filteredData.slice(start, end);
 
     // Siapkan data untuk tabel dengan kolom baru
+    // PERBAIKAN: Hanya 7 kolom (No, Nama, Nomor HP, NIK, Alamat, Desa, Kecamatan)
     const tableRows = pageData.map((d, index) => [
         index + 1, 
         d.nama,
@@ -2163,9 +2161,8 @@ function generateFilteredPdf() {
         maskData(d.nik),
         d.alamat || '-',
         d.desa,
-        d.kecamatan,
-        d.status === 'Pemilik Kapal' ? (d.namaKapal || '-') : '-',
-        d.kodeValidasi || '-'
+        d.kecamatan
+        // Kolom Nama Perahu dan Kode Validasi dihapus sesuai permintaan
     ]);
 
     // Generate kode unik untuk setiap cetakan
@@ -2272,15 +2269,13 @@ function generateFilteredPdf() {
 
             doc.autoTable({
                 head: [[
-                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 15}},
-                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 45}},
-                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 50}},
-                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'Nama Perahu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'Kode Validasi', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
+                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
+                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 60}},
+                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
+                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
+                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 65}},
+                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
+                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}}
                 ]],
                 body: tableRows,
                 startY: 72,
@@ -2316,15 +2311,13 @@ function generateFilteredPdf() {
                     halign: 'left'
                 },
                 columnStyles: {
-                    0: {cellWidth: 15, halign: 'center'},
-                    1: {cellWidth: 45, halign: 'left'},
-                    2: {cellWidth: 30, halign: 'center'},
-                    3: {cellWidth: 35, halign: 'center'},
-                    4: {cellWidth: 50, halign: 'left'},
-                    5: {cellWidth: 35, halign: 'left'},
-                    6: {cellWidth: 35, halign: 'left'},
-                    7: {cellWidth: 35, halign: 'left'},
-                    8: {cellWidth: 30, halign: 'center'}
+                    0: {cellWidth: 20, halign: 'center'},
+                    1: {cellWidth: 60, halign: 'left'},
+                    2: {cellWidth: 35, halign: 'center'},
+                    3: {cellWidth: 40, halign: 'center'},
+                    4: {cellWidth: 65, halign: 'left'},
+                    5: {cellWidth: 40, halign: 'left'},
+                    6: {cellWidth: 40, halign: 'left'}
                 }
             });
 
