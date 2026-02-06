@@ -48,7 +48,6 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Login Modal -->
     <div class="login-overlay" id="loginModal">
         <ul class="circles">
             <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
@@ -146,7 +145,6 @@
         </div>
     </div>
 
-    <!-- Welcome Modal -->
     <div class="modal fade" id="welcomeModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content welcome-modal-content">
@@ -171,7 +169,7 @@
         </div>
     </div>
 
-    <!-- Modal Data Wilayah -->
+    <!-- Modal Data Wilayah - DIREVISI DENGAN TAB DESA DAN KECAMATAN -->
     <div class="modal fade" id="modalDataWilayah" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
@@ -212,1332 +210,738 @@
                         </div>
                     </div>
                     
-                    <div class="wilayah-tabs-container">
-                        <ul class="nav nav-tabs wilayah-nav-tabs" id="wilayahTabs" role="tablist">
+                    <!-- Tab untuk Desa dan Kecamatan -->
+                    <div class="px-4 mb-4">
+                        <ul class="nav nav-tabs" id="wilayahTabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="desa-tab" data-bs-toggle="tab" data-bs-target="#desa-pane" type="button" role="tab">
-                                    <i class="fas fa-village me-2"></i> Desa / Kelurahan
-                                    <span class="badge bg-primary ms-2" id="totalDesaCount">0</span>
+                                <button class="nav-link active" id="desa-tab" data-bs-toggle="tab" data-bs-target="#desa-tab-pane" type="button" role="tab" aria-controls="desa-tab-pane" aria-selected="true">
+                                    <i class="fas fa-village me-2"></i> Data Desa
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="kecamatan-tab" data-bs-toggle="tab" data-bs-target="#kecamatan-pane" type="button" role="tab">
-                                    <i class="fas fa-map me-2"></i> Kecamatan
-                                    <span class="badge bg-success ms-2" id="totalKecamatanCount">0</span>
+                                <button class="nav-link" id="kecamatan-tab" data-bs-toggle="tab" data-bs-target="#kecamatan-tab-pane" type="button" role="tab" aria-controls="kecamatan-tab-pane" aria-selected="false">
+                                    <i class="fas fa-city me-2"></i> Data Kecamatan
                                 </button>
                             </li>
                         </ul>
                         
-                        <div class="tab-content p-4" id="wilayahTabsContent">
+                        <div class="tab-content mt-3" id="wilayahTabContent">
                             <!-- Tab Desa -->
-                            <div class="tab-pane fade show active" id="desa-pane" role="tabpanel" tabindex="0">
-                                <div class="alert alert-light mb-4">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-info-circle text-primary me-2"></i>
-                                        <div>
-                                            <strong>Mode Desa:</strong> Data nelayan per desa/kelurahan. Pilih desa untuk memuat data atau input data baru.
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-center mb-4" id="wilayahDesaEmptyState" style="display: none;">
-                                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                                    <h6 class="text-muted">Desa tidak ditemukan</h6>
-                                    <p class="text-muted small">Coba dengan kata kunci pencarian yang berbeda</p>
-                                </div>
-                                
-                                <div class="row g-3" id="wilayahDesaCardsContainer">
-                                    <!-- Kartu desa akan diisi oleh JavaScript -->
-                                </div>
-                                
-                                <div class="mt-4 pt-3 border-top">
-                                    <button class="btn btn-outline-primary w-100" id="btnGlobalMode">
-                                        <i class="fas fa-globe-americas me-2"></i> Kembali ke Mode Global
-                                    </button>
+                            <div class="tab-pane fade show active" id="desa-tab-pane" role="tabpanel" aria-labelledby="desa-tab" tabindex="0">
+                                <div class="wilayah-grid" id="desaListContainer">
+                                    <!-- Data desa akan dimuat di sini -->
                                 </div>
                             </div>
                             
                             <!-- Tab Kecamatan -->
-                            <div class="tab-pane fade" id="kecamatan-pane" role="tabpanel" tabindex="0">
-                                <div class="alert alert-light mb-4">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-info-circle text-success me-2"></i>
-                                        <div>
-                                            <strong>Mode Kecamatan:</strong> Data nelayan per kecamatan. Pilih kecamatan untuk memuat data atau input data baru.
+                            <div class="tab-pane fade" id="kecamatan-tab-pane" role="tabpanel" aria-labelledby="kecamatan-tab" tabindex="0">
+                                <div class="wilayah-grid" id="kecamatanListContainer">
+                                    <!-- Data kecamatan akan dimuat di sini -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="btnLoadSelectedWilayah">
+                        <i class="fas fa-download me-2"></i> Muat Data Wilayah Terpilih
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pengaturan Keamanan -->
+    <div class="modal fade" id="modalPengaturanKeamanan" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-user-shield me-2"></i> Pengaturan Keamanan Sistem</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="security-status mb-4">
+                        <h6><i class="fas fa-shield-alt me-2 text-primary"></i>Status Keamanan Sistem</h6>
+                        <p class="mb-0 small">Semua pengaturan keamanan di bawah ini mempengaruhi akses ke fitur input data dan data nelayan.</p>
+                    </div>
+                    
+                    <!-- Kode Keamanan Input Data -->
+                    <div class="security-card mb-4">
+                        <div class="security-card-header">
+                            <h6 class="fw-bold mb-0"><i class="fas fa-edit me-2 text-primary"></i>Kode Keamanan Input Data</h6>
+                        </div>
+                        <div class="security-card-body">
+                            <form id="inputCodeForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Kode Keamanan Input Data Saat Ini</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="currentInputCode" placeholder="Masukkan kode saat ini" required>
+                                            <button type="button" class="btn btn-outline-secondary" id="toggleCurrentInputCode">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <small class="text-muted">Kode ini digunakan untuk mengakses fitur input data nelayan.</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Kode Keamanan Input Data Baru</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="newInputCode" placeholder="Kode baru (min. 6 digit)" required minlength="6">
+                                            <button type="button" class="btn btn-outline-secondary" id="toggleNewInputCode">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Konfirmasi Kode Baru</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="confirmInputCode" placeholder="Ulangi kode baru" required minlength="6">
+                                            <button type="button" class="btn btn-outline-secondary" id="toggleConfirmInputCode">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Perbarui Kode Keamanan Input Data
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Kode Keamanan Data Menu -->
+                    <div class="security-card mb-4">
+                        <div class="security-card-header">
+                            <h6 class="fw-bold mb-0"><i class="fas fa-database me-2 text-success"></i>Kode Keamanan Data Menu</h6>
+                        </div>
+                        <div class="security-card-body">
+                            <form id="dataMenuCodeForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Kode Keamanan Data Menu Saat Ini</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="currentDataMenuCode" placeholder="Masukkan kode saat ini" required>
+                                            <button type="button" class="btn btn-outline-secondary" id="toggleCurrentDataMenuCode">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <small class="text-muted">Kode ini digunakan untuk mengakses menu data nelayan.</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Kode Keamanan Data Menu Baru</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="newDataMenuCode" placeholder="Kode baru (min. 6 digit)" required minlength="6">
+                                            <button type="button" class="btn btn-outline-secondary" id="toggleNewDataMenuCode">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Konfirmasi Kode Baru</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="confirmDataMenuCode" placeholder="Ulangi kode baru" required minlength="6">
+                                            <button type="button" class="btn btn-outline-secondary" id="toggleConfirmDataMenuCode">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save me-2"></i>Perbarui Kode Keamanan Data Menu
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- FITUR BARU: Pengaturan Pejabat Penandatangan -->
+                    <div class="card p-4 border-0 shadow-sm mb-4">
+                        <h6 class="fw-bold mb-3 border-bottom pb-2">Pengaturan Pejabat Penandatangan</h6>
+                        <form id="officialForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nama Pejabat</label>
+                                    <input type="text" class="form-control" id="officialName" placeholder="Masukkan nama pejabat" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">NIP</label>
+                                    <input type="text" class="form-control" id="officialNip" placeholder="Masukkan NIP pejabat" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">Jabatan</label>
+                                    <input type="text" class="form-control" id="officialPosition" placeholder="Masukkan jabatan pejabat" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Simpan Pengaturan Pejabat</button>
+                            <small class="text-muted d-block mt-2">*Data ini akan digunakan untuk tanda tangan pada dokumen PDF resmi</small>
+                        </form>
+                    </div>
+                    
+                    <!-- Kode Keamanan Sensor Data -->
+                    <div class="card p-4 border-0 shadow-sm mb-4">
+                        <h6 class="fw-bold mb-3 border-bottom pb-2">Kode Keamanan Sensor Data</h6>
+                        <form id="sensorCodeForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Kode Keamanan Sensor Saat Ini</label>
+                                    <input type="password" class="form-control" id="currentSensorCode" placeholder="Masukkan kode saat ini" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kode Keamanan Sensor Baru</label>
+                                    <input type="password" class="form-control" id="newSensorCode" placeholder="Kode baru (min. 6 digit)" required minlength="6">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Konfirmasi Kode Baru</label>
+                                    <input type="password" class="form-control" id="confirmSensorCode" placeholder="Ulangi kode baru" required minlength="6">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Perbarui Kode Keamanan Sensor</button>
+                            <small class="text-muted d-block mt-2">*Kode ini digunakan untuk menonaktifkan sensor dan reset data</small>
+                        </form>
+                    </div>
+                    
+                    <div class="card p-4 border-0 shadow-sm border-left border-4 border-danger">
+                        <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-user-shield me-2"></i>Privasi & Keamanan Data</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="d-block">Sensor Data Pribadi (NIK & No. HP)</strong>
+                                <small class="text-muted">Menyensor 4 digit terakhir dengan tanda bintang (*) pada tabel dan hasil unduhan.</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="privacyToggle" style="width: 3em; height: 1.5em; cursor: pointer;" checked>
+                            </div>
+                        </div>
+                        <div id="privacyStatus" class="mt-2 small text-success fw-bold">Status: Sensor Aktif (Aman)</div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-danger" id="btnResetAllCodes">
+                        <i class="fas fa-redo me-2"></i> Reset Semua Kode
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container (Akan ditampilkan setelah login) -->
+    <div id="mainApp" style="display: none;">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars me-1"></i> MENU
+        </button>
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="app-logo-icon">
+                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logoku.png" alt="Logo SIMPADAN TANGKAP" onerror="this.onerror=null; this.innerHTML='<i class=\'fas fa-eye fa-4x\'></i>';">
+            </div>
+            <h1 class="app-title">SIMPADAN TANGKAP</h1>
+            <p class="app-subtitle">SISTEM SATU DATA NELAYAN</p>
+            <div class="app-slogan">Situbondo Naik Kelas</div>
+            <div class="app-origin">Dinas Perikanan Kabupaten Situbondo</div>
+        </header>
+
+        <!-- Main Container -->
+        <div class="app-container">
+            <div class="row g-0">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 bg-white border-end" id="sidebar">
+                    <div class="nav flex-column nav-pills p-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button" role="tab">
+                            <i class="fas fa-chart-line"></i> Dashboard
+                        </button>
+                        <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button" role="tab">
+                            <i class="fas fa-database"></i> Data Nelayan
+                        </button>
+                        <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button" role="tab">
+                            <i class="fas fa-edit"></i> Input Data
+                        </button>
+                        <button class="nav-link" id="v-pills-map-tab" data-bs-toggle="pill" data-bs-target="#v-pills-map" type="button" role="tab">
+                            <i class="fas fa-map-marked-alt"></i> Peta Sebaran
+                        </button>
+                        <button class="nav-link" id="v-pills-wilayah-tab" data-bs-toggle="pill" data-bs-target="#v-pills-wilayah" type="button" role="tab">
+                            <i class="fas fa-map-marked-alt"></i> Data Wilayah
+                        </button>
+                        <button class="nav-link" id="v-pills-verifikasi-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verifikasi" type="button" role="tab">
+                            <i class="fas fa-qrcode"></i> Verifikasi KIN
+                        </button>
+                        <button class="nav-link" id="v-pills-filter-tab" data-bs-toggle="pill" data-bs-target="#v-pills-filter" type="button" role="tab">
+                            <i class="fas fa-filter"></i> Filter Data
+                        </button>
+                        <button class="nav-link" id="v-pills-keamanan-tab" data-bs-toggle="pill" data-bs-target="#v-pills-keamanan" type="button" role="tab">
+                            <i class="fas fa-user-shield"></i> Pengaturan Keamanan
+                        </button>
+                        <hr class="my-3">
+                        <button class="nav-link text-danger" id="v-pills-logout-tab" type="button" id="btnLogout">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10">
+                    <div class="tab-content p-3 p-lg-5" id="v-pills-tabContent">
+                        <!-- Dashboard Tab -->
+                        <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
+                            <h3 class="section-title"><i class="fas fa-chart-line me-2"></i> Dashboard Statistik</h3>
+                            <div class="row dashboard-row mb-4">
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body text-center">
+                                            <h4 class="card-title text-primary" id="totalNelayan">0</h4>
+                                            <p class="card-text text-muted">Total Nelayan</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body text-center">
+                                            <h4 class="card-title text-success" id="totalPemilik">0</h4>
+                                            <p class="card-text text-muted">Pemilik Kapal</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body text-center">
+                                            <h4 class="card-title text-warning" id="totalABK">0</h4>
+                                            <p class="card-text text-muted">ABK</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body text-center">
+                                            <h4 class="card-title text-info" id="totalKapal">0</h4>
+                                            <p class="card-text text-muted">Total Kapal</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Charts -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Distribusi Profesi</h5>
+                                            <div class="chart-container-fixed">
+                                                <canvas id="profesiChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Distribusi Alat Tangkap</h5>
+                                            <div class="chart-container-fixed">
+                                                <canvas id="alatTangkapChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Terbaru -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white border-0">
+                                    <h5 class="mb-0">Data Terbaru</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table data-table" id="latestDataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nama</th>
+                                                    <th>Profesi</th>
+                                                    <th>Alat Tangkap</th>
+                                                    <th>Domisili</th>
+                                                    <th>Tanggal Validasi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="latestDataBody">
+                                                <!-- Data akan diisi oleh JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Nelayan Tab -->
+                        <div class="tab-pane fade" id="v-pills-data" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="section-title mb-0"><i class="fas fa-database me-2"></i> Data Nelayan</h3>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-success" id="btnExportExcel">
+                                        <i class="fas fa-file-excel me-2"></i> Excel
+                                    </button>
+                                    <button type="button" class="btn btn-danger" id="btnExportPDF">
+                                        <i class="fas fa-file-pdf me-2"></i> PDF
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table data-table" id="dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-id-cell">Nama Lengkap & NIK</th>
+                                            <th>Usia</th>
+                                            <th>Domisili</th>
+                                            <th class="col-contact-cell">Kontak</th>
+                                            <th>Profesi</th>
+                                            <th>Status</th>
+                                            <th>Alat Tangkap</th>
+                                            <th class="col-status-cell">Validasi</th>
+                                            <th class="col-action sticky-col-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dataTableBody">
+                                        <!-- Data akan diisi oleh JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div class="pagination-container">
+                                <div class="pagination-info" id="paginationInfo">
+                                    Menampilkan 0 dari 0 data
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination" id="pagination">
+                                        <!-- Pagination akan diisi oleh JavaScript -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+
+                        <!-- Input Data Tab -->
+                        <div class="tab-pane fade" id="v-pills-input" role="tabpanel">
+                            <h3 class="section-title mb-4"><i class="fas fa-edit me-2"></i> Input Data Nelayan</h3>
+                            <form id="inputForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="nama" class="form-label">Nama Lengkap</label>
+                                        <input type="text" class="form-control" id="nama" placeholder="Masukkan nama lengkap" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="nik" class="form-label">NIK</label>
+                                        <input type="text" class="form-control" id="nik" placeholder="Masukkan NIK" required maxlength="16">
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="tahun_lahir" class="form-label">Tahun Lahir</label>
+                                        <input type="number" class="form-control" id="tahun_lahir" placeholder="Contoh: 1985" required min="1900" max="2025">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label for="alamat" class="form-label">Alamat Lengkap</label>
+                                        <input type="text" class="form-control" id="alamat" placeholder="Masukkan alamat lengkap" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="domisili" class="form-label">Domisili</label>
+                                        <select class="form-select" id="domisili" required>
+                                            <option value="">Pilih domisili</option>
+                                            <!-- Opsi akan diisi oleh JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="wa" class="form-label">Nomor WhatsApp/Telepon</label>
+                                        <input type="text" class="form-control" id="wa" placeholder="Contoh: 081234567890" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="profesi" class="form-label">Profesi</label>
+                                        <select class="form-select" id="profesi" required>
+                                            <option value="">Pilih profesi</option>
+                                            <option value="Penuh">Nelayan Penuh</option>
+                                            <option value="Sambilan Utama">Nelayan Sambilan Utama</option>
+                                            <option value="Sambilan Tambahan">Nelayan Sambilan Tambahan</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="status" class="form-label">Status</label>
+                                        <select class="form-select" id="status" required>
+                                            <option value="">Pilih status</option>
+                                            <option value="Pemilik">Pemilik Kapal</option>
+                                            <option value="ABK">ABK (Anak Buah Kapal)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="alatTangkap" class="form-label">Alat Penangkapan Ikan (API)</label>
+                                        <select class="form-select" id="alatTangkap" required>
+                                            <option value="">Pilih alat tangkap</option>
+                                            <!-- Opsi akan diisi oleh JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="usaha" class="form-label">Usaha Sampingan</label>
+                                        <input type="text" class="form-control" id="usaha" placeholder="Contoh: Petani, Pedagang, dll">
+                                    </div>
+                                </div>
+                                
+                                <!-- Kapal Section (hanya muncul jika status Pemilik) -->
+                                <div class="row mb-3" id="kapalSection" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label for="namaKapal" class="form-label">Nama Kapal</label>
+                                        <input type="text" class="form-control" id="namaKapal" placeholder="Masukkan nama kapal">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="jenisKapal" class="form-label">Jenis Kapal</label>
+                                        <select class="form-select" id="jenisKapal">
+                                            <option value="">Pilih jenis kapal</option>
+                                            <option value="Perahu Motor Tempel">Perahu Motor Tempel</option>
+                                            <option value="Kapal Motor">Kapal Motor</option>
+                                            <option value="Perahu Tanpa Motor">Perahu Tanpa Motor</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Ikan Tangkapan -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <label class="form-label">Jenis Ikan Tangkapan</label>
+                                        <div id="ikanContainer">
+                                            <!-- Checkbox ikan akan diisi oleh JavaScript -->
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="text-center mb-4" id="wilayahKecamatanEmptyState" style="display: none;">
-                                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                                    <h6 class="text-muted">Kecamatan tidak ditemukan</h6>
-                                    <p class="text-muted small">Coba dengan kata kunci pencarian yang berbeda</p>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="reset" class="btn btn-secondary me-md-2">Reset Form</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i> Simpan Data
+                                    </button>
                                 </div>
-                                
-                                <div class="row g-3" id="wilayahKecamatanCardsContainer">
-                                    <!-- Kartu kecamatan akan diisi oleh JavaScript -->
+                            </form>
+                        </div>
+
+                        <!-- Peta Tab -->
+                        <div class="tab-pane fade" id="v-pills-map" role="tabpanel">
+                            <h3 class="section-title mb-4"><i class="fas fa-map-marked-alt me-2"></i> Peta Sebaran Nelayan</h3>
+                            <div id="map-container">
+                                <div id="map"></div>
+                            </div>
+                        </div>
+
+                        <!-- Data Wilayah Tab -->
+                        <div class="tab-pane fade" id="v-pills-wilayah" role="tabpanel">
+                            <h3 class="section-title mb-4"><i class="fas fa-map-marked-alt me-2"></i> Data Wilayah</h3>
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0">Kelola Data Berdasarkan Wilayah</h5>
                                 </div>
-                                
-                                <div class="mt-4 pt-3 border-top">
-                                    <button class="btn btn-outline-primary w-100" id="btnGlobalModeKecamatan">
-                                        <i class="fas fa-globe-americas me-2"></i> Kembali ke Mode Global
+                                <div class="card-body">
+                                    <p>Gunakan fitur ini untuk melihat dan mengelola data nelayan berdasarkan wilayah administratif (Desa/Kecamatan).</p>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDataWilayah">
+                                        <i class="fas fa-map-marked-alt me-2"></i> Buka Data Wilayah
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Container Aplikasi Utama (Tersembunyi Saat Login) -->
-    <div id="appContent" style="display: none;">
-        <!-- Floating Action Button Menu -->
-        <div class="fab-container" id="fabMenu">
-            <div class="fab-main" id="fabMainBtn">
-                <i class="fas fa-plus"></i>
-            </div>
-            <div class="fab-buttons">
-                <button class="fab-btn" id="fabReload" title="Sinkronisasi Data">
-                    <i class="fas fa-sync"></i>
-                </button>
-                <button class="fab-btn" id="fabInput" title="Input Data">
-                    <i class="fas fa-plus-circle"></i>
-                </button>
-                <button class="fab-btn" id="fabFilter" title="Filter Data">
-                    <i class="fas fa-filter"></i>
-                </button>
-                <button class="fab-btn" id="fabVerify" title="Verifikasi KIN">
-                    <i class="fas fa-check-circle"></i>
-                </button>
-                <button class="fab-btn" id="fabExport" title="Ekspor Data">
-                    <i class="fas fa-file-export"></i>
-                </button>
-                <button class="fab-btn" id="fabBackup" title="Backup & Restore">
-                    <i class="fas fa-database"></i>
-                </button>
-                <button class="fab-btn" id="fabSettings" title="Pengaturan">
-                    <i class="fas fa-cog"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Sidebar Menu -->
-        <nav class="sidebar" id="sidebarMenu">
-            <div class="sidebar-header">
-                <div class="app-brand">
-                    <div class="app-icon">
-                        <i class="fas fa-ship"></i>
-                    </div>
-                    <div class="app-title-container">
-                        <h1 class="app-title">SIMPADAN TANGKAP</h1>
-                        <p class="app-subtitle" id="dynamicSubtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</p>
-                    </div>
-                </div>
-                <button class="sidebar-toggle" id="sidebarToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-            
-            <div class="sidebar-menu">
-                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button" role="tab">
-                        <i class="fas fa-tachometer-alt me-3"></i> Dashboard
-                    </button>
-                    <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button" role="tab">
-                        <i class="fas fa-edit me-3"></i> Input Data Nelayan
-                    </button>
-                    <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button" role="tab">
-                        <i class="fas fa-database me-3"></i> Data Nelayan
-                    </button>
-                    <button class="nav-link" id="v-pills-filter-tab" data-bs-toggle="pill" data-bs-target="#v-pills-filter" type="button" role="tab">
-                        <i class="fas fa-filter me-3"></i> Filter & Validasi
-                    </button>
-                    <button class="nav-link" id="v-pills-verify-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verify" type="button" role="tab">
-                        <i class="fas fa-search me-3"></i> Verifikasi KIN
-                    </button>
-                    <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button" role="tab">
-                        <i class="fas fa-file-export me-3"></i> Ekspor & Cetak
-                    </button>
-                    <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button" role="tab">
-                        <i class="fas fa-database me-3"></i> Backup & Restore
-                    </button>
-                    <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab">
-                        <i class="fas fa-cog me-3"></i> Pengaturan Sistem
-                    </button>
-                    <button class="nav-link" id="v-pills-logout-tab" type="button">
-                        <i class="fas fa-sign-out-alt me-3"></i> Logout
-                    </button>
-                </div>
-            </div>
-            
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">Operator SIMPADAN</div>
-                        <div class="user-role">Administrator</div>
-                    </div>
-                </div>
-                <div class="app-version">v6.1 Final</div>
-            </div>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Mobile Header -->
-            <header class="mobile-header">
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="mobile-title">
-                    <h5>SIMPADAN TANGKAP</h5>
-                    <small id="currentWilayahBadge" class="badge bg-primary">Wilayah: Global</small>
-                </div>
-                <div class="mobile-actions">
-                    <button class="btn btn-sm btn-outline-primary me-2" id="btn-refresh-page" title="Refresh">
-                        <i class="fas fa-redo"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-success" id="btn-reload-repo" title="Sinkronisasi Data">
-                        <i class="fas fa-sync"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Content Tabs -->
-            <div class="tab-content" id="v-pills-tabContent">
-                <!-- Dashboard Tab -->
-                <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
-                    <div class="container-fluid py-4">
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h2 class="fw-bold mb-2">Dashboard SIMPADAN TANGKAP</h2>
-                                        <p class="text-muted mb-0" id="wilayahInfo">Mode Global: Data dari reload.js. Input data bebas tanpa batasan desa.</p>
+                        <!-- Verifikasi KIN Tab -->
+                        <div class="tab-pane fade" id="v-pills-verifikasi" role="tabpanel">
+                            <div class="verify-card">
+                                <div class="verify-header">
+                                    <div class="verify-icon-container">
+                                        <i class="fas fa-qrcode"></i>
                                     </div>
-                                    <div>
-                                        <button class="btn btn-primary me-2" id="btnDataWilayah">
-                                            <i class="fas fa-map-marked-alt me-2"></i> Data Wilayah
-                                        </button>
-                                        <button class="btn btn-warning" id="btnInputGlobal">
-                                            <i class="fas fa-globe me-2"></i> Mode Global
+                                    <h4 class="fw-bold mb-3">Verifikasi Kartu Identitas Nelayan (KIN)</h4>
+                                    <p class="mb-4 opacity-75">Masukkan Kode Identifikasi Nelayan (KIN) untuk memverifikasi keaslian data</p>
+                                    
+                                    <div class="verify-input-group mb-4">
+                                        <input type="text" class="form-control form-control-lg border-0" id="kinCode" placeholder="Masukkan Kode KIN (contoh: KIN-2025-0001)" aria-label="Kode KIN">
+                                        <button class="btn btn-primary btn-lg px-4" type="button" id="btnVerifyKIN">
+                                            <i class="fas fa-search me-2"></i> Verifikasi
                                         </button>
                                     </div>
+                                    
+                                    <div class="verify-breadcrumb">
+                                        <div class="verify-breadcrumb-item active">
+                                            <i class="fas fa-key me-2"></i> Masukkan Kode
+                                        </div>
+                                        <div class="verify-breadcrumb-item">
+                                            <i class="fas fa-user-check me-2"></i> Verifikasi Identitas
+                                        </div>
+                                        <div class="verify-breadcrumb-item">
+                                            <i class="fas fa-id-card me-2"></i> Tampilkan Hasil
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="verify-result-content" id="verifyResult" style="display: none;">
+                                    <!-- Hasil verifikasi akan ditampilkan di sini -->
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Statistik Cards -->
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-3">
-                                <div class="stats-card total">
-                                    <div class="stats-icon">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <h3 id="totalPenerima">0</h3>
-                                        <p>Total Nelayan</p>
-                                    </div>
+                        <!-- Filter Data Tab -->
+                        <div class="tab-pane fade" id="v-pills-filter" role="tabpanel">
+                            <h3 class="section-title mb-4"><i class="fas fa-filter me-2"></i> Filter Data</h3>
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0">Filter Data Nelayan</h5>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stats-card owner">
-                                    <div class="stats-icon">
-                                        <i class="fas fa-ship"></i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <h3 id="totalPemilik">0</h3>
-                                        <p>Pemilik Kapal</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stats-card abk">
-                                    <div class="stats-icon">
-                                        <i class="fas fa-user-friends"></i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <h3 id="totalABK">0</h3>
-                                        <p>Anak Buah Kapal</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stats-card fulltime">
-                                    <div class="stats-icon">
-                                        <i class="fas fa-user-clock"></i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <h3 id="totalPenuhWaktu">0</h3>
-                                        <p>Penuh Waktu</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Charts Row -->
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-6">
-                                <div class="chart-card">
-                                    <div class="chart-header">
-                                        <h5><i class="fas fa-chart-pie me-2"></i> Distribusi Profesi Nelayan</h5>
-                                    </div>
-                                    <div class="chart-body">
-                                        <canvas id="profesiChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="chart-card">
-                                    <div class="chart-header">
-                                        <h5><i class="fas fa-chart-bar me-2"></i> Jenis Kapal Dimiliki</h5>
-                                    </div>
-                                    <div class="chart-body">
-                                        <canvas id="kapalChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Quick Actions -->
-                        <div class="row g-4">
-                            <div class="col-12">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <h5 class="card-title mb-4"><i class="fas fa-bolt me-2"></i> Akses Cepat</h5>
+                                <div class="card-body">
+                                    <form id="filterForm">
                                         <div class="row g-3">
-                                            <div class="col-md-3">
-                                                <button class="btn btn-outline-primary w-100 h-100 py-3" onclick="document.getElementById('v-pills-input-tab').click()">
-                                                    <i class="fas fa-plus-circle fa-2x mb-2"></i>
-                                                    <div>Input Data Baru</div>
-                                                </button>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <button class="btn btn-outline-success w-100 h-100 py-3" onclick="document.getElementById('v-pills-data-tab').click()">
-                                                    <i class="fas fa-database fa-2x mb-2"></i>
-                                                    <div>Lihat Data</div>
-                                                </button>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <button class="btn btn-outline-info w-100 h-100 py-3" onclick="document.getElementById('v-pills-verify-tab').click()">
-                                                    <i class="fas fa-search fa-2x mb-2"></i>
-                                                    <div>Verifikasi KIN</div>
-                                                </button>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <button class="btn btn-outline-warning w-100 h-100 py-3" onclick="document.getElementById('v-pills-export-tab').click()">
-                                                    <i class="fas fa-file-pdf fa-2x mb-2"></i>
-                                                    <div>Cetak Laporan</div>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Input Data Tab -->
-                <div class="tab-pane fade" id="v-pills-input" role="tabpanel">
-                    <div class="container-fluid py-4">
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h2 class="fw-bold mb-0">Input Data Nelayan</h2>
-                                    <div>
-                                        <span class="badge bg-info" id="inputModeBadge">Mode: Global</span>
-                                        <div class="alert alert-warning d-none mt-2 p-2 small" id="desaWarning">
-                                            <i class="fas fa-exclamation-triangle me-2"></i>
-                                            <strong>Mode Desa:</strong> Anda hanya dapat input data untuk desa yang dipilih
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <form id="inputForm">
-                            <div class="row g-4">
-                                <!-- Kolom Kiri - Data Pribadi -->
-                                <div class="col-lg-6">
-                                    <div class="card border-0 shadow-sm mb-4">
-                                        <div class="card-header bg-primary text-white">
-                                            <h5 class="mb-0"><i class="fas fa-user me-2"></i> Data Pribadi</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="nama" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="nama" placeholder="Masukkan nama lengkap" required>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="nik" class="form-label">NIK (16 digit) <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="nik" placeholder="16 digit NIK" minlength="16" maxlength="16" required>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="tahunLahir" class="form-label">Tahun Lahir <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" id="tahunLahir" placeholder="Contoh: 1980" min="1900" max="2025" required>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="usia" class="form-label">Usia</label>
-                                                    <input type="number" class="form-control" id="usia" readonly>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="whatsapp" class="form-label">WhatsApp <span class="text-danger">*</span></label>
-                                                    <div class="input-group">
-                                                        <input type="tel" class="form-control" id="whatsapp" placeholder="08123456789" required>
-                                                        <button type="button" class="btn btn-outline-secondary" id="btnNoWA">Tidak Ada</button>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="col-md-12">
-                                                    <label for="alamat" class="form-label">Alamat Lengkap</label>
-                                                    <textarea class="form-control" id="alamat" rows="2" placeholder="Masukkan alamat lengkap"></textarea>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="kecamatan" class="form-label">Kecamatan <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="kecamatan" required>
-                                                        <option value="">Pilih Kecamatan</option>
-                                                    </select>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="desa" class="form-label">Desa/Kelurahan <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="desa" required disabled>
-                                                        <option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="card border-0 shadow-sm">
-                                        <div class="card-header bg-success text-white">
-                                            <h5 class="mb-0"><i class="fas fa-fish me-2"></i> Jenis Ikan Tangkapan</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div id="fishCheckboxContainer" class="fish-options-grid">
-                                                <!-- Opsi ikan akan diisi oleh JavaScript -->
-                                            </div>
-                                            <div class="mt-3" id="jenisIkanLainnya" style="display: none;">
-                                                <label for="otherFish" class="form-label">Sebutkan jenis ikan lainnya:</label>
-                                                <input type="text" class="form-control" id="otherFish" placeholder="Masukkan jenis ikan lainnya">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Kolom Kanan - Data Profesi -->
-                                <div class="col-lg-6">
-                                    <div class="card border-0 shadow-sm mb-4">
-                                        <div class="card-header bg-info text-white">
-                                            <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i> Data Profesi</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-6">
-                                                    <label for="profesi" class="form-label">Profesi <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="profesi" required>
-                                                        <option value="">Pilih Profesi</option>
-                                                        <option value="Nelayan Penuh Waktu">Penuh Waktu</option>
-                                                        <option value="Nelayan Sambilan Utama">Sambilan Utama</option>
-                                                        <option value="Nelayan Sambilan Tambahan">Sambilan Tambahan</option>
-                                                    </select>
-                                                    <div id="profesiHelp" class="form-text"></div>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="statusNelayan" class="form-label">Status <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="statusNelayan" required>
-                                                        <option value="">Pilih Status</option>
-                                                        <option value="Pemilik Kapal">Pemilik Kapal</option>
-                                                        <option value="Anak Buah Kapal">Anak Buah Kapal</option>
-                                                    </select>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="alatTangkap" class="form-label">Alat Tangkap (API) <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="alatTangkap" required>
-                                                        <option value="">Pilih Alat Penangkapan Ikan</option>
-                                                    </select>
-                                                    <div id="apiInfo" class="form-text mt-1" style="display: none;"></div>
-                                                    <div id="apiMappingInfo" class="form-text mt-1" style="display: none;"></div>
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="usahaSampingan" class="form-label">Usaha Sampingan</label>
-                                                    <input type="text" class="form-control" id="usahaSampingan" placeholder="Contoh: Berdagang">
-                                                </div>
-                                                
-                                                <div id="ownerFields" style="display: none;">
-                                                    <div class="col-12">
-                                                        <hr>
-                                                        <h6 class="mb-3"><i class="fas fa-ship me-2"></i> Data Kapal</h6>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="jenisKapal" class="form-label">Jenis Kapal</label>
-                                                        <select class="form-select" id="jenisKapal">
-                                                            <option value="">Pilih Jenis Kapal</option>
-                                                        </select>
-                                                        <div id="kapalInfo" class="form-text mt-1" style="display: none;"></div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="namaKapal" class="form-label">Nama Kapal</label>
-                                                        <input type="text" class="form-control" id="namaKapal" placeholder="Nama kapal (jika ada)">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="card border-0 shadow-sm mb-4">
-                                        <div class="card-header bg-warning text-dark">
-                                            <h5 class="mb-0"><i class="fas fa-clipboard-check me-2"></i> Validasi & Dokumen</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-6">
-                                                    <label for="tanggalValidasi" class="form-label">Tanggal Validasi</label>
-                                                    <input type="date" class="form-control" id="tanggalValidasi">
-                                                </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <label for="validator" class="form-label">Validator</label>
-                                                    <input type="text" class="form-control" id="validator" placeholder="Nama validator">
-                                                </div>
-                                                
-                                                <div class="col-md-12">
-                                                    <label for="driveLink" class="form-label">Link Google Drive (Opsional)</label>
-                                                    <input type="url" class="form-control" id="driveLink" placeholder="https://drive.google.com/...">
-                                                </div>
-                                                
-                                                <div class="col-md-12">
-                                                    <label for="kodeValidasi" class="form-label">Kode Validasi (KIN) <span class="text-danger">*</span></label>
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" id="kodeValidasi" placeholder="Klik Generate Kode" readonly required>
-                                                        <button type="button" class="btn btn-primary" id="generateKodeBtn">
-                                                            <i class="fas fa-key me-2"></i> Generate Kode
-                                                        </button>
-                                                    </div>
-                                                    <div class="form-text">Kode Validasi bersifat unik dan permanen</div>
-                                                </div>
-                                                
-                                                <div class="col-md-12">
-                                                    <label for="keterangan" class="form-label">Keterangan Tambahan</label>
-                                                    <textarea class="form-control" id="keterangan" rows="2" placeholder="Catatan tambahan (opsional)"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-success btn-lg" id="submitFormBtn">
-                                            <i class="fas fa-save me-2"></i> Simpan Data
-                                        </button>
-                                        <button type="reset" class="btn btn-outline-secondary">
-                                            <i class="fas fa-redo me-2"></i> Reset Form
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Data Nelayan Tab -->
-                <div class="tab-pane fade" id="v-pills-data" role="tabpanel">
-                    <div class="container-fluid py-4">
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h2 class="fw-bold mb-2">Data Nelayan</h2>
-                                        <p id="tableInfo" class="text-muted mb-0">Menampilkan 0-0 dari 0 data</p>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-primary me-2" onclick="generateTabelPdf()">
-                                            <i class="fas fa-file-pdf me-2"></i> Cetak Tabel
-                                        </button>
-                                        <button class="btn btn-success" onclick="exportData('xlsx')">
-                                            <i class="fas fa-file-excel me-2"></i> Export Excel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pencarian dan Filter -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-8">
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                            <input type="text" class="form-control" id="searchData" placeholder="Cari berdasarkan nama, NIK, alamat, desa, kecamatan...">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="resetFilter()">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="d-flex justify-content-end">
-                                            <div class="btn-group">
-                                                <button class="btn btn-outline-primary" onclick="document.getElementById('v-pills-filter-tab').click()">
-                                                    <i class="fas fa-filter me-2"></i> Filter Lanjut
-                                                </button>
-                                                <button class="btn btn-outline-danger d-none" id="bulkDeleteBtn" onclick="bulkDeleteData()">
-                                                    <i class="fas fa-trash me-2"></i> Hapus Terpilih
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Alert Duplikat -->
-                        <div class="alert alert-warning d-none" id="duplicateWarning" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Peringatan:</strong> Terdapat data dengan NIK ganda dalam database.
-                            <a href="#" onclick="showDuplicateDataInFilter()" class="alert-link"> Lihat data duplikat</a>
-                        </div>
-
-                        <!-- Tabel Data -->
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th width="40">
-                                                    <input type="checkbox" class="form-check-input" id="selectAllCheckbox">
-                                                </th>
-                                                <th width="60">No</th>
-                                                <th>Identitas</th>
-                                                <th width="150">Kontak</th>
-                                                <th width="150">Profesi & Status</th>
-                                                <th width="150">Kapal</th>
-                                                <th width="120">Alat Tangkap</th>
-                                                <th width="180" class="text-center">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="dataTableBody">
-                                            <!-- Data akan diisi oleh JavaScript -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center">
-                                    <span class="me-3">Baris per halaman:</span>
-                                    <select class="form-select form-select-sm w-auto" id="itemsPerPageSelect" onchange="appSettings.itemsPerPage = this.value; currentPage = 1; saveSettings(); renderDataTable();">
-                                        <option value="5">5</option>
-                                        <option value="10" selected>10</option>
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <nav aria-label="Page navigation">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div id="paginationInfo" class="text-muted">Halaman 1 dari 1</div>
-                                        <ul class="pagination pagination-sm mb-0" id="pagination">
-                                            <!-- Pagination akan diisi oleh JavaScript -->
-                                        </ul>
-                                    </div>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Filter & Validasi Tab -->
-                <div class="tab-pane fade" id="v-pills-filter" role="tabpanel">
-                    <div class="container-fluid py-4">
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h2 class="fw-bold mb-2">Filter & Validasi Data</h2>
-                                <p class="text-muted">Filter data nelayan berdasarkan kriteria tertentu</p>
-                            </div>
-                        </div>
-
-                        <!-- Filter Form -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0"><i class="fas fa-filter me-2"></i> Filter Data</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="filterDesa" class="form-label">Desa/Kelurahan</label>
-                                        <select class="form-select" id="filterDesa">
-                                            <option value="">Semua Desa</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="filterProfesi" class="form-label">Profesi</label>
-                                        <select class="form-select" id="filterProfesi">
-                                            <option value="">Semua Profesi</option>
-                                            <option value="Nelayan Penuh Waktu">Penuh Waktu</option>
-                                            <option value="Nelayan Sambilan Utama">Sambilan Utama</option>
-                                            <option value="Nelayan Sambilan Tambahan">Sambilan Tambahan</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="filterStatus" class="form-label">Status</label>
-                                        <select class="form-select" id="filterStatus">
-                                            <option value="">Semua Status</option>
-                                            <option value="Pemilik Kapal">Pemilik Kapal</option>
-                                            <option value="Anak Buah Kapal">Anak Buah Kapal</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="filterJenisKapal" class="form-label">Jenis Kapal</label>
-                                        <select class="form-select" id="filterJenisKapal">
-                                            <option value="">Semua Jenis</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="filterAlatTangkap" class="form-label">Alat Tangkap (API)</label>
-                                        <select class="form-select" id="filterAlatTangkap">
-                                            <option value="">Semua Alat Tangkap</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="filterUsaha" class="form-label">Usaha Sampingan</label>
-                                        <select class="form-select" id="filterUsaha">
-                                            <option value="">Semua</option>
-                                            <option value="Ada">Ada Usaha Sampingan</option>
-                                            <option value="Tidak">Tidak Ada Usaha</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="row mt-4">
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <button class="btn btn-secondary" id="resetFilterBtn">
-                                                <i class="fas fa-redo me-2"></i> Reset Filter
-                                            </button>
-                                            <button class="btn btn-primary" id="applyFilterBtn">
-                                                <i class="fas fa-check me-2"></i> Terapkan Filter
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Validasi Data Ganda -->
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-warning text-dark">
-                                <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Validasi Data Ganda</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Fitur ini membantu mengidentifikasi data dengan NIK ganda dalam database.
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="d-grid">
-                                            <button class="btn btn-outline-warning" id="btnCekGanda">
-                                                <i class="fas fa-search me-2"></i> Cek Data Ganda
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="d-grid">
-                                            <button class="btn btn-outline-danger" onclick="backupData()">
-                                                <i class="fas fa-download me-2"></i> Backup Data Sebelum Validasi
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-4">
-                                    <h6>Informasi Validasi:</h6>
-                                    <ul class="text-muted">
-                                        <li>Data dianggap ganda jika memiliki NIK yang sama</li>
-                                        <li>Sistem akan menampilkan semua data dengan NIK ganda</li>
-                                        <li>Lakukan backup data sebelum menghapus data ganda</li>
-                                        <li>Pastikan hanya menyimpan data yang valid dan terbaru</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Verifikasi KIN Tab -->
-                <div class="tab-pane fade" id="v-pills-verify" role="tabpanel">
-                    <div class="container-fluid py-4">
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h2 class="fw-bold mb-2">Verifikasi Kode Identifikasi Nelayan (KIN)</h2>
-                                <p class="text-muted">Verifikasi keaslian data nelayan menggunakan Kode Validasi (KIN) atau NIK</p>
-                            </div>
-                        </div>
-
-                        <!-- Input Verifikasi -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-info text-white">
-                                <h5 class="mb-0"><i class="fas fa-search me-2"></i> Verifikasi Data</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row mb-4">
-                                    <div class="col-12">
-                                        <nav aria-label="breadcrumb">
-                                            <ol class="breadcrumb verify-breadcrumb">
-                                                <li class="breadcrumb-item verify-breadcrumb-item active" onclick="setVerifyExample('kin')">
-                                                    <i class="fas fa-key me-2"></i>Kode Validasi (KIN)
-                                                </li>
-                                                <li class="breadcrumb-item verify-breadcrumb-item" onclick="setVerifyExample('nik')">
-                                                    <i class="fas fa-id-card me-2"></i>NIK
-                                                </li>
-                                                <li class="breadcrumb-item verify-breadcrumb-item" onclick="setVerifyExample('all')">
-                                                    <i class="fas fa-list me-2"></i>Semua KIN
-                                                </li>
-                                            </ol>
-                                        </nav>
-                                    </div>
-                                </div>
-                                
-                                <div class="row g-3">
-                                    <div class="col-md-9">
-                                        <div class="input-group input-group-lg">
-                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                            <input type="text" class="form-control" id="verifyInput" placeholder="Masukkan Kode Validasi (contoh: VLD-ABC123) atau NIK 16 digit">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="resetVerifyForm()">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="d-grid">
-                                            <button class="btn btn-primary btn-lg" id="verifyBtn">
-                                                <i class="fas fa-check me-2"></i> Verifikasi
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row mt-3">
-                                    <div class="col-12">
-                                        <div class="alert alert-light">
-                                            <i class="fas fa-lightbulb me-2"></i>
-                                            <strong>Tips:</strong> 
-                                            <ul class="mb-0 mt-2">
-                                                <li>Kode Validasi (KIN) biasanya berbentuk VLD-XXXXXX</li>
-                                                <li>Anda juga dapat menggunakan NIK 16 digit untuk verifikasi</li>
-                                                <li>Klik "Semua KIN" untuk melihat daftar lengkap kode validasi</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Hasil Verifikasi -->
-                        <div class="card shadow-sm border-0 mb-4" id="verifyResultCard" style="display: none;">
-                            <div class="verify-result-header p-4 bg-success text-white">
-                                <div class="row align-items-center">
-                                    <div class="col-md-2 text-center">
-                                        <div id="verifyResultIcon">
-                                            <i class="fas fa-check-circle fa-3x"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <h4 class="verify-result-title mb-1" id="verifyResultTitle">VERIFIKASI BERHASIL</h4>
-                                        <p class="verify-result-subtitle mb-0" id="verifyResultSubtitle">Data ditemukan berdasarkan Kode Validasi (KIN)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="row" id="verifyResultContent">
-                                    <!-- Konten hasil verifikasi akan diisi oleh JavaScript -->
-                                </div>
-                                
-                                <div class="row mt-4">
-                                    <div class="col-12 text-center">
-                                        <button class="btn btn-primary me-2" id="verifyDetailBtn" style="display: none;">
-                                            <i class="fas fa-eye me-2"></i> Lihat Detail Lengkap
-                                        </button>
-                                        <button class="btn btn-success" id="verifyIdCardBtn" style="display: none;">
-                                            <i class="fas fa-id-card me-2"></i> Cetak ID Card
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Daftar Semua KIN -->
-                        <div class="card shadow-sm border-0" id="allKinCard" style="display: none;">
-                            <div class="card-header bg-primary text-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0"><i class="fas fa-list me-2"></i> Daftar Semua Kode Validasi (KIN)</h5>
-                                    <span class="badge bg-light text-dark" id="totalKinCount">0</span>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th width="50">No</th>
-                                                <th width="150">Kode Validasi</th>
-                                                <th>Nama</th>
-                                                <th width="150">NIK</th>
-                                                <th>Alamat</th>
-                                                <th width="100">Status</th>
-                                                <th width="120">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="allKinTableBody">
-                                            <!-- Data KIN akan diisi oleh JavaScript -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Ekspor & Cetak Tab -->
-                <div class="tab-pane fade" id="v-pills-export" role="tabpanel">
-                    <div class="container-fluid py-4">
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h2 class="fw-bold mb-2">Ekspor & Cetak Data</h2>
-                                <p class="text-muted">Ekspor data nelayan dalam berbagai format dan cetak laporan</p>
-                            </div>
-                        </div>
-
-                        <div class="row g-4">
-                            <!-- Cetak Laporan -->
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0"><i class="fas fa-file-pdf me-2"></i> Cetak Laporan</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="export-icon text-center mb-4">
-                                            <i class="fas fa-file-pdf fa-4x text-danger"></i>
-                                        </div>
-                                        <h5 class="text-center mb-3">Laporan PDF</h5>
-                                        <p class="text-muted text-center mb-4">Cetak laporan data nelayan dalam format PDF dengan tampilan profesional</p>
-                                        
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-danger" id="printPdfBtn" onclick="printData()">
-                                                <i class="fas fa-print me-2"></i> Cetak Laporan Rekapitulasi
-                                            </button>
-                                            <button class="btn btn-outline-danger" id="btnUnduhFilteredPdf" onclick="generateFilteredPdf()">
-                                                <i class="fas fa-download me-2"></i> Unduh Laporan Terfilter
-                                            </button>
-                                        </div>
-                                        
-                                        <div class="mt-4">
-                                            <h6>Fitur Laporan:</h6>
-                                            <ul class="text-muted small">
-                                                <li>Format PDF standar A4 landscape</li>
-                                                <li>Tanda tangan elektronik dengan QR Code</li>
-                                                <li>Header resmi Dinas Perikanan</li>
-                                                <li>Statistik per desa/kelurahan</li>
-                                                <li>Filter berdasarkan kriteria</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Ekspor Data -->
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-success text-white">
-                                        <h5 class="mb-0"><i class="fas fa-file-export me-2"></i> Ekspor Data</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-3">
-                                            <div class="col-12">
-                                                <div class="export-option-card">
-                                                    <div class="export-icon">
-                                                        <i class="fas fa-file-excel text-success"></i>
-                                                    </div>
-                                                    <div class="export-info">
-                                                        <h6>Microsoft Excel</h6>
-                                                        <p class="small text-muted mb-2">Ekspor data ke format XLSX untuk analisis lebih lanjut</p>
-                                                        <button class="btn btn-sm btn-outline-success w-100" onclick="exportData('xlsx')">
-                                                            <i class="fas fa-download me-2"></i> Export Excel
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-12">
-                                                <div class="export-option-card">
-                                                    <div class="export-icon">
-                                                        <i class="fas fa-file-code text-info"></i>
-                                                    </div>
-                                                    <div class="export-info">
-                                                        <h6>File JavaScript (reload.js)</h6>
-                                                        <p class="small text-muted mb-2">Backup data dalam format JavaScript untuk sinkronisasi</p>
-                                                        <button class="btn btn-sm btn-outline-info w-100" id="exportReloadJsBtn" onclick="backupData('reload.js')">
-                                                            <i class="fas fa-download me-2"></i> Export reload.js
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-12">
-                                                <div class="export-option-card">
-                                                    <div class="export-icon">
-                                                        <i class="fab fa-whatsapp text-success"></i>
-                                                    </div>
-                                                    <div class="export-info">
-                                                        <h6>Kirim via WhatsApp</h6>
-                                                        <p class="small text-muted mb-2">Bagikan data melalui WhatsApp ke administrator</p>
-                                                        <button class="btn btn-sm btn-outline-success w-100" id="sendWaBtn" onclick="sendDataToWhatsapp()">
-                                                            <i class="fab fa-whatsapp me-2"></i> Kirim ke WhatsApp
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mt-4 pt-3 border-top">
-                                            <h6>Informasi Ekspor:</h6>
-                                            <ul class="text-muted small">
-                                                <li>Data sensitif (NIK, WhatsApp) akan disensor otomatis</li>
-                                                <li>Format Excel mendukung semua data termasuk alamat lengkap</li>
-                                                <li>File reload.js dapat digunakan untuk sinkronisasi antar perangkat</li>
-                                                <li>Pastikan koneksi internet stabil untuk pengiriman WhatsApp</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Backup & Restore Tab -->
-                <div class="tab-pane fade" id="v-pills-backup" role="tabpanel">
-                    <div class="container-fluid py-4">
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h2 class="fw-bold mb-2">Backup & Restore Data</h2>
-                                <p class="text-muted">Kelola cadangan data dan restore data dari file backup</p>
-                            </div>
-                        </div>
-
-                        <div class="row g-4">
-                            <!-- Backup Data -->
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-warning text-dark">
-                                        <h5 class="mb-0"><i class="fas fa-database me-2"></i> Backup Data</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="backup-icon text-center mb-4">
-                                            <i class="fas fa-save fa-4x text-warning"></i>
-                                        </div>
-                                        <h5 class="text-center mb-3">Buat Backup Data</h5>
-                                        <p class="text-muted text-center mb-4">Simpan salinan data Anda dalam format file JavaScript (reload.js)</p>
-                                        
-                                        <div class="alert alert-info">
-                                            <i class="fas fa-info-circle me-2"></i>
-                                            <strong>Mode Backup:</strong> Data akan disimpan berdasarkan mode wilayah saat ini.
-                                        </div>
-                                        
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-warning" id="backupDataBtn" onclick="backupData()">
-                                                <i class="fas fa-download me-2"></i> Buat Backup
-                                            </button>
-                                        </div>
-                                        
-                                        <div class="mt-4">
-                                            <h6>Informasi Backup:</h6>
-                                            <ul class="text-muted small">
-                                                <li>Data akan disimpan dalam format JavaScript</li>
-                                                <li>File dapat digunakan untuk restore atau sinkronisasi</li>
-                                                <li>Nama file disesuaikan dengan mode wilayah</li>
-                                                <li>Backup data secara berkala untuk menghindari kehilangan data</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Restore Data -->
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-info text-white">
-                                        <h5 class="mb-0"><i class="fas fa-upload me-2"></i> Restore Data</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="restore-icon text-center mb-4">
-                                            <i class="fas fa-upload fa-4x text-info"></i>
-                                        </div>
-                                        <h5 class="text-center mb-3">Restore Data dari File</h5>
-                                        <p class="text-muted text-center mb-4">Upload file backup untuk memulihkan data sebelumnya</p>
-                                        
-                                        <div class="alert alert-warning">
-                                            <i class="fas fa-exclamation-triangle me-2"></i>
-                                            <strong>Peringatan:</strong> Restore akan menggabungkan data lama dengan data baru. Data duplikat akan difilter.
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="restoreFileInput" class="form-label">Pilih File Backup</label>
-                                            <input type="file" class="form-control" id="restoreFileInput" accept=".js,.json">
-                                            <div class="form-text">File harus dalam format .js (reload.js) atau .json</div>
-                                        </div>
-                                        
-                                        <div class="d-grid">
-                                            <button class="btn btn-info" id="restoreDataBtn" disabled onclick="restoreData()">
-                                                <i class="fas fa-upload me-2"></i> Restore Data
-                                            </button>
-                                        </div>
-                                        
-                                        <div class="mt-4">
-                                            <h6>Informasi Restore:</h6>
-                                            <ul class="text-muted small">
-                                                <li>Hanya file dengan format valid yang dapat di-restore</li>
-                                                <li>Data duplikat akan difilter otomatis</li>
-                                                <li>Data lama tetap tersimpan dan digabung dengan data baru</li>
-                                                <li>Selalu backup data sebelum melakukan restore</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sinkronisasi Data -->
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-success text-white">
-                                        <h5 class="mb-0"><i class="fas fa-sync me-2"></i> Sinkronisasi Data</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-8">
-                                                <h5>Sinkronisasi dengan Server</h5>
-                                                <p class="text-muted mb-0">Perbarui data dengan data terbaru dari server menggunakan file reload.js</p>
-                                            </div>
-                                            <div class="col-md-4 text-end">
-                                                <button class="btn btn-success btn-lg" onclick="handleReloadRepo()">
-                                                    <i class="fas fa-sync me-2"></i> Sinkronisasi Sekarang
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pengaturan Sistem Tab -->
-                <div class="tab-pane fade" id="v-pills-settings" role="tabpanel">
-                    <div class="container-fluid py-4">
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h2 class="fw-bold mb-2">Pengaturan Sistem</h2>
-                                <p class="text-muted">Kelola pengaturan aplikasi dan sistem keamanan</p>
-                            </div>
-                        </div>
-
-                        <div class="row g-4">
-                            <!-- Pengaturan Umum -->
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i> Pengaturan Umum</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <form id="settingsForm">
-                                            <div class="mb-3">
-                                                <label for="appName" class="form-label">Nama Aplikasi</label>
-                                                <input type="text" class="form-control" id="appName" value="SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP" readonly>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="appSubtitle" class="form-label">Subjudul Aplikasi</label>
-                                                <input type="text" class="form-control" id="appSubtitle" placeholder="Masukkan nama instansi">
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="itemsPerPageSelect" class="form-label">Jumlah Baris per Halaman</label>
-                                                <select class="form-select" id="itemsPerPageSelect">
-                                                    <option value="5">5 Baris</option>
-                                                    <option value="10" selected>10 Baris</option>
-                                                    <option value="25">25 Baris</option>
-                                                    <option value="50">50 Baris</option>
-                                                    <option value="100">100 Baris</option>
+                                            <div class="col-md-4">
+                                                <label for="filterProfesi" class="form-label">Profesi</label>
+                                                <select class="form-select" id="filterProfesi">
+                                                    <option value="">Semua Profesi</option>
+                                                    <option value="Penuh">Nelayan Penuh</option>
+                                                    <option value="Sambilan Utama">Nelayan Sambilan Utama</option>
+                                                    <option value="Sambilan Tambahan">Nelayan Sambilan Tambahan</option>
                                                 </select>
                                             </div>
-                                            
+                                            <div class="col-md-4">
+                                                <label for="filterStatus" class="form-label">Status</label>
+                                                <select class="form-select" id="filterStatus">
+                                                    <option value="">Semua Status</option>
+                                                    <option value="Pemilik">Pemilik Kapal</option>
+                                                    <option value="ABK">ABK</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="filterDomisili" class="form-label">Domisili</label>
+                                                <select class="form-select" id="filterDomisili">
+                                                    <option value="">Semua Domisili</option>
+                                                    <!-- Opsi akan diisi oleh JavaScript -->
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="filterAlatTangkap" class="form-label">Alat Tangkap</label>
+                                                <select class="form-select" id="filterAlatTangkap">
+                                                    <option value="">Semua Alat Tangkap</option>
+                                                    <!-- Opsi akan diisi oleh JavaScript -->
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="filterIkan" class="form-label">Jenis Ikan</label>
+                                                <select class="form-select" id="filterIkan">
+                                                    <option value="">Semua Jenis Ikan</option>
+                                                    <!-- Opsi akan diisi oleh JavaScript -->
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                            <button type="reset" class="btn btn-secondary me-md-2">Reset Filter</button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-filter me-2"></i> Terapkan Filter
+                                            </button>
+                                        </div>
+                                    </form>
+                                    
+                                    <div class="mt-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6>Hasil Filter</h6>
+                                            <button type="button" class="btn btn-danger btn-sm" id="btnDownloadFilteredPDF">
+                                                <i class="fas fa-file-pdf me-1"></i> Unduh PDF
+                                            </button>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm data-table" id="filterTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nama</th>
+                                                        <th>Profesi</th>
+                                                        <th>Status</th>
+                                                        <th>Alat Tangkap</th>
+                                                        <th>Domisili</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="filterTableBody">
+                                                    <!-- Data hasil filter akan diisi di sini -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pengaturan Keamanan Tab -->
+                        <div class="tab-pane fade" id="v-pills-keamanan" role="tabpanel">
+                            <h3 class="section-title mb-4"><i class="fas fa-user-shield me-2"></i> Pengaturan Keamanan</h3>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Pengaturan keamanan ini memungkinkan Anda mengatur kode akses untuk fitur input data dan data nelayan.
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0"><i class="fas fa-edit me-2 text-primary"></i> Keamanan Input Data</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="small text-muted">Atur kode keamanan untuk mengakses menu Input Data Nelayan.</p>
                                             <div class="d-grid">
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="fas fa-save me-2"></i> Simpan Pengaturan
+                                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalPengaturanKeamanan" onclick="showSecuritySection('input')">
+                                                    <i class="fas fa-cog me-2"></i> Atur Kode Input Data
                                                 </button>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Pengaturan Pejabat Penandatangan -->
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-info text-white">
-                                        <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i> Pejabat Penandatangan</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <form id="officialForm">
-                                            <div class="mb-3">
-                                                <label for="officialName" class="form-label">Nama Pejabat</label>
-                                                <input type="text" class="form-control" id="officialName" placeholder="Masukkan nama pejabat" required>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="officialNip" class="form-label">NIP</label>
-                                                <input type="text" class="form-control" id="officialNip" placeholder="Masukkan NIP pejabat" required>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="officialPosition" class="form-label">Jabatan</label>
-                                                <input type="text" class="form-control" id="officialPosition" placeholder="Masukkan jabatan pejabat" required>
-                                            </div>
-                                            
+                                
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0"><i class="fas fa-database me-2 text-success"></i> Keamanan Data Menu</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="small text-muted">Atur kode keamanan untuk mengakses menu Data Nelayan.</p>
                                             <div class="d-grid">
-                                                <button type="submit" class="btn btn-info">
-                                                    <i class="fas fa-save me-2"></i> Simpan Data Pejabat
+                                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalPengaturanKeamanan" onclick="showSecuritySection('data')">
+                                                    <i class="fas fa-cog me-2"></i> Atur Kode Data Menu
                                                 </button>
                                             </div>
-                                        </form>
-                                        
-                                        <div class="mt-4">
-                                            <small class="text-muted">
-                                                <i class="fas fa-info-circle me-1"></i>
-                                                Data ini akan digunakan untuk tanda tangan pada dokumen PDF resmi
-                                            </small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Keamanan Sistem -->
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-warning text-dark">
-                                        <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i> Keamanan Sistem</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <h6>Keamanan Input Data</h6>
-                                                <button class="btn btn-sm btn-outline-warning" id="btnSecurityInput">
-                                                    <i class="fas fa-cog me-1"></i> Atur
-                                                </button>
-                                            </div>
-                                            <p class="small text-muted">Lindungi akses ke menu Input Data dengan kode keamanan</p>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <h6>Keamanan Menu Data</h6>
-                                                <button class="btn btn-sm btn-outline-warning" id="btnSecurityDataMenu">
-                                                    <i class="fas fa-cog me-1"></i> Atur
-                                                </button>
-                                            </div>
-                                            <p class="small text-muted">Lindungi akses ke menu Data Nelayan dengan kode keamanan</p>
-                                        </div>
-                                        
-                                        <hr>
-                                        
-                                        <!-- Kode Keamanan Sensor Data -->
-                                        <div class="mb-3">
-                                            <h6>Kode Keamanan Sensor Data</h6>
-                                            <form id="sensorCodeForm">
-                                                <div class="mb-3">
-                                                    <label for="currentSensorCode" class="form-label">Kode Saat Ini</label>
-                                                    <input type="password" class="form-control" id="currentSensorCode" placeholder="Masukkan kode saat ini" required>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label for="newSensorCode" class="form-label">Kode Baru</label>
-                                                    <input type="password" class="form-control" id="newSensorCode" placeholder="Kode baru (min. 6 digit)" minlength="6" required>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label for="confirmSensorCode" class="form-label">Konfirmasi Kode</label>
-                                                    <input type="password" class="form-control" id="confirmSensorCode" placeholder="Ulangi kode baru" minlength="6" required>
-                                                </div>
-                                                
-                                                <div class="d-grid">
-                                                    <button type="submit" class="btn btn-warning">
-                                                        <i class="fas fa-key me-2"></i> Perbarui Kode Sensor
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
+                            
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="fas fa-history me-2 text-warning"></i> Riwayat Akses Keamanan</h6>
                                 </div>
-                            </div>
-
-                            <!-- Privasi Data -->
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-danger text-white">
-                                        <h5 class="mb-0"><i class="fas fa-user-shield me-2"></i> Privasi & Sensor Data</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-4">
-                                            <div>
-                                                <h6 class="mb-1">Sensor Data Pribadi</h6>
-                                                <p class="small text-muted mb-0">Menyensor 4 digit terakhir NIK & No. HP dengan tanda bintang (*)</p>
-                                            </div>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="privacyToggle" checked style="width: 3em; height: 1.5em;">
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="alert alert-info">
-                                            <i class="fas fa-info-circle me-2"></i>
-                                            Sensor aktif akan melindungi data sensitif pada tabel dan dokumen yang diunduh.
-                                        </div>
-                                        
-                                        <div id="privacyStatus" class="mt-3 small fw-bold text-success">
-                                            <i class="fas fa-check-circle me-2"></i>Status: Sensor Aktif (Aman)
-                                        </div>
-                                        
-                                        <div class="mt-4">
-                                            <h6>Informasi Keamanan:</h6>
-                                            <ul class="text-muted small">
-                                                <li>Sensor melindungi NIK dan nomor telepon nelayan</li>
-                                                <li>Data tetap utuh di database, hanya tampilan yang disensor</li>
-                                                <li>Nonaktifkan sensor hanya untuk keperluan administrasi</li>
-                                                <li>Selalu aktifkan sensor setelah penggunaan selesai</li>
-                                            </ul>
-                                        </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Waktu</th>
+                                                    <th>Aktivitas</th>
+                                                    <th>IP Address</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="securityLogTable">
+                                                <!-- Riwayat keamanan akan diisi di sini -->
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -1545,29 +949,57 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Footer -->
-            <footer class="main-footer">
-                <div class="container">
-                    <h5 class="footer-brand">SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP</h5>
-                    <div class="footer-text">
-                        &copy; 2025 Bidang Pemberdayaan Nelayan <span class="footer-divider">|</span> Dinas Perikanan Kabupaten Situbondo
-                    </div>
-                    <div class="footer-links">
-                        <a href="#" style="pointer-events: none;">
-                            <i class="fas fa-phone-alt me-1"></i> Contact Center: 0878-6561-4222
-                        </a>
-                        <span class="footer-divider">|</span>
-                        <a href="mailto:info@dinasperikanansitubondo.com">
-                            <i class="fas fa-envelope me-1"></i> info@dinasperikanansitubondo.com
-                        </a>
-                    </div>
+        </div>
+        
+        <!-- Floating Action Button -->
+        <div class="fab-container" id="fabContainer">
+            <a href="#" class="fab-item" id="fabRefresh" title="Refresh Data">
+                <i class="fas fa-sync-alt"></i>
+            </a>
+            <a href="#" class="fab-item" id="fabPrint" title="Cetak Laporan">
+                <i class="fas fa-print"></i>
+            </a>
+            <a href="#" class="fab-item" id="fabHelp" title="Bantuan">
+                <i class="fas fa-question-circle"></i>
+            </a>
+            <button class="fab-main" id="fabMain">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        
+        <!-- Sticky Warning -->
+        <div class="sticky-warning" id="stickyWarning">
+            <div class="d-flex align-items-start">
+                <i class="fas fa-exclamation-triangle text-danger me-2 mt-1"></i>
+                <div>
+                    <strong>Peringatan!</strong>
+                    <p class="mb-0 small" id="warningMessage">Data belum disimpan. Harap simpan perubahan Anda.</p>
                 </div>
-            </footer>
-        </main>
+                <button type="button" class="btn-close ms-auto" id="closeWarning"></button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="container">
+                <h5 class="footer-brand">SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP</h5>
+                <div class="footer-text">
+                    &copy; 2025 Bidang Pemberdayaan Nelayan <span class="footer-divider">|</span> Dinas Perikanan Kabupaten Situbondo
+                </div>
+                <div class="footer-links">
+                    <a href="#" style="pointer-events: none;">
+                        <i class="fas fa-phone-alt me-1"></i> Contact Center: 0878-6561-4222
+                    </a>
+                    <span class="footer-divider">|</span>
+                    <a href="mailto:info@dinasperikanansitubondo.com">
+                        <i class="fas fa-envelope me-1"></i> info@dinasperikanansitubondo.com
+                    </a>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- Modal Detail -->
+    <!-- Modal Detail Data -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -1584,7 +1016,7 @@
                                     <div class="detail-label">Nama Lengkap</div>
                                     <div class="detail-value" id="d_nama">-</div>
                                     <div class="detail-label">NIK (Nomori Induk Kependudukan)</div>
-                                    <div class="detail-value font-monospace" id="d_nik">-</div>
+                                    <div class="detail-value font-monospace" id="d_nik">  </div>
                                     <div class="detail-label">Usia / Tahun Lahir</div>
                                     <div class="detail-value" id="d_usia">-</div>
                                     <div class="detail-label">Alamat Lengkap</div>
@@ -1597,7 +1029,7 @@
                                 <div class="col-md-6 ps-md-4 mt-3 mt-md-0">
                                     <h6 class="text-primary fw-bold mb-3">PROFESI & KEPEMILIKAN</h6>
                                     <div class="detail-label">Profesi</div>
-                                    <div class="detail-value"><span id="d_profesi" class="badge bg-primary">-</span></div>
+                                    <div class="detail-value"><span id="d_profesi" class="badge bg-primary"></span></div>
                                     <div class="detail-label">Status</div>
                                     <div class="detail-value" id="d_status">-</div>
                                     <div class="detail-label">Alat Penangkapan Ikan (API)</div>
@@ -1615,11 +1047,11 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div class="detail-label">Nama Kapal</div>
-                                    <div class="fw-bold" id="d_namaKapal">-</div>
+                                    <div class="fw-bold" id="d_namaKapal">.</div>
                                 </div>
                                 <div class="col-6">
                                     <div class="detail-label">Jenis Kapal</div>
-                                    <div class="fw-bold"><span id="d_jenisKapal">-</span></div>
+                                    <div class="fw-bold"><span id="d_jenisKapal"> -</span></div>
                                 </div>
                             </div>
                         </div>
@@ -1628,7 +1060,7 @@
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body bg-white border-left border-4 border-success">
                             <h6 class="text-success fw-bold mb-3"><i class="fas fa-fish me-2"></i>JENIS IKAN TANGKAPAN</h6>
-                            <div id="d_ikan">-</div>
+                            <div id="d_ikan"></div>
                         </div>
                     </div>
 
@@ -1638,22 +1070,9 @@
                 </div>
                 <div class="modal-footer bg-white">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-danger" id="btnDownloadDetailPdf">
-                        <i class="fas fa-file-pdf me-2"></i>UNDUH DOKUMEN (PDF)
-                    </button>
+                    <button type="button" class="btn btn-danger" id="btnDownloadDetailPdf"><i class="fas fa-file-pdf me-2"></i>UNDUH DOKUMEN (PDF)</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Toast Notifikasi -->
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-        <div class="toast notification-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
-            <div class="toast-header">
-                <strong class="me-auto" id="toastTitle"></strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-            </div>
-            <div class="toast-body" id="toastMessage"></div>
         </div>
     </div>
 
@@ -1667,6 +1086,150 @@
             <p class="small text-muted">Harap tunggu sebentar</p>
         </div>
     </div>
+
+    <!-- Modal Kode Keamanan Input Data -->
+    <div class="modal fade" id="modalInputCode" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-key me-2"></i>Kode Keamanan Input Data</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Masukkan kode keamanan untuk mengakses fitur Input Data Nelayan.
+                    </div>
+                    <form id="inputCodeFormModal">
+                        <div class="mb-3">
+                            <label for="inputCode" class="form-label">Kode Keamanan</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="inputCode" placeholder="Masukkan kode keamanan" required>
+                                <button type="button" class="btn btn-outline-secondary" id="toggleInputCode">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Kode ini diatur di menu Pengaturan Keamanan.</small>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-unlock me-2"></i> Buka Akses
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Kode Keamanan Data Menu -->
+    <div class="modal fade" id="modalDataCode" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-database me-2"></i>Kode Keamanan Data Menu</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Masukkan kode keamanan untuk mengakses menu Data Nelayan.
+                    </div>
+                    <form id="dataCodeFormModal">
+                        <div class="mb-3">
+                            <label for="dataCode" class="form-label">Kode Keamanan</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="dataCode" placeholder="Masukkan kode keamanan" required>
+                                <button type="button" class="btn btn-outline-secondary" id="toggleDataCode">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Kode ini diatur di menu Pengaturan Keamanan.</small>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-unlock me-2"></i> Buka Akses
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script untuk memanipulasi DOM setelah halaman dimuat -->
+    <script>
+        // Fungsi untuk menampilkan bagian keamanan tertentu di modal
+        function showSecuritySection(section) {
+            if (section === 'input') {
+                // Scroll ke bagian input code form
+                document.getElementById('currentInputCode').scrollIntoView({ behavior: 'smooth' });
+            } else if (section === 'data') {
+                // Scroll ke bagian data menu code form
+                document.getElementById('currentDataMenuCode').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        // Fungsi untuk toggle password visibility
+        function setupPasswordToggles() {
+            // Toggle untuk modal input code
+            const toggleInputCode = document.getElementById('toggleInputCode');
+            const inputCode = document.getElementById('inputCode');
+            
+            if (toggleInputCode && inputCode) {
+                toggleInputCode.addEventListener('click', function() {
+                    const type = inputCode.getAttribute('type') === 'password' ? 'text' : 'password';
+                    inputCode.setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+            
+            // Toggle untuk modal data code
+            const toggleDataCode = document.getElementById('toggleDataCode');
+            const dataCode = document.getElementById('dataCode');
+            
+            if (toggleDataCode && dataCode) {
+                toggleDataCode.addEventListener('click', function() {
+                    const type = dataCode.getAttribute('type') === 'password' ? 'text' : 'password';
+                    dataCode.setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+            
+            // Toggle untuk form pengaturan keamanan
+            const toggles = [
+                { btn: 'toggleCurrentInputCode', input: 'currentInputCode' },
+                { btn: 'toggleNewInputCode', input: 'newInputCode' },
+                { btn: 'toggleConfirmInputCode', input: 'confirmInputCode' },
+                { btn: 'toggleCurrentDataMenuCode', input: 'currentDataMenuCode' },
+                { btn: 'toggleNewDataMenuCode', input: 'newDataMenuCode' },
+                { btn: 'toggleConfirmDataMenuCode', input: 'confirmDataMenuCode' }
+            ];
+            
+            toggles.forEach(item => {
+                const btn = document.getElementById(item.btn);
+                const input = document.getElementById(item.input);
+                
+                if (btn && input) {
+                    btn.addEventListener('click', function() {
+                        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                        input.setAttribute('type', type);
+                        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                    });
+                }
+            });
+        }
+        
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            setupPasswordToggles();
+            
+            // Tampilkan tanggal saat ini di login form
+            const currentDate = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDateDisplay').textContent = currentDate.toLocaleDateString('id-ID', options);
+        });
+    </script>
 
 </body>
 </html>
