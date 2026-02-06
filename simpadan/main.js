@@ -10,6 +10,7 @@
 // 2. INPUT OTOMATIS HURUF KAPITAL UNTUK NAMA DAN ALAMAT
 // 3. FITUR MEMUAT DATA PER KECAMATAN
 // REVISI CETAK PDF: MENGHAPUS KOLOM NAMA PERAHU DAN KODE VALIDASI
+// PERBAIKAN CETAK PDF: TABEL TIDAK MELEBIHI BATAS HALAMAN
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -1482,7 +1483,7 @@ function updateFishOptionsByAPI(api) {
     }
 }
 
-// --- FUNGSI GENERATE PDF TABEL DATA ---
+// --- FUNGSI GENERATE PDF TABEL DATA YANG DIPERBAIKI ---
 function generateTabelPdf() {
     const filteredData = getFilteredData();
     
@@ -1604,43 +1605,42 @@ function generateTabelPdf() {
                 d.alamat || '-',
                 d.desa,
                 d.kecamatan
-                // Kolom Nama Perahu dan Kode Validasi dihapus sesuai permintaan
             ]);
 
-            // Tabel Data
-            const tableWidth = pageWidth - 40;
-            const tableStartX = (pageWidth - tableWidth) / 2;
+            // PERBAIKAN: Atur lebar kolom agar tidak melebihi halaman
+            // Lebar halaman A4 landscape: 297mm, margin kiri-kanan 15mm, maka lebar tabel 267mm
+            const columnWidths = [15, 55, 30, 35, 65, 35, 32]; // Total: 267mm
 
+            // Tabel Data
             doc.autoTable({
                 head: [[
-                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
-                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 60}},
-                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
-                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 65}},
-                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
-                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}}
+                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}}
                 ]],
                 body: tableRows,
                 startY: 72,
                 theme: 'grid',
-                tableWidth: tableWidth,
-                margin: { left: tableStartX, right: tableStartX },
+                margin: { left: 15, right: 15 },
                 headStyles: { 
                     fillColor: [12, 36, 97],
                     textColor: [255, 255, 255], 
                     fontStyle: 'bold', 
                     halign: 'center',
                     fontSize: 8,
-                    cellPadding: 3,
+                    cellPadding: 2,
                     lineWidth: 0.5,
                     lineColor: [255, 255, 255]
                 },
                 bodyStyles: {
                     textColor: [0, 0, 0],
-                    fontSize: 8,
+                    fontSize: 7, // diperkecil agar muat lebih banyak
                     fillColor: [255, 255, 255],
-                    cellPadding: 3,
+                    cellPadding: 2,
                     lineWidth: 0.1,
                     lineColor: [200, 200, 200]
                 },
@@ -1649,19 +1649,19 @@ function generateTabelPdf() {
                 },
                 styles: {
                     overflow: 'linebreak',
-                    cellPadding: 3,
-                    fontSize: 8,
+                    cellPadding: 2,
+                    fontSize: 7,
                     valign: 'middle',
                     halign: 'left'
                 },
                 columnStyles: {
-                    0: {cellWidth: 20, halign: 'center'},
-                    1: {cellWidth: 60, halign: 'left'},
-                    2: {cellWidth: 35, halign: 'center'},
-                    3: {cellWidth: 40, halign: 'center'},
-                    4: {cellWidth: 65, halign: 'left'},
-                    5: {cellWidth: 40, halign: 'left'},
-                    6: {cellWidth: 40, halign: 'left'}
+                    0: {cellWidth: columnWidths[0], halign: 'center'},
+                    1: {cellWidth: columnWidths[1], halign: 'left'},
+                    2: {cellWidth: columnWidths[2], halign: 'center'},
+                    3: {cellWidth: columnWidths[3], halign: 'center'},
+                    4: {cellWidth: columnWidths[4], halign: 'left'},
+                    5: {cellWidth: columnWidths[5], halign: 'left'},
+                    6: {cellWidth: columnWidths[6], halign: 'left'}
                 }
             });
 
@@ -2138,7 +2138,7 @@ function showDuplicateDataInFilter() {
     showNotification(`Ditemukan ${duplicates.length} data dengan NIK dan nama ganda`, 'warning');
 }
 
-// --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER ---
+// --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER YANG DIPERBAIKI ---
 function generateFilteredPdf() {
     const filteredData = getFilteredData();
     
@@ -2162,7 +2162,6 @@ function generateFilteredPdf() {
         d.alamat || '-',
         d.desa,
         d.kecamatan
-        // Kolom Nama Perahu dan Kode Validasi dihapus sesuai permintaan
     ]);
 
     // Generate kode unik untuk setiap cetakan
@@ -2263,40 +2262,38 @@ function generateFilteredPdf() {
             const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
             doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
 
-            // Tabel Data
-            const tableWidth = pageWidth - 40;
-            const tableStartX = (pageWidth - tableWidth) / 2;
-
+            // PERBAIKAN: Atur lebar kolom agar tidak melebihi halaman
+            const columnWidths = [15, 55, 30, 35, 65, 35, 32]; // Total: 267mm
+            
             doc.autoTable({
                 head: [[
-                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
-                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 60}},
-                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 35}},
-                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
-                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 65}},
-                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}},
-                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 40}}
+                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
+                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}}
                 ]],
                 body: tableRows,
                 startY: 72,
                 theme: 'grid',
-                tableWidth: tableWidth,
-                margin: { left: tableStartX, right: tableStartX },
+                margin: { left: 15, right: 15 },
                 headStyles: { 
                     fillColor: [12, 36, 97],
                     textColor: [255, 255, 255], 
                     fontStyle: 'bold', 
                     halign: 'center',
                     fontSize: 8,
-                    cellPadding: 3,
+                    cellPadding: 2,
                     lineWidth: 0.5,
                     lineColor: [255, 255, 255]
                 },
                 bodyStyles: {
                     textColor: [0, 0, 0],
-                    fontSize: 8,
+                    fontSize: 7,
                     fillColor: [255, 255, 255],
-                    cellPadding: 3,
+                    cellPadding: 2,
                     lineWidth: 0.1,
                     lineColor: [200, 200, 200]
                 },
@@ -2305,19 +2302,19 @@ function generateFilteredPdf() {
                 },
                 styles: {
                     overflow: 'linebreak',
-                    cellPadding: 3,
-                    fontSize: 8,
+                    cellPadding: 2,
+                    fontSize: 7,
                     valign: 'middle',
                     halign: 'left'
                 },
                 columnStyles: {
-                    0: {cellWidth: 20, halign: 'center'},
-                    1: {cellWidth: 60, halign: 'left'},
-                    2: {cellWidth: 35, halign: 'center'},
-                    3: {cellWidth: 40, halign: 'center'},
-                    4: {cellWidth: 65, halign: 'left'},
-                    5: {cellWidth: 40, halign: 'left'},
-                    6: {cellWidth: 40, halign: 'left'}
+                    0: {cellWidth: columnWidths[0], halign: 'center'},
+                    1: {cellWidth: columnWidths[1], halign: 'left'},
+                    2: {cellWidth: columnWidths[2], halign: 'center'},
+                    3: {cellWidth: columnWidths[3], halign: 'center'},
+                    4: {cellWidth: columnWidths[4], halign: 'left'},
+                    5: {cellWidth: columnWidths[5], halign: 'left'},
+                    6: {cellWidth: columnWidths[6], halign: 'left'}
                 }
             });
 
