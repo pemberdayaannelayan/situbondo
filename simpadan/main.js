@@ -12,6 +12,7 @@
 // REVISI CETAK PDF: MENGHAPUS KOLOM NAMA PERAHU DAN KODE VALIDASI
 // PERBAIKAN CETAK PDF: TABEL TIDAK MELEBIHI BATAS HALAMAN
 // REVISI PENGATURAN SISTEM: TAMBAHAN FITUR KEAMANAN MENU INPUT DATA DAN DATA NELAYAN
+// PERBAIKAN LOGIN: FIX KONFLIK EVENT LISTENER DENGAN FITUR KEAMANAN BARU
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -300,7 +301,8 @@ function generateSecurityCode() {
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    return `${year}${month}${day}`;
+    // PERBAIKAN: Gunakan format DDMMYYYY (periode terbalik)
+    return `${day}${month}${year}`;
 }
 
 function displayCurrentDate() {
@@ -487,7 +489,7 @@ function setupInputForDesa(desaName) {
     updateWilayahStatusIndicator();
     
     // Buka tab Input Data
-    document.getElementById('v-pills-input-tab').click();
+    openTabSafely('v-pills-input-tab');
     
     // Atur dropdown kecamatan dan desa
     if (kecamatan) {
@@ -531,7 +533,7 @@ function setupInputForKecamatan(kecamatanName) {
     updateWilayahStatusIndicator();
     
     // Buka tab Input Data
-    document.getElementById('v-pills-input-tab').click();
+    openTabSafely('v-pills-input-tab');
     
     // Atur dropdown kecamatan
     const kecSelect = document.getElementById('kecamatan');
@@ -3056,10 +3058,7 @@ function verifyInputSecurity() {
     inputSecurityModal.hide();
     
     // Buka tab Input Data
-    const inputTab = document.getElementById('v-pills-input-tab');
-    if (inputTab) {
-        inputTab.click();
-    }
+    openTabSafely('v-pills-input-tab');
     
     showNotification('Keamanan terverifikasi. Akses menu Input Data diizinkan.', 'success');
 }
@@ -3082,10 +3081,7 @@ function verifyDataMenuSecurity() {
     dataMenuSecurityModal.hide();
     
     // Buka tab Data Nelayan
-    const dataTab = document.getElementById('v-pills-data-tab');
-    if (dataTab) {
-        dataTab.click();
-    }
+    openTabSafely('v-pills-data-tab');
     
     showNotification('Keamanan terverifikasi. Akses menu Data Nelayan diizinkan.', 'success');
 }
@@ -3248,6 +3244,16 @@ function setupAutoUppercaseInputs() {
     }
 }
 
+// --- FUNGSI BARU: MEMBUKA TAB DENGAN AMAN ---
+function openTabSafely(tabId) {
+    const tabElement = document.getElementById(tabId);
+    if (!tabElement) return;
+    
+    // Gunakan Bootstrap's Tab API untuk membuka tab
+    const tab = new bootstrap.Tab(tabElement);
+    tab.show();
+}
+
 function loadOfficialData() {
     // Load data pejabat dari appSettings ke form
     const officialName = document.getElementById('officialName');
@@ -3378,40 +3384,13 @@ function setupEventListeners() {
         });
     }
 
-    // Login Form
+    // Login Form - PERBAIKAN: Gunakan proper addEventListener tanpa bentrok
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('loginButton');
-            const spinner = document.getElementById('loginSpinner');
-            const inputCode = document.getElementById('securityCode').value;
-            const correctCode = generateSecurityCode();
-            
-            if (!btn || !spinner) return;
-            
-            if (inputCode !== correctCode) {
-                showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
-                return;
-            }
-            
-            btn.disabled = true;
-            spinner.classList.remove('d-none');
-            btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
-            
-            setTimeout(() => {
-                sessionStorage.setItem('simata_session', 'active');
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('appContent').style.display = 'block';
-                initializeCharts();
-                updateDashboard();
-                renderDataTable();
-                loginSuccessModal.show();
-                btn.disabled = false;
-                spinner.classList.add('d-none');
-                btn.innerHTML = 'BUKA DASHBOARD';
-            }, 1200);
-        });
+        // Hapus event listener lama jika ada
+        loginForm.removeEventListener('submit', handleLoginSubmit);
+        // Tambah event listener baru
+        loginForm.addEventListener('submit', handleLoginSubmit);
     }
 
     // Continue to Dashboard
@@ -3983,31 +3962,70 @@ function setupEventListeners() {
         verifyDataMenuSecurityBtn.addEventListener('click', verifyDataMenuSecurity);
     }
     
-    // Event listener untuk tab Input Data dengan validasi keamanan
+    // Event listener untuk tab Input Data dengan validasi keamanan - PERBAIKAN
     const inputDataTab = document.getElementById('v-pills-input-tab');
     if (inputDataTab) {
         inputDataTab.addEventListener('click', function(e) {
             // Cek apakah keamanan aktif
-            if (!checkInputDataSecurity()) {
+            if (appSettings.inputDataSecurity.enabled) {
                 e.preventDefault();
                 e.stopPropagation();
+                inputSecurityModal.show();
             }
         });
     }
     
-    // Event listener untuk tab Data Nelayan dengan validasi keamanan
+    // Event listener untuk tab Data Nelayan dengan validasi keamanan - PERBAIKAN
     const dataTab = document.getElementById('v-pills-data-tab');
     if (dataTab) {
         dataTab.addEventListener('click', function(e) {
             // Cek apakah keamanan aktif
-            if (!checkDataMenuSecurity()) {
+            if (appSettings.dataMenuSecurity.enabled) {
                 e.preventDefault();
                 e.stopPropagation();
+                dataMenuSecurityModal.show();
             }
         });
     }
 
     setupFloatingMenu();
+}
+
+// --- FUNGSI LOGIN TERPISAH UNTUK MENGHINDARI KONFLIK ---
+function handleLoginSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('loginButton');
+    const spinner = document.getElementById('loginSpinner');
+    const inputCode = document.getElementById('securityCode').value;
+    const correctCode = generateSecurityCode();
+    
+    if (!btn || !spinner) return;
+    
+    // Debugging: Tampilkan kode yang dihasilkan dan dimasukkan
+    console.log('Kode dimasukkan:', inputCode);
+    console.log('Kode yang benar:', correctCode);
+    
+    if (inputCode !== correctCode) {
+        showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
+        return;
+    }
+    
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
+    
+    setTimeout(() => {
+        sessionStorage.setItem('simata_session', 'active');
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        initializeCharts();
+        updateDashboard();
+        renderDataTable();
+        loginSuccessModal.show();
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+        btn.innerHTML = 'BUKA DASHBOARD';
+    }, 1200);
 }
 
 function setupFloatingMenu() {
@@ -4204,8 +4222,7 @@ function handleFormSubmit(e) {
     updateDashboard(); 
     renderDataTable();
     updateFilterDesaOptions();
-    const dataTab = document.getElementById('v-pills-data-tab');
-    if (dataTab) dataTab.click();
+    openTabSafely('v-pills-data-tab');
     checkGlobalDuplicates();
 }
 
@@ -4624,8 +4641,7 @@ function editData(id) {
         }
     }
 
-    const inputTab = document.getElementById('v-pills-input-tab');
-    if (inputTab) inputTab.click();
+    openTabSafely('v-pills-input-tab');
     window.scrollTo(0,0);
 }
 
