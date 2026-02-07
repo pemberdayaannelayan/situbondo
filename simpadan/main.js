@@ -1,5 +1,5 @@
 // =====================================================
-// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.0 FINAL REVISI
+// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.1 FINAL REVISI
 // DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
 // REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
 // TAMBAHAN: FITUR ALAMAT SEBELUM KECAMATAN
@@ -13,6 +13,7 @@
 // PERBAIKAN CETAK PDF: TABEL TIDAK MELEBIHI BATAS HALAMAN
 // PERBAIKAN KEAMANAN: TAMBAHAN PASSWORD UNTUK MENU INPUT DATA DAN DATA NELAYAN
 // PERBAIKAN TAMBAHAN: FITUR SHOW/HIDE PASSWORD UNTUK SEMUA KODE KEAMANAN
+// FITUR BARU: TOMBOL ON/OFF KODE KEAMANAN AKSES MENU
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -222,7 +223,10 @@ let appSettings = {
     officialPosition: 'Kepala Bidang Pemberdayaan Nelayan',
     // Password baru untuk keamanan menu
     passwordInputData: '6666666',
-    passwordDataNelayan: '999999'
+    passwordDataNelayan: '999999',
+    // Fitur baru: ON/OFF kode keamanan akses menu
+    securityMenuInputDataEnabled: true,
+    securityMenuDataNelayanEnabled: true
 };
 
 // Variabel baru untuk fitur Data Wilayah
@@ -374,6 +378,19 @@ function initMenuAuthModal() {
 }
 
 function showMenuAuth(menuType, menuName) {
+    // PERBAIKAN: Cek apakah kode keamanan untuk menu ini diaktifkan
+    if (menuType === 'input' && !appSettings.securityMenuInputDataEnabled) {
+        // Jika kode keamanan dinonaktifkan, langsung buka menu
+        document.getElementById('v-pills-input-tab').click();
+        return;
+    }
+    
+    if (menuType === 'data' && !appSettings.securityMenuDataNelayanEnabled) {
+        // Jika kode keamanan dinonaktifkan, langsung buka menu
+        document.getElementById('v-pills-data-tab').click();
+        return;
+    }
+    
     // Simpan tipe menu yang diminta
     document.getElementById('menuAuthModal').setAttribute('data-menu-type', menuType);
     document.getElementById('menuAuthModal').setAttribute('data-menu-name', menuName);
@@ -447,6 +464,15 @@ function checkMenuAuth(menuType) {
     const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
     if (!isSessionActive) {
         return false;
+    }
+    
+    // PERBAIKAN: Cek apakah kode keamanan untuk menu ini diaktifkan
+    if (menuType === 'input' && !appSettings.securityMenuInputDataEnabled) {
+        return true; // Langsung izinkan akses jika kode keamanan dinonaktifkan
+    }
+    
+    if (menuType === 'data' && !appSettings.securityMenuDataNelayanEnabled) {
+        return true; // Langsung izinkan akses jika kode keamanan dinonaktifkan
     }
     
     // Cek apakah sudah terautentikasi untuk menu ini
@@ -1154,7 +1180,7 @@ function restoreData() {
             
             // Simpan data yang telah dimerge
             appData = mergedData;
-    saveData();
+            saveData();
             renderDataTable();
             updateDashboard();
             updateFilterDesaOptions();
@@ -3113,6 +3139,104 @@ function initializeApp() {
     
     // Setup password toggle untuk semua input password
     setupAllPasswordToggles();
+    
+    // PERBAIKAN BARU: Inisialisasi toggle untuk kode keamanan menu
+    initMenuSecurityToggles();
+}
+
+// --- FUNGSI BARU: INISIALISASI TOGGLE UNTUK KODE KEAMANAN MENU ---
+function initMenuSecurityToggles() {
+    // Load toggle state untuk menu Input Data
+    const toggleInputData = document.getElementById('toggleSecurityMenuInputData');
+    if (toggleInputData) {
+        toggleInputData.checked = appSettings.securityMenuInputDataEnabled;
+        updateMenuSecurityToggleUI('input', appSettings.securityMenuInputDataEnabled);
+    }
+    
+    // Load toggle state untuk menu Data Nelayan
+    const toggleDataNelayan = document.getElementById('toggleSecurityMenuDataNelayan');
+    if (toggleDataNelayan) {
+        toggleDataNelayan.checked = appSettings.securityMenuDataNelayanEnabled;
+        updateMenuSecurityToggleUI('data', appSettings.securityMenuDataNelayanEnabled);
+    }
+    
+    // Setup event listeners untuk toggle
+    setupMenuSecurityToggleListeners();
+}
+
+// --- FUNGSI BARU: UPDATE UI TOGGLE KEAMANAN MENU ---
+function updateMenuSecurityToggleUI(menuType, isEnabled) {
+    const toggleElement = document.getElementById(`toggleSecurityMenu${menuType === 'input' ? 'InputData' : 'DataNelayan'}`);
+    const statusElement = document.getElementById(`securityMenu${menuType === 'input' ? 'InputData' : 'DataNelayan'}Status`);
+    
+    if (!toggleElement || !statusElement) return;
+    
+    if (isEnabled) {
+        statusElement.innerHTML = `<span class="text-success fw-bold">ON (Aktif)</span>`;
+        statusElement.className = "mt-2 small fw-bold text-success";
+        toggleElement.checked = true;
+    } else {
+        statusElement.innerHTML = `<span class="text-danger fw-bold">OFF (Non-Aktif)</span>`;
+        statusElement.className = "mt-2 small fw-bold text-danger";
+        toggleElement.checked = false;
+    }
+}
+
+// --- FUNGSI BARU: SETUP EVENT LISTENERS UNTUK TOGGLE KEAMANAN MENU ---
+function setupMenuSecurityToggleListeners() {
+    // Toggle untuk menu Input Data
+    const toggleInputData = document.getElementById('toggleSecurityMenuInputData');
+    if (toggleInputData) {
+        toggleInputData.addEventListener('click', function(e) {
+            e.preventDefault();
+            const currentStatus = appSettings.securityMenuInputDataEnabled;
+            
+            if (currentStatus === true) {
+                const code = prompt("MASUKKAN KODE KEAMANAN SENSOR untuk menonaktifkan kode keamanan menu Input Data:");
+                if (code === appSettings.securityCodeSensor) {
+                    appSettings.securityMenuInputDataEnabled = false;
+                    saveSettings();
+                    updateMenuSecurityToggleUI('input', false);
+                    showNotification('Kode keamanan menu Input Data dinonaktifkan.', 'warning');
+                } else { 
+                    alert("Kode Keamanan Sensor Salah!"); 
+                    this.checked = true;
+                }
+            } else {
+                appSettings.securityMenuInputDataEnabled = true;
+                saveSettings();
+                updateMenuSecurityToggleUI('input', true);
+                showNotification('Kode keamanan menu Input Data diaktifkan.', 'success');
+            }
+        });
+    }
+    
+    // Toggle untuk menu Data Nelayan
+    const toggleDataNelayan = document.getElementById('toggleSecurityMenuDataNelayan');
+    if (toggleDataNelayan) {
+        toggleDataNelayan.addEventListener('click', function(e) {
+            e.preventDefault();
+            const currentStatus = appSettings.securityMenuDataNelayanEnabled;
+            
+            if (currentStatus === true) {
+                const code = prompt("MASUKKAN KODE KEAMANAN SENSOR untuk menonaktifkan kode keamanan menu Data Nelayan:");
+                if (code === appSettings.securityCodeSensor) {
+                    appSettings.securityMenuDataNelayanEnabled = false;
+                    saveSettings();
+                    updateMenuSecurityToggleUI('data', false);
+                    showNotification('Kode keamanan menu Data Nelayan dinonaktifkan.', 'warning');
+                } else { 
+                    alert("Kode Keamanan Sensor Salah!"); 
+                    this.checked = true;
+                }
+            } else {
+                appSettings.securityMenuDataNelayanEnabled = true;
+                saveSettings();
+                updateMenuSecurityToggleUI('data', true);
+                showNotification('Kode keamanan menu Data Nelayan diaktifkan.', 'success');
+            }
+        });
+    }
 }
 
 // --- FUNGSI PERBAIKAN: SETUP SHOW/HIDE PASSWORD UNTUK SEMUA INPUT ---
@@ -4713,6 +4837,13 @@ function loadSettings() {
             }
             if (!loadedSettings.passwordDataNelayan) {
                 loadedSettings.passwordDataNelayan = '999999';
+            }
+            // Load pengaturan keamanan menu jika ada
+            if (typeof loadedSettings.securityMenuInputDataEnabled === 'undefined') {
+                loadedSettings.securityMenuInputDataEnabled = true;
+            }
+            if (typeof loadedSettings.securityMenuDataNelayanEnabled === 'undefined') {
+                loadedSettings.securityMenuDataNelayanEnabled = true;
             }
             Object.assign(appSettings, loadedSettings);
         } catch (e) {
