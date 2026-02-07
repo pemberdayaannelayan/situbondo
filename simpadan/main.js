@@ -14,6 +14,7 @@
 // PERBAIKAN KEAMANAN: TAMBAHAN PASSWORD UNTUK MENU INPUT DATA DAN DATA NELAYAN
 // PERBAIKAN TAMBAHAN: FITUR SHOW/HIDE PASSWORD UNTUK SEMUA KODE KEAMANAN
 // FITUR BARU: TOMBOL ON/OFF KODE KEAMANAN AKSES MENU
+// PERBAIKAN: MODAL AUTH KEMBALI KE DASHBOARD SAAT DITUTUP
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -221,8 +222,8 @@ let appSettings = {
     officialName: 'SUGENG PURWO PRIYANTO, S.E, M.M',
     officialNip: '19761103 200903 1 001',
     officialPosition: 'Kepala Bidang Pemberdayaan Nelayan',
-    // Password baru untuk keamanan menu
-    passwordInputData: '6666666',
+    // Password baru untuk keamanan menu - PERBAIKAN: Default sesuai permintaan
+    passwordInputData: '666666',
     passwordDataNelayan: '999999',
     // Fitur baru: ON/OFF kode keamanan akses menu
     securityMenuInputDataEnabled: true,
@@ -356,11 +357,17 @@ function initMenuAuthModal() {
         // Setup event listener untuk tombol batal
         document.getElementById('menuAuthCancelBtn').addEventListener('click', function() {
             // Arahkan ke menu Dashboard saat tombol batal diklik
-            const dashboardTab = document.getElementById('v-pills-dashboard-tab');
-            if (dashboardTab) {
-                dashboardTab.click();
-            }
+            redirectToDashboard();
         });
+        
+        // PERBAIKAN: Tambahkan event listener untuk ketika modal ditutup (close button atau klik di luar)
+        const modalElement = document.getElementById('menuAuthModal');
+        if (modalElement) {
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                // Arahkan ke menu Dashboard saat modal ditutup
+                redirectToDashboard();
+            });
+        }
         
         // Setup event listener untuk tombol show/hide password
         setupPasswordToggle('menuAuthPassword', 'menuAuthPasswordToggle');
@@ -374,6 +381,25 @@ function initMenuAuthModal() {
     } else {
         // Modal sudah ada, inisialisasi ulang
         menuAuthModal = new bootstrap.Modal(document.getElementById('menuAuthModal'));
+        
+        // PERBAIKAN: Pastikan event listener untuk modal hidden sudah ada
+        const modalElement = document.getElementById('menuAuthModal');
+        if (modalElement) {
+            // Hapus event listener yang mungkin sudah ada
+            modalElement.removeEventListener('hidden.bs.modal', redirectToDashboard);
+            // Tambahkan kembali event listener
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                redirectToDashboard();
+            });
+        }
+    }
+}
+
+// PERBAIKAN: Fungsi untuk mengarahkan ke dashboard
+function redirectToDashboard() {
+    const dashboardTab = document.getElementById('v-pills-dashboard-tab');
+    if (dashboardTab) {
+        dashboardTab.click();
     }
 }
 
@@ -4831,9 +4857,9 @@ function loadSettings() {
             if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
                 loadedSettings.itemsPerPage = 5;
             }
-            // Load password untuk menu jika ada
+            // Load password untuk menu jika ada - PERBAIKAN: Default sesuai permintaan
             if (!loadedSettings.passwordInputData) {
-                loadedSettings.passwordInputData = '6666666';
+                loadedSettings.passwordInputData = '666666';
             }
             if (!loadedSettings.passwordDataNelayan) {
                 loadedSettings.passwordDataNelayan = '999999';
