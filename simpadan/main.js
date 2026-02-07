@@ -12,6 +12,7 @@
 // REVISI CETAK PDF: MENGHAPUS KOLOM NAMA PERAHU DAN KODE VALIDASI
 // PERBAIKAN CETAK PDF: TABEL TIDAK MELEBIHI BATAS HALAMAN
 // PERBAIKAN KEAMANAN: TAMBAHAN PASSWORD UNTUK MENU INPUT DATA DAN DATA NELAYAN
+// PERBAIKAN TAMBAHAN: FITUR SHOW/HIDE PASSWORD UNTUK SEMUA KODE KEAMANAN
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -275,6 +276,31 @@ function hideLoading() {
     document.body.style.overflow = 'auto'; // Mengembalikan scroll
 }
 
+// --- FUNGSI SHOW/HIDE PASSWORD YANG DISEMPURNAKAN ---
+function setupPasswordToggle(inputId, buttonId) {
+    const passwordInput = document.getElementById(inputId);
+    const toggleButton = document.getElementById(buttonId);
+    
+    if (!passwordInput || !toggleButton) return;
+    
+    toggleButton.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Ganti icon
+        const icon = this.querySelector('i');
+        if (type === 'password') {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+            this.title = "Tampilkan password";
+        } else {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+            this.title = "Sembunyikan password";
+        }
+    });
+}
+
 // --- FUNGSI KEAMANAN MENU BARU ---
 function initMenuAuthModal() {
     // Cek apakah modal sudah ada
@@ -291,7 +317,12 @@ function initMenuAuthModal() {
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="menuAuthPassword" class="form-label">Masukkan Password</label>
-                            <input type="password" class="form-control" id="menuAuthPassword" placeholder="Password" autocomplete="off">
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="menuAuthPassword" placeholder="Password" autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" id="menuAuthPasswordToggle">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
@@ -299,7 +330,7 @@ function initMenuAuthModal() {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="menuAuthCancelBtn">Batal</button>
                         <button type="button" class="btn btn-primary" id="menuAuthSubmit">Masuk</button>
                     </div>
                 </div>
@@ -317,6 +348,18 @@ function initMenuAuthModal() {
         
         // Setup event listener untuk tombol submit
         document.getElementById('menuAuthSubmit').addEventListener('click', handleMenuAuthSubmit);
+        
+        // Setup event listener untuk tombol batal
+        document.getElementById('menuAuthCancelBtn').addEventListener('click', function() {
+            // Arahkan ke menu Dashboard saat tombol batal diklik
+            const dashboardTab = document.getElementById('v-pills-dashboard-tab');
+            if (dashboardTab) {
+                dashboardTab.click();
+            }
+        });
+        
+        // Setup event listener untuk tombol show/hide password
+        setupPasswordToggle('menuAuthPassword', 'menuAuthPasswordToggle');
         
         // Setup event listener untuk tekan Enter di input password
         document.getElementById('menuAuthPassword').addEventListener('keypress', function(e) {
@@ -340,6 +383,14 @@ function showMenuAuth(menuType, menuName) {
     
     // Reset input password
     document.getElementById('menuAuthPassword').value = '';
+    document.getElementById('menuAuthPassword').type = 'password';
+    
+    // Reset icon toggle
+    const toggleIcon = document.querySelector('#menuAuthPasswordToggle i');
+    if (toggleIcon) {
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    }
     
     // Tampilkan modal
     menuAuthModal.show();
@@ -1103,7 +1154,7 @@ function restoreData() {
             
             // Simpan data yang telah dimerge
             appData = mergedData;
-            saveData();
+    saveData();
             renderDataTable();
             updateDashboard();
             updateFilterDesaOptions();
@@ -3059,6 +3110,82 @@ function initializeApp() {
     
     // Setup event listener untuk autentikasi menu
     setupMenuAuthListeners();
+    
+    // Setup password toggle untuk semua input password
+    setupAllPasswordToggles();
+}
+
+// --- FUNGSI PERBAIKAN: SETUP SHOW/HIDE PASSWORD UNTUK SEMUA INPUT ---
+function setupAllPasswordToggles() {
+    // Setup untuk login form
+    setupPasswordToggle('securityCode', 'passwordToggle');
+    
+    // Setup untuk sensor code form (jika ada)
+    const sensorForm = document.getElementById('sensorCodeForm');
+    if (sensorForm) {
+        // Tambahkan toggle button untuk current sensor code
+        const currentCodeInput = document.getElementById('currentSensorCode');
+        if (currentCodeInput) {
+            const parent = currentCodeInput.parentElement;
+            if (!parent.classList.contains('input-group')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'input-group';
+                currentCodeInput.parentNode.insertBefore(wrapper, currentCodeInput);
+                wrapper.appendChild(currentCodeInput);
+                
+                const toggleButton = document.createElement('button');
+                toggleButton.className = 'btn btn-outline-secondary';
+                toggleButton.type = 'button';
+                toggleButton.id = 'currentSensorCodeToggle';
+                toggleButton.innerHTML = '<i class="fas fa-eye"></i>';
+                wrapper.appendChild(toggleButton);
+                
+                setupPasswordToggle('currentSensorCode', 'currentSensorCodeToggle');
+            }
+        }
+        
+        // Tambahkan toggle button untuk new sensor code
+        const newCodeInput = document.getElementById('newSensorCode');
+        if (newCodeInput) {
+            const parent = newCodeInput.parentElement;
+            if (!parent.classList.contains('input-group')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'input-group';
+                newCodeInput.parentNode.insertBefore(wrapper, newCodeInput);
+                wrapper.appendChild(newCodeInput);
+                
+                const toggleButton = document.createElement('button');
+                toggleButton.className = 'btn btn-outline-secondary';
+                toggleButton.type = 'button';
+                toggleButton.id = 'newSensorCodeToggle';
+                toggleButton.innerHTML = '<i class="fas fa-eye"></i>';
+                wrapper.appendChild(toggleButton);
+                
+                setupPasswordToggle('newSensorCode', 'newSensorCodeToggle');
+            }
+        }
+        
+        // Tambahkan toggle button untuk confirm sensor code
+        const confirmCodeInput = document.getElementById('confirmSensorCode');
+        if (confirmCodeInput) {
+            const parent = confirmCodeInput.parentElement;
+            if (!parent.classList.contains('input-group')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'input-group';
+                confirmCodeInput.parentNode.insertBefore(wrapper, confirmCodeInput);
+                wrapper.appendChild(confirmCodeInput);
+                
+                const toggleButton = document.createElement('button');
+                toggleButton.className = 'btn btn-outline-secondary';
+                toggleButton.type = 'button';
+                toggleButton.id = 'confirmSensorCodeToggle';
+                toggleButton.innerHTML = '<i class="fas fa-eye"></i>';
+                wrapper.appendChild(toggleButton);
+                
+                setupPasswordToggle('confirmSensorCode', 'confirmSensorCodeToggle');
+            }
+        }
+    }
 }
 
 // --- FUNGSI PERBAIKAN: SETUP INPUT OTOMATIS HURUF KAPITAL ---
@@ -3218,28 +3345,8 @@ function updatePrivacyUI() {
 
 // --- EVENT LISTENERS ---
 function setupEventListeners() {
-    // Password Toggle
-    const passwordToggle = document.getElementById('passwordToggle');
-    if (passwordToggle) {
-        passwordToggle.addEventListener('click', function() {
-            const passwordInput = document.getElementById('securityCode');
-            const icon = document.getElementById('passwordToggleIcon');
-            if (!passwordInput || !icon) return;
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-                this.title = "Sembunyikan kode";
-            } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-                this.title = "Lihat kode";
-            }
-        });
-    }
-
+    // Password Toggle sudah dihandle oleh setupAllPasswordToggles()
+    
     // Login Form
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
