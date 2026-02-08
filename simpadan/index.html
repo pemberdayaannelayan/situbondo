@@ -78,19 +78,18 @@
             border-radius: 8px;
         }
         
-        /* PERBAIKAN: Fix untuk overlay modal yang tersisa */
+        /* Perbaikan untuk backdrop modal */
         .modal-backdrop {
-            z-index: 1040 !important;
+            z-index: 1040;
         }
         
         .modal {
-            z-index: 1050 !important;
+            z-index: 1050;
         }
         
-        /* PERBAIKAN: Pastikan konten aplikasi tidak tertutup overlay */
-        .app-content-unauthenticated {
-            position: relative;
-            z-index: 1;
+        /* Perbaikan untuk modal fishInfoModal */
+        #fishInfoModal .modal-content {
+            z-index: 1060;
         }
     </style>
     
@@ -108,12 +107,24 @@
     <script src="convert.js"></script>
     <script src="main.js" defer></script>
     
-    <!-- Skrip untuk mengelola modal gambar ikan -->
+    <!-- Skrip untuk mengelola modal gambar ikan - DIPERBAIKI -->
     <script>
         // Fungsi untuk menampilkan modal info ikan
         function showFishInfoModal() {
             try {
-                const fishModal = new bootstrap.Modal(document.getElementById('fishInfoModal'));
+                // Hapus backdrop yang mungkin tertinggal
+                const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+                existingBackdrops.forEach(backdrop => {
+                    backdrop.remove();
+                });
+                
+                // Hapus kelas modal-open dari body jika ada
+                document.body.classList.remove('modal-open');
+                
+                const fishModal = new bootstrap.Modal(document.getElementById('fishInfoModal'), {
+                    backdrop: true,
+                    keyboard: true
+                });
                 fishModal.show();
                 
                 // Preload gambar untuk memastikan dapat dimuat
@@ -162,33 +173,65 @@
             }, 500);
         }
         
-        // PERBAIKAN: Fungsi untuk beralih ke tab input setelah modal ditutup
-        function switchToInputTabAfterModalClose() {
-            // Tutup modal dengan benar
-            const fishModal = bootstrap.Modal.getInstance(document.getElementById('fishInfoModal'));
-            if (fishModal) {
-                fishModal.hide();
-            }
-            
-            // Pastikan semua backdrop modal dihapus
-            setTimeout(() => {
-                const backdrops = document.querySelectorAll('.modal-backdrop');
-                backdrops.forEach(backdrop => {
-                    backdrop.remove();
-                });
-                
-                // Hapus kelas modal-open dari body
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-                
-                // Beralih ke tab input
-                const inputTab = document.getElementById('v-pills-input-tab');
-                if (inputTab) {
-                    inputTab.click();
-                    window.scrollTo(0, 0);
+        // Fungsi untuk menutup modal dengan aman - DITAMBAHKAN
+        function closeFishInfoModalSafely() {
+            try {
+                const modalElement = document.getElementById('fishInfoModal');
+                if (modalElement) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    }
+                    
+                    // Hapus backdrop setelah modal ditutup
+                    setTimeout(() => {
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        backdrops.forEach(backdrop => {
+                            backdrop.remove();
+                        });
+                        
+                        // Hapus kelas modal-open dari body
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+                    }, 300);
                 }
-            }, 300);
+            } catch (error) {
+                console.error('Error closing modal:', error);
+            }
+        }
+        
+        // Fungsi untuk kembali ke input data nelayan - DIPERBAIKI
+        function goToInputDataAfterModal() {
+            // Tutup modal dengan aman terlebih dahulu
+            closeFishInfoModalSafely();
+            
+            // Tunggu sebentar untuk memastikan modal benar-benar tertutup
+            setTimeout(() => {
+                try {
+                    // Klik tab input data
+                    const inputTab = document.getElementById('v-pills-input-tab');
+                    if (inputTab) {
+                        inputTab.click();
+                        
+                        // Scroll ke atas halaman
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Fokus ke form input
+                        const namaInput = document.getElementById('nama');
+                        if (namaInput) {
+                            setTimeout(() => {
+                                namaInput.focus();
+                            }, 100);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error navigating to input tab:', error);
+                }
+            }, 400);
         }
     </script>
 </head>
@@ -993,7 +1036,7 @@
                                                                                         </div>
                                                                                     </div>
                                                                 </div>
-                                                                                
+                                                                
                                                                 <div class="row">
                                                                     <div class="col-md-12">
                                                                         <div class="verify-breadcrumb">
@@ -1045,7 +1088,7 @@
                                                                                             <i class="fas fa-id-card me-2"></i>Cetak ID Card
                                                                                         </button>
                                                                                     </div>
-                                                                                </div>
+                                                </div>
                                                                             </div>
                                                                         </div>
                                                                         
@@ -1388,7 +1431,7 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-primary text-white">
                                                         <h5 class="modal-title fw-bold"><i class="fas fa-fish me-2"></i>Referensi Jenis Ikan Tangkapan</h5>
-                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closeFishInfoModalSafely()"></button>
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="alert alert-info">
@@ -1445,9 +1488,8 @@
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                                        <!-- PERBAIKAN: Tombol Input Data Nelayan yang telah diperbaiki -->
-                                                        <button type="button" class="btn btn-primary" id="btnFishModalToInput" data-bs-dismiss="modal">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeFishInfoModalSafely()">Tutup</button>
+                                                        <button type="button" class="btn btn-primary" onclick="goToInputDataAfterModal()">
                                                             <i class="fas fa-plus me-2"></i>Input Data Nelayan
                                                         </button>
                                                     </div>
@@ -1497,12 +1539,13 @@
         </div>
     </div>
 
-    <!-- Skrip tambahan untuk mengelola gambar ikan -->
+    <!-- Skrip tambahan untuk mengelola gambar ikan - DIPERBAIKI -->
     <script>
         // Event listener untuk modal fishInfoModal
         document.addEventListener('DOMContentLoaded', function() {
             const fishInfoModal = document.getElementById('fishInfoModal');
             if (fishInfoModal) {
+                // Tangani event saat modal akan ditampilkan
                 fishInfoModal.addEventListener('show.bs.modal', function() {
                     // Pastikan gambar dimuat dengan benar saat modal dibuka
                     setTimeout(() => {
@@ -1515,18 +1558,20 @@
                     }, 100);
                 });
                 
-                // PERBAIKAN: Event listener untuk menghapus backdrop saat modal ditutup
+                // Tangani event saat modal ditutup
                 fishInfoModal.addEventListener('hidden.bs.modal', function() {
-                    // Hapus backdrop modal yang mungkin tersisa
-                    const backdrops = document.querySelectorAll('.modal-backdrop');
-                    backdrops.forEach(backdrop => {
-                        backdrop.remove();
-                    });
-                    
-                    // Reset style body
-                    document.body.classList.remove('modal-open');
-                    document.body.style.overflow = '';
-                    document.body.style.paddingRight = '';
+                    // Pastikan backdrop dihapus dengan benar
+                    setTimeout(() => {
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        backdrops.forEach(backdrop => {
+                            backdrop.remove();
+                        });
+                        
+                        // Hapus kelas modal-open dari body
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+                    }, 300);
                 });
             }
             
@@ -1539,43 +1584,24 @@
                 });
             }
             
-            // PERBAIKAN: Event listener untuk tombol "Input Data Nelayan" di modal fishInfoModal
-            const btnFishModalToInput = document.getElementById('btnFishModalToInput');
-            if (btnFishModalToInput) {
-                btnFishModalToInput.addEventListener('click', function() {
-                    // Tutup modal dengan benar
-                    const fishModal = bootstrap.Modal.getInstance(document.getElementById('fishInfoModal'));
-                    if (fishModal) {
-                        fishModal.hide();
-                    }
-                    
-                    // Bersihkan backdrop dan reset body
-                    setTimeout(() => {
-                        const backdrops = document.querySelectorAll('.modal-backdrop');
-                        backdrops.forEach(backdrop => {
-                            backdrop.remove();
-                        });
-                        
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
-                        document.body.style.paddingRight = '';
-                        
-                        // Beralih ke tab input
-                        const inputTab = document.getElementById('v-pills-input-tab');
-                        if (inputTab) {
-                            inputTab.click();
-                            window.scrollTo(0, 0);
-                        }
-                    }, 300);
+            // Tangani event untuk semua tombol close di modal fishInfoModal
+            const fishModalCloseBtns = document.querySelectorAll('#fishInfoModal .btn-close, #fishInfoModal .btn-secondary');
+            fishModalCloseBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    closeFishInfoModalSafely();
                 });
-            }
+            });
         });
         
         // Fallback untuk fungsi showFishInfoModal jika tidak didefinisikan
         if (typeof showFishInfoModal === 'undefined') {
             window.showFishInfoModal = function() {
                 try {
-                    const modal = new bootstrap.Modal(document.getElementById('fishInfoModal'));
+                    const modal = new bootstrap.Modal(document.getElementById('fishInfoModal'), {
+                        backdrop: true,
+                        keyboard: true
+                    });
                     modal.show();
                 } catch (error) {
                     console.error('Gagal membuka modal info ikan:', error);
@@ -1584,32 +1610,70 @@
             };
         }
         
-        // PERBAIKAN: Fungsi untuk memastikan modal ditutup dengan benar
-        function ensureModalCleanup() {
-            // Hapus semua backdrop modal
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            backdrops.forEach(backdrop => {
-                backdrop.remove();
-            });
-            
-            // Reset body styles
-            document.body.classList.remove('modal-open');
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
-            
-            // Hapus kelas show dari semua modal
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                modal.classList.remove('show');
-                modal.style.display = '';
-            });
+        // Tambahkan fungsi untuk memastikan modal tertutup dengan benar
+        if (typeof closeFishInfoModalSafely === 'undefined') {
+            window.closeFishInfoModalSafely = function() {
+                try {
+                    const modalElement = document.getElementById('fishInfoModal');
+                    if (modalElement) {
+                        const modal = bootstrap.Modal.getInstance(modalElement);
+                        if (modal) {
+                            modal.hide();
+                        }
+                        
+                        // Hapus backdrop setelah modal ditutup
+                        setTimeout(() => {
+                            const backdrops = document.querySelectorAll('.modal-backdrop');
+                            backdrops.forEach(backdrop => {
+                                backdrop.remove();
+                            });
+                            
+                            // Hapus kelas modal-open dari body
+                            document.body.classList.remove('modal-open');
+                            document.body.style.overflow = '';
+                            document.body.style.paddingRight = '';
+                        }, 300);
+                    }
+                } catch (error) {
+                    console.error('Error closing modal:', error);
+                }
+            };
         }
         
-        // PERBAIKAN: Tambahkan event listener untuk menangani masalah modal
-        window.addEventListener('load', function() {
-            // Pastikan tidak ada backdrop tersisa saat halaman dimuat
-            ensureModalCleanup();
-        });
+        // Tambahkan fungsi untuk kembali ke input data
+        if (typeof goToInputDataAfterModal === 'undefined') {
+            window.goToInputDataAfterModal = function() {
+                // Tutup modal dengan aman terlebih dahulu
+                closeFishInfoModalSafely();
+                
+                // Tunggu sebentar untuk memastikan modal benar-benar tertutup
+                setTimeout(() => {
+                    try {
+                        // Klik tab input data
+                        const inputTab = document.getElementById('v-pills-input-tab');
+                        if (inputTab) {
+                            inputTab.click();
+                            
+                            // Scroll ke atas halaman
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                            
+                            // Fokus ke form input
+                            const namaInput = document.getElementById('nama');
+                            if (namaInput) {
+                                setTimeout(() => {
+                                    namaInput.focus();
+                                }, 100);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error navigating to input tab:', error);
+                    }
+                }, 400);
+            };
+        }
     </script>
 
 </body>
