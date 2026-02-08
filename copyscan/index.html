@@ -877,6 +877,69 @@
             flex: 1;
             max-width: 300px;
         }
+
+        /* WhatsApp Validation Status */
+        .whatsapp-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+        
+        .whatsapp-valid {
+            background-color: #d1f7c4;
+            color: #2e7d32;
+        }
+        
+        .whatsapp-invalid {
+            background-color: #ffeaa7;
+            color: #f39c12;
+        }
+        
+        /* Profesi Options */
+        .profesi-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin: 2px;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1002;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -894,7 +957,7 @@
                     </div>
                 </div>
                 <div class="app-version">
-                    <i class="fas fa-code-branch"></i> v2.2 Professional
+                    <i class="fas fa-code-branch"></i> v2.3 Professional
                 </div>
             </div>
             
@@ -932,7 +995,21 @@
                                 <h4>Seret file Excel ke sini</h4>
                                 <p>Atau klik untuk memilih file dari komputer Anda</p>
                                 <p class="file-formats">Format yang didukung: .xlsx, .xls, .csv</p>
-                                <p class="file-formats">Kolom yang diperlukan: Nama, NIK, Alamat, Kecamatan, Desa, WhatsApp, Profesi, Alat Tangkap, Jenis Kapal</p>
+                                <p class="file-formats">
+                                    <span class="tooltip">
+                                        Kolom yang diperlukan: 
+                                        <i class="fas fa-info-circle"></i>
+                                        <span class="tooltiptext">
+                                            <strong>Kolom Wajib:</strong><br>
+                                            • Nama<br>
+                                            • NIK (16 digit)<br>
+                                            • WhatsApp/No HP<br><br>
+                                            <strong>Kolom Tambahan:</strong><br>
+                                            • Alamat, Kecamatan, Desa<br>
+                                            • Profesi, Alat Tangkap, Jenis Kapal
+                                        </span>
+                                    </span>
+                                </p>
                             </div>
                             <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
                         </div>
@@ -1019,7 +1096,7 @@
                                 <div class="radio-group">
                                     <div class="radio-item">
                                         <input type="radio" id="methodComplete" name="duplicateMethod" value="complete" checked>
-                                        <label for="methodComplete">Alamat & WhatsApp Terlengkap</label>
+                                        <label for="methodComplete">Data Terlengkap</label>
                                     </div>
                                     <div class="radio-item">
                                         <input type="radio" id="methodRecent" name="duplicateMethod" value="recent">
@@ -1029,8 +1106,12 @@
                                         <input type="radio" id="methodFirst" name="duplicateMethod" value="first">
                                         <label for="methodFirst">Data Pertama</label>
                                     </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="methodWhatsApp" name="duplicateMethod" value="whatsapp">
+                                        <label for="methodWhatsApp">Prioritaskan WhatsApp Valid</label>
+                                    </div>
                                 </div>
-                                <p class="setting-description">Menentukan data mana yang akan dipertahankan saat ada duplikat</p>
+                                <p class="setting-description">Menentukan data mana yang akan dipertahankan saat ada duplikat NIK</p>
                             </div>
                             
                             <button class="toggle-advanced" id="toggleAdvanced">
@@ -1038,20 +1119,77 @@
                             </button>
                             
                             <div class="advanced-options" id="advancedOptions">
+                                <!-- WhatsApp Validation Options -->
                                 <div class="setting-item">
-                                    <label class="setting-label">Validasi Data</label>
+                                    <label class="setting-label">Validasi WhatsApp/No HP</label>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="validateWhatsAppFormat" checked>
+                                            <label for="validateWhatsAppFormat">Validasi format nomor</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="validateWhatsAppLength" checked>
+                                            <label for="validateWhatsAppLength">Validasi panjang nomor (10-15 digit)</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="validateWhatsAppPrefix" checked>
+                                            <label for="validateWhatsAppPrefix">Validasi awalan nomor (08/62)</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="autoFormatWhatsApp" checked>
+                                            <label for="autoFormatWhatsApp">Format otomatis ke 62xxx</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Profesi Options -->
+                                <div class="setting-item">
+                                    <label class="setting-label">Pengaturan Profesi</label>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="standardizeProfesi" checked>
+                                            <label for="standardizeProfesi">Standarisasi nilai profesi</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="groupSimilarProfesi" checked>
+                                            <label for="groupSimilarProfesi">Kelompokkan profesi serupa</label>
+                                        </div>
+                                    </div>
+                                    <p class="setting-description">
+                                        <span class="tooltip">
+                                            Standar profesi yang dideteksi:
+                                            <i class="fas fa-info-circle"></i>
+                                            <span class="tooltiptext">
+                                                <strong>Kategori Profesi:</strong><br>
+                                                • Nelayan<br>
+                                                • Petani<br>
+                                                • Pedagang<br>
+                                                • PNS<br>
+                                                • Swasta<br>
+                                                • Wiraswasta<br>
+                                                • Ibu Rumah Tangga<br>
+                                                • Pelajar/Mahasiswa<br>
+                                                • Pensiunan
+                                            </span>
+                                        </span>
+                                    </p>
+                                </div>
+                                
+                                <!-- NIK Validation -->
+                                <div class="setting-item">
+                                    <label class="setting-label">Validasi NIK</label>
                                     <div class="checkbox-group">
                                         <div class="checkbox-item">
                                             <input type="checkbox" id="validateNikLength" checked>
-                                            <label for="validateNikLength">Validasi panjang NIK (16 digit)</label>
+                                            <label for="validateNikLength">Validasi panjang (16 digit)</label>
                                         </div>
                                         <div class="checkbox-item">
                                             <input type="checkbox" id="validateNikNumeric" checked>
-                                            <label for="validateNikNumeric">Validasi NIK harus angka</label>
+                                            <label for="validateNikNumeric">Validasi harus angka</label>
                                         </div>
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="validateWhatsApp" checked>
-                                            <label for="validateWhatsApp">Validasi format WhatsApp</label>
+                                            <input type="checkbox" id="validateNikProvince" checked>
+                                            <label for="validateNikProvince">Validasi kode provinsi (digit 1-2)</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1062,6 +1200,7 @@
                                         <option value="exclude">Exclude dari hasil</option>
                                         <option value="include">Tetap masukkan ke hasil</option>
                                         <option value="separate">Pisahkan ke file terpisah</option>
+                                        <option value="mark">Tandai sebagai data tidak valid</option>
                                     </select>
                                 </div>
                                 
@@ -1069,20 +1208,20 @@
                                     <label class="setting-label">Bobot Penilaian Kelengkapan Data</label>
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                         <div>
+                                            <label style="font-size: 0.9rem;">Nama Lengkap:</label>
+                                            <input type="number" id="weightNama" value="4" min="1" max="10" style="width: 100%;">
+                                        </div>
+                                        <div>
                                             <label style="font-size: 0.9rem;">Alamat:</label>
                                             <input type="number" id="weightAlamat" value="3" min="1" max="10" style="width: 100%;">
                                         </div>
                                         <div>
-                                            <label style="font-size: 0.9rem;">Kecamatan:</label>
-                                            <input type="number" id="weightKecamatan" value="2" min="1" max="10" style="width: 100%;">
-                                        </div>
-                                        <div>
-                                            <label style="font-size: 0.9rem;">Desa:</label>
-                                            <input type="number" id="weightDesa" value="2" min="1" max="10" style="width: 100%;">
-                                        </div>
-                                        <div>
                                             <label style="font-size: 0.9rem;">WhatsApp:</label>
-                                            <input type="number" id="weightWhatsApp" value="4" min="1" max="10" style="width: 100%;">
+                                            <input type="number" id="weightWhatsApp" value="5" min="1" max="10" style="width: 100%;">
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.9rem;">Profesi:</label>
+                                            <input type="number" id="weightProfesi" value="2" min="1" max="10" style="width: 100%;">
                                         </div>
                                     </div>
                                     <p class="setting-description">Semakin tinggi bobot, semakin penting kolom tersebut dalam penilaian kelengkapan data</p>
@@ -1148,19 +1287,25 @@
                                 <div class="stat-value" id="statDuplicates">0</div>
                                 <div class="stat-label">Duplikat Ditemukan</div>
                             </div>
-                            <div class="stat-card merged">
-                                <div class="stat-value" id="statMerged">0</div>
-                                <div class="stat-label">Data Digabungkan</div>
-                            </div>
                             <div class="stat-card whatsapp">
                                 <div class="stat-value" id="statWhatsApp">0</div>
                                 <div class="stat-label">WhatsApp Valid</div>
+                            </div>
+                            <div class="stat-card merged">
+                                <div class="stat-value" id="statProfesi">0</div>
+                                <div class="stat-label">Profesi Terdeteksi</div>
                             </div>
                         </div>
                         
                         <!-- Chart Container -->
                         <div class="chart-container">
                             <canvas id="dataChart" height="200"></canvas>
+                        </div>
+                        
+                        <!-- Profesi Distribution -->
+                        <div class="panel-card" id="profesiCard" style="display: none;">
+                            <h3><i class="fas fa-user-tie"></i> Distribusi Profesi</h3>
+                            <div id="profesiDistribution"></div>
                         </div>
                         
                         <!-- Filters -->
@@ -1173,6 +1318,15 @@
                                     <option value="duplicate">Duplikat</option>
                                     <option value="selected">Data Terpilih</option>
                                     <option value="invalid">Data Tidak Valid</option>
+                                    <option value="whatsapp_valid">WhatsApp Valid</option>
+                                    <option value="whatsapp_invalid">WhatsApp Tidak Valid</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="filter-label">Filter Profesi</label>
+                                <select id="filterProfesi">
+                                    <option value="all">Semua Profesi</option>
                                 </select>
                             </div>
                             
@@ -1256,6 +1410,10 @@
                                         <input type="radio" id="exportIssues" name="exportData" value="issues">
                                         <label for="exportIssues">Hanya Data Bermasalah</label>
                                     </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="exportWhatsAppOnly" name="exportData" value="whatsapp_only">
+                                        <label for="exportWhatsAppOnly">Hanya Data WhatsApp Valid</label>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -1276,15 +1434,19 @@
                                 <div class="radio-group">
                                     <div class="radio-item">
                                         <input type="radio" id="whatsappFormat1" name="whatsappFormat" value="name_number" checked>
-                                        <label for="whatsappFormat1">Nama + Nomor</label>
+                                        <label for="whatsappFormat1">Nama + Nomor (081234567890)</label>
                                     </div>
                                     <div class="radio-item">
                                         <input type="radio" id="whatsappFormat2" name="whatsappFormat" value="number_only">
-                                        <label for="whatsappFormat2">Nomor Saja</label>
+                                        <label for="whatsappFormat2">Nomor Saja (081234567890)</label>
                                     </div>
                                     <div class="radio-item">
                                         <input type="radio" id="whatsappFormat3" name="whatsappFormat" value="csv_import">
-                                        <label for="whatsappFormat3">Format Impor WhatsApp</label>
+                                        <label for="whatsappFormat3">Format Impor WhatsApp (6281234567890,Nama)</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="whatsappFormat4" name="whatsappFormat" value="with_plus">
+                                        <label for="whatsappFormat4">Dengan kode +62 (+6281234567890)</label>
                                     </div>
                                 </div>
                             </div>
@@ -1340,6 +1502,9 @@
                                 <button class="btn btn-outline" id="btnColumnSettings">
                                     <i class="fas fa-columns"></i> Pengaturan Kolom
                                 </button>
+                                <button class="btn btn-outline" id="btnProfesiStats">
+                                    <i class="fas fa-chart-bar"></i> Statistik Profesi
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1372,7 +1537,7 @@
     
     <!-- Modals -->
     <div class="modal" id="modalAdvancedAnalysis">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
                 <h3><i class="fas fa-chart-line"></i> Analisis Data Lanjutan</h3>
                 <button class="close-modal" id="closeAdvancedModal">&times;</button>
@@ -1433,8 +1598,8 @@
                 <div id="whatsAppTestContent">
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600;">Nomor WhatsApp:</label>
-                        <input type="text" id="testWhatsAppNumber" placeholder="Contoh: 6281234567890" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Format: 62xxxxxxxxxxx (tanpa +, spasi, atau -)</p>
+                        <input type="text" id="testWhatsAppNumber" placeholder="Contoh: 081234567890 atau 6281234567890" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Format yang diterima: 08xxx, 62xxx, +62xxx</p>
                     </div>
                     <div id="whatsAppTestResult"></div>
                 </div>
@@ -1445,7 +1610,22 @@
             </div>
         </div>
     </div>
-    
+
+    <div class="modal" id="modalProfesiStats">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-tie"></i> Statistik Profesi</h3>
+                <button class="close-modal" id="closeProfesiStats">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="profesiStatsContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="btnCloseProfesiStats">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div class="notification" id="notification">
         <i class="fas fa-check-circle"></i>
@@ -1462,8 +1642,8 @@
         let columnDefinitions = [];
         let fileData = null;
         let scanningSettings = {
-            nikColumn: '',
             namaColumn: '',
+            nikColumn: '',
             alamatColumn: '',
             kecamatanColumn: '',
             desaColumn: '',
@@ -1472,20 +1652,46 @@
             alatTangkapColumn: '',
             jenisKapalColumn: '',
             duplicateMethod: 'complete',
-            addressColumns: [],
             validateNikLength: true,
             validateNikNumeric: true,
-            validateWhatsApp: true,
+            validateNikProvince: true,
+            validateWhatsAppFormat: true,
+            validateWhatsAppLength: true,
+            validateWhatsAppPrefix: true,
+            autoFormatWhatsApp: true,
+            standardizeProfesi: true,
+            groupSimilarProfesi: true,
             invalidDataAction: 'exclude',
             weights: {
+                nama: 4,
                 alamat: 3,
-                kecamatan: 2,
-                desa: 2,
-                whatsapp: 4
+                whatsapp: 5,
+                profesi: 2
             }
         };
         
         let dataChart = null;
+        let profesiDistribution = {};
+        
+        // Standard profesi categories
+        const standardProfesi = {
+            'nelayan': ['nelayan', 'fisherman', 'pekebun', 'petambak', 'penangkap ikan'],
+            'petani': ['petani', 'farmer', 'pekebun', 'peternak'],
+            'pedagang': ['pedagang', 'seller', 'merchant', 'wiraswasta', 'usaha', 'dagang'],
+            'pns': ['pns', 'pegawai negeri', 'asn', 'pegawai pemerintah'],
+            'swasta': ['swasta', 'karyawan', 'employee', 'staff', 'office'],
+            'wiraswasta': ['wiraswasta', 'entrepreneur', 'pengusaha', 'business owner'],
+            'irt': ['ibu rumah tangga', 'irt', 'housewife', 'ibu', 'istri'],
+            'pelajar': ['pelajar', 'student', 'siswa', 'mahasiswa', 'murid'],
+            'pensiunan': ['pensiunan', 'retired', 'purnawirawan']
+        };
+        
+        // WhatsApp validation patterns
+        const whatsappPatterns = [
+            /^0[8-9][0-9]{8,11}$/, // 08/09xxxxxxxx
+            /^62[8-9][0-9]{9,12}$/, // 628/629xxxxxxxx
+            /^\+62[8-9][0-9]{9,12}$/ // +628/629xxxxxxxx
+        ];
         
         // DOM Elements
         const fileInput = document.getElementById('fileInput');
@@ -1500,6 +1706,7 @@
             initApp();
             setupEventListeners();
             setupSampleData();
+            setupProfesiFilter();
         });
         
         // Application Initialization
@@ -1512,10 +1719,10 @@
             document.getElementById('exportFileName').value = `hasil_pemindaian_${today}`;
             
             // Set default weights
+            document.getElementById('weightNama').value = scanningSettings.weights.nama;
             document.getElementById('weightAlamat').value = scanningSettings.weights.alamat;
-            document.getElementById('weightKecamatan').value = scanningSettings.weights.kecamatan;
-            document.getElementById('weightDesa').value = scanningSettings.weights.desa;
             document.getElementById('weightWhatsApp').value = scanningSettings.weights.whatsapp;
+            document.getElementById('weightProfesi').value = scanningSettings.weights.profesi;
             
             // Show first tab
             showTab('upload');
@@ -1579,10 +1786,12 @@
             document.getElementById('btnRefreshTable').addEventListener('click', refreshTable);
             document.getElementById('btnColumnSettings').addEventListener('click', showColumnSettings);
             document.getElementById('btnWhatsAppSelected').addEventListener('click', exportWhatsAppSelected);
+            document.getElementById('btnProfesiStats').addEventListener('click', showProfesiStats);
             
             // Filters
             document.getElementById('btnApplyFilters').addEventListener('click', applyFilters);
             document.getElementById('searchData').addEventListener('input', debounce(applyFilters, 300));
+            document.getElementById('filterProfesi').addEventListener('change', applyFilters);
             
             // Export
             document.getElementById('btnExportData').addEventListener('click', exportData);
@@ -1607,20 +1816,49 @@
             });
             
             // Weight settings
+            document.getElementById('weightNama').addEventListener('change', function() {
+                scanningSettings.weights.nama = parseInt(this.value) || 4;
+            });
+            
             document.getElementById('weightAlamat').addEventListener('change', function() {
                 scanningSettings.weights.alamat = parseInt(this.value) || 3;
             });
             
-            document.getElementById('weightKecamatan').addEventListener('change', function() {
-                scanningSettings.weights.kecamatan = parseInt(this.value) || 2;
-            });
-            
-            document.getElementById('weightDesa').addEventListener('change', function() {
-                scanningSettings.weights.desa = parseInt(this.value) || 2;
-            });
-            
             document.getElementById('weightWhatsApp').addEventListener('change', function() {
-                scanningSettings.weights.whatsapp = parseInt(this.value) || 4;
+                scanningSettings.weights.whatsapp = parseInt(this.value) || 5;
+            });
+            
+            document.getElementById('weightProfesi').addEventListener('change', function() {
+                scanningSettings.weights.profesi = parseInt(this.value) || 2;
+            });
+            
+            // Validation settings
+            document.getElementById('validateWhatsAppFormat').addEventListener('change', function() {
+                scanningSettings.validateWhatsAppFormat = this.checked;
+            });
+            
+            document.getElementById('validateWhatsAppLength').addEventListener('change', function() {
+                scanningSettings.validateWhatsAppLength = this.checked;
+            });
+            
+            document.getElementById('validateWhatsAppPrefix').addEventListener('change', function() {
+                scanningSettings.validateWhatsAppPrefix = this.checked;
+            });
+            
+            document.getElementById('autoFormatWhatsApp').addEventListener('change', function() {
+                scanningSettings.autoFormatWhatsApp = this.checked;
+            });
+            
+            document.getElementById('standardizeProfesi').addEventListener('change', function() {
+                scanningSettings.standardizeProfesi = this.checked;
+            });
+            
+            document.getElementById('groupSimilarProfesi').addEventListener('change', function() {
+                scanningSettings.groupSimilarProfesi = this.checked;
+            });
+            
+            document.getElementById('validateNikProvince').addEventListener('change', function() {
+                scanningSettings.validateNikProvince = this.checked;
             });
             
             // Modals
@@ -1633,12 +1871,33 @@
             document.getElementById('btnSaveColumnSettings').addEventListener('click', saveColumnSettings);
             document.getElementById('closeWhatsAppTest').addEventListener('click', () => hideModal('modalWhatsAppTest'));
             document.getElementById('btnCloseWhatsAppTest').addEventListener('click', () => hideModal('modalWhatsAppTest'));
+            document.getElementById('closeProfesiStats').addEventListener('click', () => hideModal('modalProfesiStats'));
+            document.getElementById('btnCloseProfesiStats').addEventListener('click', () => hideModal('modalProfesiStats'));
             
             // Analysis
             document.getElementById('btnAnalyzeData').addEventListener('click', showAdvancedAnalysis);
             
             // Initialize settings
             resetSettings();
+        }
+        
+        // Setup Profesi Filter Options
+        function setupProfesiFilter() {
+            const filterProfesi = document.getElementById('filterProfesi');
+            filterProfesi.innerHTML = '<option value="all">Semua Profesi</option>';
+            
+            Object.keys(standardProfesi).forEach(profesi => {
+                const option = document.createElement('option');
+                option.value = profesi;
+                option.textContent = profesi.charAt(0).toUpperCase() + profesi.slice(1);
+                filterProfesi.appendChild(option);
+            });
+            
+            // Add custom option
+            const customOption = document.createElement('option');
+            customOption.value = 'lainnya';
+            customOption.textContent = 'Lainnya';
+            filterProfesi.appendChild(customOption);
         }
         
         // Tab Management
@@ -1660,6 +1919,7 @@
                 updateStatistics();
                 displayDataTable();
                 updateChart();
+                updateProfesiDistribution();
             }
             
             if (tabId === 'export' && processedData.length > 0) {
@@ -1813,8 +2073,18 @@
                     td.textContent = row[column] || '';
                     
                     // Special styling for WhatsApp column
-                    if (column.includes('whatsapp') || column.includes('wa') || column.includes('hp')) {
+                    if (column.includes('whatsapp') || column.includes('wa') || column.includes('hp') || column.includes('no') || column.includes('telepon')) {
                         td.classList.add('whatsapp-cell');
+                        if (row[column]) {
+                            td.innerHTML = formatWhatsAppForDisplay(row[column]);
+                        }
+                    }
+                    
+                    // Special styling for Profesi column
+                    if (column.includes('profesi') || column.includes('pekerjaan') || column.includes('job')) {
+                        if (row[column]) {
+                            td.innerHTML = `<span class="profesi-tag">${row[column]}</span>`;
+                        }
                     }
                     
                     tr.appendChild(td);
@@ -1834,15 +2104,15 @@
             mappingContainer.innerHTML = '';
             
             const requiredFields = [
-                { id: 'nama', label: 'Nama', description: 'Kolom untuk nama lengkap' },
-                { id: 'nik', label: 'NIK', description: 'Kolom untuk Nomor Induk Kependudukan' },
-                { id: 'alamat', label: 'Alamat', description: 'Kolom untuk alamat lengkap' },
-                { id: 'kecamatan', label: 'Kecamatan', description: 'Kolom untuk nama kecamatan' },
-                { id: 'desa', label: 'Desa/Kelurahan', description: 'Kolom untuk nama desa/kelurahan' },
-                { id: 'whatsapp', label: 'WhatsApp', description: 'Kolom untuk nomor WhatsApp' },
-                { id: 'profesi', label: 'Profesi', description: 'Kolom untuk profesi pekerjaan' },
-                { id: 'alatTangkap', label: 'Alat Tangkap', description: 'Kolom untuk alat tangkap yang digunakan' },
-                { id: 'jenisKapal', label: 'Jenis Kapal', description: 'Kolom untuk jenis kapal yang digunakan' }
+                { id: 'nama', label: 'Nama', description: 'Kolom untuk nama lengkap', required: true },
+                { id: 'nik', label: 'NIK', description: 'Kolom untuk Nomor Induk Kependudukan (16 digit)', required: true },
+                { id: 'whatsapp', label: 'WhatsApp/No HP', description: 'Kolom untuk nomor WhatsApp/Telepon', required: true },
+                { id: 'alamat', label: 'Alamat', description: 'Kolom untuk alamat lengkap', required: false },
+                { id: 'kecamatan', label: 'Kecamatan', description: 'Kolom untuk nama kecamatan', required: false },
+                { id: 'desa', label: 'Desa/Kelurahan', description: 'Kolom untuk nama desa/kelurahan', required: false },
+                { id: 'profesi', label: 'Profesi', description: 'Kolom untuk profesi pekerjaan', required: false },
+                { id: 'alatTangkap', label: 'Alat Tangkap', description: 'Kolom untuk alat tangkap yang digunakan', required: false },
+                { id: 'jenisKapal', label: 'Jenis Kapal', description: 'Kolom untuk jenis kapal yang digunakan', required: false }
             ];
             
             requiredFields.forEach(field => {
@@ -1852,7 +2122,7 @@
                 const labelDiv = document.createElement('div');
                 labelDiv.className = 'mapping-label';
                 labelDiv.innerHTML = `
-                    <span style="font-weight: 600;">${field.label}</span>
+                    <span style="font-weight: 600;">${field.label} ${field.required ? '<span style="color:red">*</span>' : ''}</span>
                     <br>
                     <span style="font-size: 0.8rem; color: #718096;">${field.description}</span>
                 `;
@@ -1868,6 +2138,9 @@
                 const emptyOption = document.createElement('option');
                 emptyOption.value = '';
                 emptyOption.textContent = `-- Pilih kolom ${field.label} --`;
+                if (!field.required) {
+                    emptyOption.textContent = `-- Opsional: ${field.label} --`;
+                }
                 select.appendChild(emptyOption);
                 
                 // Add column options
@@ -1880,9 +2153,26 @@
                     const columnLower = column.toLowerCase();
                     const fieldLower = field.id.toLowerCase();
                     
-                    if (columnLower.includes(fieldLower) || fieldLower.includes(columnLower)) {
-                        option.selected = true;
-                        scanningSettings[`${field.id}Column`] = column;
+                    // Check for various possible column names
+                    const possibleNames = {
+                        'nama': ['nama', 'name', 'fullname', 'nama lengkap'],
+                        'nik': ['nik', 'no ktp', 'ktp', 'nomor induk'],
+                        'whatsapp': ['whatsapp', 'wa', 'hp', 'telepon', 'no hp', 'telp', 'phone', 'mobile'],
+                        'alamat': ['alamat', 'address', 'jalan', 'jl'],
+                        'kecamatan': ['kecamatan', 'kec', 'district'],
+                        'desa': ['desa', 'kelurahan', 'desa/kel', 'village'],
+                        'profesi': ['profesi', 'pekerjaan', 'job', 'occupation', 'kerja'],
+                        'alatTangkap': ['alat tangkap', 'alat', 'gear', 'fishing gear'],
+                        'jenisKapal': ['jenis kapal', 'kapal', 'boat type', 'ship type']
+                    };
+                    
+                    if (possibleNames[field.id]) {
+                        possibleNames[field.id].forEach(name => {
+                            if (columnLower.includes(name) || fieldLower.includes(columnLower)) {
+                                option.selected = true;
+                                scanningSettings[`${field.id}Column`] = column;
+                            }
+                        });
                     }
                     
                     select.appendChild(option);
@@ -1906,7 +2196,7 @@
         // Scan Data
         function scanData() {
             // Validate required columns
-            const requiredColumns = ['nama', 'nik', 'alamat', 'kecamatan', 'desa', 'whatsapp'];
+            const requiredColumns = ['nama', 'nik', 'whatsapp'];
             const missingColumns = [];
             
             requiredColumns.forEach(col => {
@@ -1958,43 +2248,84 @@
                     const groups = {};
                     const invalidData = [];
                     let validWhatsAppCount = 0;
+                    profesiDistribution = {};
                     
                     originalData.forEach((item, index) => {
                         const nik = item[scanningSettings.nikColumn];
                         
                         // Validate NIK
+                        let nikValid = true;
+                        let nikIssues = [];
+                        
                         if (scanningSettings.validateNikLength && nik && nik.toString().length !== 16) {
-                            item._status = 'invalid_nik_length';
-                            item._invalidReason = 'Panjang NIK tidak 16 digit';
-                            invalidData.push(item);
-                            return;
+                            nikValid = false;
+                            nikIssues.push('Panjang NIK tidak 16 digit');
                         }
                         
                         if (scanningSettings.validateNikNumeric && nik && !/^\d+$/.test(nik.toString())) {
-                            item._status = 'invalid_nik_numeric';
-                            item._invalidReason = 'NIK mengandung karakter non-digit';
-                            invalidData.push(item);
-                            return;
+                            nikValid = false;
+                            nikIssues.push('NIK mengandung karakter non-digit');
+                        }
+                        
+                        if (scanningSettings.validateNikProvince && nik && nik.toString().length >= 2) {
+                            const provinceCode = nik.toString().substring(0, 2);
+                            if (provinceCode < 11 || provinceCode > 94) {
+                                nikValid = false;
+                                nikIssues.push('Kode provinsi tidak valid');
+                            }
                         }
                         
                         if (!nik) {
-                            item._status = 'missing_nik';
-                            item._invalidReason = 'NIK kosong';
+                            nikValid = false;
+                            nikIssues.push('NIK kosong');
+                        }
+                        
+                        if (!nikValid) {
+                            item._status = 'invalid_nik';
+                            item._invalidReason = nikIssues.join(', ');
                             invalidData.push(item);
                             return;
                         }
                         
                         // Validate WhatsApp
                         const whatsapp = item[scanningSettings.whatsappColumn];
-                        if (scanningSettings.validateWhatsApp && whatsapp) {
-                            const whatsappStr = whatsapp.toString().trim();
-                            if (isValidWhatsApp(whatsappStr)) {
+                        let whatsappValid = false;
+                        let whatsappFormatted = '';
+                        
+                        if (whatsapp) {
+                            whatsappValid = isValidWhatsApp(whatsapp.toString());
+                            whatsappFormatted = formatWhatsApp(whatsapp.toString());
+                            
+                            if (whatsappValid) {
                                 item._whatsappValid = true;
+                                item._whatsappFormatted = whatsappFormatted;
                                 validWhatsAppCount++;
                             } else {
                                 item._whatsappValid = false;
                                 item._whatsappIssue = 'Format WhatsApp tidak valid';
+                                if (scanningSettings.autoFormatWhatsApp) {
+                                    item._whatsappFormatted = whatsappFormatted || whatsapp.toString();
+                                }
                             }
+                        } else {
+                            item._whatsappValid = false;
+                            item._whatsappIssue = 'Nomor WhatsApp kosong';
+                        }
+                        
+                        // Process profesi
+                        const profesi = item[scanningSettings.profesiColumn];
+                        let standardizedProfesi = '';
+                        
+                        if (profesi && scanningSettings.standardizeProfesi) {
+                            standardizedProfesi = standardizeProfesi(profesi.toString());
+                            item._profesiStandardized = standardizedProfesi;
+                            
+                            // Update profesi distribution
+                            if (standardizedProfesi) {
+                                profesiDistribution[standardizedProfesi] = (profesiDistribution[standardizedProfesi] || 0) + 1;
+                            }
+                        } else if (profesi) {
+                            item._profesiStandardized = profesi.toString();
                         }
                         
                         const nikKey = nik.toString();
@@ -2032,16 +2363,16 @@
                             
                             switch (scanningSettings.duplicateMethod) {
                                 case 'complete':
-                                    // Select item with most complete data (including WhatsApp)
                                     selectedItem = selectByDataCompleteness(group);
                                     break;
                                 case 'recent':
-                                    // Select last item (assuming last is most recent)
                                     selectedItem = group[group.length - 1];
                                     break;
                                 case 'first':
-                                    // Select first item
                                     selectedItem = group[0];
+                                    break;
+                                case 'whatsapp':
+                                    selectedItem = selectByWhatsAppValidity(group);
                                     break;
                                 default:
                                     selectedItem = group[0];
@@ -2070,8 +2401,14 @@
                             });
                             break;
                         case 'separate':
-                            // Store invalid data separately
                             window.invalidData = invalidData;
+                            break;
+                        case 'mark':
+                            invalidData.forEach(item => {
+                                item._status = 'invalid_marked';
+                                item._selected = false;
+                                processedData.push(item);
+                            });
                             break;
                         case 'exclude':
                         default:
@@ -2110,7 +2447,7 @@
             }, 1000);
         }
         
-        // Select item by data completeness (including WhatsApp)
+        // Select item by data completeness
         function selectByDataCompleteness(group) {
             let bestScore = -1;
             let bestItem = group[0];
@@ -2119,42 +2456,44 @@
                 let score = 0;
                 
                 // Calculate completeness score with weights
+                const nama = item[scanningSettings.namaColumn];
+                if (nama && nama.toString().trim() !== '') {
+                    score += scanningSettings.weights.nama;
+                    // Bonus for complete name (at least 2 words)
+                    if (nama.toString().trim().split(' ').length >= 2) {
+                        score += 1;
+                    }
+                }
+                
                 if (item[scanningSettings.alamatColumn] && item[scanningSettings.alamatColumn].toString().trim() !== '') {
                     score += scanningSettings.weights.alamat;
                     // Bonus for more detailed address
                     const address = item[scanningSettings.alamatColumn].toString();
                     if (address.includes('RT') && address.includes('RW')) score += 1;
                     if (address.includes('No.')) score += 0.5;
-                    if (address.length > 30) score += 1; // Longer address is more detailed
-                }
-                
-                if (item[scanningSettings.kecamatanColumn] && item[scanningSettings.kecamatanColumn].toString().trim() !== '') {
-                    score += scanningSettings.weights.kecamatan;
-                }
-                
-                if (item[scanningSettings.desaColumn] && item[scanningSettings.desaColumn].toString().trim() !== '') {
-                    score += scanningSettings.weights.desa;
+                    if (address.length > 30) score += 1;
                 }
                 
                 // WhatsApp score (higher weight because it's important)
-                const whatsapp = item[scanningSettings.whatsappColumn];
-                if (whatsapp && whatsapp.toString().trim() !== '') {
-                    score += scanningSettings.weights.whatsapp;
-                    
-                    // Bonus for valid WhatsApp format
-                    if (item._whatsappValid) {
-                        score += 2;
-                    }
+                if (item._whatsappValid) {
+                    score += scanningSettings.weights.whatsapp + 2; // Bonus for valid WhatsApp
+                } else if (item[scanningSettings.whatsappColumn]) {
+                    score += scanningSettings.weights.whatsapp * 0.5; // Reduced score for invalid WhatsApp
                 }
                 
-                // Bonus for complete name
-                const nama = item[scanningSettings.namaColumn];
-                if (nama && nama.toString().trim().split(' ').length >= 2) {
+                // Profesi score
+                if (item._profesiStandardized) {
+                    score += scanningSettings.weights.profesi;
+                } else if (item[scanningSettings.profesiColumn]) {
+                    score += scanningSettings.weights.profesi * 0.5;
+                }
+                
+                // Bonus for other columns
+                if (item[scanningSettings.kecamatanColumn] && item[scanningSettings.kecamatanColumn].toString().trim() !== '') {
                     score += 1;
                 }
                 
-                // Bonus for new columns
-                if (item[scanningSettings.profesiColumn] && item[scanningSettings.profesiColumn].toString().trim() !== '') {
+                if (item[scanningSettings.desaColumn] && item[scanningSettings.desaColumn].toString().trim() !== '') {
                     score += 1;
                 }
                 
@@ -2170,7 +2509,7 @@
                     bestScore = score;
                     bestItem = item;
                 } else if (score === bestScore) {
-                    // If scores are equal, prioritize WhatsApp validity
+                    // Tie breaker: prioritize WhatsApp validity
                     if (item._whatsappValid && !bestItem._whatsappValid) {
                         bestItem = item;
                     }
@@ -2180,48 +2519,168 @@
             return bestItem;
         }
         
+        // Select item by WhatsApp validity
+        function selectByWhatsAppValidity(group) {
+            // First try to find item with valid WhatsApp
+            const validWhatsAppItems = group.filter(item => item._whatsappValid);
+            if (validWhatsAppItems.length > 0) {
+                return selectByDataCompleteness(validWhatsAppItems);
+            }
+            
+            // If no valid WhatsApp, fall back to completeness
+            return selectByDataCompleteness(group);
+        }
+        
         // Validate WhatsApp number
         function isValidWhatsApp(whatsapp) {
             if (!whatsapp) return false;
             
-            // Clean the number
-            const cleaned = whatsapp.toString().replace(/\s+/g, '').replace(/[+\-()]/g, '');
+            const whatsappStr = whatsapp.toString().trim();
+            
+            // Check if empty
+            if (!whatsappStr) return false;
+            
+            // Clean the number (remove spaces, plus, hyphens, parentheses)
+            const cleaned = whatsappStr.replace(/[\s+\-()]/g, '');
             
             // Check if it's all digits
             if (!/^\d+$/.test(cleaned)) return false;
             
-            // Check length (minimum 10 digits for international numbers)
-            if (cleaned.length < 10 || cleaned.length > 15) return false;
+            // Validate based on settings
+            if (scanningSettings.validateWhatsAppLength) {
+                if (cleaned.length < 10 || cleaned.length > 15) return false;
+            }
             
-            // Check if it starts with valid country code (Indonesia: 62)
-            if (cleaned.startsWith('62') && cleaned.length >= 11) return true;
+            if (scanningSettings.validateWhatsAppPrefix) {
+                // Check for valid prefixes
+                const validPrefixes = ['08', '62', '+62'];
+                let hasValidPrefix = false;
+                
+                for (const prefix of validPrefixes) {
+                    if (cleaned.startsWith(prefix.replace('+', ''))) {
+                        hasValidPrefix = true;
+                        break;
+                    }
+                }
+                
+                if (!hasValidPrefix) return false;
+                
+                // Check if starts with 08 or 628 or +628
+                if (cleaned.startsWith('08')) {
+                    if (cleaned.charAt(2) < '8' || cleaned.charAt(2) > '9') return false;
+                } else if (cleaned.startsWith('62')) {
+                    if (cleaned.charAt(2) < '8' || cleaned.charAt(2) > '9') return false;
+                }
+            }
             
-            // Check if it starts with 0 (local format)
-            if (cleaned.startsWith('0') && cleaned.length >= 10) return true;
+            if (scanningSettings.validateWhatsAppFormat) {
+                // Check against patterns
+                let matchesPattern = false;
+                for (const pattern of whatsappPatterns) {
+                    if (pattern.test(whatsappStr)) {
+                        matchesPattern = true;
+                        break;
+                    }
+                }
+                
+                if (!matchesPattern) {
+                    // Try cleaned version
+                    for (const pattern of whatsappPatterns) {
+                        if (pattern.test(cleaned)) {
+                            matchesPattern = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!matchesPattern) return false;
+            }
             
-            // Check if it starts with 8 (mobile number without prefix)
-            if (cleaned.startsWith('8') && cleaned.length >= 10) return true;
-            
-            return false;
+            return true;
         }
         
-        // Format WhatsApp number
+        // Format WhatsApp number to standard format (62xxxxxxxxxxx)
         function formatWhatsApp(whatsapp) {
             if (!whatsapp) return '';
             
-            const cleaned = whatsapp.toString().replace(/\s+/g, '').replace(/[+\-()]/g, '');
+            let cleaned = whatsapp.toString().replace(/[\s+\-()]/g, '');
             
             // If starts with 0, replace with 62
             if (cleaned.startsWith('0')) {
                 return '62' + cleaned.substring(1);
             }
             
-            // If starts with 8 (without country code), add 62
+            // If starts with +62, remove the plus
+            if (cleaned.startsWith('+62')) {
+                return cleaned.substring(1);
+            }
+            
+            // If starts with 62, return as is
+            if (cleaned.startsWith('62')) {
+                return cleaned;
+            }
+            
+            // If starts with 8 (without prefix), add 62
             if (cleaned.startsWith('8') && cleaned.length >= 10) {
                 return '62' + cleaned;
             }
             
+            // Return cleaned version if no transformation applied
             return cleaned;
+        }
+        
+        // Format WhatsApp for display
+        function formatWhatsAppForDisplay(whatsapp) {
+            if (!whatsapp) return '-';
+            
+            const isValid = isValidWhatsApp(whatsapp);
+            const formatted = formatWhatsApp(whatsapp);
+            
+            if (isValid && formatted) {
+                return `
+                    <a href="https://wa.me/${formatted}" target="_blank" style="color: #25D366; text-decoration: none;">
+                        <i class="fab fa-whatsapp"></i> ${formatted}
+                    </a>
+                    <span class="whatsapp-status whatsapp-valid">
+                        <i class="fas fa-check-circle"></i> Valid
+                    </span>
+                `;
+            } else {
+                return `
+                    <span style="color: #666;">${whatsapp}</span>
+                    <span class="whatsapp-status whatsapp-invalid">
+                        <i class="fas fa-exclamation-triangle"></i> Tidak Valid
+                    </span>
+                `;
+            }
+        }
+        
+        // Standardize profesi
+        function standardizeProfesi(profesi) {
+            if (!profesi) return '';
+            
+            const profesiLower = profesi.toString().toLowerCase().trim();
+            
+            // Check against standard categories
+            for (const [category, keywords] of Object.entries(standardProfesi)) {
+                for (const keyword of keywords) {
+                    if (profesiLower.includes(keyword)) {
+                        return category;
+                    }
+                }
+            }
+            
+            // If grouping similar profesi is enabled
+            if (scanningSettings.groupSimilarProfesi) {
+                // Try to find similar profesi
+                if (profesiLower.includes('tani') || profesiLower.includes('kebun')) return 'petani';
+                if (profesiLower.includes('dagang') || profesiLower.includes('jual')) return 'pedagang';
+                if (profesiLower.includes('karyawan') || profesiLower.includes('staff')) return 'swasta';
+                if (profesiLower.includes('usaha') || profesiLower.includes('wira')) return 'wiraswasta';
+            }
+            
+            // Return original if no match
+            return profesiLower;
         }
         
         // Add process log
@@ -2244,17 +2703,133 @@
             const total = originalData.length;
             const unique = processedData.filter(item => item._status === 'unique').length;
             const duplicates = processedData.filter(item => item._status === 'duplicate' && item._selected).length;
-            const merged = originalData.length - processedData.length;
             const validWhatsApp = processedData.filter(item => item._whatsappValid).length;
+            const profesiCount = Object.keys(profesiDistribution).length;
             
             document.getElementById('statTotal').textContent = total;
             document.getElementById('statUnique').textContent = unique;
             document.getElementById('statDuplicates').textContent = duplicates;
-            document.getElementById('statMerged').textContent = merged;
             document.getElementById('statWhatsApp').textContent = validWhatsApp;
+            document.getElementById('statProfesi').textContent = profesiCount;
             
             // Update table count
             document.getElementById('tableCount').textContent = `(${filteredData.length || processedData.length} data)`;
+        }
+        
+        // Update Profesi Distribution
+        function updateProfesiDistribution() {
+            const profesiCard = document.getElementById('profesiCard');
+            const profesiDistributionDiv = document.getElementById('profesiDistribution');
+            
+            if (Object.keys(profesiDistribution).length === 0) {
+                profesiCard.style.display = 'none';
+                return;
+            }
+            
+            let totalProfesi = 0;
+            Object.values(profesiDistribution).forEach(count => {
+                totalProfesi += count;
+            });
+            
+            let distributionHTML = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+            
+            // Sort by count descending
+            const sortedProfesi = Object.entries(profesiDistribution)
+                .sort((a, b) => b[1] - a[1]);
+            
+            sortedProfesi.forEach(([profesi, count]) => {
+                const percentage = ((count / totalProfesi) * 100).toFixed(1);
+                distributionHTML += `
+                    <div style="flex: 1; min-width: 150px; background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: var(--primary-color); margin-bottom: 5px;">
+                            ${profesi.charAt(0).toUpperCase() + profesi.slice(1)}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700;">${count}</div>
+                            <div style="color: #718096; font-size: 0.9rem;">${percentage}%</div>
+                        </div>
+                        <div style="height: 6px; background-color: #e2e8f0; border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                            <div style="height: 100%; width: ${percentage}%; background-color: var(--accent-color);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            distributionHTML += '</div>';
+            profesiDistributionDiv.innerHTML = distributionHTML;
+            profesiCard.style.display = 'block';
+        }
+        
+        // Show Profesi Statistics
+        function showProfesiStats() {
+            if (Object.keys(profesiDistribution).length === 0) {
+                showNotification('Tidak ada data profesi untuk ditampilkan', 'warning');
+                return;
+            }
+            
+            const profesiStatsContent = document.getElementById('profesiStatsContent');
+            let totalProfesi = 0;
+            Object.values(profesiDistribution).forEach(count => {
+                totalProfesi += count;
+            });
+            
+            let statsHTML = `
+                <h4 style="color: var(--primary-color); margin-bottom: 20px;">Distribusi Profesi Data</h4>
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Total Data dengan Profesi:</span>
+                        <span style="font-weight: 600;">${totalProfesi}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Jenis Profesi Terdeteksi:</span>
+                        <span style="font-weight: 600;">${Object.keys(profesiDistribution).length}</span>
+                    </div>
+                </div>
+                
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #dee2e6;">Profesi</th>
+                                <th style="padding: 10px; text-align: right; border-bottom: 2px solid #dee2e6;">Jumlah</th>
+                                <th style="padding: 10px; text-align: right; border-bottom: 2px solid #dee2e6;">Persentase</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Sort by count descending
+            const sortedProfesi = Object.entries(profesiDistribution)
+                .sort((a, b) => b[1] - a[1]);
+            
+            sortedProfesi.forEach(([profesi, count]) => {
+                const percentage = ((count / totalProfesi) * 100).toFixed(1);
+                statsHTML += `
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 10px;">
+                            <span class="profesi-tag">${profesi.charAt(0).toUpperCase() + profesi.slice(1)}</span>
+                        </td>
+                        <td style="padding: 10px; text-align: right; font-weight: 600;">${count}</td>
+                        <td style="padding: 10px; text-align: right;">
+                            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                                <span>${percentage}%</span>
+                                <div style="width: 100px; height: 6px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${percentage}%; background-color: var(--accent-color);"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            statsHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            profesiStatsContent.innerHTML = statsHTML;
+            showModal('modalProfesiStats');
         }
         
         // Update Chart
@@ -2269,29 +2844,29 @@
             const total = originalData.length;
             const unique = processedData.filter(item => item._status === 'unique').length;
             const duplicates = processedData.filter(item => item._status === 'duplicate' && item._selected).length;
-            const invalid = originalData.length - processedData.length;
+            const invalid = processedData.filter(item => item._status && item._status.includes('invalid')).length;
             const validWhatsApp = processedData.filter(item => item._whatsappValid).length;
-            const invalidWhatsApp = processedData.length - validWhatsApp;
             
             dataChart = new Chart(ctx, {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
-                    labels: ['Data Unik', 'Duplikat Terpilih', 'Data Tidak Valid', 'WhatsApp Valid', 'WhatsApp Tidak Valid'],
+                    labels: ['Total Data', 'Data Unik', 'Duplikat Terpilih', 'WhatsApp Valid', 'Data Tidak Valid'],
                     datasets: [{
-                        data: [unique, duplicates, invalid, validWhatsApp, invalidWhatsApp],
+                        label: 'Jumlah Data',
+                        data: [total, unique, duplicates, validWhatsApp, invalid],
                         backgroundColor: [
-                            'rgba(46, 204, 113, 0.8)',
                             'rgba(52, 152, 219, 0.8)',
-                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(155, 89, 182, 0.8)',
                             'rgba(37, 211, 102, 0.8)',
-                            'rgba(243, 156, 18, 0.8)'
+                            'rgba(231, 76, 60, 0.8)'
                         ],
                         borderColor: [
-                            'rgb(46, 204, 113)',
                             'rgb(52, 152, 219)',
-                            'rgb(231, 76, 60)',
+                            'rgb(46, 204, 113)',
+                            'rgb(155, 89, 182)',
                             'rgb(37, 211, 102)',
-                            'rgb(243, 156, 18)'
+                            'rgb(231, 76, 60)'
                         ],
                         borderWidth: 1
                     }]
@@ -2300,11 +2875,20 @@
                     responsive: true,
                     plugins: {
                         legend: {
-                            position: 'bottom',
+                            display: false,
                         },
                         title: {
                             display: true,
-                            text: 'Distribusi Data Hasil Pemindaian'
+                            text: 'Statistik Data Hasil Pemindaian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Data'
+                            }
                         }
                     }
                 }
@@ -2326,7 +2910,7 @@
             if (dataToDisplay.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="13" style="text-align: center; padding: 40px; color: #718096;">
+                        <td colspan="10" style="text-align: center; padding: 40px; color: #718096;">
                             <i class="fas fa-database" style="font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
                             Tidak ada data untuk ditampilkan
                         </td>
@@ -2338,19 +2922,20 @@
             // Create header with mapped columns
             const headerRow = document.createElement('tr');
             
-            // Define column order
-            const columns = [
-                { key: scanningSettings.namaColumn, label: 'NAMA', sortable: true },
-                { key: scanningSettings.nikColumn, label: 'NIK', sortable: true },
-                { key: scanningSettings.alamatColumn, label: 'ALAMAT', sortable: true },
-                { key: scanningSettings.kecamatanColumn, label: 'KECAMATAN', sortable: true },
-                { key: scanningSettings.desaColumn, label: 'DESA', sortable: true },
-                { key: scanningSettings.whatsappColumn, label: 'WHATSAPP', sortable: true, whatsapp: true },
-                { key: scanningSettings.profesiColumn, label: 'PROFESI', sortable: true },
-                { key: scanningSettings.alatTangkapColumn, label: 'ALAT TANGKAP', sortable: true },
-                { key: scanningSettings.jenisKapalColumn, label: 'JENIS KAPAL', sortable: true },
-                { key: '_status', label: 'STATUS', sortable: false }
-            ];
+            // Define column order (only show columns that are mapped)
+            const columns = [];
+            
+            if (scanningSettings.namaColumn) columns.push({ key: scanningSettings.namaColumn, label: 'NAMA', sortable: true });
+            if (scanningSettings.nikColumn) columns.push({ key: scanningSettings.nikColumn, label: 'NIK', sortable: true });
+            if (scanningSettings.whatsappColumn) columns.push({ key: scanningSettings.whatsappColumn, label: 'WHATSAPP', sortable: true, whatsapp: true });
+            if (scanningSettings.profesiColumn) columns.push({ key: scanningSettings.profesiColumn, label: 'PROFESI', sortable: true, profesi: true });
+            if (scanningSettings.alamatColumn) columns.push({ key: scanningSettings.alamatColumn, label: 'ALAMAT', sortable: true });
+            if (scanningSettings.kecamatanColumn) columns.push({ key: scanningSettings.kecamatanColumn, label: 'KECAMATAN', sortable: true });
+            if (scanningSettings.desaColumn) columns.push({ key: scanningSettings.desaColumn, label: 'DESA', sortable: true });
+            if (scanningSettings.alatTangkapColumn) columns.push({ key: scanningSettings.alatTangkapColumn, label: 'ALAT TANGKAP', sortable: true });
+            if (scanningSettings.jenisKapalColumn) columns.push({ key: scanningSettings.jenisKapalColumn, label: 'JENIS KAPAL', sortable: true });
+            
+            columns.push({ key: '_status', label: 'STATUS', sortable: false });
             
             columns.forEach(col => {
                 const th = document.createElement('th');
@@ -2397,13 +2982,9 @@
                                 badge.classList.add(item._selected ? 'status-selected' : 'status-duplicate');
                                 badge.textContent = item._selected ? 'DIPILIH' : 'DUPLIKAT';
                                 break;
-                            case 'invalid_nik_length':
-                            case 'invalid_nik_numeric':
-                            case 'missing_nik':
-                                badge.classList.add('status-invalid');
-                                badge.textContent = 'NIK TIDAK VALID';
-                                break;
+                            case 'invalid_nik':
                             case 'invalid_included':
+                            case 'invalid_marked':
                                 badge.classList.add('status-invalid');
                                 badge.textContent = 'TIDAK VALID';
                                 break;
@@ -2412,22 +2993,38 @@
                         }
                         
                         td.appendChild(badge);
+                        
+                        // Add WhatsApp status icon if applicable
+                        if (item._whatsappValid !== undefined) {
+                            const whatsappIcon = document.createElement('span');
+                            whatsappIcon.className = `whatsapp-status ${item._whatsappValid ? 'whatsapp-valid' : 'whatsapp-invalid'}`;
+                            whatsappIcon.innerHTML = `<i class="fab fa-whatsapp"></i> ${item._whatsappValid ? 'Valid' : 'Tidak Valid'}`;
+                            td.appendChild(document.createElement('br'));
+                            td.appendChild(whatsappIcon);
+                        }
                     } else if (col.whatsapp) {
                         // WhatsApp column with special formatting
                         td.className = 'whatsapp-cell';
                         const whatsapp = item[col.key];
                         
                         if (whatsapp) {
-                            const formatted = formatWhatsApp(whatsapp);
-                            const whatsappLink = document.createElement('a');
-                            whatsappLink.href = `https://wa.me/${formatted}`;
-                            whatsappLink.target = '_blank';
-                            whatsappLink.innerHTML = `
-                                <i class="fab fa-whatsapp"></i> ${formatted}
-                                ${item._whatsappValid ? '<i class="fas fa-check-circle" style="color: #25D366; margin-left: 5px;"></i>' : 
-                                  item._whatsappIssue ? '<i class="fas fa-exclamation-triangle" style="color: #f39c12; margin-left: 5px;"></i>' : ''}
+                            td.innerHTML = formatWhatsAppForDisplay(whatsapp);
+                        } else {
+                            td.textContent = '-';
+                            td.innerHTML += '<span class="whatsapp-status whatsapp-invalid"><i class="fas fa-exclamation-triangle"></i> Kosong</span>';
+                        }
+                    } else if (col.profesi) {
+                        // Profesi column with special formatting
+                        const profesi = item[col.key];
+                        const standardizedProfesi = item._profesiStandardized;
+                        
+                        if (standardizedProfesi) {
+                            td.innerHTML = `
+                                <span class="profesi-tag">${standardizedProfesi.charAt(0).toUpperCase() + standardizedProfesi.slice(1)}</span>
+                                ${profesi && profesi !== standardizedProfesi ? `<br><small style="color: #666;">${profesi}</small>` : ''}
                             `;
-                            td.appendChild(whatsappLink);
+                        } else if (profesi) {
+                            td.innerHTML = `<span class="profesi-tag">${profesi}</span>`;
                         } else {
                             td.textContent = '-';
                         }
@@ -2528,6 +3125,7 @@
         // Apply Filters
         function applyFilters() {
             const statusFilter = document.getElementById('filterStatus').value;
+            const profesiFilter = document.getElementById('filterProfesi').value;
             const searchTerm = document.getElementById('searchData').value.toLowerCase();
             
             filteredData = processedData.filter(item => {
@@ -2537,6 +3135,28 @@
                     if (statusFilter === 'duplicate' && item._status !== 'duplicate') return false;
                     if (statusFilter === 'selected' && !item._selected) return false;
                     if (statusFilter === 'invalid' && !(item._status && item._status.includes('invalid'))) return false;
+                    if (statusFilter === 'whatsapp_valid' && !item._whatsappValid) return false;
+                    if (statusFilter === 'whatsapp_invalid' && item._whatsappValid) return false;
+                }
+                
+                // Profesi filter
+                if (profesiFilter !== 'all') {
+                    const profesi = item._profesiStandardized || item[scanningSettings.profesiColumn] || '';
+                    const profesiLower = profesi.toString().toLowerCase();
+                    
+                    if (profesiFilter === 'lainnya') {
+                        // Check if profesi is not in standard categories
+                        let isStandard = false;
+                        for (const category of Object.keys(standardProfesi)) {
+                            if (profesiLower === category) {
+                                isStandard = true;
+                                break;
+                            }
+                        }
+                        if (isStandard || !profesi) return false;
+                    } else if (profesiLower !== profesiFilter) {
+                        return false;
+                    }
                 }
                 
                 // Search filter
@@ -2554,6 +3174,7 @@
                     ];
                     
                     const matches = searchableFields.some(field => {
+                        if (!field) return false;
                         const value = item[field];
                         return value && value.toString().toLowerCase().includes(searchTerm);
                     });
@@ -2579,19 +3200,21 @@
             
             if (processedData.length === 0) return;
             
-            // Define columns for export
-            const exportColumns = [
-                { key: scanningSettings.namaColumn, label: 'Nama' },
-                { key: scanningSettings.nikColumn, label: 'NIK' },
-                { key: scanningSettings.alamatColumn, label: 'Alamat' },
-                { key: scanningSettings.kecamatanColumn, label: 'Kecamatan' },
-                { key: scanningSettings.desaColumn, label: 'Desa' },
-                { key: scanningSettings.whatsappColumn, label: 'WhatsApp', whatsapp: true },
-                { key: scanningSettings.profesiColumn, label: 'Profesi' },
-                { key: scanningSettings.alatTangkapColumn, label: 'Alat Tangkap' },
-                { key: scanningSettings.jenisKapalColumn, label: 'Jenis Kapal' },
-                { key: '_status_display', label: 'Status' }
-            ];
+            // Define columns for export (only show columns that are mapped)
+            const exportColumns = [];
+            
+            if (scanningSettings.namaColumn) exportColumns.push({ key: scanningSettings.namaColumn, label: 'Nama' });
+            if (scanningSettings.nikColumn) exportColumns.push({ key: scanningSettings.nikColumn, label: 'NIK' });
+            if (scanningSettings.whatsappColumn) exportColumns.push({ key: scanningSettings.whatsappColumn, label: 'WhatsApp', whatsapp: true });
+            if (scanningSettings.profesiColumn) exportColumns.push({ key: scanningSettings.profesiColumn, label: 'Profesi' });
+            if (scanningSettings.alamatColumn) exportColumns.push({ key: scanningSettings.alamatColumn, label: 'Alamat' });
+            if (scanningSettings.kecamatanColumn) exportColumns.push({ key: scanningSettings.kecamatanColumn, label: 'Kecamatan' });
+            if (scanningSettings.desaColumn) exportColumns.push({ key: scanningSettings.desaColumn, label: 'Desa' });
+            if (scanningSettings.alatTangkapColumn) exportColumns.push({ key: scanningSettings.alatTangkapColumn, label: 'Alat Tangkap' });
+            if (scanningSettings.jenisKapalColumn) exportColumns.push({ key: scanningSettings.jenisKapalColumn, label: 'Jenis Kapal' });
+            
+            exportColumns.push({ key: '_status_display', label: 'Status' });
+            exportColumns.push({ key: '_whatsapp_status', label: 'Status WhatsApp' });
             
             exportColumns.forEach(col => {
                 const checkboxItem = document.createElement('div');
@@ -2654,6 +3277,9 @@
                         !item._whatsappValid
                     );
                     break;
+                case 'whatsapp_only':
+                    dataToExport = processedData.filter(item => item._whatsappValid);
+                    break;
                 default:
                     dataToExport = processedData;
             }
@@ -2683,20 +3309,32 @@
                             case 'duplicate':
                                 exportItem['Status'] = item._selected ? 'Data Terpilih (Duplikat)' : 'Data Duplikat';
                                 break;
-                            case 'invalid_nik_length':
-                                exportItem['Status'] = 'NIK Tidak Valid (Panjang)';
-                                break;
-                            case 'invalid_nik_numeric':
-                                exportItem['Status'] = 'NIK Tidak Valid (Format)';
-                                break;
-                            case 'missing_nik':
-                                exportItem['Status'] = 'NIK Kosong';
+                            case 'invalid_nik':
+                                exportItem['Status'] = 'NIK Tidak Valid';
                                 break;
                             case 'invalid_included':
-                                exportItem['Status'] = 'Data Tidak Valid (Tetap Disertakan)';
+                                exportItem['Status'] = 'Data Tidak Valid (Disertakan)';
+                                break;
+                            case 'invalid_marked':
+                                exportItem['Status'] = 'Data Tidak Valid (Ditandai)';
                                 break;
                             default:
                                 exportItem['Status'] = item._status || '';
+                        }
+                    } else if (column === '_whatsapp_status') {
+                        // WhatsApp status
+                        exportItem['Status WhatsApp'] = item._whatsappValid ? 'Valid' : 'Tidak Valid';
+                        if (item._whatsappIssue) {
+                            exportItem['Status WhatsApp'] += ` (${item._whatsappIssue})`;
+                        }
+                    } else if (column === scanningSettings.whatsappColumn && item._whatsappFormatted) {
+                        // Use formatted WhatsApp if available
+                        exportItem['WhatsApp'] = item._whatsappFormatted;
+                    } else if (column === scanningSettings.profesiColumn && item._profesiStandardized) {
+                        // Use standardized profesi if available
+                        exportItem['Profesi'] = item._profesiStandardized.charAt(0).toUpperCase() + item._profesiStandardized.slice(1);
+                        if (item[column] && item[column] !== item._profesiStandardized) {
+                            exportItem['Profesi Asli'] = item[column];
                         }
                     } else {
                         // Use formatted column name
@@ -2789,10 +3427,7 @@
             let content = '';
             
             // Filter only valid WhatsApp numbers
-            const validData = dataToExport.filter(item => {
-                const whatsapp = item[scanningSettings.whatsappColumn];
-                return whatsapp && isValidWhatsApp(whatsapp.toString());
-            });
+            const validData = dataToExport.filter(item => item._whatsappValid);
             
             if (validData.length === 0) {
                 showNotification('Tidak ada nomor WhatsApp valid untuk diekspor', 'warning');
@@ -2801,18 +3436,36 @@
             
             validData.forEach(item => {
                 const nama = item[scanningSettings.namaColumn] || '';
-                const whatsapp = item[scanningSettings.whatsappColumn];
-                const formattedWhatsApp = formatWhatsApp(whatsapp.toString());
+                let whatsapp = item._whatsappFormatted || item[scanningSettings.whatsappColumn] || '';
+                
+                // Format based on selection
+                let formattedNumber = whatsapp;
                 
                 switch (format) {
                     case 'name_number':
-                        content += `${nama},${formattedWhatsApp}\n`;
+                        // 081234567890 format
+                        if (whatsapp.startsWith('62')) {
+                            formattedNumber = '0' + whatsapp.substring(2);
+                        }
+                        content += `${nama},${formattedNumber}\n`;
                         break;
                     case 'number_only':
-                        content += `${formattedWhatsApp}\n`;
+                        // 081234567890 format
+                        if (whatsapp.startsWith('62')) {
+                            formattedNumber = '0' + whatsapp.substring(2);
+                        }
+                        content += `${formattedNumber}\n`;
                         break;
                     case 'csv_import':
-                        content += `${formattedWhatsApp},${nama}\n`;
+                        // WhatsApp import format: 6281234567890,Nama
+                        content += `${whatsapp},${nama}\n`;
+                        break;
+                    case 'with_plus':
+                        // +6281234567890 format
+                        if (!whatsapp.startsWith('+')) {
+                            formattedNumber = '+' + whatsapp;
+                        }
+                        content += `${nama},${formattedNumber}\n`;
                         break;
                 }
             });
@@ -2829,9 +3482,9 @@
         
         // Export Selected WhatsApp Contacts
         function exportWhatsAppSelected() {
-            const selectedData = processedData.filter(item => item._selected);
+            const selectedData = processedData.filter(item => item._selected && item._whatsappValid);
             if (selectedData.length === 0) {
-                showNotification('Tidak ada data terpilih', 'warning');
+                showNotification('Tidak ada data terpilih dengan WhatsApp valid', 'warning');
                 return;
             }
             
@@ -2840,18 +3493,17 @@
             
             selectedData.forEach(item => {
                 const nama = item[scanningSettings.namaColumn] || '';
-                const whatsapp = item[scanningSettings.whatsappColumn];
+                const whatsapp = item._whatsappFormatted || item[scanningSettings.whatsappColumn] || '';
                 
-                if (whatsapp && isValidWhatsApp(whatsapp.toString())) {
-                    const formattedWhatsApp = formatWhatsApp(whatsapp.toString());
-                    content += `${nama},${formattedWhatsApp}\n`;
+                if (whatsapp) {
+                    // Format as 08xxxxxxxxxx
+                    let formattedNumber = whatsapp;
+                    if (whatsapp.startsWith('62')) {
+                        formattedNumber = '0' + whatsapp.substring(2);
+                    }
+                    content += `${nama},${formattedNumber}\n`;
                 }
             });
-            
-            if (!content) {
-                showNotification('Tidak ada nomor WhatsApp valid pada data terpilih', 'warning');
-                return;
-            }
             
             const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
             const link = document.createElement('a');
@@ -2859,7 +3511,7 @@
             link.download = `whatsapp_terpilih_${dateStr}.txt`;
             link.click();
             
-            showNotification('Kontak WhatsApp terpilih berhasil diekspor', 'success');
+            showNotification(`${selectedData.length} kontak WhatsApp terpilih berhasil diekspor`, 'success');
         }
         
         // Preview Export
@@ -2898,6 +3550,9 @@
                         !item._whatsappValid
                     );
                     break;
+                case 'whatsapp_only':
+                    dataToExport = processedData.filter(item => item._whatsappValid);
+                    break;
                 default:
                     dataToExport = processedData;
             }
@@ -2921,18 +3576,30 @@
                             case 'duplicate':
                                 previewItem['Status'] = item._selected ? 'Data Terpilih (Duplikat)' : 'Data Duplikat';
                                 break;
-                            case 'invalid_nik_length':
-                                previewItem['Status'] = 'NIK Tidak Valid (Panjang)';
+                            case 'invalid_nik':
+                                previewItem['Status'] = 'NIK Tidak Valid';
                                 break;
-                            case 'invalid_nik_numeric':
-                                previewItem['Status'] = 'NIK Tidak Valid (Format)';
+                            case 'invalid_included':
+                                previewItem['Status'] = 'Data Tidak Valid (Disertakan)';
                                 break;
-                            case 'missing_nik':
-                                previewItem['Status'] = 'NIK Kosong';
+                            case 'invalid_marked':
+                                previewItem['Status'] = 'Data Tidak Valid (Ditandai)';
                                 break;
                             default:
                                 previewItem['Status'] = item._status || '';
                         }
+                    } else if (column === '_whatsapp_status') {
+                        // WhatsApp status
+                        previewItem['Status WhatsApp'] = item._whatsappValid ? 'Valid' : 'Tidak Valid';
+                        if (item._whatsappIssue) {
+                            previewItem['Status WhatsApp'] += ` (${item._whatsappIssue})`;
+                        }
+                    } else if (column === scanningSettings.whatsappColumn && item._whatsappFormatted) {
+                        // Use formatted WhatsApp if available
+                        previewItem['WhatsApp'] = item._whatsappFormatted;
+                    } else if (column === scanningSettings.profesiColumn && item._profesiStandardized) {
+                        // Use standardized profesi if available
+                        previewItem['Profesi'] = item._profesiStandardized.charAt(0).toUpperCase() + item._profesiStandardized.slice(1);
                     } else {
                         // Use formatted column name
                         let columnName = column;
@@ -3021,6 +3688,13 @@
                 statusCounts[status] = (statusCounts[status] || 0) + 1;
             });
             
+            // WhatsApp statistics
+            const whatsappStats = {
+                valid: validWhatsApp,
+                invalid: invalidWhatsApp,
+                empty: processedData.filter(item => !item[scanningSettings.whatsappColumn]).length
+            };
+            
             // Create analysis HTML
             let analysisHTML = `
                 <div style="margin-bottom: 20px;">
@@ -3054,36 +3728,65 @@
                 </div>
                 
                 <div style="margin-bottom: 20px;">
-                    <h4 style="color: var(--primary-color); margin-bottom: 15px;">Distribusi Status Data</h4>
+                    <h4 style="color: var(--primary-color); margin-bottom: 15px;">Statistik WhatsApp</h4>
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>WhatsApp Valid:</span>
+                                <span>${whatsappStats.valid} (${((whatsappStats.valid/processedData.length)*100).toFixed(1)}%)</span>
+                            </div>
+                            <div style="height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; width: ${((whatsappStats.valid/processedData.length)*100)}%; background-color: var(--whatsapp-color);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>WhatsApp Tidak Valid:</span>
+                                <span>${whatsappStats.invalid} (${((whatsappStats.invalid/processedData.length)*100).toFixed(1)}%)</span>
+                            </div>
+                            <div style="height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; width: ${((whatsappStats.invalid/processedData.length)*100)}%; background-color: var(--warning-color);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>WhatsApp Kosong:</span>
+                                <span>${whatsappStats.empty} (${((whatsappStats.empty/processedData.length)*100).toFixed(1)}%)</span>
+                            </div>
+                            <div style="height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; width: ${((whatsappStats.empty/processedData.length)*100)}%; background-color: var(--danger-color);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 15px;">Distribusi Profesi</h4>
                     <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
             `;
             
-            Object.keys(statusCounts).forEach(status => {
-                const count = statusCounts[status];
-                const percentage = ((count / processedData.length) * 100).toFixed(1);
+            if (Object.keys(profesiDistribution).length > 0) {
+                const totalProfesi = Object.values(profesiDistribution).reduce((a, b) => a + b, 0);
+                const sortedProfesi = Object.entries(profesiDistribution)
+                    .sort((a, b) => b[1] - a[1]);
                 
-                let statusLabel = status;
-                switch (status) {
-                    case 'unique': statusLabel = 'Data Unik'; break;
-                    case 'duplicate': statusLabel = 'Data Duplikat'; break;
-                    case 'invalid_nik_length': statusLabel = 'NIK Panjang Tidak Valid'; break;
-                    case 'invalid_nik_numeric': statusLabel = 'NIK Format Tidak Valid'; break;
-                    case 'missing_nik': statusLabel = 'NIK Kosong'; break;
-                    case 'invalid_included': statusLabel = 'Data Tidak Valid (Disertakan)'; break;
-                }
-                
-                analysisHTML += `
-                    <div style="margin-bottom: 10px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                            <span>${statusLabel}</span>
-                            <span>${count} (${percentage}%)</span>
+                sortedProfesi.forEach(([profesi, count]) => {
+                    const percentage = ((count / totalProfesi) * 100).toFixed(1);
+                    analysisHTML += `
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>${profesi.charAt(0).toUpperCase() + profesi.slice(1)}:</span>
+                                <span>${count} (${percentage}%)</span>
+                            </div>
+                            <div style="height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; width: ${percentage}%; background-color: var(--secondary-color);"></div>
+                            </div>
                         </div>
-                        <div style="height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden;">
-                            <div style="height: 100%; width: ${percentage}%; background-color: var(--secondary-color);"></div>
-                        </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            } else {
+                analysisHTML += `<p style="color: #718096; text-align: center;">Tidak ada data profesi</p>`;
+            }
             
             analysisHTML += `
                     </div>
@@ -3102,12 +3805,23 @@
                 analysisHTML += `<p><i class="fas fa-exclamation-triangle" style="color: var(--warning-color); margin-right: 8px;"></i> ${invalid} data tidak valid ditemukan. Periksa validitas data NIK.</p>`;
             }
             
-            if (invalidWhatsApp > 0) {
-                analysisHTML += `<p><i class="fab fa-whatsapp" style="color: var(--whatsapp-color); margin-right: 8px;"></i> ${invalidWhatsApp} nomor WhatsApp tidak valid. Gunakan fitur validasi WhatsApp.</p>`;
+            if (whatsappStats.invalid > 0) {
+                analysisHTML += `<p><i class="fab fa-whatsapp" style="color: var(--whatsapp-color); margin-right: 8px;"></i> ${whatsappStats.invalid} nomor WhatsApp tidak valid. Gunakan fitur validasi WhatsApp.</p>`;
+            }
+            
+            if (whatsappStats.empty > 0) {
+                analysisHTML += `<p><i class="fas fa-exclamation-circle" style="color: var(--danger-color); margin-right: 8px;"></i> ${whatsappStats.empty} data tidak memiliki nomor WhatsApp.</p>`;
             }
             
             if (unique === total) {
                 analysisHTML += `<p><i class="fas fa-info-circle" style="color: var(--secondary-color); margin-right: 8px;"></i> Tidak ada data duplikat ditemukan. Data sudah bersih.</p>`;
+            }
+            
+            // Profesi recommendations
+            if (Object.keys(profesiDistribution).length > 0) {
+                const topProfesi = Object.entries(profesiDistribution)
+                    .sort((a, b) => b[1] - a[1])[0];
+                analysisHTML += `<p><i class="fas fa-user-tie" style="color: var(--primary-color); margin-right: 8px;"></i> Profesi dominan: <strong>${topProfesi[0]}</strong> (${topProfesi[1]} data)</p>`;
             }
             
             analysisHTML += `
@@ -3174,8 +3888,8 @@
         
         function resetSettings() {
             scanningSettings = {
-                nikColumn: '',
                 namaColumn: '',
+                nikColumn: '',
                 alamatColumn: '',
                 kecamatanColumn: '',
                 desaColumn: '',
@@ -3184,30 +3898,41 @@
                 alatTangkapColumn: '',
                 jenisKapalColumn: '',
                 duplicateMethod: 'complete',
-                addressColumns: [],
                 validateNikLength: true,
                 validateNikNumeric: true,
-                validateWhatsApp: true,
+                validateNikProvince: true,
+                validateWhatsAppFormat: true,
+                validateWhatsAppLength: true,
+                validateWhatsAppPrefix: true,
+                autoFormatWhatsApp: true,
+                standardizeProfesi: true,
+                groupSimilarProfesi: true,
                 invalidDataAction: 'exclude',
                 weights: {
+                    nama: 4,
                     alamat: 3,
-                    kecamatan: 2,
-                    desa: 2,
-                    whatsapp: 4
+                    whatsapp: 5,
+                    profesi: 2
                 }
             };
             
             // Update UI
             document.getElementById('validateNikLength').checked = true;
             document.getElementById('validateNikNumeric').checked = true;
-            document.getElementById('validateWhatsApp').checked = true;
+            document.getElementById('validateNikProvince').checked = true;
+            document.getElementById('validateWhatsAppFormat').checked = true;
+            document.getElementById('validateWhatsAppLength').checked = true;
+            document.getElementById('validateWhatsAppPrefix').checked = true;
+            document.getElementById('autoFormatWhatsApp').checked = true;
+            document.getElementById('standardizeProfesi').checked = true;
+            document.getElementById('groupSimilarProfesi').checked = true;
             document.getElementById('invalidDataAction').value = 'exclude';
             document.querySelector('input[name="duplicateMethod"][value="complete"]').checked = true;
             
+            document.getElementById('weightNama').value = 4;
             document.getElementById('weightAlamat').value = 3;
-            document.getElementById('weightKecamatan').value = 2;
-            document.getElementById('weightDesa').value = 2;
-            document.getElementById('weightWhatsApp').value = 4;
+            document.getElementById('weightWhatsApp').value = 5;
+            document.getElementById('weightProfesi').value = 2;
             
             showNotification('Pengaturan telah direset ke default', 'success');
         }
@@ -3226,12 +3951,18 @@
         }
         
         function selectAllRows() {
-            // Implementation for selecting all rows
-            showNotification('Fitur pilih semua diaktifkan', 'info');
+            processedData.forEach(item => {
+                item._selected = true;
+            });
+            displayDataTable();
+            showNotification('Semua data telah dipilih', 'info');
         }
         
         function deselectAllRows() {
-            // Implementation for deselecting all rows
+            processedData.forEach(item => {
+                item._selected = false;
+            });
+            displayDataTable();
             showNotification('Semua pilihan dibatalkan', 'info');
         }
         
@@ -3256,18 +3987,16 @@
             // Add column toggles
             const columnSettingsList = document.getElementById('columnSettingsList');
             
-            const columns = [
-                { key: scanningSettings.namaColumn || 'nama', label: 'Nama', enabled: true },
-                { key: scanningSettings.nikColumn || 'nik', label: 'NIK', enabled: true },
-                { key: scanningSettings.alamatColumn || 'alamat', label: 'Alamat', enabled: true },
-                { key: scanningSettings.kecamatanColumn || 'kecamatan', label: 'Kecamatan', enabled: true },
-                { key: scanningSettings.desaColumn || 'desa', label: 'Desa', enabled: true },
-                { key: scanningSettings.whatsappColumn || 'whatsapp', label: 'WhatsApp', enabled: true },
-                { key: scanningSettings.profesiColumn || 'profesi', label: 'Profesi', enabled: true },
-                { key: scanningSettings.alatTangkapColumn || 'alattangkap', label: 'Alat Tangkap', enabled: true },
-                { key: scanningSettings.jenisKapalColumn || 'jeniskapal', label: 'Jenis Kapal', enabled: true },
-                { key: '_status', label: 'Status', enabled: true }
-            ];
+            const columns = [];
+            if (scanningSettings.namaColumn) columns.push({ key: scanningSettings.namaColumn, label: 'Nama', enabled: true });
+            if (scanningSettings.nikColumn) columns.push({ key: scanningSettings.nikColumn, label: 'NIK', enabled: true });
+            if (scanningSettings.whatsappColumn) columns.push({ key: scanningSettings.whatsappColumn, label: 'WhatsApp', enabled: true });
+            if (scanningSettings.profesiColumn) columns.push({ key: scanningSettings.profesiColumn, label: 'Profesi', enabled: true });
+            if (scanningSettings.alamatColumn) columns.push({ key: scanningSettings.alamatColumn, label: 'Alamat', enabled: true });
+            if (scanningSettings.kecamatanColumn) columns.push({ key: scanningSettings.kecamatanColumn, label: 'Kecamatan', enabled: true });
+            if (scanningSettings.desaColumn) columns.push({ key: scanningSettings.desaColumn, label: 'Desa', enabled: true });
+            if (scanningSettings.alatTangkapColumn) columns.push({ key: scanningSettings.alatTangkapColumn, label: 'Alat Tangkap', enabled: true });
+            if (scanningSettings.jenisKapalColumn) columns.push({ key: scanningSettings.jenisKapalColumn, label: 'Jenis Kapal', enabled: true });
             
             columns.forEach(col => {
                 const checkboxItem = document.createElement('div');
@@ -3306,20 +4035,33 @@
             
             let validCount = 0;
             let invalidCount = 0;
+            let emptyCount = 0;
             
             processedData.forEach(item => {
                 const whatsapp = item[scanningSettings.whatsappColumn];
-                if (whatsapp && isValidWhatsApp(whatsapp.toString())) {
-                    item._whatsappValid = true;
-                    validCount++;
+                if (whatsapp) {
+                    const isValid = isValidWhatsApp(whatsapp.toString());
+                    const formatted = formatWhatsApp(whatsapp.toString());
+                    
+                    item._whatsappValid = isValid;
+                    if (isValid) {
+                        item._whatsappFormatted = formatted;
+                        validCount++;
+                    } else {
+                        item._whatsappIssue = 'Format WhatsApp tidak valid';
+                        invalidCount++;
+                        if (scanningSettings.autoFormatWhatsApp) {
+                            item._whatsappFormatted = formatted;
+                        }
+                    }
                 } else {
                     item._whatsappValid = false;
-                    invalidCount++;
-                    item._whatsappIssue = 'Format WhatsApp tidak valid';
+                    item._whatsappIssue = 'Nomor WhatsApp kosong';
+                    emptyCount++;
                 }
             });
             
-            showNotification(`Validasi WhatsApp selesai: ${validCount} valid, ${invalidCount} tidak valid`, 'success');
+            showNotification(`Validasi WhatsApp selesai: ${validCount} valid, ${invalidCount} tidak valid, ${emptyCount} kosong`, 'success');
             updateStatistics();
             updateChart();
             displayDataTable();
@@ -3354,6 +4096,8 @@
                     <div style="background-color: #f8f9fa; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
                         <p><strong>Nomor asli:</strong> ${number}</p>
                         <p><strong>Format internasional:</strong> ${formatted}</p>
+                        <p><strong>Format lokal:</strong> 0${formatted.substring(2)}</p>
+                        <p><strong>Format dengan +:</strong> +${formatted}</p>
                         <p><strong>Link WhatsApp:</strong> <a href="https://wa.me/${formatted}" target="_blank">https://wa.me/${formatted}</a></p>
                     </div>
                 `;
@@ -3366,9 +4110,15 @@
                         <p><strong>Nomor yang dimasukkan:</strong> ${number}</p>
                         <p><strong>Format yang valid:</strong></p>
                         <ul style="margin-left: 20px;">
-                            <li>08xxxxxxxxxx (10-13 digit)</li>
+                            <li>08xxxxxxxxxx (10-13 digit, dimulai dengan 08 atau 09)</li>
                             <li>628xxxxxxxxxx (11-14 digit)</li>
                             <li>+628xxxxxxxxxx (12-15 digit)</li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>Contoh valid:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>081234567890</li>
+                            <li>6281234567890</li>
+                            <li>+6281234567890</li>
                         </ul>
                     </div>
                 `;
@@ -3463,12 +4213,12 @@
         
         function downloadTemplate() {
             const templateData = [
-                ['NAMA', 'NIK', 'ALAMAT', 'KECAMATAN', 'DESA', 'WHATSAPP', 'PROFESI', 'ALAT_TANGKAP', 'JENIS_KAPAL'],
-                ['Ahmad Santoso', '1234567890123456', 'Jl. Merdeka No. 12 RT 03 RW 05', 'Sukajadi', 'Sukamaju', '081234567890', 'Nelayan', 'Jaring Insang', 'Kapal Motor 5 GT'],
-                ['Budi Pratama', '2345678901234567', 'Jl. Sudirman No. 45', 'Cibeunying', 'Cihapit', '6281234567891', 'Nelayan', 'Pancing', 'Perahu Katinting'],
-                ['Citra Dewi', '3456789012345678', 'Jl. Gatot Subroto No. 78', 'Bandung Kidul', 'Mengger', '081298765432', 'Ibu Rumah Tangga', '-', '-'],
-                ['Contoh data duplikat', '1234567890123456', 'Jl. Merdeka No. 12', 'Sukajadi', 'Sukamaju', '081234567890', 'Nelayan', 'Jaring Insang', 'Kapal Motor 5 GT'],
-                ['Dian Sari', '4567890123456789', 'Jl. Asia Afrika No. 23', 'Sumur Bandung', 'Braga', '6285212345678', 'Pedagang Ikan', 'Bagan', 'Kapal Motor 10 GT']
+                ['NAMA', 'NIK', 'WHATSAPP', 'PROFESI', 'ALAMAT', 'KECAMATAN', 'DESA', 'ALAT_TANGKAP', 'JENIS_KAPAL'],
+                ['Ahmad Santoso', '1234567890123456', '081234567890', 'Nelayan', 'Jl. Merdeka No. 12 RT 03 RW 05', 'Sukajadi', 'Sukamaju', 'Jaring Insang', 'Kapal Motor 5 GT'],
+                ['Budi Pratama', '2345678901234567', '6281234567891', 'Nelayan', 'Jl. Sudirman No. 45', 'Cibeunying', 'Cihapit', 'Pancing', 'Perahu Katinting'],
+                ['Citra Dewi', '3456789012345678', '081298765432', 'Ibu Rumah Tangga', 'Jl. Gatot Subroto No. 78', 'Bandung Kidul', 'Mengger', '-', '-'],
+                ['Contoh data duplikat', '1234567890123456', '081234567890', 'Nelayan', 'Jl. Merdeka No. 12', 'Sukajadi', 'Sukamaju', 'Jaring Insang', 'Kapal Motor 5 GT'],
+                ['Dian Sari', '4567890123456789', '6285212345678', 'Pedagang Ikan', 'Jl. Asia Afrika No. 23', 'Sumur Bandung', 'Braga', 'Bagan', 'Kapal Motor 10 GT']
             ];
             
             const worksheet = XLSX.utils.aoa_to_sheet(templateData);
