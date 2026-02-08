@@ -132,6 +132,7 @@
             margin-top: 10px;
             font-size: 0.9rem;
             color: #666;
+            min-height: 20px;
         }
         
         .controls {
@@ -182,6 +183,7 @@
             background: linear-gradient(to right, #95a5a6, #7f8c8d);
             color: #ecf0f1;
             cursor: not-allowed;
+            opacity: 0.7;
         }
         
         .btn-disabled:hover {
@@ -317,6 +319,16 @@
             border-left: 4px solid #f1c40f;
         }
         
+        .error-message {
+            background-color: #fee;
+            color: #c33;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+        
         @media (max-width: 768px) {
             .controls {
                 flex-direction: column;
@@ -378,16 +390,21 @@
                     </div>
                     <div id="fileName" class="file-name">Belum ada file dipilih</div>
                     
+                    <div id="errorMessage" class="error-message"></div>
+                    
                     <div class="note">
                         <p><strong>Catatan:</strong> Pastikan file Excel memiliki kolom dengan nama tepat: <strong>nama, nik, alamat, kecamatan, desa</strong> (tidak case-sensitive). Data dengan alamat lebih lengkap akan diprioritaskan saat ada duplikasi NIK.</p>
                     </div>
                     
                     <div class="controls">
-                        <button id="processBtn" class="btn btn-primary">
+                        <button id="processBtn" class="btn btn-primary btn-disabled" disabled>
                             <i class="fas fa-search"></i> Proses Pemindaian
                         </button>
                         <button id="downloadBtn" class="btn btn-secondary btn-disabled" disabled>
                             <i class="fas fa-download"></i> Unduh Hasil
+                        </button>
+                        <button id="demoBtn" class="btn" style="background:linear-gradient(to right, #9b59b6, #8e44ad); color:white;">
+                            <i class="fas fa-magic"></i> Data Demo
                         </button>
                     </div>
                 </div>
@@ -415,15 +432,15 @@
             
             <div class="right-panel">
                 <div id="tableSection">
-                    <div class="empty-state">
+                    <div class="empty-state" id="emptyState">
                         <div class="empty-icon">
                             <i class="fas fa-table"></i>
                         </div>
                         <h3>Belum Ada Data</h3>
-                        <p>Unggah file Excel untuk memulai pemindaian data duplikat.</p>
+                        <p>Unggah file Excel atau klik "Data Demo" untuk memulai pemindaian data duplikat.</p>
                     </div>
                     
-                    <div class="table-container" style="display: none;">
+                    <div class="table-container" id="tableContainer" style="display: none;">
                         <table id="dataTable">
                             <thead>
                                 <tr>
@@ -457,9 +474,11 @@
             const fileName = document.getElementById('fileName');
             const processBtn = document.getElementById('processBtn');
             const downloadBtn = document.getElementById('downloadBtn');
-            const tableContainer = document.querySelector('.table-container');
+            const demoBtn = document.getElementById('demoBtn');
+            const tableContainer = document.getElementById('tableContainer');
             const tableBody = document.getElementById('tableBody');
-            const emptyState = document.querySelector('.empty-state');
+            const emptyState = document.getElementById('emptyState');
+            const errorMessage = document.getElementById('errorMessage');
             
             // Statistik
             const totalDataEl = document.getElementById('totalData');
@@ -474,9 +493,10 @@
             
             // Event listener untuk file input
             fileInput.addEventListener('change', function(e) {
+                errorMessage.style.display = 'none';
                 if (e.target.files.length > 0) {
                     const file = e.target.files[0];
-                    fileName.textContent = `File dipilih: ${file.name}`;
+                    fileName.textContent = `File dipilih: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
                     processBtn.disabled = false;
                     processBtn.classList.remove('btn-disabled');
                     
@@ -495,7 +515,7 @@
             // Event listener untuk tombol proses
             processBtn.addEventListener('click', function() {
                 if (!fileInput.files.length) {
-                    alert('Silakan pilih file Excel terlebih dahulu!');
+                    showError('Silakan pilih file Excel terlebih dahulu!');
                     return;
                 }
                 
@@ -512,47 +532,46 @@
                         const worksheet = workbook.Sheets[firstSheetName];
                         
                         // Konversi ke JSON
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
                         
-                        if (jsonData.length < 2) {
-                            alert('File Excel kosong atau tidak memiliki data!');
+                        if (jsonData.length === 0) {
+                            showError('File Excel kosong atau tidak memiliki data!');
                             return;
                         }
                         
-                        // Ambil header (baris pertama)
-                        const headers = jsonData[0].map(header => header ? header.toString().toLowerCase().trim() : '');
+                        // Ambil header (kunci dari objek pertama)
+                        const firstRow = jsonData[0];
+                        const headers = Object.keys(firstRow).map(header => header ? header.toString().toLowerCase().trim() : '');
                         
                         // Validasi header
                         const missingColumns = expectedColumns.filter(col => !headers.includes(col));
                         
                         if (missingColumns.length > 0) {
-                            alert(`Kolom yang diperlukan tidak ditemukan: ${missingColumns.join(', ')}\n\nPastikan file Excel memiliki kolom: Nama, NIK, Alamat, Kecamatan, Desa`);
+                            showError(`Kolom yang diperlukan tidak ditemukan: ${missingColumns.join(', ')}\n\nPastikan file Excel memiliki kolom: Nama, NIK, Alamat, Kecamatan, Desa`);
                             return;
                         }
                         
-                        // Dapatkan indeks kolom
-                        const colIndexes = {
-                            nama: headers.indexOf('nama'),
-                            nik: headers.indexOf('nik'),
-                            alamat: headers.indexOf('alamat'),
-                            kecamatan: headers.indexOf('kecamatan'),
-                            desa: headers.indexOf('desa')
-                        };
-                        
-                        // Ekstrak data (mulai dari baris kedua)
+                        // Ekstrak data
                         originalData = [];
-                        for (let i = 1; i < jsonData.length; i++) {
+                        for (let i = 0; i < jsonData.length; i++) {
                             const row = jsonData[i];
                             
-                            // Skip baris kosong
-                            if (!row || row.length === 0 || !row[colIndexes.nik]) continue;
+                            // Cari kunci yang sesuai (case-insensitive)
+                            const namaKey = Object.keys(row).find(key => key.toLowerCase().trim() === 'nama');
+                            const nikKey = Object.keys(row).find(key => key.toLowerCase().trim() === 'nik');
+                            const alamatKey = Object.keys(row).find(key => key.toLowerCase().trim() === 'alamat');
+                            const kecamatanKey = Object.keys(row).find(key => key.toLowerCase().trim() === 'kecamatan');
+                            const desaKey = Object.keys(row).find(key => key.toLowerCase().trim() === 'desa');
+                            
+                            // Skip baris jika NIK kosong
+                            if (!row[nikKey] || row[nikKey].toString().trim() === '') continue;
                             
                             const dataRow = {
-                                nama: row[colIndexes.nama] ? row[colIndexes.nama].toString().trim() : '',
-                                nik: row[colIndexes.nik] ? row[colIndexes.nik].toString().trim() : '',
-                                alamat: row[colIndexes.alamat] ? row[colIndexes.alamat].toString().trim() : '',
-                                kecamatan: row[colIndexes.kecamatan] ? row[colIndexes.kecamatan].toString().trim() : '',
-                                desa: row[colIndexes.desa] ? row[colIndexes.desa].toString().trim() : '',
+                                nama: row[namaKey] ? row[namaKey].toString().trim() : '',
+                                nik: row[nikKey] ? row[nikKey].toString().trim() : '',
+                                alamat: row[alamatKey] ? row[alamatKey].toString().trim() : '',
+                                kecamatan: row[kecamatanKey] ? row[kecamatanKey].toString().trim() : '',
+                                desa: row[desaKey] ? row[desaKey].toString().trim() : '',
                                 isDuplicate: false,
                                 isSelected: true
                             };
@@ -561,7 +580,7 @@
                         }
                         
                         if (originalData.length === 0) {
-                            alert('Tidak ada data yang valid ditemukan dalam file Excel!');
+                            showError('Tidak ada data yang valid ditemukan dalam file Excel! Pastikan kolom NIK terisi.');
                             return;
                         }
                         
@@ -580,11 +599,52 @@
                         
                     } catch (error) {
                         console.error('Error membaca file:', error);
-                        alert('Terjadi kesalahan saat membaca file Excel. Pastikan format file benar.');
+                        showError(`Terjadi kesalahan saat membaca file Excel: ${error.message}. Pastikan format file benar.`);
                     }
                 };
                 
+                reader.onerror = function() {
+                    showError('Gagal membaca file. Pastikan file tidak rusak.');
+                };
+                
                 reader.readAsArrayBuffer(file);
+            });
+            
+            // Event listener untuk tombol demo
+            demoBtn.addEventListener('click', function() {
+                // Data contoh untuk demo
+                originalData = [
+                    { nama: "Ahmad Santoso", nik: "1234567890123456", alamat: "Jl. Merdeka No. 12", kecamatan: "Sukajadi", desa: "Sukamaju", isDuplicate: false, isSelected: true },
+                    { nama: "Budi Pratama", nik: "2345678901234567", alamat: "Jl. Sudirman No. 45", kecamatan: "Cibeunying", desa: "Cihapit", isDuplicate: false, isSelected: true },
+                    { nama: "Citra Dewi", nik: "3456789012345678", alamat: "Jl. Gatot Subroto No. 78", kecamatan: "Bandung Kidul", desa: "Mengger", isDuplicate: false, isSelected: true },
+                    { nama: "Ahmad Santoso", nik: "1234567890123456", alamat: "Jl. Merdeka No. 12 RT 03 RW 05", kecamatan: "Sukajadi", desa: "Sukamaju", isDuplicate: false, isSelected: true },
+                    { nama: "Dian Sari", nik: "4567890123456789", alamat: "Jl. Asia Afrika No. 23", kecamatan: "Sumur Bandung", desa: "Braga", isDuplicate: false, isSelected: true },
+                    { nama: "Eko Wijaya", nik: "5678901234567890", alamat: "Jl. Cihampelas No. 56", kecamatan: "Cidadap", desa: "Cipaganti", isDuplicate: false, isSelected: true },
+                    { nama: "Budi Pratama", nik: "2345678901234567", alamat: "Jl. Sudirman No. 45", kecamatan: "Cibeunying", desa: "", isDuplicate: false, isSelected: true },
+                    { nama: "Fajar Nugraha", nik: "6789012345678901", alamat: "Jl. Sultan Agung No. 34", kecamatan: "Lengkong", desa: "Turangga", isDuplicate: false, isSelected: true },
+                    { nama: "Gita Maya", nik: "7890123456789012", alamat: "Jl. Pahlawan No. 67", kecamatan: "Buahbatu", desa: "Kebon Lega", isDuplicate: false, isSelected: true },
+                    { nama: "Hendra Setiawan", nik: "8901234567890123", alamat: "Jl. Soekarno Hatta No. 89", kecamatan: "Bandung Kulon", desa: "Caringin", isDuplicate: false, isSelected: true }
+                ];
+                
+                fileName.textContent = "Menggunakan data demo (10 record)";
+                processBtn.disabled = false;
+                processBtn.classList.remove('btn-disabled');
+                
+                // Proses data untuk menemukan dan menggabungkan duplikat
+                processData();
+                
+                // Tampilkan data
+                displayData();
+                
+                // Update statistik
+                updateStats();
+                
+                // Aktifkan tombol unduh
+                downloadBtn.disabled = false;
+                downloadBtn.classList.remove('btn-disabled');
+                
+                // Sembunyikan error jika ada
+                errorMessage.style.display = 'none';
             });
             
             // Fungsi untuk memproses data dan menggabungkan duplikat
@@ -594,6 +654,8 @@
                 
                 originalData.forEach(item => {
                     const nik = item.nik;
+                    
+                    if (!nik) return; // Skip jika NIK kosong
                     
                     if (!nikGroups[nik]) {
                         nikGroups[nik] = [];
@@ -615,18 +677,29 @@
                         processedData.push(group[0]);
                     } else {
                         // Ada duplikat - pilih data dengan alamat terlengkap
-                        // Hitung "kelengkapan alamat" berdasarkan panjang string gabungan
+                        // Hitung "kelengkapan alamat" berdasarkan jumlah field yang terisi
                         let bestIndex = 0;
-                        let maxLength = 0;
+                        let maxScore = 0;
                         
                         group.forEach((item, index) => {
-                            const addressLength = (
-                                item.alamat + item.kecamatan + item.desa
-                            ).length;
+                            let score = 0;
                             
-                            if (addressLength > maxLength) {
-                                maxLength = addressLength;
+                            // Beri poin untuk setiap bagian alamat yang terisi
+                            if (item.alamat && item.alamat.trim() !== '') score += 3;
+                            if (item.kecamatan && item.kecamatan.trim() !== '') score += 2;
+                            if (item.desa && item.desa.trim() !== '') score += 1;
+                            
+                            // Tambah poin untuk panjang alamat (detail)
+                            if (item.alamat) score += item.alamat.length * 0.01;
+                            
+                            if (score > maxScore) {
+                                maxScore = score;
                                 bestIndex = index;
+                            } else if (score === maxScore) {
+                                // Jika skor sama, pilih yang nama lebih lengkap
+                                if (item.nama && item.nama.length > group[bestIndex].nama.length) {
+                                    bestIndex = index;
+                                }
                             }
                         });
                         
@@ -676,8 +749,8 @@
                             statusIcon = 'star';
                             statusColor = '#f39c12';
                         } else {
-                            statusText = 'Duplikat';
-                            statusIcon = 'exclamation-circle';
+                            statusText = 'Duplikat (digantikan)';
+                            statusIcon = 'times-circle';
                             statusColor = '#e74c3c';
                         }
                     }
@@ -710,39 +783,47 @@
             // Event listener untuk tombol unduh
             downloadBtn.addEventListener('click', function() {
                 if (processedData.length === 0) {
-                    alert('Tidak ada data untuk diunduh!');
+                    showError('Tidak ada data untuk diunduh!');
                     return;
                 }
                 
-                // Siapkan data untuk Excel
-                const exportData = processedData.map(item => ({
-                    'Nama': item.nama,
-                    'NIK': item.nik,
-                    'Alamat': item.alamat,
-                    'Kecamatan': item.kecamatan,
-                    'Desa': item.desa,
-                    'Status': item.isDuplicate ? 'Data dipilih (alamat terlengkap dari duplikat)' : 'Data unik'
-                }));
-                
-                // Buat worksheet
-                const worksheet = XLSX.utils.json_to_sheet(exportData);
-                
-                // Buat workbook
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Data Hasil Pemindaian");
-                
-                // Buat file Excel
-                XLSX.writeFile(workbook, `hasil_pemindaian_${new Date().toISOString().slice(0,10)}.xlsx`);
+                try {
+                    // Siapkan data untuk Excel
+                    const exportData = processedData.map(item => ({
+                        'Nama': item.nama,
+                        'NIK': item.nik,
+                        'Alamat': item.alamat,
+                        'Kecamatan': item.kecamatan,
+                        'Desa': item.desa
+                    }));
+                    
+                    // Buat worksheet
+                    const worksheet = XLSX.utils.json_to_sheet(exportData);
+                    
+                    // Buat workbook
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Hasil Pemindaian");
+                    
+                    // Buat file Excel
+                    const currentDate = new Date().toISOString().slice(0,10).replace(/-/g, '');
+                    XLSX.writeFile(workbook, `hasil_pemindaian_${currentDate}.xlsx`);
+                } catch (error) {
+                    showError(`Gagal membuat file Excel: ${error.message}`);
+                }
             });
             
-            // Contoh data untuk demo (akan dihapus jika file diunggah)
-            loadDemoData();
-            
-            function loadDemoData() {
-                // Hanya untuk tujuan demonstrasi
-                console.log("Aplikasi Pemindai Excel Cerdas siap digunakan.");
-                console.log("Silakan unggah file Excel dengan kolom: Nama, NIK, Alamat, Kecamatan, Desa");
+            // Fungsi untuk menampilkan pesan error
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                
+                // Scroll ke error message
+                errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
+            
+            // Inisialisasi status tombol
+            processBtn.classList.add('btn-disabled');
+            downloadBtn.classList.add('btn-disabled');
         });
     </script>
 </body>
