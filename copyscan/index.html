@@ -995,7 +995,7 @@
                     </div>
                 </div>
                 <div class="app-version">
-                    <i class="fas fa-code-branch"></i> v3.0 Final
+                    <i class="fas fa-code-branch"></i> v4.0 Final Tersempurna
                 </div>
             </div>
             
@@ -1571,7 +1571,7 @@
         
         <!-- Footer -->
         <footer class="footer">
-            <p>Smart Excel Scanner Pro &copy; 2023 - Aplikasi Pemindai Data Excel Cerdas</p>
+            <p>Smart Excel Scanner Pro &copy; 2023 - Aplikasi Pemindai Data Excel Cerdas - VERSI FINAL</p>
             <p>Dikembangkan dengan <i class="fas fa-heart" style="color:#e74c3c;"></i> untuk optimalisasi pengolahan data</p>
         </footer>
     </div>
@@ -2220,7 +2220,7 @@
             
             mappingContainer.innerHTML = '';
             
-            // Define required fields with better matching
+            // Define ALL required fields
             const requiredFields = [
                 { 
                     id: 'nama', 
@@ -2247,42 +2247,42 @@
                     id: 'profesi', 
                     label: 'PROFESI', 
                     description: 'Kolom untuk profesi pekerjaan', 
-                    required: false,
+                    required: true,
                     possibleNames: ['profesi', 'pekerjaan', 'job', 'occupation', 'kerja', 'mata pencaharian', 'pekerjaan_utama']
                 },
                 { 
                     id: 'alamat', 
                     label: 'ALAMAT', 
                     description: 'Kolom untuk alamat lengkap', 
-                    required: false,
+                    required: true,
                     possibleNames: ['alamat', 'address', 'jalan', 'jl', 'alamat_lengkap', 'lokasi']
                 },
                 { 
                     id: 'kecamatan', 
                     label: 'KECAMATAN', 
                     description: 'Kolom untuk nama kecamatan', 
-                    required: false,
+                    required: true,
                     possibleNames: ['kecamatan', 'kec', 'district', 'wilayah', 'area']
                 },
                 { 
                     id: 'desa', 
                     label: 'DESA/KELURAHAN', 
                     description: 'Kolom untuk nama desa/kelurahan', 
-                    required: false,
+                    required: true,
                     possibleNames: ['desa', 'kelurahan', 'desa/kel', 'village', 'kel', 'dusun', 'kampung']
                 },
                 { 
                     id: 'alatTangkap', 
                     label: 'ALAT TANGKAP', 
                     description: 'Kolom untuk alat tangkap yang digunakan', 
-                    required: false,
+                    required: true,
                     possibleNames: ['alat tangkap', 'alat', 'gear', 'fishing gear', 'alat_tangkap', 'peralatan', 'alat_penangkapan', 'alattangkap']
                 },
                 { 
                     id: 'jenisKapal', 
                     label: 'JENIS KAPAL', 
                     description: 'Kolom untuk jenis kapal yang digunakan', 
-                    required: false,
+                    required: true,
                     possibleNames: ['jenis kapal', 'kapal', 'boat type', 'ship type', 'jenis_kapal', 'tipe_kapal', 'type_kapal', 'jeniskapal']
                 }
             ];
@@ -2351,7 +2351,6 @@
                 // Add event listener
                 select.addEventListener('change', function() {
                     scanningSettings[`${field.id}Column`] = this.value;
-                    console.log(`Set ${field.id}Column to: ${this.value}`);
                 });
                 
                 selectDiv.appendChild(select);
@@ -2367,7 +2366,7 @@
         // Scan Data - PERBAIKAN UTAMA
         function scanData() {
             // Validate required columns
-            const requiredColumns = ['nama', 'nik', 'whatsapp'];
+            const requiredColumns = ['nama', 'nik', 'whatsapp', 'profesi', 'alamat', 'kecamatan', 'desa', 'alatTangkap', 'jenisKapal'];
             const missingColumns = [];
             
             requiredColumns.forEach(col => {
@@ -3008,8 +3007,7 @@
                                 <div style="width: 100px; height: 6px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden;">
                                     <div style="height: 100%; width: ${percentage}%; background-color: var(--accent-color);"></div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
                     </tr>
                 `;
             });
@@ -3111,97 +3109,79 @@
                 return;
             }
             
-            // Create header with mapped columns - FIXED: Include all required columns
+            // Create header with ALL mapped columns
             const headerRow = document.createElement('tr');
             
-            // Define column order - PERBAIKAN: Pastikan semua kolom yang dipetakan muncul
-            const columns = [];
-            
-            // Always add mapped columns in the correct order
-            if (scanningSettings.namaColumn && columnVisibility.nama) {
-                columns.push({ 
+            // Define column order with ALL 9 columns plus status
+            const columns = [
+                { 
                     key: scanningSettings.namaColumn, 
                     label: 'NAMA', 
                     sortable: true,
-                    type: 'nama' 
-                });
-            }
-            
-            if (scanningSettings.nikColumn && columnVisibility.nik) {
-                columns.push({ 
+                    type: 'nama',
+                    visible: columnVisibility.nama
+                },
+                { 
                     key: scanningSettings.nikColumn, 
                     label: 'NIK', 
                     sortable: true,
-                    type: 'nik' 
-                });
-            }
-            
-            if (scanningSettings.whatsappColumn && columnVisibility.whatsapp) {
-                columns.push({ 
+                    type: 'nik',
+                    visible: columnVisibility.nik
+                },
+                { 
                     key: scanningSettings.whatsappColumn, 
                     label: 'WHATSAPP', 
                     sortable: true, 
                     whatsapp: true,
-                    type: 'whatsapp' 
-                });
-            }
-            
-            if (scanningSettings.profesiColumn && columnVisibility.profesi) {
-                columns.push({ 
+                    type: 'whatsapp',
+                    visible: columnVisibility.whatsapp
+                },
+                { 
                     key: scanningSettings.profesiColumn, 
                     label: 'PROFESI', 
                     sortable: true, 
                     profesi: true,
-                    type: 'profesi' 
-                });
-            }
-            
-            if (scanningSettings.alamatColumn && columnVisibility.alamat) {
-                columns.push({ 
+                    type: 'profesi',
+                    visible: columnVisibility.profesi
+                },
+                { 
                     key: scanningSettings.alamatColumn, 
                     label: 'ALAMAT', 
                     sortable: true,
-                    type: 'alamat' 
-                });
-            }
-            
-            if (scanningSettings.kecamatanColumn && columnVisibility.kecamatan) {
-                columns.push({ 
+                    type: 'alamat',
+                    visible: columnVisibility.alamat
+                },
+                { 
                     key: scanningSettings.kecamatanColumn, 
                     label: 'KECAMATAN', 
                     sortable: true,
-                    type: 'kecamatan' 
-                });
-            }
-            
-            if (scanningSettings.desaColumn && columnVisibility.desa) {
-                columns.push({ 
+                    type: 'kecamatan',
+                    visible: columnVisibility.kecamatan
+                },
+                { 
                     key: scanningSettings.desaColumn, 
                     label: 'DESA', 
                     sortable: true,
-                    type: 'desa' 
-                });
-            }
-            
-            if (scanningSettings.alatTangkapColumn && columnVisibility.alat_tangkap) {
-                columns.push({ 
+                    type: 'desa',
+                    visible: columnVisibility.desa
+                },
+                { 
                     key: scanningSettings.alatTangkapColumn, 
                     label: 'ALAT TANGKAP', 
                     sortable: true, 
                     alatTangkap: true,
-                    type: 'alat_tangkap' 
-                });
-            }
-            
-            if (scanningSettings.jenisKapalColumn && columnVisibility.jenis_kapal) {
-                columns.push({ 
+                    type: 'alat_tangkap',
+                    visible: columnVisibility.alat_tangkap
+                },
+                { 
                     key: scanningSettings.jenisKapalColumn, 
                     label: 'JENIS KAPAL', 
                     sortable: true, 
                     jenisKapal: true,
-                    type: 'jenis_kapal' 
-                });
-            }
+                    type: 'jenis_kapal',
+                    visible: columnVisibility.jenis_kapal
+                }
+            ];
             
             // Add status column if visible
             if (columnVisibility.status) {
@@ -3209,12 +3189,16 @@
                     key: '_status', 
                     label: 'STATUS', 
                     sortable: false,
-                    type: 'status' 
+                    type: 'status',
+                    visible: true
                 });
             }
             
+            // Filter columns based on visibility
+            const visibleColumns = columns.filter(col => col.visible !== false);
+            
             // Check if we have columns to display
-            if (columns.length === 0) {
+            if (visibleColumns.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="1" style="text-align: center; padding: 40px; color: #718096;">
@@ -3226,7 +3210,7 @@
                 return;
             }
             
-            columns.forEach(col => {
+            visibleColumns.forEach(col => {
                 const th = document.createElement('th');
                 
                 if (col.sortable) {
@@ -3255,7 +3239,7 @@
                 if (item._selected) row.classList.add('selected');
                 if (item._status && item._status.includes('invalid')) row.classList.add('invalid');
                 
-                columns.forEach(col => {
+                visibleColumns.forEach(col => {
                     const td = document.createElement('td');
                     
                     if (col.key === '_status') {
@@ -3515,7 +3499,7 @@
             
             if (processedData.length === 0) return;
             
-            // Define columns for export (only show columns that are mapped)
+            // Define columns for export (show all columns)
             const exportColumns = [];
             
             if (scanningSettings.namaColumn) exportColumns.push({ key: scanningSettings.namaColumn, label: 'Nama', type: 'nama' });
@@ -3578,17 +3562,17 @@
             const columnVisibilityList = document.getElementById('columnVisibilityList');
             columnVisibilityList.innerHTML = '';
             
-            // Define all possible columns with descriptions
+            // Define ALL 9 columns with descriptions
             const allColumns = [
                 { id: 'nama', label: 'NAMA', description: 'Nama lengkap', required: true },
                 { id: 'nik', label: 'NIK', description: 'Nomor Induk Kependudukan', required: true },
                 { id: 'whatsapp', label: 'WHATSAPP', description: 'Nomor WhatsApp/Telepon', required: true },
-                { id: 'profesi', label: 'PROFESI', description: 'Jenis pekerjaan', required: false },
-                { id: 'alamat', label: 'ALAMAT', description: 'Alamat lengkap', required: false },
-                { id: 'kecamatan', label: 'KECAMATAN', description: 'Nama kecamatan', required: false },
-                { id: 'desa', label: 'DESA', description: 'Nama desa/kelurahan', required: false },
-                { id: 'alat_tangkap', label: 'ALAT TANGKAP', description: 'Jenis alat tangkap', required: false },
-                { id: 'jenis_kapal', label: 'JENIS KAPAL', description: 'Jenis kapal', required: false },
+                { id: 'profesi', label: 'PROFESI', description: 'Jenis pekerjaan', required: true },
+                { id: 'alamat', label: 'ALAMAT', description: 'Alamat lengkap', required: true },
+                { id: 'kecamatan', label: 'KECAMATAN', description: 'Nama kecamatan', required: true },
+                { id: 'desa', label: 'DESA', description: 'Nama desa/kelurahan', required: true },
+                { id: 'alat_tangkap', label: 'ALAT TANGKAP', description: 'Jenis alat tangkap', required: true },
+                { id: 'jenis_kapal', label: 'JENIS KAPAL', description: 'Jenis kapal', required: true },
                 { id: 'status', label: 'STATUS', description: 'Status data (unik/duplikat)', required: false }
             ];
             
@@ -4584,9 +4568,7 @@
                 ['NAMA', 'NIK', 'WHATSAPP', 'PROFESI', 'ALAMAT', 'KECAMATAN', 'DESA', 'ALAT_TANGKAP', 'JENIS_KAPAL'],
                 ['Ahmad Santoso', '1234567890123456', '081234567890', 'Nelayan', 'Jl. Merdeka No. 12 RT 03 RW 05', 'Sukajadi', 'Sukamaju', 'Jaring Insang', 'Kapal Motor 5 GT'],
                 ['Budi Pratama', '2345678901234567', '6281234567891', 'Nelayan', 'Jl. Sudirman No. 45', 'Cibeunying', 'Cihapit', 'Pancing', 'Perahu Katinting'],
-                ['Citra Dewi', '3456789012345678', '081298765432', 'Ibu Rumah Tangga', 'Jl. Gatot Subroto No. 78', 'Bandung Kidul', 'Mengger', '-', '-'],
-                ['Contoh data duplikat', '1234567890123456', '081234567890', 'Nelayan', 'Jl. Merdeka No. 12', 'Sukajadi', 'Sukamaju', 'Jaring Insang', 'Kapal Motor 5 GT'],
-                ['Dian Sari', '4567890123456789', '6285212345678', 'Pedagang Ikan', 'Jl. Asia Afrika No. 23', 'Sumur Bandung', 'Braga', 'Bagan', 'Kapal Motor 10 GT']
+                ['Citra Dewi', '3456789012345678', '081298765432', 'Ibu Rumah Tangga', 'Jl. Gatot Subroto No. 78', 'Bandung Kidul', 'Mengger', '-', '-']
             ];
             
             const worksheet = XLSX.utils.aoa_to_sheet(templateData);
@@ -4605,21 +4587,7 @@
                 { nama: "Citra Dewi", nik: "3456789012345678", alamat: "Jl. Gatot Subroto No. 78", kecamatan: "Bandung Kidul", desa: "Mengger", whatsapp: "081298765432", profesi: "Ibu Rumah Tangga", alat_tangkap: "", jenis_kapal: "" },
                 { nama: "Ahmad Santoso", nik: "1234567890123456", alamat: "Jl. Merdeka No. 12", kecamatan: "Sukajadi", desa: "Sukamaju", whatsapp: "081234567890", profesi: "Nelayan", alat_tangkap: "Jaring Insang", jenis_kapal: "Kapal Motor 5 GT" },
                 { nama: "Dian Sari", nik: "4567890123456789", alamat: "Jl. Asia Afrika No. 23", kecamatan: "Sumur Bandung", desa: "Braga", whatsapp: "6285212345678", profesi: "Pedagang Ikan", alat_tangkap: "Bagan", jenis_kapal: "Kapal Motor 10 GT" },
-                { nama: "Eko Wijaya", nik: "5678901234567890", alamat: "Jl. Cihampelas No. 56", kecamatan: "Cidadap", desa: "Cipaganti", whatsapp: "081311223344", profesi: "Nelayan", alat_tangkap: "Jaring Lingkar", jenis_kapal: "Kapal Motor 7 GT" },
-                { nama: "Budi Pratama", nik: "2345678901234567", alamat: "Jl. Sudirman No. 45 Lantai 3", kecamatan: "Cibeunying", desa: "", whatsapp: "6281234567891", profesi: "Nelayan", alat_tangkap: "Pancing", jenis_kapal: "Perahu Katinting" },
-                { nama: "Fajar Nugraha", nik: "6789012345678901", alamat: "Jl. Sultan Agung No. 34", kecamatan: "Lengkong", desa: "Turangga", whatsapp: "081555666777", profesi: "ABK Kapal", alat_tangkap: "Jaring Insang", jenis_kapal: "Kapal Motor 15 GT" },
-                { nama: "Gita Maya", nik: "7890123456789012", alamat: "Jl. Pahlawan No. 67", kecamatan: "Buahbatu", desa: "Kebon Lega", whatsapp: "628999888777", profesi: "Pedagang", alat_tangkap: "", jenis_kapal: "" },
-                { nama: "Hendra Setiawan", nik: "8901234567890123", alamat: "Jl. Soekarno Hatta No. 89", kecamatan: "Bandung Kulon", desa: "Caringin", whatsapp: "081212121212", profesi: "Nelayan", alat_tangkap: "Jaring Tarik", jenis_kapal: "Kapal Motor 8 GT" },
-                { nama: "Indra Kurniawan", nik: "9012345678901234", alamat: "Jl. Pasteur No. 11", kecamatan: "Sukajadi", desa: "Sukagalih", whatsapp: "628131313131", profesi: "Nelayan", alat_tangkap: "Pancing Ulur", jenis_kapal: "Perahu Motor Tempel" },
-                { nama: "Julia Anastasia", nik: "0123456789012345", alamat: "Jl. Dago No. 99", kecamatan: "Coblong", desa: "Dago", whatsapp: "081414141414", profesi: "Ibu Rumah Tangga", alat_tangkap: "", jenis_kapal: "" },
-                { nama: "Kurniawan Eka", nik: "1122334455667788", alamat: "Jl. Buah Batu No. 123", kecamatan: "Lengkong", desa: "Malabar", whatsapp: "628151515151", profesi: "ABK Kapal", alat_tangkap: "Jaring Kantong", jenis_kapal: "Kapal Motor 20 GT" },
-                { nama: "Linda Wijaya", nik: "2233445566778899", alamat: "Jl. Cikutra No. 45", kecamatan: "Cibeunying Kidul", desa: "Cikutra", whatsapp: "081616161616", profesi: "Pedagang Ikan", alat_tangkap: "", jenis_kapal: "" },
-                { nama: "M. Rizki Pratama", nik: "3344556677889900", alamat: "Jl. Cihampelas No. 78", kecamatan: "Cidadap", desa: "Cipaganti", whatsapp: "628171717171", profesi: "Nelayan", alat_tangkap: "Jaring Hanyut", jenis_kapal: "Kapal Motor 12 GT" },
-                { nama: "Nina Susanti", nik: "4455667788990011", alamat: "Jl. Martadinata No. 56", kecamatan: "Andir", desa: "Campaka", whatsapp: "081818181818", profesi: "Ibu Rumah Tangga", alat_tangkap: "", jenis_kapal: "" },
-                { nama: "Oscar Hermawan", nik: "5566778899001122", alamat: "Jl. Laswi No. 34", kecamatan: "Antapani", desa: "Antapani Tengah", whatsapp: "628191919191", profesi: "Nelayan", alat_tangkap: "Bubu", jenis_kapal: "Perahu Tanpa Motor" },
-                { nama: "Putri Ayu Lestari", nik: "6677889900112233", alamat: "Jl. Surapati No. 67", kecamatan: "Cicendo", desa: "Arjuna", whatsapp: "081202020202", profesi: "Pedagang", alat_tangkap: "", jenis_kapal: "" },
-                { nama: "Qory Sandioriva", nik: "7788990011223344", alamat: "Jl. Cipaganti No. 89", kecamatan: "Coblong", desa: "Cipaganti", whatsapp: "628212121212", profesi: "Nelayan", alat_tangkap: "Pancing Tonda", jenis_kapal: "Kapal Motor 6 GT" },
-                { nama: "Rudi Hartono", nik: "8899001122334455", alamat: "Jl. Suryalaya No. 12", kecamatan: "Ujung Berung", desa: "Cigending", whatsapp: "081222222222", profesi: "ABK Kapal", alat_tangkap: "Jaring Insang", jenis_kapal: "Kapal Motor 25 GT" }
+                { nama: "Eko Wijaya", nik: "5678901234567890", alamat: "Jl. Cihampelas No. 56", kecamatan: "Cidadap", desa: "Cipaganti", whatsapp: "081311223344", profesi: "Nelayan", alat_tangkap: "Jaring Lingkar", jenis_kapal: "Kapal Motor 7 GT" }
             ];
         }
         
