@@ -6,6 +6,7 @@
     <title>Filter Data Ganda Berdasarkan NIK KTP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -111,6 +112,15 @@
             background-color: #f0f5ff;
         }
         
+        .supported-formats {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
         .btn {
             padding: 14px 28px;
             border: none;
@@ -155,6 +165,15 @@
             background-color: #218838;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
         }
         
         .btn:disabled {
@@ -285,6 +304,19 @@
             gap: 15px;
             flex-wrap: wrap;
             margin-top: 20px;
+        }
+        
+        .download-options {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .format-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .legend {
@@ -465,6 +497,24 @@
             color: #333;
         }
         
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #2a5298;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 padding: 20px;
@@ -507,6 +557,11 @@
                 right: 20px;
                 top: 10px;
             }
+            
+            .download-options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -517,6 +572,9 @@
             <div class="spinner"></div>
             <div class="loading-text" id="loadingText">Memproses data...</div>
             <div class="loading-subtext" id="loadingSubtext">Silakan tunggu, proses sedang berjalan</div>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
     </div>
     
@@ -527,18 +585,21 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-filter"></i> Filter Data Ganda Berdasarkan NIK KTP</h1>
-            <p class="subtitle">Impor data Excel dan hapus duplikat berdasarkan NIK dengan memilih data yang paling lengkap</p>
+            <p class="subtitle">Impor data Excel/CSV dan hapus duplikat berdasarkan NIK dengan memilih data yang paling lengkap</p>
         </header>
         
         <div class="main-content">
             <div class="card">
-                <h2><i class="fas fa-upload"></i> Impor Data Excel</h2>
+                <h2><i class="fas fa-upload"></i> Impor Data Spreadsheet</h2>
                 <div class="upload-section">
-                    <p>Unggah file Excel (.xlsx) yang berisi data dengan kolom: NAMA, NIK, ALAMAT, KECAMATAN, DESA, NOMOR_HP, PROFESI, ALAT_TANGKAP, JENIS_KAPAL</p>
+                    <p>Unggah file Excel (.xlsx, .xls) atau CSV (.csv) yang berisi data dengan kolom: <strong>NAMA, NIK, ALAMAT, KECAMATAN, DESA, NOMOR_HP, PROFESI, ALAT_TANGKAP, JENIS_KAPAL</strong></p>
                     
                     <div class="file-input-container">
                         <div class="file-input-wrapper">
-                            <input type="file" id="fileInput" class="file-input" accept=".xlsx, .xls">
+                            <input type="file" id="fileInput" class="file-input" accept=".xlsx, .xls, .csv, .txt, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv">
+                            <div class="supported-formats">
+                                <i class="fas fa-info-circle"></i> Format yang didukung: .xlsx, .xls, .csv
+                            </div>
                         </div>
                         <button id="processBtn" class="btn btn-primary" disabled>
                             <i class="fas fa-cogs"></i> Proses Data
@@ -548,11 +609,11 @@
                     <div class="info-box">
                         <p><strong>Fitur Aplikasi:</strong></p>
                         <ul>
-                            <li>Mendeteksi data ganda berdasarkan NIK KTP</li>
-                            <li>Otomatis memilih data dengan isian paling lengkap untuk setiap NIK</li>
-                            <li>Menampilkan statistik data sebelum dan sesudah diproses</li>
-                            <li>Mengunduh hasil data yang sudah difilter</li>
-                            <li>Notifikasi dan indikator loading untuk setiap proses</li>
+                            <li>Mendeteksi data ganda berdasarkan NIK KTP secara otomatis</li>
+                            <li>Memilih data dengan isian paling lengkap untuk setiap NIK</li>
+                            <li>Mendukung berbagai format file: Excel (.xlsx, .xls) dan CSV (.csv)</li>
+                            <li>Unduh hasil dalam format Excel (.xlsx) atau CSV (.csv)</li>
+                            <li>Statistik lengkap dan notifikasi real-time</li>
                         </ul>
                     </div>
                 </div>
@@ -614,7 +675,7 @@
                             <tr>
                                 <td colspan="11" style="text-align: center; padding: 40px; color: #999;">
                                     <i class="fas fa-file-excel" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
-                                    Belum ada data. Silakan unggah file Excel untuk memulai.
+                                    Belum ada data. Silakan unggah file Excel/CSV untuk memulai.
                                 </td>
                             </tr>
                         </tbody>
@@ -625,9 +686,21 @@
                     <button id="filterBtn" class="btn btn-primary" disabled>
                         <i class="fas fa-filter"></i> Filter Data Ganda
                     </button>
-                    <button id="downloadBtn" class="btn btn-success" disabled>
-                        <i class="fas fa-download"></i> Unduh Hasil Filter
-                    </button>
+                    
+                    <div class="download-options">
+                        <button id="downloadBtn" class="btn btn-success" disabled>
+                            <i class="fas fa-download"></i> Unduh Hasil Filter
+                        </button>
+                        <div class="format-option">
+                            <input type="radio" id="formatExcel" name="downloadFormat" value="excel" checked>
+                            <label for="formatExcel">Excel (.xlsx)</label>
+                        </div>
+                        <div class="format-option">
+                            <input type="radio" id="formatCSV" name="downloadFormat" value="csv">
+                            <label for="formatCSV">CSV (.csv)</label>
+                        </div>
+                    </div>
+                    
                     <button id="resetBtn" class="btn btn-secondary">
                         <i class="fas fa-redo"></i> Reset
                     </button>
@@ -646,6 +719,7 @@
         let originalData = [];
         let filteredData = [];
         let duplicateGroups = {};
+        let isProcessing = false;
         
         // Elemen DOM
         const fileInput = document.getElementById('fileInput');
@@ -662,63 +736,182 @@
         const loadingText = document.getElementById('loadingText');
         const loadingSubtext = document.getElementById('loadingSubtext');
         const toastContainer = document.getElementById('toastContainer');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const formatExcel = document.getElementById('formatExcel');
+        const formatCSV = document.getElementById('formatCSV');
         
         // Kolom yang akan diproses
         const columns = ['NAMA', 'NIK', 'ALAMAT', 'KECAMATAN', 'DESA', 'NOMOR_HP', 'PROFESI', 'ALAT_TANGKAP', 'JENIS_KAPAL'];
+        const columnAliases = {
+            'NAMA': ['Nama', 'nama', 'Nama Lengkap', 'nama lengkap'],
+            'NIK': ['Nik', 'nik', 'Nomor Induk Kependudukan'],
+            'ALAMAT': ['Alamat', 'alamat', 'Alamat Lengkap'],
+            'KECAMATAN': ['Kecamatan', 'kecamatan', 'KEC'],
+            'DESA': ['Desa', 'desa', 'Kelurahan', 'kelurahan'],
+            'NOMOR_HP': ['Nomor HP', 'nomor hp', 'Telepon', 'telepon', 'No HP', 'no hp', 'Handphone'],
+            'PROFESI': ['Profesi', 'profesi', 'Pekerjaan', 'pekerjaan'],
+            'ALAT_TANGKAP': ['Alat Tangkap', 'alat tangkap', 'Alat Tangkap Ikan'],
+            'JENIS_KAPAL': ['Jenis Kapal', 'jenis kapal', 'Tipe Kapal', 'tipe kapal']
+        };
         
         // Event listener untuk input file
         fileInput.addEventListener('change', function(e) {
             if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                const fileName = file.name;
+                const fileExt = fileName.split('.').pop().toLowerCase();
+                
+                // Validasi ekstensi file
+                const validExtensions = ['xlsx', 'xls', 'csv', 'txt'];
+                if (!validExtensions.includes(fileExt)) {
+                    showNotification('error', 'Format Tidak Didukung', 'Hanya file Excel (.xlsx, .xls) dan CSV (.csv) yang didukung.');
+                    fileInput.value = '';
+                    processBtn.disabled = true;
+                    return;
+                }
+                
                 processBtn.disabled = false;
-                showNotification('success', 'File Dipilih', `File "${e.target.files[0].name}" siap untuk diproses`);
+                showNotification('success', 'File Dipilih', `File "${fileName}" siap untuk diproses`);
             } else {
                 processBtn.disabled = true;
             }
         });
         
-        // Proses file Excel yang diunggah
+        // Proses file yang diunggah
         processBtn.addEventListener('click', async function() {
+            if (isProcessing) return;
+            
             const file = fileInput.files[0];
             if (!file) {
-                showNotification('error', 'Kesalahan', 'Silakan pilih file Excel terlebih dahulu.');
+                showNotification('error', 'Kesalahan', 'Silakan pilih file terlebih dahulu.');
                 return;
             }
             
-            // Tampilkan loading
-            showLoading('Memproses File Excel', 'Membaca dan memvalidasi data dari file...');
+            const fileName = file.name;
+            const fileExt = fileName.split('.').pop().toLowerCase();
             
-            // Gunakan setTimeout untuk memberikan waktu tampilan loading
-            setTimeout(async () => {
-                try {
-                    const data = await readExcelFile(file);
-                    
-                    if (data.length === 0) {
-                        hideLoading();
-                        showNotification('warning', 'Data Kosong', 'Tidak ada data yang valid ditemukan dalam file.');
-                        return;
-                    }
-                    
-                    // Simpan data asli
-                    originalData = data;
-                    
-                    // Tampilkan data awal
-                    displayData(originalData);
-                    updateStats(originalData);
-                    
-                    // Aktifkan tombol filter
-                    filterBtn.disabled = false;
-                    downloadBtn.disabled = true;
-                    
-                    hideLoading();
-                    showNotification('success', 'Berhasil', `Berhasil membaca ${originalData.length} data dari file Excel.`);
-                    
-                } catch (error) {
-                    console.error(error);
-                    hideLoading();
-                    showNotification('error', 'Kesalahan', 'Terjadi kesalahan saat membaca file. Pastikan file dalam format Excel yang benar.');
+            // Tampilkan loading
+            showLoading('Memproses File', `Membaca data dari ${fileName}...`);
+            
+            try {
+                isProcessing = true;
+                
+                // Update progress
+                updateProgress(10, 'Membaca file...');
+                
+                let data;
+                
+                // Proses berdasarkan tipe file
+                if (fileExt === 'csv' || fileExt === 'txt') {
+                    updateProgress(30, 'Membaca file CSV...');
+                    data = await readCSVFile(file);
+                } else {
+                    updateProgress(30, 'Membaca file Excel...');
+                    data = await readExcelFile(file);
                 }
-            }, 500);
+                
+                if (data.length === 0) {
+                    hideLoading();
+                    showNotification('warning', 'Data Kosong', 'Tidak ada data yang valid ditemukan dalam file.');
+                    isProcessing = false;
+                    return;
+                }
+                
+                updateProgress(60, 'Memvalidasi data...');
+                
+                // Simpan data asli
+                originalData = data;
+                
+                updateProgress(80, 'Menyiapkan tampilan...');
+                
+                // Tampilkan data awal
+                displayData(originalData);
+                updateStats(originalData);
+                
+                // Aktifkan tombol filter
+                filterBtn.disabled = false;
+                downloadBtn.disabled = true;
+                
+                updateProgress(100, 'Selesai!');
+                
+                setTimeout(() => {
+                    hideLoading();
+                    showNotification('success', 'Berhasil', `Berhasil membaca ${originalData.length} data dari ${fileName}.`);
+                    isProcessing = false;
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error processing file:', error);
+                hideLoading();
+                showNotification('error', 'Kesalahan', `Gagal memproses file: ${error.message}`);
+                isProcessing = false;
+            }
         });
+        
+        // Fungsi untuk membaca file CSV
+        function readCSVFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const csvText = e.target.result;
+                        const lines = csvText.split('\n');
+                        
+                        if (lines.length < 2) {
+                            resolve([]);
+                            return;
+                        }
+                        
+                        // Deteksi separator (koma atau titik koma)
+                        const firstLine = lines[0];
+                        const hasSemicolon = firstLine.includes(';');
+                        const separator = hasSemicolon ? ';' : ',';
+                        
+                        // Parse header
+                        const headers = lines[0].split(separator).map(h => h.trim().replace(/"/g, ''));
+                        
+                        // Normalisasi header (cocokkan dengan nama kolom standar)
+                        const normalizedHeaders = normalizeHeaders(headers);
+                        
+                        // Proses data
+                        const processedData = [];
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            if (!lines[i].trim()) continue;
+                            
+                            const row = parseCSVLine(lines[i], separator);
+                            const rowData = {};
+                            
+                            normalizedHeaders.forEach((col, index) => {
+                                if (col && index < row.length) {
+                                    rowData[col] = row[index] !== undefined && row[index] !== null ? 
+                                                  String(row[index]).trim().replace(/"/g, '') : '';
+                                }
+                            });
+                            
+                            // Hanya tambah data yang memiliki NIK
+                            if (rowData.NIK && rowData.NIK.trim() !== '') {
+                                // Tambahkan ID unik untuk melacak baris asli
+                                rowData.__id = `csv_row_${i}`;
+                                processedData.push(rowData);
+                            }
+                        }
+                        
+                        resolve(processedData);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                reader.onerror = function() {
+                    reject(new Error('Gagal membaca file CSV'));
+                };
+                
+                reader.readAsText(file, 'UTF-8');
+            });
+        }
         
         // Fungsi untuk membaca file Excel
         function readExcelFile(file) {
@@ -736,33 +929,36 @@
                         // Konversi ke JSON
                         const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
                         
-                        // Proses data: baris pertama sebagai header
-                        const headers = jsonData[0];
-                        
-                        // Validasi header
-                        const missingColumns = columns.filter(col => !headers.includes(col));
-                        if (missingColumns.length > 0) {
-                            reject(new Error(`Kolom berikut tidak ditemukan dalam file: ${missingColumns.join(', ')}`));
+                        if (jsonData.length < 2) {
+                            resolve([]);
                             return;
                         }
+                        
+                        // Proses data: baris pertama sebagai header
+                        const headers = jsonData[0].map(h => h ? String(h).trim() : '');
+                        
+                        // Normalisasi header
+                        const normalizedHeaders = normalizeHeaders(headers);
                         
                         // Ambil data dari baris kedua dan seterusnya
                         const processedData = [];
                         
                         for (let i = 1; i < jsonData.length; i++) {
                             const row = jsonData[i];
-                            if (row.length === 0) continue;
+                            if (!row || row.length === 0) continue;
                             
                             const rowData = {};
-                            columns.forEach((col, index) => {
-                                const colIndex = headers.indexOf(col);
-                                rowData[col] = colIndex !== -1 && row[colIndex] !== undefined && row[colIndex] !== null ? String(row[colIndex]).trim() : '';
+                            normalizedHeaders.forEach((col, index) => {
+                                if (col && index < row.length) {
+                                    rowData[col] = row[index] !== undefined && row[index] !== null ? 
+                                                  String(row[index]).trim() : '';
+                                }
                             });
                             
                             // Hanya tambah data yang memiliki NIK
                             if (rowData.NIK && rowData.NIK.trim() !== '') {
                                 // Tambahkan ID unik untuk melacak baris asli
-                                rowData.__id = `row_${i}`;
+                                rowData.__id = `excel_row_${i}`;
                                 processedData.push(rowData);
                             }
                         }
@@ -774,11 +970,60 @@
                 };
                 
                 reader.onerror = function() {
-                    reject(new Error('Gagal membaca file'));
+                    reject(new Error('Gagal membaca file Excel'));
                 };
                 
                 reader.readAsArrayBuffer(file);
             });
+        }
+        
+        // Normalisasi header untuk mencocokkan dengan nama kolom standar
+        function normalizeHeaders(headers) {
+            return headers.map(header => {
+                if (!header) return null;
+                
+                const headerLower = header.toLowerCase().trim();
+                
+                // Cek setiap kolom standar dan aliasnya
+                for (const [standardCol, aliases] of Object.entries(columnAliases)) {
+                    if (headerLower === standardCol.toLowerCase()) {
+                        return standardCol;
+                    }
+                    
+                    // Cek alias
+                    for (const alias of aliases) {
+                        if (headerLower === alias.toLowerCase()) {
+                            return standardCol;
+                        }
+                    }
+                }
+                
+                // Jika tidak cocok dengan apapun, kembalikan null
+                return null;
+            });
+        }
+        
+        // Parse line CSV yang mungkin memiliki koma di dalam quotes
+        function parseCSVLine(line, separator) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === separator && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current);
+            return result;
         }
         
         // Fungsi untuk menampilkan data di tabel
@@ -867,7 +1112,11 @@
             const cleaned = phone.toString().replace(/\D/g, '');
             if (cleaned.length === 0) return phone;
             
-            if (cleaned.length <= 10) {
+            if (cleaned.startsWith('0')) {
+                return cleaned.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3');
+            } else if (cleaned.startsWith('62')) {
+                return cleaned.replace(/(\d{2})(\d{4})(\d{4})(\d{4})/, '+$1 $2-$3-$4');
+            } else if (cleaned.length <= 10) {
                 return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
             } else {
                 return cleaned.replace(/(\d{4})(\d{4})(\d{4,})/, '$1-$2-$3');
@@ -876,22 +1125,24 @@
         
         // Fungsi untuk memperbarui statistik
         function updateStats(data) {
-            totalDataEl.textContent = data.length.toLocaleString();
+            totalDataEl.textContent = data.length.toLocaleString('id-ID');
             
             // Hitung jumlah data unik berdasarkan NIK
             const uniqueNiks = new Set(data.map(item => item.NIK));
-            uniqueDataEl.textContent = uniqueNiks.size.toLocaleString();
+            uniqueDataEl.textContent = uniqueNiks.size.toLocaleString('id-ID');
             
             // Hitung jumlah data ganda
             const duplicateCount = data.length - uniqueNiks.size;
-            duplicateDataEl.textContent = duplicateCount.toLocaleString();
+            duplicateDataEl.textContent = duplicateCount.toLocaleString('id-ID');
             
             // Data terpilih (setelah filter)
-            selectedDataEl.textContent = filteredData.length ? filteredData.length.toLocaleString() : '0';
+            selectedDataEl.textContent = filteredData.length ? filteredData.length.toLocaleString('id-ID') : '0';
         }
         
         // Filter data ganda
-        filterBtn.addEventListener('click', function() {
+        filterBtn.addEventListener('click', async function() {
+            if (isProcessing) return;
+            
             if (originalData.length === 0) {
                 showNotification('warning', 'Peringatan', 'Tidak ada data untuk diproses.');
                 return;
@@ -899,135 +1150,230 @@
             
             // Tampilkan loading
             showLoading('Memfilter Data Ganda', 'Menganalisis dan memfilter data duplikat...');
+            progressContainer.style.display = 'block';
             
-            // Gunakan setTimeout untuk memberikan waktu tampilan loading
-            setTimeout(() => {
-                try {
-                    // Kelompokkan data berdasarkan NIK
-                    const groupedByNIK = {};
-                    duplicateGroups = {};
+            try {
+                isProcessing = true;
+                
+                // Simulasi progress
+                updateProgress(10, 'Menganalisis data...');
+                
+                // Tunggu sedikit untuk animasi
+                await delay(300);
+                
+                // Kelompokkan data berdasarkan NIK
+                updateProgress(30, 'Mengelompokkan data berdasarkan NIK...');
+                const groupedByNIK = {};
+                duplicateGroups = {};
+                
+                originalData.forEach((item) => {
+                    const nik = item.NIK;
+                    if (!groupedByNIK[nik]) {
+                        groupedByNIK[nik] = [];
+                    }
+                    groupedByNIK[nik].push({...item});
+                });
+                
+                await delay(300);
+                updateProgress(50, 'Memilih data dengan isian paling lengkap...');
+                
+                // Untuk setiap NIK, pilih data dengan isian paling lengkap
+                filteredData = [];
+                
+                Object.keys(groupedByNIK).forEach(nik => {
+                    const group = groupedByNIK[nik];
                     
-                    originalData.forEach((item, index) => {
-                        const nik = item.NIK;
-                        if (!groupedByNIK[nik]) {
-                            groupedByNIK[nik] = [];
-                        }
-                        groupedByNIK[nik].push({...item});
-                    });
-                    
-                    // Untuk setiap NIK, pilih data dengan isian paling lengkap
-                    filteredData = [];
-                    
-                    Object.keys(groupedByNIK).forEach(nik => {
-                        const group = groupedByNIK[nik];
+                    if (group.length === 1) {
+                        // Jika hanya ada satu data, langsung tambahkan
+                        filteredData.push(group[0]);
+                        duplicateGroups[nik] = {
+                            selectedId: group[0].__id,
+                            count: 1
+                        };
+                    } else {
+                        // Jika ada duplikat, pilih yang paling lengkap
+                        let bestItem = group[0];
+                        let maxFilled = 0;
                         
-                        if (group.length === 1) {
-                            // Jika hanya ada satu data, langsung tambahkan
-                            filteredData.push(group[0]);
-                            duplicateGroups[nik] = {
-                                selectedId: group[0].__id,
-                                count: 1
-                            };
-                        } else {
-                            // Jika ada duplikat, pilih yang paling lengkap
-                            let bestItem = group[0];
-                            let maxFilled = 0;
+                        // Hitung isian untuk setiap item
+                        group.forEach(item => {
+                            // Hitung jumlah kolom yang terisi
+                            const filledCount = columns.filter(col => 
+                                item[col] && item[col].toString().trim() !== ''
+                            ).length;
                             
-                            // Hitung isian untuk setiap item
-                            group.forEach(item => {
-                                // Hitung jumlah kolom yang terisi
-                                const filledCount = columns.filter(col => 
-                                    item[col] && item[col].toString().trim() !== ''
-                                ).length;
+                            // Jika jumlah terisi lebih besar, pilih item ini
+                            if (filledCount > maxFilled) {
+                                maxFilled = filledCount;
+                                bestItem = item;
+                            } else if (filledCount === maxFilled) {
+                                // Jika jumlah terisi sama, cek kelengkapan per kolom
+                                // Prioritas: NAMA, ALAMAT, NOMOR_HP
+                                const currentBestScore = calculateDataScore(bestItem);
+                                const currentItemScore = calculateDataScore(item);
                                 
-                                // Jika jumlah terisi lebih besar, pilih item ini
-                                if (filledCount > maxFilled) {
-                                    maxFilled = filledCount;
+                                if (currentItemScore > currentBestScore) {
                                     bestItem = item;
                                 }
-                                // Jika jumlah terisi sama, pertahankan yang pertama
-                            });
-                            
-                            filteredData.push(bestItem);
-                            
-                            // Simpan informasi duplikat untuk highlight
-                            duplicateGroups[nik] = {
-                                selectedId: bestItem.__id,
-                                count: group.length
-                            };
-                        }
-                    });
-                    
-                    // Tampilkan data yang sudah difilter dengan highlight
-                    displayData(originalData, true);
-                    updateStats(originalData);
-                    selectedDataEl.textContent = filteredData.length.toLocaleString();
-                    
-                    // Aktifkan tombol unduh
-                    downloadBtn.disabled = false;
-                    
-                    hideLoading();
-                    
-                    // Tampilkan hasil filter
-                    const duplicateCount = originalData.length - filteredData.length;
-                    showNotification(
-                        'success', 
-                        'Filter Berhasil', 
-                        `Ditemukan ${duplicateCount} data ganda. Data unik setelah filter: ${filteredData.length} data.`
-                    );
-                    
-                } catch (error) {
-                    console.error(error);
-                    hideLoading();
-                    showNotification('error', 'Kesalahan', 'Terjadi kesalahan saat memfilter data.');
-                }
-            }, 800);
+                            }
+                        });
+                        
+                        filteredData.push(bestItem);
+                        
+                        // Simpan informasi duplikat untuk highlight
+                        duplicateGroups[nik] = {
+                            selectedId: bestItem.__id,
+                            count: group.length
+                        };
+                    }
+                });
+                
+                await delay(300);
+                updateProgress(80, 'Menyiapkan tampilan...');
+                
+                // Tampilkan data yang sudah difilter dengan highlight
+                displayData(originalData, true);
+                updateStats(originalData);
+                selectedDataEl.textContent = filteredData.length.toLocaleString('id-ID');
+                
+                // Aktifkan tombol unduh
+                downloadBtn.disabled = false;
+                
+                updateProgress(100, 'Selesai!');
+                
+                await delay(500);
+                hideLoading();
+                
+                // Tampilkan hasil filter
+                const duplicateCount = originalData.length - filteredData.length;
+                showNotification(
+                    'success', 
+                    'Filter Berhasil', 
+                    `Ditemukan ${duplicateCount} data ganda. Data unik setelah filter: ${filteredData.length} data.`
+                );
+                
+                isProcessing = false;
+                
+            } catch (error) {
+                console.error('Error filtering data:', error);
+                hideLoading();
+                showNotification('error', 'Kesalahan', 'Terjadi kesalahan saat memfilter data.');
+                isProcessing = false;
+            }
         });
         
-        // Unduh hasil filter sebagai file Excel
-        downloadBtn.addEventListener('click', function() {
+        // Fungsi untuk menghitung skor data (untuk tie-breaker)
+        function calculateDataScore(item) {
+            let score = 0;
+            
+            // Beri bobot lebih untuk kolom penting
+            if (item.NAMA && item.NAMA.trim() !== '') score += 3;
+            if (item.ALAMAT && item.ALAMAT.trim() !== '') score += 2;
+            if (item.NOMOR_HP && item.NOMOR_HP.trim() !== '') score += 2;
+            if (item.KECAMATAN && item.KECAMATAN.trim() !== '') score += 1;
+            if (item.DESA && item.DESA.trim() !== '') score += 1;
+            if (item.PROFESI && item.PROFESI.trim() !== '') score += 1;
+            if (item.ALAT_TANGKAP && item.ALAT_TANGKAP.trim() !== '') score += 1;
+            if (item.JENIS_KAPAL && item.JENIS_KAPAL.trim() !== '') score += 1;
+            
+            return score;
+        }
+        
+        // Unduh hasil filter
+        downloadBtn.addEventListener('click', async function() {
+            if (isProcessing) return;
+            
             if (filteredData.length === 0) {
                 showNotification('warning', 'Peringatan', 'Tidak ada data untuk diunduh.');
                 return;
             }
             
-            // Tampilkan loading
-            showLoading('Menyiapkan File', 'Membuat file Excel dari data yang sudah difilter...');
+            const format = document.querySelector('input[name="downloadFormat"]:checked').value;
             
-            // Gunakan setTimeout untuk memberikan waktu tampilan loading
-            setTimeout(() => {
-                try {
-                    // Buat worksheet dari data yang sudah difilter
-                    const cleanData = filteredData.map(item => {
-                        // Hapus properti internal sebelum diunduh
-                        const { __id, ...cleanItem } = item;
-                        return cleanItem;
-                    });
+            // Tampilkan loading
+            showLoading('Menyiapkan File', `Membuat file ${format.toUpperCase()} dari data yang sudah difilter...`);
+            
+            try {
+                isProcessing = true;
+                
+                // Bersihkan data dari properti internal
+                const cleanData = filteredData.map(item => {
+                    const { __id, ...cleanItem } = item;
+                    return cleanItem;
+                });
+                
+                updateProgress(30, 'Mempersiapkan data...');
+                
+                let filename, blob;
+                
+                if (format === 'excel') {
+                    updateProgress(60, 'Membuat file Excel...');
                     
+                    // Buat worksheet
                     const worksheet = XLSX.utils.json_to_sheet(cleanData);
                     
                     // Buat workbook
                     const workbook = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(workbook, worksheet, "Data Filtered");
                     
-                    // Simpan file
-                    const timestamp = new Date().toISOString().slice(0,19).replace(/[:]/g, '-');
-                    const filename = `data_filtered_${timestamp}.xlsx`;
-                    XLSX.writeFile(workbook, filename);
+                    // Konversi ke binary
+                    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
                     
-                    hideLoading();
-                    showNotification('success', 'Unduh Berhasil', `File "${filename}" berhasil diunduh.`);
+                    // Buat blob
+                    blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    filename = `data_filtered_${getTimestamp()}.xlsx`;
                     
-                } catch (error) {
-                    console.error(error);
-                    hideLoading();
-                    showNotification('error', 'Kesalahan', 'Terjadi kesalahan saat mengunduh file.');
+                } else if (format === 'csv') {
+                    updateProgress(60, 'Membuat file CSV...');
+                    
+                    // Buat header CSV
+                    const headers = columns.join(',');
+                    
+                    // Buat baris data
+                    const csvRows = cleanData.map(item => {
+                        return columns.map(col => {
+                            const value = item[col] || '';
+                            // Handle nilai yang mengandung koma atau quote
+                            if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+                                return `"${value.replace(/"/g, '""')}"`;
+                            }
+                            return value;
+                        }).join(',');
+                    });
+                    
+                    // Gabungkan header dan data
+                    const csvContent = [headers, ...csvRows].join('\n');
+                    
+                    // Buat blob
+                    blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    filename = `data_filtered_${getTimestamp()}.csv`;
                 }
-            }, 800);
+                
+                updateProgress(90, 'Menyimpan file...');
+                
+                // Gunakan FileSaver.js untuk menyimpan file
+                saveAs(blob, filename);
+                
+                updateProgress(100, 'Selesai!');
+                
+                await delay(500);
+                hideLoading();
+                showNotification('success', 'Unduh Berhasil', `File "${filename}" berhasil diunduh.`);
+                
+                isProcessing = false;
+                
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                hideLoading();
+                showNotification('error', 'Kesalahan', 'Terjadi kesalahan saat mengunduh file.');
+                isProcessing = false;
+            }
         });
         
         // Reset aplikasi
         resetBtn.addEventListener('click', function() {
+            if (isProcessing) return;
+            
             // Tampilkan loading
             showLoading('Mereset Aplikasi', 'Membersihkan data dan mengatur ulang...');
             
@@ -1044,12 +1390,15 @@
                 filterBtn.disabled = true;
                 downloadBtn.disabled = true;
                 
+                // Reset format download ke default
+                formatExcel.checked = true;
+                
                 // Reset tabel
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="11" style="text-align: center; padding: 40px; color: #999;">
                             <i class="fas fa-file-excel" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
-                            Belum ada data. Silakan unggah file Excel untuk memulai.
+                            Belum ada data. Silakan unggah file Excel/CSV untuk memulai.
                         </td>
                     </tr>
                 `;
@@ -1061,7 +1410,7 @@
                 selectedDataEl.textContent = '0';
                 
                 hideLoading();
-                showNotification('info', 'Reset Berhasil', 'Aplikasi telah direset. Silakan unggah file Excel baru.');
+                showNotification('info', 'Reset Berhasil', 'Aplikasi telah direset. Silakan unggah file baru.');
             }, 500);
         });
         
@@ -1070,11 +1419,23 @@
             loadingText.textContent = title;
             loadingSubtext.textContent = message;
             loadingOverlay.style.display = 'flex';
+            progressContainer.style.display = 'none';
+            progressBar.style.width = '0%';
         }
         
         // Fungsi untuk menyembunyikan loading
         function hideLoading() {
             loadingOverlay.style.display = 'none';
+            progressContainer.style.display = 'none';
+            progressBar.style.width = '0%';
+        }
+        
+        // Fungsi untuk update progress bar
+        function updateProgress(percent, message = '') {
+            progressBar.style.width = `${percent}%`;
+            if (message) {
+                loadingSubtext.textContent = message;
+            }
         }
         
         // Fungsi untuk menampilkan notifikasi
@@ -1134,12 +1495,33 @@
             }, 300);
         }
         
+        // Fungsi utilitas
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        function getTimestamp() {
+            const now = new Date();
+            return now.toISOString().slice(0, 19).replace(/[:]/g, '-').replace('T', '_');
+        }
+        
         // Load data contoh saat halaman dimuat (untuk demo)
         document.addEventListener('DOMContentLoaded', function() {
             // Tampilkan notifikasi selamat datang
             setTimeout(() => {
-                showNotification('info', 'Selamat Datang', 'Unggah file Excel untuk memulai atau gunakan data contoh.');
+                showNotification('info', 'Selamat Datang', 'Unggah file Excel/CSV untuk memulai proses filter data ganda.');
             }, 1000);
+            
+            // Tambahkan event listener untuk mencegah double click
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (isProcessing && !this.id.includes('reset')) {
+                        e.preventDefault();
+                        showNotification('warning', 'Sedang Memproses', 'Tunggu hingga proses selesai.');
+                    }
+                });
+            });
         });
     </script>
 </body>
