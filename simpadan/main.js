@@ -58,6 +58,57 @@ const FISH_CATEGORIES = {
     ]
 };
 
+// TAMBAHKAN FUNGSI UNTUK MENAMPILKAN GAMBAR INFORMASI JENIS IKAN
+function showFishInfo(category) {
+    // Cek apakah modal sudah ada
+    let modal = document.getElementById('fishInfoModal');
+    if (!modal) {
+        // Buat modal baru
+        modal = document.createElement('div');
+        modal.id = 'fishInfoModal';
+        modal.className = 'modal fade';
+        modal.tabIndex = '-1';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Informasi Jenis Ikan - Kategori ${category}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="${FISH_CATEGORY_IMAGES[category]}" class="img-fluid" alt="Informasi Jenis Ikan ${category}">
+                        <div class="mt-3">
+                            <p class="text-muted">Kategori: <strong>${category}</strong></p>
+                            <p class="small">Gambar referensi jenis-jenis ikan dalam kategori ${category}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // Update gambar berdasarkan kategori
+    const modalImg = modal.querySelector('img');
+    if (modalImg) {
+        modalImg.src = FISH_CATEGORY_IMAGES[category];
+        modalImg.alt = `Informasi Jenis Ikan ${category}`;
+    }
+    
+    // Update judul modal
+    const modalTitle = modal.querySelector('.modal-title');
+    if (modalTitle) {
+        modalTitle.textContent = `Informasi Jenis Ikan - Kategori ${category}`;
+    }
+    
+    // Tampilkan modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+
 // Array untuk kompatibilitas
 const FISH_TYPES = [];
 const FISH_DETAILS = {};
@@ -76,14 +127,16 @@ FISH_TYPES.push("Lainnya");
 
 // Mapping antara Jenis Kapal dan Alat Tangkap yang sesuai
 const KAPAL_API_MAPPING = {
-    "Perahu Jukung": ["Pancing", "Pancing Ulur", "Perangkap Bubu", "Jaring Insang (gill net)"],
-    "Perahu Mayang": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)"],
+    "Perahu Jukung": ["Pancing", "Pancing Ulur", "Perangkap Bubu", "Jaring Insang (gill net)", "Pancing Berjoran", "Jala Tebar"],
+    "Perahu Mayang": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Cantrang"],
     "Perahu Slerek": ["Pukat Cincin", "Pukat Tarik", "Jaring Angkat (lift net)"],
-    "Perahu Insang": ["Jaring Insang (gill net)"],
+    "Perahu Insang": ["Jaring Insang (gill net)", "Jaring Insang Hanyut", "Jaring Insang Kombinasi", "Jaring Insang Tetap"],
     "Perahu Jaring Angkat": ["Jaring Angkat (lift net)"],
-    "Perahu Pancing": ["Pancing", "Pancing Ulur"],
-    "Perahu Pukat Tarik": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)"],
-    "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Lainnya"]
+    "Perahu Pancing": ["Pancing", "Pancing Ulur", "Pancing Berjoran", "Pancing Cumi"],
+    "Perahu Pukat Tarik": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Cantrang"],
+    "Kapal Motor": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Rawai Dasar", "Jaring Insang Hanyut", "Huhate", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Rawai Tuna", "Jaring Insang Kombinasi", "Jaring Insang Tetap", "Pancing Cumi", "Jaring Lingkar Tanpa Tali Kerut", "Lainnya"],
+    "Kapal Motor Tempel": ["Pancing", "Pancing Ulur", "Perangkap Bubu", "Jaring Insang (gill net)", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Pancing Cumi", "Lainnya"],
+    "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Rawai Dasar", "Jaring Insang Hanyut", "Huhate", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Rawai Tuna", "Jaring Insang Kombinasi", "Jaring Insang Tetap", "Pancing Cumi", "Jaring Lingkar Tanpa Tali Kerut", "Lainnya"]
 };
 
 // Mapping antara Alat Tangkap dan Kategori Ikan yang bisa ditangkap
@@ -91,10 +144,21 @@ const API_FISH_MAPPING = {
     "Pukat Cincin": ["Pelagis Besar", "Pelagis Kecil"],
     "Pukat Tarik": ["Pelagis Kecil", "Pelagis Besar", "Demersal"],
     "Pancing Ulur": ["Demersal", "Pelagis Besar"],
+    "Rawai Dasar": ["Demersal"],
     "Jaring Insang (gill net)": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
+    "Jaring Insang Hanyut": ["Pelagis Kecil", "Pelagis Besar"],
+    "Huhate": ["Pelagis Besar"],
+    "Pancing Berjoran": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
     "Jaring Angkat (lift net)": ["Pelagis Kecil", "Demersal"],
     "Pancing": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
+    "Jala Tebar": ["Pelagis Kecil"],
+    "Cantrang": ["Demersal", "Pelagis Kecil"],
     "Perangkap Bubu": ["Demersal", "Pelagis Kecil"],
+    "Rawai Tuna": ["Pelagis Besar"],
+    "Jaring Insang Kombinasi": ["Demersal", "Pelagis Kecil", "Pelagis Besar"],
+    "Jaring Insang Tetap": ["Demersal", "Pelagis Kecil"],
+    "Pancing Cumi": ["Demersal"],
+    "Jaring Lingkar Tanpa Tali Kerut": ["Pelagis Kecil", "Pelagis Besar"],
     "Lainnya": ["Demersal", "Pelagis Kecil", "Pelagis Besar"]
 };
 
@@ -103,10 +167,21 @@ const API_INFO = {
     "Pukat Cincin": "Alat tangkap untuk ikan pelagis besar",
     "Pukat Tarik": "Alat tangkap untuk ikan pelagis kecil",
     "Pancing Ulur": "Alat tangkap untuk ikan dasar",
+    "Rawai Dasar": "Alat tangkap dengan banyak mata pancing di dasar perairan",
     "Jaring Insang (gill net)": "Alat tangkap untuk berbagai jenis ikan",
+    "Jaring Insang Hanyut": "Jaring insang yang dihanyutkan dengan arus",
+    "Huhate": "Alat tangkap khusus untuk ikan tuna",
+    "Pancing Berjoran": "Pancing dengan menggunakan joran",
     "Jaring Angkat (lift net)": "Alat tangkap untuk ikan permukaan",
     "Pancing": "Alat tangkap tradisional",
+    "Jala Tebar": "Jala yang ditebar untuk menangkap ikan",
+    "Cantrang": "Jaring tarik berukuran kecil",
     "Perangkap Bubu": "Alat tangkap berupa perangkap",
+    "Rawai Tuna": "Rawai khusus untuk menangkap tuna",
+    "Jaring Insang Kombinasi": "Jaring insang dengan berbagai ukuran mata",
+    "Jaring Insang Tetap": "Jaring insang yang dipasang tetap",
+    "Pancing Cumi": "Pancing khusus untuk cumi-cumi",
+    "Jaring Lingkar Tanpa Tali Kerut": "Jaring lingkar tanpa sistem tali kerut",
     "Lainnya": "Alat tangkap lainnya"
 };
 
@@ -119,6 +194,8 @@ const KAPAL_INFO = {
     "Perahu Jaring Angkat": "Perahu untuk jaring angkat",
     "Perahu Pancing": "Perahu untuk pancing",
     "Perahu Pukat Tarik": "Perahu untuk pukat tarik",
+    "Kapal Motor": "Kapal dengan motor penggerak utama",
+    "Kapal Motor Tempel": "Kapal dengan motor tempel sebagai penggerak",
     "Lainnya": "Jenis kapal lainnya"
 };
 
@@ -1747,6 +1824,132 @@ function updateFishOptionsByAPI(api) {
             });
         }
     }
+
+// TAMBAHKAN FUNGSI UNTUK MENAMPILKAN GAMBAR INFORMASI JENIS IKAN
+function showFishInfo(category) {
+    // Cek apakah modal sudah ada
+    let modal = document.getElementById('fishInfoModal');
+    if (!modal) {
+        // Buat modal baru
+        modal = document.createElement('div');
+        modal.id = 'fishInfoModal';
+        modal.className = 'modal fade';
+        modal.tabIndex = '-1';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Informasi Jenis Ikan - Kategori ${category}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="${FISH_CATEGORY_IMAGES[category]}" class="img-fluid" alt="Informasi Jenis Ikan ${category}">
+                        <div class="mt-3">
+                            <p class="text-muted">Kategori: <strong>${category}</strong></p>
+                            <p class="small">Gambar referensi jenis-jenis ikan dalam kategori ${category}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // Update gambar berdasarkan kategori
+    const modalImg = modal.querySelector('img');
+    if (modalImg) {
+        modalImg.src = FISH_CATEGORY_IMAGES[category];
+        modalImg.alt = `Informasi Jenis Ikan ${category}`;
+    }
+    
+    // Update judul modal
+    const modalTitle = modal.querySelector('.modal-title');
+    if (modalTitle) {
+        modalTitle.textContent = `Informasi Jenis Ikan - Kategori ${category}`;
+    }
+    
+    // Tampilkan modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+
+    function updateFishOptionsByAPI(api) {
+    const fishContainer = document.getElementById('fishCheckboxContainer');
+    if (!fishContainer) return;
+    
+    fishContainer.innerHTML = '';
+    
+    let fishList = [];
+    if (api && API_FISH_MAPPING[api]) {
+        // Ambil ikan berdasarkan kategori yang sesuai
+        API_FISH_MAPPING[api].forEach(category => {
+            if (FISH_CATEGORIES[category]) {
+                FISH_CATEGORIES[category].forEach(fish => {
+                    fishList.push(fish);
+                });
+            }
+        });
+    } else {
+        // Jika tidak ada API yang dipilih, tampilkan semua ikan
+        for (const category in FISH_CATEGORIES) {
+            FISH_CATEGORIES[category].forEach(fish => {
+                fishList.push(fish);
+            });
+        }
+    }
+    
+    // Tambahkan opsi "Lainnya"
+    fishList.push("Lainnya");
+    
+    // Tampilkan checklist dengan informasi dan tombol info
+    fishList.forEach(fish => {
+        const id = 'fish_' + fish.replace(/\s/g, '');
+        const fishInfo = FISH_DETAILS[fish] || {};
+        const category = fishInfo.category || '';
+        
+        // Buat tombol info jika memiliki kategori
+        const infoButton = category && fish !== "Lainnya" ? 
+            `<button class="btn btn-sm btn-outline-info fish-info-btn ms-2" onclick="showFishInfo('${category}')" title="Lihat informasi jenis ikan">
+                <i class="fas fa-info-circle"></i>
+            </button>` : '';
+        
+        const html = `
+        <label class="fish-option-box d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <input type="checkbox" class="form-check-input me-2 fish-checkbox" value="${fish}" id="${id}">
+                <span>${fish}</span>
+                ${infoButton}
+            </div>
+            ${fishInfo.latin ? `
+            <div class="fish-info-box">
+                <div class="fish-info-title">${fish}</div>
+                <div class="fish-info-latin">${fishInfo.latin}</div>
+                ${category ? `<div class="fish-info-category">Kategori: ${category}</div>` : ''}
+            </div>
+            ` : ''}
+        </label>`;
+        fishContainer.innerHTML += html;
+    });
+    
+    // Event listener untuk "Lainnya"
+    const lainCheckbox = document.getElementById('fish_Lainnya');
+    if (lainCheckbox) {
+        lainCheckbox.addEventListener('change', function() {
+            const inputLain = document.getElementById('jenisIkanLainnya');
+            if(this.checked) {
+                inputLain.style.display = 'block';
+                inputLain.setAttribute('required', 'required');
+            } else {
+                inputLain.style.display = 'none';
+                inputLain.value = '';
+                inputLain.removeAttribute('required');
+            }
+        });
+    }
+}
     
     // Tambahkan opsi "Lainnya"
     fishList.push("Lainnya");
