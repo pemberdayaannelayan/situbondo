@@ -77,6 +77,21 @@
             background-color: #f8f9fa;
             border-radius: 8px;
         }
+        
+        /* PERBAIKAN: Fix untuk overlay modal yang tersisa */
+        .modal-backdrop {
+            z-index: 1040 !important;
+        }
+        
+        .modal {
+            z-index: 1050 !important;
+        }
+        
+        /* PERBAIKAN: Pastikan konten aplikasi tidak tertutup overlay */
+        .app-content-unauthenticated {
+            position: relative;
+            z-index: 1;
+        }
     </style>
     
     <!-- LOAD SEMUA JAVASCRIPT LIBRARY -->
@@ -145,6 +160,35 @@
                     imageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 500);
+        }
+        
+        // PERBAIKAN: Fungsi untuk beralih ke tab input setelah modal ditutup
+        function switchToInputTabAfterModalClose() {
+            // Tutup modal dengan benar
+            const fishModal = bootstrap.Modal.getInstance(document.getElementById('fishInfoModal'));
+            if (fishModal) {
+                fishModal.hide();
+            }
+            
+            // Pastikan semua backdrop modal dihapus
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => {
+                    backdrop.remove();
+                });
+                
+                // Hapus kelas modal-open dari body
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                
+                // Beralih ke tab input
+                const inputTab = document.getElementById('v-pills-input-tab');
+                if (inputTab) {
+                    inputTab.click();
+                    window.scrollTo(0, 0);
+                }
+            }, 300);
         }
     </script>
 </head>
@@ -948,23 +992,23 @@
                                                                                             Kode Validasi (KIN) dapat ditemukan di ID Card atau kolom "Kode Validasi" pada data nelayan
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>
+                                                                </div>
                                                                                 
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
-                                                                                        <div class="verify-breadcrumb">
-                                                                                            <div class="verify-breadcrumb-item active" onclick="setVerifyExample('kin')">
-                                                                                                <i class="fas fa-id-card me-2"></i>Cek dengan KIN
-                                                                                            </div>
-                                                                                            <div class="verify-breadcrumb-item" onclick="setVerifyExample('nik')">
-                                                                                                <i class="fas fa-address-card me-2"></i>Cek dengan NIK
-                                                                                            </div>
-                                                                                            <div class="verify-breadcrumb-item" onclick="setVerifyExample('all')">
-                                                                                                <i class="fas fa-list me-2"></i>Tampilkan Semua KIN
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="verify-breadcrumb">
+                                                                            <div class="verify-breadcrumb-item active" onclick="setVerifyExample('kin')">
+                                                                                <i class="fas fa-id-card me-2"></i>Cek dengan KIN
+                                                                            </div>
+                                                                            <div class="verify-breadcrumb-item" onclick="setVerifyExample('nik')">
+                                                                                <i class="fas fa-address-card me-2"></i>Cek dengan NIK
+                                                                            </div>
+                                                                            <div class="verify-breadcrumb-item" onclick="setVerifyExample('all')">
+                                                                                <i class="fas fa-list me-2"></i>Tampilkan Semua KIN
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -1402,7 +1446,8 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="document.getElementById('v-pills-input-tab').click(); window.scrollTo(0, 0);">
+                                                        <!-- PERBAIKAN: Tombol Input Data Nelayan yang telah diperbaiki -->
+                                                        <button type="button" class="btn btn-primary" id="btnFishModalToInput" data-bs-dismiss="modal">
                                                             <i class="fas fa-plus me-2"></i>Input Data Nelayan
                                                         </button>
                                                     </div>
@@ -1469,6 +1514,20 @@
                         });
                     }, 100);
                 });
+                
+                // PERBAIKAN: Event listener untuk menghapus backdrop saat modal ditutup
+                fishInfoModal.addEventListener('hidden.bs.modal', function() {
+                    // Hapus backdrop modal yang mungkin tersisa
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => {
+                        backdrop.remove();
+                    });
+                    
+                    // Reset style body
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                });
             }
             
             // Tambahkan event listener untuk tombol info ikan di form input
@@ -1477,6 +1536,37 @@
                 fishInfoBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     showFishInfoModal();
+                });
+            }
+            
+            // PERBAIKAN: Event listener untuk tombol "Input Data Nelayan" di modal fishInfoModal
+            const btnFishModalToInput = document.getElementById('btnFishModalToInput');
+            if (btnFishModalToInput) {
+                btnFishModalToInput.addEventListener('click', function() {
+                    // Tutup modal dengan benar
+                    const fishModal = bootstrap.Modal.getInstance(document.getElementById('fishInfoModal'));
+                    if (fishModal) {
+                        fishModal.hide();
+                    }
+                    
+                    // Bersihkan backdrop dan reset body
+                    setTimeout(() => {
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        backdrops.forEach(backdrop => {
+                            backdrop.remove();
+                        });
+                        
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+                        
+                        // Beralih ke tab input
+                        const inputTab = document.getElementById('v-pills-input-tab');
+                        if (inputTab) {
+                            inputTab.click();
+                            window.scrollTo(0, 0);
+                        }
+                    }, 300);
                 });
             }
         });
@@ -1493,6 +1583,33 @@
                 }
             };
         }
+        
+        // PERBAIKAN: Fungsi untuk memastikan modal ditutup dengan benar
+        function ensureModalCleanup() {
+            // Hapus semua backdrop modal
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => {
+                backdrop.remove();
+            });
+            
+            // Reset body styles
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Hapus kelas show dari semua modal
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                modal.classList.remove('show');
+                modal.style.display = '';
+            });
+        }
+        
+        // PERBAIKAN: Tambahkan event listener untuk menangani masalah modal
+        window.addEventListener('load', function() {
+            // Pastikan tidak ada backdrop tersisa saat halaman dimuat
+            ensureModalCleanup();
+        });
     </script>
 
 </body>
