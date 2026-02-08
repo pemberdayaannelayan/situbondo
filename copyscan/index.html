@@ -957,7 +957,7 @@
                     </div>
                 </div>
                 <div class="app-version">
-                    <i class="fas fa-code-branch"></i> v2.3 Professional
+                    <i class="fas fa-code-branch"></i> v2.4 Final
                 </div>
             </div>
             
@@ -2070,21 +2070,53 @@
                 const tr = document.createElement('tr');
                 columns.forEach(column => {
                     const td = document.createElement('td');
-                    td.textContent = row[column] || '';
+                    const value = row[column] || '';
                     
                     // Special styling for WhatsApp column
-                    if (column.includes('whatsapp') || column.includes('wa') || column.includes('hp') || column.includes('no') || column.includes('telepon')) {
+                    const columnLower = column.toLowerCase();
+                    if (columnLower.includes('whatsapp') || columnLower.includes('wa') || columnLower.includes('hp') || 
+                        columnLower.includes('no') || columnLower.includes('telepon') || columnLower.includes('phone') ||
+                        columnLower.includes('mobile') || columnLower.includes('kontak')) {
                         td.classList.add('whatsapp-cell');
-                        if (row[column]) {
-                            td.innerHTML = formatWhatsAppForDisplay(row[column]);
+                        if (value) {
+                            td.innerHTML = formatWhatsAppForDisplay(value);
+                        } else {
+                            td.textContent = '-';
                         }
                     }
-                    
                     // Special styling for Profesi column
-                    if (column.includes('profesi') || column.includes('pekerjaan') || column.includes('job')) {
-                        if (row[column]) {
-                            td.innerHTML = `<span class="profesi-tag">${row[column]}</span>`;
+                    else if (columnLower.includes('profesi') || columnLower.includes('pekerjaan') || 
+                            columnLower.includes('job') || columnLower.includes('occupation') || columnLower.includes('kerja')) {
+                        if (value) {
+                            td.innerHTML = `<span class="profesi-tag">${value}</span>`;
+                        } else {
+                            td.textContent = '-';
                         }
+                    }
+                    // Special styling for Alat Tangkap column
+                    else if ((columnLower.includes('alat') && columnLower.includes('tangkap')) || 
+                            columnLower.includes('peralatan') || columnLower.includes('gear')) {
+                        if (value) {
+                            td.style.color = '#2c3e50';
+                            td.style.fontWeight = '500';
+                            td.textContent = value;
+                        } else {
+                            td.textContent = '-';
+                        }
+                    }
+                    // Special styling for Jenis Kapal column
+                    else if ((columnLower.includes('jenis') && columnLower.includes('kapal')) || 
+                            columnLower.includes('tipe') || columnLower.includes('type') || columnLower.includes('kapal')) {
+                        if (value) {
+                            td.style.color = '#3498db';
+                            td.style.fontWeight = '500';
+                            td.textContent = value;
+                        } else {
+                            td.textContent = '-';
+                        }
+                    }
+                    else {
+                        td.textContent = value;
                     }
                     
                     tr.appendChild(td);
@@ -2137,10 +2169,7 @@
                 // Add empty option
                 const emptyOption = document.createElement('option');
                 emptyOption.value = '';
-                emptyOption.textContent = `-- Pilih kolom ${field.label} --`;
-                if (!field.required) {
-                    emptyOption.textContent = `-- Opsional: ${field.label} --`;
-                }
+                emptyOption.textContent = field.required ? `-- Pilih kolom ${field.label} --` : `-- Opsional: ${field.label} --`;
                 select.appendChild(emptyOption);
                 
                 // Add column options
@@ -2155,20 +2184,20 @@
                     
                     // Check for various possible column names
                     const possibleNames = {
-                        'nama': ['nama', 'name', 'fullname', 'nama lengkap'],
-                        'nik': ['nik', 'no ktp', 'ktp', 'nomor induk'],
-                        'whatsapp': ['whatsapp', 'wa', 'hp', 'telepon', 'no hp', 'telp', 'phone', 'mobile'],
-                        'alamat': ['alamat', 'address', 'jalan', 'jl'],
-                        'kecamatan': ['kecamatan', 'kec', 'district'],
-                        'desa': ['desa', 'kelurahan', 'desa/kel', 'village'],
-                        'profesi': ['profesi', 'pekerjaan', 'job', 'occupation', 'kerja'],
-                        'alatTangkap': ['alat tangkap', 'alat', 'gear', 'fishing gear'],
-                        'jenisKapal': ['jenis kapal', 'kapal', 'boat type', 'ship type']
+                        'nama': ['nama', 'name', 'fullname', 'nama lengkap', 'nm', 'nama_lengkap'],
+                        'nik': ['nik', 'no ktp', 'ktp', 'nomor induk', 'nomor_ktp', 'no_ktp'],
+                        'whatsapp': ['whatsapp', 'wa', 'hp', 'telepon', 'no hp', 'telp', 'phone', 'mobile', 'kontak', 'nohp', 'no_hp', 'no_telepon'],
+                        'alamat': ['alamat', 'address', 'jalan', 'jl', 'alamat_lengkap', 'lokasi'],
+                        'kecamatan': ['kecamatan', 'kec', 'district', 'wilayah', 'area'],
+                        'desa': ['desa', 'kelurahan', 'desa/kel', 'village', 'kel', 'dusun', 'kampung'],
+                        'profesi': ['profesi', 'pekerjaan', 'job', 'occupation', 'kerja', 'mata pencaharian', 'pekerjaan_utama'],
+                        'alatTangkap': ['alat tangkap', 'alat', 'gear', 'fishing gear', 'alat_tangkap', 'peralatan', 'alat_penangkapan'],
+                        'jenisKapal': ['jenis kapal', 'kapal', 'boat type', 'ship type', 'jenis_kapal', 'tipe_kapal', 'type_kapal']
                     };
                     
                     if (possibleNames[field.id]) {
                         possibleNames[field.id].forEach(name => {
-                            if (columnLower.includes(name) || fieldLower.includes(columnLower)) {
+                            if (columnLower.includes(name) || name.includes(columnLower)) {
                                 option.selected = true;
                                 scanningSettings[`${field.id}Column`] = column;
                             }
@@ -2178,9 +2207,15 @@
                     select.appendChild(option);
                 });
                 
+                // Set value if already selected
+                if (scanningSettings[`${field.id}Column`]) {
+                    select.value = scanningSettings[`${field.id}Column`];
+                }
+                
                 // Add event listener
                 select.addEventListener('change', function() {
                     scanningSettings[`${field.id}Column`] = this.value;
+                    console.log(`Set ${field.id}Column to: ${this.value}`);
                 });
                 
                 selectDiv.appendChild(select);
@@ -2326,6 +2361,21 @@
                             }
                         } else if (profesi) {
                             item._profesiStandardized = profesi.toString();
+                            if (profesi.toString().trim()) {
+                                profesiDistribution[profesi.toString()] = (profesiDistribution[profesi.toString()] || 0) + 1;
+                            }
+                        }
+                        
+                        // Process alat tangkap
+                        const alatTangkap = item[scanningSettings.alatTangkapColumn];
+                        if (alatTangkap) {
+                            item._alatTangkap = alatTangkap.toString();
+                        }
+                        
+                        // Process jenis kapal
+                        const jenisKapal = item[scanningSettings.jenisKapalColumn];
+                        if (jenisKapal) {
+                            item._jenisKapal = jenisKapal.toString();
                         }
                         
                         const nikKey = nik.toString();
@@ -2895,7 +2945,7 @@
             });
         }
         
-        // Display Data Table
+        // Display Data Table - FIXED VERSION
         function displayDataTable() {
             const tableHeader = document.getElementById('tableHeader');
             const tableBody = document.getElementById('tableBody');
@@ -2922,24 +2972,60 @@
             // Create header with mapped columns
             const headerRow = document.createElement('tr');
             
-            // Define column order (only show columns that are mapped)
+            // Define column order (show all columns that are mapped, even if empty in settings)
             const columns = [];
             
-            if (scanningSettings.namaColumn) columns.push({ key: scanningSettings.namaColumn, label: 'NAMA', sortable: true });
-            if (scanningSettings.nikColumn) columns.push({ key: scanningSettings.nikColumn, label: 'NIK', sortable: true });
-            if (scanningSettings.whatsappColumn) columns.push({ key: scanningSettings.whatsappColumn, label: 'WHATSAPP', sortable: true, whatsapp: true });
-            if (scanningSettings.profesiColumn) columns.push({ key: scanningSettings.profesiColumn, label: 'PROFESI', sortable: true, profesi: true });
-            if (scanningSettings.alamatColumn) columns.push({ key: scanningSettings.alamatColumn, label: 'ALAMAT', sortable: true });
-            if (scanningSettings.kecamatanColumn) columns.push({ key: scanningSettings.kecamatanColumn, label: 'KECAMATAN', sortable: true });
-            if (scanningSettings.desaColumn) columns.push({ key: scanningSettings.desaColumn, label: 'DESA', sortable: true });
-            if (scanningSettings.alatTangkapColumn) columns.push({ key: scanningSettings.alatTangkapColumn, label: 'ALAT TANGKAP', sortable: true });
-            if (scanningSettings.jenisKapalColumn) columns.push({ key: scanningSettings.jenisKapalColumn, label: 'JENIS KAPAL', sortable: true });
+            // Always add these columns if they exist in data
+            columns.push({ key: scanningSettings.namaColumn || 'nama', label: 'NAMA', sortable: true });
+            columns.push({ key: scanningSettings.nikColumn || 'nik', label: 'NIK', sortable: true });
+            
+            // Check if WhatsApp column exists in first data item
+            const firstItem = dataToDisplay[0];
+            const whatsappKey = scanningSettings.whatsappColumn || findWhatsAppColumn(firstItem);
+            if (whatsappKey) {
+                columns.push({ key: whatsappKey, label: 'WHATSAPP', sortable: true, whatsapp: true });
+            }
+            
+            // Check if Profesi column exists
+            const profesiKey = scanningSettings.profesiColumn || findProfesiColumn(firstItem);
+            if (profesiKey) {
+                columns.push({ key: profesiKey, label: 'PROFESI', sortable: true, profesi: true });
+            }
+            
+            // Check if Alamat column exists
+            const alamatKey = scanningSettings.alamatColumn;
+            if (alamatKey) {
+                columns.push({ key: alamatKey, label: 'ALAMAT', sortable: true });
+            }
+            
+            // Check if Kecamatan column exists
+            const kecamatanKey = scanningSettings.kecamatanColumn;
+            if (kecamatanKey) {
+                columns.push({ key: kecamatanKey, label: 'KECAMATAN', sortable: true });
+            }
+            
+            // Check if Desa column exists
+            const desaKey = scanningSettings.desaColumn;
+            if (desaKey) {
+                columns.push({ key: desaKey, label: 'DESA', sortable: true });
+            }
+            
+            // Check if Alat Tangkap column exists
+            const alatTangkapKey = scanningSettings.alatTangkapColumn;
+            if (alatTangkapKey) {
+                columns.push({ key: alatTangkapKey, label: 'ALAT TANGKAP', sortable: true });
+            }
+            
+            // Check if Jenis Kapal column exists
+            const jenisKapalKey = scanningSettings.jenisKapalColumn;
+            if (jenisKapalKey) {
+                columns.push({ key: jenisKapalKey, label: 'JENIS KAPAL', sortable: true });
+            }
             
             columns.push({ key: '_status', label: 'STATUS', sortable: false });
             
             columns.forEach(col => {
                 const th = document.createElement('th');
-                th.textContent = col.label;
                 
                 if (col.sortable) {
                     th.className = 'sortable';
@@ -2947,6 +3033,8 @@
                     
                     // Add sorting functionality
                     th.addEventListener('click', () => sortTable(col.key));
+                } else {
+                    th.textContent = col.label;
                 }
                 
                 headerRow.appendChild(th);
@@ -3028,6 +3116,22 @@
                         } else {
                             td.textContent = '-';
                         }
+                    } else if (col.key === scanningSettings.alatTangkapColumn) {
+                        // Alat Tangkap column
+                        const alatTangkap = item[col.key];
+                        td.textContent = alatTangkap || '-';
+                        if (alatTangkap) {
+                            td.style.color = '#2c3e50';
+                            td.style.fontWeight = '500';
+                        }
+                    } else if (col.key === scanningSettings.jenisKapalColumn) {
+                        // Jenis Kapal column
+                        const jenisKapal = item[col.key];
+                        td.textContent = jenisKapal || '-';
+                        if (jenisKapal) {
+                            td.style.color = '#3498db';
+                            td.style.fontWeight = '500';
+                        }
                     } else {
                         // Regular column
                         td.textContent = item[col.key] || '-';
@@ -3041,6 +3145,42 @@
             
             // Update pagination
             updatePagination(dataToDisplay.length);
+        }
+        
+        // Helper function to find WhatsApp column
+        function findWhatsAppColumn(item) {
+            if (!item) return null;
+            
+            const whatsappKeywords = ['whatsapp', 'wa', 'hp', 'telepon', 'no hp', 'telp', 'phone', 'mobile', 'kontak', 'nohp', 'no_hp'];
+            
+            for (const key in item) {
+                const keyLower = key.toLowerCase();
+                for (const keyword of whatsappKeywords) {
+                    if (keyLower.includes(keyword)) {
+                        return key;
+                    }
+                }
+            }
+            
+            return null;
+        }
+        
+        // Helper function to find Profesi column
+        function findProfesiColumn(item) {
+            if (!item) return null;
+            
+            const profesiKeywords = ['profesi', 'pekerjaan', 'job', 'occupation', 'kerja', 'mata pencaharian', 'pekerjaan_utama'];
+            
+            for (const key in item) {
+                const keyLower = key.toLowerCase();
+                for (const keyword of profesiKeywords) {
+                    if (keyLower.includes(keyword)) {
+                        return key;
+                    }
+                }
+            }
+            
+            return null;
         }
         
         // Sort Table
@@ -3171,15 +3311,24 @@
                         scanningSettings.profesiColumn,
                         scanningSettings.alatTangkapColumn,
                         scanningSettings.jenisKapalColumn
-                    ];
+                    ].filter(field => field && field.trim() !== '');
                     
                     const matches = searchableFields.some(field => {
-                        if (!field) return false;
                         const value = item[field];
                         return value && value.toString().toLowerCase().includes(searchTerm);
                     });
                     
-                    if (!matches) return false;
+                    if (!matches) {
+                        // Also search in additional fields
+                        for (const key in item) {
+                            if (key.startsWith('_')) continue; // Skip internal fields
+                            const value = item[key];
+                            if (value && value.toString().toLowerCase().includes(searchTerm)) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
                 }
                 
                 return true;
@@ -4272,7 +4421,7 @@
             document.getElementById('fileColumns').textContent = Object.keys(originalData[0]).join(', ');
             fileInfo.classList.add('show');
             
-            // Auto-map columns
+            // Auto-map columns based on data structure
             scanningSettings.namaColumn = 'nama';
             scanningSettings.nikColumn = 'nik';
             scanningSettings.alamatColumn = 'alamat';
@@ -4282,6 +4431,19 @@
             scanningSettings.profesiColumn = 'profesi';
             scanningSettings.alatTangkapColumn = 'alattangkap';
             scanningSettings.jenisKapalColumn = 'jeniskapal';
+            
+            // Update UI select elements
+            if (document.getElementById('map_nama')) {
+                document.getElementById('map_nama').value = 'nama';
+                document.getElementById('map_nik').value = 'nik';
+                document.getElementById('map_whatsapp').value = 'whatsapp';
+                document.getElementById('map_profesi').value = 'profesi';
+                document.getElementById('map_alamat').value = 'alamat';
+                document.getElementById('map_kecamatan').value = 'kecamatan';
+                document.getElementById('map_desa').value = 'desa';
+                document.getElementById('map_alatTangkap').value = 'alattangkap';
+                document.getElementById('map_jenisKapal').value = 'jeniskapal';
+            }
             
             // Show preview
             showDataPreview(originalData);
