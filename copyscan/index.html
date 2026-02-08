@@ -6,6 +6,8 @@
     <title>Smart Excel Scanner Pro | Aplikasi Pemindai Data Cerdas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -13,6 +15,7 @@
             --accent-color: #2ecc71;
             --warning-color: #f39c12;
             --danger-color: #e74c3c;
+            --whatsapp-color: #25D366;
             --light-color: #f8f9fa;
             --dark-color: #343a40;
             --border-radius: 8px;
@@ -221,6 +224,12 @@
             margin-bottom: 20px;
         }
         
+        .file-formats {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
         /* File Info */
         .file-info {
             background-color: #edf2f7;
@@ -287,6 +296,16 @@
         .btn-secondary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-whatsapp {
+            background: linear-gradient(to right, var(--whatsapp-color), #1DA851);
+            color: white;
+        }
+        
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
         }
         
         .btn-outline {
@@ -457,6 +476,24 @@
             color: #4a5568;
         }
         
+        /* WhatsApp Column Styling */
+        .whatsapp-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .whatsapp-cell a {
+            color: var(--whatsapp-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .whatsapp-cell a:hover {
+            text-decoration: underline;
+        }
+        
         /* Status Badges */
         .status-badge {
             display: inline-block;
@@ -481,6 +518,11 @@
         .status-selected {
             background-color: #d0ebff;
             color: #1971c2;
+        }
+        
+        .status-invalid {
+            background-color: #ffc9c9;
+            color: #c92a2a;
         }
         
         /* Statistics Cards */
@@ -519,6 +561,10 @@
         
         .stat-card.merged {
             border-color: #9b59b6;
+        }
+        
+        .stat-card.whatsapp {
+            border-color: var(--whatsapp-color);
         }
         
         .stat-value {
@@ -685,6 +731,10 @@
             background-color: var(--warning-color);
         }
         
+        .notification.info {
+            background-color: var(--secondary-color);
+        }
+        
         /* Footer */
         .footer {
             text-align: center;
@@ -693,6 +743,15 @@
             font-size: 0.9rem;
             border-top: 1px solid #e2e8f0;
             background-color: #f8fafc;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
         
         /* Responsive */
@@ -786,6 +845,38 @@
             padding: 10px 0;
             margin-top: 10px;
         }
+        
+        /* Column Mapping */
+        .column-mapping {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: var(--border-radius);
+            border: 1px dashed #cbd5e0;
+        }
+        
+        .mapping-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .mapping-row:last-child {
+            border-bottom: none;
+        }
+        
+        .mapping-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 150px;
+        }
+        
+        .mapping-select {
+            flex: 1;
+            max-width: 300px;
+        }
     </style>
 </head>
 <body>
@@ -803,7 +894,7 @@
                     </div>
                 </div>
                 <div class="app-version">
-                    <i class="fas fa-code-branch"></i> v2.0 Professional
+                    <i class="fas fa-code-branch"></i> v2.1 Professional
                 </div>
             </div>
             
@@ -841,6 +932,7 @@
                                 <h4>Seret file Excel ke sini</h4>
                                 <p>Atau klik untuk memilih file dari komputer Anda</p>
                                 <p class="file-formats">Format yang didukung: .xlsx, .xls, .csv</p>
+                                <p class="file-formats">Kolom yang diperlukan: Nama, NIK, Alamat, Kecamatan, Desa, WhatsApp</p>
                             </div>
                             <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
                         </div>
@@ -883,6 +975,9 @@
                             <button class="btn btn-outline" id="btnUseSample">
                                 <i class="fas fa-vial"></i> Gunakan Data Contoh
                             </button>
+                            <button class="btn btn-whatsapp" id="btnTemplate">
+                                <i class="fab fa-whatsapp"></i> Download Template
+                            </button>
                         </div>
                     </div>
                     
@@ -910,21 +1005,21 @@
                     <div class="panel-card">
                         <h3><i class="fas fa-sliders-h"></i> Pengaturan Pemindaian</h3>
                         
+                        <!-- Column Mapping -->
+                        <div class="column-mapping" id="columnMapping">
+                            <h4 style="margin-bottom: 15px; color: var(--primary-color);">
+                                <i class="fas fa-columns"></i> Pemetaan Kolom
+                            </h4>
+                            <div id="mappingContainer"></div>
+                        </div>
+                        
                         <div class="settings-group">
-                            <div class="setting-item">
-                                <label class="setting-label">Kolom NIK (Identifikasi Duplikat)</label>
-                                <select id="nikColumn">
-                                    <option value="">Pilih kolom NIK</option>
-                                </select>
-                                <p class="setting-description">Kolom ini akan digunakan untuk mendeteksi data duplikat</p>
-                            </div>
-                            
                             <div class="setting-item">
                                 <label class="setting-label">Metode Pemilihan Data Duplikat</label>
                                 <div class="radio-group">
                                     <div class="radio-item">
                                         <input type="radio" id="methodComplete" name="duplicateMethod" value="complete" checked>
-                                        <label for="methodComplete">Alamat Terlengkap</label>
+                                        <label for="methodComplete">Alamat & WhatsApp Terlengkap</label>
                                     </div>
                                     <div class="radio-item">
                                         <input type="radio" id="methodRecent" name="duplicateMethod" value="recent">
@@ -944,13 +1039,7 @@
                             
                             <div class="advanced-options" id="advancedOptions">
                                 <div class="setting-item">
-                                    <label class="setting-label">Kolom untuk Kelengkapan Alamat</label>
-                                    <div class="checkbox-group" id="addressColumns"></div>
-                                    <p class="setting-description">Pilih kolom yang akan digunakan untuk menilai kelengkapan alamat</p>
-                                </div>
-                                
-                                <div class="setting-item">
-                                    <label class="setting-label">Validasi NIK</label>
+                                    <label class="setting-label">Validasi Data</label>
                                     <div class="checkbox-group">
                                         <div class="checkbox-item">
                                             <input type="checkbox" id="validateNikLength" checked>
@@ -959,6 +1048,10 @@
                                         <div class="checkbox-item">
                                             <input type="checkbox" id="validateNikNumeric" checked>
                                             <label for="validateNikNumeric">Validasi NIK harus angka</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="validateWhatsApp" checked>
+                                            <label for="validateWhatsApp">Validasi format WhatsApp</label>
                                         </div>
                                     </div>
                                 </div>
@@ -971,6 +1064,29 @@
                                         <option value="separate">Pisahkan ke file terpisah</option>
                                     </select>
                                 </div>
+                                
+                                <div class="setting-item">
+                                    <label class="setting-label">Bobot Penilaian Kelengkapan Data</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                        <div>
+                                            <label style="font-size: 0.9rem;">Alamat:</label>
+                                            <input type="number" id="weightAlamat" value="3" min="1" max="10" style="width: 100%;">
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.9rem;">Kecamatan:</label>
+                                            <input type="number" id="weightKecamatan" value="2" min="1" max="10" style="width: 100%;">
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.9rem;">Desa:</label>
+                                            <input type="number" id="weightDesa" value="2" min="1" max="10" style="width: 100%;">
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.9rem;">WhatsApp:</label>
+                                            <input type="number" id="weightWhatsApp" value="4" min="1" max="10" style="width: 100%;">
+                                        </div>
+                                    </div>
+                                    <p class="setting-description">Semakin tinggi bobot, semakin penting kolom tersebut dalam penilaian kelengkapan data</p>
+                                </div>
                             </div>
                         </div>
                         
@@ -980,6 +1096,9 @@
                             </button>
                             <button class="btn btn-outline" id="btnResetSettings">
                                 <i class="fas fa-redo"></i> Reset Pengaturan
+                            </button>
+                            <button class="btn btn-whatsapp" id="btnValidateWhatsApp">
+                                <i class="fab fa-whatsapp"></i> Validasi WhatsApp
                             </button>
                         </div>
                     </div>
@@ -1033,6 +1152,15 @@
                                 <div class="stat-value" id="statMerged">0</div>
                                 <div class="stat-label">Data Digabungkan</div>
                             </div>
+                            <div class="stat-card whatsapp">
+                                <div class="stat-value" id="statWhatsApp">0</div>
+                                <div class="stat-label">WhatsApp Valid</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Container -->
+                        <div class="chart-container">
+                            <canvas id="dataChart" height="200"></canvas>
                         </div>
                         
                         <!-- Filters -->
@@ -1044,13 +1172,13 @@
                                     <option value="unique">Data Unik</option>
                                     <option value="duplicate">Duplikat</option>
                                     <option value="selected">Data Terpilih</option>
-                                    <option value="excluded">Data Dikecualikan</option>
+                                    <option value="invalid">Data Tidak Valid</option>
                                 </select>
                             </div>
                             
                             <div class="filter-group">
                                 <label class="filter-label">Cari Data</label>
-                                <input type="text" id="searchData" placeholder="Cari berdasarkan NIK atau Nama...">
+                                <input type="text" id="searchData" placeholder="Cari berdasarkan NIK, Nama, atau WhatsApp...">
                             </div>
                             
                             <div class="filter-group">
@@ -1064,6 +1192,9 @@
                         <div class="btn-group">
                             <button class="btn btn-secondary" id="btnAnalyzeData">
                                 <i class="fas fa-chart-line"></i> Analisis Lanjutan
+                            </button>
+                            <button class="btn btn-whatsapp" id="btnExportContacts">
+                                <i class="fab fa-whatsapp"></i> Ekspor Kontak WhatsApp
                             </button>
                             <button class="btn btn-outline" id="btnExportResults">
                                 <i class="fas fa-download"></i> Ekspor Hasil
@@ -1099,6 +1230,10 @@
                                         <input type="radio" id="formatJSON" name="exportFormat" value="json">
                                         <label for="formatJSON">JSON (.json)</label>
                                     </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="formatWhatsApp" name="exportFormat" value="whatsapp">
+                                        <label for="formatWhatsApp">Kontak WhatsApp (.txt)</label>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -1112,6 +1247,10 @@
                                     <div class="radio-item">
                                         <input type="radio" id="exportAll" name="exportData" value="all">
                                         <label for="exportAll">Semua Data Hasil</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="exportValid" name="exportData" value="valid">
+                                        <label for="exportValid">Hanya Data Valid</label>
                                     </div>
                                     <div class="radio-item">
                                         <input type="radio" id="exportIssues" name="exportData" value="issues">
@@ -1131,6 +1270,24 @@
                                 <input type="text" id="exportFileName" value="hasil_pemindaian_data" placeholder="Masukkan nama file">
                                 <p class="setting-description">Nama file akan ditambahkan dengan tanggal ekspor</p>
                             </div>
+                            
+                            <div class="setting-item" id="whatsappExportOptions" style="display: none;">
+                                <label class="setting-label">Format Kontak WhatsApp</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" id="whatsappFormat1" name="whatsappFormat" value="name_number" checked>
+                                        <label for="whatsappFormat1">Nama + Nomor</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="whatsappFormat2" name="whatsappFormat" value="number_only">
+                                        <label for="whatsappFormat2">Nomor Saja</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="whatsappFormat3" name="whatsappFormat" value="csv_import">
+                                        <label for="whatsappFormat3">Format Impor WhatsApp</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="btn-group">
@@ -1139,6 +1296,9 @@
                             </button>
                             <button class="btn btn-outline" id="btnPreviewExport">
                                 <i class="fas fa-eye"></i> Pratinjau Ekspor
+                            </button>
+                            <button class="btn btn-whatsapp" id="btnTestWhatsApp">
+                                <i class="fab fa-whatsapp"></i> Test WhatsApp
                             </button>
                         </div>
                     </div>
@@ -1169,10 +1329,16 @@
                                 <button class="btn btn-outline" id="btnDeselectAll">
                                     <i class="far fa-square"></i> Batalkan Pilihan
                                 </button>
+                                <button class="btn btn-whatsapp" id="btnWhatsAppSelected">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp Terpilih
+                                </button>
                             </div>
                             <div>
                                 <button class="btn btn-outline" id="btnRefreshTable">
                                     <i class="fas fa-sync-alt"></i> Segarkan
+                                </button>
+                                <button class="btn btn-outline" id="btnColumnSettings">
+                                    <i class="fas fa-columns"></i> Pengaturan Kolom
                                 </button>
                             </div>
                         </div>
@@ -1241,6 +1407,45 @@
         </div>
     </div>
     
+    <div class="modal" id="modalColumnSettings">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-columns"></i> Pengaturan Tampilan Kolom</h3>
+                <button class="close-modal" id="closeColumnSettings">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="columnSettingsContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="btnCloseColumnSettings">Batal</button>
+                <button class="btn btn-primary" id="btnSaveColumnSettings">Simpan</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="modalWhatsAppTest">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fab fa-whatsapp"></i> Test Nomor WhatsApp</h3>
+                <button class="close-modal" id="closeWhatsAppTest">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="whatsAppTestContent">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Nomor WhatsApp:</label>
+                        <input type="text" id="testWhatsAppNumber" placeholder="Contoh: 6281234567890" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Format: 62xxxxxxxxxxx (tanpa +, spasi, atau -)</p>
+                    </div>
+                    <div id="whatsAppTestResult"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="btnCloseWhatsAppTest">Tutup</button>
+                <button class="btn btn-whatsapp" id="btnTestNumber">Test Nomor</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Notification -->
     <div class="notification" id="notification">
         <i class="fas fa-check-circle"></i>
@@ -1258,12 +1463,26 @@
         let fileData = null;
         let scanningSettings = {
             nikColumn: '',
+            namaColumn: '',
+            alamatColumn: '',
+            kecamatanColumn: '',
+            desaColumn: '',
+            whatsappColumn: '',
             duplicateMethod: 'complete',
             addressColumns: [],
             validateNikLength: true,
             validateNikNumeric: true,
-            invalidDataAction: 'exclude'
+            validateWhatsApp: true,
+            invalidDataAction: 'exclude',
+            weights: {
+                alamat: 3,
+                kecamatan: 2,
+                desa: 2,
+                whatsapp: 4
+            }
         };
+        
+        let dataChart = null;
         
         // DOM Elements
         const fileInput = document.getElementById('fileInput');
@@ -1288,6 +1507,12 @@
             // Set default date for export filename
             const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             document.getElementById('exportFileName').value = `hasil_pemindaian_${today}`;
+            
+            // Set default weights
+            document.getElementById('weightAlamat').value = scanningSettings.weights.alamat;
+            document.getElementById('weightKecamatan').value = scanningSettings.weights.kecamatan;
+            document.getElementById('weightDesa').value = scanningSettings.weights.desa;
+            document.getElementById('weightWhatsApp').value = scanningSettings.weights.whatsapp;
             
             // Show first tab
             showTab('upload');
@@ -1332,6 +1557,9 @@
             // Sample Data
             document.getElementById('btnUseSample').addEventListener('click', loadSampleData);
             
+            // Template Download
+            document.getElementById('btnTemplate').addEventListener('click', downloadTemplate);
+            
             // Navigation Buttons
             document.getElementById('btnNextToProcess').addEventListener('click', () => showTab('process'));
             document.getElementById('btnViewResults').addEventListener('click', () => showTab('results'));
@@ -1340,11 +1568,14 @@
             document.getElementById('btnScanData').addEventListener('click', scanData);
             document.getElementById('btnResetSettings').addEventListener('click', resetSettings);
             document.getElementById('toggleAdvanced').addEventListener('click', toggleAdvancedOptions);
+            document.getElementById('btnValidateWhatsApp').addEventListener('click', validateAllWhatsApp);
             
             // Table Actions
             document.getElementById('btnSelectAll').addEventListener('click', selectAllRows);
             document.getElementById('btnDeselectAll').addEventListener('click', deselectAllRows);
             document.getElementById('btnRefreshTable').addEventListener('click', refreshTable);
+            document.getElementById('btnColumnSettings').addEventListener('click', showColumnSettings);
+            document.getElementById('btnWhatsAppSelected').addEventListener('click', exportWhatsAppSelected);
             
             // Filters
             document.getElementById('btnApplyFilters').addEventListener('click', applyFilters);
@@ -1354,12 +1585,51 @@
             document.getElementById('btnExportData').addEventListener('click', exportData);
             document.getElementById('btnPreviewExport').addEventListener('click', previewExport);
             document.getElementById('btnConfirmExport').addEventListener('click', confirmExport);
+            document.getElementById('btnExportContacts').addEventListener('click', exportWhatsAppContacts);
+            document.getElementById('btnTestWhatsApp').addEventListener('click', showWhatsAppTest);
+            
+            // WhatsApp Test
+            document.getElementById('btnTestNumber').addEventListener('click', testWhatsAppNumber);
+            
+            // Format change for WhatsApp export
+            document.querySelectorAll('input[name="exportFormat"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const whatsappOptions = document.getElementById('whatsappExportOptions');
+                    if (this.value === 'whatsapp') {
+                        whatsappOptions.style.display = 'block';
+                    } else {
+                        whatsappOptions.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Weight settings
+            document.getElementById('weightAlamat').addEventListener('change', function() {
+                scanningSettings.weights.alamat = parseInt(this.value) || 3;
+            });
+            
+            document.getElementById('weightKecamatan').addEventListener('change', function() {
+                scanningSettings.weights.kecamatan = parseInt(this.value) || 2;
+            });
+            
+            document.getElementById('weightDesa').addEventListener('change', function() {
+                scanningSettings.weights.desa = parseInt(this.value) || 2;
+            });
+            
+            document.getElementById('weightWhatsApp').addEventListener('change', function() {
+                scanningSettings.weights.whatsapp = parseInt(this.value) || 4;
+            });
             
             // Modals
             document.getElementById('closeAdvancedModal').addEventListener('click', () => hideModal('modalAdvancedAnalysis'));
             document.getElementById('btnCloseAdvancedModal').addEventListener('click', () => hideModal('modalAdvancedAnalysis'));
             document.getElementById('closeExportPreview').addEventListener('click', () => hideModal('modalExportPreview'));
             document.getElementById('btnCloseExportPreview').addEventListener('click', () => hideModal('modalExportPreview'));
+            document.getElementById('closeColumnSettings').addEventListener('click', () => hideModal('modalColumnSettings'));
+            document.getElementById('btnCloseColumnSettings').addEventListener('click', () => hideModal('modalColumnSettings'));
+            document.getElementById('btnSaveColumnSettings').addEventListener('click', saveColumnSettings);
+            document.getElementById('closeWhatsAppTest').addEventListener('click', () => hideModal('modalWhatsAppTest'));
+            document.getElementById('btnCloseWhatsAppTest').addEventListener('click', () => hideModal('modalWhatsAppTest'));
             
             // Analysis
             document.getElementById('btnAnalyzeData').addEventListener('click', showAdvancedAnalysis);
@@ -1386,6 +1656,7 @@
             if (tabId === 'results' && processedData.length > 0) {
                 updateStatistics();
                 displayDataTable();
+                updateChart();
             }
             
             if (tabId === 'export' && processedData.length > 0) {
@@ -1452,8 +1723,8 @@
                     // Show preview
                     showDataPreview(data);
                     
-                    // Setup process settings
-                    setupProcessSettings(data[0]);
+                    // Setup column mapping
+                    setupColumnMapping(data[0]);
                     
                     updateProgress(100);
                     
@@ -1537,6 +1808,12 @@
                 columns.forEach(column => {
                     const td = document.createElement('td');
                     td.textContent = row[column] || '';
+                    
+                    // Special styling for WhatsApp column
+                    if (column.includes('whatsapp') || column.includes('wa') || column.includes('hp')) {
+                        td.classList.add('whatsapp-cell');
+                    }
+                    
                     tr.appendChild(td);
                 });
                 previewBody.appendChild(tr);
@@ -1546,99 +1823,94 @@
             previewCard.style.display = 'block';
         }
         
-        // Setup Process Settings
-        function setupProcessSettings(firstRow) {
+        // Setup Column Mapping
+        function setupColumnMapping(firstRow) {
             const columns = Object.keys(firstRow);
-            const nikColumnSelect = document.getElementById('nikColumn');
-            const addressColumnsDiv = document.getElementById('addressColumns');
+            const mappingContainer = document.getElementById('mappingContainer');
             
-            // Clear previous options
-            nikColumnSelect.innerHTML = '<option value="">Pilih kolom NIK</option>';
-            addressColumnsDiv.innerHTML = '';
+            mappingContainer.innerHTML = '';
             
-            // Add column options
-            columns.forEach(column => {
-                // NIK column select
-                const option = document.createElement('option');
-                option.value = column;
-                option.textContent = column;
+            const requiredFields = [
+                { id: 'nama', label: 'Nama', description: 'Kolom untuk nama lengkap' },
+                { id: 'nik', label: 'NIK', description: 'Kolom untuk Nomor Induk Kependudukan' },
+                { id: 'alamat', label: 'Alamat', description: 'Kolom untuk alamat lengkap' },
+                { id: 'kecamatan', label: 'Kecamatan', description: 'Kolom untuk nama kecamatan' },
+                { id: 'desa', label: 'Desa/Kelurahan', description: 'Kolom untuk nama desa/kelurahan' },
+                { id: 'whatsapp', label: 'WhatsApp', description: 'Kolom untuk nomor WhatsApp' }
+            ];
+            
+            requiredFields.forEach(field => {
+                const mappingRow = document.createElement('div');
+                mappingRow.className = 'mapping-row';
                 
-                // Auto-select if column name contains 'nik'
-                if (column.includes('nik')) {
-                    option.selected = true;
-                    scanningSettings.nikColumn = column;
-                }
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'mapping-label';
+                labelDiv.innerHTML = `
+                    <span style="font-weight: 600;">${field.label}</span>
+                    <br>
+                    <span style="font-size: 0.8rem; color: #718096;">${field.description}</span>
+                `;
                 
-                nikColumnSelect.appendChild(option);
+                const selectDiv = document.createElement('div');
+                selectDiv.className = 'mapping-select';
                 
-                // Address columns checkboxes
-                if (column.includes('alamat') || column.includes('kecamatan') || column.includes('desa') || 
-                    column.includes('address') || column.includes('kelurahan') || column.includes('kota')) {
+                const select = document.createElement('select');
+                select.id = `map_${field.id}`;
+                select.className = 'column-select';
+                
+                // Add empty option
+                const emptyOption = document.createElement('option');
+                emptyOption.value = '';
+                emptyOption.textContent = `-- Pilih kolom ${field.label} --`;
+                select.appendChild(emptyOption);
+                
+                // Add column options
+                columns.forEach(column => {
+                    const option = document.createElement('option');
+                    option.value = column;
+                    option.textContent = column;
                     
-                    const checkboxItem = document.createElement('div');
-                    checkboxItem.className = 'checkbox-item';
+                    // Auto-select based on column name similarity
+                    const columnLower = column.toLowerCase();
+                    const fieldLower = field.id.toLowerCase();
                     
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.id = `col_${column}`;
-                    checkbox.value = column;
-                    
-                    // Auto-check address-related columns
-                    if (column.includes('alamat') || column.includes('address')) {
-                        checkbox.checked = true;
-                        scanningSettings.addressColumns.push(column);
+                    if (columnLower.includes(fieldLower) || fieldLower.includes(columnLower)) {
+                        option.selected = true;
+                        scanningSettings[`${field.id}Column`] = column;
                     }
                     
-                    const label = document.createElement('label');
-                    label.htmlFor = `col_${column}`;
-                    label.textContent = column;
-                    
-                    checkboxItem.appendChild(checkbox);
-                    checkboxItem.appendChild(label);
-                    addressColumnsDiv.appendChild(checkboxItem);
-                    
-                    // Add event listener
-                    checkbox.addEventListener('change', function() {
-                        if (this.checked) {
-                            scanningSettings.addressColumns.push(this.value);
-                        } else {
-                            scanningSettings.addressColumns = scanningSettings.addressColumns.filter(col => col !== this.value);
-                        }
-                    });
-                }
-            });
-            
-            // Add event listener for NIK column change
-            nikColumnSelect.addEventListener('change', function() {
-                scanningSettings.nikColumn = this.value;
-            });
-            
-            // Add event listeners for duplicate method
-            document.querySelectorAll('input[name="duplicateMethod"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    scanningSettings.duplicateMethod = this.value;
+                    select.appendChild(option);
                 });
+                
+                // Add event listener
+                select.addEventListener('change', function() {
+                    scanningSettings[`${field.id}Column`] = this.value;
+                });
+                
+                selectDiv.appendChild(select);
+                mappingRow.appendChild(labelDiv);
+                mappingRow.appendChild(selectDiv);
+                mappingContainer.appendChild(mappingRow);
             });
             
-            // Add event listeners for validation options
-            document.getElementById('validateNikLength').addEventListener('change', function() {
-                scanningSettings.validateNikLength = this.checked;
-            });
-            
-            document.getElementById('validateNikNumeric').addEventListener('change', function() {
-                scanningSettings.validateNikNumeric = this.checked;
-            });
-            
-            // Add event listener for invalid data action
-            document.getElementById('invalidDataAction').addEventListener('change', function() {
-                scanningSettings.invalidDataAction = this.value;
-            });
+            // Show column mapping
+            document.getElementById('columnMapping').style.display = 'block';
         }
         
         // Scan Data
         function scanData() {
-            if (!scanningSettings.nikColumn) {
-                showNotification('Silakan pilih kolom NIK terlebih dahulu', 'warning');
+            // Validate required columns
+            const requiredColumns = ['nama', 'nik', 'alamat', 'kecamatan', 'desa', 'whatsapp'];
+            const missingColumns = [];
+            
+            requiredColumns.forEach(col => {
+                if (!scanningSettings[`${col}Column`]) {
+                    missingColumns.push(col);
+                }
+            });
+            
+            if (missingColumns.length > 0) {
+                showNotification(`Kolom berikut belum dipetakan: ${missingColumns.join(', ')}`, 'warning');
                 return;
             }
             
@@ -1679,27 +1951,44 @@
                     // Group data by NIK
                     const groups = {};
                     const invalidData = [];
+                    let validWhatsAppCount = 0;
                     
                     originalData.forEach((item, index) => {
                         const nik = item[scanningSettings.nikColumn];
                         
                         // Validate NIK
                         if (scanningSettings.validateNikLength && nik && nik.toString().length !== 16) {
-                            item._status = 'invalid_length';
+                            item._status = 'invalid_nik_length';
+                            item._invalidReason = 'Panjang NIK tidak 16 digit';
                             invalidData.push(item);
                             return;
                         }
                         
                         if (scanningSettings.validateNikNumeric && nik && !/^\d+$/.test(nik.toString())) {
-                            item._status = 'invalid_numeric';
+                            item._status = 'invalid_nik_numeric';
+                            item._invalidReason = 'NIK mengandung karakter non-digit';
                             invalidData.push(item);
                             return;
                         }
                         
                         if (!nik) {
                             item._status = 'missing_nik';
+                            item._invalidReason = 'NIK kosong';
                             invalidData.push(item);
                             return;
+                        }
+                        
+                        // Validate WhatsApp
+                        const whatsapp = item[scanningSettings.whatsappColumn];
+                        if (scanningSettings.validateWhatsApp && whatsapp) {
+                            const whatsappStr = whatsapp.toString().trim();
+                            if (isValidWhatsApp(whatsappStr)) {
+                                item._whatsappValid = true;
+                                validWhatsAppCount++;
+                            } else {
+                                item._whatsappValid = false;
+                                item._whatsappIssue = 'Format WhatsApp tidak valid';
+                            }
                         }
                         
                         const nikKey = nik.toString();
@@ -1715,6 +2004,7 @@
                     });
                     
                     addProcessLog(`Data dikelompokkan menjadi ${Object.keys(groups).length} kelompok NIK`);
+                    addProcessLog(`${validWhatsAppCount} nomor WhatsApp valid ditemukan`);
                     
                     // Process each group
                     processedData = [];
@@ -1736,8 +2026,8 @@
                             
                             switch (scanningSettings.duplicateMethod) {
                                 case 'complete':
-                                    // Select item with most complete address
-                                    selectedItem = selectByAddressCompleteness(group);
+                                    // Select item with most complete data (including WhatsApp)
+                                    selectedItem = selectByDataCompleteness(group);
                                     break;
                                 case 'recent':
                                     // Select last item (assuming last is most recent)
@@ -1755,6 +2045,9 @@
                             group.forEach(item => {
                                 item._status = 'duplicate';
                                 item._selected = (item === selectedItem);
+                                if (item !== selectedItem) {
+                                    item._replacedBy = selectedItem._index;
+                                }
                             });
                             
                             processedData.push(selectedItem);
@@ -1785,6 +2078,7 @@
                     
                     if (invalidData.length > 0) {
                         addProcessLog(`${invalidData.length} data tidak valid ditemukan`, 'warning');
+                        showDataIssues(invalidData);
                     }
                     
                     // Update progress to 100%
@@ -1810,40 +2104,105 @@
             }, 1000);
         }
         
-        // Select item by address completeness
-        function selectByAddressCompleteness(group) {
+        // Select item by data completeness (including WhatsApp)
+        function selectByDataCompleteness(group) {
             let bestScore = -1;
             let bestItem = group[0];
             
             group.forEach(item => {
                 let score = 0;
                 
-                // Calculate completeness score
-                scanningSettings.addressColumns.forEach(column => {
-                    const value = item[column];
-                    if (value && value.toString().trim() !== '') {
-                        score += 1;
-                        // Bonus for longer values (more detailed)
-                        score += value.toString().length * 0.001;
-                    }
-                });
-                
-                // Bonus for having specific address components
-                if (item.alamat && item.alamat.toString().includes('RT') && item.alamat.toString().includes('RW')) {
-                    score += 2;
+                // Calculate completeness score with weights
+                if (item[scanningSettings.alamatColumn] && item[scanningSettings.alamatColumn].toString().trim() !== '') {
+                    score += scanningSettings.weights.alamat;
+                    // Bonus for more detailed address
+                    const address = item[scanningSettings.alamatColumn].toString();
+                    if (address.includes('RT') && address.includes('RW')) score += 1;
+                    if (address.includes('No.')) score += 0.5;
+                    if (address.length > 30) score += 1; // Longer address is more detailed
                 }
                 
-                if (item.alamat && item.alamat.toString().includes('No.')) {
+                if (item[scanningSettings.kecamatanColumn] && item[scanningSettings.kecamatanColumn].toString().trim() !== '') {
+                    score += scanningSettings.weights.kecamatan;
+                }
+                
+                if (item[scanningSettings.desaColumn] && item[scanningSettings.desaColumn].toString().trim() !== '') {
+                    score += scanningSettings.weights.desa;
+                }
+                
+                // WhatsApp score (higher weight because it's important)
+                const whatsapp = item[scanningSettings.whatsappColumn];
+                if (whatsapp && whatsapp.toString().trim() !== '') {
+                    score += scanningSettings.weights.whatsapp;
+                    
+                    // Bonus for valid WhatsApp format
+                    if (item._whatsappValid) {
+                        score += 2;
+                    }
+                }
+                
+                // Bonus for complete name
+                const nama = item[scanningSettings.namaColumn];
+                if (nama && nama.toString().trim().split(' ').length >= 2) {
                     score += 1;
                 }
                 
                 if (score > bestScore) {
                     bestScore = score;
                     bestItem = item;
+                } else if (score === bestScore) {
+                    // If scores are equal, prioritize WhatsApp validity
+                    if (item._whatsappValid && !bestItem._whatsappValid) {
+                        bestItem = item;
+                    }
                 }
             });
             
             return bestItem;
+        }
+        
+        // Validate WhatsApp number
+        function isValidWhatsApp(whatsapp) {
+            if (!whatsapp) return false;
+            
+            // Clean the number
+            const cleaned = whatsapp.toString().replace(/\s+/g, '').replace(/[+\-()]/g, '');
+            
+            // Check if it's all digits
+            if (!/^\d+$/.test(cleaned)) return false;
+            
+            // Check length (minimum 10 digits for international numbers)
+            if (cleaned.length < 10 || cleaned.length > 15) return false;
+            
+            // Check if it starts with valid country code (Indonesia: 62)
+            if (cleaned.startsWith('62') && cleaned.length >= 11) return true;
+            
+            // Check if it starts with 0 (local format)
+            if (cleaned.startsWith('0') && cleaned.length >= 10) return true;
+            
+            // Check if it starts with 8 (mobile number without prefix)
+            if (cleaned.startsWith('8') && cleaned.length >= 10) return true;
+            
+            return false;
+        }
+        
+        // Format WhatsApp number
+        function formatWhatsApp(whatsapp) {
+            if (!whatsapp) return '';
+            
+            const cleaned = whatsapp.toString().replace(/\s+/g, '').replace(/[+\-()]/g, '');
+            
+            // If starts with 0, replace with 62
+            if (cleaned.startsWith('0')) {
+                return '62' + cleaned.substring(1);
+            }
+            
+            // If starts with 8 (without country code), add 62
+            if (cleaned.startsWith('8') && cleaned.length >= 10) {
+                return '62' + cleaned;
+            }
+            
+            return cleaned;
         }
         
         // Add process log
@@ -1867,14 +2226,70 @@
             const unique = processedData.filter(item => item._status === 'unique').length;
             const duplicates = processedData.filter(item => item._status === 'duplicate' && item._selected).length;
             const merged = originalData.length - processedData.length;
+            const validWhatsApp = processedData.filter(item => item._whatsappValid).length;
             
             document.getElementById('statTotal').textContent = total;
             document.getElementById('statUnique').textContent = unique;
             document.getElementById('statDuplicates').textContent = duplicates;
             document.getElementById('statMerged').textContent = merged;
+            document.getElementById('statWhatsApp').textContent = validWhatsApp;
             
             // Update table count
             document.getElementById('tableCount').textContent = `(${filteredData.length || processedData.length} data)`;
+        }
+        
+        // Update Chart
+        function updateChart() {
+            const ctx = document.getElementById('dataChart').getContext('2d');
+            
+            // Destroy existing chart
+            if (dataChart) {
+                dataChart.destroy();
+            }
+            
+            const total = originalData.length;
+            const unique = processedData.filter(item => item._status === 'unique').length;
+            const duplicates = processedData.filter(item => item._status === 'duplicate' && item._selected).length;
+            const invalid = originalData.length - processedData.length;
+            const validWhatsApp = processedData.filter(item => item._whatsappValid).length;
+            const invalidWhatsApp = processedData.length - validWhatsApp;
+            
+            dataChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Data Unik', 'Duplikat Terpilih', 'Data Tidak Valid', 'WhatsApp Valid', 'WhatsApp Tidak Valid'],
+                    datasets: [{
+                        data: [unique, duplicates, invalid, validWhatsApp, invalidWhatsApp],
+                        backgroundColor: [
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(37, 211, 102, 0.8)',
+                            'rgba(243, 156, 18, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(46, 204, 113)',
+                            'rgb(52, 152, 219)',
+                            'rgb(231, 76, 60)',
+                            'rgb(37, 211, 102)',
+                            'rgb(243, 156, 18)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribusi Data Hasil Pemindaian'
+                        }
+                    }
+                }
+            });
         }
         
         // Display Data Table
@@ -1901,34 +2316,35 @@
                 return;
             }
             
-            // Get columns from first item
-            const firstItem = dataToDisplay[0];
-            const columns = Object.keys(firstItem).filter(key => !key.startsWith('_'));
-            
-            // Add status column
-            columns.push('_status');
-            
-            // Create header
+            // Create header with mapped columns
             const headerRow = document.createElement('tr');
-            columns.forEach(column => {
+            
+            // Define column order
+            const columns = [
+                { key: scanningSettings.namaColumn, label: 'NAMA', sortable: true },
+                { key: scanningSettings.nikColumn, label: 'NIK', sortable: true },
+                { key: scanningSettings.alamatColumn, label: 'ALAMAT', sortable: true },
+                { key: scanningSettings.kecamatanColumn, label: 'KECAMATAN', sortable: true },
+                { key: scanningSettings.desaColumn, label: 'DESA', sortable: true },
+                { key: scanningSettings.whatsappColumn, label: 'WHATSAPP', sortable: true, whatsapp: true },
+                { key: '_status', label: 'STATUS', sortable: false }
+            ];
+            
+            columns.forEach(col => {
                 const th = document.createElement('th');
-                th.className = column.startsWith('_') ? '' : 'sortable';
-                th.textContent = formatColumnName(column);
+                th.textContent = col.label;
                 
-                if (column.startsWith('_')) {
-                    // Status column
-                    if (column === '_status') {
-                        th.innerHTML = 'STATUS <i class="fas fa-sort"></i>';
-                    }
-                } else {
-                    th.innerHTML = `${column.toUpperCase()} <i class="fas fa-sort"></i>`;
+                if (col.sortable) {
+                    th.className = 'sortable';
+                    th.innerHTML = `${col.label} <i class="fas fa-sort"></i>`;
                     
                     // Add sorting functionality
-                    th.addEventListener('click', () => sortTable(column));
+                    th.addEventListener('click', () => sortTable(col.key));
                 }
                 
                 headerRow.appendChild(th);
             });
+            
             tableHeader.appendChild(headerRow);
             
             // Create rows for current page
@@ -1940,11 +2356,12 @@
                 const row = document.createElement('tr');
                 if (item._status === 'duplicate') row.classList.add('duplicate');
                 if (item._selected) row.classList.add('selected');
+                if (item._status && item._status.includes('invalid')) row.classList.add('invalid');
                 
-                columns.forEach(column => {
+                columns.forEach(col => {
                     const td = document.createElement('td');
                     
-                    if (column === '_status') {
+                    if (col.key === '_status') {
                         // Status badge
                         const badge = document.createElement('span');
                         badge.className = 'status-badge';
@@ -1958,14 +2375,14 @@
                                 badge.classList.add(item._selected ? 'status-selected' : 'status-duplicate');
                                 badge.textContent = item._selected ? 'DIPILIH' : 'DUPLIKAT';
                                 break;
-                            case 'invalid_length':
-                            case 'invalid_numeric':
+                            case 'invalid_nik_length':
+                            case 'invalid_nik_numeric':
                             case 'missing_nik':
-                                badge.classList.add('status-duplicate');
-                                badge.textContent = 'TIDAK VALID';
+                                badge.classList.add('status-invalid');
+                                badge.textContent = 'NIK TIDAK VALID';
                                 break;
                             case 'invalid_included':
-                                badge.classList.add('status-duplicate');
+                                badge.classList.add('status-invalid');
                                 badge.textContent = 'TIDAK VALID';
                                 break;
                             default:
@@ -1973,8 +2390,28 @@
                         }
                         
                         td.appendChild(badge);
+                    } else if (col.whatsapp) {
+                        // WhatsApp column with special formatting
+                        td.className = 'whatsapp-cell';
+                        const whatsapp = item[col.key];
+                        
+                        if (whatsapp) {
+                            const formatted = formatWhatsApp(whatsapp);
+                            const whatsappLink = document.createElement('a');
+                            whatsappLink.href = `https://wa.me/${formatted}`;
+                            whatsappLink.target = '_blank';
+                            whatsappLink.innerHTML = `
+                                <i class="fab fa-whatsapp"></i> ${formatted}
+                                ${item._whatsappValid ? '<i class="fas fa-check-circle" style="color: #25D366; margin-left: 5px;"></i>' : 
+                                  item._whatsappIssue ? '<i class="fas fa-exclamation-triangle" style="color: #f39c12; margin-left: 5px;"></i>' : ''}
+                            `;
+                            td.appendChild(whatsappLink);
+                        } else {
+                            td.textContent = '-';
+                        }
                     } else {
-                        td.textContent = item[column] || '';
+                        // Regular column
+                        td.textContent = item[col.key] || '-';
                     }
                     
                     row.appendChild(td);
@@ -2077,12 +2514,20 @@
                     if (statusFilter === 'unique' && item._status !== 'unique') return false;
                     if (statusFilter === 'duplicate' && item._status !== 'duplicate') return false;
                     if (statusFilter === 'selected' && !item._selected) return false;
-                    if (statusFilter === 'excluded' && item._status && item._status.includes('invalid')) return false;
+                    if (statusFilter === 'invalid' && !(item._status && item._status.includes('invalid'))) return false;
                 }
                 
                 // Search filter
                 if (searchTerm) {
-                    const searchableFields = ['nama', 'nik', 'alamat', 'kecamatan', 'desa'];
+                    const searchableFields = [
+                        scanningSettings.namaColumn,
+                        scanningSettings.nikColumn,
+                        scanningSettings.alamatColumn,
+                        scanningSettings.kecamatanColumn,
+                        scanningSettings.desaColumn,
+                        scanningSettings.whatsappColumn
+                    ];
+                    
                     const matches = searchableFields.some(field => {
                         const value = item[field];
                         return value && value.toString().toLowerCase().includes(searchTerm);
@@ -2109,26 +2554,33 @@
             
             if (processedData.length === 0) return;
             
-            // Get all columns from first item (excluding internal fields)
-            const firstItem = processedData[0];
-            const columns = Object.keys(firstItem).filter(key => !key.startsWith('_'));
+            // Define columns for export
+            const exportColumns = [
+                { key: scanningSettings.namaColumn, label: 'Nama' },
+                { key: scanningSettings.nikColumn, label: 'NIK' },
+                { key: scanningSettings.alamatColumn, label: 'Alamat' },
+                { key: scanningSettings.kecamatanColumn, label: 'Kecamatan' },
+                { key: scanningSettings.desaColumn, label: 'Desa' },
+                { key: scanningSettings.whatsappColumn, label: 'WhatsApp', whatsapp: true },
+                { key: '_status_display', label: 'Status' }
+            ];
             
-            // Add status column option
-            columns.push('_status_display');
-            
-            columns.forEach(column => {
+            exportColumns.forEach(col => {
                 const checkboxItem = document.createElement('div');
                 checkboxItem.className = 'checkbox-item';
                 
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.id = `export_${column}`;
-                checkbox.value = column;
+                checkbox.id = `export_${col.key}`;
+                checkbox.value = col.key;
                 checkbox.checked = true;
                 
                 const label = document.createElement('label');
-                label.htmlFor = `export_${column}`;
-                label.textContent = formatColumnName(column);
+                label.htmlFor = `export_${col.key}`;
+                label.textContent = col.label;
+                if (col.whatsapp) {
+                    label.innerHTML = `<i class="fab fa-whatsapp" style="color: #25D366; margin-right: 5px;"></i> ${col.label}`;
+                }
                 
                 checkboxItem.appendChild(checkbox);
                 checkboxItem.appendChild(label);
@@ -2162,9 +2614,16 @@
                 case 'all':
                     dataToExport = processedData;
                     break;
+                case 'valid':
+                    dataToExport = processedData.filter(item => 
+                        item._status === 'unique' || (item._status === 'duplicate' && item._selected)
+                    );
+                    break;
                 case 'issues':
                     dataToExport = processedData.filter(item => 
-                        item._status && (item._status.includes('invalid') || item._status === 'duplicate' && !item._selected)
+                        (item._status && item._status.includes('invalid')) || 
+                        (item._status === 'duplicate' && !item._selected) ||
+                        !item._whatsappValid
                     );
                     break;
                 default:
@@ -2173,6 +2632,12 @@
             
             if (dataToExport.length === 0) {
                 showNotification('Tidak ada data untuk diekspor', 'warning');
+                return;
+            }
+            
+            // Handle WhatsApp export separately
+            if (exportFormat === 'whatsapp') {
+                exportWhatsAppContacts(dataToExport, exportFileName);
                 return;
             }
             
@@ -2190,10 +2655,10 @@
                             case 'duplicate':
                                 exportItem['Status'] = item._selected ? 'Data Terpilih (Duplikat)' : 'Data Duplikat';
                                 break;
-                            case 'invalid_length':
+                            case 'invalid_nik_length':
                                 exportItem['Status'] = 'NIK Tidak Valid (Panjang)';
                                 break;
-                            case 'invalid_numeric':
+                            case 'invalid_nik_numeric':
                                 exportItem['Status'] = 'NIK Tidak Valid (Format)';
                                 break;
                             case 'missing_nik':
@@ -2207,7 +2672,14 @@
                         }
                     } else {
                         // Use formatted column name
-                        const columnName = formatColumnName(column);
+                        let columnName = column;
+                        if (column === scanningSettings.namaColumn) columnName = 'Nama';
+                        if (column === scanningSettings.nikColumn) columnName = 'NIK';
+                        if (column === scanningSettings.alamatColumn) columnName = 'Alamat';
+                        if (column === scanningSettings.kecamatanColumn) columnName = 'Kecamatan';
+                        if (column === scanningSettings.desaColumn) columnName = 'Desa';
+                        if (column === scanningSettings.whatsappColumn) columnName = 'WhatsApp';
+                        
                         exportItem[columnName] = item[column] || '';
                     }
                 });
@@ -2280,9 +2752,87 @@
             link.click();
         }
         
+        // Export WhatsApp Contacts
+        function exportWhatsAppContacts(dataToExport, filename) {
+            const format = document.querySelector('input[name="whatsappFormat"]:checked').value;
+            let content = '';
+            
+            // Filter only valid WhatsApp numbers
+            const validData = dataToExport.filter(item => {
+                const whatsapp = item[scanningSettings.whatsappColumn];
+                return whatsapp && isValidWhatsApp(whatsapp.toString());
+            });
+            
+            if (validData.length === 0) {
+                showNotification('Tidak ada nomor WhatsApp valid untuk diekspor', 'warning');
+                return;
+            }
+            
+            validData.forEach(item => {
+                const nama = item[scanningSettings.namaColumn] || '';
+                const whatsapp = item[scanningSettings.whatsappColumn];
+                const formattedWhatsApp = formatWhatsApp(whatsapp.toString());
+                
+                switch (format) {
+                    case 'name_number':
+                        content += `${nama},${formattedWhatsApp}\n`;
+                        break;
+                    case 'number_only':
+                        content += `${formattedWhatsApp}\n`;
+                        break;
+                    case 'csv_import':
+                        content += `${formattedWhatsApp},${nama}\n`;
+                        break;
+                }
+            });
+            
+            const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${filename}_whatsapp_${dateStr}.txt`;
+            link.click();
+            
+            showNotification(`${validData.length} kontak WhatsApp berhasil diekspor`, 'success');
+        }
+        
+        // Export Selected WhatsApp Contacts
+        function exportWhatsAppSelected() {
+            const selectedData = processedData.filter(item => item._selected);
+            if (selectedData.length === 0) {
+                showNotification('Tidak ada data terpilih', 'warning');
+                return;
+            }
+            
+            const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            let content = '';
+            
+            selectedData.forEach(item => {
+                const nama = item[scanningSettings.namaColumn] || '';
+                const whatsapp = item[scanningSettings.whatsappColumn];
+                
+                if (whatsapp && isValidWhatsApp(whatsapp.toString())) {
+                    const formattedWhatsApp = formatWhatsApp(whatsapp.toString());
+                    content += `${nama},${formattedWhatsApp}\n`;
+                }
+            });
+            
+            if (!content) {
+                showNotification('Tidak ada nomor WhatsApp valid pada data terpilih', 'warning');
+                return;
+            }
+            
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `whatsapp_terpilih_${dateStr}.txt`;
+            link.click();
+            
+            showNotification('Kontak WhatsApp terpilih berhasil diekspor', 'success');
+        }
+        
         // Preview Export
         function previewExport() {
-            // Similar to exportData but shows preview in modal
             const exportDataType = document.querySelector('input[name="exportData"]:checked').value;
             
             // Get selected columns
@@ -2305,9 +2855,16 @@
                 case 'all':
                     dataToExport = processedData;
                     break;
+                case 'valid':
+                    dataToExport = processedData.filter(item => 
+                        item._status === 'unique' || (item._status === 'duplicate' && item._selected)
+                    );
+                    break;
                 case 'issues':
                     dataToExport = processedData.filter(item => 
-                        item._status && (item._status.includes('invalid') || item._status === 'duplicate' && !item._selected)
+                        (item._status && item._status.includes('invalid')) || 
+                        (item._status === 'duplicate' && !item._selected) ||
+                        !item._whatsappValid
                     );
                     break;
                 default:
@@ -2333,10 +2890,10 @@
                             case 'duplicate':
                                 previewItem['Status'] = item._selected ? 'Data Terpilih (Duplikat)' : 'Data Duplikat';
                                 break;
-                            case 'invalid_length':
+                            case 'invalid_nik_length':
                                 previewItem['Status'] = 'NIK Tidak Valid (Panjang)';
                                 break;
-                            case 'invalid_numeric':
+                            case 'invalid_nik_numeric':
                                 previewItem['Status'] = 'NIK Tidak Valid (Format)';
                                 break;
                             case 'missing_nik':
@@ -2347,7 +2904,14 @@
                         }
                     } else {
                         // Use formatted column name
-                        const columnName = formatColumnName(column);
+                        let columnName = column;
+                        if (column === scanningSettings.namaColumn) columnName = 'Nama';
+                        if (column === scanningSettings.nikColumn) columnName = 'NIK';
+                        if (column === scanningSettings.alamatColumn) columnName = 'Alamat';
+                        if (column === scanningSettings.kecamatanColumn) columnName = 'Kecamatan';
+                        if (column === scanningSettings.desaColumn) columnName = 'Desa';
+                        if (column === scanningSettings.whatsappColumn) columnName = 'WhatsApp';
+                        
                         previewItem[columnName] = item[column] || '';
                     }
                 });
@@ -2413,6 +2977,8 @@
             const duplicates = processedData.filter(item => item._status === 'duplicate').length;
             const selectedDuplicates = processedData.filter(item => item._status === 'duplicate' && item._selected).length;
             const invalid = processedData.filter(item => item._status && item._status.includes('invalid')).length;
+            const validWhatsApp = processedData.filter(item => item._whatsappValid).length;
+            const invalidWhatsApp = processedData.length - validWhatsApp;
             
             // Group by status
             const statusCounts = {};
@@ -2442,6 +3008,14 @@
                             <div class="stat-value">${selectedDuplicates}</div>
                             <div class="stat-label">Duplikat Terpilih</div>
                         </div>
+                        <div class="stat-card whatsapp">
+                            <div class="stat-value">${validWhatsApp}</div>
+                            <div class="stat-label">WhatsApp Valid</div>
+                        </div>
+                        <div class="stat-card" style="border-color: var(--danger-color);">
+                            <div class="stat-value">${invalidWhatsApp}</div>
+                            <div class="stat-label">WhatsApp Tidak Valid</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -2458,8 +3032,8 @@
                 switch (status) {
                     case 'unique': statusLabel = 'Data Unik'; break;
                     case 'duplicate': statusLabel = 'Data Duplikat'; break;
-                    case 'invalid_length': statusLabel = 'NIK Panjang Tidak Valid'; break;
-                    case 'invalid_numeric': statusLabel = 'NIK Format Tidak Valid'; break;
+                    case 'invalid_nik_length': statusLabel = 'NIK Panjang Tidak Valid'; break;
+                    case 'invalid_nik_numeric': statusLabel = 'NIK Format Tidak Valid'; break;
                     case 'missing_nik': statusLabel = 'NIK Kosong'; break;
                     case 'invalid_included': statusLabel = 'Data Tidak Valid (Disertakan)'; break;
                 }
@@ -2494,6 +3068,10 @@
                 analysisHTML += `<p><i class="fas fa-exclamation-triangle" style="color: var(--warning-color); margin-right: 8px;"></i> ${invalid} data tidak valid ditemukan. Periksa validitas data NIK.</p>`;
             }
             
+            if (invalidWhatsApp > 0) {
+                analysisHTML += `<p><i class="fab fa-whatsapp" style="color: var(--whatsapp-color); margin-right: 8px;"></i> ${invalidWhatsApp} nomor WhatsApp tidak valid. Gunakan fitur validasi WhatsApp.</p>`;
+            }
+            
             if (unique === total) {
                 analysisHTML += `<p><i class="fas fa-info-circle" style="color: var(--secondary-color); margin-right: 8px;"></i> Tidak ada data duplikat ditemukan. Data sudah bersih.</p>`;
             }
@@ -2516,19 +3094,6 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
         
-        function formatColumnName(column) {
-            if (column.startsWith('_')) {
-                return column.replace('_', '').toUpperCase();
-            }
-            
-            // Convert snake_case or camelCase to Title Case
-            return column
-                .replace(/_/g, ' ')
-                .replace(/([A-Z])/g, ' $1')
-                .replace(/^./, str => str.toUpperCase())
-                .trim();
-        }
-        
         function updateProgress(percent) {
             progressFill.style.width = `${percent}%`;
             progressPercent.textContent = `${percent}%`;
@@ -2540,6 +3105,23 @@
             
             notification.className = `notification ${type}`;
             notificationMessage.textContent = message;
+            
+            // Set icon based on type
+            const icon = notification.querySelector('i');
+            switch (type) {
+                case 'success':
+                    icon.className = 'fas fa-check-circle';
+                    break;
+                case 'error':
+                    icon.className = 'fas fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    icon.className = 'fas fa-exclamation-triangle';
+                    break;
+                case 'info':
+                    icon.className = 'fas fa-info-circle';
+                    break;
+            }
             
             notification.classList.add('show');
             
@@ -2559,18 +3141,36 @@
         function resetSettings() {
             scanningSettings = {
                 nikColumn: '',
+                namaColumn: '',
+                alamatColumn: '',
+                kecamatanColumn: '',
+                desaColumn: '',
+                whatsappColumn: '',
                 duplicateMethod: 'complete',
-                addressColumns: ['alamat', 'kecamatan', 'desa'],
+                addressColumns: [],
                 validateNikLength: true,
                 validateNikNumeric: true,
-                invalidDataAction: 'exclude'
+                validateWhatsApp: true,
+                invalidDataAction: 'exclude',
+                weights: {
+                    alamat: 3,
+                    kecamatan: 2,
+                    desa: 2,
+                    whatsapp: 4
+                }
             };
             
             // Update UI
             document.getElementById('validateNikLength').checked = true;
             document.getElementById('validateNikNumeric').checked = true;
+            document.getElementById('validateWhatsApp').checked = true;
             document.getElementById('invalidDataAction').value = 'exclude';
             document.querySelector('input[name="duplicateMethod"][value="complete"]').checked = true;
+            
+            document.getElementById('weightAlamat').value = 3;
+            document.getElementById('weightKecamatan').value = 2;
+            document.getElementById('weightDesa').value = 2;
+            document.getElementById('weightWhatsApp').value = 4;
             
             showNotification('Pengaturan telah direset ke default', 'success');
         }
@@ -2601,6 +3201,138 @@
         function refreshTable() {
             displayDataTable();
             showNotification('Tabel data diperbarui', 'success');
+        }
+        
+        function showColumnSettings() {
+            const columnSettingsContent = document.getElementById('columnSettingsContent');
+            
+            let content = `
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 10px;">Pengaturan Tampilan Kolom</h4>
+                    <p style="color: #718096; font-size: 0.9rem;">Atur kolom mana yang ingin ditampilkan dalam tabel.</p>
+                </div>
+                <div id="columnSettingsList"></div>
+            `;
+            
+            columnSettingsContent.innerHTML = content;
+            
+            // Add column toggles
+            const columnSettingsList = document.getElementById('columnSettingsList');
+            
+            const columns = [
+                { key: scanningSettings.namaColumn || 'nama', label: 'Nama', enabled: true },
+                { key: scanningSettings.nikColumn || 'nik', label: 'NIK', enabled: true },
+                { key: scanningSettings.alamatColumn || 'alamat', label: 'Alamat', enabled: true },
+                { key: scanningSettings.kecamatanColumn || 'kecamatan', label: 'Kecamatan', enabled: true },
+                { key: scanningSettings.desaColumn || 'desa', label: 'Desa', enabled: true },
+                { key: scanningSettings.whatsappColumn || 'whatsapp', label: 'WhatsApp', enabled: true },
+                { key: '_status', label: 'Status', enabled: true }
+            ];
+            
+            columns.forEach(col => {
+                const checkboxItem = document.createElement('div');
+                checkboxItem.className = 'checkbox-item';
+                checkboxItem.style.marginBottom = '15px';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `col_setting_${col.key}`;
+                checkbox.checked = col.enabled;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `col_setting_${col.key}`;
+                label.textContent = col.label;
+                label.style.fontWeight = '600';
+                
+                checkboxItem.appendChild(checkbox);
+                checkboxItem.appendChild(label);
+                columnSettingsList.appendChild(checkboxItem);
+            });
+            
+            showModal('modalColumnSettings');
+        }
+        
+        function saveColumnSettings() {
+            // Implementation for saving column settings
+            hideModal('modalColumnSettings');
+            showNotification('Pengaturan kolom disimpan', 'success');
+        }
+        
+        function validateAllWhatsApp() {
+            if (processedData.length === 0) {
+                showNotification('Tidak ada data untuk divalidasi', 'warning');
+                return;
+            }
+            
+            let validCount = 0;
+            let invalidCount = 0;
+            
+            processedData.forEach(item => {
+                const whatsapp = item[scanningSettings.whatsappColumn];
+                if (whatsapp && isValidWhatsApp(whatsapp.toString())) {
+                    item._whatsappValid = true;
+                    validCount++;
+                } else {
+                    item._whatsappValid = false;
+                    invalidCount++;
+                    item._whatsappIssue = 'Format WhatsApp tidak valid';
+                }
+            });
+            
+            showNotification(`Validasi WhatsApp selesai: ${validCount} valid, ${invalidCount} tidak valid`, 'success');
+            updateStatistics();
+            updateChart();
+            displayDataTable();
+        }
+        
+        function showWhatsAppTest() {
+            showModal('modalWhatsAppTest');
+        }
+        
+        function testWhatsAppNumber() {
+            const numberInput = document.getElementById('testWhatsAppNumber');
+            const number = numberInput.value.trim();
+            const resultDiv = document.getElementById('whatsAppTestResult');
+            
+            if (!number) {
+                resultDiv.innerHTML = `
+                    <div style="background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; border: 1px solid #ffeaa7;">
+                        <i class="fas fa-exclamation-triangle"></i> Masukkan nomor WhatsApp untuk di-test
+                    </div>
+                `;
+                return;
+            }
+            
+            const isValid = isValidWhatsApp(number);
+            const formatted = formatWhatsApp(number);
+            
+            if (isValid) {
+                resultDiv.innerHTML = `
+                    <div style="background-color: #d1f7c4; color: #2e7d32; padding: 10px; border-radius: 4px; border: 1px solid #a3e9a4; margin-bottom: 10px;">
+                        <i class="fas fa-check-circle"></i> Nomor WhatsApp VALID
+                    </div>
+                    <div style="background-color: #f8f9fa; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                        <p><strong>Nomor asli:</strong> ${number}</p>
+                        <p><strong>Format internasional:</strong> ${formatted}</p>
+                        <p><strong>Link WhatsApp:</strong> <a href="https://wa.me/${formatted}" target="_blank">https://wa.me/${formatted}</a></p>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="background-color: #ffc9c9; color: #c92a2a; padding: 10px; border-radius: 4px; border: 1px solid #ffa8a8; margin-bottom: 10px;">
+                        <i class="fas fa-times-circle"></i> Nomor WhatsApp TIDAK VALID
+                    </div>
+                    <div style="background-color: #f8f9fa; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                        <p><strong>Nomor yang dimasukkan:</strong> ${number}</p>
+                        <p><strong>Format yang valid:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>08xxxxxxxxxx (10-13 digit)</li>
+                            <li>628xxxxxxxxxx (11-14 digit)</li>
+                            <li>+628xxxxxxxxxx (12-15 digit)</li>
+                        </ul>
+                    </div>
+                `;
+            }
         }
         
         function debounce(func, wait) {
@@ -2655,29 +3387,78 @@
             });
         }
         
+        function showDataIssues(invalidData) {
+            const issuesCard = document.getElementById('issuesCard');
+            const issuesList = document.getElementById('issuesList');
+            
+            if (invalidData.length === 0) {
+                issuesCard.style.display = 'none';
+                return;
+            }
+            
+            let issuesHTML = '';
+            
+            invalidData.forEach((item, index) => {
+                issuesHTML += `
+                    <div style="background-color: #fff5f5; padding: 15px; border-radius: var(--border-radius); margin-bottom: 10px; border-left: 4px solid var(--danger-color);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: var(--danger-color);">Data #${index + 1}</strong>
+                            <span class="status-badge status-invalid">${item._invalidReason || 'TIDAK VALID'}</span>
+                        </div>
+                        <div style="font-size: 0.9rem;">
+                            <div><strong>Nama:</strong> ${item[scanningSettings.namaColumn] || '-'}</div>
+                            <div><strong>NIK:</strong> ${item[scanningSettings.nikColumn] || '-'}</div>
+                            <div><strong>WhatsApp:</strong> ${item[scanningSettings.whatsappColumn] || '-'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            issuesList.innerHTML = issuesHTML;
+            issuesCard.style.display = 'block';
+        }
+        
+        function downloadTemplate() {
+            const templateData = [
+                ['NAMA', 'NIK', 'ALAMAT', 'KECAMATAN', 'DESA', 'WHATSAPP'],
+                ['Ahmad Santoso', '1234567890123456', 'Jl. Merdeka No. 12 RT 03 RW 05', 'Sukajadi', 'Sukamaju', '081234567890'],
+                ['Budi Pratama', '2345678901234567', 'Jl. Sudirman No. 45', 'Cibeunying', 'Cihapit', '6281234567891'],
+                ['Citra Dewi', '3456789012345678', 'Jl. Gatot Subroto No. 78', 'Bandung Kidul', 'Mengger', '081298765432'],
+                ['Contoh data duplikat', '1234567890123456', 'Jl. Merdeka No. 12', 'Sukajadi', 'Sukamaju', '081234567890'],
+                ['Contoh data dengan WhatsApp', '4567890123456789', 'Jl. Asia Afrika No. 23', 'Sumur Bandung', 'Braga', '6285212345678']
+            ];
+            
+            const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Template Data");
+            XLSX.writeFile(workbook, 'template_data_pemindaian.xlsx');
+            
+            showNotification('Template berhasil diunduh', 'success');
+        }
+        
         // Sample Data Setup
         function setupSampleData() {
             window.sampleData = [
-                { nama: "Ahmad Santoso", nik: "1234567890123456", alamat: "Jl. Merdeka No. 12 RT 03 RW 05", kecamatan: "Sukajadi", desa: "Sukamaju" },
-                { nama: "Budi Pratama", nik: "2345678901234567", alamat: "Jl. Sudirman No. 45", kecamatan: "Cibeunying", desa: "Cihapit" },
-                { nama: "Citra Dewi", nik: "3456789012345678", alamat: "Jl. Gatot Subroto No. 78", kecamatan: "Bandung Kidul", desa: "Mengger" },
-                { nama: "Ahmad Santoso", nik: "1234567890123456", alamat: "Jl. Merdeka No. 12", kecamatan: "Sukajadi", desa: "Sukamaju" },
-                { nama: "Dian Sari", nik: "4567890123456789", alamat: "Jl. Asia Afrika No. 23", kecamatan: "Sumur Bandung", desa: "Braga" },
-                { nama: "Eko Wijaya", nik: "5678901234567890", alamat: "Jl. Cihampelas No. 56", kecamatan: "Cidadap", desa: "Cipaganti" },
-                { nama: "Budi Pratama", nik: "2345678901234567", alamat: "Jl. Sudirman No. 45 Lantai 3", kecamatan: "Cibeunying", desa: "" },
-                { nama: "Fajar Nugraha", nik: "6789012345678901", alamat: "Jl. Sultan Agung No. 34", kecamatan: "Lengkong", desa: "Turangga" },
-                { nama: "Gita Maya", nik: "7890123456789012", alamat: "Jl. Pahlawan No. 67", kecamatan: "Buahbatu", desa: "Kebon Lega" },
-                { nama: "Hendra Setiawan", nik: "8901234567890123", alamat: "Jl. Soekarno Hatta No. 89", kecamatan: "Bandung Kulon", desa: "Caringin" },
-                { nama: "Indra Kurniawan", nik: "9012345678901234", alamat: "Jl. Pasteur No. 11", kecamatan: "Sukajadi", desa: "Sukagalih" },
-                { nama: "Julia Anastasia", nik: "0123456789012345", alamat: "Jl. Dago No. 99", kecamatan: "Coblong", desa: "Dago" },
-                { nama: "Kurniawan Eka", nik: "1122334455667788", alamat: "Jl. Buah Batu No. 123", kecamatan: "Lengkong", desa: "Malabar" },
-                { nama: "Linda Wijaya", nik: "2233445566778899", alamat: "Jl. Cikutra No. 45", kecamatan: "Cibeunying Kidul", desa: "Cikutra" },
-                { nama: "M. Rizki Pratama", nik: "3344556677889900", alamat: "Jl. Cihampelas No. 78", kecamatan: "Cidadap", desa: "Cipaganti" },
-                { nama: "Nina Susanti", nik: "4455667788990011", alamat: "Jl. Martadinata No. 56", kecamatan: "Andir", desa: "Campaka" },
-                { nama: "Oscar Hermawan", nik: "5566778899001122", alamat: "Jl. Laswi No. 34", kecamatan: "Antapani", desa: "Antapani Tengah" },
-                { nama: "Putri Ayu Lestari", nik: "6677889900112233", alamat: "Jl. Surapati No. 67", kecamatan: "Cicendo", desa: "Arjuna" },
-                { nama: "Qory Sandioriva", nik: "7788990011223344", alamat: "Jl. Cipaganti No. 89", kecamatan: "Coblong", desa: "Cipaganti" },
-                { nama: "Rudi Hartono", nik: "8899001122334455", alamat: "Jl. Suryalaya No. 12", kecamatan: "Ujung Berung", desa: "Cigending" }
+                { nama: "Ahmad Santoso", nik: "1234567890123456", alamat: "Jl. Merdeka No. 12 RT 03 RW 05", kecamatan: "Sukajadi", desa: "Sukamaju", whatsapp: "081234567890" },
+                { nama: "Budi Pratama", nik: "2345678901234567", alamat: "Jl. Sudirman No. 45", kecamatan: "Cibeunying", desa: "Cihapit", whatsapp: "6281234567891" },
+                { nama: "Citra Dewi", nik: "3456789012345678", alamat: "Jl. Gatot Subroto No. 78", kecamatan: "Bandung Kidul", desa: "Mengger", whatsapp: "081298765432" },
+                { nama: "Ahmad Santoso", nik: "1234567890123456", alamat: "Jl. Merdeka No. 12", kecamatan: "Sukajadi", desa: "Sukamaju", whatsapp: "081234567890" },
+                { nama: "Dian Sari", nik: "4567890123456789", alamat: "Jl. Asia Afrika No. 23", kecamatan: "Sumur Bandung", desa: "Braga", whatsapp: "6285212345678" },
+                { nama: "Eko Wijaya", nik: "5678901234567890", alamat: "Jl. Cihampelas No. 56", kecamatan: "Cidadap", desa: "Cipaganti", whatsapp: "081311223344" },
+                { nama: "Budi Pratama", nik: "2345678901234567", alamat: "Jl. Sudirman No. 45 Lantai 3", kecamatan: "Cibeunying", desa: "", whatsapp: "6281234567891" },
+                { nama: "Fajar Nugraha", nik: "6789012345678901", alamat: "Jl. Sultan Agung No. 34", kecamatan: "Lengkong", desa: "Turangga", whatsapp: "081555666777" },
+                { nama: "Gita Maya", nik: "7890123456789012", alamat: "Jl. Pahlawan No. 67", kecamatan: "Buahbatu", desa: "Kebon Lega", whatsapp: "628999888777" },
+                { nama: "Hendra Setiawan", nik: "8901234567890123", alamat: "Jl. Soekarno Hatta No. 89", kecamatan: "Bandung Kulon", desa: "Caringin", whatsapp: "081212121212" },
+                { nama: "Indra Kurniawan", nik: "9012345678901234", alamat: "Jl. Pasteur No. 11", kecamatan: "Sukajadi", desa: "Sukagalih", whatsapp: "628131313131" },
+                { nama: "Julia Anastasia", nik: "0123456789012345", alamat: "Jl. Dago No. 99", kecamatan: "Coblong", desa: "Dago", whatsapp: "081414141414" },
+                { nama: "Kurniawan Eka", nik: "1122334455667788", alamat: "Jl. Buah Batu No. 123", kecamatan: "Lengkong", desa: "Malabar", whatsapp: "628151515151" },
+                { nama: "Linda Wijaya", nik: "2233445566778899", alamat: "Jl. Cikutra No. 45", kecamatan: "Cibeunying Kidul", desa: "Cikutra", whatsapp: "081616161616" },
+                { nama: "M. Rizki Pratama", nik: "3344556677889900", alamat: "Jl. Cihampelas No. 78", kecamatan: "Cidadap", desa: "Cipaganti", whatsapp: "628171717171" },
+                { nama: "Nina Susanti", nik: "4455667788990011", alamat: "Jl. Martadinata No. 56", kecamatan: "Andir", desa: "Campaka", whatsapp: "081818181818" },
+                { nama: "Oscar Hermawan", nik: "5566778899001122", alamat: "Jl. Laswi No. 34", kecamatan: "Antapani", desa: "Antapani Tengah", whatsapp: "628191919191" },
+                { nama: "Putri Ayu Lestari", nik: "6677889900112233", alamat: "Jl. Surapati No. 67", kecamatan: "Cicendo", desa: "Arjuna", whatsapp: "081202020202" },
+                { nama: "Qory Sandioriva", nik: "7788990011223344", alamat: "Jl. Cipaganti No. 89", kecamatan: "Coblong", desa: "Cipaganti", whatsapp: "628212121212" },
+                { nama: "Rudi Hartono", nik: "8899001122334455", alamat: "Jl. Suryalaya No. 12", kecamatan: "Ujung Berung", desa: "Cigending", whatsapp: "081222222222" }
             ];
         }
         
@@ -2698,11 +3479,19 @@
             document.getElementById('fileColumns').textContent = Object.keys(originalData[0]).join(', ');
             fileInfo.classList.add('show');
             
+            // Auto-map columns
+            scanningSettings.namaColumn = 'nama';
+            scanningSettings.nikColumn = 'nik';
+            scanningSettings.alamatColumn = 'alamat';
+            scanningSettings.kecamatanColumn = 'kecamatan';
+            scanningSettings.desaColumn = 'desa';
+            scanningSettings.whatsappColumn = 'whatsapp';
+            
             // Show preview
             showDataPreview(originalData);
             
-            // Setup process settings
-            setupProcessSettings(originalData[0]);
+            // Setup column mapping
+            setupColumnMapping(originalData[0]);
             
             // Show success message
             showNotification('Data contoh berhasil dimuat', 'success');
