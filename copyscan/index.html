@@ -957,7 +957,7 @@
                     </div>
                 </div>
                 <div class="app-version">
-                    <i class="fas fa-code-branch"></i> v2.4 Final
+                    <i class="fas fa-code-branch"></i> v2.5 Final
                 </div>
             </div>
             
@@ -1083,7 +1083,7 @@
                         <h3><i class="fas fa-sliders-h"></i> Pengaturan Pemindaian</h3>
                         
                         <!-- Column Mapping -->
-                        <div class="column-mapping" id="columnMapping">
+                        <div class="column-mapping" id="columnMapping" style="display: none;">
                             <h4 style="margin-bottom: 15px; color: var(--primary-color);">
                                 <i class="fas fa-columns"></i> Pemetaan Kolom
                             </h4>
@@ -2128,7 +2128,7 @@
             previewCard.style.display = 'block';
         }
         
-        // Setup Column Mapping
+        // Setup Column Mapping - PERBAIKAN UTAMA
         function setupColumnMapping(firstRow) {
             const columns = Object.keys(firstRow);
             const mappingContainer = document.getElementById('mappingContainer');
@@ -2228,7 +2228,7 @@
             document.getElementById('columnMapping').style.display = 'block';
         }
         
-        // Scan Data
+        // Scan Data - PERBAIKAN UTAMA
         function scanData() {
             // Validate required columns
             const requiredColumns = ['nama', 'nik', 'whatsapp'];
@@ -2945,7 +2945,7 @@
             });
         }
         
-        // Display Data Table - FIXED VERSION
+        // Display Data Table - PERBAIKAN UTAMA
         function displayDataTable() {
             const tableHeader = document.getElementById('tableHeader');
             const tableBody = document.getElementById('tableBody');
@@ -2972,56 +2972,47 @@
             // Create header with mapped columns
             const headerRow = document.createElement('tr');
             
-            // Define column order (show all columns that are mapped, even if empty in settings)
+            // Define column order - PERBAIKAN: Pastikan semua kolom yang dipetakan muncul
             const columns = [];
             
-            // Always add these columns if they exist in data
-            columns.push({ key: scanningSettings.namaColumn || 'nama', label: 'NAMA', sortable: true });
-            columns.push({ key: scanningSettings.nikColumn || 'nik', label: 'NIK', sortable: true });
-            
-            // Check if WhatsApp column exists in first data item
-            const firstItem = dataToDisplay[0];
-            const whatsappKey = scanningSettings.whatsappColumn || findWhatsAppColumn(firstItem);
-            if (whatsappKey) {
-                columns.push({ key: whatsappKey, label: 'WHATSAPP', sortable: true, whatsapp: true });
+            // Always add mapped columns
+            if (scanningSettings.namaColumn) {
+                columns.push({ key: scanningSettings.namaColumn, label: 'NAMA', sortable: true });
             }
             
-            // Check if Profesi column exists
-            const profesiKey = scanningSettings.profesiColumn || findProfesiColumn(firstItem);
-            if (profesiKey) {
-                columns.push({ key: profesiKey, label: 'PROFESI', sortable: true, profesi: true });
+            if (scanningSettings.nikColumn) {
+                columns.push({ key: scanningSettings.nikColumn, label: 'NIK', sortable: true });
             }
             
-            // Check if Alamat column exists
-            const alamatKey = scanningSettings.alamatColumn;
-            if (alamatKey) {
-                columns.push({ key: alamatKey, label: 'ALAMAT', sortable: true });
+            if (scanningSettings.whatsappColumn) {
+                columns.push({ key: scanningSettings.whatsappColumn, label: 'WHATSAPP', sortable: true, whatsapp: true });
             }
             
-            // Check if Kecamatan column exists
-            const kecamatanKey = scanningSettings.kecamatanColumn;
-            if (kecamatanKey) {
-                columns.push({ key: kecamatanKey, label: 'KECAMATAN', sortable: true });
+            if (scanningSettings.profesiColumn) {
+                columns.push({ key: scanningSettings.profesiColumn, label: 'PROFESI', sortable: true, profesi: true });
             }
             
-            // Check if Desa column exists
-            const desaKey = scanningSettings.desaColumn;
-            if (desaKey) {
-                columns.push({ key: desaKey, label: 'DESA', sortable: true });
+            if (scanningSettings.alamatColumn) {
+                columns.push({ key: scanningSettings.alamatColumn, label: 'ALAMAT', sortable: true });
             }
             
-            // Check if Alat Tangkap column exists
-            const alatTangkapKey = scanningSettings.alatTangkapColumn;
-            if (alatTangkapKey) {
-                columns.push({ key: alatTangkapKey, label: 'ALAT TANGKAP', sortable: true });
+            if (scanningSettings.kecamatanColumn) {
+                columns.push({ key: scanningSettings.kecamatanColumn, label: 'KECAMATAN', sortable: true });
             }
             
-            // Check if Jenis Kapal column exists
-            const jenisKapalKey = scanningSettings.jenisKapalColumn;
-            if (jenisKapalKey) {
-                columns.push({ key: jenisKapalKey, label: 'JENIS KAPAL', sortable: true });
+            if (scanningSettings.desaColumn) {
+                columns.push({ key: scanningSettings.desaColumn, label: 'DESA', sortable: true });
             }
             
+            if (scanningSettings.alatTangkapColumn) {
+                columns.push({ key: scanningSettings.alatTangkapColumn, label: 'ALAT TANGKAP', sortable: true, alatTangkap: true });
+            }
+            
+            if (scanningSettings.jenisKapalColumn) {
+                columns.push({ key: scanningSettings.jenisKapalColumn, label: 'JENIS KAPAL', sortable: true, jenisKapal: true });
+            }
+            
+            // Add status column
             columns.push({ key: '_status', label: 'STATUS', sortable: false });
             
             columns.forEach(col => {
@@ -3116,7 +3107,7 @@
                         } else {
                             td.textContent = '-';
                         }
-                    } else if (col.key === scanningSettings.alatTangkapColumn) {
+                    } else if (col.alatTangkap) {
                         // Alat Tangkap column
                         const alatTangkap = item[col.key];
                         td.textContent = alatTangkap || '-';
@@ -3124,7 +3115,7 @@
                             td.style.color = '#2c3e50';
                             td.style.fontWeight = '500';
                         }
-                    } else if (col.key === scanningSettings.jenisKapalColumn) {
+                    } else if (col.jenisKapal) {
                         // Jenis Kapal column
                         const jenisKapal = item[col.key];
                         td.textContent = jenisKapal || '-';
@@ -3145,42 +3136,6 @@
             
             // Update pagination
             updatePagination(dataToDisplay.length);
-        }
-        
-        // Helper function to find WhatsApp column
-        function findWhatsAppColumn(item) {
-            if (!item) return null;
-            
-            const whatsappKeywords = ['whatsapp', 'wa', 'hp', 'telepon', 'no hp', 'telp', 'phone', 'mobile', 'kontak', 'nohp', 'no_hp'];
-            
-            for (const key in item) {
-                const keyLower = key.toLowerCase();
-                for (const keyword of whatsappKeywords) {
-                    if (keyLower.includes(keyword)) {
-                        return key;
-                    }
-                }
-            }
-            
-            return null;
-        }
-        
-        // Helper function to find Profesi column
-        function findProfesiColumn(item) {
-            if (!item) return null;
-            
-            const profesiKeywords = ['profesi', 'pekerjaan', 'job', 'occupation', 'kerja', 'mata pencaharian', 'pekerjaan_utama'];
-            
-            for (const key in item) {
-                const keyLower = key.toLowerCase();
-                for (const keyword of profesiKeywords) {
-                    if (keyLower.includes(keyword)) {
-                        return key;
-                    }
-                }
-            }
-            
-            return null;
         }
         
         // Sort Table
