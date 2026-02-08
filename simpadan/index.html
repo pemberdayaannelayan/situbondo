@@ -36,8 +36,42 @@
             transform: scale(1.1);
         }
 
+        /* Tombol informasi jenis kapal */
+        .boat-info-btn {
+            background-color: #198754;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 5px;
+            vertical-align: middle;
+            transition: all 0.3s ease;
+        }
+
+        .boat-info-btn:hover {
+            background-color: #157347;
+            transform: scale(1.1);
+        }
+
         /* Modal gambar ikan - DIPERBAIKI */
         .fish-modal-img {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 15px auto;
+        }
+        
+        /* Modal gambar kapal */
+        .boat-modal-img {
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border: 1px solid #dee2e6;
@@ -53,7 +87,21 @@
             text-align: center;
         }
         
+        /* Container untuk gambar kapal */
+        .boat-image-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
         .fish-image-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0c2461;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        
+        .boat-image-title {
             font-size: 16px;
             font-weight: 600;
             color: #0c2461;
@@ -68,8 +116,24 @@
             font-style: italic;
         }
         
+        .boat-image-caption {
+            font-size: 14px;
+            color: #6c757d;
+            text-align: left;
+            font-style: italic;
+        }
+        
         /* Loading untuk gambar */
         .fish-image-loading {
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .boat-image-loading {
             min-height: 300px;
             display: flex;
             align-items: center;
@@ -87,8 +151,9 @@
             z-index: 1050;
         }
         
-        /* Perbaikan untuk modal fishInfoModal */
-        #fishInfoModal .modal-content {
+        /* Perbaikan untuk modal fishInfoModal dan boatInfoModal */
+        #fishInfoModal .modal-content,
+        #boatInfoModal .modal-content {
             z-index: 1060;
         }
     </style>
@@ -107,7 +172,7 @@
     <script src="convert.js"></script>
     <script src="main.js" defer></script>
     
-    <!-- Skrip untuk mengelola modal gambar ikan - DIPERBAIKI -->
+    <!-- Skrip untuk mengelola modal gambar ikan dan kapal - DIPERBAIKI -->
     <script>
         // Fungsi untuk menampilkan modal info ikan
         function showFishInfoModal() {
@@ -132,6 +197,32 @@
             } catch (error) {
                 console.error('Gagal membuka modal info ikan:', error);
                 alert('Modal informasi ikan tidak dapat dibuka. Silakan coba lagi.');
+            }
+        }
+        
+        // Fungsi untuk menampilkan modal info kapal
+        function showBoatInfoModal() {
+            try {
+                // Hapus backdrop yang mungkin tertinggal
+                const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+                existingBackdrops.forEach(backdrop => {
+                    backdrop.remove();
+                });
+                
+                // Hapus kelas modal-open dari body jika ada
+                document.body.classList.remove('modal-open');
+                
+                const boatModal = new bootstrap.Modal(document.getElementById('boatInfoModal'), {
+                    backdrop: true,
+                    keyboard: true
+                });
+                boatModal.show();
+                
+                // Preload gambar untuk memastikan dapat dimuat
+                preloadBoatImages();
+            } catch (error) {
+                console.error('Gagal membuka modal info kapal:', error);
+                alert('Modal informasi kapal tidak dapat dibuka. Silakan coba lagi.');
             }
         }
         
@@ -161,6 +252,32 @@
             });
         }
         
+        // Fungsi untuk memuat gambar kapal secara asinkron
+        function preloadBoatImages() {
+            const imageUrls = [
+                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-1.png',
+                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-2.png',
+                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-3.png'
+            ];
+            
+            imageUrls.forEach((url, index) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = function() {
+                    console.log(`Gambar kapal ${index + 1} berhasil dimuat`);
+                };
+                img.onerror = function() {
+                    console.error(`Gagal memuat gambar kapal ${index + 1}: ${url}`);
+                    // Tampilkan placeholder jika gambar gagal dimuat
+                    const imgElement = document.getElementById(`boatImage${index + 1}`);
+                    if (imgElement) {
+                        imgElement.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f8f9fa"/><text x="200" y="150" text-anchor="middle" font-family="Arial" font-size="16" fill="%236c757d">Gambar tidak tersedia</text></svg>';
+                        imgElement.alt = `Gambar referensi kapal ${index + 1} tidak tersedia`;
+                    }
+                };
+            });
+        }
+        
         // Fungsi untuk menampilkan gambar spesifik di modal
         function showSpecificFishImage(imageNumber) {
             showFishInfoModal();
@@ -173,10 +290,50 @@
             }, 500);
         }
         
-        // Fungsi untuk menutup modal dengan aman - DITAMBAHKAN
+        // Fungsi untuk menampilkan gambar spesifik di modal kapal
+        function showSpecificBoatImage(imageNumber) {
+            showBoatInfoModal();
+            // Jika perlu scroll ke gambar tertentu
+            setTimeout(() => {
+                const imageElement = document.getElementById(`boatImage${imageNumber}`);
+                if (imageElement) {
+                    imageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 500);
+        }
+        
+        // Fungsi untuk menutup modal ikan dengan aman - DITAMBAHKAN
         function closeFishInfoModalSafely() {
             try {
                 const modalElement = document.getElementById('fishInfoModal');
+                if (modalElement) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    }
+                    
+                    // Hapus backdrop setelah modal ditutup
+                    setTimeout(() => {
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        backdrops.forEach(backdrop => {
+                            backdrop.remove();
+                        });
+                        
+                        // Hapus kelas modal-open dari body
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Error closing modal:', error);
+            }
+        }
+        
+        // Fungsi untuk menutup modal kapal dengan aman - DITAMBAHKAN
+        function closeBoatInfoModalSafely() {
+            try {
+                const modalElement = document.getElementById('boatInfoModal');
                 if (modalElement) {
                     const modal = bootstrap.Modal.getInstance(modalElement);
                     if (modal) {
@@ -205,6 +362,7 @@
         function goToInputDataAfterModal() {
             // Tutup modal dengan aman terlebih dahulu
             closeFishInfoModalSafely();
+            closeBoatInfoModalSafely();
             
             // Tunggu sebentar untuk memastikan modal benar-benar tertutup
             setTimeout(() => {
@@ -767,7 +925,11 @@
                                                                                         <input type="text" class="form-control" id="namaKapal">
                                                                                     </div>
                                                                                     <div class="col-md-6">
-                                                                                        <label class="form-label">Jenis Kapal</label>
+                                                                                        <label class="form-label">Jenis Kapal
+                                                                                            <button type="button" class="boat-info-btn" onclick="showBoatInfoModal()" title="Lihat Referensi Jenis Kapal">
+                                                                                                <i class="fas fa-info"></i>
+                                                                                            </button>
+                                                                                        </label>
                                                                                         <select class="form-select" id="jenisKapal">
                                                                                             <option value="">Pilih Jenis...</option>
                                                                                         </select>
@@ -1497,6 +1659,78 @@
                                             </div>
                                         </div>
 
+                                        <!-- Modal Info Jenis Kapal - BARU DITAMBAHKAN -->
+                                        <div class="modal fade" id="boatInfoModal" tabindex="-1">
+                                            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-success text-white">
+                                                        <h5 class="modal-title fw-bold"><i class="fas fa-ship me-2"></i>Referensi Jenis Kapal Nelayan</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closeBoatInfoModalSafely()"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="alert alert-info">
+                                                            <i class="fas fa-info-circle me-2"></i>
+                                                            Berikut adalah referensi visual jenis kapal nelayan yang umum digunakan di perairan Situbondo.
+                                                        </div>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-md-12 mb-4">
+                                                                <div class="boat-image-container">
+                                                                    <div class="boat-image-title">Gambar Referensi 1: Jenis Perahu Tradisional</div>
+                                                                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-1.png" 
+                                                                         alt="Referensi Jenis Kapal 1" 
+                                                                         class="boat-modal-img img-fluid" 
+                                                                         id="boatImage1"
+                                                                         onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>';">
+                                                                    <div class="boat-image-caption">Ilustrasi perahu tradisional yang digunakan nelayan untuk menangkap ikan di perairan dangkal</div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-md-12 mb-4">
+                                                                <div class="boat-image-container">
+                                                                    <div class="boat-image-title">Gambar Referensi 2: Jenis Kapal Motor</div>
+                                                                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-2.png" 
+                                                                         alt="Referensi Jenis Kapal 2" 
+                                                                         class="boat-modal-img img-fluid"
+                                                                         id="boatImage2"
+                                                                         onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>';">
+                                                                    <div class="boat-image-caption">Kapal motor dengan ukuran sedang untuk menangkap ikan di perairan yang lebih jauh</div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-md-12 mb-4">
+                                                                <div class="boat-image-container">
+                                                                    <div class="boat-image-title">Gambar Referensi 3: Jenis Kapal Besar</div>
+                                                                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-3.png" 
+                                                                         alt="Referensi Jenis Kapal 3" 
+                                                                         class="boat-modal-img img-fluid"
+                                                                         id="boatImage3"
+                                                                         onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>';">
+                                                                    <div class="boat-image-caption">Kapal besar dengan peralatan modern untuk menangkap ikan dalam jumlah besar</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="alert alert-warning mt-4">
+                                                            <i class="fas fa-lightbulb me-2"></i>
+                                                            <strong>Tips Penggunaan:</strong> Gunakan referensi ini untuk memastikan ketepatan pemilihan jenis kapal dalam pendataan nelayan. Perhatikan ciri-ciri spesifik setiap jenis kapal untuk akurasi data.
+                                                        </div>
+                                                        
+                                                        <div class="alert alert-success">
+                                                            <i class="fas fa-check-circle me-2"></i>
+                                                            <strong>Catatan Penting:</strong> Pastikan nelayan memilih jenis kapal yang sesuai dengan yang mereka miliki. Data ini penting untuk analisis potensi perikanan dan kebijakan pengembangan sarana prasarana.
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeBoatInfoModalSafely()">Tutup</button>
+                                                        <button type="button" class="btn btn-primary" onclick="goToInputDataAfterModal()">
+                                                            <i class="fas fa-plus me-2"></i>Input Data Nelayan
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="fab-container" id="fabMenu">
                                             <button class="fab-main" id="fabMainBtn"><i class="fas fa-plus"></i></button>
                                             <a href="#" class="fab-item" id="fabInput" title="Input Data"><i class="fas fa-pencil-alt"></i></a>
@@ -1539,7 +1773,7 @@
         </div>
     </div>
 
-    <!-- Skrip tambahan untuk mengelola gambar ikan - DIPERBAIKI -->
+    <!-- Skrip tambahan untuk mengelola gambar ikan dan kapal - DIPERBAIKI -->
     <script>
         // Event listener untuk modal fishInfoModal
         document.addEventListener('DOMContentLoaded', function() {
@@ -1575,6 +1809,39 @@
                 });
             }
             
+            // Event listener untuk modal boatInfoModal
+            const boatInfoModal = document.getElementById('boatInfoModal');
+            if (boatInfoModal) {
+                // Tangani event saat modal akan ditampilkan
+                boatInfoModal.addEventListener('show.bs.modal', function() {
+                    // Pastikan gambar dimuat dengan benar saat modal dibuka
+                    setTimeout(() => {
+                        const images = boatInfoModal.querySelectorAll('img');
+                        images.forEach(img => {
+                            if (img.complete && img.naturalHeight === 0) {
+                                img.src = img.src; // Coba muat ulang jika gagal
+                            }
+                        });
+                    }, 100);
+                });
+                
+                // Tangani event saat modal ditutup
+                boatInfoModal.addEventListener('hidden.bs.modal', function() {
+                    // Pastikan backdrop dihapus dengan benar
+                    setTimeout(() => {
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        backdrops.forEach(backdrop => {
+                            backdrop.remove();
+                        });
+                        
+                        // Hapus kelas modal-open dari body
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+                    }, 300);
+                });
+            }
+            
             // Tambahkan event listener untuk tombol info ikan di form input
             const fishInfoBtn = document.querySelector('.fish-info-btn');
             if (fishInfoBtn) {
@@ -1584,12 +1851,30 @@
                 });
             }
             
+            // Tambahkan event listener untuk tombol info kapal di form input
+            const boatInfoBtn = document.querySelector('.boat-info-btn');
+            if (boatInfoBtn) {
+                boatInfoBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showBoatInfoModal();
+                });
+            }
+            
             // Tangani event untuk semua tombol close di modal fishInfoModal
             const fishModalCloseBtns = document.querySelectorAll('#fishInfoModal .btn-close, #fishInfoModal .btn-secondary');
             fishModalCloseBtns.forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     closeFishInfoModalSafely();
+                });
+            });
+            
+            // Tangani event untuk semua tombol close di modal boatInfoModal
+            const boatModalCloseBtns = document.querySelectorAll('#boatInfoModal .btn-close, #boatInfoModal .btn-secondary');
+            boatModalCloseBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    closeBoatInfoModalSafely();
                 });
             });
         });
@@ -1606,6 +1891,22 @@
                 } catch (error) {
                     console.error('Gagal membuka modal info ikan:', error);
                     alert('Modal informasi ikan tidak dapat dibuka. Silakan coba lagi.');
+                }
+            };
+        }
+        
+        // Fallback untuk fungsi showBoatInfoModal jika tidak didefinisikan
+        if (typeof showBoatInfoModal === 'undefined') {
+            window.showBoatInfoModal = function() {
+                try {
+                    const modal = new bootstrap.Modal(document.getElementById('boatInfoModal'), {
+                        backdrop: true,
+                        keyboard: true
+                    });
+                    modal.show();
+                } catch (error) {
+                    console.error('Gagal membuka modal info kapal:', error);
+                    alert('Modal informasi kapal tidak dapat dibuka. Silakan coba lagi.');
                 }
             };
         }
@@ -1640,11 +1941,42 @@
             };
         }
         
+        // Tambahkan fungsi untuk menutup modal kapal dengan benar
+        if (typeof closeBoatInfoModalSafely === 'undefined') {
+            window.closeBoatInfoModalSafely = function() {
+                try {
+                    const modalElement = document.getElementById('boatInfoModal');
+                    if (modalElement) {
+                        const modal = bootstrap.Modal.getInstance(modalElement);
+                        if (modal) {
+                            modal.hide();
+                        }
+                        
+                        // Hapus backdrop setelah modal ditutup
+                        setTimeout(() => {
+                            const backdrops = document.querySelectorAll('.modal-backdrop');
+                            backdrops.forEach(backdrop => {
+                                backdrop.remove();
+                            });
+                            
+                            // Hapus kelas modal-open dari body
+                            document.body.classList.remove('modal-open');
+                            document.body.style.overflow = '';
+                            document.body.style.paddingRight = '';
+                        }, 300);
+                    }
+                } catch (error) {
+                    console.error('Error closing modal:', error);
+                }
+            };
+        }
+        
         // Tambahkan fungsi untuk kembali ke input data
         if (typeof goToInputDataAfterModal === 'undefined') {
             window.goToInputDataAfterModal = function() {
                 // Tutup modal dengan aman terlebih dahulu
                 closeFishInfoModalSafely();
+                closeBoatInfoModalSafely();
                 
                 // Tunggu sebentar untuk memastikan modal benar-benar tertutup
                 setTimeout(() => {
