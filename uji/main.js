@@ -1,9 +1,9 @@
 // =====================================================
-// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.1 FINAL REVISI
-// DENGAN ID CARD GENERATOR YANG DISEMPURNAKAN
-// REVISI: PERBAIKAN FORMAT PDF DAN INTEGRASI SENSOR DATA
-// TAMBAHAN: FITUR ALAMAT SEBELUM KECAMATAN
-// REVISI ID CARD: PERUBAHAN FORMAT PROFESI DAN ALAT TANGKAP
+// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.2 FINAL REVISI
+// DENGAN SISTEM LOGIN USERNAME DAN PASSWORD
+// REVISI: PERBAIKAN SISTEM AUTENTIKASI MULTI-USER
+// TAMBAHAN: FITUR MANAJEMEN USER/PENGGUNA
+// REVISI: MENGGANTI METODE LOGIN PERIODE TERBALIK DENGAN USERNAME/PASSWORD
 // PERBAIKAN: TAMBAHAN INFORMASI VALIDASI DI QRCODE ID CARD
 // PERBAIKAN TAMBAHAN: 
 // 1. FITUR FILTER DATA GANDA YANG LEBIH KETAT
@@ -136,7 +136,7 @@ const KAPAL_API_MAPPING = {
     "Perahu Pukat Tarik": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Cantrang"],
     "Kapal Motor": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Rawai Dasar", "Jaring Insang Hanyut", "Huhate", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Rawai Tuna", "Jaring Insang Kombinasi", "Jaring Insang Tetap", "Pancing Cumi", "Jaring Lingkar Tanpa Tali Kerut", "Lainnya"],
     "Kapal Motor Tempel": ["Pancing", "Pancing Ulur", "Perangkap Bubu", "Jaring Insang (gill net)", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Pancing Cumi", "Lainnya"],
-    "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Rawai Dasar", "Jaring Insang Hanyut", "Huhate", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Rawai Tuna", "Jaring Insang Kombinasi", "Jaring Insang Tetap", "Pancing Cumi", "Jaring Lingkar Tanpa Tali Kerut", "Lainnya"]
+    "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Rawai Dasar", "Jaring Insang Hanyut", "Huhate", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Rawai Tuna", "Jaring Insang Kombinasi", "Jaring Insang Tetap", "Pancing Cumi", "Jaring Lingkar TanPA Tali Kerut", "Lainnya"]
 };
 
 // Mapping antara Alat Tangkap dan Kategori Ikan yang bisa ditangkap
@@ -304,7 +304,14 @@ let appSettings = {
     passwordDataNelayan: '999999',
     // Fitur baru: ON/OFF kode keamanan akses menu
     securityMenuInputDataEnabled: true,
-    securityMenuDataNelayanEnabled: true
+    securityMenuDataNelayanEnabled: true,
+    // Data pengguna untuk login
+    users: [
+        { username: 'BIDANGPN', password: '@12345' },
+        { username: 'BIDANGPB', password: '@123456' },
+        { username: 'BIDANGP4', password: '@1234567' },
+        { username: 'BIDANGKESWAN', password: '@12345678' }
+    ]
 };
 
 // Variabel baru untuk fitur Data Wilayah
@@ -652,12 +659,17 @@ function migrateOldData() {
     saveData();
 }
 
-function generateSecurityCode() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}${month}${day}`;
+// --- FUNGSI LOGIN DENGAN USERNAME DAN PASSWORD ---
+function validateLogin(username, password) {
+    // Cari user dengan username dan password yang cocok
+    const user = appSettings.users.find(u => 
+        u.username === username && u.password === password
+    );
+    
+    return {
+        success: !!user,
+        user: user
+    };
 }
 
 function displayCurrentDate() {
@@ -665,7 +677,7 @@ function displayCurrentDate() {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dateString = now.toLocaleDateString('id-ID', options);
     document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-    document.getElementById('passwordHint').innerHTML = `Masukkan kode keamanan untuk mengakses sistem`;
+    document.getElementById('passwordHint').innerHTML = `Masukkan username dan password untuk mengakses sistem`;
 }
 
 function maskData(data, force = false) {
@@ -3471,7 +3483,7 @@ function setupMenuSecurityToggleListeners() {
 // --- FUNGSI PERBAIKAN: SETUP SHOW/HIDE PASSWORD UNTUK SEMUA INPUT ---
 function setupAllPasswordToggles() {
     // Setup untuk login form
-    setupPasswordToggle('securityCode', 'passwordToggle');
+    setupPasswordToggle('password', 'passwordToggle');
     
     // Setup untuk sensor code form (jika ada)
     const sensorForm = document.getElementById('sensorCodeForm');
@@ -3700,20 +3712,23 @@ function updatePrivacyUI() {
 function setupEventListeners() {
     // Password Toggle sudah dihandle oleh setupAllPasswordToggles()
     
-    // Login Form
+    // Login Form dengan username dan password
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('loginButton');
             const spinner = document.getElementById('loginSpinner');
-            const inputCode = document.getElementById('securityCode').value;
-            const correctCode = generateSecurityCode();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             
             if (!btn || !spinner) return;
             
-            if (inputCode !== correctCode) {
-                showNotification('Kode keamanan salah! Periksa kembali atau hubungi administrator.', 'error');
+            // Validasi login dengan username dan password
+            const loginResult = validateLogin(username, password);
+            
+            if (!loginResult.success) {
+                showNotification('Username atau password salah! Periksa kembali atau hubungi administrator.', 'error');
                 return;
             }
             
@@ -3723,6 +3738,7 @@ function setupEventListeners() {
             
             setTimeout(() => {
                 sessionStorage.setItem('simata_session', 'active');
+                sessionStorage.setItem('logged_in_user', username);
                 document.getElementById('loginModal').style.display = 'none';
                 document.getElementById('appContent').style.display = 'block';
                 initializeCharts();
@@ -3732,6 +3748,9 @@ function setupEventListeners() {
                 btn.disabled = false;
                 spinner.classList.add('d-none');
                 btn.innerHTML = 'BUKA DASHBOARD';
+                
+                // Tampilkan username yang login
+                showNotification(`Login berhasil! Selamat datang ${username}`, 'success');
             }, 1200);
         });
     }
@@ -4096,6 +4115,7 @@ function setupEventListeners() {
                 showLoading("Membuat Backup", "Sedang membuat backup data sebelum keluar. Mohon tunggu...");
                 setTimeout(() => {
                     sessionStorage.removeItem('simata_session');
+                    sessionStorage.removeItem('logged_in_user');
                     // Reset autentikasi menu saat logout
                     resetMenuAuth();
                     backupData();
@@ -5074,6 +5094,15 @@ function loadSettings() {
             if (typeof loadedSettings.securityMenuDataNelayanEnabled === 'undefined') {
                 loadedSettings.securityMenuDataNelayanEnabled = true;
             }
+            // Load data pengguna jika ada
+            if (!loadedSettings.users) {
+                loadedSettings.users = [
+                    { username: 'BIDANGPN', password: '@12345' },
+                    { username: 'BIDANGPB', password: '@123456' },
+                    { username: 'BIDANGP4', password: '@1234567' },
+                    { username: 'BIDANGKESWAN', password: '@12345678' }
+                ];
+            }
             Object.assign(appSettings, loadedSettings);
         } catch (e) {
             console.error("Error loading settings:", e);
@@ -5369,9 +5398,9 @@ function generateIDCard(id) {
             document.body.removeChild(qrContainer);
 
             // PERBAIKAN: Garis pemisah horizontal antara data dan footer - DINAIIKAN ke atas
+            const separatorY = 44; // Dinaikkan dari 45 ke 44 (lebih ke atas)
             doc.setDrawColor(220, 220, 220);
             doc.setLineWidth(0.2);
-            const separatorY = 44; // Dinaikkan dari 45 ke 44 (lebih ke atas)
             doc.line(5, separatorY, 80, separatorY);
 
             // PERBAIKAN: Footer dengan informasi validasi - DINAIIKAN ke atas
