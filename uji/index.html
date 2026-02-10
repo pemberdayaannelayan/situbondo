@@ -234,6 +234,14 @@
             right: 20px;
             z-index: 1000;
         }
+        
+        /* PERBAIKAN TAMBAHAN: Pastikan body tidak scroll saat sidebar terbuka di mobile */
+        body.sidebar-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
     </style>
     
     <!-- LOAD SEMUA JAVASCRIPT LIBRARY -->
@@ -275,99 +283,6 @@
                 toggleButton.setAttribute('title', 'Sembunyikan password');
                 toggleButton.setAttribute('aria-label', 'Sembunyikan password');
             }
-        }
-        
-        // Fungsi untuk mengelola modal gambar ikan dan kapal
-        function showFishInfoModal() {
-            try {
-                const existingBackdrops = document.querySelectorAll('.modal-backdrop');
-                existingBackdrops.forEach(backdrop => {
-                    backdrop.remove();
-                });
-                
-                document.body.classList.remove('modal-open');
-                
-                const fishModal = new bootstrap.Modal(document.getElementById('fishInfoModal'), {
-                    backdrop: true,
-                    keyboard: true
-                });
-                fishModal.show();
-                
-                preloadFishImages();
-            } catch (error) {
-                console.error('Gagal membuka modal info ikan:', error);
-                alert('Modal informasi ikan tidak dapat dibuka. Silakan coba lagi.');
-            }
-        }
-        
-        function showBoatInfoModal() {
-            try {
-                const existingBackdrops = document.querySelectorAll('.modal-backdrop');
-                existingBackdrops.forEach(backdrop => {
-                    backdrop.remove();
-                });
-                
-                document.body.classList.remove('modal-open');
-                
-                const boatModal = new bootstrap.Modal(document.getElementById('boatInfoModal'), {
-                    backdrop: true,
-                    keyboard: true
-                });
-                boatModal.show();
-                
-                preloadBoatImages();
-            } catch (error) {
-                console.error('Gagal membuka modal info kapal:', error);
-                alert('Modal informasi kapal tidak dapat dibuka. Silakan coba lagi.');
-            }
-        }
-        
-        function preloadFishImages() {
-            const imageUrls = [
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-1.jpg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-2.jpg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-3.jpg'
-            ];
-            
-            imageUrls.forEach((url, index) => {
-                const img = new Image();
-                img.src = url;
-                img.onload = function() {
-                    console.log(`Gambar ikan ${index + 1} berhasil dimuat`);
-                };
-                img.onerror = function() {
-                    console.error(`Gagal memuat gambar ikan ${index + 1}: ${url}`);
-                    const imgElement = document.getElementById(`fishImage${index + 1}`);
-                    if (imgElement) {
-                        imgElement.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f8f9fa"/><text x="200" y="150" text-anchor="middle" font-family="Arial" font-size="16" fill="%236c757d">Gambar tidak tersedia</text></svg>';
-                        imgElement.alt = `Gambar referensi ikan ${index + 1} tidak tersedia`;
-                    }
-                };
-            });
-        }
-        
-        function preloadBoatImages() {
-            const imageUrls = [
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-1.png',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-2.png',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-3.png'
-            ];
-            
-            imageUrls.forEach((url, index) => {
-                const img = new Image();
-                img.src = url;
-                img.onload = function() {
-                    console.log(`Gambar kapal ${index + 1} berhasil dimuat`);
-                };
-                img.onerror = function() {
-                    console.error(`Gagal memuat gambar kapal ${index + 1}: ${url}`);
-                    const imgElement = document.getElementById(`boatImage${index + 1}`);
-                    if (imgElement) {
-                        imgElement.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f8f9fa"/><text x="200" y="150" text-anchor="middle" font-family="Arial" font-size="16" fill="%236c757d">Gambar tidak tersedia</text></svg>';
-                        imgElement.alt = `Gambar referensi kapal ${index + 1} tidak tersedia`;
-                    }
-                };
-            });
         }
         
         // ========== FUNGSI LOGIN YANG DISEMPURNAKAN ==========
@@ -581,6 +496,7 @@
                 loginModal.style.transform = 'scale(0.9)';
                 setTimeout(() => {
                     loginModal.style.display = 'none';
+                    loginModal.remove();
                 }, 300);
             }
             
@@ -624,7 +540,7 @@
                 const newBtn = continueBtn.cloneNode(true);
                 continueBtn.parentNode.replaceChild(newBtn, continueBtn);
                 
-                // Dalam fungsi showLoginSuccessModal(), perbaiki bagian tombol "Lanjut ke Dashboard"
+                // Setup event listener baru
                 document.getElementById('btnContinueDashboard').addEventListener('click', function() {
                     // Sembunyikan modal dengan benar
                     const modalInstance = bootstrap.Modal.getInstance(document.getElementById('loginSuccessModal'));
@@ -650,8 +566,8 @@
                             appContent.style.display = 'flex';
                             appContent.style.opacity = '1';
                             appContent.style.width = '100%';
-                            appContent.style.height = '100vh';
-                            appContent.style.overflow = 'auto';
+                            appContent.style.height = '100%';
+                            appContent.style.overflow = 'hidden';
                             
                             // Panggil fungsi inisialisasi aplikasi
                             initAppAfterLogin();
@@ -671,10 +587,98 @@
                                 if ('virtualKeyboard' in navigator) {
                                     navigator.virtualKeyboard.hide();
                                 }
+                                
+                                // Inisialisasi ulang semua komponen
+                                initAllComponents();
                             }, 100);
                         }
                     }, 300);
                 });
+            }
+        }
+        
+        // PERBAIKAN UTAMA: Fungsi untuk menginisialisasi semua komponen aplikasi
+        function initAllComponents() {
+            console.log('Menginisialisasi semua komponen aplikasi...');
+            
+            // Setup menu mobile
+            setupMobileMenu();
+            
+            // Setup event listeners
+            setupAppEventListeners();
+            
+            // Setup FAB menu
+            setupFABMenu();
+            
+            // Setup tombol tambahan
+            setupAdditionalButtons();
+            
+            // Setup responsive handlers
+            setupResponsiveHandlers();
+            
+            // Muat data awal jika fungsi tersedia
+            if (typeof loadInitialData === 'function') {
+                try {
+                    setTimeout(() => {
+                        loadInitialData();
+                    }, 500);
+                } catch (error) {
+                    console.error('Error dalam loadInitialData:', error);
+                }
+            }
+            
+            // Tampilkan notifikasi selamat datang
+            const username = localStorage.getItem('simpadan_username') || 'Pengguna';
+            if (typeof showNotification === 'function') {
+                setTimeout(() => {
+                    showNotification(`Selamat datang ${username}! SIMPADAN TANGKAP siap digunakan.`, 'success');
+                }, 1000);
+            }
+            
+            // Pastikan konten aplikasi terlihat dengan baik
+            const appContent = document.getElementById('appContent');
+            if (appContent) {
+                appContent.style.opacity = '1';
+                appContent.style.transition = 'opacity 0.5s ease';
+            }
+            
+            // Force resize untuk memastikan layout responsif
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+                checkAndFixLayout();
+            }, 200);
+        }
+        
+        // PERBAIKAN: Fungsi untuk memeriksa dan memperbaiki layout
+        function checkAndFixLayout() {
+            const appContent = document.getElementById('appContent');
+            if (!appContent) return;
+            
+            // Periksa jika ada elemen yang overflow
+            const checkOverflow = () => {
+                const tabPanes = document.querySelectorAll('.tab-pane');
+                tabPanes.forEach(pane => {
+                    if (pane.scrollHeight > pane.clientHeight) {
+                        pane.style.overflowY = 'auto';
+                    } else {
+                        pane.style.overflowY = 'visible';
+                    }
+                });
+                
+                // Periksa tabel
+                const tables = document.querySelectorAll('.table-responsive');
+                tables.forEach(table => {
+                    if (table.scrollWidth > table.clientWidth) {
+                        table.style.overflowX = 'auto';
+                    }
+                });
+            };
+            
+            checkOverflow();
+            
+            // Jalankan lagi setelah delay untuk memastikan
+            setTimeout(checkOverflow, 500);
+        }
         
         function initAppAfterLogin() {
             try {
@@ -686,39 +690,31 @@
                 // Setup menu mobile
                 setupMobileMenu();
                 
-                // Pastikan semua elemen utama sudah dimuat
-                setTimeout(() => {
-                    // Muat data awal jika fungsi tersedia
-                    if (typeof loadInitialData === 'function') {
-                        try {
-                            loadInitialData();
-                        } catch (error) {
-                            console.error('Error dalam loadInitialData:', error);
-                        }
-                    }
-                    
-                    // Setup event listeners lainnya
-                    setupAppEventListeners();
-                    
-                    // Tampilkan notifikasi selamat datang dengan username
-                    const username = localStorage.getItem('simpadan_username') || 'Pengguna';
-                    if (typeof showNotification === 'function') {
-                        setTimeout(() => {
-                            showNotification(`Selamat datang ${username}! SIMPADAN TANGKAP siap digunakan.`, 'success');
-                        }, 1000);
-                    }
-                    
-                    // Pastikan konten aplikasi terlihat dengan baik
-                    const appContent = document.getElementById('appContent');
-                    if (appContent) {
-                        appContent.style.opacity = '1';
-                        appContent.style.transition = 'opacity 0.5s ease';
-                    }
-                    
-                    // Force resize untuk memastikan layout responsif
-                    window.dispatchEvent(new Event('resize'));
-                    
-                }, 300);
+                // Setup event listeners lainnya
+                setupAppEventListeners();
+                
+                // Setup FAB menu
+                setupFABMenu();
+                
+                // Setup tombol tambahan
+                setupAdditionalButtons();
+                
+                // Setup responsive handlers
+                setupResponsiveHandlers();
+                
+                // Pastikan konten aplikasi terlihat dengan baik
+                const appContent = document.getElementById('appContent');
+                if (appContent) {
+                    appContent.style.opacity = '1';
+                    appContent.style.transition = 'opacity 0.5s ease';
+                }
+                
+                // Force resize untuk memastikan layout responsif
+                window.dispatchEvent(new Event('resize'));
+                
+                // Panggil fungsi checkAndFixLayout setelah delay
+                setTimeout(checkAndFixLayout, 300);
+                
             } catch (error) {
                 console.error('Error dalam initAppAfterLogin:', error);
                 // Fallback: tampilkan aplikasi meskipun ada error
@@ -738,9 +734,17 @@
             
             if (mobileMenuBtn && sidebarMenu) {
                 mobileMenuBtn.addEventListener('click', function() {
+                    const isOpen = sidebarMenu.classList.contains('mobile-show');
                     sidebarMenu.classList.toggle('mobile-show');
                     if (sidebarOverlay) {
                         sidebarOverlay.style.display = sidebarMenu.classList.contains('mobile-show') ? 'block' : 'none';
+                    }
+                    
+                    // Toggle class pada body untuk mencegah scroll saat sidebar terbuka
+                    if (sidebarMenu.classList.contains('mobile-show')) {
+                        document.body.classList.add('sidebar-open');
+                    } else {
+                        document.body.classList.remove('sidebar-open');
                     }
                 });
             }
@@ -749,6 +753,7 @@
                 sidebarOverlay.addEventListener('click', function() {
                     sidebarMenu.classList.remove('mobile-show');
                     sidebarOverlay.style.display = 'none';
+                    document.body.classList.remove('sidebar-open');
                 });
             }
             
@@ -761,6 +766,7 @@
                         if (sidebarOverlay) {
                             sidebarOverlay.style.display = 'none';
                         }
+                        document.body.classList.remove('sidebar-open');
                     }
                 });
             });
@@ -897,25 +903,14 @@
             }
         }
         
-        // Inisialisasi saat DOM siap
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM siap, setup login system...');
-            
-            // Setup login system
-            setupLoginSystem();
-            
-            // Setup tombol tambahan
-            setupAdditionalButtons();
-            
-            // Preload animasi lingkaran
-            initCirclesAnimation();
-            
-            // Setup event listener untuk resize window
+        // Setup responsive handlers
+        function setupResponsiveHandlers() {
+            // Handle resize window
             window.addEventListener('resize', handleResize);
             
-            // Setup awal untuk responsive
+            // Initial resize
             handleResize();
-        });
+        }
         
         function handleResize() {
             // Sembunyikan FAB menu di desktop
@@ -944,121 +939,51 @@
                 sidebarMenu.classList.remove('mobile-show');
                 sidebarMenu.style.transform = 'none';
             }
+            
+            // Perbaikan layout saat resize
+            checkAndFixLayout();
         }
+        
+        // Inisialisasi saat DOM siap
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM siap, setup login system...');
+            
+            // Setup login system
+            setupLoginSystem();
+            
+            // Setup tombol tambahan
+            setupAdditionalButtons();
+            
+            // Preload animasi lingkaran
+            initCirclesAnimation();
+            
+            // Setup event listener untuk resize window
+            window.addEventListener('resize', handleResize);
+            
+            // Setup awal untuk responsive
+            handleResize();
+            
+            // Cek jika sudah login
+            if (localStorage.getItem('simpadan_logged_in') === 'true') {
+                // Langsung tampilkan aplikasi
+                const appContent = document.getElementById('appContent');
+                const loginModal = document.getElementById('loginModal');
+                
+                if (appContent && loginModal) {
+                    loginModal.style.display = 'none';
+                    appContent.style.display = 'flex';
+                    
+                    // Inisialisasi aplikasi
+                    setTimeout(() => {
+                        initAllComponents();
+                    }, 300);
+                }
+            }
+        });
         
         function initCirclesAnimation() {
             // Animasi sudah didefinisikan di CSS
             console.log('Animasi lingkaran login diinisialisasi');
-        }
-        
-        // Fungsi-fungsi modal lainnya
-        function closeFishInfoModalSafely() {
-            try {
-                const modalElement = document.getElementById('fishInfoModal');
-                if (modalElement) {
-                    const modal = bootstrap.Modal.getInstance(modalElement);
-                    if (modal) {
-                        modal.hide();
-                    }
-                    
-                    setTimeout(() => {
-                        const backdrops = document.querySelectorAll('.modal-backdrop');
-                        backdrops.forEach(backdrop => {
-                            backdrop.remove();
-                        });
-                        
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
-                        document.body.style.paddingRight = '';
-                    }, 300);
-                }
-            } catch (error) {
-                console.error('Error closing modal:', error);
-            }
-        }
-        
-        function closeBoatInfoModalSafely() {
-            try {
-                const modalElement = document.getElementById('boatInfoModal');
-                if (modalElement) {
-                    const modal = bootstrap.Modal.getInstance(modalElement);
-                    if (modal) {
-                        modal.hide();
-                    }
-                    
-                    setTimeout(() => {
-                        const backdrops = document.querySelectorAll('.modal-backdrop');
-                        backdrops.forEach(backdrop => {
-                            backdrop.remove();
-                        });
-                        
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
-                        document.body.style.paddingRight = '';
-                    }, 300);
-                }
-            } catch (error) {
-                console.error('Error closing modal:', error);
-            }
-        }
-        
-        function goToInputDataAfterModal() {
-            closeFishInfoModalSafely();
-            closeBoatInfoModalSafely();
-            
-            setTimeout(() => {
-                try {
-                    const inputTab = document.getElementById('v-pills-input-tab');
-                    if (inputTab) {
-                        inputTab.click();
-                        
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
-                        
-                        const namaInput = document.getElementById('nama');
-                        if (namaInput) {
-                            setTimeout(() => {
-                                namaInput.focus();
-                            }, 100);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error navigating to input tab:', error);
-                }
-            }, 400);
-        }
-        
-        // Fungsi helper untuk notifikasi
-        function showNotification(message, type = 'info') {
-            const toastEl = document.querySelector('.notification-toast');
-            const toastTitle = document.getElementById('toastTitle');
-            const toastMessage = document.getElementById('toastMessage');
-            
-            if (toastEl && toastTitle && toastMessage) {
-                // Set warna berdasarkan type
-                let icon = 'fas fa-info-circle';
-                let bgColor = 'bg-primary';
-                
-                if (type === 'success') {
-                    icon = 'fas fa-check-circle';
-                    bgColor = 'bg-success';
-                } else if (type === 'error' || type === 'danger') {
-                    icon = 'fas fa-exclamation-circle';
-                    bgColor = 'bg-danger';
-                } else if (type === 'warning') {
-                    icon = 'fas fa-exclamation-triangle';
-                    bgColor = 'bg-warning';
-                }
-                
-                toastTitle.innerHTML = `<i class="${icon} me-2"></i>Notifikasi`;
-                toastMessage.textContent = message;
-                
-                // Tampilkan toast
-                const toast = new bootstrap.Toast(toastEl);
-                toast.show();
-            }
         }
     </script>
 </head>
@@ -1189,170 +1114,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="welcomeModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content welcome-modal-content">
-                <div class="welcome-header">
-                    <i class="fas fa-satellite-dish fa-3x mb-3 text-warning"></i>
-                    <h4 class="fw-bold mb-0">Selamat Datang, Sobat!</h4>
-                </div>
-                <div class="welcome-body">
-                    <p class="text-muted mb-4">
-                        Untuk memastikan data yang Anda akses adalah data terbaru dan valid, sistem merekomendasikan untuk melakukan <strong>Sinkronisasi Data</strong> terlebih dahulu.
-                    </p>
-                    <div class="d-grid gap-2 justify-content-center">
-                        <button type="button" class="welcome-btn-reload" id="btnWelcomeReload">
-                            <i class="fas fa-sync me-2"></i> Sinkronisasi Data Sekarang
-                        </button>
-                        <button type="button" class="btn btn-link text-muted text-decoration-none btn-sm mt-2" data-bs-dismiss="modal">
-                            Tutup Notifikasi
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Data Wilayah - DIREVISI DENGAN TAB DESA DAN KECAMATAN -->
-    <div class="modal fade" id="modalDataWilayah" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="wilayah-modal-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="modal-title fw-bold mb-1"><i class="fas fa-map-marked-alt me-2"></i> Data Wilayah</h5>
-                            <p class="mb-0 opacity-75">Kelola data berdasarkan wilayah administratif</p>
-                        </div>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="wilayah-search-box px-4">
-                        <div class="alert alert-info mb-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Pilih desa atau kecamatan untuk memuat data nelayan dari wilayah tersebut. Anda juga dapat langsung input data untuk wilayah yang dipilih.
-                        </div>
-                        
-                        <div class="row align-items-center mb-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                    <input type="text" class="form-control" id="searchWilayah" placeholder="Cari nama desa atau kecamatan...">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex justify-content-end align-items-center gap-3">
-                                    <div class="wilayah-status-indicator" id="wilayahStatusIndicator">
-                                        <i class="fas fa-globe"></i>
-                                        <span>Mode Global</span>
-                                    </div>
-                                    <button class="btn btn-warning" id="btnInputGlobalModal">
-                                        <i class="fas fa-globe me-2"></i> Switch ke Global
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- TABS NAVIGASI UNTUK DESA DAN KECAMATAN -->
-                    <div class="wilayah-tabs-container px-4">
-                        <ul class="nav nav-tabs wilayah-tabs" id="wilayahTabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="desa-tab" data-bs-toggle="tab" data-bs-target="#desa-panel" type="button" role="tab">
-                                    <i class="fas fa-village me-2"></i> Data Desa
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="kecamatan-tab" data-bs-toggle="tab" data-bs-target="#kecamatan-panel" type="button" role="tab">
-                                    <i class="fas fa-map me-2"></i> Data Kecamatan
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="tab-content px-4 pb-4">
-                        <!-- PANEL DESA -->
-                        <div class="tab-pane fade show active" id="desa-panel" role="tabpanel">
-                            <div class="wilayah-global-card mb-4">
-                                <div class="icon">
-                                    <i class="fas fa-globe-americas"></i>
-                                </div>
-                                <h5 class="fw-bold">Mode Global</h5>
-                                <p class="text-muted mb-3">Akses dan kelola semua data nelayan tanpa batasan wilayah</p>
-                                <button class="btn btn-warning px-4" id="btnGlobalMode">
-                                    <i class="fas fa-database me-2"></i> Aktifkan Mode Global
-                                </button>
-                            </div>
-                            
-                            <h6 class="fw-bold mb-3">Daftar Desa / Kelurahan</h6>
-                            
-                            <!-- KONTAINER KARTU DESA -->
-                            <div class="wilayah-grid" id="wilayahDesaCardsContainer">
-                                <!-- Kartu desa akan dimuat di sini oleh JavaScript -->
-                            </div>
-                            
-                            <!-- STATE KOSONG UNTUK DESA -->
-                            <div class="wilayah-empty-state d-none" id="wilayahDesaEmptyState">
-                                <i class="fas fa-search"></i>
-                                <h5 class="text-muted">Desa tidak ditemukan</h5>
-                                <p class="text-muted">Coba gunakan kata kunci pencarian yang berbeda</p>
-                            </div>
-                        </div>
-                        
-                        <!-- PANEL KECAMATAN -->
-                        <div class="tab-pane fade" id="kecamatan-panel" role="tabpanel">
-                            <div class="wilayah-global-card mb-4">
-                                <div class="icon">
-                                    <i class="fas fa-globe-americas"></i>
-                                </div>
-                                <h5 class="fw-bold">Mode Global</h5>
-                                <p class="text-muted mb-3">Akses dan kelola semua data nelayan tanpa batasan wilayah</p>
-                                <button class="btn btn-warning px-4" id="btnGlobalModeKecamatan">
-                                    <i class="fas fa-database me-2"></i> Aktifkan Mode Global
-                                </button>
-                            </div>
-                            
-                            <h6 class="fw-bold mb-3">Daftar Kecamatan</h6>
-                            
-                            <!-- KONTAINER KARTU KECAMATAN -->
-                            <div class="wilayah-grid" id="wilayahKecamatanCardsContainer">
-                                <!-- Kartu kecamatan akan dimuat di sini oleh JavaScript -->
-                            </div>
-                            
-                            <!-- STATE KOSONG UNTUK KECAMatan -->
-                            <div class="wilayah-empty-state d-none" id="wilayahKecamatanEmptyState">
-                                <i class="fas fa-search"></i>
-                                <h5 class="text-muted">Kecamatan tidak ditemukan</h5>
-                                <p class="text-muted">Coba gunakan kata kunci pencarian yang berbeda</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-top py-3">
-                    <div class="d-flex justify-content-between w-100">
-                        <div class="text-muted small">
-                            <i class="fas fa-info-circle me-1"></i>
-                            <span id="totalDesaCount">0</span> desa dan <span id="totalKecamatanCount">0</span> kecamatan tersedia
-                        </div>
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="sticky-warning" id="duplicateWarning">
-        <div class="d-flex align-items-start">
-            <div class="me-3 text-danger"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-            <div>
-                <h6 class="fw-bold text-danger mb-1">PERHATIAN: Data Ganda!</h6>
-                <p class="small text-muted mb-2">Sistem mendeteksi adanya NIK ganda yang belum diperbaiki.</p>
-                <button class="btn btn-sm btn-outline-danger" onclick="document.getElementById('v-pills-data-tab').click(); setTimeout(() => document.getElementById('btnCekGanda').click(), 200);">Periksa Sekarang</button>
-                <button class="btn btn-sm btn-link text-muted text-decoration-none ms-2" onclick="document.getElementById('duplicateWarning').style.display='none'">Tutup</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- KONTEN APLIKASI UTAMA -->
     <div class="app-content-unauthenticated" id="appContent" style="display:none;">
         <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
         
