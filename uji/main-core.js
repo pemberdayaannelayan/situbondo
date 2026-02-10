@@ -1,10 +1,9 @@
 // =====================================================
 // KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.1 FINAL REVISI
-// BAGIAN: CORE FUNCTIONALITY
-// REVISI: PEMISAHAN KODE KE FILE TERPISAH
+// BAGIAN: CORE FUNCTIONALITY - VERSI FINAL YANG DIPERBAIKI
 // =====================================================
 
-// Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
+// Data ikan yang diperbarui dan disederhanakan
 const FISH_CATEGORIES = {
     "Demersal": [
         {name: "Ikan Mangla (Pomadasys spp.)", latin: "Pomadasys spp."},
@@ -98,7 +97,7 @@ const API_FISH_MAPPING = {
     "Lainnya": ["Demersal", "Pelagis Kecil", "Pelagis Besar"]
 };
 
-// Mapping informasi alat tangkap (disingkat)
+// Mapping informasi alat tangkap
 const API_INFO = {
     "Pukat Cincin": "Alat tangkap untuk ikan pelagis besar",
     "Pukat Tarik": "Alat tangkap untuk ikan pelagis kecil",
@@ -121,7 +120,7 @@ const API_INFO = {
     "Lainnya": "Alat tangkap lainnya"
 };
 
-// Mapping informasi perahu (disingkat)
+// Mapping informasi perahu
 const KAPAL_INFO = {
     "Perahu Jukung": "Perahu tradisional kecil",
     "Perahu Mayang": "Perahu tradisional sedang",
@@ -162,7 +161,7 @@ const SITUBONDO_DATA = {
     "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
 };
 
-// Daftar desa untuk fitur Data Wilayah - DIPERBARUI dengan desa baru
+// Daftar desa untuk fitur Data Wilayah
 const DESA_LIST = [
     { name: "Kilensari", file: "kilensari.js" },
     { name: "Klatakan", file: "klatakan.js" },
@@ -235,15 +234,13 @@ let appSettings = {
     officialName: 'SUGENG PURWO PRIYANTO, S.E, M.M',
     officialNip: '19761103 200903 1 001',
     officialPosition: 'Kepala Bidang Pemberdayaan Nelayan',
-    // Password baru untuk keamanan menu - PERBAIKAN: Default sesuai permintaan
     passwordInputData: '666666',
     passwordDataNelayan: '999999',
-    // Fitur baru: ON/OFF kode keamanan akses menu
     securityMenuInputDataEnabled: true,
     securityMenuDataNelayanEnabled: true
 };
 
-// Variabel baru untuk fitur Data Wilayah
+// Variabel untuk fitur Data Wilayah
 let currentWilayah = {
     mode: 'global', // 'global', 'desa', atau 'kecamatan'
     desaName: null,
@@ -260,9 +257,6 @@ const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
 const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
 const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
 const modalDataWilayah = new bootstrap.Modal(document.getElementById('modalDataWilayah'));
-
-// Modal untuk autentikasi menu (akan dibuat secara dinamis)
-let menuAuthModal = null;
 
 const PROFESI_MAPPING = {
     "Penuh Waktu": "Nelayan Penuh Waktu",
@@ -281,35 +275,44 @@ window.appData = appData;
 window.appSettings = appSettings;
 window.currentWilayah = currentWilayah;
 
-// --- FUNGSI LOADING EFFECT ---
-function showLoading(title = "Memproses Data", message = "Mohon tunggu, sistem sedang memproses permintaan Anda. Proses ini mungkin memerlukan waktu beberapa saat tergantung jumlah data yang tersedia.") {
+// --- FUNGSI UTAMA YANG DIPERBAIKI ---
+function showLoading(title = "Memproses Data", message = "Mohon tunggu, sistem sedang memproses permintaan Anda...") {
     document.getElementById('loadingTitle').textContent = title;
     document.getElementById('loadingMessage').textContent = message;
     document.getElementById('loadingModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Mencegah scroll saat loading
+    document.body.style.overflow = 'hidden';
 }
 
 function hideLoading() {
     document.getElementById('loadingModal').style.display = 'none';
-    document.body.style.overflow = 'auto'; // Mengembalikan scroll
+    document.body.style.overflow = 'auto';
 }
 
-// --- FUNGSI UTAMA ---
-function getProfesiLabel(profesi) {
-    return PROFESI_MAPPING[profesi] || profesi;
-}
-
-function migrateOldData() {
-    appData.forEach(item => {
-        if (PROFESI_MAPPING[item.profesi]) {
-            item.profesi = PROFESI_MAPPING[item.profesi];
-        }
-        // Tambahkan field alamat jika belum ada
-        if (!item.hasOwnProperty('alamat')) {
-            item.alamat = '';
-        }
-    });
-    saveData();
+function showNotification(message, type = 'info') {
+    const toast = document.querySelector('.notification-toast');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    if (!toast || !toastTitle || !toastMessage) return;
+    
+    const toastEl = new bootstrap.Toast(toast);
+    
+    switch(type) {
+        case 'success':
+            toastTitle.innerHTML = '<i class="fas fa-check-circle me-2 text-success"></i>Berhasil';
+            break;
+        case 'error':
+            toastTitle.innerHTML = '<i class="fas fa-exclamation-circle me-2 text-danger"></i>Error';
+            break;
+        case 'warning':
+            toastTitle.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning"></i>Peringatan';
+            break;
+        default:
+            toastTitle.innerHTML = '<i class="fas fa-info-circle me-2 text-info"></i>Informasi';
+    }
+    
+    toastMessage.textContent = message;
+    toastEl.show();
 }
 
 function generateSecurityCode() {
@@ -318,14 +321,6 @@ function generateSecurityCode() {
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}${month}${day}`;
-}
-
-function displayCurrentDate() {
-    const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const dateString = now.toLocaleDateString('id-ID', options);
-    document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-    document.getElementById('passwordHint').innerHTML = `Masukkan kode keamanan untuk mengakses sistem`;
 }
 
 function maskData(data, force = false) {
@@ -352,130 +347,115 @@ function getFishIconClass(fishName) {
 
 // --- FUNGSI DATA WILAYAH YANG DISEMPURNAKAN ---
 function initDataWilayah() {
+    if (!document.getElementById('wilayahDesaCardsContainer')) return;
+    
     // Inisialisasi data desa
-    initDesaCards();
+    const desaContainer = document.getElementById('wilayahDesaCardsContainer');
+    if (desaContainer) {
+        const sortedDesa = [...DESA_LIST].sort((a, b) => a.name.localeCompare(b.name));
+        desaContainer.innerHTML = '';
+        
+        sortedDesa.forEach(desa => {
+            const card = document.createElement('div');
+            card.className = 'wilayah-card';
+            
+            if (currentWilayah.mode === 'desa' && currentWilayah.desaName === desa.name) {
+                card.classList.add('active');
+            }
+            
+            card.innerHTML = `
+                <div class="wilayah-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            <strong>${desa.name}</strong>
+                        </div>
+                        ${currentWilayah.mode === 'desa' && currentWilayah.desaName === desa.name ? 
+                            '<span class="badge bg-success">Aktif</span>' : ''}
+                    </div>
+                </div>
+                <div class="wilayah-card-body">
+                    <div class="wilayah-info-badge">
+                        <i class="fas fa-database me-1"></i> Data Tersedia
+                    </div>
+                    
+                    <div class="wilayah-actions">
+                        <button class="btn wilayah-btn wilayah-btn-load" onclick="loadDataByDesa('${desa.name}', '${desa.file}')">
+                            <i class="fas fa-database"></i>
+                            <span>Muat Data</span>
+                        </button>
+                        <button class="btn wilayah-btn wilayah-btn-input" onclick="setupInputForDesa('${desa.name}')">
+                            <i class="fas fa-plus"></i>
+                            <span>Input Data</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            desaContainer.appendChild(card);
+        });
+    }
     
     // Inisialisasi data kecamatan
-    initKecamatanCards();
+    const kecamatanContainer = document.getElementById('wilayahKecamatanCardsContainer');
+    if (kecamatanContainer) {
+        const sortedKecamatan = [...KECAMATAN_LIST].sort((a, b) => a.name.localeCompare(b.name));
+        kecamatanContainer.innerHTML = '';
+        
+        sortedKecamatan.forEach(kecamatan => {
+            const desaCount = SITUBONDO_DATA[kecamatan.name] ? SITUBONDO_DATA[kecamatan.name].length : 0;
+            
+            const card = document.createElement('div');
+            card.className = 'wilayah-card kecamatan-card';
+            
+            if (currentWilayah.mode === 'kecamatan' && currentWilayah.kecamatanName === kecamatan.name) {
+                card.classList.add('active');
+            }
+            
+            card.innerHTML = `
+                <div class="wilayah-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-map me-2"></i>
+                            <strong>KEC. ${kecamatan.name.toUpperCase()}</strong>
+                        </div>
+                        ${currentWilayah.mode === 'kecamatan' && currentWilayah.kecamatanName === kecamatan.name ? 
+                            '<span class="badge bg-success">Aktif</span>' : ''}
+                    </div>
+                </div>
+                <div class="wilayah-card-body">
+                    <div class="wilayah-info-badge">
+                        <i class="fas fa-database me-1"></i> ${desaCount} Desa
+                    </div>
+                    
+                    <div class="wilayah-actions">
+                        <button class="btn wilayah-btn wilayah-btn-load" onclick="loadDataByKecamatan('${kecamatan.name}', '${kecamatan.file}')">
+                            <i class="fas fa-database"></i>
+                            <span>Muat Data</span>
+                        </button>
+                        <button class="btn wilayah-btn wilayah-btn-input" onclick="setupInputForKecamatan('${kecamatan.name}')">
+                            <i class="fas fa-plus"></i>
+                            <span>Input Data</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            kecamatanContainer.appendChild(card);
+        });
+    }
     
     // Update total desa dan kecamatan count
-    document.getElementById('totalDesaCount').textContent = DESA_LIST.length;
-    document.getElementById('totalKecamatanCount').textContent = KECAMATAN_LIST.length;
+    const totalDesaCount = document.getElementById('totalDesaCount');
+    const totalKecamatanCount = document.getElementById('totalKecamatanCount');
+    
+    if (totalDesaCount) totalDesaCount.textContent = DESA_LIST.length;
+    if (totalKecamatanCount) totalKecamatanCount.textContent = KECAMATAN_LIST.length;
     
     // Update status indicator
     updateWilayahStatusIndicator();
 }
 
-// Fungsi untuk inisialisasi kartu desa
-function initDesaCards() {
-    const desaContainer = document.getElementById('wilayahDesaCardsContainer');
-    if (!desaContainer) return;
-    
-    desaContainer.innerHTML = '';
-    
-    // Urutkan desa berdasarkan nama
-    const sortedDesa = [...DESA_LIST].sort((a, b) => a.name.localeCompare(b.name));
-    
-    // Tambahkan kartu untuk setiap desa
-    sortedDesa.forEach(desa => {
-        const card = document.createElement('div');
-        card.className = 'wilayah-card';
-        
-        // Cek jika ini desa yang sedang aktif
-        if (currentWilayah.mode === 'desa' && currentWilayah.desaName === desa.name) {
-            card.classList.add('active');
-        }
-        
-        card.innerHTML = `
-            <div class="wilayah-card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <i class="fas fa-map-marker-alt me-2"></i>
-                        <strong>${desa.name}</strong>
-                    </div>
-                    ${currentWilayah.mode === 'desa' && currentWilayah.desaName === desa.name ? 
-                        '<span class="badge bg-success">Aktif</span>' : ''}
-                </div>
-            </div>
-            <div class="wilayah-card-body">
-                <div class="wilayah-info-badge">
-                    <i class="fas fa-database me-1"></i> Data Tersedia
-                </div>
-                
-                <div class="wilayah-actions">
-                    <button class="btn wilayah-btn wilayah-btn-load" onclick="loadDataByDesa('${desa.name}', '${desa.file}')">
-                        <i class="fas fa-database"></i>
-                        <span>Muat Data</span>
-                    </button>
-                    <button class="btn wilayah-btn wilayah-btn-input" onclick="setupInputForDesa('${desa.name}')">
-                        <i class="fas fa-plus"></i>
-                        <span>Input Data</span>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        desaContainer.appendChild(card);
-    });
-}
-
-// Fungsi untuk inisialisasi kartu kecamatan
-function initKecamatanCards() {
-    const kecamatanContainer = document.getElementById('wilayahKecamatanCardsContainer');
-    if (!kecamatanContainer) return;
-    
-    kecamatanContainer.innerHTML = '';
-    
-    // Urutkan kecamatan berdasarkan nama
-    const sortedKecamatan = [...KECAMATAN_LIST].sort((a, b) => a.name.localeCompare(b.name));
-    
-    // Tambahkan kartu untuk setiap kecamatan
-    sortedKecamatan.forEach(kecamatan => {
-        const card = document.createElement('div');
-        card.className = 'wilayah-card kecamatan-card';
-        
-        // Cek jika ini kecamatan yang sedang aktif
-        if (currentWilayah.mode === 'kecamatan' && currentWilayah.kecamatanName === kecamatan.name) {
-            card.classList.add('active');
-        }
-        
-        // Hitung jumlah desa dalam kecamatan ini
-        const desaCount = SITUBONDO_DATA[kecamatan.name] ? SITUBONDO_DATA[kecamatan.name].length : 0;
-        
-        card.innerHTML = `
-            <div class="wilayah-card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <i class="fas fa-map me-2"></i>
-                        <strong>KEC. ${kecamatan.name.toUpperCase()}</strong>
-                    </div>
-                    ${currentWilayah.mode === 'kecamatan' && currentWilayah.kecamatanName === kecamatan.name ? 
-                        '<span class="badge bg-success">Aktif</span>' : ''}
-                </div>
-            </div>
-            <div class="wilayah-card-body">
-                <div class="wilayah-info-badge">
-                    <i class="fas fa-database me-1"></i> ${desaCount} Desa
-                </div>
-                
-                <div class="wilayah-actions">
-                    <button class="btn wilayah-btn wilayah-btn-load" onclick="loadDataByKecamatan('${kecamatan.name}', '${kecamatan.file}')">
-                        <i class="fas fa-database"></i>
-                        <span>Muat Data</span>
-                    </button>
-                    <button class="btn wilayah-btn wilayah-btn-input" onclick="setupInputForKecamatan('${kecamatan.name}')">
-                        <i class="fas fa-plus"></i>
-                        <span>Input Data</span>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        kecamatanContainer.appendChild(card);
-    });
-}
-
-// Fungsi untuk mendapatkan kecamatan dari nama desa
 function getKecamatanByDesa(desaName) {
     for (const kec in SITUBONDO_DATA) {
         if (SITUBONDO_DATA[kec].includes(desaName)) {
@@ -485,121 +465,87 @@ function getKecamatanByDesa(desaName) {
     return null;
 }
 
-// Fungsi untuk setup input data berdasarkan desa
 function setupInputForDesa(desaName) {
-    // Tutup modal Data Wilayah
     modalDataWilayah.hide();
     
-    // Cari kecamatan dari desa ini
     const kecamatan = getKecamatanByDesa(desaName);
     
-    // Set mode wilayah ke desa
     currentWilayah.mode = 'desa';
     currentWilayah.desaName = desaName;
     currentWilayah.kecamatanName = null;
     currentWilayah.fileName = DESA_LIST.find(d => d.name === desaName)?.file || `${desaName.toLowerCase()}.js`;
     
-    // Update UI wilayah
     updateWilayahUI();
     updateWilayahStatusIndicator();
     
-    // Buka tab Input Data (dengan cek autentikasi)
-    if (checkMenuAuth('input')) {
-        document.getElementById('v-pills-input-tab').click();
-    } else {
-        showMenuAuth('input', 'Input Data');
-    }
+    // Buka tab Input Data
+    const inputTab = document.getElementById('v-pills-input-tab');
+    if (inputTab) inputTab.click();
     
-    // Atur dropdown kecamatan dan desa
     if (kecamatan) {
         const kecSelect = document.getElementById('kecamatan');
         if (kecSelect) {
             kecSelect.value = kecamatan;
-            // Trigger change event untuk memuat desa
             kecSelect.dispatchEvent(new Event('change'));
             
-            // Setelah dropdown desa terisi, atur desa
             setTimeout(() => {
                 const desaSelect = document.getElementById('desa');
                 if (desaSelect) {
                     desaSelect.value = desaName;
                 }
                 
-                // Focus ke field nama
                 document.getElementById('nama').focus();
-                
-                showNotification(`Mode input data untuk Desa ${desaName} telah diaktifkan. Data yang diinput akan otomatis tersimpan untuk desa ini.`, 'success');
+                showNotification(`Mode input data untuk Desa ${desaName} telah diaktifkan.`, 'success');
             }, 500);
         }
-    } else {
-        showNotification(`Desa ${desaName} tidak ditemukan dalam data kecamatan.`, 'warning');
     }
 }
 
-// Fungsi untuk setup input data berdasarkan kecamatan
 function setupInputForKecamatan(kecamatanName) {
-    // Tutup modal Data Wilayah
     modalDataWilayah.hide();
     
-    // Set mode wilayah ke kecamatan
     currentWilayah.mode = 'kecamatan';
     currentWilayah.kecamatanName = kecamatanName;
     currentWilayah.desaName = null;
     currentWilayah.fileName = KECAMATAN_LIST.find(k => k.name === kecamatanName)?.file || `Kecamatan-${kecamatanName}.js`;
     
-    // Update UI wilayah
     updateWilayahUI();
     updateWilayahStatusIndicator();
     
-    // Buka tab Input Data (dengan cek autentikasi)
-    if (checkMenuAuth('input')) {
-        document.getElementById('v-pills-input-tab').click();
-    } else {
-        showMenuAuth('input', 'Input Data');
-    }
+    const inputTab = document.getElementById('v-pills-input-tab');
+    if (inputTab) inputTab.click();
     
-    // Atur dropdown kecamatan
     const kecSelect = document.getElementById('kecamatan');
     if (kecSelect) {
         kecSelect.value = kecamatanName;
-        // Trigger change event untuk memuat desa
         kecSelect.dispatchEvent(new Event('change'));
         
-        // Focus ke field nama
         setTimeout(() => {
             document.getElementById('nama').focus();
-            showNotification(`Mode input data untuk Kecamatan ${kecamatanName} telah diaktifkan. Data yang diinput akan otomatis tersimpan untuk kecamatan ini.`, 'success');
+            showNotification(`Mode input data untuk Kecamatan ${kecamatanName} telah diaktifkan.`, 'success');
         }, 500);
     }
 }
 
-// Fungsi untuk memuat data berdasarkan desa
 function loadDataByDesa(desaName, fileName) {
     if (confirm(`Anda akan memuat data dari Desa ${desaName}. Data saat ini akan digantikan. Lanjutkan?`)) {
-        showLoading("Memuat Data Desa", `Sedang memproses data dari Desa ${desaName}. Mohon tunggu...`);
+        showLoading("Memuat Data Desa", `Sedang memproses data dari Desa ${desaName}...`);
         
-        // Reset currentWilayah
         currentWilayah.mode = 'desa';
         currentWilayah.desaName = desaName;
         currentWilayah.kecamatanName = null;
         currentWilayah.fileName = fileName;
         
-        // Update UI
         updateWilayahUI();
         updateWilayahStatusIndicator();
         
-        // Load data dari file JavaScript
         const script = document.createElement('script');
         script.src = fileName + '?t=' + new Date().getTime();
         
         script.onload = function() {
-            console.log(`File ${fileName} berhasil dimuat`);
-            
-            // Beri waktu untuk pemrosesan
             setTimeout(() => {
                 if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
                     try {
-                        // Ganti data dengan data baru dari desa
                         appData = window.SIMATA_BACKUP_DATA;
                         saveData();
                         renderDataTable();
@@ -609,13 +555,12 @@ function loadDataByDesa(desaName, fileName) {
                         showNotification(`Data dari Desa ${desaName} berhasil dimuat (${appData.length} data)`, 'success');
                         modalDataWilayah.hide();
                         
-                        // Update filter desa
                         updateFilterDesaOptions();
                         
                     } catch (error) {
                         console.error('Error memuat data desa:', error);
                         hideLoading();
-                        showNotification('Gagal memuat data dari desa. Format data tidak valid.', 'error');
+                        showNotification('Gagal memuat data dari desa.', 'error');
                     }
                 } else {
                     hideLoading();
@@ -625,7 +570,6 @@ function loadDataByDesa(desaName, fileName) {
         };
         
         script.onerror = function() {
-            console.error(`Gagal memuat file ${fileName}`);
             hideLoading();
             showNotification(`Maaf, Desa ${desaName} Masih Belum Ada Data Di SIMPADAN TANGKAP`, 'error');
         };
@@ -634,33 +578,25 @@ function loadDataByDesa(desaName, fileName) {
     }
 }
 
-// Fungsi untuk memuat data berdasarkan kecamatan
 function loadDataByKecamatan(kecamatanName, fileName) {
     if (confirm(`Anda akan memuat data dari Kecamatan ${kecamatanName}. Data saat ini akan digantikan. Lanjutkan?`)) {
-        showLoading("Memuat Data Kecamatan", `Sedang memproses data dari Kecamatan ${kecamatanName}. Mohon tunggu...`);
+        showLoading("Memuat Data Kecamatan", `Sedang memproses data dari Kecamatan ${kecamatanName}...`);
         
-        // Reset currentWilayah
         currentWilayah.mode = 'kecamatan';
         currentWilayah.kecamatanName = kecamatanName;
         currentWilayah.desaName = null;
         currentWilayah.fileName = fileName;
         
-        // Update UI
         updateWilayahUI();
         updateWilayahStatusIndicator();
         
-        // Load data dari file JavaScript
         const script = document.createElement('script');
         script.src = fileName + '?t=' + new Date().getTime();
         
         script.onload = function() {
-            console.log(`File ${fileName} berhasil dimuat`);
-            
-            // Beri waktu untuk pemrosesan
             setTimeout(() => {
                 if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
                     try {
-                        // Ganti data dengan data baru dari kecamatan
                         appData = window.SIMATA_BACKUP_DATA;
                         saveData();
                         renderDataTable();
@@ -670,13 +606,12 @@ function loadDataByKecamatan(kecamatanName, fileName) {
                         showNotification(`Data dari Kecamatan ${kecamatanName} berhasil dimuat (${appData.length} data)`, 'success');
                         modalDataWilayah.hide();
                         
-                        // Update filter desa
                         updateFilterDesaOptions();
                         
                     } catch (error) {
                         console.error('Error memuat data kecamatan:', error);
                         hideLoading();
-                        showNotification('Gagal memuat data dari kecamatan. Format data tidak valid.', 'error');
+                        showNotification('Gagal memuat data dari kecamatan.', 'error');
                     }
                 } else {
                     hideLoading();
@@ -686,7 +621,6 @@ function loadDataByKecamatan(kecamatanName, fileName) {
         };
         
         script.onerror = function() {
-            console.error(`Gagal memuat file ${fileName}`);
             hideLoading();
             showNotification(`Maaf, Data Tidak Ditemukan Di SIMPADAN TANGKAP untuk Kecamatan ${kecamatanName}`, 'error');
         };
@@ -702,11 +636,10 @@ function setInputGlobalMode() {
         currentWilayah.kecamatanName = null;
         currentWilayah.fileName = 'reload.js';
         
-        // Reload data dari reload.js
         handleReloadRepo();
         updateWilayahUI();
         updateWilayahStatusIndicator();
-        showNotification('Mode Input Global diaktifkan. Data dari reload.js akan dimuat.', 'info');
+        showNotification('Mode Input Global diaktifkan.', 'info');
     }
 }
 
@@ -715,48 +648,40 @@ function updateWilayahUI() {
     const info = document.getElementById('wilayahInfo');
     const inputModeBadge = document.getElementById('inputModeBadge');
     const desaWarning = document.getElementById('desaWarning');
-    const submitFormBtn = document.getElementById('submitFormBtn');
     
     if (currentWilayah.mode === 'desa') {
         if (badge) {
-            badge.innerHTML = `Wilayah: Desa ${currentWilayah.desaName}`;
-            badge.className = 'badge bg-info';
+            badge.innerHTML = `<span class="badge bg-info">Wilayah: Desa ${currentWilayah.desaName}</span>`;
         }
-        if (info) info.textContent = `Mode Desa: Data dari ${currentWilayah.fileName}. Input data hanya untuk desa ${currentWilayah.desaName}.`;
+        if (info) info.textContent = `Mode Desa: Data dari ${currentWilayah.fileName}`;
         if (inputModeBadge) {
             inputModeBadge.textContent = `Mode: Desa ${currentWilayah.desaName}`;
             inputModeBadge.className = 'badge bg-info float-end';
         }
         if (desaWarning) desaWarning.classList.remove('d-none');
-        if (submitFormBtn) submitFormBtn.disabled = false;
     } else if (currentWilayah.mode === 'kecamatan') {
         if (badge) {
-            badge.innerHTML = `Wilayah: Kecamatan ${currentWilayah.kecamatanName}`;
-            badge.className = 'badge bg-success';
+            badge.innerHTML = `<span class="badge bg-success">Wilayah: Kecamatan ${currentWilayah.kecamatanName}</span>`;
         }
-        if (info) info.textContent = `Mode Kecamatan: Data dari ${currentWilayah.fileName}. Input data untuk kecamatan ${currentWilayah.kecamatanName}.`;
+        if (info) info.textContent = `Mode Kecamatan: Data dari ${currentWilayah.fileName}`;
         if (inputModeBadge) {
             inputModeBadge.textContent = `Mode: Kecamatan ${currentWilayah.kecamatanName}`;
             inputModeBadge.className = 'badge bg-success float-end';
         }
         if (desaWarning) desaWarning.classList.add('d-none');
-        if (submitFormBtn) submitFormBtn.disabled = false;
     } else {
         if (badge) {
-            badge.innerHTML = 'Wilayah: Global (reload.js)';
-            badge.className = 'badge bg-primary';
+            badge.innerHTML = '<span class="badge bg-primary">Wilayah: Global (reload.js)</span>';
         }
-        if (info) info.textContent = 'Mode Global: Data dari reload.js. Input data bebas tanpa batasan desa.';
+        if (info) info.textContent = 'Mode Global: Data dari reload.js';
         if (inputModeBadge) {
             inputModeBadge.textContent = 'Mode: Global';
             inputModeBadge.className = 'badge bg-warning float-end';
         }
         if (desaWarning) desaWarning.classList.add('d-none');
-        if (submitFormBtn) submitFormBtn.disabled = false;
     }
 }
 
-// Fungsi untuk update status indicator di modal
 function updateWilayahStatusIndicator() {
     const indicator = document.getElementById('wilayahStatusIndicator');
     if (!indicator) return;
@@ -777,7 +702,6 @@ function updateFilterDesaOptions() {
     const filterDesa = document.getElementById('filterDesa');
     if (!filterDesa) return;
     
-    // Dapatkan daftar desa unik dari data
     const desaSet = new Set();
     appData.forEach(d => {
         if (d.desa && d.desa.trim() !== '') {
@@ -785,46 +709,28 @@ function updateFilterDesaOptions() {
         }
     });
     
-    // Urutkan desa
     const desaList = Array.from(desaSet).sort();
     
-    // Update opsi filter
     filterDesa.innerHTML = '<option value="">Semua Desa</option>';
     desaList.forEach(desa => {
         filterDesa.add(new Option(desa, desa));
     });
 }
 
-// --- FUNGSI RELOAD DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
 function handleReloadRepo() {
-    showLoading("Sinkronisasi Data", "Sedang melakukan sinkronisasi data dari server. Mohon tunggu, proses ini mungkin memerlukan waktu beberapa saat...");
+    showLoading("Sinkronisasi Data", "Sedang melakukan sinkronisasi data dari server...");
     
-    // Tentukan file yang akan dimuat berdasarkan mode
     const fileName = currentWilayah.mode === 'desa' ? currentWilayah.fileName : 
                     currentWilayah.mode === 'kecamatan' ? currentWilayah.fileName : 'reload.js';
     
-    // Coba load ulang file
     const script = document.createElement('script');
     script.src = fileName + '?t=' + new Date().getTime();
     
     script.onload = function() {
-        console.log(`File ${fileName} berhasil dimuat ulang`);
-        
-        // Beri waktu untuk pemrosesan
         setTimeout(() => {
             if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
                 try {
-                    // Validasi data duplikat sebelum mengganti data
-                    const duplicateCheck = validateDataDuplicates(window.SIMATA_BACKUP_DATA);
-                    if (duplicateCheck.hasDuplicates) {
-                        console.warn(`File ${fileName} mengandung ${duplicateCheck.duplicateCount} data duplikat`);
-                        showNotification(`Peringatan: File mengandung data duplikat. Data duplikat akan difilter.`, 'warning');
-                    }
-                    
-                    // Filter data duplikat
                     const uniqueData = filterDuplicateData(window.SIMATA_BACKUP_DATA);
-                    
-                    // Ganti data dengan data baru yang sudah difilter
                     appData = uniqueData.filteredData;
                     saveData();
                     renderDataTable();
@@ -832,12 +738,12 @@ function handleReloadRepo() {
                     updateFilterDesaOptions();
                     
                     hideLoading();
-                    showNotification(`Data berhasil disinkronisasi dari ${fileName} (${appData.length} data, ${uniqueData.removedCount} duplikat difilter)`, 'success');
+                    showNotification(`Data berhasil disinkronisasi (${appData.length} data)`, 'success');
                     
                 } catch (error) {
                     console.error('Reload error:', error);
                     hideLoading();
-                    showNotification('Gagal memuat data. Format data tidak valid.', 'error');
+                    showNotification('Gagal memuat data.', 'error');
                 }
             } else {
                 hideLoading();
@@ -847,7 +753,6 @@ function handleReloadRepo() {
     };
     
     script.onerror = function() {
-        console.error(`Gagal memuat file ${fileName}`);
         hideLoading();
         showNotification(`Maaf, Data Tidak Ditemukan Di SIMPADAN TANGKAP`, 'error');
     };
@@ -863,7 +768,6 @@ function verifyKIN(input) {
     
     const cleanInput = input.trim().toUpperCase();
     
-    // Cari berdasarkan Kode Validasi (KIN)
     const byKodeValidasi = appData.find(d => d.kodeValidasi && d.kodeValidasi.toUpperCase() === cleanInput);
     if (byKodeValidasi) {
         return { 
@@ -874,7 +778,6 @@ function verifyKIN(input) {
         };
     }
     
-    // Cari berdasarkan NIK
     const byNIK = appData.find(d => d.nik === cleanInput);
     if (byNIK) {
         return { 
@@ -885,7 +788,6 @@ function verifyKIN(input) {
         };
     }
     
-    // Coba tanpa prefix VLD-
     if (cleanInput.startsWith('VLD-')) {
         const withoutPrefix = cleanInput.substring(4);
         const byKodeWithoutPrefix = appData.find(d => d.kodeValidasi && d.kodeValidasi.toUpperCase().endsWith(withoutPrefix));
@@ -907,7 +809,6 @@ function verifyKIN(input) {
 
 function displayVerifyResult(result) {
     const card = document.getElementById('verifyResultCard');
-    const header = document.getElementById('verifyResultHeader');
     const icon = document.getElementById('verifyResultIcon');
     const title = document.getElementById('verifyResultTitle');
     const subtitle = document.getElementById('verifyResultSubtitle');
@@ -916,21 +817,17 @@ function displayVerifyResult(result) {
     const idCardBtn = document.getElementById('verifyIdCardBtn');
     const allKinCard = document.getElementById('allKinCard');
     
-    // Sembunyikan daftar semua KIN jika sedang ditampilkan
     if (allKinCard) allKinCard.style.display = 'none';
     
     if (result.success) {
         const data = result.data;
         verifyDataResult = data;
         
-        // Update UI untuk hasil sukses
         card.className = 'card shadow-sm border-0 mb-4 verify-success';
-        header.className = 'verify-result-header p-4 bg-success text-white';
         icon.innerHTML = '<i class="fas fa-check-circle fa-3x"></i>';
         title.textContent = 'VERIFIKASI BERHASIL';
         subtitle.textContent = result.message;
         
-        // Isi konten
         content.innerHTML = `
             <div class="col-md-6">
                 <div class="verify-result-item">
@@ -984,7 +881,6 @@ function displayVerifyResult(result) {
             </div>
         `;
         
-        // Tampilkan tombol aksi
         detailBtn.style.display = 'inline-block';
         detailBtn.onclick = () => {
             viewDetail(data.id);
@@ -997,14 +893,11 @@ function displayVerifyResult(result) {
         };
         
     } else {
-        // Update UI untuk hasil gagal
         card.className = 'card shadow-sm border-0 mb-4 verify-error';
-        header.className = 'verify-result-header p-4 bg-danger text-white';
         icon.innerHTML = '<i class="fas fa-times-circle fa-3x"></i>';
         title.textContent = 'VERIFIKASI GAGAL';
         subtitle.textContent = result.message;
         
-        // Isi konten
         content.innerHTML = `
             <div class="col-md-12 text-center py-4">
                 <i class="fas fa-search fa-4x text-muted mb-3"></i>
@@ -1017,15 +910,12 @@ function displayVerifyResult(result) {
             </div>
         `;
         
-        // Sembunyikan tombol aksi
         detailBtn.style.display = 'none';
         idCardBtn.style.display = 'none';
     }
     
-    // Tampilkan kartu hasil
     card.style.display = 'block';
     
-    // Scroll ke hasil dengan animasi smooth
     setTimeout(() => {
         card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
@@ -1035,7 +925,6 @@ function setVerifyExample(type) {
     const input = document.getElementById('verifyInput');
     const breadcrumbItems = document.querySelectorAll('.verify-breadcrumb-item');
     
-    // Reset semua breadcrumb
     breadcrumbItems.forEach(item => item.classList.remove('active'));
     
     if (type === 'kin') {
@@ -1060,13 +949,10 @@ function showAllKIN() {
     const totalKinCount = document.getElementById('totalKinCount');
     const verifyResultCard = document.getElementById('verifyResultCard');
     
-    // Sembunyikan hasil verifikasi individual
     if (verifyResultCard) verifyResultCard.style.display = 'none';
     
-    // Filter data yang memiliki kode validasi
     const dataWithKIN = appData.filter(d => d.kodeValidasi && d.kodeValidasi.trim() !== '');
     
-    // Update count
     totalKinCount.textContent = dataWithKIN.length;
     
     if (dataWithKIN.length === 0) {
@@ -1120,7 +1006,6 @@ function showAllKIN() {
         });
     }
     
-    // Tampilkan kartu
     allKinCard.style.display = 'block';
     allKinCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -1129,7 +1014,6 @@ function verifyKINAndShow(input) {
     const result = verifyKIN(input);
     displayVerifyResult(result);
     
-    // Update input field
     document.getElementById('verifyInput').value = input;
 }
 
@@ -1139,7 +1023,6 @@ function resetVerifyForm() {
     document.getElementById('verifyResultCard').style.display = 'none';
     document.getElementById('allKinCard').style.display = 'none';
     
-    // Reset breadcrumb ke pertama
     setVerifyExample('kin');
 }
 
@@ -1150,14 +1033,13 @@ function updateAlatTangkapByKapal() {
     const apiMappingInfo = document.getElementById('apiMappingInfo');
     
     if (!jenisKapal) {
-        apiMappingInfo.style.display = 'none';
+        if (apiMappingInfo) apiMappingInfo.style.display = 'none';
         return;
     }
     
     const availableAPIs = KAPAL_API_MAPPING[jenisKapal] || Object.keys(API_INFO);
     const currentAPI = alatTangkapSelect.value;
     
-    // Update opsi alat tangkap
     alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
     availableAPIs.forEach(api => {
         const option = document.createElement('option');
@@ -1167,11 +1049,11 @@ function updateAlatTangkapByKapal() {
         alatTangkapSelect.appendChild(option);
     });
     
-    // Tampilkan informasi mapping
-    apiMappingInfo.innerHTML = `<strong>${jenisKapal}</strong> biasanya digunakan untuk: ${availableAPIs.join(', ')}`;
-    apiMappingInfo.style.display = 'block';
+    if (apiMappingInfo) {
+        apiMappingInfo.innerHTML = `<strong>${jenisKapal}</strong> biasanya digunakan untuk: ${availableAPIs.join(', ')}`;
+        apiMappingInfo.style.display = 'block';
+    }
     
-    // Update daftar ikan jika alat tangkap sudah dipilih
     if (currentAPI && availableAPIs.includes(currentAPI)) {
         updateFishOptionsByAPI(currentAPI);
     } else {
@@ -1187,7 +1069,6 @@ function updateFishOptionsByAPI(api) {
     
     let fishList = [];
     if (api && API_FISH_MAPPING[api]) {
-        // Ambil ikan berdasarkan kategori yang sesuai
         API_FISH_MAPPING[api].forEach(category => {
             if (FISH_CATEGORIES[category]) {
                 FISH_CATEGORIES[category].forEach(fish => {
@@ -1196,7 +1077,6 @@ function updateFishOptionsByAPI(api) {
             }
         });
     } else {
-        // Jika tidak ada API yang dipilih, tampilkan semua ikan
         for (const category in FISH_CATEGORIES) {
             FISH_CATEGORIES[category].forEach(fish => {
                 fishList.push(fish);
@@ -1204,16 +1084,13 @@ function updateFishOptionsByAPI(api) {
         }
     }
     
-    // Tambahkan opsi "Lainnya"
     fishList.push("Lainnya");
     
-    // Tampilkan checklist dengan informasi dan tombol info
     fishList.forEach(fish => {
         const id = 'fish_' + fish.replace(/\s/g, '');
         const fishInfo = FISH_DETAILS[fish] || {};
         const category = fishInfo.category || '';
         
-        // Buat tombol info jika memiliki kategori
         const infoButton = category && fish !== "Lainnya" ? 
             `<button class="btn btn-sm btn-outline-info fish-info-btn ms-2" onclick="showFishInfo('${category}')" title="Lihat informasi jenis ikan">
                 <i class="fas fa-info-circle"></i>
@@ -1237,7 +1114,6 @@ function updateFishOptionsByAPI(api) {
         fishContainer.innerHTML += html;
     });
     
-    // Event listener untuk "Lainnya"
     const lainCheckbox = document.getElementById('fish_Lainnya');
     if (lainCheckbox) {
         lainCheckbox.addEventListener('change', function() {
@@ -1254,58 +1130,10 @@ function updateFishOptionsByAPI(api) {
     }
 }
 
-// TAMBAHKAN FUNGSI UNTUK MENAMPILKAN GAMBAR INFORMASI JENIS IKAN
 function showFishInfo(category) {
-    // Cek apakah modal sudah ada
-    let modal = document.getElementById('fishInfoModal');
-    if (!modal) {
-        // Buat modal baru
-        modal = document.createElement('div');
-        modal.id = 'fishInfoModal';
-        modal.className = 'modal fade';
-        modal.tabIndex = '-1';
-        modal.innerHTML = `
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Informasi Jenis Ikan - Kategori ${category}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <img src="${FISH_CATEGORY_IMAGES[category]}" class="img-fluid" alt="Informasi Jenis Ikan ${category}">
-                        <div class="mt-3">
-                            <p class="text-muted">Kategori: <strong>${category}</strong></p>
-                            <p class="small">Gambar referensi jenis-jenis ikan dalam kategori ${category}</p>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-    
-    // Update gambar berdasarkan kategori
-    const modalImg = modal.querySelector('img');
-    if (modalImg) {
-        modalImg.src = FISH_CATEGORY_IMAGES[category];
-        modalImg.alt = `Informasi Jenis Ikan ${category}`;
-    }
-    
-    // Update judul modal
-    const modalTitle = modal.querySelector('.modal-title');
-    if (modalTitle) {
-        modalTitle.textContent = `Informasi Jenis Ikan - Kategori ${category}`;
-    }
-    
-    // Tampilkan modal
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
+    alert(`Informasi kategori ikan ${category}: Ini adalah kategori ikan yang termasuk dalam kelompok ${category}.`);
 }
 
-// --- FUNGSI BARU: REFRESH HALAMAN ---
 function refreshPage() {
     if (confirm('Apakah Anda yakin ingin me-refresh halaman? Semua perubahan yang belum disimpan akan hilang.')) {
         location.reload();
@@ -1318,7 +1146,6 @@ function updatePagination(totalItems) {
     const ul = document.getElementById('pagination');
     const paginationInfo = document.getElementById('paginationInfo');
     
-    // Validasi currentPage
     if (currentPage > totalPages) {
         currentPage = totalPages;
     }
@@ -1335,23 +1162,19 @@ function updatePagination(totalItems) {
     
     paginationInfo.textContent = `Halaman ${currentPage} dari ${totalPages} (Total: ${totalItems} data)`;
     
-    // Tombol pertama
     const first = document.createElement('li');
     first.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
     first.innerHTML = `<a class="page-link" href="#" onclick="goToPage(1); return false;" title="Halaman Pertama">&laquo;</a>`;
     ul.appendChild(first);
     
-    // Tombol sebelumnya
     const prev = document.createElement('li');
     prev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
     prev.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage-1}); return false;" title="Halaman Sebelumnya">&lt;</a>`;
     ul.appendChild(prev);
     
-    // Tampilkan beberapa halaman sekitar currentPage
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
     
-    // Pastikan kita selalu menampilkan 5 halaman jika memungkinkan
     if (endPage - startPage < 4) {
         if (startPage === 1) {
             endPage = Math.min(totalPages, startPage + 4);
@@ -1367,13 +1190,11 @@ function updatePagination(totalItems) {
         ul.appendChild(li);
     }
     
-    // Tombol berikutnya
     const next = document.createElement('li');
     next.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
     next.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage+1}); return false;" title="Halaman Berikutnya">&gt;</a>`;
     ul.appendChild(next);
     
-    // Tombol terakhir
     const last = document.createElement('li');
     last.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
     last.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;" title="Halaman Terakhir">&raquo;</a>`;
@@ -1386,21 +1207,17 @@ function goToPage(page) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// --- FUNGSI GET FILTERED DATA UNTUK PDF ---
 function getFilteredData() {
     const search = document.getElementById('searchData').value.toLowerCase();
     
-    // Filter data berdasarkan pencarian dan filter
     let filtered = appData;
     
-    // Terapkan filter jika ada
     if (Object.keys(currentFilter).length > 0) {
         filtered = filtered.filter(d => {
             const matchDesa = !currentFilter.desa || d.desa === currentFilter.desa;
             const matchProfesi = !currentFilter.profesi || d.profesi === currentFilter.profesi;
             const matchStatus = !currentFilter.status || d.status === currentFilter.status;
             
-            // Filter jenis kapal hanya untuk pemilik kapal
             let matchJenis = true;
             if (currentFilter.jenisKapal) {
                 if (d.status === 'Pemilik Kapal') {
@@ -1420,7 +1237,6 @@ function getFilteredData() {
         });
     }
     
-    // Terapkan pencarian jika ada
     if (search) {
         filtered = filtered.filter(d => 
             d.nama.toLowerCase().includes(search) || 
@@ -1440,17 +1256,14 @@ function renderDataTable() {
     const tableBody = document.getElementById('dataTableBody');
     const search = document.getElementById('searchData').value.toLowerCase();
     
-    // Filter data berdasarkan pencarian dan filter
     let filtered = appData;
     
-    // Terapkan filter jika ada
     if (Object.keys(currentFilter).length > 0) {
         filtered = filtered.filter(d => {
             const matchDesa = !currentFilter.desa || d.desa === currentFilter.desa;
             const matchProfesi = !currentFilter.profesi || d.profesi === currentFilter.profesi;
             const matchStatus = !currentFilter.status || d.status === currentFilter.status;
             
-            // Filter jenis kapal hanya untuk pemilik kapal
             let matchJenis = true;
             if (currentFilter.jenisKapal) {
                 if (d.status === 'Pemilik Kapal') {
@@ -1470,7 +1283,6 @@ function renderDataTable() {
         });
     }
     
-    // Terapkan pencarian jika ada
     if (search) {
         filtered = filtered.filter(d => 
             d.nama.toLowerCase().includes(search) || 
@@ -1488,7 +1300,6 @@ function renderDataTable() {
     const totalItems = filtered.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / appSettings.itemsPerPage));
     
-    // Validasi currentPage
     if (currentPage > totalPages && totalPages > 0) {
         currentPage = totalPages;
     } else if (totalItems === 0) {
@@ -1574,15 +1385,11 @@ function renderDataTable() {
         });
     }
     
-    // Update informasi tabel
     const startItem = totalItems > 0 ? start + 1 : 0;
     const endItem = Math.min(start + appSettings.itemsPerPage, totalItems);
     document.getElementById('tableInfo').textContent = `Menampilkan ${startItem}-${endItem} dari ${totalItems} data`;
     
-    // Update pagination
     updatePagination(totalItems);
-    
-    // Update tombol bulk delete
     toggleBulkDeleteBtn();
 }
 
@@ -1597,10 +1404,9 @@ function applyFilter() {
         usaha: document.getElementById('filterUsaha').value
     };
     
-    currentPage = 1; // Reset ke halaman pertama saat filter diterapkan
+    currentPage = 1;
     renderDataTable();
     
-    // Hitung jumlah data yang difilter
     const filteredCount = appData.filter(d => {
         const matchDesa = !currentFilter.desa || d.desa === currentFilter.desa;
         const matchProfesi = !currentFilter.profesi || d.profesi === currentFilter.profesi;
@@ -1628,7 +1434,6 @@ function applyFilter() {
 }
 
 function resetFilter() {
-    // Reset semua dropdown filter
     document.getElementById('filterDesa').value = '';
     document.getElementById('filterProfesi').value = '';
     document.getElementById('filterStatus').value = '';
@@ -1636,11 +1441,9 @@ function resetFilter() {
     document.getElementById('filterAlatTangkap').value = '';
     document.getElementById('filterUsaha').value = '';
     
-    // Reset filter aktif
     currentFilter = {};
     currentPage = 1;
     
-    // Render ulang tabel
     renderDataTable();
     
     showNotification('Filter direset, menampilkan semua data', 'info');
@@ -1648,7 +1451,6 @@ function resetFilter() {
 
 // --- FUNGSI PERBAIKAN: FILTER DATA GANDA YANG LEBIH KETAT ---
 function showDuplicateDataInFilter() {
-    // Hitung data duplikat berdasarkan NIK dan NAMA (uppercase)
     const duplicateMap = new Map();
     const duplicates = [];
     
@@ -1661,7 +1463,6 @@ function showDuplicateDataInFilter() {
         }
     });
     
-    // Filter hanya yang memiliki lebih dari 1 data (duplikat)
     duplicateMap.forEach((items, key) => {
         if (items.length > 1) {
             duplicates.push(...items);
@@ -1673,26 +1474,21 @@ function showDuplicateDataInFilter() {
         return;
     }
     
-    // Set filter untuk menampilkan hanya data duplikat
     currentFilter = { duplicate: true };
     currentPage = 1;
     
-    // Simpan data duplikat untuk ditampilkan
     window.duplicateDataForDisplay = duplicates;
     
-    // Render ulang tabel
     renderDataTable();
     
     showNotification(`Ditemukan ${duplicates.length} data dengan NIK dan nama ganda`, 'warning');
 }
 
-// --- FUNGSI VALIDASI DATA GANDA YANG LEBIH KETAT ---
 function validateDataDuplicates(dataArray) {
     const seen = new Set();
     const duplicates = [];
     
     dataArray.forEach((item, index) => {
-        // Buat key unik berdasarkan NIK dan NAMA (dalam uppercase)
         const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
         
         if (seen.has(key)) {
@@ -1714,14 +1510,12 @@ function validateDataDuplicates(dataArray) {
     };
 }
 
-// Fungsi untuk filter data duplikat
 function filterDuplicateData(dataArray) {
     const seen = new Set();
     const filteredData = [];
     const removedDuplicates = [];
     
     dataArray.forEach(item => {
-        // Buat key unik berdasarkan NIK dan NAMA (dalam uppercase)
         const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
         
         if (!seen.has(key)) {
@@ -1743,18 +1537,14 @@ function filterDuplicateData(dataArray) {
     };
 }
 
-// --- FUNGSI MERGE DATA DENGAN VALIDASI DUPLIKAT ---
 function mergeDataWithDuplicateCheck(existingData, newData) {
-    // Buat map untuk data yang sudah ada dengan key NIK_NAMA
     const dataMap = new Map();
     
-    // Tambahkan data yang sudah ada ke map
     existingData.forEach(item => {
         const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
         dataMap.set(key, item);
     });
     
-    // Tambahkan data baru, lewati jika sudah ada
     const skippedData = [];
     newData.forEach(item => {
         const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
@@ -1769,75 +1559,29 @@ function mergeDataWithDuplicateCheck(existingData, newData) {
         }
     });
     
-    // Log data yang dilewati (untuk debugging)
     if (skippedData.length > 0) {
         console.log('Data yang dilewati saat merge:', skippedData);
     }
     
-    // Kembalikan sebagai array
     return Array.from(dataMap.values());
 }
 
-// --- FUNGSI MERGE DATA (untuk kompatibilitas) ---
 function mergeData(existingData, newData) {
     return mergeDataWithDuplicateCheck(existingData, newData);
 }
 
 // --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', function() {
-    try {
-        initializeApp();
-        setupEventListeners();
-        
-        displayCurrentDate();
-        
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('tanggalValidasi').value = today;
-        
-        const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
-        if (isSessionActive) {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('appContent').style.display = 'block';
-            initializeCharts();
-            updateDashboard();
-            renderDataTable();
-            
-            // Periksa autentikasi menu dari sessionStorage saat aplikasi dimuat
-            if (sessionStorage.getItem('menu_auth_input') === 'true') {
-                menuAuthStatus.inputData = true;
-            }
-            if (sessionStorage.getItem('menu_auth_data') === 'true') {
-                menuAuthStatus.dataNelayan = true;
-            }
-        } else {
-            setTimeout(() => {
-                document.getElementById('loginModal').style.display = 'flex';
-            }, 100);
-        }
-
-        if (typeof window.handleHashRouting === 'function') {
-            window.handleHashRouting();
-        }
-
-    } catch (error) {
-        console.error("Initialization Error:", error);
-        showNotification("Terjadi kesalahan sistem saat memuat. Silakan refresh halaman.", 'error');
-    }
-});
-
 function initializeApp() {
     loadData();
     loadSettings();
     migrateOldData();
     
-    // Inisialisasi Data Wilayah yang disempurnakan
     initDataWilayah();
     
     if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
         console.log("Data backup terdeteksi. Ready untuk merge/sync.");
     }
 
-    // Inisialisasi dropdown kecamatan
     const kecSelect = document.getElementById('kecamatan');
     if (kecSelect) {
         kecSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
@@ -1846,32 +1590,28 @@ function initializeApp() {
         }
     }
     
-    // Inisialisasi dropdown filter desa
-    const allDesas = new Set();
-    if (typeof SITUBONDO_DATA !== 'undefined') {
-        Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
-    }
     const filterDesaSelect = document.getElementById('filterDesa');
     if (filterDesaSelect) {
         filterDesaSelect.innerHTML = `<option value="">Semua Desa</option>`;
+        const allDesas = new Set();
+        if (typeof SITUBONDO_DATA !== 'undefined') {
+            Object.values(SITUBONDO_DATA).forEach(list => list.forEach(d => allDesas.add(d)));
+        }
         [...allDesas].sort().forEach(d => filterDesaSelect.add(new Option(d, d)));
     }
     
-    // Inisialisasi dropdown filter alat tangkap
     const filterAlatTangkap = document.getElementById('filterAlatTangkap');
     if (filterAlatTangkap) {
         filterAlatTangkap.innerHTML = `<option value="">Semua</option>`;
         Object.keys(API_INFO).forEach(api => filterAlatTangkap.add(new Option(api, api)));
     }
     
-    // Inisialisasi dropdown filter jenis kapal
     const filterJenisKapal = document.getElementById('filterJenisKapal');
     if (filterJenisKapal) {
         filterJenisKapal.innerHTML = `<option value="">Semua</option>`;
         Object.keys(KAPAL_INFO).forEach(kapal => filterJenisKapal.add(new Option(kapal, kapal)));
     }
     
-    // Inisialisasi dropdown jenis kapal di form input
     const jenisKapalSelect = document.getElementById('jenisKapal');
     if (jenisKapalSelect) {
         jenisKapalSelect.innerHTML = '<option value="">Pilih Jenis...</option>';
@@ -1880,7 +1620,6 @@ function initializeApp() {
         });
     }
     
-    // Inisialisasi dropdown alat tangkap di form input
     const alatTangkapSelect = document.getElementById('alatTangkap');
     if (alatTangkapSelect) {
         alatTangkapSelect.innerHTML = '<option value="">Pilih Alat Penangkapan Ikan...</option>';
@@ -1897,27 +1636,25 @@ function initializeApp() {
     setupInfoTooltips();
     setupProfesiInfo();
     
-    // Inisialisasi daftar ikan
     updateFishOptionsByAPI('');
     
-    // Inisialisasi form pengaturan pejabat
     loadOfficialData();
     
-    // --- PERBAIKAN: INISIALISASI INPUT OTOMATIS HURUF KAPITAL ---
     setupAutoUppercaseInputs();
     
-    // Setup event listener untuk autentikasi menu
     setupMenuAuthListeners();
     
-    // Setup password toggle untuk semua input password
     setupAllPasswordToggles();
     
-    // PERBAIKAN BARU: Inisialisasi toggle untuk kode keamanan menu
     initMenuSecurityToggles();
+    
+    // Initialize charts
+    initializeCharts();
+    updateDashboard();
+    renderDataTable();
 }
 
 function loadOfficialData() {
-    // Load data pejabat dari appSettings ke form
     const officialName = document.getElementById('officialName');
     const officialNip = document.getElementById('officialNip');
     const officialPosition = document.getElementById('officialPosition');
@@ -2022,24 +1759,16 @@ function updatePrivacyUI() {
     }
 }
 
-// --- PERBAIKAN: SETUP INPUT OTOMATIS HURUF KAPITAL ---
 function setupAutoUppercaseInputs() {
-    // Input Nama - otomatis huruf kapital
     const namaInput = document.getElementById('nama');
     if (namaInput) {
         namaInput.addEventListener('input', function() {
-            // Simpan posisi cursor
             const start = this.selectionStart;
             const end = this.selectionEnd;
-            
-            // Ubah ke huruf kapital
             this.value = this.value.toUpperCase();
-            
-            // Kembalikan posisi cursor
             this.setSelectionRange(start, end);
         });
         
-        // Juga untuk event paste
         namaInput.addEventListener('paste', function(e) {
             setTimeout(() => {
                 this.value = this.value.toUpperCase();
@@ -2047,22 +1776,15 @@ function setupAutoUppercaseInputs() {
         });
     }
     
-    // Input Alamat - otomatis huruf kapital
     const alamatInput = document.getElementById('alamat');
     if (alamatInput) {
         alamatInput.addEventListener('input', function() {
-            // Simpan posisi cursor
             const start = this.selectionStart;
             const end = this.selectionEnd;
-            
-            // Ubah ke huruf kapital
             this.value = this.value.toUpperCase();
-            
-            // Kembalikan posisi cursor
             this.setSelectionRange(start, end);
         });
         
-        // Juga untuk event paste
         alamatInput.addEventListener('paste', function(e) {
             setTimeout(() => {
                 this.value = this.value.toUpperCase();
@@ -2073,9 +1795,6 @@ function setupAutoUppercaseInputs() {
 
 // --- EVENT LISTENERS ---
 function setupEventListeners() {
-    // Password Toggle sudah dihandle oleh setupAllPasswordToggles()
-    
-    // No WhatsApp Button
     const noWaBtn = document.getElementById('btnNoWA');
     if (noWaBtn) {
         noWaBtn.addEventListener('click', function() {
@@ -2100,7 +1819,6 @@ function setupEventListeners() {
         });
     }
 
-    // Kecamatan Change
     const kecamatanSelect = document.getElementById('kecamatan');
     if (kecamatanSelect) {
         kecamatanSelect.addEventListener('change', function() {
@@ -2119,13 +1837,11 @@ function setupEventListeners() {
         });
     }
 
-    // Form Submit - DIPERBAIKI untuk validasi mode desa dan kecamatan
     const inputForm = document.getElementById('inputForm');
     if (inputForm) {
         inputForm.addEventListener('submit', handleFormSubmit);
     }
     
-    // Form Reset
     if (inputForm) {
         inputForm.addEventListener('reset', () => {
             setTimeout(() => {
@@ -2177,13 +1893,11 @@ function setupEventListeners() {
                 const tanggalValidasi = document.getElementById('tanggalValidasi');
                 if (tanggalValidasi) tanggalValidasi.value = today;
                 
-                // Reset daftar ikan ke semua opsi
                 updateFishOptionsByAPI('');
             }, 100);
         });
     }
     
-    // Status Nelayan Change
     const statusNelayan = document.getElementById('statusNelayan');
     if (statusNelayan) {
         statusNelayan.addEventListener('change', function() {
@@ -2206,7 +1920,6 @@ function setupEventListeners() {
         });
     }
 
-    // Tahun Lahir Input
     const tahunLahirInput = document.getElementById('tahunLahir');
     if (tahunLahirInput) {
         tahunLahirInput.addEventListener('input', function() {
@@ -2221,7 +1934,6 @@ function setupEventListeners() {
         });
     }
 
-    // Generate Kode Button
     const generateKodeBtn = document.getElementById('generateKodeBtn');
     if (generateKodeBtn) {
         generateKodeBtn.addEventListener('click', function() {
@@ -2242,7 +1954,6 @@ function setupEventListeners() {
         });
     }
 
-    // Tombol Data Wilayah
     const btnDataWilayah = document.getElementById('btnDataWilayah');
     if (btnDataWilayah) {
         btnDataWilayah.addEventListener('click', function() {
@@ -2250,13 +1961,6 @@ function setupEventListeners() {
         });
     }
 
-    // Tombol Input Global
-    const btnInputGlobal = document.getElementById('btnInputGlobal');
-    if (btnInputGlobal) {
-        btnInputGlobal.addEventListener('click', setInputGlobalMode);
-    }
-
-    // Tombol Input Global di Modal
     const btnInputGlobalModal = document.getElementById('btnInputGlobalModal');
     if (btnInputGlobalModal) {
         btnInputGlobalModal.addEventListener('click', function() {
@@ -2265,7 +1969,6 @@ function setupEventListeners() {
         });
     }
 
-    // Tombol Global Mode di modal (tab desa)
     const btnGlobalMode = document.getElementById('btnGlobalMode');
     if (btnGlobalMode) {
         btnGlobalMode.addEventListener('click', function() {
@@ -2274,7 +1977,6 @@ function setupEventListeners() {
         });
     }
 
-    // Tombol Global Mode di modal (tab kecamatan)
     const btnGlobalModeKecamatan = document.getElementById('btnGlobalModeKecamatan');
     if (btnGlobalModeKecamatan) {
         btnGlobalModeKecamatan.addEventListener('click', function() {
@@ -2283,13 +1985,11 @@ function setupEventListeners() {
         });
     }
 
-    // Search wilayah di modal
     const searchWilayah = document.getElementById('searchWilayah');
     if (searchWilayah) {
         searchWilayah.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             
-            // Cek tab mana yang aktif
             const activeTab = document.querySelector('#wilayahTabs .nav-link.active');
             if (!activeTab) return;
             
@@ -2331,7 +2031,6 @@ function setupEventListeners() {
         });
     }
 
-    // Verifikasi KIN
     const verifyBtn = document.getElementById('verifyBtn');
     if (verifyBtn) {
         verifyBtn.addEventListener('click', function() {
@@ -2346,13 +2045,11 @@ function setupEventListeners() {
         });
     }
 
-    // Refresh Halaman Button
     const refreshBtn = document.getElementById('btn-refresh-page');
     if (refreshBtn) {
         refreshBtn.addEventListener('click', refreshPage);
     }
 
-    // Mobile Menu
     const overlay = document.getElementById('sidebarOverlay');
     const sidebar = document.getElementById('sidebarMenu');
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -2378,15 +2075,13 @@ function setupEventListeners() {
         });
     }
     
-    // Logout
     const logoutBtn = document.getElementById('v-pills-logout-tab');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             if(confirm('Apakah Anda yakin ingin keluar? Sistem akan mengunduh data backup secara otomatis.')) {
-                showLoading("Membuat Backup", "Sedang membuat backup data sebelum keluar. Mohon tunggu...");
+                showLoading("Membuat Backup", "Sedang membuat backup data sebelum keluar...");
                 setTimeout(() => {
                     sessionStorage.removeItem('simata_session');
-                    // Reset autentikasi menu saat logout
                     resetMenuAuth();
                     backupData();
                     setTimeout(() => {
@@ -2398,16 +2093,14 @@ function setupEventListeners() {
         });
     }
 
-    // Search and Filter
     const searchInput = document.getElementById('searchData');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
-            currentPage = 1; // Reset ke halaman pertama saat mencari
+            currentPage = 1;
             renderDataTable();
         });
     }
     
-    // Filter & Validasi Data
     const applyFilterBtn = document.getElementById('applyFilterBtn');
     const resetFilterBtn = document.getElementById('resetFilterBtn');
     const cekGandaBtn = document.getElementById('btnCekGanda');
@@ -2424,18 +2117,14 @@ function setupEventListeners() {
     });
     if (bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', bulkDeleteData);
     
-    // Download PDF Terfilter
     const unduhFilteredPdfBtn = document.getElementById('btnUnduhFilteredPdf');
     if (unduhFilteredPdfBtn) unduhFilteredPdfBtn.addEventListener('click', generateFilteredPdf);
     
-    // Download PDF Tabel Data
     const unduhTabelPdfBtn = document.getElementById('btnUnduhTabelPdf');
     if (unduhTabelPdfBtn) unduhTabelPdfBtn.addEventListener('click', generateTabelPdf);
 
-    // Print and Export
     const printPdfBtn = document.getElementById('printPdfBtn');
     const exportExcelBtn = document.getElementById('exportExcelBtn');
-    const exportReloadJsBtn = document.getElementById('exportReloadJsBtn');
     const sendWaBtn = document.getElementById('sendWaBtn');
     const backupDataBtn = document.getElementById('backupDataBtn');
     const restoreFileInput = document.getElementById('restoreFileInput');
@@ -2443,9 +2132,10 @@ function setupEventListeners() {
     
     if (printPdfBtn) printPdfBtn.addEventListener('click', printData);
     if (exportExcelBtn) exportExcelBtn.addEventListener('click', () => exportData('xlsx'));
-    if (exportReloadJsBtn) exportReloadJsBtn.addEventListener('click', () => backupData('reload.js'));
     if (sendWaBtn) sendWaBtn.addEventListener('click', sendDataToWhatsapp);
-    if (backupDataBtn) backupDataBtn.addEventListener('click', () => backupData());
+    if (backupDataBtn) {
+        backupDataBtn.addEventListener('click', () => backupData());
+    }
     if (restoreFileInput) {
         restoreFileInput.addEventListener('change', function() {
             if (restoreDataBtn) {
@@ -2455,13 +2145,11 @@ function setupEventListeners() {
     }
     if (restoreDataBtn) restoreDataBtn.addEventListener('click', restoreData);
     
-    // Event listener untuk tombol Reload Data
     const reloadRepoBtn = document.getElementById('btn-reload-repo');
     if (reloadRepoBtn) {
         reloadRepoBtn.addEventListener('click', handleReloadRepo);
     }
     
-    // Detail PDF
     const downloadDetailPdfBtn = document.getElementById('btnDownloadDetailPdf');
     if (downloadDetailPdfBtn) {
         downloadDetailPdfBtn.addEventListener('click', () => {
@@ -2469,7 +2157,6 @@ function setupEventListeners() {
         });
     }
 
-    // Settings Form
     const settingsForm = document.getElementById('settingsForm');
     if (settingsForm) {
         settingsForm.addEventListener('submit', function(e) {
@@ -2481,11 +2168,10 @@ function setupEventListeners() {
             
             if (appSubtitleInput) appSettings.appSubtitle = appSubtitleInput.value;
             
-            // Baca nilai dari input number dengan validasi
             if (itemsPerPageSelect) {
                 let itemsPerPage = parseInt(itemsPerPageSelect.value);
                 if (isNaN(itemsPerPage) || itemsPerPage < 1) {
-                    itemsPerPage = 5; // Default jika nilai tidak valid
+                    itemsPerPage = 5;
                 }
                 appSettings.itemsPerPage = itemsPerPage;
             }
@@ -2493,11 +2179,10 @@ function setupEventListeners() {
             saveSettings(); 
             updateAppIdentity(); 
             renderDataTable();
-            showNotification('Pengaturan tersimpan! Nama instansi dan jumlah baris per halaman berhasil diperbarui.', 'success');
+            showNotification('Pengaturan tersimpan!', 'success');
         });
     }
 
-    // Form Pengaturan Pejabat
     const officialForm = document.getElementById('officialForm');
     if (officialForm) {
         officialForm.addEventListener('submit', function(e) {
@@ -2578,7 +2263,6 @@ function handleFormSubmit(e) {
     const form = document.getElementById('inputForm');
     if (!form) return;
     
-    // Validasi mode desa
     if (currentWilayah.mode === 'desa') {
         const selectedDesa = document.getElementById('desa').value;
         if (selectedDesa !== currentWilayah.desaName) {
@@ -2587,7 +2271,6 @@ function handleFormSubmit(e) {
         }
     }
     
-    // Validasi mode kecamatan
     if (currentWilayah.mode === 'kecamatan') {
         const selectedKecamatan = document.getElementById('kecamatan').value;
         if (selectedKecamatan !== currentWilayah.kecamatanName) {
@@ -2627,15 +2310,12 @@ function handleFormSubmit(e) {
 
     const editId = form.getAttribute('data-edit-id');
     
-    // --- PERBAIKAN: VALIDASI DATA GANDA YANG LEBIH KETAT ---
-    // Gunakan NIK dan NAMA (dalam uppercase) untuk pengecekan duplikasi
     const nama = document.getElementById('nama').value.toUpperCase();
     
-    // Cari data dengan NIK dan NAMA yang sama
     const duplicateCheck = appData.find(d => 
         d.nik === nik && 
         d.nama.toUpperCase() === nama && 
-        (!editId || d.id != editId) // Kecualikan data yang sedang diedit
+        (!editId || d.id != editId)
     );
     
     if (duplicateCheck) {
@@ -2648,17 +2328,16 @@ function handleFormSubmit(e) {
 
     const isOwner = document.getElementById('statusNelayan').value === 'Pemilik Kapal';
     
-    // --- PERBAIKAN: SIMPAN NAMA DAN ALAMAT DALAM HURUF KAPITAL ---
     const formData = {
         id: editId || Date.now(),
-        nama: nama, // Sudah dalam uppercase dari event listener
+        nama: nama,
         nik: nik,
         whatsapp: whatsapp,
         profesi: document.getElementById('profesi').value,
         status: document.getElementById('statusNelayan').value,
         tahunLahir: document.getElementById('tahunLahir').value,
         usia: document.getElementById('usia').value,
-        alamat: document.getElementById('alamat').value.toUpperCase(), // Konversi ke uppercase
+        alamat: document.getElementById('alamat').value.toUpperCase(),
         kecamatan: document.getElementById('kecamatan').value,
         desa: document.getElementById('desa').value,
         alatTangkap: document.getElementById('alatTangkap').value,
@@ -2727,49 +2406,93 @@ function viewDetail(id) {
     if(!d) return;
     currentDetailId = id;
     
-    // PERBAIKAN: Selalu gunakan maskData untuk NIK dan WhatsApp jika privacyMode aktif
     const displayNik = maskData(d.nik);
     const displayWa = maskData(d.whatsapp);
     
-    document.getElementById('d_nama').innerText = d.nama;
-    document.getElementById('d_nik').innerText = displayNik; 
-    document.getElementById('d_usia').innerText = `${d.usia} Tahun (${d.tahunLahir})`;
-    document.getElementById('d_wa').innerText = displayWa;
-    document.getElementById('d_alamat').innerText = d.alamat || '-'; // TAMBAHAN: Tampilkan alamat
-    document.getElementById('d_domisili').innerText = `${d.desa}, ${d.kecamatan}`;
-    
-    const profBadge = document.getElementById('d_profesi');
-    profBadge.innerText = d.profesi;
-    
-    let badgeClass = 'bg-primary';
-    if(d.profesi === 'Nelayan Penuh Waktu') badgeClass = 'badge-profesi-penuh';
-    else if(d.profesi === 'Nelayan Sambilan Utama') badgeClass = 'badge-profesi-sambilan-utama';
-    else if(d.profesi === 'Nelayan Sambilan Tambahan') badgeClass = 'badge-profesi-sambilan-tambahan';
-    profBadge.className = `badge ${badgeClass}`;
-
-    document.getElementById('d_status').innerText = d.status;
-    document.getElementById('d_alatTangkap').innerText = d.alatTangkap;
-    document.getElementById('d_usaha').innerText = d.usahaSampingan || '-';
-    
-    const fishContainer = document.getElementById('d_ikan');
-    fishContainer.innerHTML = '';
-    if(d.jenisIkan) {
-        d.jenisIkan.split(', ').forEach(fish => {
-            const iconClass = getFishIconClass(fish);
-            fishContainer.innerHTML += `<span class="badge bg-light text-dark border me-1 mb-1"><i class="fas ${iconClass} me-1"></i>${fish}</span>`;
-        });
+    const detailBody = document.querySelector('#detailModal .modal-body');
+    if (detailBody) {
+        detailBody.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Lengkap</label>
+                        <div class="form-control-plaintext">${d.nama}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">NIK</label>
+                        <div class="form-control-plaintext font-monospace">${displayNik}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Usia</label>
+                        <div class="form-control-plaintext">${d.usia} Tahun (${d.tahunLahir})</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">WhatsApp</label>
+                        <div class="form-control-plaintext">${displayWa}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Alamat Lengkap</label>
+                        <div class="form-control-plaintext">${d.alamat || '-'}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Domisili</label>
+                        <div class="form-control-plaintext">${d.desa}, ${d.kecamatan}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Profesi</label>
+                        <div>
+                            <span class="badge ${d.profesi === 'Nelayan Penuh Waktu' ? 'badge-profesi-penuh' : d.profesi === 'Nelayan Sambilan Utama' ? 'badge-profesi-sambilan-utama' : 'badge-profesi-sambilan-tambahan'}">
+                                ${d.profesi}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Status Nelayan</label>
+                        <div class="form-control-plaintext">${d.status}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Alat Tangkap (API)</label>
+                        <div class="form-control-plaintext">${d.alatTangkap}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Jenis Ikan</label>
+                        <div id="d_ikan">
+                            ${d.jenisIkan ? d.jenisIkan.split(', ').map(fish => 
+                                `<span class="badge bg-light text-dark border me-1 mb-1">
+                                    <i class="fas ${getFishIconClass(fish)} me-1"></i>${fish}
+                                </span>`
+                            ).join('') : '-'}
+                        </div>
+                    </div>
+                    ${d.status === 'Pemilik Kapal' ? `
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Kapal</label>
+                        <div class="form-control-plaintext">${d.namaKapal || '-'}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Jenis Kapal</label>
+                        <div class="form-control-plaintext">${d.jenisKapal || '-'}</div>
+                    </div>
+                    ` : ''}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Usaha Sampingan</label>
+                        <div class="form-control-plaintext">${d.usahaSampingan || '-'}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kode Validasi (KIN)</label>
+                        <div class="form-control-plaintext font-monospace">${d.kodeValidasi || '-'}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tanggal Validasi</label>
+                        <div class="form-control-plaintext">${d.tanggalValidasi} oleh ${d.validator}</div>
+                    </div>
+                </div>
+            </div>
+        `;
     }
     
-    const kapalCard = document.getElementById('d_kapal_card');
-    if(d.status === 'Pemilik Kapal') {
-        if (kapalCard) kapalCard.style.display = 'block';
-        document.getElementById('d_namaKapal').innerText = d.namaKapal;
-        document.getElementById('d_jenisKapal').innerText = d.jenisKapal;
-    } else {
-        if (kapalCard) kapalCard.style.display = 'none';
-    }
-    document.getElementById('d_tgl_valid').innerText = d.tanggalValidasi;
-    document.getElementById('d_validator').innerText = d.validator;
     detailModal.show();
 }
 
@@ -2785,7 +2508,7 @@ function bulkDeleteData() {
     const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
     if(checkedBoxes.length === 0) return;
     
-    showLoading("Menghapus Data", `Sedang menghapus ${checkedBoxes.length} data terpilih. Mohon tunggu...`);
+    showLoading("Menghapus Data", `Sedang menghapus ${checkedBoxes.length} data terpilih...`);
     
     setTimeout(() => {
         const userCode = prompt(`Anda akan menghapus ${checkedBoxes.length} data.\nMasukkan KODE KEAMANAN SENSOR:`);
@@ -2793,7 +2516,7 @@ function bulkDeleteData() {
             const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
             appData = appData.filter(d => !idsToDelete.includes(d.id.toString()));
             saveData(); 
-            currentPage = 1; // Reset ke halaman pertama setelah menghapus
+            currentPage = 1;
             renderDataTable(); 
             updateDashboard();
             updateFilterDesaOptions();
@@ -2819,7 +2542,6 @@ function editData(id) {
     
     form.setAttribute('data-edit-id', id);
     
-    // Set nilai form (nama dan alamat tetap dalam format asli)
     ['nama', 'nik', 'whatsapp', 'profesi', 'tahunLahir', 'usia', 'alamat', 'alatTangkap', 'usahaSampingan', 'tanggalValidasi', 'validator', 'driveLink', 'kodeValidasi', 'keterangan']
      .forEach(key => {
          const element = document.getElementById(key);
@@ -2854,14 +2576,12 @@ function editData(id) {
         jenisIkanLainnya.value = '';
     }
     
-    // Set alat tangkap dan update daftar ikan
     const alatTangkap = document.getElementById('alatTangkap');
     if (alatTangkap) {
         alatTangkap.value = d.alatTangkap;
         updateFishOptionsByAPI(d.alatTangkap);
     }
     
-    // Set ikan yang sudah dipilih setelah daftar diupdate
     setTimeout(() => {
         if(d.jenisIkan) {
             const savedFish = d.jenisIkan.split(', ');
@@ -2874,7 +2594,6 @@ function editData(id) {
                     }
                 });
                 if(!found) {
-                    // Jika ikan tidak ada dalam daftar, maka tambahkan ke opsi "Lainnya"
                     const cbLain = document.getElementById('fish_Lainnya');
                     if (cbLain) {
                         cbLain.checked = true;
@@ -2934,7 +2653,7 @@ function editData(id) {
 }
 
 function deleteData(id) {
-    showLoading("Menghapus Data", "Sedang memproses penghapusan data. Mohon tunggu...");
+    showLoading("Menghapus Data", "Sedang memproses penghapusan data...");
     
     setTimeout(() => {
         const userCode = prompt("Masukkan KODE KEAMANAN SENSOR untuk menghapus data:");
@@ -2943,7 +2662,6 @@ function deleteData(id) {
                 appData = appData.filter(d => d.id != id);
                 saveData(); 
                 
-                // Periksa apakah halaman saat ini akan kosong setelah penghapusan
                 const totalItems = appData.length;
                 const totalPages = Math.ceil(totalItems / appSettings.itemsPerPage);
                 if (currentPage > totalPages && totalPages > 0) {
@@ -3008,13 +2726,32 @@ function initializeCharts() {
     window.profesiChart = new Chart(profesiCtx, {
         type: 'doughnut', 
         data: { labels: [], datasets: [] },
-        options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
+        options: { 
+            maintainAspectRatio: false, 
+            responsive: true, 
+            plugins: { 
+                legend: { 
+                    position: 'bottom', 
+                    labels: { 
+                        boxWidth: 12,
+                        font: { size: 10 }
+                    } 
+                } 
+            } 
+        }
     });
 
     window.kapalChart = new Chart(kapalCtx, {
         type: 'bar', 
         data: { labels: [], datasets: [] },
-        options: { maintainAspectRatio: false, responsive: true, scales: { y: { beginAtZero: true } } }
+        options: { 
+            maintainAspectRatio: false, 
+            responsive: true, 
+            scales: { 
+                y: { beginAtZero: true },
+                x: { ticks: { font: { size: 10 } } }
+            } 
+        }
     });
     
     updateDashboard();
@@ -3094,7 +2831,6 @@ function loadSettings() {
             if (!loadedSettings.securityCodeSensor) {
                 loadedSettings.securityCodeSensor = '97531';
             }
-            // Load data pejabat jika ada
             if (!loadedSettings.officialName) {
                 loadedSettings.officialName = 'SUGENG PURWO PRIYANTO, S.E, M.M';
             }
@@ -3104,18 +2840,15 @@ function loadSettings() {
             if (!loadedSettings.officialPosition) {
                 loadedSettings.officialPosition = 'Kepala Bidang Pemberdayaan Nelayan';
             }
-            // Pastikan itemsPerPage valid (minimal 1)
             if (!loadedSettings.itemsPerPage || loadedSettings.itemsPerPage < 1) {
                 loadedSettings.itemsPerPage = 5;
             }
-            // Load password untuk menu jika ada - PERBAIKAN: Default sesuai permintaan
             if (!loadedSettings.passwordInputData) {
                 loadedSettings.passwordInputData = '666666';
             }
             if (!loadedSettings.passwordDataNelayan) {
                 loadedSettings.passwordDataNelayan = '999999';
             }
-            // Load pengaturan keamanan menu jika ada
             if (typeof loadedSettings.securityMenuInputDataEnabled === 'undefined') {
                 loadedSettings.securityMenuInputDataEnabled = true;
             }
@@ -3159,33 +2892,215 @@ function sendDataToWhatsapp() {
     window.open(url, '_blank');
 }
 
-// --- FUNGSI NOTIFIKASI ---
-function showNotification(message, type = 'info') {
-    const toast = document.querySelector('.notification-toast');
-    const toastTitle = document.getElementById('toastTitle');
-    const toastMessage = document.getElementById('toastMessage');
+// --- FUNGSI KEAMANAN MENU ---
+function setupMenuAuthListeners() {
+    const inputTab = document.getElementById('v-pills-input-tab');
+    const dataTab = document.getElementById('v-pills-data-tab');
     
-    if (!toast || !toastTitle || !toastMessage) return;
-    
-    // Atur warna berdasarkan tipe
-    switch(type) {
-        case 'success':
-            toastTitle.innerHTML = '<i class="fas fa-check-circle me-2 text-success"></i>Berhasil';
-            break;
-        case 'error':
-            toastTitle.innerHTML = '<i class="fas fa-exclamation-circle me-2 text-danger"></i>Error';
-            break;
-        case 'warning':
-            toastTitle.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning"></i>Peringatan';
-            break;
-        default:
-            toastTitle.innerHTML = '<i class="fas fa-info-circle me-2 text-info"></i>Informasi';
+    if (inputTab) {
+        inputTab.addEventListener('click', function(e) {
+            if (!checkMenuAuth('input')) {
+                e.preventDefault();
+                showMenuAuth('input', 'Input Data');
+            }
+        });
     }
     
-    toastMessage.textContent = message;
+    if (dataTab) {
+        dataTab.addEventListener('click', function(e) {
+            if (!checkMenuAuth('data')) {
+                e.preventDefault();
+                showMenuAuth('data', 'Data Nelayan');
+            }
+        });
+    }
+}
+
+function checkMenuAuth(menuType) {
+    if (menuType === 'input') {
+        if (!appSettings.securityMenuInputDataEnabled) return true;
+        return menuAuthStatus.inputData || sessionStorage.getItem('menu_auth_input') === 'true';
+    } else if (menuType === 'data') {
+        if (!appSettings.securityMenuDataNelayanEnabled) return true;
+        return menuAuthStatus.dataNelayan || sessionStorage.getItem('menu_auth_data') === 'true';
+    }
+    return true;
+}
+
+function showMenuAuth(menuType, menuName) {
+    const modalHtml = `
+        <div class="modal fade" id="menuAuthModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-lock me-2"></i>Akses Menu ${menuName}
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-shield-alt fa-3x text-warning"></i>
+                            <h4 class="mt-3">Akses Dibatasi</h4>
+                            <p class="text-muted">Masukkan password untuk mengakses menu ${menuName}</p>
+                        </div>
+                        <form id="menuAuthForm">
+                            <div class="mb-3">
+                                <label for="menuPassword" class="form-label">Password ${menuName}</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="menuPassword" 
+                                           placeholder="Masukkan password" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="menuPasswordToggle">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">
+                                    Password default: ${menuType === 'input' ? '666666' : '999999'}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-warning">Verifikasi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
     
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
+    let modal = document.getElementById('menuAuthModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.innerHTML = modalHtml;
+        document.body.appendChild(modal);
+    }
+    
+    const authModal = new bootstrap.Modal(modal);
+    
+    modal.querySelector('#menuAuthForm').onsubmit = function(e) {
+        e.preventDefault();
+        const password = document.getElementById('menuPassword').value;
+        let correctPassword = '';
+        let isEnabled = true;
+        
+        if (menuType === 'input') {
+            correctPassword = appSettings.passwordInputData;
+            isEnabled = appSettings.securityMenuInputDataEnabled;
+        } else if (menuType === 'data') {
+            correctPassword = appSettings.passwordDataNelayan;
+            isEnabled = appSettings.securityMenuDataNelayanEnabled;
+        }
+        
+        if (!isEnabled || password === correctPassword) {
+            if (menuType === 'input') {
+                menuAuthStatus.inputData = true;
+                sessionStorage.setItem('menu_auth_input', 'true');
+            } else if (menuType === 'data') {
+                menuAuthStatus.dataNelayan = true;
+                sessionStorage.setItem('menu_auth_data', 'true');
+            }
+            
+            authModal.hide();
+            showNotification(`Akses ke menu ${menuName} diberikan`, 'success');
+            
+            setTimeout(() => {
+                const tab = document.getElementById(`v-pills-${menuType}-tab`);
+                if (tab) tab.click();
+            }, 300);
+        } else {
+            alert('Password salah!');
+        }
+    };
+    
+    const passwordToggle = modal.querySelector('#menuPasswordToggle');
+    if (passwordToggle) {
+        passwordToggle.addEventListener('click', function() {
+            const passwordInput = document.getElementById('menuPassword');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    }
+    
+    authModal.show();
+}
+
+function resetMenuAuth() {
+    menuAuthStatus.inputData = false;
+    menuAuthStatus.dataNelayan = false;
+    sessionStorage.removeItem('menu_auth_input');
+    sessionStorage.removeItem('menu_auth_data');
+}
+
+function setupAllPasswordToggles() {
+    const togglePassword = (button, inputId) => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            const icon = button.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            }
+        }
+    };
+    
+    const passwordToggle = document.getElementById('passwordToggle');
+    if (passwordToggle) {
+        passwordToggle.addEventListener('click', () => togglePassword(passwordToggle, 'securityCode'));
+    }
+}
+
+function initMenuSecurityToggles() {
+    const toggleInput = document.getElementById('toggleSecurityMenuInputData');
+    const toggleData = document.getElementById('toggleSecurityMenuDataNelayan');
+    const statusInput = document.getElementById('securityMenuInputDataStatus');
+    const statusData = document.getElementById('securityMenuDataNelayanStatus');
+    
+    if (toggleInput) {
+        toggleInput.checked = appSettings.securityMenuInputDataEnabled;
+        toggleInput.addEventListener('change', function() {
+            appSettings.securityMenuInputDataEnabled = this.checked;
+            saveSettings();
+            if (this.checked) {
+                statusInput.innerHTML = 'ON (Aktif)';
+                statusInput.className = 'mt-2 small fw-bold text-success';
+            } else {
+                statusInput.innerHTML = 'OFF (Non-Aktif)';
+                statusInput.className = 'mt-2 small fw-bold text-danger';
+            }
+        });
+    }
+    
+    if (toggleData) {
+        toggleData.checked = appSettings.securityMenuDataNelayanEnabled;
+        toggleData.addEventListener('change', function() {
+            appSettings.securityMenuDataNelayanEnabled = this.checked;
+            saveSettings();
+            if (this.checked) {
+                statusData.innerHTML = 'ON (Aktif)';
+                statusData.className = 'mt-2 small fw-bold text-success';
+            } else {
+                statusData.innerHTML = 'OFF (Non-Aktif)';
+                statusData.className = 'mt-2 small fw-bold text-danger';
+            }
+        });
+    }
+}
+
+function migrateOldData() {
+    appData.forEach(item => {
+        if (PROFESI_MAPPING[item.profesi]) {
+            item.profesi = PROFESI_MAPPING[item.profesi];
+        }
+        if (!item.hasOwnProperty('alamat')) {
+            item.alamat = '';
+        }
+    });
+    saveData();
 }
 
 // Ekspos fungsi yang diperlukan ke window
@@ -3205,3 +3120,41 @@ window.deleteData = deleteData;
 window.goToPage = goToPage;
 window.toggleBulkDeleteBtn = toggleBulkDeleteBtn;
 window.showDuplicateDataInFilter = showDuplicateDataInFilter;
+window.initializeApp = initializeApp;
+window.setupEventListeners = setupEventListeners;
+window.handleReloadRepo = handleReloadRepo;
+window.showNotification = showNotification;
+window.refreshPage = refreshPage;
+window.applyFilter = applyFilter;
+window.resetFilter = resetFilter;
+window.backupData = backupData;
+window.restoreData = restoreData;
+window.exportData = exportData;
+window.sendDataToWhatsapp = sendDataToWhatsapp;
+window.printData = printData;
+window.generateFilteredPdf = generateFilteredPdf;
+window.generateTabelPdf = generateTabelPdf;
+window.searchForIDCard = searchForIDCard;
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        displayCurrentDate();
+        
+        const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
+        if (isSessionActive) {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            initializeApp();
+            setupEventListeners();
+        } else {
+            setTimeout(() => {
+                document.getElementById('loginModal').style.display = 'flex';
+            }, 100);
+        }
+
+    } catch (error) {
+        console.error("Initialization Error:", error);
+        showNotification("Terjadi kesalahan sistem saat memuat. Silakan refresh halaman.", 'error');
+    }
+});
