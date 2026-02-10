@@ -624,7 +624,7 @@
                 const newBtn = continueBtn.cloneNode(true);
                 continueBtn.parentNode.replaceChild(newBtn, continueBtn);
                 
-                // Tambahkan event listener baru dengan perbaikan bug
+                // Dalam fungsi showLoginSuccessModal(), perbaiki bagian tombol "Lanjut ke Dashboard"
                 document.getElementById('btnContinueDashboard').addEventListener('click', function() {
                     // Sembunyikan modal dengan benar
                     const modalInstance = bootstrap.Modal.getInstance(document.getElementById('loginSuccessModal'));
@@ -650,17 +650,31 @@
                             appContent.style.display = 'flex';
                             appContent.style.opacity = '1';
                             appContent.style.width = '100%';
+                            appContent.style.height = '100vh';
+                            appContent.style.overflow = 'auto';
+                            
+                            // Panggil fungsi inisialisasi aplikasi
                             initAppAfterLogin();
                             
-                            // Force resize untuk memastikan layout ter-render dengan benar
+                            // Force resize dan reflow untuk memastikan layout ter-render dengan benar
                             setTimeout(() => {
                                 window.dispatchEvent(new Event('resize'));
+                                // Trigger reflow
+                                appContent.style.display = 'none';
+                                appContent.offsetHeight; // Trigger reflow
+                                appContent.style.display = 'flex';
+                                
+                                // Scroll ke atas
+                                window.scrollTo(0, 0);
+                                
+                                // Pastikan viewport mobile diatur dengan benar
+                                if ('virtualKeyboard' in navigator) {
+                                    navigator.virtualKeyboard.hide();
+                                }
                             }, 100);
                         }
                     }, 300);
                 });
-            }
-        }
         
         function initAppAfterLogin() {
             try {
