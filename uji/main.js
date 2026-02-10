@@ -15,7 +15,6 @@
 // PERBAIKAN TAMBAHAN: FITUR SHOW/HIDE PASSWORD UNTUK SEMUA KODE KEAMANAN
 // FITUR BARU: TOMBOL ON/OFF KODE KEAMANAN AKSES MENU
 // PERBAIKAN: MODAL AUTH KEMBALI KE DASHBOARD SAAT DITUTUP
-// PERBAIKAN RESPONSIVITAS: TAMPILAN TIDAK TERPOTONG DI SEMUA DEVICE
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -1825,6 +1824,82 @@ function updateFishOptionsByAPI(api) {
         API_FISH_MAPPING[api].forEach(category => {
             if (FISH_CATEGORIES[category]) {
                 FISH_CATEGORIES[category].forEach(fish => {
+                    fishList.push(fish.name);
+                });
+            }
+        });
+    } else {
+        // Jika tidak ada API yang dipilih, tampilkan semua ikan
+        for (const category in FISH_CATEGORIES) {
+            FISH_CATEGORIES[category].forEach(fish => {
+                fishList.push(fish.name);
+            });
+        }
+    }
+
+// TAMBAHKAN FUNGSI UNTUK MENAMPILKAN GAMBAR INFORMASI JENIS IKAN
+function showFishInfo(category) {
+    // Cek apakah modal sudah ada
+    let modal = document.getElementById('fishInfoModal');
+    if (!modal) {
+        // Buat modal baru
+        modal = document.createElement('div');
+        modal.id = 'fishInfoModal';
+        modal.className = 'modal fade';
+        modal.tabIndex = '-1';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Informasi Jenis Ikan - Kategori ${category}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="${FISH_CATEGORY_IMAGES[category]}" class="img-fluid" alt="Informasi Jenis Ikan ${category}">
+                        <div class="mt-3">
+                            <p class="text-muted">Kategori: <strong>${category}</strong></p>
+                            <p class="small">Gambar referensi jenis-jenis ikan dalam kategori ${category}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // Update gambar berdasarkan kategori
+    const modalImg = modal.querySelector('img');
+    if (modalImg) {
+        modalImg.src = FISH_CATEGORY_IMAGES[category];
+        modalImg.alt = `Informasi Jenis Ikan ${category}`;
+    }
+    
+    // Update judul modal
+    const modalTitle = modal.querySelector('.modal-title');
+    if (modalTitle) {
+        modalTitle.textContent = `Informasi Jenis Ikan - Kategori ${category}`;
+    }
+    
+    // Tampilkan modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+
+    function updateFishOptionsByAPI(api) {
+    const fishContainer = document.getElementById('fishCheckboxContainer');
+    if (!fishContainer) return;
+    
+    fishContainer.innerHTML = '';
+    
+    let fishList = [];
+    if (api && API_FISH_MAPPING[api]) {
+        // Ambil ikan berdasarkan kategori yang sesuai
+        API_FISH_MAPPING[api].forEach(category => {
+            if (FISH_CATEGORIES[category]) {
+                FISH_CATEGORIES[category].forEach(fish => {
                     fishList.push(fish);
                 });
             }
@@ -1865,6 +1940,44 @@ function updateFishOptionsByAPI(api) {
                 <div class="fish-info-title">${fish}</div>
                 <div class="fish-info-latin">${fishInfo.latin}</div>
                 ${category ? `<div class="fish-info-category">Kategori: ${category}</div>` : ''}
+            </div>
+            ` : ''}
+        </label>`;
+        fishContainer.innerHTML += html;
+    });
+    
+    // Event listener untuk "Lainnya"
+    const lainCheckbox = document.getElementById('fish_Lainnya');
+    if (lainCheckbox) {
+        lainCheckbox.addEventListener('change', function() {
+            const inputLain = document.getElementById('jenisIkanLainnya');
+            if(this.checked) {
+                inputLain.style.display = 'block';
+                inputLain.setAttribute('required', 'required');
+            } else {
+                inputLain.style.display = 'none';
+                inputLain.value = '';
+                inputLain.removeAttribute('required');
+            }
+        });
+    }
+}
+    
+    // Tambahkan opsi "Lainnya"
+    fishList.push("Lainnya");
+    
+    // Tampilkan checklist dengan informasi
+    fishList.forEach(fish => {
+        const id = 'fish_' + fish.replace(/\s/g, '');
+        const fishInfo = FISH_DETAILS[fish] || {};
+        const html = `
+        <label class="fish-option-box">
+            <input type="checkbox" class="form-check-input me-2 fish-checkbox" value="${fish}" id="${id}">
+            <span>${fish}</span>
+            ${fishInfo.latin ? `
+            <div class="fish-info-box">
+                <div class="fish-info-title">${fish}</div>
+                <div class="fish-info-latin">${fishInfo.latin}</div>
             </div>
             ` : ''}
         </label>`;
@@ -3136,165 +3249,11 @@ function printData() {
     }, 800);
 }
 
-// --- PERBAIKAN RESPONSIVITAS: FUNGSI UNTUK MENYESUAIKAN TAMPILAN DI SEMUA DEVICE ---
-function applyResponsiveLayout() {
-    // Cek lebar layar
-    const isMobile = window.innerWidth <= 768;
-    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-    
-    // Atur tampilan berdasarkan device
-    if (isMobile) {
-        // Mobile: Sembunyikan sidebar, tampilkan konten penuh
-        const sidebar = document.getElementById('sidebarMenu');
-        const mainContent = document.querySelector('.main-content');
-        
-        if (sidebar) {
-            sidebar.style.width = '100%';
-            sidebar.style.position = 'fixed';
-            sidebar.style.zIndex = '1040';
-            sidebar.style.left = '-100%';
-            sidebar.style.transition = 'left 0.3s ease';
-        }
-        
-        if (mainContent) {
-            mainContent.style.marginLeft = '0';
-            mainContent.style.width = '100%';
-            mainContent.style.padding = '15px';
-        }
-        
-        // Perbaiki tabel untuk mobile
-        const tableContainer = document.querySelector('.table-responsive');
-        if (tableContainer) {
-            tableContainer.style.overflowX = 'auto';
-            tableContainer.style.fontSize = '12px';
-        }
-        
-        // Perbaiki modal untuk mobile
-        const modals = document.querySelectorAll('.modal-dialog');
-        modals.forEach(modal => {
-            modal.style.margin = '10px';
-            modal.style.maxWidth = 'calc(100% - 20px)';
-        });
-        
-        // Perbaiki tombol aksi di tabel
-        const actionButtons = document.querySelectorAll('.col-action .btn-group');
-        actionButtons.forEach(btnGroup => {
-            btnGroup.style.flexWrap = 'wrap';
-        });
-        
-    } else if (isTablet) {
-        // Tablet: Atur lebar sidebar lebih kecil
-        const sidebar = document.getElementById('sidebarMenu');
-        const mainContent = document.querySelector('.main-content');
-        
-        if (sidebar) {
-            sidebar.style.width = '250px';
-        }
-        
-        if (mainContent) {
-            mainContent.style.marginLeft = '250px';
-            mainContent.style.width = 'calc(100% - 250px)';
-        }
-    } else {
-        // Desktop: Tampilan normal
-        const sidebar = document.getElementById('sidebarMenu');
-        const mainContent = document.querySelector('.main-content');
-        
-        if (sidebar) {
-            sidebar.style.width = '280px';
-            sidebar.style.position = 'fixed';
-            sidebar.style.left = '0';
-        }
-        
-        if (mainContent) {
-            mainContent.style.marginLeft = '280px';
-            mainContent.style.width = 'calc(100% - 280px)';
-        }
-    }
-    
-    // Perbaiki tinggi konten
-    const appContent = document.getElementById('appContent');
-    if (appContent) {
-        appContent.style.minHeight = '100vh';
-        appContent.style.display = 'flex';
-        appContent.style.flexDirection = 'column';
-    }
-    
-    // Perbaiki footer
-    const footer = document.querySelector('footer');
-    if (footer) {
-        footer.style.marginTop = 'auto';
-    }
-}
-
-// --- PERBAIKAN: FUNGSI UNTUK MEMASTIKAN MODAL TAMPIL LENGKAP ---
-function fixModalDisplay() {
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-        // Atur modal agar selalu di tengah dan terlihat lengkap
-        modal.style.display = 'none'; // Reset display
-        modal.style.overflowY = 'auto';
-        modal.style.maxHeight = '90vh';
-        
-        // Atur konten modal
-        const modalContent = modal.querySelector('.modal-content');
-        if (modalContent) {
-            modalContent.style.maxHeight = '85vh';
-            modalContent.style.overflowY = 'auto';
-        }
-        
-        // Pastikan modal bisa di-scroll di mobile
-        const modalBody = modal.querySelector('.modal-body');
-        if (modalBody) {
-            modalBody.style.maxHeight = '60vh';
-            modalBody.style.overflowY = 'auto';
-        }
-    });
-}
-
-// --- PERBAIKAN: SETUP RESPONSIVE EVENT LISTENERS ---
-function setupResponsiveListeners() {
-    // Terapkan layout responsif saat aplikasi dimuat
-    applyResponsiveLayout();
-    fixModalDisplay();
-    
-    // Terapkan layout responsif saat ukuran window berubah
-    window.addEventListener('resize', function() {
-        applyResponsiveLayout();
-        fixModalDisplay();
-    });
-    
-    // Terapkan layout responsif saat orientation change (mobile)
-    window.addEventListener('orientationchange', function() {
-        setTimeout(() => {
-            applyResponsiveLayout();
-            fixModalDisplay();
-        }, 300);
-    });
-    
-    // Perbaiki tampilan saat modal ditampilkan
-    document.addEventListener('shown.bs.modal', function(event) {
-        const modal = event.target;
-        if (modal) {
-            // Pastikan modal terlihat lengkap
-            modal.style.display = 'block';
-            
-            // Scroll ke atas modal
-            setTimeout(() => {
-                modal.scrollTop = 0;
-            }, 100);
-        }
-    });
-}
-
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', function() {
     try {
         initializeApp();
         setupEventListeners();
-        
-        // PERBAIKAN: Setup responsive listeners
-        setupResponsiveListeners();
         
         displayCurrentDate();
         
@@ -3319,20 +3278,12 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             setTimeout(() => {
                 document.getElementById('loginModal').style.display = 'flex';
-                // PERBAIKAN: Pastikan modal login responsif
-                applyResponsiveLayout();
             }, 100);
         }
 
         if (typeof window.handleHashRouting === 'function') {
             window.handleHashRouting();
         }
-
-        // PERBAIKAN: Panggil applyResponsiveLayout lagi setelah semua konten dimuat
-        setTimeout(() => {
-            applyResponsiveLayout();
-            fixModalDisplay();
-        }, 500);
 
     } catch (error) {
         console.error("Initialization Error:", error);
@@ -3800,12 +3751,6 @@ function setupEventListeners() {
                 
                 // Tampilkan username yang login
                 showNotification(`Login berhasil! Selamat datang ${username}`, 'success');
-                
-                // PERBAIKAN: Terapkan layout responsif setelah login
-                setTimeout(() => {
-                    applyResponsiveLayout();
-                    fixModalDisplay();
-                }, 300);
             }, 1200);
         });
     }
@@ -3817,9 +3762,6 @@ function setupEventListeners() {
             loginSuccessModal.hide();
             setTimeout(() => {
                 welcomeModal.show();
-                // PERBAIKAN: Terapkan layout responsif setelah modal welcome muncul
-                applyResponsiveLayout();
-                fixModalDisplay();
             }, 300);
         });
     }
@@ -4034,11 +3976,6 @@ function setupEventListeners() {
     if (btnDataWilayah) {
         btnDataWilayah.addEventListener('click', function() {
             modalDataWilayah.show();
-            // PERBAIKAN: Terapkan layout responsif untuk modal
-            setTimeout(() => {
-                applyResponsiveLayout();
-                fixModalDisplay();
-            }, 300);
         });
     }
 
@@ -4151,27 +4088,20 @@ function setupEventListeners() {
     
     if (mobileMenuBtn && overlay && sidebar) {
         mobileMenuBtn.addEventListener('click', () => {
-            sidebar.style.left = '0';
+            sidebar.classList.add('mobile-show');
             overlay.classList.add('active');
-            
-            // PERBAIKAN: Prevent body scroll saat sidebar terbuka
-            document.body.style.overflow = 'hidden';
         });
         
         overlay.addEventListener('click', () => {
-            sidebar.style.left = '-100%';
+            sidebar.classList.remove('mobile-show');
             overlay.classList.remove('active');
-            
-            // PERBAIKAN: Kembalikan body scroll
-            document.body.style.overflow = 'auto';
         });
         
         document.querySelectorAll('#sidebarMenu .nav-link').forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth < 992) {
-                    sidebar.style.left = '-100%';
+                    sidebar.classList.remove('mobile-show');
                     overlay.classList.remove('active');
-                    document.body.style.overflow = 'auto';
                 }
             });
         });
@@ -4392,11 +4322,6 @@ function setupFloatingMenu() {
                 const tabElement = document.getElementById(tabId);
                 if (tabElement) tabElement.click(); 
                 container.classList.remove('open');
-                
-                // PERBAIKAN: Terapkan layout responsif setelah berpindah tab
-                setTimeout(() => {
-                    applyResponsiveLayout();
-                }, 100);
             });
         }
     }
@@ -4558,11 +4483,6 @@ function handleFormSubmit(e) {
     const dataTab = document.getElementById('v-pills-data-tab');
     if (dataTab) dataTab.click();
     checkGlobalDuplicates();
-    
-    // PERBAIKAN: Terapkan layout responsif setelah submit form
-    setTimeout(() => {
-        applyResponsiveLayout();
-    }, 100);
 }
 
 function viewDetail(id) {
@@ -4614,12 +4534,6 @@ function viewDetail(id) {
     document.getElementById('d_tgl_valid').innerText = d.tanggalValidasi;
     document.getElementById('d_validator').innerText = d.validator;
     detailModal.show();
-    
-    // PERBAIKAN: Terapkan layout responsif untuk modal detail
-    setTimeout(() => {
-        applyResponsiveLayout();
-        fixModalDisplay();
-    }, 300);
 }
 
 function downloadSinglePdf(id) {
@@ -4989,11 +4903,6 @@ function editData(id) {
     const inputTab = document.getElementById('v-pills-input-tab');
     if (inputTab) inputTab.click();
     window.scrollTo(0,0);
-    
-    // PERBAIKAN: Terapkan layout responsif setelah edit data
-    setTimeout(() => {
-        applyResponsiveLayout();
-    }, 100);
 }
 
 function deleteData(id) {
@@ -5071,26 +4980,13 @@ function initializeCharts() {
     window.profesiChart = new Chart(profesiCtx, {
         type: 'doughnut', 
         data: { labels: [], datasets: [] },
-        options: { 
-            maintainAspectRatio: false, 
-            responsive: true, 
-            plugins: { 
-                legend: { 
-                    position: 'bottom', 
-                    labels: { boxWidth: 12 } 
-                } 
-            } 
-        }
+        options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
     });
 
     window.kapalChart = new Chart(kapalCtx, {
         type: 'bar', 
         data: { labels: [], datasets: [] },
-        options: { 
-            maintainAspectRatio: false, 
-            responsive: true, 
-            scales: { y: { beginAtZero: true } } 
-        }
+        options: { maintainAspectRatio: false, responsive: true, scales: { y: { beginAtZero: true } } }
     });
     
     updateDashboard();
