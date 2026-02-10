@@ -1,20 +1,7 @@
 // =====================================================
-// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.2 FINAL REVISI
-// DENGAN SISTEM LOGIN USERNAME DAN PASSWORD
-// REVISI: PERBAIKAN SISTEM AUTENTIKASI MULTI-USER
-// TAMBAHAN: FITUR MANAJEMEN USER/PENGGUNA
-// REVISI: MENGGANTI METODE LOGIN PERIODE TERBALIK DENGAN USERNAME/PASSWORD
-// PERBAIKAN: TAMBAHAN INFORMASI VALIDASI DI QRCODE ID CARD
-// PERBAIKAN TAMBAHAN: 
-// 1. FITUR FILTER DATA GANDA YANG LEBIH KETAT
-// 2. INPUT OTOMATIS HURUF KAPITAL UNTUK NAMA DAN ALAMAT
-// 3. FITUR MEMUAT DATA PER KECAMATAN
-// REVISI CETAK PDF: MENGHAPUS KOLOM NAMA PERAHU DAN KODE VALIDASI
-// PERBAIKAN CETAK PDF: TABEL TIDAK MELEBIHI BATAS HALAMAN
-// PERBAIKAN KEAMANAN: TAMBAHAN PASSWORD UNTUK MENU INPUT DATA DAN DATA NELAYAN
-// PERBAIKAN TAMBAHAN: FITUR SHOW/HIDE PASSWORD UNTUK SEMUA KODE KEAMANAN
-// FITUR BARU: TOMBOL ON/OFF KODE KEAMANAN AKSES MENU
-// PERBAIKAN: MODAL AUTH KEMBALI KE DASHBOARD SAAT DITUTUP
+// KODE UTAMA APLIKASI SIMPADAN TANGKAP - VERSI 6.1 FINAL REVISI
+// BAGIAN: CORE FUNCTIONALITY
+// REVISI: PEMISAHAN KODE KE FILE TERPISAH
 // =====================================================
 
 // Data ikan yang diperbarui dan disederhanakan (tanpa deskripsi detail)
@@ -58,57 +45,6 @@ const FISH_CATEGORIES = {
     ]
 };
 
-// TAMBAHKAN FUNGSI UNTUK MENAMPILKAN GAMBAR INFORMASI JENIS IKAN
-function showFishInfo(category) {
-    // Cek apakah modal sudah ada
-    let modal = document.getElementById('fishInfoModal');
-    if (!modal) {
-        // Buat modal baru
-        modal = document.createElement('div');
-        modal.id = 'fishInfoModal';
-        modal.className = 'modal fade';
-        modal.tabIndex = '-1';
-        modal.innerHTML = `
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Informasi Jenis Ikan - Kategori ${category}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <img src="${FISH_CATEGORY_IMAGES[category]}" class="img-fluid" alt="Informasi Jenis Ikan ${category}">
-                        <div class="mt-3">
-                            <p class="text-muted">Kategori: <strong>${category}</strong></p>
-                            <p class="small">Gambar referensi jenis-jenis ikan dalam kategori ${category}</p>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-    
-    // Update gambar berdasarkan kategori
-    const modalImg = modal.querySelector('img');
-    if (modalImg) {
-        modalImg.src = FISH_CATEGORY_IMAGES[category];
-        modalImg.alt = `Informasi Jenis Ikan ${category}`;
-    }
-    
-    // Update judul modal
-    const modalTitle = modal.querySelector('.modal-title');
-    if (modalTitle) {
-        modalTitle.textContent = `Informasi Jenis Ikan - Kategori ${category}`;
-    }
-    
-    // Tampilkan modal
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-}
-
 // Array untuk kompatibilitas
 const FISH_TYPES = [];
 const FISH_DETAILS = {};
@@ -136,7 +72,7 @@ const KAPAL_API_MAPPING = {
     "Perahu Pukat Tarik": ["Pukat Tarik", "Pancing", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Cantrang"],
     "Kapal Motor": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Rawai Dasar", "Jaring Insang Hanyut", "Huhate", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Rawai Tuna", "Jaring Insang Kombinasi", "Jaring Insang Tetap", "Pancing Cumi", "Jaring Lingkar Tanpa Tali Kerut", "Lainnya"],
     "Kapal Motor Tempel": ["Pancing", "Pancing Ulur", "Perangkap Bubu", "Jaring Insang (gill net)", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Pancing Cumi", "Lainnya"],
-    "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Rawai Dasar", "Jaring Insang Hanyut", "Huhate", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Rawai Tuna", "Jaring Insang Kombinasi", "Jaring Insang Tetap", "Pancing Cumi", "Jaring Lingkar TanPA Tali Kerut", "Lainnya"]
+    "Lainnya": ["Pukat Cincin", "Pukat Tarik", "Pancing Ulur", "Jaring Insang (gill net)", "Jaring Angkat (lift net)", "Pancing", "Perangkap Bubu", "Rawai Dasar", "Jaring Insang Hanyut", "Huhate", "Pancing Berjoran", "Jala Tebar", "Cantrang", "Rawai Tuna", "Jaring Insang Kombinasi", "Jaring Insang Tetap", "Pancing Cumi", "Jaring Lingkar Tanpa Tali Kerut", "Lainnya"]
 };
 
 // Mapping antara Alat Tangkap dan Kategori Ikan yang bisa ditangkap
@@ -304,14 +240,7 @@ let appSettings = {
     passwordDataNelayan: '999999',
     // Fitur baru: ON/OFF kode keamanan akses menu
     securityMenuInputDataEnabled: true,
-    securityMenuDataNelayanEnabled: true,
-    // Data pengguna untuk login
-    users: [
-        { username: 'BIDANGPN', password: '@12345' },
-        { username: 'BIDANGPB', password: '@123456' },
-        { username: 'BIDANGP4', password: '@1234567' },
-        { username: 'BIDANGKESWAN', password: '@12345678' }
-    ]
+    securityMenuDataNelayanEnabled: true
 };
 
 // Variabel baru untuk fitur Data Wilayah
@@ -365,282 +294,6 @@ function hideLoading() {
     document.body.style.overflow = 'auto'; // Mengembalikan scroll
 }
 
-// --- FUNGSI SHOW/HIDE PASSWORD YANG DISEMPURNAKAN ---
-function setupPasswordToggle(inputId, buttonId) {
-    const passwordInput = document.getElementById(inputId);
-    const toggleButton = document.getElementById(buttonId);
-    
-    if (!passwordInput || !toggleButton) return;
-    
-    toggleButton.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        
-        // Ganti icon
-        const icon = this.querySelector('i');
-        if (type === 'password') {
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-            this.title = "Tampilkan password";
-        } else {
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-            this.title = "Sembunyikan password";
-        }
-    });
-}
-
-// --- FUNGSI KEAMANAN MENU BARU ---
-function initMenuAuthModal() {
-    // Cek apakah modal sudah ada
-    if (!document.getElementById('menuAuthModal')) {
-        // Buat modal autentikasi menu
-        const modalHTML = `
-        <div class="modal fade" id="menuAuthModal" tabindex="-1" aria-labelledby="menuAuthModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="menuAuthModalLabel">Autentikasi Menu</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="menuAuthPassword" class="form-label">Masukkan Password</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="menuAuthPassword" placeholder="Password" autocomplete="off">
-                                <button class="btn btn-outline-secondary" type="button" id="menuAuthPasswordToggle">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Masukkan password untuk mengakses menu ini.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="menuAuthCancelBtn">Batal</button>
-                        <button type="button" class="btn btn-primary" id="menuAuthSubmit">Masuk</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
-        
-        // Tambahkan modal ke body
-        const modalDiv = document.createElement('div');
-        modalDiv.innerHTML = modalHTML;
-        document.body.appendChild(modalDiv);
-        
-        // Inisialisasi modal Bootstrap
-        menuAuthModal = new bootstrap.Modal(document.getElementById('menuAuthModal'));
-        
-        // Setup event listener untuk tombol submit
-        document.getElementById('menuAuthSubmit').addEventListener('click', handleMenuAuthSubmit);
-        
-        // Setup event listener untuk tombol batal
-        document.getElementById('menuAuthCancelBtn').addEventListener('click', function() {
-            // Arahkan ke menu Dashboard saat tombol batal diklik
-            redirectToDashboard();
-        });
-        
-        // PERBAIKAN: Tambahkan event listener untuk ketika modal ditutup (close button atau klik di luar)
-        const modalElement = document.getElementById('menuAuthModal');
-        if (modalElement) {
-            modalElement.addEventListener('hidden.bs.modal', function() {
-                // Arahkan ke menu Dashboard saat modal ditutup
-                redirectToDashboard();
-            });
-        }
-        
-        // Setup event listener untuk tombol show/hide password
-        setupPasswordToggle('menuAuthPassword', 'menuAuthPasswordToggle');
-        
-        // Setup event listener untuk tekan Enter di input password
-        document.getElementById('menuAuthPassword').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleMenuAuthSubmit();
-            }
-        });
-    } else {
-        // Modal sudah ada, inisialisasi ulang
-        menuAuthModal = new bootstrap.Modal(document.getElementById('menuAuthModal'));
-        
-        // PERBAIKAN: Pastikan event listener untuk modal hidden sudah ada
-        const modalElement = document.getElementById('menuAuthModal');
-        if (modalElement) {
-            // Hapus event listener yang mungkin sudah ada
-            modalElement.removeEventListener('hidden.bs.modal', redirectToDashboard);
-            // Tambahkan kembali event listener
-            modalElement.addEventListener('hidden.bs.modal', function() {
-                redirectToDashboard();
-            });
-        }
-    }
-}
-
-// PERBAIKAN: Fungsi untuk mengarahkan ke dashboard
-function redirectToDashboard() {
-    const dashboardTab = document.getElementById('v-pills-dashboard-tab');
-    if (dashboardTab) {
-        dashboardTab.click();
-    }
-}
-
-function showMenuAuth(menuType, menuName) {
-    // PERBAIKAN: Cek apakah kode keamanan untuk menu ini diaktifkan
-    if (menuType === 'input' && !appSettings.securityMenuInputDataEnabled) {
-        // Jika kode keamanan dinonaktifkan, langsung buka menu
-        document.getElementById('v-pills-input-tab').click();
-        return;
-    }
-    
-    if (menuType === 'data' && !appSettings.securityMenuDataNelayanEnabled) {
-        // Jika kode keamanan dinonaktifkan, langsung buka menu
-        document.getElementById('v-pills-data-tab').click();
-        return;
-    }
-    
-    // Simpan tipe menu yang diminta
-    document.getElementById('menuAuthModal').setAttribute('data-menu-type', menuType);
-    document.getElementById('menuAuthModal').setAttribute('data-menu-name', menuName);
-    
-    // Update judul modal
-    document.getElementById('menuAuthModalLabel').textContent = `Autentikasi Menu ${menuName}`;
-    
-    // Reset input password
-    document.getElementById('menuAuthPassword').value = '';
-    document.getElementById('menuAuthPassword').type = 'password';
-    
-    // Reset icon toggle
-    const toggleIcon = document.querySelector('#menuAuthPasswordToggle i');
-    if (toggleIcon) {
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
-    }
-    
-    // Tampilkan modal
-    menuAuthModal.show();
-    
-    // Focus ke input password
-    setTimeout(() => {
-        document.getElementById('menuAuthPassword').focus();
-    }, 500);
-}
-
-function handleMenuAuthSubmit() {
-    const password = document.getElementById('menuAuthPassword').value;
-    const menuType = document.getElementById('menuAuthModal').getAttribute('data-menu-type');
-    const menuName = document.getElementById('menuAuthModal').getAttribute('data-menu-name');
-    
-    let correctPassword = '';
-    if (menuType === 'input') {
-        correctPassword = appSettings.passwordInputData;
-    } else if (menuType === 'data') {
-        correctPassword = appSettings.passwordDataNelayan;
-    }
-    
-    if (password === correctPassword) {
-        // Autentikasi berhasil
-        menuAuthStatus[menuType === 'input' ? 'inputData' : 'dataNelayan'] = true;
-        
-        // Simpan di sessionStorage agar bertahan selama sesi browser
-        sessionStorage.setItem(`menu_auth_${menuType}`, 'true');
-        
-        // Tutup modal
-        menuAuthModal.hide();
-        
-        // Tampilkan notifikasi
-        showNotification(`Autentikasi berhasil! Mengakses menu ${menuName}`, 'success');
-        
-        // Buka menu yang dimaksud
-        if (menuType === 'input') {
-            // Buka tab Input Data
-            document.getElementById('v-pills-input-tab').click();
-        } else if (menuType === 'data') {
-            // Buka tab Data Nelayan
-            document.getElementById('v-pills-data-tab').click();
-        }
-    } else {
-        // Password salah
-        showNotification('Password salah! Silakan coba lagi.', 'error');
-        document.getElementById('menuAuthPassword').value = '';
-        document.getElementById('menuAuthPassword').focus();
-    }
-}
-
-function checkMenuAuth(menuType) {
-    // Cek apakah sudah login ke sistem
-    const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
-    if (!isSessionActive) {
-        return false;
-    }
-    
-    // PERBAIKAN: Cek apakah kode keamanan untuk menu ini diaktifkan
-    if (menuType === 'input' && !appSettings.securityMenuInputDataEnabled) {
-        return true; // Langsung izinkan akses jika kode keamanan dinonaktifkan
-    }
-    
-    if (menuType === 'data' && !appSettings.securityMenuDataNelayanEnabled) {
-        return true; // Langsung izinkan akses jika kode keamanan dinonaktifkan
-    }
-    
-    // Cek apakah sudah terautentikasi untuk menu ini
-    if (menuType === 'input' && menuAuthStatus.inputData) {
-        return true;
-    }
-    if (menuType === 'data' && menuAuthStatus.dataNelayan) {
-        return true;
-    }
-    
-    // Cek sessionStorage
-    const sessionAuth = sessionStorage.getItem(`menu_auth_${menuType}`);
-    if (sessionAuth === 'true') {
-        menuAuthStatus[menuType === 'input' ? 'inputData' : 'dataNelayan'] = true;
-        return true;
-    }
-    
-    return false;
-}
-
-function setupMenuAuthListeners() {
-    // Event listener untuk menu Input Data
-    const inputDataTab = document.getElementById('v-pills-input-tab');
-    if (inputDataTab) {
-        inputDataTab.addEventListener('click', function(e) {
-            // Cek apakah sudah terautentikasi
-            if (!checkMenuAuth('input')) {
-                e.preventDefault();
-                e.stopPropagation();
-                showMenuAuth('input', 'Input Data');
-            }
-        });
-    }
-    
-    // Event listener untuk menu Data Nelayan
-    const dataNelayanTab = document.getElementById('v-pills-data-tab');
-    if (dataNelayanTab) {
-        dataNelayanTab.addEventListener('click', function(e) {
-            // Cek apakah sudah terautentikasi
-            if (!checkMenuAuth('data')) {
-                e.preventDefault();
-                e.stopPropagation();
-                showMenuAuth('data', 'Data Nelayan');
-            }
-        });
-    }
-}
-
-function resetMenuAuth() {
-    // Reset status autentikasi menu
-    menuAuthStatus.inputData = false;
-    menuAuthStatus.dataNelayan = false;
-    
-    // Hapus dari sessionStorage
-    sessionStorage.removeItem('menu_auth_input');
-    sessionStorage.removeItem('menu_auth_data');
-}
-
 // --- FUNGSI UTAMA ---
 function getProfesiLabel(profesi) {
     return PROFESI_MAPPING[profesi] || profesi;
@@ -659,17 +312,12 @@ function migrateOldData() {
     saveData();
 }
 
-// --- FUNGSI LOGIN DENGAN USERNAME DAN PASSWORD ---
-function validateLogin(username, password) {
-    // Cari user dengan username dan password yang cocok
-    const user = appSettings.users.find(u => 
-        u.username === username && u.password === password
-    );
-    
-    return {
-        success: !!user,
-        user: user
-    };
+function generateSecurityCode() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}${month}${day}`;
 }
 
 function displayCurrentDate() {
@@ -677,7 +325,7 @@ function displayCurrentDate() {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dateString = now.toLocaleDateString('id-ID', options);
     document.getElementById('currentDateDisplay').innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-    document.getElementById('passwordHint').innerHTML = `Masukkan username dan password untuk mengakses sistem`;
+    document.getElementById('passwordHint').innerHTML = `Masukkan kode keamanan untuk mengakses sistem`;
 }
 
 function maskData(data, force = false) {
@@ -1147,287 +795,6 @@ function updateFilterDesaOptions() {
     });
 }
 
-// --- FUNGSI BACKUP DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
-function backupData() {
-    try {
-        showLoading("Membuat Backup", "Sedang menyimpan data ke file backup. Mohon tunggu...");
-        
-        setTimeout(() => {
-            let dataToBackup = appData;
-            let backupFileName = 'reload.js';
-            let backupContent = '';
-            
-            // Tentukan nama file berdasarkan mode
-            if (currentWilayah.mode === 'desa' && currentWilayah.desaName) {
-                backupFileName = currentWilayah.fileName;
-                
-                // Filter data hanya untuk desa yang dipilih
-                dataToBackup = appData.filter(d => d.desa === currentWilayah.desaName);
-                
-                backupContent = `// DATA NELAYAN DESA ${currentWilayah.desaName.toUpperCase()}
-// File: ${backupFileName}
-// Dibuat: ${new Date().toLocaleString('id-ID')}
-// Jumlah Data: ${dataToBackup.length}
-
-window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
-            } else if (currentWilayah.mode === 'kecamatan' && currentWilayah.kecamatanName) {
-                backupFileName = currentWilayah.fileName;
-                
-                // Filter data hanya untuk kecamatan yang dipilih
-                dataToBackup = appData.filter(d => d.kecamatan === currentWilayah.kecamatanName);
-                
-                backupContent = `// DATA NELAYAN KECAMATAN ${currentWilayah.kecamatanName.toUpperCase()}
-// File: ${backupFileName}
-// Dibuat: ${new Date().toLocaleString('id-ID')}
-// Jumlah Data: ${dataToBackup.length}
-
-window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
-            } else {
-                backupContent = `// DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: reload.js
-// Dibuat: ${new Date().toLocaleString('id-ID')}
-// Jumlah Data: ${dataToBackup.length}
-
-window.SIMATA_BACKUP_DATA = ${JSON.stringify(dataToBackup, null, 2)};`;
-            }
-            
-            // Buat dan download file
-            const blob = new Blob([backupContent], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = backupFileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            hideLoading();
-            showNotification(`Backup berhasil: ${backupFileName} (${dataToBackup.length} data)`, 'success');
-        }, 1000);
-        
-    } catch (error) {
-        console.error('Backup error:', error);
-        hideLoading();
-        showNotification('Gagal membuat backup. Silakan coba lagi.', 'error');
-    }
-}
-
-// --- FUNGSI RESTORE DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
-function restoreData() {
-    const fileInput = document.getElementById('restoreFileInput');
-    if (!fileInput.files.length) return;
-    
-    showLoading("Restore Data", "Sedang memproses restore data. Mohon tunggu, proses ini mungkin memerlukan waktu beberapa saat...");
-    
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        try {
-            const content = e.target.result;
-            let restoredData = [];
-            
-            // Coba parse sebagai JSON langsung
-            try {
-                restoredData = JSON.parse(content);
-            } catch (jsonError) {
-                // Jika bukan JSON, coba ekstrak dari JavaScript
-                if (content.includes('SIMATA_BACKUP_DATA')) {
-                    // Ekstrak data dari window.SIMATA_BACKUP_DATA
-                    const match = content.match(/window\.SIMATA_BACKUP_DATA\s*=\s*(\[.*?\]);/s);
-                    if (match) {
-                        restoredData = JSON.parse(match[1]);
-                    } else {
-                        throw new Error('Format data tidak dikenali');
-                    }
-                } else {
-                    throw new Error('File tidak berisi data SIMATA yang valid');
-                }
-            }
-            
-            if (!Array.isArray(restoredData)) {
-                throw new Error('Data harus berupa array');
-            }
-            
-            if (restoredData.length === 0) {
-                hideLoading();
-                showNotification('File tidak berisi data', 'warning');
-                return;
-            }
-            
-            // --- PERBAIKAN: VALIDASI DATA GANDA YANG LEBIH KETAT ---
-            // Cek duplikasi NIK dan nama dalam data yang akan di-restore
-            const duplicateCheck = validateDataDuplicates(restoredData);
-            if (duplicateCheck.hasDuplicates) {
-                const confirmed = confirm(
-                    `Ditemukan ${duplicateCheck.duplicateCount} data duplikat dalam file restore.\n` +
-                    `Duplikat berdasarkan NIK dan nama yang sama akan ditolak.\n` +
-                    `Lanjutkan restore dengan melewatkan data duplikat?`
-                );
-                
-                if (!confirmed) {
-                    hideLoading();
-                    showNotification('Restore dibatalkan oleh pengguna', 'warning');
-                    return;
-                }
-                
-                // Filter data duplikat dari restoredData
-                const uniqueData = filterDuplicateData(restoredData);
-                restoredData = uniqueData.filteredData;
-                
-                showNotification(
-                    `${duplicateCheck.duplicateCount} data duplikat telah difilter. ` +
-                    `Akan di-restore ${restoredData.length} data unik.`, 
-                    'warning'
-                );
-            }
-            
-            // Merge data lama dengan data baru (hanya data unik)
-            const existingData = appData;
-            const mergedData = mergeDataWithDuplicateCheck(existingData, restoredData);
-            
-            const newCount = restoredData.length;
-            const existingCount = existingData.length;
-            const mergedCount = mergedData.length;
-            const replacedCount = existingCount + newCount - mergedCount;
-            const addedCount = mergedCount - existingCount;
-            
-            // Simpan data yang telah dimerge
-            appData = mergedData;
-            saveData();
-            renderDataTable();
-            updateDashboard();
-            updateFilterDesaOptions();
-            
-            let message = '';
-            if (replacedCount > 0 && addedCount > 0) {
-                message = `Restore berhasil: ${replacedCount} data diperbarui, ${addedCount} data baru ditambahkan`;
-            } else if (replacedCount > 0) {
-                message = `Restore berhasil: ${replacedCount} data diperbarui`;
-            } else if (addedCount > 0) {
-                message = `Restore berhasil: ${addedCount} data baru ditambahkan`;
-            } else {
-                message = 'Tidak ada data baru untuk di-restore';
-            }
-            
-            hideLoading();
-            showNotification(message, 'success');
-            fileInput.value = '';
-            document.getElementById('restoreDataBtn').disabled = true;
-            
-        } catch (error) {
-            console.error('Restore error:', error);
-            hideLoading();
-            showNotification(`Gagal restore: ${error.message}`, 'error');
-        }
-    };
-    
-    reader.onerror = function() {
-        hideLoading();
-        showNotification('Gagal membaca file', 'error');
-    };
-    
-    reader.readAsText(file);
-}
-
-// --- FUNGSI VALIDASI DATA GANDA YANG LEBIH KETAT ---
-function validateDataDuplicates(dataArray) {
-    const seen = new Set();
-    const duplicates = [];
-    
-    dataArray.forEach((item, index) => {
-        // Buat key unik berdasarkan NIK dan NAMA (dalam uppercase)
-        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
-        
-        if (seen.has(key)) {
-            duplicates.push({
-                index: index,
-                nik: item.nik,
-                nama: item.nama,
-                key: key
-            });
-        } else {
-            seen.add(key);
-        }
-    });
-    
-    return {
-        hasDuplicates: duplicates.length > 0,
-        duplicateCount: duplicates.length,
-        duplicates: duplicates
-    };
-}
-
-// Fungsi untuk filter data duplikat
-function filterDuplicateData(dataArray) {
-    const seen = new Set();
-    const filteredData = [];
-    const removedDuplicates = [];
-    
-    dataArray.forEach(item => {
-        // Buat key unik berdasarkan NIK dan NAMA (dalam uppercase)
-        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
-        
-        if (!seen.has(key)) {
-            seen.add(key);
-            filteredData.push(item);
-        } else {
-            removedDuplicates.push({
-                nik: item.nik,
-                nama: item.nama,
-                key: key
-            });
-        }
-    });
-    
-    return {
-        filteredData: filteredData,
-        removedCount: removedDuplicates.length,
-        removedDuplicates: removedDuplicates
-    };
-}
-
-// --- FUNGSI MERGE DATA DENGAN VALIDASI DUPLIKAT ---
-function mergeDataWithDuplicateCheck(existingData, newData) {
-    // Buat map untuk data yang sudah ada dengan key NIK_NAMA
-    const dataMap = new Map();
-    
-    // Tambahkan data yang sudah ada ke map
-    existingData.forEach(item => {
-        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
-        dataMap.set(key, item);
-    });
-    
-    // Tambahkan data baru, lewati jika sudah ada
-    const skippedData = [];
-    newData.forEach(item => {
-        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
-        if (!dataMap.has(key)) {
-            dataMap.set(key, item);
-        } else {
-            skippedData.push({
-                nik: item.nik,
-                nama: item.nama,
-                reason: 'Data dengan NIK dan nama yang sama sudah ada'
-            });
-        }
-    });
-    
-    // Log data yang dilewati (untuk debugging)
-    if (skippedData.length > 0) {
-        console.log('Data yang dilewati saat merge:', skippedData);
-    }
-    
-    // Kembalikan sebagai array
-    return Array.from(dataMap.values());
-}
-
-// --- FUNGSI MERGE DATA (untuk kompatibilitas) ---
-function mergeData(existingData, newData) {
-    return mergeDataWithDuplicateCheck(existingData, newData);
-}
-
 // --- FUNGSI RELOAD DATA YANG DISEMPURNAKAN (DENGAN LOADING EFFECT) ---
 function handleReloadRepo() {
     showLoading("Sinkronisasi Data", "Sedang melakukan sinkronisasi data dari server. Mohon tunggu, proses ini mungkin memerlukan waktu beberapa saat...");
@@ -1824,82 +1191,6 @@ function updateFishOptionsByAPI(api) {
         API_FISH_MAPPING[api].forEach(category => {
             if (FISH_CATEGORIES[category]) {
                 FISH_CATEGORIES[category].forEach(fish => {
-                    fishList.push(fish.name);
-                });
-            }
-        });
-    } else {
-        // Jika tidak ada API yang dipilih, tampilkan semua ikan
-        for (const category in FISH_CATEGORIES) {
-            FISH_CATEGORIES[category].forEach(fish => {
-                fishList.push(fish.name);
-            });
-        }
-    }
-
-// TAMBAHKAN FUNGSI UNTUK MENAMPILKAN GAMBAR INFORMASI JENIS IKAN
-function showFishInfo(category) {
-    // Cek apakah modal sudah ada
-    let modal = document.getElementById('fishInfoModal');
-    if (!modal) {
-        // Buat modal baru
-        modal = document.createElement('div');
-        modal.id = 'fishInfoModal';
-        modal.className = 'modal fade';
-        modal.tabIndex = '-1';
-        modal.innerHTML = `
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Informasi Jenis Ikan - Kategori ${category}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <img src="${FISH_CATEGORY_IMAGES[category]}" class="img-fluid" alt="Informasi Jenis Ikan ${category}">
-                        <div class="mt-3">
-                            <p class="text-muted">Kategori: <strong>${category}</strong></p>
-                            <p class="small">Gambar referensi jenis-jenis ikan dalam kategori ${category}</p>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-    
-    // Update gambar berdasarkan kategori
-    const modalImg = modal.querySelector('img');
-    if (modalImg) {
-        modalImg.src = FISH_CATEGORY_IMAGES[category];
-        modalImg.alt = `Informasi Jenis Ikan ${category}`;
-    }
-    
-    // Update judul modal
-    const modalTitle = modal.querySelector('.modal-title');
-    if (modalTitle) {
-        modalTitle.textContent = `Informasi Jenis Ikan - Kategori ${category}`;
-    }
-    
-    // Tampilkan modal
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-}
-
-    function updateFishOptionsByAPI(api) {
-    const fishContainer = document.getElementById('fishCheckboxContainer');
-    if (!fishContainer) return;
-    
-    fishContainer.innerHTML = '';
-    
-    let fishList = [];
-    if (api && API_FISH_MAPPING[api]) {
-        // Ambil ikan berdasarkan kategori yang sesuai
-        API_FISH_MAPPING[api].forEach(category => {
-            if (FISH_CATEGORIES[category]) {
-                FISH_CATEGORIES[category].forEach(fish => {
                     fishList.push(fish);
                 });
             }
@@ -1962,317 +1253,56 @@ function showFishInfo(category) {
         });
     }
 }
-    
-    // Tambahkan opsi "Lainnya"
-    fishList.push("Lainnya");
-    
-    // Tampilkan checklist dengan informasi
-    fishList.forEach(fish => {
-        const id = 'fish_' + fish.replace(/\s/g, '');
-        const fishInfo = FISH_DETAILS[fish] || {};
-        const html = `
-        <label class="fish-option-box">
-            <input type="checkbox" class="form-check-input me-2 fish-checkbox" value="${fish}" id="${id}">
-            <span>${fish}</span>
-            ${fishInfo.latin ? `
-            <div class="fish-info-box">
-                <div class="fish-info-title">${fish}</div>
-                <div class="fish-info-latin">${fishInfo.latin}</div>
+
+// TAMBAHKAN FUNGSI UNTUK MENAMPILKAN GAMBAR INFORMASI JENIS IKAN
+function showFishInfo(category) {
+    // Cek apakah modal sudah ada
+    let modal = document.getElementById('fishInfoModal');
+    if (!modal) {
+        // Buat modal baru
+        modal = document.createElement('div');
+        modal.id = 'fishInfoModal';
+        modal.className = 'modal fade';
+        modal.tabIndex = '-1';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Informasi Jenis Ikan - Kategori ${category}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="${FISH_CATEGORY_IMAGES[category]}" class="img-fluid" alt="Informasi Jenis Ikan ${category}">
+                        <div class="mt-3">
+                            <p class="text-muted">Kategori: <strong>${category}</strong></p>
+                            <p class="small">Gambar referensi jenis-jenis ikan dalam kategori ${category}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
             </div>
-            ` : ''}
-        </label>`;
-        fishContainer.innerHTML += html;
-    });
-    
-    // Event listener untuk "Lainnya"
-    const lainCheckbox = document.getElementById('fish_Lainnya');
-    if (lainCheckbox) {
-        lainCheckbox.addEventListener('change', function() {
-            const inputLain = document.getElementById('jenisIkanLainnya');
-            if(this.checked) {
-                inputLain.style.display = 'block';
-                inputLain.setAttribute('required', 'required');
-            } else {
-                inputLain.style.display = 'none';
-                inputLain.value = '';
-                inputLain.removeAttribute('required');
-            }
-        });
-    }
-}
-
-// --- FUNGSI GENERATE PDF TABEL DATA YANG DIPERBAIKI ---
-function generateTabelPdf() {
-    const filteredData = getFilteredData();
-    
-    if (filteredData.length === 0) {
-        showNotification('Tidak ada data untuk dicetak!', 'error');
-        return;
+        `;
+        document.body.appendChild(modal);
     }
     
-    // Ambil data sesuai dengan halaman dan jumlah baris per halaman
-    const start = (currentPage - 1) * appSettings.itemsPerPage;
-    const end = start + appSettings.itemsPerPage;
-    const pageData = filteredData.slice(start, end);
-    
-    // Generate kode unik untuk setiap cetakan
-    const printId = 'SIMPADAN-TANGKAP-TABEL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-    // Generate QR Code untuk tanda tangan
-    document.getElementById('qr-right').innerHTML = "";
-    const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
-    
-    try {
-        new QRCode(document.getElementById("qr-right"), { 
-            text: signatureText, 
-            width: 120, 
-            height: 120,
-            colorDark: "#4a69bd",
-            colorLight: "#ffffff", 
-            correctLevel: QRCode.CorrectLevel.M
-        });
-    } catch (error) {
-        console.error("Error generating QR code:", error);
+    // Update gambar berdasarkan kategori
+    const modalImg = modal.querySelector('img');
+    if (modalImg) {
+        modalImg.src = FISH_CATEGORY_IMAGES[category];
+        modalImg.alt = `Informasi Jenis Ikan ${category}`;
     }
-
-    setTimeout(() => {
-        try {
-            const { jsPDF } = window.jspdf;
-            
-            if (typeof jsPDF.API.autoTable !== 'function') {
-                showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
-                return;
-            }
-
-            const doc = new jsPDF('l', 'mm', 'a4');
-            const pageWidth = doc.internal.pageSize.width;
-            const pageHeight = doc.internal.pageSize.height;
-
-            // Header
-            doc.setFillColor(12, 36, 97);
-            doc.rect(10, 10, pageWidth - 20, 28, 'F');
-            
-            // Judul utama
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
-            
-            // Subjudul
-            doc.setFontSize(12);
-            doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
-
-            // Slogan dengan warna oranye
-            doc.setTextColor(246, 185, 59);
-            doc.setFont('helvetica', 'italic');
-            doc.setFontSize(10);
-            doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
-
-            // Garis bawah header dengan warna aksen
-            doc.setDrawColor(246, 185, 59);
-            doc.setLineWidth(1.5);
-            doc.line(20, 38, pageWidth - 20, 38);
-
-            // Judul Laporan dengan informasi filter
-            doc.setTextColor(12, 36, 97);
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.text('LAPORAN TABEL DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
-            
-            // Informasi filter yang aktif
-            let filterInfo = "Semua Data";
-            if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
-                filterInfo = "Data Terfilter: ";
-                const filterParts = [];
-                
-                if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
-                if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
-                if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
-                if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
-                if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
-                if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
-                if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
-                
-                filterInfo += filterParts.join(', ');
-            }
-            
-            // Tambahkan informasi halaman dan jumlah baris
-            filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
-            
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
-            
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
-            
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            const now = new Date();
-            const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-            doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
-
-            // Siapkan data untuk tabel dengan kolom baru
-            // PERBAIKAN: Hanya 7 kolom (No, Nama, Nomor HP, NIK, Alamat, Desa, Kecamatan)
-            const tableRows = pageData.map((d, index) => [
-                index + 1,
-                d.nama,
-                d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
-                maskData(d.nik),
-                d.alamat || '-',
-                d.desa,
-                d.kecamatan
-            ]);
-
-            // PERBAIKAN: Atur lebar kolom agar tidak melebihi halaman
-            // Lebar halaman A4 landscape: 297mm, margin kiri-kanan 15mm, maka lebar tabel 267mm
-            const columnWidths = [15, 55, 30, 35, 65, 35, 32]; // Total: 267mm
-
-            // Tabel Data
-            doc.autoTable({
-                head: [[
-                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}}
-                ]],
-                body: tableRows,
-                startY: 72,
-                theme: 'grid',
-                margin: { left: 15, right: 15 },
-                headStyles: { 
-                    fillColor: [12, 36, 97],
-                    textColor: [255, 255, 255], 
-                    fontStyle: 'bold', 
-                    halign: 'center',
-                    fontSize: 8,
-                    cellPadding: 2,
-                    lineWidth: 0.5,
-                    lineColor: [255, 255, 255]
-                },
-                bodyStyles: {
-                    textColor: [0, 0, 0],
-                    fontSize: 7, // diperkecil agar muat lebih banyak
-                    fillColor: [255, 255, 255],
-                    cellPadding: 2,
-                    lineWidth: 0.1,
-                    lineColor: [200, 200, 200]
-                },
-                alternateRowStyles: {
-                    fillColor: [245, 245, 245]
-                },
-                styles: {
-                    overflow: 'linebreak',
-                    cellPadding: 2,
-                    fontSize: 7,
-                    valign: 'middle',
-                    halign: 'left'
-                },
-                columnStyles: {
-                    0: {cellWidth: columnWidths[0], halign: 'center'},
-                    1: {cellWidth: columnWidths[1], halign: 'left'},
-                    2: {cellWidth: columnWidths[2], halign: 'center'},
-                    3: {cellWidth: columnWidths[3], halign: 'center'},
-                    4: {cellWidth: columnWidths[4], halign: 'left'},
-                    5: {cellWidth: columnWidths[5], halign: 'left'},
-                    6: {cellWidth: columnWidths[6], halign: 'left'}
-                }
-            });
-
-            // Setelah autoTable, kita atur footer
-            const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
-
-            // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
-            const separatorY = finalY + 10;
-            doc.setDrawColor(200, 200, 200);
-            doc.setLineWidth(0.5);
-            doc.line(20, separatorY, pageWidth - 20, separatorY);
-
-            // Bagian kiri: Validasi elektronik
-            const leftX = 25;
-            const leftY = separatorY + 12;
-
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(8);
-            doc.setTextColor(12, 36, 97);
-            doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
-            doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
-            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", leftX, leftY + 8);
-
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(7);
-            doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
-            doc.setTextColor(230, 126, 34);
-            doc.text("www.dinasperikanansitubondo.com/simpadan", leftX, leftY + 18);
-
-            // Bagian kanan: Tanda tangan dan QR Code
-            const rightX = pageWidth - 85;
-            const rightY = separatorY + 10;
-
-            // PERIODE/TANGGAL
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            doc.setTextColor(0, 0, 0);
-            const currentDate = new Date();
-            const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
-            doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
-            
-            // JABATAN
-            doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
-
-            // QR Code dengan warna biru muda
-            const qrRightCanvas = document.querySelector('#qr-right canvas');
-            if(qrRightCanvas) {
-                try {
-                    const imgRight = qrRightCanvas.toDataURL("image/png");
-                    // QR code 25x25 mm
-                    doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
-                } catch (error) {
-                    console.error("Error adding QR code image:", error);
-                }
-            }
-            
-            // GARIS TANDA TANGAN
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(0.5);
-            doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
-            
-            // NAMA DAN NIP PEJABAT
-            const nameY = rightY + 45;
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(9);
-            doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
-            doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
-
-            // FOOTER DENGAN INFORMASI SISTEM
-            const footerY = pageHeight - 15;
-            doc.setFontSize(8);
-            doc.setTextColor(100);
-            
-            // Informasi sistem di footer
-            doc.setFontSize(7);
-            const printTime = new Date().toLocaleString('id-ID');
-            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
-            doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
-
-            // Simpan file PDF
-            const fileName = `Tabel_Nelayan_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_Halaman${currentPage}_${Date.now()}.pdf`;
-            doc.save(fileName);
-            document.getElementById('qr-right').innerHTML = "";
-            
-            showNotification(`Tabel PDF berhasil dibuat (${pageData.length} data dari halaman ${currentPage})`, 'success');
-            
-        } catch (error) {
-            console.error("Error generating table PDF:", error);
-            showNotification('Gagal membuat PDF tabel. Silakan coba lagi atau periksa konsol browser.', 'error');
-        }
-    }, 800);
+    
+    // Update judul modal
+    const modalTitle = modal.querySelector('.modal-title');
+    if (modalTitle) {
+        modalTitle.textContent = `Informasi Jenis Ikan - Kategori ${category}`;
+    }
+    
+    // Tampilkan modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
 }
 
 // --- FUNGSI BARU: REFRESH HALAMAN ---
@@ -2656,597 +1686,101 @@ function showDuplicateDataInFilter() {
     showNotification(`Ditemukan ${duplicates.length} data dengan NIK dan nama ganda`, 'warning');
 }
 
-// --- FUNGSI GENERATE PDF UNTUK DATA TERFILTER YANG DIPERBAIKI ---
-function generateFilteredPdf() {
-    const filteredData = getFilteredData();
+// --- FUNGSI VALIDASI DATA GANDA YANG LEBIH KETAT ---
+function validateDataDuplicates(dataArray) {
+    const seen = new Set();
+    const duplicates = [];
     
-    if (filteredData.length === 0) {
-        showNotification('Tidak ada data untuk dicetak!', 'error');
-        return;
-    }
-    
-    // Ambil data sesuai dengan halaman dan jumlah baris per halaman
-    const start = (currentPage - 1) * appSettings.itemsPerPage;
-    const end = start + appSettings.itemsPerPage;
-    const pageData = filteredData.slice(start, end);
-
-    // Siapkan data untuk tabel dengan kolom baru
-    // PERBAIKAN: Hanya 7 kolom (No, Nama, Nomor HP, NIK, Alamat, Desa, Kecamatan)
-    const tableRows = pageData.map((d, index) => [
-        index + 1, 
-        d.nama,
-        d.whatsapp === '00000000' || !d.whatsapp ? '-' : maskData(d.whatsapp),
-        maskData(d.nik),
-        d.alamat || '-',
-        d.desa,
-        d.kecamatan
-    ]);
-
-    // Generate kode unik untuk setiap cetakan
-    const printId = 'SIMPADAN-TANGKAP-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-    // Generate QR Code untuk tanda tangan
-    document.getElementById('qr-right').innerHTML = "";
-    const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
-    
-    try {
-        new QRCode(document.getElementById("qr-right"), { 
-            text: signatureText, 
-            width: 120, 
-            height: 120,
-            colorDark: "#4a69bd",
-            colorLight: "#ffffff", 
-            correctLevel: QRCode.CorrectLevel.M
-        });
-    } catch (error) {
-        console.error("Error generating QR code:", error);
-    }
-
-    setTimeout(() => {
-        try {
-            const { jsPDF } = window.jspdf;
-            
-            if (typeof jsPDF.API.autoTable !== 'function') {
-                showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
-                return;
-            }
-
-            const doc = new jsPDF('l', 'mm', 'a4');
-            const pageWidth = doc.internal.pageSize.width;
-            const pageHeight = doc.internal.pageSize.height;
-
-            // Header
-            doc.setFillColor(12, 36, 97);
-            doc.rect(10, 10, pageWidth - 20, 28, 'F');
-            
-            // Judul utama
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
-            
-            // Subjudul
-            doc.setFontSize(12);
-            doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
-
-            // Slogan dengan warna oranye
-            doc.setTextColor(246, 185, 59);
-            doc.setFont('helvetica', 'italic');
-            doc.setFontSize(10);
-            doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
-
-            // Garis bawah header dengan warna aksen
-            doc.setDrawColor(246, 185, 59);
-            doc.setLineWidth(1.5);
-            doc.line(20, 38, pageWidth - 20, 38);
-
-            // Judul Laporan dengan informasi filter
-            doc.setTextColor(12, 36, 97);
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.text('LAPORAN DATA NELAYAN TERFILTER', pageWidth/2, 48, { align: 'center' });
-            
-            // Informasi filter yang aktif
-            let filterInfo = "Semua Data";
-            if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
-                filterInfo = "Data Terfilter: ";
-                const filterParts = [];
-                
-                if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
-                if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
-                if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
-                if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
-                if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
-                if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
-                if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
-                
-                filterInfo += filterParts.join(', ');
-            }
-            
-            // Tambahkan informasi halaman dan jumlah baris
-            filterInfo += ` | Halaman: ${currentPage}, Jumlah Baris: ${appSettings.itemsPerPage}`;
-            
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
-            
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('TABEL DATA NELAYAN', pageWidth/2, 60, { align: 'center' });
-            
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            const now = new Date();
-            const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-            doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
-
-            // PERBAIKAN: Atur lebar kolom agar tidak melebihi halaman
-            const columnWidths = [15, 55, 30, 35, 65, 35, 32]; // Total: 267mm
-            
-            doc.autoTable({
-                head: [[
-                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Nama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Nomor HP', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'NIK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Alamat', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Desa', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}},
-                    {content: 'Kecamatan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center'}}
-                ]],
-                body: tableRows,
-                startY: 72,
-                theme: 'grid',
-                margin: { left: 15, right: 15 },
-                headStyles: { 
-                    fillColor: [12, 36, 97],
-                    textColor: [255, 255, 255], 
-                    fontStyle: 'bold', 
-                    halign: 'center',
-                    fontSize: 8,
-                    cellPadding: 2,
-                    lineWidth: 0.5,
-                    lineColor: [255, 255, 255]
-                },
-                bodyStyles: {
-                    textColor: [0, 0, 0],
-                    fontSize: 7,
-                    fillColor: [255, 255, 255],
-                    cellPadding: 2,
-                    lineWidth: 0.1,
-                    lineColor: [200, 200, 200]
-                },
-                alternateRowStyles: {
-                    fillColor: [245, 245, 245]
-                },
-                styles: {
-                    overflow: 'linebreak',
-                    cellPadding: 2,
-                    fontSize: 7,
-                    valign: 'middle',
-                    halign: 'left'
-                },
-                columnStyles: {
-                    0: {cellWidth: columnWidths[0], halign: 'center'},
-                    1: {cellWidth: columnWidths[1], halign: 'left'},
-                    2: {cellWidth: columnWidths[2], halign: 'center'},
-                    3: {cellWidth: columnWidths[3], halign: 'center'},
-                    4: {cellWidth: columnWidths[4], halign: 'left'},
-                    5: {cellWidth: columnWidths[5], halign: 'left'},
-                    6: {cellWidth: columnWidths[6], halign: 'left'}
-                }
+    dataArray.forEach((item, index) => {
+        // Buat key unik berdasarkan NIK dan NAMA (dalam uppercase)
+        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
+        
+        if (seen.has(key)) {
+            duplicates.push({
+                index: index,
+                nik: item.nik,
+                nama: item.nama,
+                key: key
             });
-
-            // Setelah autoTable, kita atur footer
-            const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
-
-            // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
-            const separatorY = finalY + 10;
-            doc.setDrawColor(200, 200, 200);
-            doc.setLineWidth(0.5);
-            doc.line(20, separatorY, pageWidth - 20, separatorY);
-
-            // Bagian kiri: Validasi elektronik
-            const leftX = 25;
-            const leftY = separatorY + 12;
-
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(8);
-            doc.setTextColor(12, 36, 97);
-            doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
-            doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
-            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", leftX, leftY + 8);
-
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(7);
-            doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
-            doc.setTextColor(230, 126, 34);
-            doc.text("www.dinasperikanansitubondo.com/simpadan", leftX, leftY + 18);
-
-            // Bagian kanan: Tanda tangan dan QR Code
-            const rightX = pageWidth - 85;
-            const rightY = separatorY + 10;
-
-            // PERIODE/TANGGAL
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            doc.setTextColor(0, 0, 0);
-            const currentDate = new Date();
-            const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
-            doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
-            
-            // JABATAN
-            doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
-
-            // QR Code dengan warna biru muda
-            const qrRightCanvas = document.querySelector('#qr-right canvas');
-            if(qrRightCanvas) {
-                try {
-                    const imgRight = qrRightCanvas.toDataURL("image/png");
-                    // QR code 25x25 mm
-                    doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
-                } catch (error) {
-                    console.error("Error adding QR code image:", error);
-                }
-            }
-            
-            // GARIS TANDA TANGAN
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(0.5);
-            doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
-            
-            // NAMA DAN NIP PEJABAT
-            const nameY = rightY + 45;
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(9);
-            doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
-            doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
-
-            // FOOTER DENGAN INFORMASI SISTEM
-            const footerY = pageHeight - 15;
-            doc.setFontSize(8);
-            doc.setTextColor(100);
-            
-            // Informasi sistem di footer
-            doc.setFontSize(7);
-            const printTime = new Date().toLocaleString('id-ID');
-            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
-            doc.text(`Data: ${start + 1}-${Math.min(end, filteredData.length)} dari ${filteredData.length} records | Baris/halaman: ${appSettings.itemsPerPage}`, pageWidth / 2, footerY + 5, { align: 'center' });
-
-            // Simpan file PDF
-            const fileName = `Laporan_Nelayan_Terfilter_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_Halaman${currentPage}_${Date.now()}.pdf`;
-            doc.save(fileName);
-            document.getElementById('qr-right').innerHTML = "";
-            
-            showNotification(`Laporan PDF terfilter berhasil dibuat (${pageData.length} data dari halaman ${currentPage})`, 'success');
-            
-        } catch (error) {
-            console.error("Error generating filtered PDF:", error);
-            showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
+        } else {
+            seen.add(key);
         }
-    }, 800);
+    });
+    
+    return {
+        hasDuplicates: duplicates.length > 0,
+        duplicateCount: duplicates.length,
+        duplicates: duplicates
+    };
 }
 
-// --- FUNGSI PRINT DATA ---
-function printData() {
-    const filteredData = getFilteredData();
+// Fungsi untuk filter data duplikat
+function filterDuplicateData(dataArray) {
+    const seen = new Set();
+    const filteredData = [];
+    const removedDuplicates = [];
     
-    if (filteredData.length === 0) {
-        showNotification('Tidak ada data untuk dicetak!', 'error');
-        return;
-    }
-
-    // Hitung statistik per desa dari data terfilter
-    const desaStats = {};
-    filteredData.forEach(d => {
-        const desa = d.desa || "Tidak Diketahui";
-        if (!desaStats[desa]) {
-            desaStats[desa] = { 
-                count: 0, 
-                owner: 0, 
-                abk: 0, 
-                penuhWaktu: 0, 
-                sambilanUtama: 0, 
-                sambilanTambahan: 0 
-            };
-        }
-        desaStats[desa].count++;
-        if(d.status === 'Pemilik Kapal') desaStats[desa].owner++; 
-        else desaStats[desa].abk++;
+    dataArray.forEach(item => {
+        // Buat key unik berdasarkan NIK dan NAMA (dalam uppercase)
+        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
         
-        if(d.profesi === 'Nelayan Penuh Waktu') desaStats[desa].penuhWaktu++;
-        else if(d.profesi === 'Nelayan Sambilan Utama') desaStats[desa].sambilanUtama++;
-        else if(d.profesi === 'Nelayan Sambilan Tambahan') desaStats[desa].sambilanTambahan++;
-    });
-
-    // Siapkan data untuk tabel dengan kolom baru
-    const tableRows = Object.keys(desaStats).sort().map((desa, index) => [
-        index + 1, 
-        desa,
-        desaStats[desa].count, 
-        desaStats[desa].owner,
-        desaStats[desa].abk, 
-        desaStats[desa].penuhWaktu, 
-        desaStats[desa].sambilanUtama,
-        desaStats[desa].sambilanTambahan
-    ]);
-
-    // Hitung total dari data terfilter
-    const totalCount = tableRows.reduce((sum, row) => sum + row[2], 0);
-    const totalOwner = tableRows.reduce((sum, row) => sum + row[3], 0);
-    const totalAbk = tableRows.reduce((sum, row) => sum + row[4], 0);
-    const totalPenuhWaktu = tableRows.reduce((sum, row) => sum + row[5], 0);
-    const totalSambilanUtama = tableRows.reduce((sum, row) => sum + row[6], 0);
-    const totalSambilanTambahan = tableRows.reduce((sum, row) => sum + row[7], 0);
-
-    // Tambahkan baris total
-    tableRows.push([
-        "",
-        "TOTAL KESELURUHAN",
-        totalCount,
-        totalOwner,
-        totalAbk,
-        totalPenuhWaktu,
-        totalSambilanUtama,
-        totalSambilanTambahan
-    ]);
-
-    // Generate kode unik untuk setiap cetakan
-    const printId = 'SIMPADAN-TANGKAP-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-    // Generate QR Code untuk tanda tangan
-    document.getElementById('qr-right').innerHTML = "";
-    const signatureText = `Dokumen Sah - Dinas Perikanan Kabupaten Situbondo\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nNIP: ${appSettings.officialNip}\nTanggal: ${new Date().toLocaleDateString('id-ID')}\nID Dokumen: ${printId}`;
-    
-    try {
-        new QRCode(document.getElementById("qr-right"), { 
-            text: signatureText, 
-            width: 120, 
-            height: 120,
-            colorDark: "#4a69bd",
-            colorLight: "#ffffff", 
-            correctLevel: QRCode.CorrectLevel.M
-        });
-    } catch (error) {
-        console.error("Error generating QR code:", error);
-    }
-
-    setTimeout(() => {
-        try {
-            const { jsPDF } = window.jspdf;
-            
-            if (typeof jsPDF.API.autoTable !== 'function') {
-                showNotification('Library PDF tidak lengkap. Silakan refresh halaman.', 'error');
-                return;
-            }
-
-            const doc = new jsPDF('l', 'mm', 'a4');
-            const pageWidth = doc.internal.pageSize.width;
-            const pageHeight = doc.internal.pageSize.height;
-
-            // Header
-            doc.setFillColor(12, 36, 97);
-            doc.rect(10, 10, pageWidth - 20, 28, 'F');
-            
-            // Judul utama
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', pageWidth/2, 20, { align: 'center' });
-            
-            // Subjudul
-            doc.setFontSize(12);
-            doc.text('DINAS PERIKANAN KABUPATEN SITUBONDO', pageWidth/2, 26, { align: 'center' });
-
-            // Slogan dengan warna oranye
-            doc.setTextColor(246, 185, 59);
-            doc.setFont('helvetica', 'italic');
-            doc.setFontSize(10);
-            doc.text('"Situbondo Naik Kelas"', pageWidth/2, 32, { align: 'center' });
-
-            // Garis bawah header dengan warna aksen
-            doc.setDrawColor(246, 185, 59);
-            doc.setLineWidth(1.5);
-            doc.line(20, 38, pageWidth - 20, 38);
-
-            // Judul Laporan dengan informasi filter
-            doc.setTextColor(12, 36, 97);
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.text('LAPORAN REKAPITULASI DATA NELAYAN', pageWidth/2, 48, { align: 'center' });
-            
-            // Informasi filter yang aktif
-            let filterInfo = "Semua Data";
-            if (Object.keys(currentFilter).length > 0 || document.getElementById('searchData').value) {
-                filterInfo = "Data Terfilter: ";
-                const filterParts = [];
-                
-                if (currentFilter.desa) filterParts.push(`Desa: ${currentFilter.desa}`);
-                if (currentFilter.profesi) filterParts.push(`Profesi: ${currentFilter.profesi}`);
-                if (currentFilter.status) filterParts.push(`Status: ${currentFilter.status}`);
-                if (currentFilter.jenisKapal) filterParts.push(`Jenis Kapal: ${currentFilter.jenisKapal}`);
-                if (currentFilter.alatTangkap) filterParts.push(`Alat Tangkap: ${currentFilter.alatTangkap}`);
-                if (currentFilter.usaha) filterParts.push(`Usaha: ${currentFilter.usaha === 'Ada' ? 'Ada Usaha Sampingan' : 'Tidak Ada Usaha'}`);
-                if (document.getElementById('searchData').value) filterParts.push(`Pencarian: "${document.getElementById('searchData').value}"`);
-                
-                filterInfo += filterParts.join(', ');
-            }
-            
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text(filterInfo, pageWidth/2, 54, { align: 'center' });
-            
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('REKAPITULASI PER DESA / KELURAHAN', pageWidth/2, 60, { align: 'center' });
-    
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            const now = new Date();
-            const dateString = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-            doc.text(`Dicetak pada: ${dateString}`, pageWidth/2, 66, { align: 'center' });
-
-            // Tabel Data dengan kolom baru
-            const tableWidth = pageWidth - 40;
-            const tableStartX = (pageWidth - tableWidth) / 2;
-
-            doc.autoTable({
-                head: [[
-                    {content: 'No', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 20}},
-                    {content: 'Desa/Kelurahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 50}},
-                    {content: 'Total Nelayan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                    {content: 'Pemilik Kapal', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                    {content: 'ABK', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 25}},
-                    {content: 'Penuh Waktu', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                    {content: 'Sambilan Utama', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}},
-                    {content: 'Sambilan Tambahan', styles: {fillColor: [12, 36, 97], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', cellWidth: 30}}
-                ]],
-                body: tableRows,
-                startY: 72,
-                theme: 'grid',
-                tableWidth: tableWidth,
-                margin: { left: tableStartX, right: tableStartX },
-                headStyles: { 
-                    fillColor: [12, 36, 97],
-                    textColor: [255, 255, 255], 
-                    fontStyle: 'bold', 
-                    halign: 'center',
-                    fontSize: 9,
-                    cellPadding: 4,
-                    lineWidth: 0.5,
-                    lineColor: [255, 255, 255]
-                },
-                bodyStyles: {
-                    textColor: [0, 0, 0],
-                    fontSize: 9,
-                    fillColor: [255, 255, 255],
-                    cellPadding: 4,
-                    lineWidth: 0.1,
-                    lineColor: [200, 200, 200]
-                },
-                alternateRowStyles: {
-                    fillColor: [245, 245, 245]
-                },
-                styles: {
-                    overflow: 'linebreak',
-                    cellPadding: 4,
-                    fontSize: 9,
-                    valign: 'middle',
-                    halign: 'center'
-                },
-                columnStyles: {
-                    0: {cellWidth: 20, halign: 'center'},
-                    1: {cellWidth: 50, halign: 'left'},
-                    2: {cellWidth: 30, halign: 'center'},
-                    3: {cellWidth: 30, halign: 'center'},
-                    4: {cellWidth: 25, halign: 'center'},
-                    5: {cellWidth: 30, halign: 'center'},
-                    6: {cellWidth: 30, halign: 'center'},
-                    7: {cellWidth: 30, halign: 'center'}
-                },
-                willDrawCell: function(data) {
-                    // Baris total dengan warna kuning
-                    if (data.row.index === tableRows.length - 1) {
-                        data.cell.styles.fillColor = [255, 235, 59];
-                        data.cell.styles.textColor = [0, 0, 0];
-                        data.cell.styles.fontStyle = 'bold';
-                        data.cell.styles.lineWidth = 0.5;
-                        data.cell.styles.lineColor = [12, 36, 97];
-                    }
-                }
+        if (!seen.has(key)) {
+            seen.add(key);
+            filteredData.push(item);
+        } else {
+            removedDuplicates.push({
+                nik: item.nik,
+                nama: item.nama,
+                key: key
             });
-
-            // Setelah autoTable, kita atur footer
-            const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 150;
-
-            // GARIS PEMISAH ANTARA TABEL DAN BAGIAN VALIDASI
-            const separatorY = finalY + 10;
-            doc.setDrawColor(200, 200, 200);
-            doc.setLineWidth(0.5);
-            doc.line(20, separatorY, pageWidth - 20, separatorY);
-
-            // Bagian kiri: Validasi elektronik
-            const leftX = 25;
-            const leftY = separatorY + 12;
-
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(8);
-            doc.setTextColor(12, 36, 97);
-            doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX, leftY);
-            doc.text("SECARA ELEKTRONIK OLEH", leftX, leftY + 4);
-            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", leftX, leftY + 8);
-
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(7);
-            doc.text("Dinas Perikanan Kabupaten Situbondo", leftX, leftY + 14);
-            doc.setTextColor(230, 126, 34);
-            doc.text("www.dinasperikanansitubondo.com/simpadan", leftX, leftY + 18);
-
-            // Bagian kanan: Tanda tangan dan QR Code
-            const rightX = pageWidth - 85;
-            const rightY = separatorY + 10;
-
-            // PERIODE/TANGGAL
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            doc.setTextColor(0, 0, 0);
-            const currentDate = new Date();
-            const formattedDate = currentDate.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year:'numeric'});
-            doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY, {align: 'center'});
-            
-            // JABATAN
-            doc.text(appSettings.officialPosition, rightX + 32, rightY + 6, {align: 'center'});
-
-            // QR Code dengan warna biru muda
-            const qrRightCanvas = document.querySelector('#qr-right canvas');
-            if(qrRightCanvas) {
-                try {
-                    const imgRight = qrRightCanvas.toDataURL("image/png");
-                    // QR code 25x25 mm
-                    doc.addImage(imgRight, 'PNG', rightX + 19, rightY + 10, 25, 25);
-                } catch (error) {
-                    console.error("Error adding QR code image:", error);
-                }
-            }
-            
-            // GARIS TANDA TANGAN
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(0.5);
-            doc.line(rightX + 5, rightY + 40, rightX + 60, rightY + 40);
-            
-            // NAMA DAN NIP PEJABAT
-            const nameY = rightY + 45;
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(9);
-            doc.text(appSettings.officialName, rightX + 32, nameY, {align: 'center'});
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
-            doc.text(`NIP. ${appSettings.officialNip}`, rightX + 32, nameY + 5, {align: 'center'});
-
-            // FOOTER DENGAN INFORMASI SISTEM
-            const footerY = pageHeight - 15;
-            doc.setFontSize(8);
-            doc.setTextColor(100);
-            
-            // Informasi sistem di footer
-            doc.setFontSize(7);
-            const printTime = new Date().toLocaleString('id-ID');
-            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth / 2, footerY, { align: 'center' });
-            doc.text(`Total Data Terfilter: ${filteredData.length} records`, pageWidth / 2, footerY + 5, { align: 'center' });
-
-            // Simpan file PDF
-            const fileName = `Laporan_Rekapitulasi_${appSettings.appSubtitle.replace(/\s+/g, '_').slice(0,15)}_${Date.now()}.pdf`;
-            doc.save(fileName);
-            document.getElementById('qr-right').innerHTML = "";
-            
-            showNotification(`Laporan PDF berhasil dibuat (${filteredData.length} data)`, 'success');
-            
-        } catch (error) {
-            console.error("Error generating PDF:", error);
-            showNotification('Gagal membuat PDF. Silakan coba lagi atau periksa konsol browser.', 'error');
         }
-    }, 800);
+    });
+    
+    return {
+        filteredData: filteredData,
+        removedCount: removedDuplicates.length,
+        removedDuplicates: removedDuplicates
+    };
+}
+
+// --- FUNGSI MERGE DATA DENGAN VALIDASI DUPLIKAT ---
+function mergeDataWithDuplicateCheck(existingData, newData) {
+    // Buat map untuk data yang sudah ada dengan key NIK_NAMA
+    const dataMap = new Map();
+    
+    // Tambahkan data yang sudah ada ke map
+    existingData.forEach(item => {
+        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
+        dataMap.set(key, item);
+    });
+    
+    // Tambahkan data baru, lewati jika sudah ada
+    const skippedData = [];
+    newData.forEach(item => {
+        const key = `${item.nik}_${item.nama ? item.nama.toUpperCase().trim() : ''}`;
+        if (!dataMap.has(key)) {
+            dataMap.set(key, item);
+        } else {
+            skippedData.push({
+                nik: item.nik,
+                nama: item.nama,
+                reason: 'Data dengan NIK dan nama yang sama sudah ada'
+            });
+        }
+    });
+    
+    // Log data yang dilewati (untuk debugging)
+    if (skippedData.length > 0) {
+        console.log('Data yang dilewati saat merge:', skippedData);
+    }
+    
+    // Kembalikan sebagai array
+    return Array.from(dataMap.values());
+}
+
+// --- FUNGSI MERGE DATA (untuk kompatibilitas) ---
+function mergeData(existingData, newData) {
+    return mergeDataWithDuplicateCheck(existingData, newData);
 }
 
 // --- INITIALIZATION ---
@@ -3298,9 +1832,6 @@ function initializeApp() {
     
     // Inisialisasi Data Wilayah yang disempurnakan
     initDataWilayah();
-    
-    // Inisialisasi modal autentikasi menu
-    initMenuAuthModal();
     
     if (typeof window.SIMATA_BACKUP_DATA !== 'undefined' && window.SIMATA_BACKUP_DATA) {
         console.log("Data backup terdeteksi. Ready untuk merge/sync.");
@@ -3383,223 +1914,6 @@ function initializeApp() {
     
     // PERBAIKAN BARU: Inisialisasi toggle untuk kode keamanan menu
     initMenuSecurityToggles();
-}
-
-// --- FUNGSI BARU: INISIALISASI TOGGLE UNTUK KODE KEAMANAN MENU ---
-function initMenuSecurityToggles() {
-    // Load toggle state untuk menu Input Data
-    const toggleInputData = document.getElementById('toggleSecurityMenuInputData');
-    if (toggleInputData) {
-        toggleInputData.checked = appSettings.securityMenuInputDataEnabled;
-        updateMenuSecurityToggleUI('input', appSettings.securityMenuInputDataEnabled);
-    }
-    
-    // Load toggle state untuk menu Data Nelayan
-    const toggleDataNelayan = document.getElementById('toggleSecurityMenuDataNelayan');
-    if (toggleDataNelayan) {
-        toggleDataNelayan.checked = appSettings.securityMenuDataNelayanEnabled;
-        updateMenuSecurityToggleUI('data', appSettings.securityMenuDataNelayanEnabled);
-    }
-    
-    // Setup event listeners untuk toggle
-    setupMenuSecurityToggleListeners();
-}
-
-// --- FUNGSI BARU: UPDATE UI TOGGLE KEAMANAN MENU ---
-function updateMenuSecurityToggleUI(menuType, isEnabled) {
-    const toggleElement = document.getElementById(`toggleSecurityMenu${menuType === 'input' ? 'InputData' : 'DataNelayan'}`);
-    const statusElement = document.getElementById(`securityMenu${menuType === 'input' ? 'InputData' : 'DataNelayan'}Status`);
-    
-    if (!toggleElement || !statusElement) return;
-    
-    if (isEnabled) {
-        statusElement.innerHTML = `<span class="text-success fw-bold">ON (Aktif)</span>`;
-        statusElement.className = "mt-2 small fw-bold text-success";
-        toggleElement.checked = true;
-    } else {
-        statusElement.innerHTML = `<span class="text-danger fw-bold">OFF (Non-Aktif)</span>`;
-        statusElement.className = "mt-2 small fw-bold text-danger";
-        toggleElement.checked = false;
-    }
-}
-
-// --- FUNGSI BARU: SETUP EVENT LISTENERS UNTUK TOGGLE KEAMANAN MENU ---
-function setupMenuSecurityToggleListeners() {
-    // Toggle untuk menu Input Data
-    const toggleInputData = document.getElementById('toggleSecurityMenuInputData');
-    if (toggleInputData) {
-        toggleInputData.addEventListener('click', function(e) {
-            e.preventDefault();
-            const currentStatus = appSettings.securityMenuInputDataEnabled;
-            
-            if (currentStatus === true) {
-                const code = prompt("MASUKKAN KODE KEAMANAN SENSOR untuk menonaktifkan kode keamanan menu Input Data:");
-                if (code === appSettings.securityCodeSensor) {
-                    appSettings.securityMenuInputDataEnabled = false;
-                    saveSettings();
-                    updateMenuSecurityToggleUI('input', false);
-                    showNotification('Kode keamanan menu Input Data dinonaktifkan.', 'warning');
-                } else { 
-                    alert("Kode Keamanan Sensor Salah!"); 
-                    this.checked = true;
-                }
-            } else {
-                appSettings.securityMenuInputDataEnabled = true;
-                saveSettings();
-                updateMenuSecurityToggleUI('input', true);
-                showNotification('Kode keamanan menu Input Data diaktifkan.', 'success');
-            }
-        });
-    }
-    
-    // Toggle untuk menu Data Nelayan
-    const toggleDataNelayan = document.getElementById('toggleSecurityMenuDataNelayan');
-    if (toggleDataNelayan) {
-        toggleDataNelayan.addEventListener('click', function(e) {
-            e.preventDefault();
-            const currentStatus = appSettings.securityMenuDataNelayanEnabled;
-            
-            if (currentStatus === true) {
-                const code = prompt("MASUKKAN KODE KEAMANAN SENSOR untuk menonaktifkan kode keamanan menu Data Nelayan:");
-                if (code === appSettings.securityCodeSensor) {
-                    appSettings.securityMenuDataNelayanEnabled = false;
-                    saveSettings();
-                    updateMenuSecurityToggleUI('data', false);
-                    showNotification('Kode keamanan menu Data Nelayan dinonaktifkan.', 'warning');
-                } else { 
-                    alert("Kode Keamanan Sensor Salah!"); 
-                    this.checked = true;
-                }
-            } else {
-                appSettings.securityMenuDataNelayanEnabled = true;
-                saveSettings();
-                updateMenuSecurityToggleUI('data', true);
-                showNotification('Kode keamanan menu Data Nelayan diaktifkan.', 'success');
-            }
-        });
-    }
-}
-
-// --- FUNGSI PERBAIKAN: SETUP SHOW/HIDE PASSWORD UNTUK SEMUA INPUT ---
-function setupAllPasswordToggles() {
-    // Setup untuk login form
-    setupPasswordToggle('password', 'passwordToggle');
-    
-    // Setup untuk sensor code form (jika ada)
-    const sensorForm = document.getElementById('sensorCodeForm');
-    if (sensorForm) {
-        // Tambahkan toggle button untuk current sensor code
-        const currentCodeInput = document.getElementById('currentSensorCode');
-        if (currentCodeInput) {
-            const parent = currentCodeInput.parentElement;
-            if (!parent.classList.contains('input-group')) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'input-group';
-                currentCodeInput.parentNode.insertBefore(wrapper, currentCodeInput);
-                wrapper.appendChild(currentCodeInput);
-                
-                const toggleButton = document.createElement('button');
-                toggleButton.className = 'btn btn-outline-secondary';
-                toggleButton.type = 'button';
-                toggleButton.id = 'currentSensorCodeToggle';
-                toggleButton.innerHTML = '<i class="fas fa-eye"></i>';
-                wrapper.appendChild(toggleButton);
-                
-                setupPasswordToggle('currentSensorCode', 'currentSensorCodeToggle');
-            }
-        }
-        
-        // Tambahkan toggle button untuk new sensor code
-        const newCodeInput = document.getElementById('newSensorCode');
-        if (newCodeInput) {
-            const parent = newCodeInput.parentElement;
-            if (!parent.classList.contains('input-group')) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'input-group';
-                newCodeInput.parentNode.insertBefore(wrapper, newCodeInput);
-                wrapper.appendChild(newCodeInput);
-                
-                const toggleButton = document.createElement('button');
-                toggleButton.className = 'btn btn-outline-secondary';
-                toggleButton.type = 'button';
-                toggleButton.id = 'newSensorCodeToggle';
-                toggleButton.innerHTML = '<i class="fas fa-eye"></i>';
-                wrapper.appendChild(toggleButton);
-                
-                setupPasswordToggle('newSensorCode', 'newSensorCodeToggle');
-            }
-        }
-        
-        // Tambahkan toggle button untuk confirm sensor code
-        const confirmCodeInput = document.getElementById('confirmSensorCode');
-        if (confirmCodeInput) {
-            const parent = confirmCodeInput.parentElement;
-            if (!parent.classList.contains('input-group')) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'input-group';
-                confirmCodeInput.parentNode.insertBefore(wrapper, confirmCodeInput);
-                wrapper.appendChild(confirmCodeInput);
-                
-                const toggleButton = document.createElement('button');
-                toggleButton.className = 'btn btn-outline-secondary';
-                toggleButton.type = 'button';
-                toggleButton.id = 'confirmSensorCodeToggle';
-                toggleButton.innerHTML = '<i class="fas fa-eye"></i>';
-                wrapper.appendChild(toggleButton);
-                
-                setupPasswordToggle('confirmSensorCode', 'confirmSensorCodeToggle');
-            }
-        }
-    }
-}
-
-// --- FUNGSI PERBAIKAN: SETUP INPUT OTOMATIS HURUF KAPITAL ---
-function setupAutoUppercaseInputs() {
-    // Input Nama - otomatis huruf kapital
-    const namaInput = document.getElementById('nama');
-    if (namaInput) {
-        namaInput.addEventListener('input', function() {
-            // Simpan posisi cursor
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            
-            // Ubah ke huruf kapital
-            this.value = this.value.toUpperCase();
-            
-            // Kembalikan posisi cursor
-            this.setSelectionRange(start, end);
-        });
-        
-        // Juga untuk event paste
-        namaInput.addEventListener('paste', function(e) {
-            setTimeout(() => {
-                this.value = this.value.toUpperCase();
-            }, 10);
-        });
-    }
-    
-    // Input Alamat - otomatis huruf kapital
-    const alamatInput = document.getElementById('alamat');
-    if (alamatInput) {
-        alamatInput.addEventListener('input', function() {
-            // Simpan posisi cursor
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            
-            // Ubah ke huruf kapital
-            this.value = this.value.toUpperCase();
-            
-            // Kembalikan posisi cursor
-            this.setSelectionRange(start, end);
-        });
-        
-        // Juga untuk event paste
-        alamatInput.addEventListener('paste', function(e) {
-            setTimeout(() => {
-                this.value = this.value.toUpperCase();
-            }, 10);
-        });
-    }
 }
 
 function loadOfficialData() {
@@ -3708,73 +2022,59 @@ function updatePrivacyUI() {
     }
 }
 
+// --- PERBAIKAN: SETUP INPUT OTOMATIS HURUF KAPITAL ---
+function setupAutoUppercaseInputs() {
+    // Input Nama - otomatis huruf kapital
+    const namaInput = document.getElementById('nama');
+    if (namaInput) {
+        namaInput.addEventListener('input', function() {
+            // Simpan posisi cursor
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            
+            // Ubah ke huruf kapital
+            this.value = this.value.toUpperCase();
+            
+            // Kembalikan posisi cursor
+            this.setSelectionRange(start, end);
+        });
+        
+        // Juga untuk event paste
+        namaInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                this.value = this.value.toUpperCase();
+            }, 10);
+        });
+    }
+    
+    // Input Alamat - otomatis huruf kapital
+    const alamatInput = document.getElementById('alamat');
+    if (alamatInput) {
+        alamatInput.addEventListener('input', function() {
+            // Simpan posisi cursor
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            
+            // Ubah ke huruf kapital
+            this.value = this.value.toUpperCase();
+            
+            // Kembalikan posisi cursor
+            this.setSelectionRange(start, end);
+        });
+        
+        // Juga untuk event paste
+        alamatInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                this.value = this.value.toUpperCase();
+            }, 10);
+        });
+    }
+}
+
 // --- EVENT LISTENERS ---
 function setupEventListeners() {
     // Password Toggle sudah dihandle oleh setupAllPasswordToggles()
     
-    // Login Form dengan username dan password
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('loginButton');
-            const spinner = document.getElementById('loginSpinner');
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (!btn || !spinner) return;
-            
-            // Validasi login dengan username dan password
-            const loginResult = validateLogin(username, password);
-            
-            if (!loginResult.success) {
-                showNotification('Username atau password salah! Periksa kembali atau hubungi administrator.', 'error');
-                return;
-            }
-            
-            btn.disabled = true;
-            spinner.classList.remove('d-none');
-            btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
-            
-            setTimeout(() => {
-                sessionStorage.setItem('simata_session', 'active');
-                sessionStorage.setItem('logged_in_user', username);
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('appContent').style.display = 'block';
-                initializeCharts();
-                updateDashboard();
-                renderDataTable();
-                loginSuccessModal.show();
-                btn.disabled = false;
-                spinner.classList.add('d-none');
-                btn.innerHTML = 'BUKA DASHBOARD';
-                
-                // Tampilkan username yang login
-                showNotification(`Login berhasil! Selamat datang ${username}`, 'success');
-            }, 1200);
-        });
-    }
-
-    // Continue to Dashboard
-    const continueBtn = document.getElementById('btnContinueDashboard');
-    if (continueBtn) {
-        continueBtn.addEventListener('click', function() {
-            loginSuccessModal.hide();
-            setTimeout(() => {
-                welcomeModal.show();
-            }, 300);
-        });
-    }
-
-    // Welcome Modal Reload
-    const welcomeReloadBtn = document.getElementById('btnWelcomeReload');
-    if (welcomeReloadBtn) {
-        welcomeReloadBtn.addEventListener('click', function() {
-            welcomeModal.hide();
-            handleReloadRepo();
-        });
-    }
-
     // No WhatsApp Button
     const noWaBtn = document.getElementById('btnNoWA');
     if (noWaBtn) {
@@ -3796,35 +2096,6 @@ function setupEventListeners() {
                 this.classList.add('active', 'btn-secondary');
                 this.classList.remove('btn-outline-secondary');
                 this.textContent = "Batal";
-            }
-        });
-    }
-
-    // Privacy Toggle
-    const privacyToggle = document.getElementById('privacyToggle');
-    if (privacyToggle) {
-        privacyToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            const currentStatus = appSettings.privacyMode;
-            
-            if (currentStatus === true) {
-                const code = prompt("MASUKKAN KODE KEAMANAN SENSOR untuk menonaktifkan sensor:");
-                if (code === appSettings.securityCodeSensor) {
-                    appSettings.privacyMode = false;
-                    saveSettings(); 
-                    updatePrivacyUI(); 
-                    renderDataTable();
-                    showNotification('Sensor Data dinonaktifkan.', 'warning');
-                } else { 
-                    alert("Kode Keamanan Sensor Salah!"); 
-                    this.checked = true;
-                }
-            } else {
-                appSettings.privacyMode = true;
-                saveSettings(); 
-                updatePrivacyUI(); 
-                renderDataTable();
-                showNotification('Sensor Data diaktifkan.', 'success');
             }
         });
     }
@@ -4115,7 +2386,6 @@ function setupEventListeners() {
                 showLoading("Membuat Backup", "Sedang membuat backup data sebelum keluar. Mohon tunggu...");
                 setTimeout(() => {
                     sessionStorage.removeItem('simata_session');
-                    sessionStorage.removeItem('logged_in_user');
                     // Reset autentikasi menu saat logout
                     resetMenuAuth();
                     backupData();
@@ -4247,39 +2517,6 @@ function setupEventListeners() {
             
             saveSettings();
             showNotification('Data pejabat penandatangan berhasil disimpan!', 'success');
-        });
-    }
-
-    // Sensor Code Form
-    const sensorCodeForm = document.getElementById('sensorCodeForm');
-    if (sensorCodeForm) {
-        sensorCodeForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const currentCode = document.getElementById('currentSensorCode').value;
-            const newCode = document.getElementById('newSensorCode').value;
-            const confirmCode = document.getElementById('confirmSensorCode').value;
-            
-            if (currentCode !== appSettings.securityCodeSensor) {
-                showNotification('Kode keamanan sensor saat ini salah!', 'error');
-                return;
-            }
-            
-            if (newCode.length < 6) {
-                showNotification('Kode keamanan baru minimal 6 digit!', 'error');
-                return;
-            }
-            
-            if (newCode !== confirmCode) {
-                showNotification('Konfirmasi kode baru tidak cocok!', 'error');
-                return;
-            }
-            
-            appSettings.securityCodeSensor = newCode;
-            saveSettings();
-            document.getElementById('currentSensorCode').value = '';
-            document.getElementById('newSensorCode').value = '';
-            document.getElementById('confirmSensorCode').value = '';
-            showNotification('Kode keamanan sensor berhasil diperbarui!', 'success');
         });
     }
 
@@ -4534,215 +2771,6 @@ function viewDetail(id) {
     document.getElementById('d_tgl_valid').innerText = d.tanggalValidasi;
     document.getElementById('d_validator').innerText = d.validator;
     detailModal.show();
-}
-
-function downloadSinglePdf(id) {
-    const d = appData.find(item => item.id == id);
-    if(!d) return;
-
-    document.getElementById('qr-right').innerHTML = "";
-    const signatureText = `DOKUMEN SAH\nNama: ${appSettings.officialName}\nJabatan: ${appSettings.officialPosition}\nRef: ${d.kodeValidasi || 'N/A'}`;
-    new QRCode(document.getElementById("qr-right"), { 
-        text: signatureText, width: 256, height: 256,
-        colorDark: "#0984e3",
-        colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
-    });
-
-    setTimeout(() => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-        
-        doc.setDrawColor(12, 36, 97);
-        doc.setLineWidth(1);
-        doc.rect(10, 10, 190, 277);
-
-        doc.setFillColor(12, 36, 97);
-        doc.rect(10, 10, 190, 40, 'F');
-        
-        // PERBAIKAN: Format teks judul agar tidak terpotong
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(12); 
-        doc.setFont('helvetica', 'bold');
-        
-        // Judul utama dibagi menjadi 2 baris
-        const titleLines = doc.splitTextToSize('SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP', 180);
-        let titleY = 18;
-        
-        // Tampilkan judul baris demi baris
-        for (let i = 0; i < titleLines.length; i++) {
-            doc.text(titleLines[i], 105, titleY + (i * 6), { align: 'center' });
-        }
-        
-        // Hitung posisi Y setelah judul
-        const titleEndY = titleY + (titleLines.length * 6);
-        
-        doc.setFontSize(14);
-        doc.text('DINAS PERIKANAN', 105, titleEndY + 5, { align: 'center' });
-        doc.setTextColor(246, 185, 59);
-        doc.setFont('times', 'italic'); 
-        doc.setFontSize(12);
-        doc.text('"Situbondo Naik Kelas"', 105, titleEndY + 12, { align: 'center' });
-        
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(10);
-        doc.text(appSettings.appSubtitle, 105, titleEndY + 18, { align: 'center' });
-        
-        doc.setTextColor(0, 0, 0); 
-        doc.setFont('helvetica', 'bold'); 
-        doc.setFontSize(14);
-        doc.text('BIODATA NELAYAN TERDAFTAR', 105, titleEndY + 30, { align: 'center' });
-        doc.setLineWidth(0.5); 
-        doc.line(70, titleEndY + 33, 140, titleEndY + 33);
-
-        let y = titleEndY + 40;
-        const lineHeight = 7;
-        
-        const checkPage = (heightNeeded) => {
-            if (y + heightNeeded > 250) { 
-                doc.addPage();
-                doc.setDrawColor(12, 36, 97); 
-                doc.setLineWidth(1); 
-                doc.rect(10, 10, 190, 277);
-                y = 30; 
-            }
-        };
-
-        // PERBAIKAN: Gunakan maskData untuk NIK dan WhatsApp di PDF
-        const displayNik = maskData(d.nik);
-        const displayWa = maskData(d.whatsapp);
-
-        const printLine = (label, value) => {
-            checkPage(lineHeight);
-            doc.setFont('helvetica', 'normal'); 
-            doc.text(label, 25, y);
-            doc.setFont('helvetica', 'bold'); 
-            
-            if (label === 'Alamat' || label === 'Domisili' || value.length > 50) {
-                const splitText = doc.splitTextToSize(': ' + value, 110);
-                doc.text(splitText, 80, y);
-                y += (splitText.length * 6);
-            } else {
-                doc.text(': ' + value, 80, y);
-                y += lineHeight;
-            }
-        };
-
-        checkPage(30);
-        doc.setFontSize(11); 
-        doc.setFillColor(230, 230, 230);
-        doc.rect(20, y-4, 170, 6, 'F');
-        doc.text('I. IDENTITAS PRIBADI', 22, y); 
-        y += 12;
-        
-        doc.setFontSize(10);
-        printLine('Nama Lengkap', d.nama);
-        printLine('NIK', displayNik); // Gunakan NIK yang sudah disensor
-        printLine('Tempat / Tgl Lahir', `${d.tahunLahir} (Usia: ${d.usia} Thn)`);
-        printLine('Alamat Lengkap', d.alamat || '-'); // TAMBAHAN: Alamat
-        printLine('Domisili', `${d.desa}, ${d.kecamatan}`);
-        printLine('No. Handphone', displayWa); // Gunakan WhatsApp yang sudah disensor
-        y += 8;
-
-        checkPage(30);
-        doc.setFontSize(11); 
-        doc.setFillColor(230, 230, 230);
-        doc.rect(20, y-4, 170, 6, 'F');
-        doc.text('II. PROFESI & EKONOMI', 22, y); 
-        y += 12;
-
-        doc.setFontSize(10);
-        printLine('Status Profesi', d.profesi);
-        printLine('Posisi Kerja', d.status);
-        printLine('Alat Penangkapan Ikan (API)', d.alatTangkap);
-        printLine('Usaha Sampingan', d.usahaSampingan || '-');
-        y += 8;
-
-        checkPage(30);
-        doc.setFontSize(11); 
-        doc.setFillColor(230, 230, 230);
-        doc.rect(20, y-4, 170, 6, 'F');
-        doc.text('III. JENIS IKAN TANGKAPAN UTAMA', 22, y); 
-        y += 12;
-
-        doc.setFontSize(10);
-        const fishList = d.jenisIkan ? d.jenisIkan.split(', ') : [];
-        fishList.forEach((fish, idx) => {
-            printLine(`Ikan ${idx + 1}`, fish);
-        });
-        y += 8;
-
-        if(d.status === 'Pemilik Kapal') {
-            checkPage(30);
-            doc.setFontSize(11); 
-            doc.setFillColor(230, 230, 230);
-            doc.rect(20, y-4, 170, 6, 'F');
-            doc.text('IV. DATA ASET KAPAL', 22, y); 
-            y += 12;
-
-            doc.setFontSize(10);
-            printLine('Nama Kapal', d.namaKapal);
-            printLine('Jenis Kapal', d.jenisKapal);
-        }
-
-        if(y > 210) doc.addPage();
-
-        const footerY = 230; 
-        const sigCenterX = 150; 
-        const leftX = 25;
-
-        doc.setDrawColor(150);
-        doc.setLineWidth(0.5);
-        doc.rect(leftX, footerY, 70, 30);
-        
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(8);
-        doc.setTextColor(100);
-        doc.text("DOKUMEN INI TELAH DIVALIDASI", leftX + 35, footerY + 6, {align: 'center'});
-        doc.text("SECARA ELEKTRONIK OLEH", leftX + 35, footerY + 10, {align: 'center'});
-        doc.text("SISTEM SATU DATA (SIMPADAN TANGKAP)", leftX + 35, footerY + 14, {align: 'center'});
-        
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7);
-        doc.text("Dinas Perikanan Kabupaten Situbondo", leftX + 35, footerY + 20, {align: 'center'});
-        doc.setTextColor(0, 0, 255);
-        doc.text("www.dinasperikanansitubondo.com/simpadan", leftX + 35, footerY + 25, {align: 'center'});
-
-        doc.setFontSize(10); 
-        doc.setTextColor(0,0,0); 
-        doc.setFont('helvetica', 'normal');
-        const dateStr = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
-        doc.text(`Situbondo, ${dateStr}`, sigCenterX, footerY - 5, {align: 'center'});
-        doc.text('Diketahui Oleh :', sigCenterX, footerY, {align: 'center'});
-        doc.setFont('helvetica', 'bold');
-        doc.text(appSettings.officialPosition, sigCenterX, footerY + 5, {align: 'center'});
-
-        const qrRightCanvas = document.querySelector('#qr-right canvas');
-        if(qrRightCanvas) {
-            const imgRight = qrRightCanvas.toDataURL("image/png");
-            doc.addImage(imgRight, 'PNG', sigCenterX - 12.5, footerY + 8, 25, 25); 
-        }
-
-        const nameY = footerY + 38; 
-        doc.text(appSettings.officialName, sigCenterX, nameY, {align: 'center'});
-        doc.setFont('helvetica', 'normal');
-        doc.text(`NIP. ${appSettings.officialNip}`, sigCenterX, nameY + 5, {align: 'center'});
-
-        doc.setFontSize(7); 
-        doc.setTextColor(150);
-        doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')} | Ref ID: ${d.kodeValidasi || '-'}`, 105, 285, {align:'center'});
-
-        const totalPages = doc.getNumberOfPages();
-        for (let i = 1; i <= totalPages; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setTextColor(100);
-            doc.text(`Dokumen ini saling berhubungan - Halaman ${i} dari ${totalPages}`, 105, 292, { align: 'center' });
-        }
-
-        doc.save(`${d.nama}_${d.nik}.pdf`);
-        document.getElementById('qr-right').innerHTML = "";
-
-    }, 500);
 }
 
 function toggleBulkDeleteBtn() {
@@ -5094,15 +3122,6 @@ function loadSettings() {
             if (typeof loadedSettings.securityMenuDataNelayanEnabled === 'undefined') {
                 loadedSettings.securityMenuDataNelayanEnabled = true;
             }
-            // Load data pengguna jika ada
-            if (!loadedSettings.users) {
-                loadedSettings.users = [
-                    { username: 'BIDANGPN', password: '@12345' },
-                    { username: 'BIDANGPB', password: '@123456' },
-                    { username: 'BIDANGP4', password: '@1234567' },
-                    { username: 'BIDANGKESWAN', password: '@12345678' }
-                ];
-            }
             Object.assign(appSettings, loadedSettings);
         } catch (e) {
             console.error("Error loading settings:", e);
@@ -5169,324 +3188,7 @@ function showNotification(message, type = 'info') {
     bsToast.show();
 }
 
-// --- FUNGSI TAMBAHAN UNTUK KOMPATIBILITAS ---
-function safeGenerateIDCard(id) {
-    // Gunakan fungsi generateIDCard yang ada di main.js
-    generateIDCard(id);
-}
-
-// --- FUNGSI ID CARD YANG DISEMPURNAKAN (REVISI PERBAIKAN) ---
-function generateIDCard(id) {
-    const data = appData.find(item => item.id == id);
-    if (!data) {
-        alert('Data tidak ditemukan!');
-        return;
-    }
-
-    // Tampilkan loading
-    const loadingEl = document.getElementById('idcardLoading');
-    if (loadingEl) loadingEl.style.display = 'flex';
-
-    // Buat PDF dengan ukuran ID Card (85.6mm x 54mm) - ukuran standar ID Card
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: [85.6, 54]
-    });
-
-    // PERBAIKAN: Background warna abu-abu muda untuk halaman
-    doc.setFillColor(240, 240, 240); // Abu-abu muda (#f0f0f0)
-    doc.rect(0, 0, 85.6, 54, 'F');
-
-    // Area putih untuk ID Card dengan bayangan
-    doc.setFillColor(255, 255, 255);
-    doc.setDrawColor(200, 200, 200);
-    doc.setLineWidth(0.3);
-    
-    // Tambahkan efek bayangan
-    doc.setFillColor(220, 220, 220);
-    doc.roundedRect(3.5, 3.5, 80.6, 49, 3, 3, 'F');
-    
-    // Area utama ID Card (putih)
-    doc.setFillColor(255, 255, 255);
-    doc.setDrawColor(12, 36, 97); // Biru tua untuk border
-    doc.setLineWidth(0.5);
-    doc.roundedRect(2.5, 2.5, 80.6, 49, 3, 3, 'FD'); // FD: Fill and Draw
-    
-    // Header ID Card dengan warna biru muda (#4a69bd)
-    doc.setFillColor(74, 105, 189);  // Biru muda (#4a69bd)
-    doc.roundedRect(2.5, 2.5, 80.6, 10, 3, 3, 'F');
-    
-    // Teks header dengan warna putih
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'bold');
-    doc.text('DINAS PERIKANAN', 42.8, 6, { align: 'center' });
-    doc.text('KABUPATEN SITUBONDO', 42.8, 8.5, { align: 'center' });
-
-    // Garis pemisah dengan warna aksen oranye
-    doc.setDrawColor(246, 185, 59);
-    doc.setLineWidth(0.5);
-    doc.line(5, 11, 80, 11);
-
-    // PERBAIKAN: Judul ID Card diturunkan agar tidak tumpang tindih
-    doc.setTextColor(12, 36, 97);
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'bold');
-    doc.text('KARTU IDENTITAS NELAYAN TERDAFTAR', 42.8, 15, { align: 'center' }); // Diturunkan dari 14 ke 15
-
-    // Garis dekoratif tipis di bawah judul
-    doc.setDrawColor(200, 200, 200);
-    doc.setLineWidth(0.2);
-    doc.line(15, 16, 70, 16); // Diturunkan dari 15 ke 16
-
-    // Container untuk data pribadi (kiri) - posisi lebih ke bawah
-    const leftX = 5;
-    const dataY = 20; // Diturunkan dari 18 ke 20
-    const lineHeight = 3.2;
-
-    doc.setFontSize(5.5);
-    doc.setFont('helvetica', 'normal');
-    
-    // Fungsi untuk menampilkan data dengan label yang lebih rapi
-    const drawData = (label, value, y, isImportant = false) => {
-        doc.text(label + ':', leftX, y);
-        doc.setFont('helvetica', isImportant ? 'bold' : 'normal');
-        
-        // Potong teks jika terlalu panjang
-        let displayValue = value;
-        if (value && value.length > 25) {
-            displayValue = value.substring(0, 25) + '...';
-        }
-        
-        doc.text(displayValue, leftX + 18, y);
-        doc.setFont('helvetica', 'normal');
-    };
-
-    // Data pribadi dengan warna yang berbeda untuk label dan nilai
-    doc.setTextColor(100, 100, 100); // Abu-abu untuk label
-    
-    // Baris 1: Nama Lengkap
-    drawData('Nama Lengkap', data.nama, dataY, true);
-    
-    // Baris 2: NIK (dengan mask data)
-    const displayNik = maskData(data.nik);
-    drawData('NIK', displayNik, dataY + lineHeight);
-    
-    // Baris 3: TTL / Usia
-    drawData('TTL / Usia', `${data.tahunLahir} (${data.usia} Tahun)`, dataY + lineHeight * 2);
-    
-    // Baris 4: Alamat
-    doc.text('Alamat:', leftX, dataY + lineHeight * 3);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(12, 36, 97); // Biru untuk nilai
-    
-    const alamatText = data.alamat || `${data.desa}, ${data.kecamatan}`;
-    if (alamatText.length > 25) {
-        // Split alamat menjadi dua baris
-        const words = alamatText.split(' ');
-        let line1 = '';
-        let line2 = '';
-        
-        for (const word of words) {
-            if ((line1 + ' ' + word).length <= 25) {
-                line1 += (line1 ? ' ' : '') + word;
-            } else {
-                line2 += (line2 ? ' ' : '') + word;
-            }
-        }
-        
-        doc.text(line1, leftX + 18, dataY + lineHeight * 3);
-        if (line2) {
-            doc.text(line2, leftX + 18, dataY + lineHeight * 3.7);
-        }
-    } else {
-        doc.text(alamatText, leftX + 18, dataY + lineHeight * 3);
-    }
-    doc.setTextColor(100, 100, 100); // Kembali ke abu-abu untuk label berikutnya
-
-    // REVISI: Baris 5: Domisili (menggantikan Profesi)
-    doc.text('Domisili:', leftX, dataY + lineHeight * 4.3);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(12, 36, 97);
-    doc.text(`${data.desa}, ${data.kecamatan}`, leftX + 18, dataY + lineHeight * 4.3);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    
-    // REVISI: Baris 6: Status Pekerjaan (menggantikan Alat Tangkap)
-    doc.text('Status Pekerjaan:', leftX, dataY + lineHeight * 5.3);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(12, 36, 97);
-    
-    // Tentukan warna berdasarkan status
-    if (data.status === 'Pemilik Kapal') {
-        doc.setTextColor(41, 128, 185); // Biru untuk Pemilik Kapal
-    } else {
-        doc.setTextColor(39, 174, 96); // Hijau untuk Anak Buah Kapal
-    }
-    
-    doc.text(data.status, leftX + 18, dataY + lineHeight * 5.3);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont('helvetica', 'normal');
-    
-    // Baris 7: Kode Validasi dengan styling khusus
-    const kodeY = dataY + lineHeight * 6.3;
-    doc.text('Kode Validasi:', leftX, kodeY);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(12, 36, 97);
-    
-    // Background untuk kode validasi
-    doc.setFillColor(240, 245, 255);
-    const textWidth = doc.getTextWidth(data.kodeValidasi || '-');
-    doc.roundedRect(leftX + 18, kodeY - 1.5, textWidth + 2, 2.5, 1, 1, 'F');
-    
-    doc.text(data.kodeValidasi || '-', leftX + 19, kodeY);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont('helvetica', 'normal');
-
-    // QR Code (kanan) - ukuran lebih kecil dan profesional
-    const qrSize = 16; // QR Code 16x16 mm (lebih kecil)
-    const qrX = 85.6 - qrSize - 8; // Posisi X: kanan dengan margin 8mm
-    const qrY = 20; // Posisi Y: sejajar dengan data (diturunkan dari 18 ke 20)
-
-    // PERBAIKAN: Generate QR Code dengan informasi validasi dan link website
-    const qrCodeData = `SIMPADAN TANGKAP - ${data.kodeValidasi || data.nik}\nNama: ${data.nama}\nNIK: ${data.nik}\nAlamat: ${data.alamat || data.desa}\nDesa: ${data.desa}\nStatus: ${data.status}\nValidasi: ${data.tanggalValidasi}\n\n=== INFORMASI VALIDASI ===\nData ini VALID dan terdaftar secara resmi\npada Sistem Satu Data Nelayan (SIMPADAN TANGKAP)\nDinas Perikanan Kabupaten Situbondo\n\nUntuk verifikasi keaslian ID Card ini,\nkunjungi:\nwww.dinasperikanansitubondo.com/simpadan`;
-    
-    // Buat container sementara untuk QR Code
-    const qrContainer = document.createElement('div');
-    qrContainer.id = 'temp-qr-container-idcard';
-    qrContainer.style.width = qrSize + 'mm';
-    qrContainer.style.height = qrSize + 'mm';
-    qrContainer.style.position = 'absolute';
-    qrContainer.style.left = '-1000px';
-    qrContainer.style.top = '-1000px';
-    document.body.appendChild(qrContainer);
-
-    try {
-        new QRCode(qrContainer, {
-            text: qrCodeData,
-            width: 160, // Resolusi lebih tinggi untuk kualitas baik
-            height: 160,
-            colorDark: "#0c2461", // Warna biru yang sesuai dengan tema
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.M
-        });
-
-        // Tunggu QR Code selesai dibuat
-        setTimeout(() => {
-            const qrCanvas = qrContainer.querySelector('canvas');
-            if (qrCanvas) {
-                const imgData = qrCanvas.toDataURL('image/png');
-                
-                // Border biru di sekitar QR Code
-                doc.setDrawColor(12, 36, 97);
-                doc.setLineWidth(0.3);
-                doc.roundedRect(qrX - 0.5, qrY - 0.5, qrSize + 1, qrSize + 1, 1, 1);
-                
-                // Tambahkan QR Code ke PDF
-                doc.addImage(imgData, 'PNG', qrX, qrY, qrSize, qrSize);
-                
-                // PERBAIKAN: Label di bawah QR Code diperbarui
-                doc.setFontSize(4);
-                doc.setFont('helvetica', 'italic');
-                doc.setTextColor(100, 100, 100);
-                doc.text('Pindai untuk verifikasi keaslian', qrX + qrSize/2, qrY + qrSize + 2, { align: 'center' });
-            }
-
-            // Hapus elemen sementara
-            document.body.removeChild(qrContainer);
-
-            // PERBAIKAN: Garis pemisah horizontal antara data dan footer - DINAIIKAN ke atas
-            const separatorY = 44; // Dinaikkan dari 45 ke 44 (lebih ke atas)
-            doc.setDrawColor(220, 220, 220);
-            doc.setLineWidth(0.2);
-            doc.line(5, separatorY, 80, separatorY);
-
-            // PERBAIKAN: Footer dengan informasi validasi - DINAIIKAN ke atas
-            const footerY = separatorY + 2; // Dinaikkan dari separatorY + 3 ke separatorY + 2
-            doc.setFontSize(4);
-            doc.setFont('helvetica', 'italic');
-            doc.setTextColor(150, 150, 150);
-            
-            // Perbaikan: Teks footer diatur dengan wrap agar tidak keluar
-            const footerText1 = 'Kartu ini diterbitkan secara elektronik oleh Sistem Satu Data Nelayan (SIMPADAN TANGKAP)';
-            const footerText2 = `Validasi: ${data.tanggalValidasi} | ${data.validator}`;
-            
-            // Split teks jika terlalu panjang
-            const splitFooter1 = doc.splitTextToSize(footerText1, 75);
-            doc.text(splitFooter1, 42.8, footerY, { align: 'center' });
-            
-            // Hitung tinggi teks pertama untuk posisi teks kedua
-            const textHeight1 = splitFooter1.length * 1.5;
-            doc.text(footerText2, 42.8, footerY + textHeight1 + 1, { align: 'center' });
-
-            // Simpan PDF
-            const fileName = `IDCard_${data.nama.replace(/\s+/g, '_')}_${data.kodeValidasi || data.nik.substring(0, 8)}.pdf`;
-            doc.save(fileName);
-
-            // Sembunyikan loading
-            if (loadingEl) loadingEl.style.display = 'none';
-            
-            showNotification(`ID Card untuk ${data.nama} berhasil dibuat`, 'success');
-        }, 500);
-    } catch (error) {
-        console.error("Error generating QR code:", error);
-        
-        // Jika QR code error, buat placeholder yang lebih rapi
-        doc.setDrawColor(220, 220, 220);
-        doc.setFillColor(250, 250, 250);
-        doc.roundedRect(qrX, qrY, qrSize, qrSize, 1, 1, 'F');
-        doc.setFontSize(4);
-        doc.setTextColor(180, 180, 180);
-        doc.text('QR Code', qrX + qrSize/2, qrY + qrSize/2 - 1, { align: 'center' });
-        doc.text('tidak tersedia', qrX + qrSize/2, qrY + qrSize/2 + 1.5, { align: 'center' });
-
-        // PERBAIKAN: Garis pemisah horizontal
-        doc.setDrawColor(220, 220, 220);
-        doc.setLineWidth(0.2);
-        const separatorY = 44; // Dinaikkan dari 45 ke 44
-        doc.line(5, separatorY, 80, separatorY);
-
-        // PERBAIKAN: Footer - DINAIIKAN ke atas
-        const footerY = separatorY + 2;
-        doc.setFontSize(4);
-        doc.setFont('helvetica', 'italic');
-        doc.setTextColor(150, 150, 150);
-        
-        // Perbaikan: Teks footer diatur dengan wrap agar tidak keluar
-        const footerText1 = 'Kartu ini diterbitkan secara elektronik oleh Sistem Satu Data Nelayan (SIMPADAN TANGKAP)';
-        const footerText2 = `Validasi: ${data.tanggalValidasi} | ${data.validator}`;
-        
-        // Split teks jika terlalu panjang
-        const splitFooter1 = doc.splitTextToSize(footerText1, 75);
-        doc.text(splitFooter1, 42.8, footerY, { align: 'center' });
-        
-        // Hitung tinggi teks pertama untuk posisi teks kedua
-        const textHeight1 = splitFooter1.length * 1.5;
-        doc.text(footerText2, 42.8, footerY + textHeight1 + 1, { align: 'center' });
-
-        // Simpan PDF
-        const fileName = `IDCard_${data.nama.replace(/\s+/g, '_')}_${data.kodeValidasi || data.nik.substring(0, 8)}.pdf`;
-        doc.save(fileName);
-
-        // Sembunyikan loading
-        if (loadingEl) loadingEl.style.display = 'none';
-        
-        showNotification(`ID Card untuk ${data.nama} berhasil dibuat (tanpa QR Code)`, 'success');
-        
-        // Hapus elemen sementara
-        if (document.body.contains(qrContainer)) {
-            document.body.removeChild(qrContainer);
-        }
-    }
-}
-
-// Ekspos fungsi generateIDCard ke window
-window.generateIDCard = generateIDCard;
-
-// --- INISIALISASI TAMBAHAN ---
-// Pastikan fungsi-fungsi yang dipanggil dari event sudah tersedia di scope global
+// Ekspos fungsi yang diperlukan ke window
 window.loadDataByDesa = loadDataByDesa;
 window.loadDataByKecamatan = loadDataByKecamatan;
 window.setupInputForDesa = setupInputForDesa;
