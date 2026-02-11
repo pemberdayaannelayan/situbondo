@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>SIMPADAN TANGKAP - SISTEM PEMETAAN NELAYAN</title>
     
-    <!-- LOAD SEMUA CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     
-    <!-- Style tambahan untuk tombol informasi dan gambar modal -->
     <style>
         /* Tombol informasi jenis ikan */
         .fish-info-btn {
@@ -59,7 +57,7 @@
             transform: scale(1.1);
         }
 
-        /* Modal gambar ikan - DIPERBAIKI */
+        /* Modal gambar ikan */
         .fish-modal-img {
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -81,19 +79,13 @@
             margin: 0 auto 15px auto;
         }
         
-        /* Container untuk gambar ikan */
-        .fish-image-container {
+        /* Container untuk gambar */
+        .fish-image-container, .boat-image-container {
             margin-bottom: 20px;
             text-align: center;
         }
         
-        /* Container untuk gambar kapal */
-        .boat-image-container {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .fish-image-title {
+        .fish-image-title, .boat-image-title {
             font-size: 16px;
             font-weight: 600;
             color: #0c2461;
@@ -101,88 +93,22 @@
             text-align: left;
         }
         
-        .boat-image-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #0c2461;
-            margin-bottom: 8px;
-            text-align: left;
-        }
-        
-        .fish-image-caption {
+        .fish-image-caption, .boat-image-caption {
             font-size: 14px;
             color: #6c757d;
             text-align: left;
             font-style: italic;
-        }
-        
-        .boat-image-caption {
-            font-size: 14px;
-            color: #6c757d;
-            text-align: left;
-            font-style: italic;
-        }
-        
-        /* Loading untuk gambar */
-        .fish-image-loading {
-            min-height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .boat-image-loading {
-            min-height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            border-radius: 8px;
         }
         
         /* Perbaikan untuk backdrop modal */
-        .modal-backdrop {
-            z-index: 1040;
-        }
-        
-        .modal {
-            z-index: 1050;
-        }
+        .modal-backdrop { z-index: 1040; }
+        .modal { z-index: 1050; }
         
         /* Perbaikan untuk modal fishInfoModal dan boatInfoModal */
         #fishInfoModal .modal-content,
-        #boatInfoModal .modal-content {
-            z-index: 1060;
-        }
-        
-        /* Fix untuk login overlay - DITAMBAHKAN */
-        .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            overflow: auto;
-        }
-        
-        /* Fix untuk app content - DITAMBAHKAN */
-        #appContent {
-            display: none;
-        }
-        
-        .app-content-unauthenticated {
-            display: none !important;
-        }
+        #boatInfoModal .modal-content { z-index: 1060; }
     </style>
     
-    <!-- LOAD SEMUA JAVASCRIPT LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -190,228 +116,71 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- LOAD FILE JAVASCRIPT YANG DIPISAHKAN -->
     <script src="idcard.js" onerror="console.log('File idcard.js tidak ditemukan, menggunakan versi di main.js')"></script>
     <script src="reload.js" onerror="console.log('File reload.js belum tersedia di server, menggunakan database lokal.')"></script>
     <script src="convert.js"></script>
     <script src="main.js" defer></script>
     
-    <!-- Skrip untuk mengelola modal gambar ikan dan kapal - DIPERBAIKI -->
     <script>
-        // Fungsi untuk menampilkan modal info ikan
-        function showFishInfoModal() {
-            try {
-                // Hapus backdrop yang mungkin tertinggal
-                const existingBackdrops = document.querySelectorAll('.modal-backdrop');
-                existingBackdrops.forEach(backdrop => {
-                    backdrop.remove();
-                });
-                
-                // Hapus kelas modal-open dari body jika ada
-                document.body.classList.remove('modal-open');
-                
-                const fishModal = new bootstrap.Modal(document.getElementById('fishInfoModal'), {
-                    backdrop: true,
-                    keyboard: true
-                });
-                fishModal.show();
-                
-                // Preload gambar untuk memastikan dapat dimuat
-                preloadFishImages();
-            } catch (error) {
-                console.error('Gagal membuka modal info ikan:', error);
-                alert('Modal informasi ikan tidak dapat dibuka. Silakan coba lagi.');
-            }
-        }
-        
-        // Fungsi untuk menampilkan modal info kapal
-        function showBoatInfoModal() {
-            try {
-                // Hapus backdrop yang mungkin tertinggal
-                const existingBackdrops = document.querySelectorAll('.modal-backdrop');
-                existingBackdrops.forEach(backdrop => {
-                    backdrop.remove();
-                });
-                
-                // Hapus kelas modal-open dari body jika ada
-                document.body.classList.remove('modal-open');
-                
-                const boatModal = new bootstrap.Modal(document.getElementById('boatInfoModal'), {
-                    backdrop: true,
-                    keyboard: true
-                });
-                boatModal.show();
-                
-                // Preload gambar untuk memastikan dapat dimuat
-                preloadBoatImages();
-            } catch (error) {
-                console.error('Gagal membuka modal info kapal:', error);
-                alert('Modal informasi kapal tidak dapat dibuka. Silakan coba lagi.');
-            }
-        }
-        
-        // Fungsi untuk memuat gambar ikan secara asinkron
-        function preloadFishImages() {
-            const imageUrls = [
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-1.jpg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-2.jpg',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-3.jpg'
-            ];
-            
-            imageUrls.forEach((url, index) => {
-                const img = new Image();
-                img.src = url;
-                img.onload = function() {
-                    console.log(`Gambar ikan ${index + 1} berhasil dimuat`);
-                };
-                img.onerror = function() {
-                    console.error(`Gagal memuat gambar ikan ${index + 1}: ${url}`);
-                    // Tampilkan placeholder jika gambar gagal dimuat
-                    const imgElement = document.getElementById(`fishImage${index + 1}`);
-                    if (imgElement) {
-                        imgElement.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f8f9fa"/><text x="200" y="150" text-anchor="middle" font-family="Arial" font-size="16" fill="%236c757d">Gambar tidak tersedia</text></svg>';
-                        imgElement.alt = `Gambar referensi ikan ${index + 1} tidak tersedia`;
-                    }
-                };
-            });
-        }
-        
-        // Fungsi untuk memuat gambar kapal secara asinkron
-        function preloadBoatImages() {
-            const imageUrls = [
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-1.png',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-2.png',
-                'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-3.png'
-            ];
-            
-            imageUrls.forEach((url, index) => {
-                const img = new Image();
-                img.src = url;
-                img.onload = function() {
-                    console.log(`Gambar kapal ${index + 1} berhasil dimuat`);
-                };
-                img.onerror = function() {
-                    console.error(`Gagal memuat gambar kapal ${index + 1}: ${url}`);
-                    // Tampilkan placeholder jika gambar gagal dimuat
-                    const imgElement = document.getElementById(`boatImage${index + 1}`);
-                    if (imgElement) {
-                        imgElement.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f8f9fa"/><text x="200" y="150" text-anchor="middle" font-family="Arial" font-size="16" fill="%236c757d">Gambar tidak tersedia</text></svg>';
-                        imgElement.alt = `Gambar referensi kapal ${index + 1} tidak tersedia`;
-                    }
-                };
-            });
-        }
-        
-        // Fungsi untuk menampilkan gambar spesifik di modal
-        function showSpecificFishImage(imageNumber) {
-            showFishInfoModal();
-            // Jika perlu scroll ke gambar tertentu
-            setTimeout(() => {
-                const imageElement = document.getElementById(`fishImage${imageNumber}`);
-                if (imageElement) {
-                    imageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 500);
-        }
-        
-        // Fungsi untuk menampilkan gambar spesifik di modal kapal
-        function showSpecificBoatImage(imageNumber) {
-            showBoatInfoModal();
-            // Jika perlu scroll ke gambar tertentu
-            setTimeout(() => {
-                const imageElement = document.getElementById(`boatImage${imageNumber}`);
-                if (imageElement) {
-                    imageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 500);
-        }
-        
-        // Fungsi untuk menutup modal ikan dengan aman - DITAMBAHKAN
+        // Helper functions untuk modal gambar
         function closeFishInfoModalSafely() {
             try {
                 const modalElement = document.getElementById('fishInfoModal');
                 if (modalElement) {
                     const modal = bootstrap.Modal.getInstance(modalElement);
-                    if (modal) {
-                        modal.hide();
-                    }
-                    
-                    // Hapus backdrop setelah modal ditutup
+                    if (modal) modal.hide();
                     setTimeout(() => {
-                        const backdrops = document.querySelectorAll('.modal-backdrop');
-                        backdrops.forEach(backdrop => {
-                            backdrop.remove();
-                        });
-                        
-                        // Hapus kelas modal-open dari body
+                        document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
                         document.body.classList.remove('modal-open');
                         document.body.style.overflow = '';
                         document.body.style.paddingRight = '';
                     }, 300);
                 }
-            } catch (error) {
-                console.error('Error closing modal:', error);
-            }
+            } catch (error) { console.error('Error closing modal:', error); }
         }
         
-        // Fungsi untuk menutup modal kapal dengan aman - DITAMBAHKAN
         function closeBoatInfoModalSafely() {
             try {
                 const modalElement = document.getElementById('boatInfoModal');
                 if (modalElement) {
                     const modal = bootstrap.Modal.getInstance(modalElement);
-                    if (modal) {
-                        modal.hide();
-                    }
-                    
-                    // Hapus backdrop setelah modal ditutup
+                    if (modal) modal.hide();
                     setTimeout(() => {
-                        const backdrops = document.querySelectorAll('.modal-backdrop');
-                        backdrops.forEach(backdrop => {
-                            backdrop.remove();
-                        });
-                        
-                        // Hapus kelas modal-open dari body
+                        document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
                         document.body.classList.remove('modal-open');
                         document.body.style.overflow = '';
                         document.body.style.paddingRight = '';
                     }, 300);
                 }
-            } catch (error) {
-                console.error('Error closing modal:', error);
-            }
+            } catch (error) { console.error('Error closing modal:', error); }
+        }
+
+        function showFishInfoModal() {
+            try {
+                closeFishInfoModalSafely();
+                const fishModal = new bootstrap.Modal(document.getElementById('fishInfoModal'), { backdrop: true, keyboard: true });
+                fishModal.show();
+            } catch (error) { console.error('Gagal membuka modal info ikan:', error); }
         }
         
-        // Fungsi untuk kembali ke input data nelayan - DIPERBAIKI
+        function showBoatInfoModal() {
+            try {
+                closeBoatInfoModalSafely();
+                const boatModal = new bootstrap.Modal(document.getElementById('boatInfoModal'), { backdrop: true, keyboard: true });
+                boatModal.show();
+            } catch (error) { console.error('Gagal membuka modal info kapal:', error); }
+        }
+        
         function goToInputDataAfterModal() {
-            // Tutup modal dengan aman terlebih dahulu
             closeFishInfoModalSafely();
             closeBoatInfoModalSafely();
-            
-            // Tunggu sebentar untuk memastikan modal benar-benar tertutup
             setTimeout(() => {
-                try {
-                    // Klik tab input data
-                    const inputTab = document.getElementById('v-pills-input-tab');
-                    if (inputTab) {
-                        inputTab.click();
-                        
-                        // Scroll ke atas halaman
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
-                        
-                        // Fokus ke form input
-                        const namaInput = document.getElementById('nama');
-                        if (namaInput) {
-                            setTimeout(() => {
-                                namaInput.focus();
-                            }, 100);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error navigating to input tab:', error);
+                const inputTab = document.getElementById('v-pills-input-tab');
+                if (inputTab) {
+                    inputTab.click();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    const namaInput = document.getElementById('nama');
+                    if (namaInput) setTimeout(() => { namaInput.focus(); }, 100);
                 }
             }, 400);
         }
@@ -419,18 +188,294 @@
 </head>
 <body>
 
-    <!-- Modal Loading -->
     <div class="loading-modal-overlay" id="loadingModal" style="display: none;">
         <div class="loading-modal-content">
             <div class="loading-spinner"></div>
             <h3 class="loading-title" id="loadingTitle">Memproses Data</h3>
-            <p class="loading-message" id="loadingMessage">Mohon tunggu, sistem sedang memproses permintaan Anda. Proses ini mungkin memerlukan waktu beberapa saat tergantung jumlah data yang tersedia.</p>
-            <div class="loading-progress">
-                <div class="loading-progress-bar"></div>
+            <p class="loading-message" id="loadingMessage">Mohon tunggu, sistem sedang memproses permintaan Anda.</p>
+        </div>
+    </div>
+
+    <div id="qr-code-generator"><div id="qr-right"></div></div>
+    <div class="pdf-table-container" id="pdfTableContainer"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="login-overlay" id="loginModal">
+        <ul class="circles">
+            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+        </ul>
+        <div class="login-card">
+            <div class="login-header-new">
+                <div class="simata-logo-container">
+                    <div class="simata-icon-box">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logoku.png" alt="Logo" onerror="this.onerror=null; this.innerHTML='<i class=\'fas fa-eye fa-4x\'></i>';">
+                    </div>
+                </div>
+                <h1 class="simata-title">SIMPADAN TANGKAP</h1>
+                <p class="simata-subtitle">SISTEM SATU DATA NELAYAN</p>
+                <div class="simata-slogan">Situbondo Naik Kelas</div>
+            </div>
+            <div class="p-4 p-md-5 pt-2">
+                <form id="loginForm">
+                    <div class="mb-4 text-center">
+                        <p class="small text-primary fw-bold mb-3" id="currentDateDisplay"></p>
+                        
+                        <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden mb-3">
+                            <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-user text-primary"></i></span>
+                            <input type="text" class="form-control bg-light border-0 fs-6" id="username" placeholder="Masukkan Username" required autocomplete="username">
+                        </div>
+
+                        <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
+                            <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-key text-success"></i></span>
+                            <input type="password" class="form-control bg-light border-0 fs-6" id="securityCode" placeholder="Masukkan Password" required autocomplete="current-password">
+                            <button type="button" class="input-group-text bg-light border-0 password-toggle-btn" id="passwordToggle">
+                                <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton" style="background: var(--primary-gradient);">
+                        MASUK APLIKASI
+                        <span class="spinner-border spinner-border-sm d-none ms-2" id="loginSpinner"></span>
+                    </button>
+                </form>
+                
+                <div class="login-extra-buttons">
+                    <a href="https://drive.google.com/drive/folders/1zmLnQ8bXFEL682BXzA2pV6WsQq7p4wdo?usp=sharing" target="_blank" class="btn btn-outline-primary">
+                        <i class="fas fa-download me-2"></i>Panduan Aplikasi
+                    </a>
+                    <a href="http://www.dinasperikanansitubondo.com/simpadan/peta" target="_blank" class="btn btn-outline-success">
+                        <i class="fas fa-map me-2"></i>Lihat Peta
+                    </a>
+                </div>
+                
+                <div class="text-center mt-4 pt-3 border-top">
+                    <small class="text-muted opacity-75">&copy; 2025 Dinas Perikanan Kabupaten Situbondo</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade login-success-modal" id="loginSuccessModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="w-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="fas fa-check-circle fa-3x mb-3 text-warning"></i>
+                        <h4 class="fw-bold mb-0 text-center">Login Berhasil</h4>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="login-success-icon d-flex justify-content-center">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5 class="fw-bold text-center mb-4" style="color: #0c2461;">SELAMAT DATANG DI SIMPADAN TANGKAP</h5>
+                    <div class="welcome-message">
+                        <p class="mb-3 text-center">Anda telah berhasil masuk sebagai <span class="fw-bold text-primary" id="loggedInUserDisplay">USER</span>.</p>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button type="button" class="btn btn-primary px-5 fw-bold shadow" data-bs-dismiss="modal" id="btnContinueDashboard">
+                        <i class="fas fa-rocket me-2"></i>LANJUT KE DASHBOARD
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="welcomeModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content welcome-modal-content">
+                <div class="welcome-header">
+                    <i class="fas fa-satellite-dish fa-3x mb-3 text-warning"></i>
+                    <h4 class="fw-bold mb-0">Selamat Datang, Sobat!</h4>
+                </div>
+                <div class="welcome-body">
+                    <p class="text-muted mb-4">
+                        Untuk memastikan data terbaru, sistem merekomendasikan <strong>Sinkronisasi Data</strong>.
+                    </p>
+                    <div class="d-grid gap-2 justify-content-center">
+                        <button type="button" class="welcome-btn-reload" id="btnWelcomeReload">
+                            <i class="fas fa-sync me-2"></i> Sinkronisasi Data Sekarang
+                        </button>
+                        <button type="button" class="btn btn-link text-muted text-decoration-none btn-sm mt-2" data-bs-dismiss="modal">
+                            Tutup Notifikasi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content-unauthenticated" id="appContent" style="display:none;">
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        
+        <div class="app-container animate-fadeIn">
+             <div class="app-header">
+                <div class="app-logo-icon">
+                    <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logoku2.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <h1 class="app-title">SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP</h1>
+                <p class="app-subtitle" id="dynamicSubtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</p>
+                <div class="app-slogan">Situbondo Naik Kelas</div>
+                <div class="position-absolute top-0 end-0 p-3 d-none d-md-block">
+                    <span class="badge bg-white text-success border shadow-sm px-3 py-2 rounded-pill"><i class="fas fa-circle text-success me-2 small"></i>Online v6.0</span>
+                </div>
+            </div>
+
+            <div class="row g-0 flex-grow-1">
+                <div class="col-md-3 col-lg-2 bg-white border-end py-4" id="sidebarMenu">
+                    <div class="px-3 mb-3 text-muted small fw-bold text-uppercase" style="color: var(--secondary-color) !important; padding-left: 15px;">Menu Utama</div>
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+                        <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+                        <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button"><i class="fas fa-edit"></i> Input Data</button>
+                        <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button"><i class="fas fa-database"></i> Database Nelayan</button>
+                        <button class="nav-link" id="v-pills-verify-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verify" type="button"><i class="fas fa-check-circle"></i> Verifikasi KIN</button>
+                        <button class="nav-link" id="v-pills-print-tab" data-bs-toggle="pill" data-bs-target="#v-pills-print" type="button"><i class="fas fa-print"></i> Cetak Laporan</button>
+                        <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button"><i class="fas fa-file-export"></i> Ekspor Data</button>
+                        <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button"><i class="fas fa-cloud-download-alt"></i> Backup & Restore</button>
+                        <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button"><i class="fas fa-cog"></i> Pengaturan</button>
+                        <button class="nav-link" id="btn-refresh-page" type="button"><i class="fas fa-redo"></i> Refresh Halaman</button>
+                        <button class="nav-link" id="btn-reload-repo" type="button"><i class="fas fa-sync"></i> Reload Data <span class="spinner-border spinner-border-sm reload-spinner" id="reloadSpinner"></span></button>
+                        <div class="mt-4 pt-3 border-top px-3">
+                             <button class="nav-link text-danger w-100 justify-content-start bg-light" id="v-pills-logout-tab" type="button"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-9 col-lg-10 p-0 d-flex flex-column" style="background-color: #fff;">
+                    <div class="p-3 p-lg-5 flex-grow-1">
+                        <div class="tab-content" id="v-pills-tabContent">
+                            <div class="tab-pane fade show active" id="v-pills-dashboard">
+                                <h3 class="section-title">Ringkasan Eksekutif</h3>
+                                <div class="row g-3 dashboard-row">
+                                    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm h-100 text-white" style="background: var(--primary-gradient);"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-2"><span class="small fw-bold text-uppercase opacity-75">Total</span><i class="fas fa-users opacity-50 fa-2x"></i></div><h2 class="fw-bold mb-0" id="totalPenerima">0</h2></div></div></div>
+                                    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-2"><span class="text-muted small fw-bold text-uppercase">Nelayan Penuh Waktu</span><i class="fas fa-user-tie text-primary opacity-50 fa-2x"></i></div><h2 class="fw-bold text-dark mb-0" id="totalPenuhWaktu">0</h2></div></div></div>
+                                    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-2"><span class="text-muted small fw-bold text-uppercase">Kapal</span><i class="fas fa-ship text-info opacity-50 fa-2x"></i></div><h2 class="fw-bold text-dark mb-0" id="totalPemilik">0</h2></div></div></div>
+                                    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-2"><span class="text-muted small fw-bold text-uppercase">ABK</span><i class="fas fa-users text-info opacity-50 fa-2x"></i></div><h2 class="fw-bold text-dark mb-0" id="totalABK">0</h2></div></div></div>
+                                    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-2"><span class="text-muted small fw-bold text-uppercase">Sambilan Utama</span><i class="fas fa-user-clock text-warning opacity-50 fa-2x"></i></div><h2 class="fw-bold text-dark mb-0" id="totalSambilanUtama">0</h2></div></div></div>
+                                    <div class="col-6 col-lg-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-2"><span class="text-muted small fw-bold text-uppercase">Sambilan Tambahan</span><i class="fas fa-user-clock text-success opacity-50 fa-2x"></i></div><h2 class="fw-bold text-dark mb-0" id="totalSambilanTambahan">0</h2></div></div></div>
+                                </div>
+                                <div class="row mt-4 g-3">
+                                    <div class="col-md-6"><div class="card h-100 shadow-sm border-0"><div class="card-header bg-white fw-bold py-3"><i class="fas fa-chart-pie me-2 text-primary"></i> Proporsi Profesi</div><div class="card-body"><div class="chart-container-fixed"><canvas id="profesiChart"></canvas></div></div></div></div>
+                                    <div class="col-md-6"><div class="card h-100 shadow-sm border-0"><div class="card-header bg-white fw-bold py-3"><i class="fas fa-chart-bar me-2 text-primary"></i> Statistik Kepemilikan Kapal</div><div class="card-body"><div class="chart-container-fixed"><canvas id="kapalChart"></canvas></div></div></div></div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="v-pills-input">
+                                <h3 class="section-title">Formulir Pendataan</h3>
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white py-3 border-bottom"><i class="fas fa-file-alt me-2 text-primary"></i> Entri Data Baru <span class="badge bg-warning float-end" id="inputModeBadge">Mode: Global</span></div>
+                                    <div class="card-body p-4">
+                                        <form id="inputForm" novalidate>
+                                            <div class="alert alert-info small mb-4 border-0 bg-light-info text-primary"><i class="fas fa-info-circle me-2"></i>NIK digunakan sebagai validasi utama. <span id="desaWarning" class="text-danger fw-bold d-none"> - Anda harus memilih desa terlebih dahulu!</span></div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6"><label class="form-label">Nama Lengkap *</label><input type="text" class="form-control" id="nama" required placeholder="Sesuai KTP"></div>
+                                                <div class="col-md-6"><label class="form-label">NIK *</label><input type="text" class="form-control" id="nik" required maxlength="16" placeholder="16 Digit Angka"></div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6"><label class="form-label">No HP/WA *</label><div class="input-group"><span class="input-group-text">+62</span><input type="tel" class="form-control" id="whatsapp" required><button class="btn btn-outline-secondary" type="button" id="btnNoWA">Tidak Ada</button></div></div>
+                                                <div class="col-md-6"><label class="form-label">Profesi *</label><select class="form-select" id="profesi" required><option value="">Pilih...</option><option value="Nelayan Penuh Waktu">Nelayan Penuh Waktu</option><option value="Nelayan Sambilan Utama">Nelayan Sambilan Utama</option><option value="Nelayan Sambilan Tambahan">Nelayan Sambilan Tambahan</option></select><div id="profesiHelp" class="form-text small text-muted mt-1"></div></div>
+                                            </div>
+                                            <div class="row mb-3"><div class="col-md-12"><label class="form-label fw-bold text-primary">Alamat Lengkap *</label><textarea class="form-control border-primary" id="alamat" rows="2" required></textarea></div></div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-4"><label class="form-label">Status *</label><select class="form-select" id="statusNelayan" required><option value="">Pilih...</option><option value="Anak Buah Kapal">Anak Buah Kapal</option><option value="Pemilik Kapal">Pemilik Kapal</option></select></div>
+                                                <div class="col-md-4"><label class="form-label">Tahun Lahir *</label><input type="number" class="form-control" id="tahunLahir" required></div>
+                                                <div class="col-md-4"><label class="form-label fw-bold text-primary">Kecamatan *</label><select class="form-select border-primary" id="kecamatan" required><option value="">Pilih...</option></select></div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6"><label class="form-label">Usia</label><input type="text" class="form-control bg-light" id="usia" readonly></div>
+                                                <div class="col-md-6"><label class="form-label fw-bold text-primary">Desa *</label><select class="form-select border-primary" id="desa" required disabled><option value="">Pilih Kec Dulu</option></select></div>
+                                            </div>
+                                            <div class="row mb-3"><div class="col-md-12"><label class="form-label fw-bold">Alat Penangkapan Ikan (API) *</label><div class="card p-3 bg-light border"><select class="form-select" id="alatTangkap" required><option value="">Pilih API...</option></select><div id="apiInfo" class="mt-2" style="display:none;"></div></div></div></div>
+                                            <div id="ownerFields" style="display:none;" class="bg-light p-4 rounded-3 mb-3 border">
+                                                <h6 class="text-primary fw-bold border-bottom pb-2 mb-3">Detail Aset Kapal</h6>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6"><label class="form-label">Nama Kapal</label><input type="text" class="form-control" id="namaKapal"></div>
+                                                    <div class="col-md-6"><label class="form-label">Jenis Kapal <button type="button" class="boat-info-btn" onclick="showBoatInfoModal()"><i class="fas fa-info"></i></button></label><select class="form-select" id="jenisKapal"><option value="">Pilih...</option></select><div id="kapalInfo" class="mt-2" style="display:none;"></div><div id="apiMappingInfo" class="mt-2" style="display:none;"></div></div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6"><label class="form-label fw-bold">Jenis Ikan Tangkapan * <button type="button" class="fish-info-btn" onclick="showFishInfoModal()"><i class="fas fa-info"></i></button></label><div class="card p-3 bg-light border"><div id="fishCheckboxContainer" style="max-height: 200px; overflow-y: auto;"></div><input type="text" class="form-control form-control-sm mt-2" id="jenisIkanLainnya" placeholder="Lainnya..." style="display:none;"></div></div>
+                                                <div class="col-md-6"><label class="form-label">Usaha Sampingan</label><input type="text" class="form-control" id="usahaSampingan"></div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6"><label class="form-label">Tanggal Validasi</label><input type="date" class="form-control" id="tanggalValidasi" required readonly style="background-color: #f8f9fa;"></div>
+                                                <div class="col-md-6"><label class="form-label">Validator *</label><input type="text" class="form-control" id="validator" required></div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6"><label class="form-label">Link Dokumen</label><input type="url" class="form-control" id="driveLink"></div>
+                                                <div class="col-md-6"><label class="form-label fw-bold text-danger">Kode Validasi *</label><div class="input-group"><input type="text" class="form-control bg-light" id="kodeValidasi" readonly required><button type="button" class="btn btn-warning fw-bold" id="generateKodeBtn">GENERATE ID</button></div></div>
+                                            </div>
+                                            <div class="mb-4"><label class="form-label">Keterangan</label><textarea class="form-control" id="keterangan" rows="2"></textarea></div>
+                                            <div class="d-flex justify-content-end border-top pt-3"><button type="reset" class="btn btn-light me-2">Reset</button><button type="submit" class="btn btn-primary fw-bold shadow" id="submitFormBtn">SIMPAN DATA</button></div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="v-pills-data">
+                                <h3 class="section-title">Database Nelayan</h3>
+                                <div class="card mb-4 border-0 shadow-sm"><div class="card-header bg-white py-3 border-bottom"><h6 class="mb-0 fw-bold">Pengelolaan Data Wilayah</h6></div><div class="card-body p-3"><div class="d-flex flex-wrap gap-2 align-items-center"><button class="btn btn-info btn-sm" id="btnDataWilayah">Data Wilayah</button><button class="btn btn-warning btn-sm" id="btnInputGlobal">Input Global</button><span class="badge bg-primary ms-auto" id="currentWilayahBadge">Wilayah: Global</span></div><div class="mt-2 text-muted small"><span id="wilayahInfo">Mode Global</span></div></div></div>
+                                <div class="card mb-4 border-0 shadow-sm"><div class="card-header bg-white py-3 border-bottom"><h6 class="mb-0 fw-bold">Filter & Validasi</h6></div><div class="card-body bg-light rounded"><div class="row g-3"><div class="col-md-3"><select class="form-select form-select-sm" id="filterDesa"><option value="">Semua Desa</option></select></div><div class="col-md-3"><select class="form-select form-select-sm" id="filterProfesi"><option value="">Semua Profesi</option><option value="Nelayan Penuh Waktu">Nelayan Penuh Waktu</option><option value="Nelayan Sambilan Utama">Nelayan Sambilan Utama</option><option value="Nelayan Sambilan Tambahan">Nelayan Sambilan Tambahan</option></select></div><div class="col-md-3"><select class="form-select form-select-sm" id="filterStatus"><option value="">Semua Status</option><option value="Anak Buah Kapal">Anak Buah Kapal</option><option value="Pemilik Kapal">Pemilik Kapal</option></select></div><div class="col-md-3"><select class="form-select form-select-sm" id="filterJenisKapal"><option value="">Semua Kapal</option></select></div><div class="col-md-3"><select class="form-select form-select-sm" id="filterAlatTangkap"><option value="">Semua API</option></select></div><div class="col-md-3"><select class="form-select form-select-sm" id="filterUsaha"><option value="">Semua Usaha</option><option value="Ada">Ada</option><option value="Tidak">Tidak</option></select></div><div class="col-md-3"><button class="btn btn-primary w-100 btn-sm" id="applyFilterBtn">Terapkan</button></div><div class="col-md-3"><button class="btn btn-outline-secondary w-100 btn-sm" id="resetFilterBtn">Reset</button></div><div class="col-md-12 mt-2 d-flex justify-content-end gap-2"><button class="btn btn-sm shadow-sm" id="btnUnduhTabelPdf">Unduh PDF Tabel</button><button class="btn btn-sm shadow-sm" id="btnUnduhFilteredPdf">Unduh PDF (Filter)</button><button class="btn btn-danger btn-sm shadow-sm" id="btnCekGanda">Cek Ganda</button></div></div></div></div>
+                                <div class="card border-0 shadow-sm"><div class="card-header bg-white py-3"><div class="row align-items-center g-2"><div class="col-12 col-md-4"><h6 class="mb-0 fw-bold">Data Terdaftar</h6></div><div class="col-12 col-md-8 d-flex justify-content-md-end gap-2 flex-wrap"><div class="input-group flex-grow-1 flex-md-grow-0" style="width: 300px;"><span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span><input type="text" class="form-control border-start-0" id="searchData" placeholder="Cari..."></div><button class="btn btn-danger btn-sm d-none" id="bulkDeleteBtn">Hapus Terpilih</button></div></div></div><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th width="40" class="text-center"><input type="checkbox" id="selectAllCheckbox"></th><th width="50">No</th><th>Identitas</th><th>Kontak</th><th>Status</th><th>Aset Kapal</th><th>API</th><th>Aksi</th></tr></thead><tbody id="dataTableBody"></tbody></table></div><div class="d-flex justify-content-between align-items-center p-3 border-top bg-light"><div class="text-muted small" id="tableInfo"></div><div class="pagination-container"><span id="paginationInfo" class="me-2 small"></span><nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav></div></div><div class="p-2 small text-muted text-end border-top"><span id="sensorStatusText" class="badge bg-secondary">Sensor: ON</span></div></div></div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="v-pills-verify">
+                                <h3 class="section-title">Verifikasi KIN</h3>
+                                <div class="row mb-4"><div class="col-md-10 mx-auto"><div class="card shadow-sm"><div class="card-body p-4"><div class="input-group"><span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span><input type="text" class="form-control py-3" id="verifyInput" placeholder="Kode Validasi (VLD-...) atau NIK"><button class="btn btn-primary px-4 fw-bold" id="verifyBtn">Verifikasi</button></div><div class="mt-3 text-center"><span class="badge bg-light text-dark border me-2 cursor-pointer" onclick="setVerifyExample('kin')">Cek KIN</span><span class="badge bg-light text-dark border me-2 cursor-pointer" onclick="setVerifyExample('nik')">Cek NIK</span><span class="badge bg-light text-dark border cursor-pointer" onclick="setVerifyExample('all')">Lihat Semua KIN</span></div></div></div></div></div>
+                                <div class="row"><div class="col-md-12"><div class="card shadow-sm border-0 mb-4" id="verifyResultCard" style="display: none;"><div class="card-body p-0"><div class="verify-result-header" id="verifyResultHeader"></div><div class="p-4"><h5 class="fw-bold mb-1" id="verifyResultTitle"></h5><p class="mb-3" id="verifyResultSubtitle"></p><div class="row" id="verifyResultContent"></div><div class="mt-4 text-center"><button class="btn btn-outline-secondary me-2" onclick="resetVerifyForm()">Cari Lagi</button><button class="btn btn-primary me-2" id="verifyDetailBtn" style="display: none;">Detail</button><button class="btn btn-success" id="verifyIdCardBtn" style="display: none;">ID Card</button></div></div></div></div><div class="card shadow-sm border-0" id="allKinCard" style="display: none;"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>No</th><th>KIN</th><th>Nama</th><th>NIK</th><th>Desa</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="allKinTableBody"></tbody></table></div></div></div></div></div>
+                            </div>
+
+                            <div class="tab-pane fade" id="v-pills-print">
+                                <h3 class="section-title">Cetak Laporan</h3>
+                                <div class="card p-5 text-center shadow-sm border-0"><div class="mb-3"><i class="fas fa-file-pdf fa-4x text-danger opacity-50"></i></div><h5>Cetak Laporan Data Terfilter</h5><p class="text-muted">Cetak rekapitulasi lengkap sesuai filter saat ini.</p><button class="btn btn-danger px-5 mt-3 shadow" id="printPdfBtn"><i class="fas fa-download me-2"></i> Download PDF</button></div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="v-pills-export">
+                                <h3 class="section-title">Ekspor & Pelaporan</h3>
+                                <div class="row g-4"><div class="col-md-12"><div class="card p-4 border-success bg-white shadow-sm" style="border-left: 5px solid #25D366;"><div class="d-flex align-items-center"><div class="me-4 text-success"><i class="fab fa-whatsapp fa-3x"></i></div><div><h5 class="fw-bold">Lapor ke WhatsApp Center</h5><p class="mb-2 text-muted">Kirim file sinkronisasi (reload.js) ke admin.</p><button class="btn btn-success" id="sendWaBtn">Kirim Laporan</button></div></div></div></div><div class="col-md-6"><button class="btn btn-outline-success w-100 py-4 shadow-sm" id="exportExcelBtn"><i class="fas fa-file-excel fa-2x mb-2 d-block"></i>Download Excel</button></div><div class="col-md-6"><button class="btn btn-outline-warning w-100 py-4 shadow-sm" id="exportReloadJsBtn"><i class="fas fa-file-code fa-2x mb-2 d-block"></i>Download File Sinkronisasi</button></div></div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="v-pills-backup">
+                                <h3 class="section-title">Backup & Restore</h3>
+                                <div class="row g-4"><div class="col-md-6"><div class="card p-4 h-100 text-center border-primary shadow-sm"><h5>Download Backup</h5><button class="btn btn-primary w-100 mt-3" id="backupDataBtn">Unduh Database</button></div></div><div class="col-md-6"><div class="card p-4 h-100 text-center border-warning shadow-sm"><h5>Restore Data</h5><input type="file" class="form-control my-3" id="restoreFileInput" accept=".js,.json"><button class="btn btn-warning w-100 text-white" id="restoreDataBtn" disabled>Proses Restore</button></div></div></div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="v-pills-settings">
+                                <h3 class="section-title">Pengaturan</h3>
+                                <div class="card p-4 border-0 shadow-sm mb-4"><h6 class="fw-bold mb-3 border-bottom pb-2">Identitas Aplikasi</h6><form id="settingsForm"><div class="row mb-3"><div class="col-md-6"><label>Nama Aplikasi</label><input type="text" class="form-control" id="appName" readonly style="background-color:#f8f9fa;"></div><div class="col-md-6"><label>Nama Instansi</label><input type="text" class="form-control" id="appSubtitle"></div></div><div class="row mb-3"><div class="col-md-6"><label>Baris Per Halaman</label><input type="number" class="form-control" id="itemsPerPageSelect" min="1"></div></div><button type="submit" class="btn btn-primary">Simpan</button></form></div>
+                                <div class="card p-4 border-0 shadow-sm mb-4"><h6 class="fw-bold mb-3 border-bottom pb-2">Pejabat Penandatangan</h6><form id="officialForm"><div class="row mb-3"><div class="col-md-6"><label>Nama</label><input type="text" class="form-control" id="officialName" required></div><div class="col-md-6"><label>NIP</label><input type="text" class="form-control" id="officialNip" required></div></div><div class="mb-3"><label>Jabatan</label><input type="text" class="form-control" id="officialPosition" required></div><button type="submit" class="btn btn-primary">Simpan</button></form></div>
+                                <div class="card mb-4"><div class="card-header bg-warning text-white"><h5 class="mb-0">Keamanan Menu</h5></div><div class="card-body"><div class="mb-4"><div class="d-flex justify-content-between"><h6 class="mb-0">Menu Input Data</h6><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="toggleSecurityMenuInputData"></div></div><div id="securityMenuInputDataStatus"></div></div><div class="mb-4"><div class="d-flex justify-content-between"><h6 class="mb-0">Menu Data Nelayan</h6><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="toggleSecurityMenuDataNelayan"></div></div><div id="securityMenuDataNelayanStatus"></div></div></div></div>
+                                <div class="card p-4 border-0 shadow-sm mb-4"><h6 class="fw-bold mb-3 border-bottom pb-2">Kode Keamanan Sensor</h6><form id="sensorCodeForm"><div class="row mb-3"><div class="col-md-6"><label>Kode Saat Ini</label><input type="password" class="form-control" id="currentSensorCode" required></div><div class="col-md-6"><label>Kode Baru</label><input type="password" class="form-control" id="newSensorCode" required></div><div class="col-md-6"><label>Konfirmasi</label><input type="password" class="form-control" id="confirmSensorCode" required></div></div><button type="submit" class="btn btn-primary">Perbarui</button></form></div>
+                                <div class="card p-4 border-0 shadow-sm border-left border-4 border-danger"><h6 class="fw-bold mb-3 text-danger">Privasi Data</h6><div class="d-flex justify-content-between align-items-center"><div><strong>Sensor Data Pribadi (NIK & No. HP)</strong></div><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="privacyToggle" style="width: 3em; height: 1.5em;" checked></div></div><div id="privacyStatus" class="mt-2 small"></div></div>
+                            </div>
+                        </div>
+                        
+                        <footer class="main-footer">
+                            <div class="container">
+                                <h5 class="footer-brand">SISTEM MANAJEMEN & PEMETAAN DATA PEMBERDAYAAN NELAYAN TANGKAP</h5>
+                                <div class="footer-text">&copy; 2025 Bidang Pemberdayaan Nelayan <span class="footer-divider">|</span> Dinas Perikanan Kabupaten Situbondo</div>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="detailModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content border-0 shadow-lg"><div class="modal-header modal-header-custom"><h5 class="modal-title fw-bold"><i class="fas fa-id-card me-2"></i>DETAIL LENGKAP</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body p-4 bg-light"><div class="card border-0 shadow-sm mb-3"><div class="card-body"><div class="row"><div class="col-md-6 border-end"><h6 class="text-primary fw-bold mb-3">IDENTITAS</h6><div class="detail-label">Nama</div><div class="detail-value" id="d_nama">-</div><div class="detail-label">NIK</div><div class="detail-value font-monospace" id="d_nik"></div><div class="detail-label">TTL/Usia</div><div class="detail-value" id="d_usia">-</div><div class="detail-label">Alamat</div><div class="detail-value" id="d_alamat">-</div><div class="detail-label">Domisili</div><div class="detail-value" id="d_domisili">-</div><div class="detail-label">Kontak</div><div class="detail-value font-monospace" id="d_wa">-</div></div><div class="col-md-6 ps-md-4"><h6 class="text-primary fw-bold mb-3">PROFESI</h6><div class="detail-label">Profesi</div><div class="detail-value"><span id="d_profesi"></span></div><div class="detail-label">Status</div><div class="detail-value" id="d_status">-</div><div class="detail-label">API</div><div class="detail-value" id="d_alatTangkap">-</div><div class="detail-label">Sampingan</div><div class="detail-value" id="d_usaha">-</div></div></div></div></div><div class="card border-0 shadow-sm mb-3" id="d_kapal_card" style="display:none;"><div class="card-body bg-white border-left border-4 border-info"><h6 class="text-info fw-bold mb-3">DATA KAPAL</h6><div class="row"><div class="col-6"><div class="detail-label">Nama</div><div class="fw-bold" id="d_namaKapal"></div></div><div class="col-6"><div class="detail-label">Jenis</div><div class="fw-bold" id="d_jenisKapal"></div></div></div></div></div><div class="card border-0 shadow-sm mb-3"><div class="card-body bg-white border-left border-4 border-success"><h6 class="text-success fw-bold mb-3">IKAN TANGKAPAN</h6><div id="d_ikan"></div></div></div><div class="text-end text-muted small fst-italic">Validasi: <span id="d_tgl_valid">-</span> oleh <span id="d_validator">-</span></div></div><div class="modal-footer bg-white"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button><button type="button" class="btn btn-danger" id="btnDownloadDetailPdf">UNDUH PDF</button></div></div></div></div>
+
+        <div class="modal fade" id="fishInfoModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5 class="modal-title fw-bold">Referensi Ikan</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closeFishInfoModalSafely()"></button></div><div class="modal-body"><div class="row"><div class="col-md-12 mb-4"><div class="fish-image-container"><div class="fish-image-title">Gambar 1</div><img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-1.jpg" class="fish-modal-img img-fluid" onerror="this.onerror=null; this.style.display='none';"><div class="fish-image-caption">Ilustrasi ikan tangkapan</div></div></div><div class="col-md-12 mb-4"><div class="fish-image-container"><div class="fish-image-title">Gambar 2</div><img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-2.jpg" class="fish-modal-img img-fluid" onerror="this.onerror=null; this.style.display='none';"><div class="fish-image-caption">Klasifikasi ikan</div></div></div></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeFishInfoModalSafely()">Tutup</button><button type="button" class="btn btn-primary" onclick="goToInputDataAfterModal()">Input Data</button></div></div></div></div>
+
+        <div class="modal fade" id="boatInfoModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title fw-bold">Referensi Kapal</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closeBoatInfoModalSafely()"></button></div><div class="modal-body"><div class="row"><div class="col-md-12 mb-4"><div class="boat-image-container"><div class="boat-image-title">Gambar 1</div><img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-1.png" class="boat-modal-img img-fluid" onerror="this.onerror=null; this.style.display='none';"><div class="boat-image-caption">Perahu Tradisional</div></div></div><div class="col-md-12 mb-4"><div class="boat-image-container"><div class="boat-image-title">Gambar 2</div><img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-2.png" class="boat-modal-img img-fluid" onerror="this.onerror=null; this.style.display='none';"><div class="boat-image-caption">Kapal Motor</div></div></div></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeBoatInfoModalSafely()">Tutup</button><button type="button" class="btn btn-primary" onclick="goToInputDataAfterModal()">Input Data</button></div></div></div></div>
+
+        <div class="modal fade" id="modalDataWilayah" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content"><div class="wilayah-modal-header"><div class="d-flex justify-content-between align-items-center"><div><h5 class="modal-title fw-bold">Data Wilayah</h5></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div></div><div class="modal-body p-0"><div class="wilayah-search-box px-4"><div class="row align-items-center mb-3"><div class="col-md-6"><div class="input-group"><span class="input-group-text"><i class="fas fa-search"></i></span><input type="text" class="form-control" id="searchWilayah" placeholder="Cari wilayah..."></div></div><div class="col-md-6"><div class="d-flex justify-content-end align-items-center gap-3"><div class="wilayah-status-indicator" id="wilayahStatusIndicator"></div><button class="btn btn-warning" id="btnInputGlobalModal">Switch Global</button></div></div></div></div><div class="wilayah-tabs-container px-4"><ul class="nav nav-tabs wilayah-tabs" id="wilayahTabs"><li class="nav-item"><button class="nav-link active" id="desa-tab" data-bs-toggle="tab" data-bs-target="#desa-panel">Data Desa</button></li><li class="nav-item"><button class="nav-link" id="kecamatan-tab" data-bs-toggle="tab" data-bs-target="#kecamatan-panel">Data Kecamatan</button></li></ul></div><div class="tab-content px-4 pb-4"><div class="tab-pane fade show active" id="desa-panel"><div class="wilayah-global-card mb-4"><button class="btn btn-warning px-4" id="btnGlobalMode">Aktifkan Global</button></div><div class="wilayah-grid" id="wilayahDesaCardsContainer"></div><div class="wilayah-empty-state d-none" id="wilayahDesaEmptyState">Tidak ditemukan</div></div><div class="tab-pane fade" id="kecamatan-panel"><div class="wilayah-global-card mb-4"><button class="btn btn-warning px-4" id="btnGlobalModeKecamatan">Aktifkan Global</button></div><div class="wilayah-grid" id="wilayahKecamatanCardsContainer"></div><div class="wilayah-empty-state d-none" id="wilayahKecamatanEmptyState">Tidak ditemukan</div></div></div></div><div class="modal-footer border-top py-3"><div class="d-flex justify-content-between w-100"><div class="text-muted small"><span id="totalDesaCount">0</span> desa, <span id="totalKecamatanCount">0</span> kecamatan</div><button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div></div></div></div></div>
+
+        <div class="fab-container" id="fabMenu"><button class="fab-main" id="fabMainBtn"><i class="fas fa-plus"></i></button><a href="#" class="fab-item" id="fabInput"><i class="fas fa-pencil-alt"></i></a><a href="#" class="fab-item" id="fabFilter"><i class="fas fa-filter"></i></a><a href="#" class="fab-item" id="fabVerify"><i class="fas fa-check-circle"></i></a><a href="#" class="fab-item" id="fabExport"><i class="fas fa-file-export"></i></a><a href="#" class="fab-item" id="fabBackup"><i class="fas fa-cloud-download-alt"></i></a><a href="#" class="fab-item" id="fabSettings"><i class="fas fa-cog"></i></a><a href="#" class="fab-item" id="fabReload"><i class="fas fa-sync"></i></a></div>
+        
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;"><div class="toast notification-toast" role="alert"><div class="toast-header"><strong class="me-auto" id="toastTitle"></strong><button type="button" class="btn-close" data-bs-dismiss="toast"></button></div><div class="toast-body" id="toastMessage"></div></div></div>
+        <div class="sticky-warning" id="duplicateWarning"><div class="d-flex align-items-start"><div class="me-3 text-danger"><i class="fas fa-exclamation-triangle fa-2x"></i></div><div><h6 class="fw-bold text-danger mb-1">PERHATIAN: Data Ganda!</h6><p class="small text-muted mb-2">NIK ganda terdeteksi.</p><button class="btn btn-sm btn-outline-danger" onclick="document.getElementById('v-pills-data-tab').click(); setTimeout(() => document.getElementById('btnCekGanda').click(), 200);">Periksa</button><button class="btn btn-sm btn-link text-muted text-decoration-none ms-2" onclick="document.getElementById('duplicateWarning').style.display='none'">Tutup</button></div></div></div>
+        <div class="idcard-loading" id="idcardLoading"><div class="idcard-loading-content"><div class="spinner-border text-primary mb-3"></div><h6>Membuat ID Card...</h6></div></div>
+    </div>
     <div id="qr-code-generator">
         <div id="qr-right"></div> 
     </div>
@@ -440,7 +485,6 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- PERBAIKAN LOGIN: TAMBAHKAN INPUT USERNAME -->
     <div class="login-overlay" id="loginModal">
         <ul class="circles">
             <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
@@ -457,26 +501,17 @@
                 <div class="simata-slogan">Situbondo Naik Kelas</div>
             </div>
             <div class="p-4 p-md-5 pt-2">
-                <!-- PERBAIKAN: UBAH FORM LOGIN SESUAI DENGAN main.js -->
                 <form id="loginForm">
                     <div class="mb-4 text-center">
                         <p class="small text-primary fw-bold mb-2" id="currentDateDisplay"></p>
-                        
-                        <!-- Input Username -->
-                        <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden mb-3">
-                            <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-user text-primary"></i></span>
-                            <input type="text" class="form-control bg-light border-0 fs-6" id="loginUsername" placeholder="Masukkan username" required>
-                        </div>
-                        
-                        <!-- Input Password -->
                         <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
                             <span class="input-group-text bg-light border-0 ps-4"><i class="fas fa-key text-success"></i></span>
-                            <input type="password" class="form-control bg-light border-0 fs-6" id="loginPassword" placeholder="Masukkan password" required>
-                            <button type="button" class="input-group-text bg-light border-0 password-toggle-btn" id="loginPasswordToggle">
+                            <input type="password" class="form-control bg-light border-0 fs-6" id="securityCode" placeholder="Masukkan kode keamanan" required>
+                            <button type="button" class="input-group-text bg-light border-0 password-toggle-btn" id="passwordToggle">
                                 <i class="fas fa-eye" id="passwordToggleIcon"></i>
                             </button>
                         </div>
-                        <small class="text-muted mt-2 d-block" id="passwordHint">Masukkan username dan password untuk mengakses sistem</small>
+                        <small class="text-muted mt-2 d-block" id="passwordHint">Kode Keamanan Berubah Setiap Hari</small>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow rounded-pill" id="loginButton" style="background: var(--primary-gradient);">
                         BUKA DASHBOARD
@@ -571,1310 +606,7 @@
         </div>
     </div>
 
-    <!-- Modal untuk informasi ikan -->
-    <div class="modal fade" id="fishInfoModal" tabindex="-1" aria-labelledby="fishInfoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="fishInfoModalLabel">Informasi Jenis Ikan Tangkapan</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4 fish-image-container">
-                            <h6 class="fish-image-title">Jenis Ikan Demersal</h6>
-                            <img id="fishImage1" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-1.jpg" 
-                                 alt="Jenis Ikan Demersal" class="fish-modal-img" 
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="fish-image-caption">Contoh ikan kategori demersal: Ikan Kerapu, Kakap Merah, Mangla, dll.</p>
-                        </div>
-                        <div class="col-md-4 fish-image-container">
-                            <h6 class="fish-image-title">Jenis Ikan Pelagis Kecil</h6>
-                            <img id="fishImage2" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-2.jpg" 
-                                 alt="Jenis Ikan Pelagis Kecil" class="fish-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="fish-image-caption">Contoh ikan kategori pelagis kecil: Tembang, Kembung, Selar, Layang, dll.</p>
-                        </div>
-                        <div class="col-md-4 fish-image-container">
-                            <h6 class="fish-image-title">Jenis Ikan Pelagis Besar</h6>
-                            <img id="fishImage3" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-3.jpg" 
-                                 alt="Jenis Ikan Pelagis Besar" class="fish-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="fish-image-caption">Contoh ikan kategori pelagis besar: Tongkol, Cakalang, Tenggiri, Tuna, dll.</p>
-                        </div>
-                    </div>
-                    <div class="alert alert-info mt-3">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Informasi:</strong> Pilih jenis ikan yang sesuai dengan hasil tangkapan utama nelayan. Klik tombol informasi <button class="fish-info-btn" disabled><i class="fas fa-info-circle"></i></button> untuk melihat referensi gambar.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="goToInputDataAfterModal()">Kembali ke Input Data</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal untuk informasi kapal -->
-    <div class="modal fade" id="boatInfoModal" tabindex="-1" aria-labelledby="boatInfoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="boatInfoModalLabel">Informasi Jenis Kapal Nelayan</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4 boat-image-container">
-                            <h6 class="boat-image-title">Perahu Tanpa Motor (PTM)</h6>
-                            <img id="boatImage1" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-1.png" 
-                                 alt="Perahu Tanpa Motor" class="boat-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="boat-image-caption">Perahu tradisional tanpa mesin, digerakkan dayung/layar.</p>
-                        </div>
-                        <div class="col-md-4 boat-image-container">
-                            <h6 class="boat-image-title">Perahu Motor Tempel (PMT)</h6>
-                            <img id="boatImage2" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-2.png" 
-                                 alt="Perahu Motor Tempel" class="boat-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="boat-image-caption">Perahu dengan mesin tempel di bagian belakang.</p>
-                        </div>
-                        <div class="col-md-4 boat-image-container">
-                            <h6 class="boat-image-title">Kapal Motor (KM)</h6>
-                            <img id="boatImage3" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-3.png" 
-                                 alt="Kapal Motor" class="boat-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="boat-image-caption">Kapal dengan mesin dalam, kapasitas lebih besar.</p>
-                        </div>
-                    </div>
-                    <div class="alert alert-info mt-3">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Informasi:</strong> Pilih jenis kapal yang sesuai dengan kapal yang digunakan nelayan. Klik tombol informasi <button class="boat-info-btn" disabled><i class="fas fa-info-circle"></i></button> untuk melihat referensi gambar.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="goToInputDataAfterModal()">Kembali ke Input Data</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Konten utama aplikasi (akan ditampilkan setelah login berhasil) -->
-    <div id="appContent" style="display: none;">
-        <!-- NAVBAR -->
-        <nav class="navbar navbar-expand-lg navbar-dark fixed-top main-navbar">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="#">
-                    <div class="brand-logo">
-                        <i class="fas fa-fish me-2"></i>
-                    </div>
-                    <div class="brand-text">
-                        <div class="app-title">SIMPADAN TANGKAP</div>
-                        <div class="app-subtitle" id="dynamicSubtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</div>
-                    </div>
-                </a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="mobileMenuBtn">
-                                <i class="fas fa-bars me-1"></i> Menu
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="btn-reload-repo">
-                                <i class="fas fa-sync-alt me-1"></i> Sinkronisasi
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="btn-refresh-page">
-                                <i class="fas fa-redo me-1"></i> Refresh
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link">
-                                <i class="fas fa-user me-1"></i>
-                                <span id="currentUserDisplay">Administrator</span>
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link sensor-status" id="sensorStatusText">
-                                <i class="fas fa-shield-alt me-1"></i> Sensor: ON
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- SIDEBAR & MAIN CONTENT -->
-        <div class="container-fluid main-container">
-            <div class="row">
-                <!-- Sidebar Menu -->
-                <div class="col-lg-2 col-md-3 sidebar" id="sidebarMenu">
-                    <div class="sidebar-header">
-                        <h5><i class="fas fa-bars me-2"></i> Menu Navigasi</h5>
-                    </div>
-                    
-                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button" role="tab">
-                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button" role="tab">
-                            <i class="fas fa-edit me-2"></i> Input Data
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button" role="tab">
-                            <i class="fas fa-database me-2"></i> Data Nelayan
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-filter-tab" data-bs-toggle="pill" data-bs-target="#v-pills-filter" type="button" role="tab">
-                            <i class="fas fa-filter me-2"></i> Filter & Validasi
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-verify-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verify" type="button" role="tab">
-                            <i class="fas fa-search me-2"></i> Verifikasi KIN
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button" role="tab">
-                            <i class="fas fa-file-export me-2"></i> Ekspor Data
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button" role="tab">
-                            <i class="fas fa-hdd me-2"></i> Backup & Restore
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab">
-                            <i class="fas fa-cog me-2"></i> Pengaturan
-                        </button>
-                        
-                        <button class="nav-link text-danger" id="v-pills-logout-tab" type="button">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </button>
-                    </div>
-                    
-                    <div class="sidebar-footer">
-                        <div class="current-wilayah" id="currentWilayahBadge">
-                            <i class="fas fa-map-marker-alt me-2"></i> Wilayah: Global
-                        </div>
-                        <small class="text-muted" id="wilayahInfo">Mode Global: Data dari reload.js</small>
-                    </div>
-                </div>
-                
-                <!-- Main Content -->
-                <div class="col-lg-10 col-md-9 offset-lg-2 offset-md-3 main-content">
-                    <div class="tab-content" id="v-pills-tabContent">
-                        <!-- Dashboard Tab -->
-                        <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
-                            <div class="dashboard-header">
-                                <h2><i class="fas fa-tachometer-alt me-2"></i> Dashboard SIMPADAN TANGKAP</h2>
-                                <p class="text-muted">Statistik dan analisis data nelayan terpadu</p>
-                            </div>
-                            
-                            <!-- Statistik Cards -->
-                            <div class="row mb-4">
-                                <div class="col-md-3">
-                                    <div class="stat-card bg-primary">
-                                        <div class="stat-icon">
-                                            <i class="fas fa-users"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 id="totalPenerima">0</h3>
-                                            <p>Total Nelayan</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stat-card bg-warning">
-                                        <div class="stat-icon">
-                                            <i class="fas fa-user-clock"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 id="totalPenuhWaktu">0</h3>
-                                            <p>Penuh Waktu</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stat-card bg-success">
-                                        <div class="stat-icon">
-                                            <i class="fas fa-ship"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 id="totalPemilik">0</h3>
-                                            <p>Pemilik Kapal</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stat-card bg-info">
-                                        <div class="stat-icon">
-                                            <i class="fas fa-user-friends"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 id="totalABK">0</h3>
-                                            <p>Anak Buah Kapal</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Charts -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="chart-card">
-                                        <div class="chart-header">
-                                            <h5><i class="fas fa-chart-pie me-2"></i> Distribusi Profesi Nelayan</h5>
-                                        </div>
-                                        <div class="chart-container">
-                                            <canvas id="profesiChart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="chart-card">
-                                        <div class="chart-header">
-                                            <h5><i class="fas fa-chart-bar me-2"></i> Distribusi Jenis Kapal</h5>
-                                        </div>
-                                        <div class="chart-container">
-                                            <canvas id="kapalChart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Info Tambahan -->
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="info-card">
-                                        <div class="info-header bg-info">
-                                            <i class="fas fa-user-tag"></i>
-                                            <h5>Nelayan Sambilan Utama</h5>
-                                        </div>
-                                        <div class="info-body">
-                                            <h2 id="totalSambilanUtama">0</h2>
-                                            <p>Orang</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="info-card">
-                                        <div class="info-header bg-secondary">
-                                            <i class="fas fa-user-tag"></i>
-                                            <h5>Nelayan Sambilan Tambahan</h5>
-                                        </div>
-                                        <div class="info-body">
-                                            <h2 id="totalSambilanTambahan">0</h2>
-                                            <p>Orang</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="info-card">
-                                        <div class="info-header bg-purple">
-                                            <i class="fas fa-database"></i>
-                                            <h5>Data Wilayah</h5>
-                                        </div>
-                                        <div class="info-body">
-                                            <button class="btn btn-outline-primary w-100" id="btnDataWilayah">
-                                                <i class="fas fa-map me-2"></i> Kelola Data Wilayah
-                                            </button>
-                                            <small class="text-muted mt-2 d-block">Kelola data per desa/kecamatan</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Input Data Tab -->
-                        <div class="tab-pane fade" id="v-pills-input" role="tabpanel">
-                            <!-- Konten input data akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Data Nelayan Tab -->
-                        <div class="tab-pane fade" id="v-pills-data" role="tabpanel">
-                            <!-- Konten data nelayan akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Filter & Validasi Tab -->
-                        <div class="tab-pane fade" id="v-pills-filter" role="tabpanel">
-                            <!-- Konten filter & validasi akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Verifikasi KIN Tab -->
-                        <div class="tab-pane fade" id="v-pills-verify" role="tabpanel">
-                            <!-- Konten verifikasi KIN akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Ekspor Data Tab -->
-                        <div class="tab-pane fade" id="v-pills-export" role="tabpanel">
-                            <!-- Konten ekspor data akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Backup & Restore Tab -->
-                        <div class="tab-pane fade" id="v-pills-backup" role="tabpanel">
-                            <!-- Konten backup & restore akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Pengaturan Tab -->
-                        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel">
-                            <!-- Konten pengaturan akan diisi oleh main.js -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Floating Action Button -->
-        <div class="fab-container" id="fabMenu">
-            <button class="fab-main-btn" id="fabMainBtn">
-                <i class="fas fa-plus"></i>
-            </button>
-            
-            <button class="fab-btn fab-input" id="fabInput" title="Input Data">
-                <i class="fas fa-edit"></i>
-            </button>
-            
-            <button class="fab-btn fab-filter" id="fabFilter" title="Filter Data">
-                <i class="fas fa-filter"></i>
-            </button>
-            
-            <button class="fab-btn fab-verify" id="fabVerify" title="Verifikasi KIN">
-                <i class="fas fa-search"></i>
-            </button>
-            
-            <button class="fab-btn fab-export" id="fabExport" title="Ekspor Data">
-                <i class="fas fa-file-export"></i>
-            </button>
-            
-            <button class="fab-btn fab-backup" id="fabBackup" title="Backup Data">
-                <i class="fas fa-hdd"></i>
-            </button>
-            
-            <button class="fab-btn fab-settings" id="fabSettings" title="Pengaturan">
-                <i class="fas fa-cog"></i>
-            </button>
-            
-            <button class="fab-btn fab-reload" id="fabReload" title="Sinkronisasi Data">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal Detail -->
-    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <!-- Konten detail modal akan diisi oleh main.js -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Data Wilayah -->
-    <div class="modal fade" id="modalDataWilayah" tabindex="-1" aria-labelledby="modalDataWilayahLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <!-- Konten modal data wilayah akan diisi oleh main.js -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notifikasi -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div class="toast notification-toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto" id="toastTitle">Notifikasi</strong>
-                <small class="text-muted">baru saja</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="toastMessage">
-                Pesan notifikasi akan muncul di sini.
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading untuk ID Card -->
-    <div class="idcard-loading" id="idcardLoading">
-        <div class="idcard-loading-content">
-            <div class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <h6>Membuat ID Card...</h6>
-            <p class="small text-muted">Harap tunggu sebentar</p>
-        </div>
-    </div>
-
-    <!-- Skrip tambahan untuk mengelola gambar ikan dan kapal - DIPERBAIKI -->
-    <script>
-        // Event listener untuk modal fishInfoModal
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing login functionality...');
-            
-            // Setup untuk menampilkan tanggal
-            displayCurrentDate();
-            
-            // Setup password toggle
-            setupLoginPasswordToggle();
-            
-            // Setup form login
-            setupLoginForm();
-            
-            // Periksa apakah sudah login sebelumnya
-            checkPreviousLogin();
-            
-            const fishInfoModal = document.getElementById('fishInfoModal');
-            if (fishInfoModal) {
-                // Tangani event saat modal akan ditampilkan
-                fishInfoModal.addEventListener('show.bs.modal', function() {
-                    // Pastikan gambar dimuat dengan benar saat modal dibuka
-                    setTimeout(() => {
-                        const images = fishInfoModal.querySelectorAll('img');
-                        images.forEach(img => {
-                            if (img.complete && img.naturalHeight === 0) {
-                                img.src = img.src; // Coba muat ulang jika gagal
-                            }
-                        });
-                    }, 100);
-                });
-                
-                // Tangani event saat modal ditutup
-                fishInfoModal.addEventListener('hidden.bs.modal', function() {
-                    // Pastikan backdrop dihapus dengan benar
-                    setTimeout(() => {
-                        const backdrops = document.querySelectorAll('.modal-backdrop');
-                        backdrops.forEach(backdrop => {
-                            backdrop.remove();
-                        });
-                        
-                        // Hapus kelas modal-open dari body
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
-                        document.body.style.paddingRight = '';
-                    }, 300);
-                });
-            }
-            
-            // Event listener untuk modal boatInfoModal
-            const boatInfoModal = document.getElementById('boatInfoModal');
-            if (boatInfoModal) {
-                // Tangani event saat modal akan ditampilkan
-                boatInfoModal.addEventListener('show.bs.modal', function() {
-                    // Pastikan gambar dimuat dengan benar saat modal dibuka
-                    setTimeout(() => {
-                        const images = boatInfoModal.querySelectorAll('img');
-                        images.forEach(img => {
-                            if (img.complete && img.naturalHeight === 0) {
-                                img.src = img.src; // Coba muat ulang jika gagal
-                            }
-                        });
-                    }, 100);
-                });
-                
-                // Tangani event saat modal ditutup
-                boatInfoModal.addEventListener('hidden.bs.modal', function() {
-                    // Pastikan backdrop dihapus dengan benar
-                    setTimeout(() => {
-                        const backdrops = document.querySelectorAll('.modal-backdrop');
-                        backdrops.forEach(backdrop => {
-                            backdrop.remove();
-                        });
-                        
-                        // Hapus kelas modal-open dari body
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
-                        document.body.style.paddingRight = '';
-                    }, 300);
-                });
-            }
-            
-            // Tambahkan event listener untuk tombol info ikan di form input
-            const fishInfoBtn = document.querySelector('.fish-info-btn');
-            if (fishInfoBtn) {
-                fishInfoBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showFishInfoModal();
-                });
-            }
-            
-            // Tambahkan event listener untuk tombol info kapal di form input
-            const boatInfoBtn = document.querySelector('.boat-info-btn');
-            if (boatInfoBtn) {
-                boatInfoBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showBoatInfoModal();
-                });
-            }
-            
-            // Tangani event untuk semua tombol close di modal fishInfoModal
-            const fishModalCloseBtns = document.querySelectorAll('#fishInfoModal .btn-close, #fishInfoModal .btn-secondary');
-            fishModalCloseBtns.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    closeFishInfoModalSafely();
-                });
-            });
-            
-            // Tangani event untuk semua tombol close di modal boatInfoModal
-            const boatModalCloseBtns = document.querySelectorAll('#boatInfoModal .btn-close, #boatInfoModal .btn-secondary');
-            boatModalCloseBtns.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    closeBoatInfoModalSafely();
-                });
-            });
-        });
-        
-        // Fungsi untuk menampilkan tanggal
-        function displayCurrentDate() {
-            try {
-                const now = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const dateString = now.toLocaleDateString('id-ID', options);
-                const dateElement = document.getElementById('currentDateDisplay');
-                if (dateElement) {
-                    dateElement.innerHTML = `<i class="fas fa-calendar-day me-2"></i>${dateString}`;
-                }
-                
-                const hintElement = document.getElementById('passwordHint');
-                if (hintElement) {
-                    hintElement.innerHTML = `Masukkan username dan password untuk mengakses sistem`;
-                }
-            } catch (error) {
-                console.error('Error displaying date:', error);
-            }
-        }
-        
-        // Setup password toggle untuk login
-        function setupLoginPasswordToggle() {
-            const passwordInput = document.getElementById('loginPassword');
-            const toggleButton = document.getElementById('loginPasswordToggle');
-            
-            if (!passwordInput || !toggleButton) return;
-            
-            toggleButton.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                
-                // Ganti icon
-                const icon = this.querySelector('i');
-                if (type === 'password') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                    this.title = "Tampilkan password";
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                    this.title = "Sembunyikan password";
-                }
-            });
-        }
-        
-        // Setup form login
-        function setupLoginForm() {
-            const loginForm = document.getElementById('loginForm');
-            if (!loginForm) {
-                console.error('Login form not found!');
-                return;
-            }
-            
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                console.log('Login form submitted');
-                
-                const btn = document.getElementById('loginButton');
-                const spinner = document.getElementById('loginSpinner');
-                const inputUsername = document.getElementById('loginUsername').value;
-                const inputPassword = document.getElementById('loginPassword').value;
-                
-                if (!btn || !spinner) {
-                    console.error('Login button or spinner not found!');
-                    return;
-                }
-                
-                // Validasi input
-                if (!inputUsername || !inputPassword) {
-                    showNotification('Harap isi username dan password!', 'error');
-                    return;
-                }
-                
-                // Simulasikan validasi pengguna sederhana
-                // Data pengguna valid dari main.js
-                const validUsers = [
-                    { username: 'BIDANGPN', password: '@12345' },
-                    { username: 'BIDANGPB', password: '@123456' },
-                    { username: 'BIDANGP4', password: '@1234567' },
-                    { username: 'BIDANGKESWAN', password: '@12345678' }
-                ];
-                
-                const isValidUser = validUsers.some(user => 
-                    user.username === inputUsername && user.password === inputPassword
-                );
-                
-                if (!isValidUser) {
-                    showNotification('Username atau password salah! Periksa kembali atau hubungi administrator.', 'error');
-                    return;
-                }
-                
-                btn.disabled = true;
-                spinner.classList.remove('d-none');
-                btn.innerHTML = 'MEMBUKA SISTEM... <span class="spinner-border spinner-border-sm ms-2"></span>';
-                
-                // Simulasi proses login
-                setTimeout(() => {
-                    // Simpan session
-                    sessionStorage.setItem('simata_session', 'active');
-                    sessionStorage.setItem('simata_user', JSON.stringify({
-                        username: inputUsername,
-                        fullName: inputUsername,
-                        role: 'Administrator'
-                    }));
-                    
-                    // Sembunyikan login modal
-                    document.getElementById('loginModal').style.display = 'none';
-                    
-                    // Tampilkan app content
-                    document.getElementById('appContent').style.display = 'block';
-                    
-                    // Tampilkan modal login sukses
-                    const loginSuccessModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
-                    loginSuccessModal.show();
-                    
-                    // Reset form
-                    btn.disabled = false;
-                    spinner.classList.add('d-none');
-                    btn.innerHTML = 'BUKA DASHBOARD';
-                    
-                    console.log('Login successful!');
-                }, 1200);
-            });
-        }
-        
-        // Cek apakah sudah login sebelumnya
-        function checkPreviousLogin() {
-            const isSessionActive = sessionStorage.getItem('simata_session') === 'active';
-            if (isSessionActive) {
-                console.log('Previous session found, skipping login...');
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('appContent').style.display = 'block';
-                
-                // Initialize charts and dashboard jika sudah ada
-                if (typeof initializeCharts === 'function') {
-                    initializeCharts();
-                }
-                if (typeof updateDashboard === 'function') {
-                    updateDashboard();
-                }
-                if (typeof renderDataTable === 'function') {
-                    renderDataTable();
-                }
-            } else {
-                console.log('No previous session, showing login...');
-                document.getElementById('loginModal').style.display = 'flex';
-            }
-        }
-        
-        // Fungsi notifikasi sederhana
-        function showNotification(message, type = 'info') {
-            console.log(`Notification [${type}]: ${message}`);
-            
-            // Gunakan toast jika tersedia
-            const toast = document.querySelector('.notification-toast');
-            if (toast) {
-                const toastTitle = document.getElementById('toastTitle');
-                const toastMessage = document.getElementById('toastMessage');
-                
-                if (toastTitle && toastMessage) {
-                    switch(type) {
-                        case 'success':
-                            toastTitle.innerHTML = '<i class="fas fa-check-circle me-2 text-success"></i>Berhasil';
-                            break;
-                        case 'error':
-                            toastTitle.innerHTML = '<i class="fas fa-exclamation-circle me-2 text-danger"></i>Error';
-                            break;
-                        case 'warning':
-                            toastTitle.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning"></i>Peringatan';
-                            break;
-                        default:
-                            toastTitle.innerHTML = '<i class="fas fa-info-circle me-2 text-info"></i>Informasi';
-                    }
-                    
-                    toastMessage.textContent = message;
-                    
-                    const bsToast = new bootstrap.Toast(toast);
-                    bsToast.show();
-                }
-            } else {
-                // Fallback ke alert
-                alert(`${type.toUpperCase()}: ${message}`);
-            }
-        }
-        
-        // Fallback untuk fungsi showFishInfoModal jika tidak didefinisikan
-        if (typeof showFishInfoModal === 'undefined') {
-            window.showFishInfoModal = function() {
-                try {
-                    const modal = new bootstrap.Modal(document.getElementById('fishInfoModal'), {
-                        backdrop: true,
-                        keyboard: true
-                    });
-                    modal.show();
-                } catch (error) {
-                    console.error('Gagal membuka modal info ikan:', error);
-                    alert('Modal informasi ikan tidak dapat dibuka. Silakan coba lagi.');
-                }
-            };
-        }
-        
-        // Fallback untuk fungsi showBoatInfoModal jika tidak didefinisikan
-        if (typeof showBoatInfoModal === 'undefined') {
-            window.showBoatInfoModal = function() {
-                try {
-                    const modal = new bootstrap.Modal(document.getElementById('boatInfoModal'), {
-                        backdrop: true,
-                        keyboard: true
-                    });
-                    modal.show();
-                } catch (error) {
-                    console.error('Gagal membuka modal info kapal:', error);
-                    alert('Modal informasi kapal tidak dapat dibuka. Silakan coba lagi.');
-                }
-            };
-        }
-        
-        // Tambahkan fungsi untuk memastikan modal tertutup dengan benar
-        if (typeof closeFishInfoModalSafely === 'undefined') {
-            window.closeFishInfoModalSafely = function() {
-                try {
-                    const modalElement = document.getElementById('fishInfoModal');
-                    if (modalElement) {
-                        const modal = bootstrap.Modal.getInstance(modalElement);
-                        if (modal) {
-                            modal.hide();
-                        }
-                        
-                        // Hapus backdrop setelah modal ditutup
-                        setTimeout(() => {
-                            const backdrops = document.querySelectorAll('.modal-backdrop');
-                            backdrops.forEach(backdrop => {
-                                backdrop.remove();
-                            });
-                            
-                            // Hapus kelas modal-open dari body
-                            document.body.classList.remove('modal-open');
-                            document.body.style.overflow = '';
-                            document.body.style.paddingRight = '';
-                        }, 300);
-                    }
-                } catch (error) {
-                    console.error('Error closing modal:', error);
-                }
-            };
-        }
-        
-        // Tambahkan fungsi untuk menutup modal kapal dengan benar
-        if (typeof closeBoatInfoModalSafely === 'undefined') {
-            window.closeBoatInfoModalSafely = function() {
-                try {
-                    const modalElement = document.getElementById('boatInfoModal');
-                    if (modalElement) {
-                        const modal = bootstrap.Modal.getInstance(modalElement);
-                        if (modal) {
-                            modal.hide();
-                        }
-                        
-                        // Hapus backdrop setelah modal ditutup
-                        setTimeout(() => {
-                            const backdrops = document.querySelectorAll('.modal-backdrop');
-                            backdrops.forEach(backdrop => {
-                                backdrop.remove();
-                            });
-                            
-                            // Hapus kelas modal-open dari body
-                            document.body.classList.remove('modal-open');
-                            document.body.style.overflow = '';
-                            document.body.style.paddingRight = '';
-                        }, 300);
-                    }
-                } catch (error) {
-                    console.error('Error closing modal:', error);
-                }
-            };
-        }
-
-        <!-- Modal untuk informasi ikan -->
-    <div class="modal fade" id="fishInfoModal" tabindex="-1" aria-labelledby="fishInfoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="fishInfoModalLabel">Informasi Jenis Ikan Tangkapan</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4 fish-image-container">
-                            <h6 class="fish-image-title">Jenis Ikan Demersal</h6>
-                            <img id="fishImage1" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-1.jpg" 
-                                 alt="Jenis Ikan Demersal" class="fish-modal-img" 
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="fish-image-caption">Contoh ikan kategori demersal: Ikan Kerapu, Kakap Merah, Mangla, dll.</p>
-                        </div>
-                        <div class="col-md-4 fish-image-container">
-                            <h6 class="fish-image-title">Jenis Ikan Pelagis Kecil</h6>
-                            <img id="fishImage2" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-2.jpg" 
-                                 alt="Jenis Ikan Pelagis Kecil" class="fish-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="fish-image-caption">Contoh ikan kategori pelagis kecil: Tembang, Kembung, Selar, Layang, dll.</p>
-                        </div>
-                        <div class="col-md-4 fish-image-container">
-                            <h6 class="fish-image-title">Jenis Ikan Pelagis Besar</h6>
-                            <img id="fishImage3" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/info-jenis-ikan-tangkapan-3.jpg" 
-                                 alt="Jenis Ikan Pelagis Besar" class="fish-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="fish-image-caption">Contoh ikan kategori pelagis besar: Tongkol, Cakalang, Tenggiri, Tuna, dll.</p>
-                        </div>
-                    </div>
-                    <div class="alert alert-info mt-3">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Informasi:</strong> Pilih jenis ikan yang sesuai dengan hasil tangkapan utama nelayan. Klik tombol informasi <button class="fish-info-btn" disabled><i class="fas fa-info-circle"></i></button> untuk melihat referensi gambar.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="goToInputDataAfterModal()">Kembali ke Input Data</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal untuk informasi kapal -->
-    <div class="modal fade" id="boatInfoModal" tabindex="-1" aria-labelledby="boatInfoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="boatInfoModalLabel">Informasi Jenis Kapal Nelayan</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4 boat-image-container">
-                            <h6 class="boat-image-title">Perahu Tanpa Motor (PTM)</h6>
-                            <img id="boatImage1" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-1.png" 
-                                 alt="Perahu Tanpa Motor" class="boat-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="boat-image-caption">Perahu tradisional tanpa mesin, digerakkan dayung/layar.</p>
-                        </div>
-                        <div class="col-md-4 boat-image-container">
-                            <h6 class="boat-image-title">Perahu Motor Tempel (PMT)</h6>
-                            <img id="boatImage2" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-2.png" 
-                                 alt="Perahu Motor Tempel" class="boat-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="boat-image-caption">Perahu dengan mesin tempel di bagian belakang.</p>
-                        </div>
-                        <div class="col-md-4 boat-image-container">
-                            <h6 class="boat-image-title">Kapal Motor (KM)</h6>
-                            <img id="boatImage3" src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpadan/hasil-tangkapan/jenis-perahu-3.png" 
-                                 alt="Kapal Motor" class="boat-modal-img"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\"><rect width=\"400\" height=\"300\" fill=\"%23f8f9fa\"/><text x=\"200" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"16\" fill=\"%236c757d\">Gambar tidak tersedia</text></svg>'">
-                            <p class="boat-image-caption">Kapal dengan mesin dalam, kapasitas lebih besar.</p>
-                        </div>
-                    </div>
-                    <div class="alert alert-info mt-3">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Informasi:</strong> Pilih jenis kapal yang sesuai dengan kapal yang digunakan nelayan. Klik tombol informasi <button class="boat-info-btn" disabled><i class="fas fa-info-circle"></i></button> untuk melihat referensi gambar.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="goToInputDataAfterModal()">Kembali ke Input Data</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Konten utama aplikasi (akan ditampilkan setelah login berhasil) -->
-    <div id="appContent" style="display: none;">
-        <!-- NAVBAR -->
-        <nav class="navbar navbar-expand-lg navbar-dark fixed-top main-navbar">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="#">
-                    <div class="brand-logo">
-                        <i class="fas fa-fish me-2"></i>
-                    </div>
-                    <div class="brand-text">
-                        <div class="app-title">SIMPADAN TANGKAP</div>
-                        <div class="app-subtitle" id="dynamicSubtitle">DINAS PERIKANAN KABUPATEN SITUBONDO</div>
-                    </div>
-                </a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="mobileMenuBtn">
-                                <i class="fas fa-bars me-1"></i> Menu
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="btn-reload-repo">
-                                <i class="fas fa-sync-alt me-1"></i> Sinkronisasi
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="btn-refresh-page">
-                                <i class="fas fa-redo me-1"></i> Refresh
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link">
-                                <i class="fas fa-user me-1"></i>
-                                <span id="currentUserDisplay">Administrator</span>
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link sensor-status" id="sensorStatusText">
-                                <i class="fas fa-shield-alt me-1"></i> Sensor: ON
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- SIDEBAR & MAIN CONTENT -->
-        <div class="container-fluid main-container">
-            <div class="row">
-                <!-- Sidebar Menu -->
-                <div class="col-lg-2 col-md-3 sidebar" id="sidebarMenu">
-                    <div class="sidebar-header">
-                        <h5><i class="fas fa-bars me-2"></i> Menu Navigasi</h5>
-                    </div>
-                    
-                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button" role="tab">
-                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-input-tab" data-bs-toggle="pill" data-bs-target="#v-pills-input" type="button" role="tab">
-                            <i class="fas fa-edit me-2"></i> Input Data
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-data-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data" type="button" role="tab">
-                            <i class="fas fa-database me-2"></i> Data Nelayan
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-filter-tab" data-bs-toggle="pill" data-bs-target="#v-pills-filter" type="button" role="tab">
-                            <i class="fas fa-filter me-2"></i> Filter & Validasi
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-verify-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verify" type="button" role="tab">
-                            <i class="fas fa-search me-2"></i> Verifikasi KIN
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button" role="tab">
-                            <i class="fas fa-file-export me-2"></i> Ekspor Data
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-backup-tab" data-bs-toggle="pill" data-bs-target="#v-pills-backup" type="button" role="tab">
-                            <i class="fas fa-hdd me-2"></i> Backup & Restore
-                        </button>
-                        
-                        <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab">
-                            <i class="fas fa-cog me-2"></i> Pengaturan
-                        </button>
-                        
-                        <button class="nav-link text-danger" id="v-pills-logout-tab" type="button">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </button>
-                    </div>
-                    
-                    <div class="sidebar-footer">
-                        <div class="current-wilayah" id="currentWilayahBadge">
-                            <i class="fas fa-map-marker-alt me-2"></i> Wilayah: Global
-                        </div>
-                        <small class="text-muted" id="wilayahInfo">Mode Global: Data dari reload.js</small>
-                    </div>
-                </div>
-                
-                <!-- Main Content -->
-                <div class="col-lg-10 col-md-9 offset-lg-2 offset-md-3 main-content">
-                    <div class="tab-content" id="v-pills-tabContent">
-                        <!-- Dashboard Tab -->
-                        <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
-                            <div class="dashboard-header">
-                                <h2><i class="fas fa-tachometer-alt me-2"></i> Dashboard SIMPADAN TANGKAP</h2>
-                                <p class="text-muted">Statistik dan analisis data nelayan terpadu</p>
-                            </div>
-                            
-                            <!-- Statistik Cards -->
-                            <div class="row mb-4">
-                                <div class="col-md-3">
-                                    <div class="stat-card bg-primary">
-                                        <div class="stat-icon">
-                                            <i class="fas fa-users"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 id="totalPenerima">0</h3>
-                                            <p>Total Nelayan</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stat-card bg-warning">
-                                        <div class="stat-icon">
-                                            <i class="fas fa-user-clock"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 id="totalPenuhWaktu">0</h3>
-                                            <p>Penuh Waktu</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stat-card bg-success">
-                                        <div class="stat-icon">
-                                            <i class="fas fa-ship"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 id="totalPemilik">0</h3>
-                                            <p>Pemilik Kapal</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stat-card bg-info">
-                                        <div class="stat-icon">
-                                            <i class="fas fa-user-friends"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <h3 id="totalABK">0</h3>
-                                            <p>Anak Buah Kapal</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Charts -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="chart-card">
-                                        <div class="chart-header">
-                                            <h5><i class="fas fa-chart-pie me-2"></i> Distribusi Profesi Nelayan</h5>
-                                        </div>
-                                        <div class="chart-container">
-                                            <canvas id="profesiChart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="chart-card">
-                                        <div class="chart-header">
-                                            <h5><i class="fas fa-chart-bar me-2"></i> Distribusi Jenis Kapal</h5>
-                                        </div>
-                                        <div class="chart-container">
-                                            <canvas id="kapalChart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Info Tambahan -->
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="info-card">
-                                        <div class="info-header bg-info">
-                                            <i class="fas fa-user-tag"></i>
-                                            <h5>Nelayan Sambilan Utama</h5>
-                                        </div>
-                                        <div class="info-body">
-                                            <h2 id="totalSambilanUtama">0</h2>
-                                            <p>Orang</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="info-card">
-                                        <div class="info-header bg-secondary">
-                                            <i class="fas fa-user-tag"></i>
-                                            <h5>Nelayan Sambilan Tambahan</h5>
-                                        </div>
-                                        <div class="info-body">
-                                            <h2 id="totalSambilanTambahan">0</h2>
-                                            <p>Orang</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="info-card">
-                                        <div class="info-header bg-purple">
-                                            <i class="fas fa-database"></i>
-                                            <h5>Data Wilayah</h5>
-                                        </div>
-                                        <div class="info-body">
-                                            <button class="btn btn-outline-primary w-100" id="btnDataWilayah">
-                                                <i class="fas fa-map me-2"></i> Kelola Data Wilayah
-                                            </button>
-                                            <small class="text-muted mt-2 d-block">Kelola data per desa/kecamatan</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Input Data Tab -->
-                        <div class="tab-pane fade" id="v-pills-input" role="tabpanel">
-                            <!-- Konten input data akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Data Nelayan Tab -->
-                        <div class="tab-pane fade" id="v-pills-data" role="tabpanel">
-                            <!-- Konten data nelayan akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Filter & Validasi Tab -->
-                        <div class="tab-pane fade" id="v-pills-filter" role="tabpanel">
-                            <!-- Konten filter & validasi akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Verifikasi KIN Tab -->
-                        <div class="tab-pane fade" id="v-pills-verify" role="tabpanel">
-                            <!-- Konten verifikasi KIN akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Ekspor Data Tab -->
-                        <div class="tab-pane fade" id="v-pills-export" role="tabpanel">
-                            <!-- Konten ekspor data akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Backup & Restore Tab -->
-                        <div class="tab-pane fade" id="v-pills-backup" role="tabpanel">
-                            <!-- Konten backup & restore akan diisi oleh main.js -->
-                        </div>
-                        
-                        <!-- Pengaturan Tab -->
-                        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel">
-                            <!-- Konten pengaturan akan diisi oleh main.js -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Floating Action Button -->
-        <div class="fab-container" id="fabMenu">
-            <button class="fab-main-btn" id="fabMainBtn">
-                <i class="fas fa-plus"></i>
-            </button>
-            
-            <button class="fab-btn fab-input" id="fabInput" title="Input Data">
-                <i class="fas fa-edit"></i>
-            </button>
-            
-            <button class="fab-btn fab-filter" id="fabFilter" title="Filter Data">
-                <i class="fas fa-filter"></i>
-            </button>
-            
-            <button class="fab-btn fab-verify" id="fabVerify" title="Verifikasi KIN">
-                <i class="fas fa-search"></i>
-            </button>
-            
-            <button class="fab-btn fab-export" id="fabExport" title="Ekspor Data">
-                <i class="fas fa-file-export"></i>
-            </button>
-            
-            <button class="fab-btn fab-backup" id="fabBackup" title="Backup Data">
-                <i class="fas fa-hdd"></i>
-            </button>
-            
-            <button class="fab-btn fab-settings" id="fabSettings" title="Pengaturan">
-                <i class="fas fa-cog"></i>
-            </button>
-            
-            <button class="fab-btn fab-reload" id="fabReload" title="Sinkronisasi Data">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal Detail -->
-    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <!-- Konten detail modal akan diisi oleh main.js -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Data Wilayah -->
-    <div class="modal fade" id="modalDataWilayah" tabindex="-1" aria-labelledby="modalDataWilayahLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <!-- Konten modal data wilayah akan diisi oleh main.js -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notifikasi -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div class="toast notification-toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto" id="toastTitle">Notifikasi</strong>
-                <small class="text-muted">baru saja</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="toastMessage">
-                Pesan notifikasi akan muncul di sini.
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Fungsi untuk kembali ke input data - tetap dipertahankan
-        if (typeof goToInputDataAfterModal === 'undefined') {
-            window.goToInputDataAfterModal = function() {
-                // Tutup modal dengan aman terlebih dahulu
-                if (typeof closeFishInfoModalSafely !== 'undefined') closeFishInfoModalSafely();
-                if (typeof closeBoatInfoModalSafely !== 'undefined') closeBoatInfoModalSafely();
-                
-                // Tunggu sebentar untuk memastikan modal benar-benar tertutup
-                setTimeout(() => {
-                    try {
-                        // Klik tab input data
-                        const inputTab = document.getElementById('v-pills-input-tab');
-                        if (inputTab) {
-                            inputTab.click();
-                            
-                            // Scroll ke atas halaman
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'smooth'
-                            });
-                            
-                            // Fokus ke form input
-                            const namaInput = document.getElementById('nama');
-                            if (namaInput) {
-                                setTimeout(() => {
-                                    namaInput.focus();
-                                }, 100);
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error navigating to input tab:', error);
-                    }
-                }, 400);
-            };
-        }
-
-        <!-- Modal Data Wilayah - DIREVISI DENGAN TAB DESA DAN KECAMATAN -->
+    <!-- Modal Data Wilayah - DIREVISI DENGAN TAB DESA DAN KECAMATAN -->
     <div class="modal fade" id="modalDataWilayah" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
@@ -3308,6 +2040,41 @@
             };
         }
         
+        // Tambahkan fungsi untuk kembali ke input data
+        if (typeof goToInputDataAfterModal === 'undefined') {
+            window.goToInputDataAfterModal = function() {
+                // Tutup modal dengan aman terlebih dahulu
+                closeFishInfoModalSafely();
+                closeBoatInfoModalSafely();
+                
+                // Tunggu sebentar untuk memastikan modal benar-benar tertutup
+                setTimeout(() => {
+                    try {
+                        // Klik tab input data
+                        const inputTab = document.getElementById('v-pills-input-tab');
+                        if (inputTab) {
+                            inputTab.click();
+                            
+                            // Scroll ke atas halaman
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                            
+                            // Fokus ke form input
+                            const namaInput = document.getElementById('nama');
+                            if (namaInput) {
+                                setTimeout(() => {
+                                    namaInput.focus();
+                                }, 100);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error navigating to input tab:', error);
+                    }
+                }, 400);
+            };
+        }
     </script>
 
 </body>
