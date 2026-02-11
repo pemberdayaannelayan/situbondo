@@ -13,6 +13,11 @@
     <!-- Leaflet CSS for Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
+    <!-- Export Libraries -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -150,7 +155,6 @@
                         <button class="nav-link" id="v-pills-export-tab" data-bs-toggle="pill" data-bs-target="#v-pills-export" type="button" role="tab">
                             <i class="fas fa-file-export feature-icon"></i> Ekspor Data
                         </button>
-                        <!-- MENU BARU: Ekstrak Data -->
                         <button class="nav-link" id="v-pills-extract-tab" data-bs-toggle="pill" data-bs-target="#v-pills-extract" type="button" role="tab">
                             <i class="fas fa-map-marked-alt feature-icon"></i> Ekstrak Data
                         </button>
@@ -472,7 +476,7 @@
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
                                     <span><i class="fas fa-database me-2"></i> Daftar Penerima</span>
-                                    <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                                    <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0 align-items-center">
                                         <select class="form-select form-select-sm" id="filterKecamatanData" style="width: auto;">
                                             <option value="">Semua Kecamatan</option>
                                         </select>
@@ -483,6 +487,13 @@
                                             <input type="text" class="form-control form-control-sm" id="searchData" placeholder="Cari data...">
                                             <button class="btn btn-sm btn-light border" id="clearSearchBtn"><i class="fas fa-times"></i></button>
                                         </div>
+                                        <!-- FITUR BARU: Reload Data Per Wilayah Kecamatan -->
+                                        <select class="form-select form-select-sm" id="reloadKecamatanSelect" style="width: auto;">
+                                            <option value="">Pilih Kecamatan</option>
+                                        </select>
+                                        <button class="btn btn-sm btn-primary" id="reloadWilayahBtn">
+                                            <i class="fas fa-sync-alt me-1"></i>Reload Wilayah
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
@@ -615,9 +626,9 @@
                             </div>
                         </div>
                         
-                        <!-- Ekspor Data Tab -->
+                        <!-- Ekspor Data Tab (Telah diperbaiki: Excel & PDF + Impor Excel) -->
                         <div class="tab-pane fade" id="v-pills-export" role="tabpanel">
-                            <h3 class="section-title">Ekspor Data</h3>
+                            <h3 class="section-title">Ekspor & Impor Data</h3>
                             <div class="card">
                                 <div class="card-header"><i class="fas fa-file-export me-2"></i> Ekspor Universal</div>
                                 <div class="card-body">
@@ -634,11 +645,19 @@
                                         </div>
                                     </div>
                                     <div class="row g-3">
-                                        <div class="col-md-3"><button class="btn btn-success w-100 py-3" id="exportExcelBtn"><i class="fas fa-file-excel fa-lg mb-1 d-block"></i>Excel</button></div>
-                                        <div class="col-md-3"><button class="btn btn-info text-white w-100 py-3" id="exportCsvBtn"><i class="fas fa-file-csv fa-lg mb-1 d-block"></i>CSV</button></div>
-                                        <div class="col-md-3"><button class="btn btn-warning text-white w-100 py-3" id="exportJsonBtn"><i class="fas fa-file-code fa-lg mb-1 d-block"></i>JSON</button></div>
-                                        <div class="col-md-3"><button class="btn btn-danger w-100 py-3" id="exportPdfBtn"><i class="fas fa-file-pdf fa-lg mb-1 d-block"></i>PDF</button></div>
+                                        <div class="col-md-6"><button class="btn btn-success w-100 py-3" id="exportExcelBtn"><i class="fas fa-file-excel fa-lg mb-1 d-block"></i>Excel</button></div>
+                                        <div class="col-md-6"><button class="btn btn-danger w-100 py-3" id="exportPdfBtn"><i class="fas fa-file-pdf fa-lg mb-1 d-block"></i>PDF</button></div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="card mt-4">
+                                <div class="card-header bg-primary text-white"><i class="fas fa-file-import me-2"></i> Impor Data Excel</div>
+                                <div class="card-body text-center">
+                                    <i class="fas fa-upload fa-3x text-primary mb-3"></i>
+                                    <h5>Tambahkan Data dari File Excel</h5>
+                                    <p class="text-muted small">Format file .xlsx, .xls. Data akan ditambahkan ke database.</p>
+                                    <input type="file" class="form-control mb-3" id="importExcelFile" accept=".xlsx,.xls">
+                                    <button class="btn btn-primary w-100" id="importExcelBtn"><i class="fas fa-file-import me-1"></i> Mulai Impor</button>
                                 </div>
                             </div>
                         </div>
@@ -858,50 +877,50 @@
             </a>
             <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-extract-tab'); return false;">
                 <i class="fas fa-map-marked-alt"></i>
-                                <span class="smart-menu-tooltip">Ekstrak Data</span>
-                            </a>
-                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-export-tab'); return false;">
-                                <i class="fas fa-file-export"></i>
-                                <span class="smart-menu-tooltip">Ekspor Data</span>
-                            </a>
-                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-print-tab'); return false;">
-                                <i class="fas fa-print"></i>
-                                <span class="smart-menu-tooltip">Cetak Laporan</span>
-                            </a>
-                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-filter-tab'); return false;">
-                                <i class="fas fa-filter"></i>
-                                <span class="smart-menu-tooltip">Filter Data</span>
-                            </a>
-                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-data-tab'); return false;">
-                                <i class="fas fa-database"></i>
-                                <span class="smart-menu-tooltip">Data Bantuan</span>
-                            </a>
-                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-input-tab'); return false;">
-                                <i class="fas fa-pencil-alt"></i>
-                                <span class="smart-menu-tooltip">Input Data</span>
-                            </a>
-                            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-dashboard-tab'); return false;">
-                                <i class="fas fa-tachometer-alt"></i>
-                                <span class="smart-menu-tooltip">Dashboard</span>
-                            </a>
-                        </div>
+                <span class="smart-menu-tooltip">Ekstrak Data</span>
+            </a>
+            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-export-tab'); return false;">
+                <i class="fas fa-file-export"></i>
+                <span class="smart-menu-tooltip">Ekspor Data</span>
+            </a>
+            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-print-tab'); return false;">
+                <i class="fas fa-print"></i>
+                <span class="smart-menu-tooltip">Cetak Laporan</span>
+            </a>
+            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-filter-tab'); return false;">
+                <i class="fas fa-filter"></i>
+                <span class="smart-menu-tooltip">Filter Data</span>
+            </a>
+            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-data-tab'); return false;">
+                <i class="fas fa-database"></i>
+                <span class="smart-menu-tooltip">Data Bantuan</span>
+            </a>
+            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-input-tab'); return false;">
+                <i class="fas fa-pencil-alt"></i>
+                <span class="smart-menu-tooltip">Input Data</span>
+            </a>
+            <a href="#" class="smart-menu-item" onclick="triggerSmartMenu('v-pills-dashboard-tab'); return false;">
+                <i class="fas fa-tachometer-alt"></i>
+                <span class="smart-menu-tooltip">Dashboard</span>
+            </a>
+        </div>
 
-                        <!-- Floating Action Button -->
-                        <button class="floating-action-btn fab-common" id="fabBtn" title="Tambah Data Baru">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                        
-                        <!-- Toast Notifications -->
-                        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                            <div class="toast notification-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="4000">
-                                <div class="toast-header">
-                                    <strong class="me-auto" id="toastTitle">Notifikasi</strong>
-                                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                                </div>
-                                <div class="toast-body" id="toastMessage"></div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Floating Action Button -->
+        <button class="floating-action-btn fab-common" id="fabBtn" title="Tambah Data Baru">
+            <i class="fas fa-plus"></i>
+        </button>
+        
+        <!-- Toast Notifications -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div class="toast notification-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="4000">
+                <div class="toast-header">
+                    <strong class="me-auto" id="toastTitle">Notifikasi</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="toastMessage"></div>
+            </div>
+        </div>
+    </div>
     
     <!-- Modal Detail Data -->
     <div class="modal fade" id="detailDataModal" tabindex="-1">
@@ -1075,7 +1094,7 @@
     <!-- Leaflet JS for Maps -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <!-- Main Application JavaScript -->
+    <!-- Main Application JavaScript (telah diperbaiki) -->
     <script src="main.js"></script>
 </body>
 </html>
