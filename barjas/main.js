@@ -17,7 +17,10 @@ let loginAttempts = 0;
 let isBlocked = false;
 let blockTimeout;
 let generatedCodes = {};
-let mapDashboard = null; // Peta dashboard
+let mapDashboard = null;
+
+// ===== FITUR WILAYAH AKTIF =====
+let activeRegion = null; // menyimpan kecamatan yang dipilih
 
 const SECURITY_CONSTANTS = {
     PIN: '17081945',
@@ -34,7 +37,7 @@ const BackupUtils = {
         try {
             const jsonString = JSON.stringify(obj);
             const utf8Bytes = encodeURIComponent(jsonString);
-            const asciiString = unescape(utf8Bytes); // konversi ke ASCII untuk btoa
+            const asciiString = unescape(utf8Bytes);
             return btoa(asciiString);
         } catch (e) {
             console.error('Backup encoding error:', e);
@@ -44,7 +47,7 @@ const BackupUtils = {
     decode: function(base64) {
         try {
             const asciiString = atob(base64);
-            const utf8Bytes = escape(asciiString); // kembalikan ke bentuk %-encoded
+            const utf8Bytes = escape(asciiString);
             const jsonString = decodeURIComponent(utf8Bytes);
             return JSON.parse(jsonString);
         } catch (e) {
@@ -83,11 +86,9 @@ const desaByKecamatan = {
     "Sumbermalang": ["Alastengah", "Baderan", "Kalirejo", "Plalangan", "Sumberargo", "Taman", "Tamankursi", "Tamansari", "Tlogosari"]
 };
 
-// Gabungkan semua desa untuk dropdown
 const desaList = Object.values(desaByKecamatan).flat().sort();
 
 // ==================== DATABASE KOORDINAT YANG DIPERBARUI ====================
-// Database koordinat kecamatan yang AKURAT untuk Kabupaten Situbondo (diperbarui)
 const koordinatKecamatan = {
     "Arjasa": { lat: -7.71924, lng: 114.12254 },
     "Asembagus": { lat: -7.7541, lng: 114.2506 },
@@ -108,9 +109,7 @@ const koordinatKecamatan = {
     "Sumbermalang": { lat: -7.8774, lng: 113.8440 }
 };
 
-// Database koordinat desa yang DIPERBARUI
 const koordinatDesa = {
-    // ===== KECAMATAN ARJASA =====
     "Arjasa, Arjasa": { lat: -7.71924, lng: 114.12254 },
     "Bayeman, Arjasa": { lat: -7.7461, lng: 114.0762 },
     "Curah Tatal, Arjasa": { lat: -7.8194, lng: 114.0368 },
@@ -119,8 +118,6 @@ const koordinatDesa = {
     "Kedungdowo, Arjasa": { lat: -7.7531, lng: 114.0657 },
     "Ketowan, Arjasa": { lat: -7.7447, lng: 114.0947 },
     "Lamongan, Arjasa": { lat: -7.726567, lng: 114.133433 },
-
-    // ===== KECAMATAN ASEMBAGUS =====
     "Asembagus, Asembagus": { lat: -7.7541, lng: 114.2506 },
     "Awar-awar, Asembagus": { lat: -7.7265, lng: 114.2296 },
     "Bantal, Asembagus": { lat: -7.7481, lng: 114.3124 },
@@ -131,8 +128,6 @@ const koordinatDesa = {
     "Parante, Asembagus": { lat: -7.7678, lng: 114.2255 },
     "Trigonco, Asembagus": { lat: -7.7722, lng: 114.2441 },
     "Wringin Anom, Asembagus": { lat: -7.7347, lng: 114.3050 },
-
-    // ===== KECAMATAN BANYUGLUGUR =====
     "Banyuglugur, Banyuglugur": { lat: -7.7766, lng: 113.9008 },
     "Kalianget, Banyuglugur": { lat: -7.8058, lng: 113.9305 },
     "Kalisari, Banyuglugur": { lat: -7.8222, lng: 113.8993 },
@@ -140,15 +135,11 @@ const koordinatDesa = {
     "Selobanteng, Banyuglugur": { lat: -7.7394, lng: 113.9384 },
     "Telempong, Banyuglugur": { lat: -7.8109, lng: 113.9567 },
     "Tepos, Banyuglugur": { lat: -7.7683, lng: 113.8925 },
-
-    // ===== KECAMATAN BANYUPUTIH =====
     "Banyuputih, Banyuputih": { lat: -7.7065, lng: 114.0108 },
     "Sumberanyar, Banyuputih": { lat: -7.7130, lng: 113.9708 },
     "Sumberejo, Banyuputih": { lat: -7.7240, lng: 113.9747 },
     "Sumberwaru, Banyuputih": { lat: -7.7365, lng: 113.9876 },
     "Wonorejo, Banyuputih": { lat: -7.6908, lng: 114.0023 },
-
-    // ===== KECAMATAN BESUKI =====
     "Besuki, Besuki": { lat: -7.7387, lng: 113.6976 },
     "Blimbing, Besuki": { lat: -7.7528, lng: 113.7166 },
     "Bloro, Besuki": { lat: -7.7368, lng: 113.7585 },
@@ -159,8 +150,6 @@ const koordinatDesa = {
     "Pesisir, Besuki": { lat: -7.728180, lng: 113.684984 },
     "Sumberejo, Besuki": { lat: -7.7358, lng: 113.7163 },
     "Widoropayung, Besuki": { lat: -7.7769, lng: 113.6975 },
-
-    // ===== KECAMATAN BUNGATAN =====
     "Bletok, Bungatan": { lat: -7.732109, lng: 113.789552 },
     "Bungatan, Bungatan": { lat: -7.7032, lng: 113.8236 },
     "Mlandingan Wetan, Bungatan": { lat: -7.6726, lng: 113.8233 },
@@ -168,8 +157,6 @@ const koordinatDesa = {
     "Patemon, Bungatan": { lat: -7.7101, lng: 113.8187 },
     "Selowogo, Bungatan": { lat: -7.6781, lng: 113.9072 },
     "Sumbertengah, Bungatan": { lat: -7.7113, lng: 113.8429 },
-
-    // ===== KECAMATAN JANGKAR =====
     "Agel, Jangkar": { lat: -7.8117, lng: 114.3519 },
     "Curah Kalak, Jangkar": { lat: -7.7614, lng: 114.3308 },
     "Gadingan, Jangkar": { lat: -7.8301, lng: 114.3728 },
@@ -178,8 +165,6 @@ const koordinatDesa = {
     "Palangan, Jangkar": { lat: -7.7650, lng: 114.3784 },
     "Pesanggrahan, Jangkar": { lat: -7.7810, lng: 114.3866 },
     "Sopet, Jangkar": { lat: -7.8247, lng: 114.3484 },
-
-    // ===== KECAMATAN JATIBANTENG =====
     "Curahsuri, Jatibanteng": { lat: -7.6585, lng: 113.9867 },
     "Jatibanteng, Jatibanteng": { lat: -7.6865, lng: 113.9365 },
     "Kembangsari, Jatibanteng": { lat: -7.6784, lng: 113.9283 },
@@ -188,8 +173,6 @@ const koordinatDesa = {
     "Semambung, Jatibanteng": { lat: -7.6560, lng: 113.9516 },
     "Sumberanyar, Jatibanteng": { lat: -7.6799, lng: 114.0128 },
     "Wringinanom, Jatibanteng": { lat: -7.6915, lng: 113.9905 },
-
-    // ===== KECAMATAN KAPONGAN =====
     "Curah Cottok, Kapongan": { lat: -7.6982, lng: 114.0678 },
     "Gebangan, Kapongan": { lat: -7.7252, lng: 114.0447 },
     "Kandang, Kapongan": { lat: -7.7267, lng: 114.0933 },
@@ -200,8 +183,6 @@ const koordinatDesa = {
     "Pokaan, Kapongan": { lat: -7.7174, lng: 114.1146 },
     "Seletreng, Kapongan": { lat: -7.6781, lng: 114.1095 },
     "Wonokoyo, Kapongan": { lat: -7.7251, lng: 114.1111 },
-
-    // ===== KECAMATAN KENDIT =====
     "Balung, Kendit": { lat: -7.7244, lng: 113.9056 },
     "Bugeman, Kendit": { lat: -7.7479, lng: 113.9122 },
     "Kendit, Kendit": { lat: -7.7307, lng: 113.9243 },
@@ -209,16 +190,12 @@ const koordinatDesa = {
     "Kukusan, Kendit": { lat: -7.7637, lng: 113.9076 },
     "Rajekwesi, Kendit": { lat: -7.7605, lng: 113.8901 },
     "Tambak Ukir, Kendit": { lat: -7.7458, lng: 113.8779 },
-
-    // ===== KECAMATAN MANGARAN =====
     "Mangaran, Mangaran": { lat: -7.6545, lng: 114.0604 },
     "Semiring, Mangaran": { lat: -7.629980, lng: 114.022293 },
     "Tanjung Glugur, Mangaran": { lat: -7.6686, lng: 114.0526 },
     "Tanjung Kamal, Mangaran": { lat: -7.66232, lng: 114.05351 },
     "Tanjung Pecinan, Mangaran": { lat: -7.63295, lng: 114.03352 },
     "Trebungan, Mangaran": { lat: -7.6624, lng: 114.0733 },
-
-    // ===== KECAMATAN MLANDINGAN =====
     "Alas Bayur, Mlandingan": { lat: -7.6644, lng: 113.8778 },
     "Campoan, Mlandingan": { lat: -7.6439, lng: 113.8425 },
     "Mlandingan Kulon, Mlandingan": { lat: -7.75250, lng: 113.76926 },
@@ -226,8 +203,6 @@ const koordinatDesa = {
     "Sumberanyar, Mlandingan": { lat: -7.6594, lng: 113.8946 },
     "Sumber Pinang, Mlandingan": { lat: -7.6743, lng: 113.8944 },
     "Trebungan, Mlandingan": { lat: -7.6436, lng: 113.8967 },
-
-    // ===== KECAMATAN PANARUKAN =====
     "Alasmalang, Panarukan": { lat: -7.6973, lng: 113.7690 },
     "Duwet, Panarukan": { lat: -7.6980, lng: 113.7885 },
     "Gelung, Panarukan": { lat: -7.7137, lng: 113.8031 },
@@ -236,8 +211,6 @@ const koordinatDesa = {
     "Peleyan, Panarukan": { lat: -7.6953, lng: 113.8074 },
     "Sumberkolak, Panarukan": { lat: -7.7121, lng: 113.7621 },
     "Wringinanom, Panarukan": { lat: -7.7064, lng: 113.8259 },
-
-    // ===== KECAMATAN PANJI =====
     "Battal, Panji": { lat: -7.7102, lng: 113.6783 },
     "Curah Jeru, Panji": { lat: -7.6944, lng: 113.6961 },
     "Juglangan, Panji": { lat: -7.6949, lng: 113.6656 },
@@ -250,16 +223,12 @@ const koordinatDesa = {
     "Tokelan, Panji": { lat: -7.7323, lng: 113.6706 },
     "Ardirejo, Panji": { lat: -7.7158, lng: 113.6947 },
     "Mimbaan, Panji": { lat: -7.7094, lng: 113.6955 },
-
-    // ===== KECAMATAN SITUBONDO =====
     "Kalibagor, Situbondo": { lat: -7.7085, lng: 114.0064 },
     "Kotakan, Situbondo": { lat: -7.6817, lng: 114.0228 },
     "Olean, Situbondo": { lat: -7.6822, lng: 114.0370 },
     "Talkandang, Situbondo": { lat: -7.6684, lng: 114.0478 },
     "Dawuhan, Situbondo": { lat: -7.6929, lng: 113.9940 },
     "Patokan, Situbondo": { lat: -7.6732, lng: 113.9774 },
-
-    // ===== KECAMATAN SUBOH =====
     "Buduan, Suboh": { lat: -7.8526, lng: 113.7662 },
     "Cemara, Suboh": { lat: -7.8270, lng: 113.7428 },
     "Dawuan, Suboh": { lat: -7.8401, lng: 113.7722 },
@@ -268,8 +237,6 @@ const koordinatDesa = {
     "Ketah, Suboh": { lat: -7.8617, lng: 113.7897 },
     "Mojodungkol, Suboh": { lat: -7.8363, lng: 113.7832 },
     "Suboh, Suboh": { lat: -7.8478, lng: 113.7583 },
-
-    // ===== KECAMATAN SUMBERMALANG =====
     "Alastengah, Sumbermalang": { lat: -7.8774, lng: 113.8440 },
     "Baderan, Sumbermalang": { lat: -7.8321, lng: 113.8217 },
     "Kalirejo, Sumbermalang": { lat: -7.8206, lng: 113.8528 },
@@ -341,7 +308,6 @@ const SAMPLE_DATA = {
 
 // --- APPLICATION LIFECYCLE ---
 document.addEventListener('DOMContentLoaded', function() {
-    // Cek jika ada error di console
     if (typeof console !== 'undefined') {
         console.log('Aplikasi Sistem Bantuan Nelayan Kab. Situbondo diinisialisasi');
     }
@@ -349,7 +315,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     setupEventListeners();
     
-    // Tampilkan modal login
     try {
         const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
         loginModal.show();
@@ -361,15 +326,14 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     loadSettings();
     loadData();
+    loadActiveRegion(); // <-- Muat wilayah aktif dari localStorage
+    updateActiveRegionUI(); // <-- Perbarui UI sesuai wilayah aktif
     
     fillYearDropdowns();
     fillKecamatanDropdown();
     initializeDesaDropdown();
     
-    // Fill filter dropdowns for data table
     fillFilterDropdownsForDataTable();
-    
-    // FITUR BARU: Isi dropdown reload per kecamatan
     fillReloadKecamatanDropdown();
     
     const today = new Date().toISOString().split('T')[0];
@@ -380,7 +344,6 @@ function initializeApp() {
     updateDashboard();
     applySettingsToUI();
     
-    // Initialize map when dashboard tab is active
     setTimeout(initializeMapDashboard, 500);
 }
 
@@ -412,7 +375,6 @@ function setupEventListeners() {
     document.getElementById('inputForm').addEventListener('submit', handleFormSubmit);
     document.getElementById('inputForm').addEventListener('reset', resetForm);
     
-    // Tombol "Tidak Ada" WhatsApp
     const btnTidakAdaWhatsapp = document.getElementById('btnTidakAdaWhatsapp');
     if (btnTidakAdaWhatsapp) {
         btnTidakAdaWhatsapp.addEventListener('click', setTidakAdaWhatsapp);
@@ -441,7 +403,6 @@ function setupEventListeners() {
         });
     }
 
-    // Form Live Validation
     ['nama', 'nik', 'whatsapp', 'namaPetugas', 'namaBantuan', 'jumlahBantuan', 'driveLink', 'kodeValidasi', 'kecamatan', 'desa', 'tanggalTerima'].forEach(id => {
         const element = document.getElementById(id);
         if (element) {
@@ -449,7 +410,6 @@ function setupEventListeners() {
         }
     });
     
-    // Data Table & Search
     const searchData = document.getElementById('searchData');
     if (searchData) {
         searchData.addEventListener('input', handleSearch);
@@ -460,7 +420,6 @@ function setupEventListeners() {
         clearSearchBtn.addEventListener('click', clearSearch);
     }
     
-    // Filter for Data Table
     const filterKecamatanData = document.getElementById('filterKecamatanData');
     if (filterKecamatanData) {
         filterKecamatanData.addEventListener('change', handleDataTableFilter);
@@ -471,7 +430,6 @@ function setupEventListeners() {
         filterDesaData.addEventListener('change', handleDataTableFilter);
     }
     
-    // Advanced Filter
     const applyFilterBtn = document.getElementById('applyFilterBtn');
     if (applyFilterBtn) {
         applyFilterBtn.addEventListener('click', applyFilter);
@@ -482,7 +440,6 @@ function setupEventListeners() {
         resetFilterBtn.addEventListener('click', resetFilter);
     }
     
-    // Print & Export Actions
     const printPdfBtn = document.getElementById('printPdfBtn');
     if (printPdfBtn) {
         printPdfBtn.addEventListener('click', printToPdf);
@@ -493,7 +450,6 @@ function setupEventListeners() {
         previewBtn.addEventListener('click', showPreview);
     }
     
-    // --- PERBAIKAN EXPORT: Hanya Excel & PDF ---
     const exportExcelBtn = document.getElementById('exportExcelBtn');
     if (exportExcelBtn) {
         exportExcelBtn.addEventListener('click', () => exportData('excel'));
@@ -503,19 +459,16 @@ function setupEventListeners() {
         exportPdfBtn.addEventListener('click', () => exportData('pdf'));
     }
     
-    // --- FITUR BARU: Impor Data Excel ---
     const importExcelBtn = document.getElementById('importExcelBtn');
     if (importExcelBtn) {
         importExcelBtn.addEventListener('click', importExcelData);
     }
     
-    // --- FITUR BARU: Reload Data Per Wilayah Kecamatan ---
     const reloadWilayahBtn = document.getElementById('reloadWilayahBtn');
     if (reloadWilayahBtn) {
         reloadWilayahBtn.addEventListener('click', reloadKecamatanData);
     }
     
-    // System Management
     const backupDataBtn = document.getElementById('backupDataBtn');
     if (backupDataBtn) {
         backupDataBtn.addEventListener('click', backupData);
@@ -536,7 +489,6 @@ function setupEventListeners() {
         resetConfirmationInput.addEventListener('input', enableResetButton);
     }
     
-    // Refactored Reset Listener (Double Security)
     const confirmResetBtn = document.getElementById('confirmResetBtn');
     if (confirmResetBtn) {
         confirmResetBtn.addEventListener('click', function() {
@@ -552,13 +504,11 @@ function setupEventListeners() {
         });
     }
     
-    // Settings Form
     const settingsForm = document.getElementById('settingsForm');
     if (settingsForm) {
         settingsForm.addEventListener('submit', handleSaveSettings);
     }
     
-    // Privacy Toggle Logic
     const privacyToggle = document.getElementById('privacyToggle');
     if (privacyToggle) {
         privacyToggle.addEventListener('click', handlePrivacyToggle);
@@ -574,13 +524,11 @@ function setupEventListeners() {
         closePrivacyModal.addEventListener('click', cancelPrivacyChange);
     }
     
-    // Universal PIN Logic
     const submitUniversalPin = document.getElementById('submitUniversalPin');
     if (submitUniversalPin) {
         submitUniversalPin.addEventListener('click', handleUniversalPinSubmit);
     }
     
-    // UI Helpers
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     if (mobileMenuBtn) {
         mobileMenuBtn.addEventListener('click', toggleMobileMenu);
@@ -596,8 +544,6 @@ function setupEventListeners() {
             if (window.innerWidth < 992 && document.getElementById('sidebarMenu').classList.contains('mobile-show')) {
                 toggleMobileMenu();
             }
-            
-            // Initialize map when dashboard tab is clicked
             if (link.id === 'v-pills-dashboard-tab') {
                 setTimeout(initializeMapDashboard, 300);
             }
@@ -632,10 +578,8 @@ function setupEventListeners() {
         reloadRepoBtn.addEventListener('click', handleReloadFromRepo);
     }
 
-    // Smart Menu Logic
     setupSmartMenu();
 
-    // FITUR BARU: Ekstrak Data
     const generateDataPetaBtn = document.getElementById('generateDataPetaBtn');
     if (generateDataPetaBtn) {
         generateDataPetaBtn.addEventListener('click', generateDataPeta);
@@ -648,148 +592,100 @@ function setupEventListeners() {
 
     window.addEventListener('beforeunload', autoBackupData);
     
-    // PERBAIKAN: Event listener untuk dropdown kecamatan di form input
     const kecamatanSelect = document.getElementById('kecamatan');
     if (kecamatanSelect) {
         kecamatanSelect.addEventListener('change', function() {
             updateDesaDropdown(this.value);
         });
     }
+
+    // ===== FITUR BARU: Pilih Wilayah Aktif =====
+    const selectRegionBtn = document.getElementById('selectRegionBtn');
+    if (selectRegionBtn) {
+        selectRegionBtn.addEventListener('click', function() {
+            const regionSelect = document.getElementById('regionPickerSelect');
+            if (regionSelect) {
+                regionSelect.innerHTML = '';
+                regionSelect.add(new Option('-- Pilih Kecamatan --', ''));
+                kecamatanList.forEach(kec => regionSelect.add(new Option(kec, kec)));
+                if (activeRegion) {
+                    regionSelect.value = activeRegion;
+                }
+            }
+            const modal = new bootstrap.Modal(document.getElementById('regionPickerModal'));
+            modal.show();
+        });
+    }
+
+    const confirmRegionBtn = document.getElementById('confirmRegionBtn');
+    if (confirmRegionBtn) {
+        confirmRegionBtn.addEventListener('click', function() {
+            const regionSelect = document.getElementById('regionPickerSelect');
+            const selected = regionSelect.value;
+            if (!selected) {
+                showNotification('Pilih kecamatan terlebih dahulu.', 'warning');
+                return;
+            }
+            activeRegion = selected;
+            saveActiveRegion(activeRegion);
+            updateActiveRegionUI();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('regionPickerModal'));
+            if (modal) modal.hide();
+            showNotification(`Wilayah aktif: ${selected}`, 'success');
+        });
+    }
 }
 
-// --- FUNGSI BARU: MAP DASHBOARD ---
-function initializeMapDashboard() {
-    const mapElement = document.getElementById('mapDashboard');
-    if (!mapElement || !appData || appData.length === 0) return;
+// ===== FUNGSI WILAYAH AKTIF =====
+function loadActiveRegion() {
+    try {
+        const saved = localStorage.getItem('barjasActiveRegion');
+        activeRegion = saved || null;
+    } catch(e) {
+        activeRegion = null;
+    }
+}
+
+function saveActiveRegion(region) {
+    try {
+        if (region) {
+            localStorage.setItem('barjasActiveRegion', region);
+        } else {
+            localStorage.removeItem('barjasActiveRegion');
+        }
+    } catch(e) {
+        console.error('Gagal menyimpan wilayah aktif:', e);
+    }
+}
+
+function updateActiveRegionUI() {
+    const display = document.getElementById('activeRegionDisplay');
+    const backupRegionName = document.getElementById('backupRegionName');
+    const regionWarningMessage = document.getElementById('regionWarningMessage');
+    const kecamatanSelect = document.getElementById('kecamatan');
     
-    // Remove existing map if exists
-    if (mapDashboard) {
-        mapDashboard.remove();
-        mapDashboard = null;
+    if (display) {
+        display.textContent = activeRegion || 'Belum dipilih';
+    }
+    if (backupRegionName) {
+        backupRegionName.textContent = activeRegion || 'Belum dipilih';
     }
     
-    // Create new map
-    mapDashboard = L.map('mapDashboard').setView([-7.7062, 113.9603], 10);
-    
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 18
-    }).addTo(mapDashboard);
-    
-    // Group markers by desa/kecamatan for better visualization
-    const markersByLocation = {};
-    
-    appData.forEach((data, index) => {
-        const locationKey = `${data.desa}, ${data.kecamatan}`;
-        if (!markersByLocation[locationKey]) {
-            markersByLocation[locationKey] = {
-                location: locationKey,
-                data: [],
-                coordinates: data.koordinat || getKoordinatDesa(data.desa, data.kecamatan)
-            };
+    if (kecamatanSelect) {
+        if (activeRegion) {
+            kecamatanSelect.disabled = true;
+            if (!kecamatanSelect.value) {
+                kecamatanSelect.value = activeRegion;
+                updateDesaDropdown(activeRegion);
+            }
+        } else {
+            kecamatanSelect.disabled = false;
         }
-        markersByLocation[locationKey].data.push(data);
-    });
-    
-    // Add cluster markers
-    Object.values(markersByLocation).forEach(locationData => {
-        if (locationData.coordinates && locationData.data.length > 0) {
-            const jumlahPenerima = locationData.data.length;
-            const jenisBantuan = locationData.data.reduce((acc, d) => {
-                acc[d.jenisBantuan] = (acc[d.jenisBantuan] || 0) + 1;
-                return acc;
-            }, {});
-            
-            const jenisBantuanStr = Object.entries(jenisBantuan)
-                .map(([jenis, count]) => `${jenis}: ${count}`)
-                .join(', ');
-            
-            const totalBantuan = locationData.data.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
-            
-            // Create popup content
-            const popupContent = `
-                <div class="map-marker-popup">
-                    <div class="popup-title">${locationData.location}</div>
-                    <div class="popup-item"><strong>Jumlah Penerima:</strong> ${jumlahPenerima}</div>
-                    <div class="popup-item"><strong>Jenis Bantuan:</strong> ${jenisBantuanStr}</div>
-                    <div class="popup-item"><strong>Total Bantuan:</strong> ${formatNumber(totalBantuan)}</div>
-                    <div class="popup-item"><strong>Koordinat:</strong> ${locationData.coordinates.lat.toFixed(6)}, ${locationData.coordinates.lng.toFixed(6)}</div>
-                    <hr>
-                    <div class="small text-muted">Klik untuk melihat detail penerima</div>
-                </div>
-            `;
-            
-            // Create marker with different colors based on jumlah penerima
-            let markerColor = 'blue';
-            if (jumlahPenerima > 10) markerColor = 'red';
-            else if (jumlahPenerima > 5) markerColor = 'orange';
-            else if (jumlahPenerima > 2) markerColor = 'green';
-            
-            const marker = L.marker([locationData.coordinates.lat, locationData.coordinates.lng], {
-                icon: L.divIcon({
-                    className: 'custom-marker',
-                    html: `<div style="background-color: ${markerColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
-                })
-            }).addTo(mapDashboard);
-            
-            // Add popup with detailed information
-            marker.bindPopup(popupContent);
-            
-            // Add click event to show detailed list
-            marker.on('click', function() {
-                const detailList = locationData.data.map((d, i) => `
-                    <div class="popup-item small">
-                        <strong>${i+1}. ${d.nama}</strong><br>
-                        ${d.jenisBantuan}: ${formatNumber(d.jumlahBantuan)} ${d.satuanBantuan}<br>
-                        ${formatDate(d.tanggalTerima)}
-                    </div>
-                `).join('');
-                
-                const detailedPopup = `
-                    <div class="map-marker-popup">
-                        <div class="popup-title">Detail Penerima - ${locationData.location}</div>
-                        <div style="max-height: 200px; overflow-y: auto;">
-                            ${detailList}
-                        </div>
-                        <div class="small text-muted mt-2">Total: ${jumlahPenerima} penerima</div>
-                    </div>
-                `;
-                
-                marker.setPopupContent(detailedPopup);
-            });
-        }
-    });
-    
-    // Fit bounds to show all markers
-    const markerBounds = L.latLngBounds(
-        Object.values(markersByLocation).map(loc => [loc.coordinates.lat, loc.coordinates.lng])
-    );
-    
-    if (Object.values(markersByLocation).length > 1) {
-        mapDashboard.fitBounds(markerBounds, { padding: [50, 50] });
     }
     
-    // Add legend
-    const legend = L.control({ position: 'bottomright' });
-    legend.onAdd = function() {
-        const div = L.DomUtil.create('div', 'info legend');
-        div.style.backgroundColor = 'white';
-        div.style.padding = '10px';
-        div.style.borderRadius = '5px';
-        div.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
-        div.innerHTML = `
-            <h6 style="margin-top: 0; margin-bottom: 8px;"><strong>Legenda Marker</strong></h6>
-            <div><span style="display: inline-block; width: 12px; height: 12px; background: red; border-radius: 50%; margin-right: 5px;"></span> > 10 penerima</div>
-            <div><span style="display: inline-block; width: 12px; height: 12px; background: orange; border-radius: 50%; margin-right: 5px;"></span> 5-10 penerima</div>
-            <div><span style="display: inline-block; width: 12px; height: 12px; background: green; border-radius: 50%; margin-right: 5px;"></span> 2-5 penerima</div>
-            <div><span style="display: inline-block; width: 12px; height: 12px; background: blue; border-radius: 50%; margin-right: 5px;"></span> 1 penerima</div>
-        `;
-        return div;
-    };
-    legend.addTo(mapDashboard);
+    if (regionWarningMessage) {
+        regionWarningMessage.style.display = activeRegion ? 'none' : 'block';
+    }
 }
 
 // --- SMART MENU LOGIC ---
@@ -805,7 +701,6 @@ function setupSmartMenu() {
         smartMenuContainer.classList.toggle('active');
     });
 
-    // Close smart menu when clicking outside
     document.addEventListener('click', function(e) {
         if (!smartMenuContainer.contains(e.target)) {
             smartMenuToggle.classList.remove('active');
@@ -818,7 +713,6 @@ function triggerSmartMenu(targetId) {
     const targetEl = document.getElementById(targetId);
     if (targetEl) {
         targetEl.click();
-        // Close menu after selection
         const smartMenuToggle = document.getElementById('smartMenuToggle');
         const smartMenu = document.getElementById('smartMenu');
         if (smartMenuToggle) smartMenuToggle.classList.remove('active');
@@ -861,14 +755,12 @@ function fillKecamatanDropdown() {
 }
 
 function initializeDesaDropdown() {
-    // Inisialisasi dropdown desa dengan status disabled
     const desaSelect = document.getElementById('desa');
     if (desaSelect) {
         desaSelect.innerHTML = '<option value="">Pilih Kecamatan terlebih dahulu</option>';
         desaSelect.disabled = true;
     }
     
-    // Untuk filter dropdowns (yang tidak tergantung pada kecamatan)
     ['filterDesa'].forEach(selectId => {
         const select = document.getElementById(selectId);
         if (!select) return;
@@ -883,7 +775,6 @@ function updateDesaDropdown(kecamatan) {
     const desaSelect = document.getElementById('desa');
     if (!desaSelect) return;
     
-    // Reset dropdown
     desaSelect.innerHTML = '';
     
     if (!kecamatan || kecamatan === '') {
@@ -892,11 +783,9 @@ function updateDesaDropdown(kecamatan) {
         return;
     }
     
-    // Enable dropdown
     desaSelect.disabled = false;
     desaSelect.add(new Option('Pilih Desa', ''));
     
-    // Tambahkan desa sesuai kecamatan
     if (desaByKecamatan[kecamatan]) {
         desaByKecamatan[kecamatan].forEach(desa => {
             desaSelect.add(new Option(desa, desa));
@@ -905,7 +794,6 @@ function updateDesaDropdown(kecamatan) {
 }
 
 function fillFilterDropdownsForDataTable() {
-    // Fill kecamatan filter for data table
     const kecFilter = document.getElementById('filterKecamatanData');
     if (kecFilter) {
         kecFilter.innerHTML = '';
@@ -913,7 +801,6 @@ function fillFilterDropdownsForDataTable() {
         kecamatanList.forEach(kec => kecFilter.add(new Option(kec, kec)));
     }
     
-    // Fill desa filter for data table
     const desaFilter = document.getElementById('filterDesaData');
     if (desaFilter) {
         desaFilter.innerHTML = '';
@@ -922,7 +809,6 @@ function fillFilterDropdownsForDataTable() {
     }
 }
 
-// --- FITUR BARU: Isi dropdown reload per kecamatan ---
 function fillReloadKecamatanDropdown() {
     const select = document.getElementById('reloadKecamatanSelect');
     if (!select) return;
@@ -931,7 +817,6 @@ function fillReloadKecamatanDropdown() {
     kecamatanList.forEach(kec => select.add(new Option(kec, kec)));
 }
 
-// --- FITUR BARU: Reload Data Per Wilayah Kecamatan ---
 function reloadKecamatanData() {
     const select = document.getElementById('reloadKecamatanSelect');
     const kecamatan = select.value;
@@ -940,12 +825,9 @@ function reloadKecamatanData() {
         return;
     }
     
-    // Siapkan nama file
     const fileName = `data_${kecamatan.toLowerCase()}.js`;
-    
     showNotification(`Memuat data dari ${fileName}...`, 'info');
     
-    // Hapus script lama jika ada
     const oldScript = document.getElementById('reload-wilayah-script');
     if (oldScript) oldScript.remove();
     
@@ -954,12 +836,10 @@ function reloadKecamatanData() {
     script.src = `./${fileName}?v=${new Date().getTime()}`;
     
     script.onload = function() {
-        // Cek apakah variabel global sesuai nama kecamatan didefinisikan
         const varName = `DATA_KECAMATAN_${kecamatan.toUpperCase()}`;
         const dataWilayah = window[varName];
         
         if (dataWilayah && Array.isArray(dataWilayah)) {
-            // Merge data baru ke appData (hindari duplikasi berdasarkan id)
             let addedCount = 0;
             const existingIds = new Set(appData.map(d => d.id));
             
@@ -972,23 +852,16 @@ function reloadKecamatanData() {
             });
             
             saveData();
-            
-            // Filter tabel secara otomatis untuk kecamatan yang direload
             document.getElementById('filterKecamatanData').value = kecamatan;
             document.getElementById('filterDesaData').value = '';
-            handleDataTableFilter(); // Memicu pencarian/filter
-            
+            handleDataTableFilter();
             showNotification(`Berhasil reload ${kecamatan}: ${addedCount} data baru ditambahkan.`, 'success');
-            
-            // Update dashboard & peta
             updateDashboard();
             if (mapDashboard) initializeMapDashboard();
         } else {
             showNotification(`File ${fileName} tidak mengandung data yang valid.`, 'error');
             console.error(`Variabel ${varName} tidak ditemukan atau bukan array.`);
         }
-        
-        // Hapus variabel global agar tidak menumpuk
         delete window[varName];
         script.remove();
     };
@@ -1211,12 +1084,9 @@ function handleUniversalPinSubmit() {
 function handlePrivacyToggle(e) {
     const toggle = e.target;
     
-    // Jika user baru saja meng-uncheck (ingin mematikan sensor)
     if (!toggle.checked) {
-        // Tahan dulu secara visual (tetap kembali ke true sampai password benar)
         toggle.checked = true;
         
-        // Buka modal minta password
         const privacyPasswordInput = document.getElementById('privacyPasswordInput');
         const privacyError = document.getElementById('privacyError');
         
@@ -1230,7 +1100,6 @@ function handlePrivacyToggle(e) {
             console.error('Error showing privacy auth modal:', error);
         }
     } else {
-        // Jika user baru saja men-check (ingin menyalakan sensor)
         appSettings.privacyMode = true;
         saveSettings();
         renderDataTable();
@@ -1284,17 +1153,14 @@ function formatPrivacy(value) {
     return str.slice(0, -4) + '****';
 }
 
-// --- FITUR DETAIL DATA ---
 function showDetailData(id) {
     const data = appData.find(item => item.id === id);
     if (!data) return;
     
-    // Apply privacy mode
     const nikDisplay = formatPrivacy(data.nik);
     const whatsappRaw = data.whatsapp ? `0${data.whatsapp}` : '-';
     const whatsappDisplay = formatPrivacy(whatsappRaw);
     
-    // Fill modal with data
     const elements = {
         'detailNama': data.nama || '-',
         'detailNik': nikDisplay,
@@ -1319,7 +1185,6 @@ function showDetailData(id) {
         if (element) element.textContent = elements[id];
     });
     
-    // Handle Google Drive link
     const driveLink = data.driveLink || '-';
     const driveLinkElement = document.getElementById('detailDriveLink');
     if (driveLinkElement) {
@@ -1330,7 +1195,6 @@ function showDetailData(id) {
         }
     }
     
-    // Show modal
     try {
         const detailModal = new bootstrap.Modal(document.getElementById('detailDataModal'));
         detailModal.show();
@@ -1339,7 +1203,6 @@ function showDetailData(id) {
     }
 }
 
-// --- FORM HANDLING & VALIDATION ---
 function setTidakAdaWhatsapp() {
     const whatsappInput = document.getElementById('whatsapp');
     if (whatsappInput) {
@@ -1358,7 +1221,6 @@ function checkNikForGeneratedCode() {
     
     const nik = nikInput.value.trim();
     
-    // Check if NIK already has a generated code
     if (generatedCodes[nik] && generatedCodes[nik].kode) {
         kodeValidasiInput.value = generatedCodes[nik].kode;
         generateKodeBtn.disabled = true;
@@ -1368,7 +1230,6 @@ function checkNikForGeneratedCode() {
         return true;
     }
     
-    // Enable button if NIK is valid and doesn't have code yet
     if (/^\d{16}$/.test(nik)) {
         generateKodeBtn.disabled = false;
         generateKodeBtn.classList.remove('generate-code-disabled');
@@ -1384,6 +1245,14 @@ function checkNikForGeneratedCode() {
 
 function handleFormSubmit(e) {
     e.preventDefault();
+    
+    // ===== VALIDASI WAJIB PILIH WILAYAH AKTIF =====
+    if (!activeRegion) {
+        showNotification('Anda wajib memilih wilayah terlebih dahulu!', 'error');
+        const selectRegionBtn = document.getElementById('selectRegionBtn');
+        if (selectRegionBtn) selectRegionBtn.focus();
+        return;
+    }
     
     if (!validateForm()) {
         showNotification('Harap perbaiki data yang salah pada formulir.', 'error');
@@ -1419,7 +1288,6 @@ function handleFormSubmit(e) {
         koordinat: getKoordinatDesa(document.getElementById('desa').value, document.getElementById('kecamatan').value)
     };
     
-    // Save generated code to storage
     if (!isEditing && formData.kodeValidasi && formData.nik) {
         generatedCodes[formData.nik] = {
             kode: formData.kodeValidasi,
@@ -1444,7 +1312,6 @@ function handleFormSubmit(e) {
     updateDashboard();
     renderDataTable();
     
-    // Update map if exists
     if (mapDashboard) {
         initializeMapDashboard();
     }
@@ -1478,21 +1345,18 @@ function resetForm() {
         if (element) element.value = elements[id];
     });
     
-    // Reset desa dropdown ke kondisi awal
     const desaSelect = document.getElementById('desa');
     if (desaSelect) {
         desaSelect.innerHTML = '<option value="">Pilih Kecamatan terlebih dahulu</option>';
         desaSelect.disabled = true;
     }
     
-    // Reset WhatsApp input
     const whatsappInput = document.getElementById('whatsapp');
     if (whatsappInput) {
         whatsappInput.disabled = false;
         whatsappInput.value = '';
     }
     
-    // Reset generate button
     const generateKodeBtn = document.getElementById('generateKodeBtn');
     if (generateKodeBtn) {
         generateKodeBtn.disabled = false;
@@ -1502,6 +1366,9 @@ function resetForm() {
     
     document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
     document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+    
+    // Kembalikan kondisi dropdown kecamatan sesuai wilayah aktif
+    updateActiveRegionUI();
 }
 
 function setError(id, message) {
@@ -1599,7 +1466,6 @@ function generateKodeValidasi() {
         return;
     }
     
-    // Check if NIK already has generated code
     if (generatedCodes[nik] && generatedCodes[nik].kode) {
         const kodeValidasi = document.getElementById('kodeValidasi');
         if (kodeValidasi) kodeValidasi.value = generatedCodes[nik].kode;
@@ -1630,13 +1496,11 @@ function generateKodeValidasi() {
     const kodeValidasi = document.getElementById('kodeValidasi');
     if (kodeValidasi) kodeValidasi.value = result;
     
-    // Save generated code
     generatedCodes[nik] = {
         kode: result,
         tanggal: new Date().toISOString()
     };
     
-    // Disable button after generation
     const generateKodeBtn = document.getElementById('generateKodeBtn');
     if (generateKodeBtn) {
         generateKodeBtn.disabled = true;
@@ -1691,16 +1555,14 @@ function loadSettings() {
         try {
             const loaded = JSON.parse(savedSettings);
             Object.assign(appSettings, loaded);
-            // SECURITY FIX: Jika kode keamanan kosong atau tidak valid, paksa kembali ke default
             if (!appSettings.securityCode || appSettings.securityCode.trim() === '') {
                 appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
-                console.warn("Kode keamanan direset ke default karena kosong.");
             }
         } catch(e) {
-             appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS; // Force default on error
+            appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
         }
     } else {
-         appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS; // Init default
+        appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
     }
 }
 
@@ -1759,7 +1621,6 @@ function handleSaveSettings(e) {
     if (appTitle) appTitle.innerHTML = appSettings.appName.replace(/\n/g, '<br>');
     if (appSubtitle) appSubtitle.textContent = appSettings.appSubtitle;
     
-    // Clear password field for security
     const settingSecurityCode = document.getElementById('settingSecurityCode');
     if (settingSecurityCode) settingSecurityCode.value = '';
 }
@@ -1800,7 +1661,6 @@ function renderDataTable() {
         const whatsappClass = (appSettings.privacyMode || !data.whatsapp) ? 'text-muted text-decoration-none' : 'whatsapp-number';
         const privacyClass = appSettings.privacyMode ? 'privacy-blurred' : '';
         
-        // Tombol aksi
         let actionButtons = `
             <div class="btn-group btn-group-sm">
                 <button class="btn btn-info text-white" onclick="showDetailData(${data.id})" title="Lihat Detail">
@@ -1864,7 +1724,6 @@ function updatePagination(totalItems) {
 
     paginationEl.appendChild(createPageItem(currentPage - 1, '<i class="fas fa-chevron-left"></i>', currentPage === 1));
 
-    const maxPagesToShow = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
     if (endPage - startPage + 1 < maxPagesToShow) {
@@ -2004,7 +1863,6 @@ function editData(id) {
     const data = appData.find(item => item.id === id);
     if (!data) return;
     
-    // Isi semua field form dengan data yang ada
     Object.keys(data).forEach(key => {
         const el = document.getElementById(key);
         if (el) el.value = data[key];
@@ -2020,7 +1878,6 @@ function editData(id) {
         }
     }
     
-    // PERBAIKAN: Aktifkan dropdown desa dan isi dengan desa yang sesuai
     const desaSelect = document.getElementById('desa');
     if (desaSelect) {
         desaSelect.disabled = false;
@@ -2030,7 +1887,6 @@ function editData(id) {
         }, 100);
     }
     
-    // Check generated code for NIK
     checkNikForGeneratedCode();
     
     document.getElementById('inputForm').setAttribute('data-edit-id', id);
@@ -2053,7 +1909,6 @@ function deleteData(id) {
             showNotification('Data berhasil dihapus.', 'success');
             updateDashboard();
             renderDataTable();
-            // Update map if exists
             if (mapDashboard) {
                 initializeMapDashboard();
             }
@@ -2074,19 +1929,16 @@ function updateDashboard() {
     
     if (totalPenerima) totalPenerima.textContent = formatNumber(appData.length);
     
-    // Hitung total bantuan uang
     const uangData = appData.filter(d => d.jenisBantuan === 'Uang');
     const totalBantuanValue = uangData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
     
     if (totalBantuan) totalBantuan.textContent = `Rp ${formatNumber(totalBantuanValue)}`;
     
-    // Hitung total bantuan barang
     const barangData = appData.filter(d => d.jenisBantuan === 'Barang');
     const totalBarangValue = barangData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
     
     if (totalBarang) totalBarang.textContent = formatNumber(totalBarangValue);
     
-    // Hitung total bantuan paket/jasa
     const paketData = appData.filter(d => d.jenisBantuan === 'Jasa');
     const totalPaketValue = paketData.reduce((sum, d) => sum + (parseFloat(d.jumlahBantuan) || 0), 0);
     
@@ -2101,7 +1953,6 @@ function updateDashboard() {
     
     if (rataBantuan) rataBantuan.textContent = `Rp ${formatNumber(rataBantuanValue.toFixed(0))}`;
     
-    // Hitung total kecamatan dan desa unik
     const kecamatanUnik = [...new Set(appData.map(d => d.kecamatan))];
     const desaUnik = [...new Set(appData.map(d => d.desa))];
     
@@ -2111,7 +1962,6 @@ function updateDashboard() {
     updateCharts();
     updateRecentData();
     
-    // Update map if exists
     if (mapDashboard && document.getElementById('v-pills-dashboard').classList.contains('show')) {
         initializeMapDashboard();
     }
@@ -2301,7 +2151,7 @@ function showPreview() {
     }
 }
 
-// --- PERBAIKAN EXPORT: Hanya Excel & PDF ---
+// --- EKSPOR EXCEL & PDF (PERBAIKAN FORMAT NIK & WA) ---
 function exportData(format) {
     const dataToExport = getFilteredDataForExport('export');
     if (dataToExport.length === 0) {
@@ -2316,11 +2166,45 @@ function exportData(format) {
             showNotification('Library XLSX tidak tersedia.', 'error');
             return;
         }
-        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        
+        // Siapkan data dengan format teks untuk NIK dan WhatsApp
+        const exportRows = dataToExport.map(d => {
+            // NIK: pastikan sebagai teks, tambahkan apostrof di depan
+            let nik = d.nik ? `'${d.nik}` : '-';
+            
+            // WhatsApp: tampilkan dengan awalan 0, sebagai teks
+            let whatsapp = '-';
+            if (d.whatsapp && d.whatsapp !== '') {
+                whatsapp = `'0${d.whatsapp.replace(/\D/g, '')}`;
+            }
+            
+            return {
+                Nama: d.nama,
+                NIK: nik,
+                WhatsApp: whatsapp,
+                Kelompok: d.namaKelompok || '-',
+                Jabatan: d.jabatan || '-',
+                Tahun: d.tahunAnggaran,
+                Kecamatan: d.kecamatan,
+                Desa: d.desa,
+                Alamat: d.alamat || '-',
+                'Jenis Bantuan': d.jenisBantuan,
+                'Nama Bantuan': d.namaBantuan || '-',
+                Jumlah: `${formatNumber(d.jumlahBantuan)} ${d.satuanBantuan}`,
+                'Tanggal Terima': formatDate(d.tanggalTerima),
+                Petugas: d.namaPetugas || '-',
+                'Link Drive': d.driveLink || '-',
+                'Kode Validasi': d.kodeValidasi || '-',
+                Keterangan: d.keterangan || '-'
+            };
+        });
+        
+        const ws = XLSX.utils.json_to_sheet(exportRows);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Data Bantuan');
         XLSX.writeFile(wb, `${filename}.xlsx`);
         showNotification('Data berhasil diekspor ke Excel.', 'success');
+        
     } else if (format === 'pdf') {
         if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
             showNotification('Library jsPDF tidak tersedia.', 'error');
@@ -2338,7 +2222,7 @@ function exportData(format) {
         const rows = dataToExport.map((d, i) => [
             i + 1,
             d.nama,
-            formatPrivacy(d.nik),
+            formatPrivacy(d.nik), // PDF tetap menggunakan format privasi
             d.kecamatan,
             d.desa,
             d.jenisBantuan,
@@ -2380,7 +2264,6 @@ function importExcelData() {
             const worksheet = workbook.Sheets[firstSheetName];
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
             
-            // Asumsikan baris pertama adalah header
             const headers = jsonData[0];
             const rows = jsonData.slice(1);
             
@@ -2393,7 +2276,7 @@ function importExcelData() {
             const existingIds = new Set(appData.map(d => d.id));
             
             rows.forEach(row => {
-                if (row.length < 5) return; // baris kosong
+                if (row.length < 5) return;
                 
                 const item = {
                     id: Date.now() + addedCount + Math.random(),
@@ -2445,7 +2328,7 @@ function importExcelData() {
     reader.readAsArrayBuffer(file);
 }
 
-// --- BACKUP (RELOAD.JS) & RESTORE ---
+// --- BACKUP (KHUSUS WILAYAH AKTIF) ---
 function autoBackupData() {
     if (appData.length === 0) return;
     appSettings.lastBackupDate = new Date().toLocaleDateString('id-ID');
@@ -2453,51 +2336,55 @@ function autoBackupData() {
 }
 
 // ======================================================
-//  PERBAIKAN: FUNGSI BACKUP (MENGGUNAKAN BackupUtils)
+//  PERBAIKAN: BACKUP DATA (HANYA WILAYAH AKTIF)
 // ======================================================
 function backupData() {
-    if (appData.length === 0) return showNotification('Tidak ada data untuk dibackup.', 'warning');
-    
-    // 1. Siapkan data JSON
-    const dataToBackup = { appData, appSettings, generatedCodes, koordinatDesa, koordinatKecamatan };
-    
-    // 2. Enkripsi dengan BackupUtils.encode
-    let encryptedString;
-    try {
-        encryptedString = BackupUtils.encode(dataToBackup);
-    } catch (e) {
-        showNotification('Gagal mengenkripsi data: ' + e.message, 'error');
+    if (!activeRegion) {
+        showNotification('Pilih wilayah aktif terlebih dahulu sebelum backup!', 'warning');
         return;
     }
     
-    // 3. Buat konten file JS - gunakan JSON.stringify untuk escaping string base64
+    const dataWilayah = appData.filter(d => d.kecamatan === activeRegion);
+    if (dataWilayah.length === 0) {
+        showNotification(`Tidak ada data untuk wilayah ${activeRegion}.`, 'warning');
+        return;
+    }
+    
     const timestamp = new Date().toLocaleString('id-ID');
     const appNameFull = "APLIKASI BARJAS BIDANG PEMBERDAYAAN NELAYAN";
+    const varName = `DATA_KECAMATAN_${activeRegion.toUpperCase()}`;
+    const fileName = `${activeRegion.toLowerCase()}.js`;
     
     const fileContent = `/* PETUNJUK PENGGUNAAN RELOAD REPO:
     1. Ini adalah file backup otomatis dari Aplikasi.
-    2. Jangan ubah kode di dalam tanda petik dua ("...") di bawah.
-    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data.
+    2. Jangan ubah kode di dalam variabel ini.
+    3. Upload file ini ke hosting tempat aplikasi berjalan untuk fitur Reload Data Per Wilayah.
     
     APP NAME : ${appNameFull}
     TANGGAL  : ${timestamp}
+    WILAYAH  : ${activeRegion}
 */
 
-window.BARJAS_BACKUP_ENCRYPTED = ${JSON.stringify(encryptedString)};
+window.${varName} = ${JSON.stringify(dataWilayah, null, 2)};
 `;
 
-    // 4. Download sebagai reload.js
-    downloadFile(fileContent, 'text/javascript', 'reload.js');
+    downloadFile(fileContent, 'text/javascript', fileName);
     
-    // Update timestamp
     appSettings.lastBackupDate = new Date().toLocaleDateString('id-ID');
     saveSettings();
     applySettingsToUI();
-    showNotification('Backup file (reload.js) berhasil diunduh.', 'success');
+    showNotification(`Backup file (${fileName}) berhasil diunduh.`, 'success');
+}
+
+function enableRestoreButton() {
+    const restoreDataBtn = document.getElementById('restoreDataBtn');
+    if (restoreDataBtn) {
+        restoreDataBtn.disabled = !this.files.length;
+    }
 }
 
 // ======================================================
-//  PERBAIKAN: FUNGSI RELOAD (SCRIPT + FETCH FALLBACK)
+//  FUNGSI RELOAD DARI REPO (BACKUP GLOBAL, TETAP)
 // ======================================================
 function handleReloadFromRepo() {
     if(!confirm("Apakah Anda yakin ingin me-reload data dari repository? Data lokal akan digabungkan dengan data baru.")) return;
@@ -2509,16 +2396,13 @@ function handleReloadFromRepo() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin feature-icon"></i> Loading...';
     btn.disabled = true;
 
-    // Hapus script lama jika ada
     const oldScript = document.getElementById('reload-script');
     if(oldScript) oldScript.remove();
 
-    // Fungsi untuk memproses data setelah base64 didapatkan
     const processBackupData = (base64String) => {
         try {
             const restored = BackupUtils.decode(base64String);
             
-            // LOGIKA MERGE DATA
             if(restored && restored.appData && Array.isArray(restored.appData)) {
                 const existingIds = new Set(appData.map(item => item.id));
                 let addedCount = 0;
@@ -2535,7 +2419,6 @@ function handleReloadFromRepo() {
                     generatedCodes = { ...restored.generatedCodes, ...generatedCodes }; 
                 }
                 
-                // Update koordinat jika ada
                 if(restored.koordinatDesa) {
                     Object.assign(koordinatDesa, restored.koordinatDesa);
                 }
@@ -2571,7 +2454,6 @@ function handleReloadFromRepo() {
         }
     };
 
-    // Metode 1: Muat via script tag
     const script = document.createElement('script');
     script.id = 'reload-script';
     script.src = './reload.js?v=' + new Date().getTime(); 
@@ -2589,14 +2471,12 @@ function handleReloadFromRepo() {
 
     script.onerror = function() {
         console.warn('Script tag gagal, mencoba fetch fallback...');
-        // Metode 2: Fallback menggunakan fetch
         fetch('./reload.js?v=' + new Date().getTime())
             .then(response => {
                 if (!response.ok) throw new Error('File reload.js tidak ditemukan.');
                 return response.text();
             })
             .then(jsText => {
-                // Ekstrak nilai window.BARJAS_BACKUP_ENCRYPTED dari teks JS
                 const match = jsText.match(/window\.BARJAS_BACKUP_ENCRYPTED\s*=\s*("|')([^"']+)\1/);
                 if (match && match[2]) {
                     processBackupData(match[2]);
@@ -2622,7 +2502,7 @@ function enableRestoreButton() {
 }
 
 // ======================================================
-//  PERBAIKAN: FUNGSI RESTORE (MENGGUNAKAN BackupUtils)
+//  FUNGSI RESTORE (TETAP DAPAT MEMPROSES BACKUP LAMA)
 // ======================================================
 function restoreData() {
     const file = document.getElementById('restoreFileInput').files[0];
@@ -2634,9 +2514,7 @@ function restoreData() {
             const content = e.target.result;
             let restored;
             
-            // Cek apakah file reload.js (mengandung window.BARJAS...) atau JSON biasa
             if (content.includes('window.BARJAS_BACKUP_ENCRYPTED')) {
-                // Extract string dalam tanda petik
                 const match = content.match(/window\.BARJAS_BACKUP_ENCRYPTED\s*=\s*("|')([^"']+)\1/);
                 if (match && match[2]) {
                     restored = BackupUtils.decode(match[2]);
@@ -2644,12 +2522,9 @@ function restoreData() {
                     throw new Error("Format reload.js tidak valid.");
                 }
             } else {
-                // Coba parse sebagai JSON biasa (legacy backup) atau base64
                 try {
-                    // Coba sebagai base64 dulu
                     restored = BackupUtils.decode(content);
                 } catch (err) {
-                    // Jika gagal, coba parse sebagai JSON biasa
                     restored = JSON.parse(content);
                 }
             }
@@ -2658,14 +2533,12 @@ function restoreData() {
                 appData = restored.appData;
                 Object.assign(appSettings, restored.appSettings);
                 
-                // PASTIKAN KODE KEAMANAN TETAP DEFAULT JIKA KOSONG SETELAH RESTORE
                 if (!appSettings.securityCode || appSettings.securityCode.trim() === '') {
                     appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
                 }
 
                 generatedCodes = restored.generatedCodes || {};
                 
-                // Update koordinat jika ada
                 if(restored.koordinatDesa) {
                     Object.assign(koordinatDesa, restored.koordinatDesa);
                 }
@@ -2684,7 +2557,6 @@ function restoreData() {
                 updateDashboard();
                 renderDataTable();
                 
-                // Update map
                 if (mapDashboard) {
                     initializeMapDashboard();
                 }
@@ -2711,7 +2583,6 @@ function enableResetButton() {
 function performFactoryReset() {
     appData = [];
     generatedCodes = {};
-    // Reset Settings tapi pertahankan default password
     appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
     saveData();
     saveSettings();
@@ -2722,7 +2593,6 @@ function performFactoryReset() {
     updateDashboard();
     renderDataTable();
     
-    // Update map
     if (mapDashboard) {
         initializeMapDashboard();
     }
@@ -2847,10 +2717,8 @@ function generateDataPeta() {
     if (errorElement) errorElement.style.display = 'none';
     
     if (appData.length === 0) {
-        // Jika tidak ada data di appData, gunakan data contoh
         generatedPetaData = SAMPLE_DATA;
         
-        // Tampilkan preview
         const extractPreviewSection = document.getElementById('extractPreviewSection');
         const extractPreview = document.getElementById('extractPreview');
         
@@ -2861,7 +2729,6 @@ function generateDataPeta() {
         return;
     }
     
-    // Proses data untuk statistik per desa
     const dataByDesa = {};
     
     appData.forEach(item => {
@@ -2869,7 +2736,7 @@ function generateDataPeta() {
         
         if (!dataByDesa[key]) {
             dataByDesa[key] = {
-                key: key, // Simpan key untuk referensi
+                key: key,
                 desa: item.desa,
                 kecamatan: item.kecamatan,
                 jumlahPenerima: 0,
@@ -2889,29 +2756,24 @@ function generateDataPeta() {
             };
         }
         
-        // Update statistik
         dataByDesa[key].jumlahPenerima++;
         
-        // Update jenis bantuan
         if (!dataByDesa[key].jenisBantuan[item.jenisBantuan]) {
             dataByDesa[key].jenisBantuan[item.jenisBantuan] = 0;
         }
         dataByDesa[key].jenisBantuan[item.jenisBantuan]++;
         
-        // Update distribusi tahun
         if (!dataByDesa[key].tahunDistribusi[item.tahunAnggaran]) {
             dataByDesa[key].tahunDistribusi[item.tahunAnggaran] = 0;
         }
         dataByDesa[key].tahunDistribusi[item.tahunAnggaran]++;
         
-        // Update distribusi kelompok
         const kelompok = item.namaKelompok || 'Individu';
         if (!dataByDesa[key].kelompokDistribusi[kelompok]) {
             dataByDesa[key].kelompokDistribusi[kelompok] = 0;
         }
         dataByDesa[key].kelompokDistribusi[kelompok]++;
         
-        // Update statistik detail
         const jumlah = parseFloat(item.jumlahBantuan) || 0;
         if (item.jenisBantuan === 'Uang') {
             dataByDesa[key].totalBantuanUang += jumlah;
@@ -2927,7 +2789,6 @@ function generateDataPeta() {
             dataByDesa[key].statistik.jasa.nilai += jumlah;
         }
         
-        // Tambah detail penerima (tanpa data sensitif)
         dataByDesa[key].detailPenerima.push({
             nama: item.nama,
             nik: formatPrivacy(item.nik),
@@ -2945,7 +2806,6 @@ function generateDataPeta() {
         });
     });
     
-    // Konversi ke array dan format untuk peta
     const dataPeta = {
         metadata: {
             generatedAt: new Date().toISOString(),
@@ -2971,30 +2831,25 @@ function generateDataPeta() {
             desaTerbanyak: Object.entries(dataByDesa).sort((a, b) => b[1].jumlahPenerima - a[1].jumlahPenerima)[0] || null
         },
         data: Object.values(dataByDesa).map(item => {
-            // Format jenis bantuan untuk peta
             const jenisBantuanFormatted = Object.keys(item.jenisBantuan).map(jenis => ({
                 jenis: jenis,
                 jumlah: item.jenisBantuan[jenis]
             }));
             
-            // Format tahun distribusi
             const tahunDistribusiFormatted = Object.keys(item.tahunDistribusi).map(tahun => ({
                 tahun: tahun,
                 jumlah: item.tahunDistribusi[tahun]
             }));
             
-            // Format kelompok distribusi
             const kelompokDistribusiFormatted = Object.keys(item.kelompokDistribusi).map(kelompok => ({
                 kelompok: kelompok,
                 jumlah: item.kelompokDistribusi[kelompok]
             }));
             
-            // Hitung total bantuan
             const totalBantuan = item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa;
             const maxPenerima = Math.max(...Object.values(dataByDesa).map(d => d.jumlahPenerima));
             const warnaIntensitas = maxPenerima > 0 ? item.jumlahPenerima / maxPenerima : 0;
             
-            // Buat ID unik dari desa dan kecamatan
             const id = item.key.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
             
             return {
@@ -3027,10 +2882,8 @@ function generateDataPeta() {
         })
     };
     
-    // Simpan data untuk preview dan download
     generatedPetaData = dataPeta;
     
-    // Tampilkan preview
     const extractPreviewSection = document.getElementById('extractPreviewSection');
     const extractPreview = document.getElementById('extractPreview');
     
@@ -3109,12 +2962,10 @@ function getAllKecamatanData() {
 function updatePetaData(newData) {
     if (!DATA_PETA_STATISTIK || !newData) return false;
     
-    // Logika update data
     console.log('Memperbarui data peta...');
     return true;
 }
 
-// Ekspor untuk penggunaan global
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         DATA_PETA_STATISTIK,
@@ -3137,7 +2988,6 @@ if (typeof module !== 'undefined' && module.exports) {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        // Hapus preview data setelah download
         generatedPetaData = null;
         const extractPreviewSection = document.getElementById('extractPreviewSection');
         const extractPreview = document.getElementById('extractPreview');
@@ -3145,14 +2995,14 @@ if (typeof module !== 'undefined' && module.exports) {
         if (extractPreviewSection) extractPreviewSection.style.display = 'none';
         if (extractPreview) extractPreview.innerHTML = '';
         
-        showNotification('File datapeta.js berhasil didownload! Preview data telah dihapus.', 'success');
+        showNotification('File datapeta.js berhasil didownload!', 'success');
     } catch (error) {
         console.error('Error downloading datapeta.js:', error);
         showNotification('Gagal mengunduh file datapeta.js.', 'error');
     }
 }
 
-// Ekspor fungsi ke global scope untuk aksi dari HTML
+// Ekspor fungsi ke global scope
 window.showDetailData = showDetailData;
 window.editData = editData;
 window.deleteData = deleteData;
