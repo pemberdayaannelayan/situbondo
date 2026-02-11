@@ -28,6 +28,32 @@ const SECURITY_CONSTANTS = {
 let pendingSecurityAction = null;
 let generatedPetaData = null; // Menyimpan data peta yang dihasilkan
 
+// --- HELPER BACKUP ENCODE/DECODE (TAMBAHAN UNTUK KEANDALAN) ---
+const BackupUtils = {
+    encode: function(obj) {
+        try {
+            const jsonString = JSON.stringify(obj);
+            const utf8Bytes = encodeURIComponent(jsonString);
+            const asciiString = unescape(utf8Bytes); // konversi ke ASCII untuk btoa
+            return btoa(asciiString);
+        } catch (e) {
+            console.error('Backup encoding error:', e);
+            throw new Error('Gagal mengenkripsi data backup');
+        }
+    },
+    decode: function(base64) {
+        try {
+            const asciiString = atob(base64);
+            const utf8Bytes = escape(asciiString); // kembalikan ke bentuk %-encoded
+            const jsonString = decodeURIComponent(utf8Bytes);
+            return JSON.parse(jsonString);
+        } catch (e) {
+            console.error('Backup decoding error:', e);
+            throw new Error('Gagal mendekripsi data backup');
+        }
+    }
+};
+
 // DATA DESA/KECAMATAN YANG DIPERBARUI SESUAI PERMINTAAN
 const kecamatanList = [
     "Arjasa", "Asembagus", "Banyuglugur", "Banyuputih", "Besuki", 
@@ -2586,16 +2612,25 @@ function autoBackupData() {
     saveSettings();
 }
 
+// ======================================================
+//  PERBAIKAN: FUNGSI BACKUP (MENGGUNAKAN BackupUtils)
+// ======================================================
 function backupData() {
     if (appData.length === 0) return showNotification('Tidak ada data untuk dibackup.', 'warning');
     
     // 1. Siapkan data JSON
     const dataToBackup = { appData, appSettings, generatedCodes, koordinatDesa, koordinatKecamatan };
     
-    // 2. Enkripsi ke Base64
-    const encryptedString = btoa(unescape(encodeURIComponent(JSON.stringify(dataToBackup))));
+    // 2. Enkripsi dengan BackupUtils.encode
+    let encryptedString;
+    try {
+        encryptedString = BackupUtils.encode(dataToBackup);
+    } catch (e) {
+        showNotification('Gagal mengenkripsi data: ' + e.message, 'error');
+        return;
+    }
     
-    // 3. Buat konten file JS with NEW APP NAME
+    // 3. Buat konten file JS - gunakan JSON.stringify untuk escaping string base64
     const timestamp = new Date().toLocaleString('id-ID');
     const appNameFull = "APLIKASI BARJAS BIDANG PEMBERDAYAAN NELAYAN";
     
@@ -2608,7 +2643,7 @@ function backupData() {
     TANGGAL  : ${timestamp}
 */
 
-window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
+window.BARJAS_BACKUP_ENCRYPTED = ${JSON.stringify(encryptedString)};
 `;
 
     // 4. Download sebagai reload.js
@@ -2621,6 +2656,9 @@ window.BARJAS_BACKUP_ENCRYPTED = "${encryptedString}";
     showNotification('Backup file (reload.js) berhasil diunduh.', 'success');
 }
 
+// ======================================================
+//  PERBAIKAN: FUNGSI RELOAD (SCRIPT + FETCH FALLBACK)
+// ======================================================
 function handleReloadFromRepo() {
     if(!confirm("Apakah Anda yakin ingin me-reload data dari repository? Data lokal akan digabungkan dengan data baru.")) return;
     
@@ -2631,81 +2669,61 @@ function handleReloadFromRepo() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin feature-icon"></i> Loading...';
     btn.disabled = true;
 
+    // Hapus script lama jika ada
     const oldScript = document.getElementById('reload-script');
     if(oldScript) oldScript.remove();
 
-    const script = document.createElement('script');
-    script.id = 'reload-script';
-    script.src = './reload.js?v=' + new Date().getTime(); 
-
-    script.onload = function() {
+    // Fungsi untuk memproses data setelah base64 didapatkan
+    const processBackupData = (base64String) => {
         try {
-            if (window.BARJAS_BACKUP_ENCRYPTED) {
-                const rawContent = window.BARJAS_BACKUP_ENCRYPTED;
-                let restored;
-                try {
-                    if (typeof rawContent === 'string') {
-                        restored = JSON.parse(decodeURIComponent(escape(atob(rawContent))));
-                    } else {
-                        restored = rawContent;
+            const restored = BackupUtils.decode(base64String);
+            
+            // LOGIKA MERGE DATA
+            if(restored && restored.appData && Array.isArray(restored.appData)) {
+                const existingIds = new Set(appData.map(item => item.id));
+                let addedCount = 0;
+
+                restored.appData.forEach(newItem => {
+                    if (!existingIds.has(newItem.id)) {
+                        appData.push(newItem);
+                        existingIds.add(newItem.id); 
+                        addedCount++;
                     }
-                } catch (decryptionError) {
-                    throw new Error("Gagal mendekripsi data.");
+                });
+
+                if(restored.generatedCodes) {
+                    generatedCodes = { ...restored.generatedCodes, ...generatedCodes }; 
                 }
                 
-                // LOGIKA MERGE DATA
-                if(restored && restored.appData && Array.isArray(restored.appData)) {
-                    
-                    const existingIds = new Set(appData.map(item => item.id));
-                    let addedCount = 0;
+                // Update koordinat jika ada
+                if(restored.koordinatDesa) {
+                    Object.assign(koordinatDesa, restored.koordinatDesa);
+                }
+                if(restored.koordinatKecamatan) {
+                    Object.assign(koordinatKecamatan, restored.koordinatKecamatan);
+                }
 
-                    restored.appData.forEach(newItem => {
-                        if (!existingIds.has(newItem.id)) {
-                            appData.push(newItem);
-                            existingIds.add(newItem.id); 
-                            addedCount++;
-                        }
-                    });
-
-                    if(restored.generatedCodes) {
-                        generatedCodes = { ...restored.generatedCodes, ...generatedCodes }; 
-                    }
-                    
-                    // Update koordinat jika ada
-                    if(restored.koordinatDesa) {
-                        Object.assign(koordinatDesa, restored.koordinatDesa);
-                    }
-                    
-                    // Update koordinat kecamatan jika ada
-                    if(restored.koordinatKecamatan) {
-                        Object.assign(koordinatKecamatan, restored.koordinatKecamatan);
-                    }
-
-                    saveData();
-                    saveSettings();
-                    applySettingsToUI();
-                    updateDashboard();
-                    renderDataTable();
-                    
-                    // Update map
-                    if (mapDashboard) {
-                        initializeMapDashboard();
-                    }
-                    
-                    if (addedCount > 0) {
-                        showNotification(`Berhasil reload! ${addedCount} data baru ditambahkan.`, 'success');
-                    } else {
-                        showNotification('Reload selesai. Tidak ada data baru yang ditemukan.', 'info');
-                    }
-
+                saveData();
+                saveSettings();
+                applySettingsToUI();
+                updateDashboard();
+                renderDataTable();
+                
+                if (mapDashboard) {
+                    initializeMapDashboard();
+                }
+                
+                if (addedCount > 0) {
+                    showNotification(`Berhasil reload! ${addedCount} data baru ditambahkan.`, 'success');
                 } else {
-                    throw new Error('Format data tidak valid.');
+                    showNotification('Reload selesai. Tidak ada data baru yang ditemukan.', 'info');
                 }
             } else {
-                throw new Error('Variabel backup tidak ditemukan di reload.js.');
+                throw new Error('Format data tidak valid.');
             }
         } catch (e) {
             showNotification('Error: ' + e.message, 'error');
+            console.error('Reload processing error:', e);
         } finally {
             btn.innerHTML = originalText;
             btn.disabled = false;
@@ -2713,11 +2731,46 @@ function handleReloadFromRepo() {
         }
     };
 
-    script.onerror = function() {
-        showNotification('Gagal memuat file reload.js. Pastikan file ada di folder yang sama.', 'error');
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+    // Metode 1: Muat via script tag
+    const script = document.createElement('script');
+    script.id = 'reload-script';
+    script.src = './reload.js?v=' + new Date().getTime(); 
+
+    script.onload = function() {
+        if (window.BARJAS_BACKUP_ENCRYPTED) {
+            const rawContent = window.BARJAS_BACKUP_ENCRYPTED;
+            processBackupData(rawContent);
+        } else {
+            showNotification('Variabel backup tidak ditemukan di reload.js.', 'error');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     };
+
+    script.onerror = function() {
+        console.warn('Script tag gagal, mencoba fetch fallback...');
+        // Metode 2: Fallback menggunakan fetch
+        fetch('./reload.js?v=' + new Date().getTime())
+            .then(response => {
+                if (!response.ok) throw new Error('File reload.js tidak ditemukan.');
+                return response.text();
+            })
+            .then(jsText => {
+                // Ekstrak nilai window.BARJAS_BACKUP_ENCRYPTED dari teks JS
+                const match = jsText.match(/window\.BARJAS_BACKUP_ENCRYPTED\s*=\s*("|')([^"']+)\1/);
+                if (match && match[2]) {
+                    processBackupData(match[2]);
+                } else {
+                    throw new Error('Tidak dapat menemukan data backup dalam file.');
+                }
+            })
+            .catch(err => {
+                showNotification('Gagal memuat reload.js. ' + err.message, 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+    };
+
     document.body.appendChild(script);
 }
 
@@ -2728,6 +2781,9 @@ function enableRestoreButton() {
     }
 }
 
+// ======================================================
+//  PERBAIKAN: FUNGSI RESTORE (MENGGUNAKAN BackupUtils)
+// ======================================================
 function restoreData() {
     const file = document.getElementById('restoreFileInput').files[0];
     if (!file || !confirm('PENTING: Restore akan menimpa semua data. Lanjutkan?')) return;
@@ -2741,17 +2797,19 @@ function restoreData() {
             // Cek apakah file reload.js (mengandung window.BARJAS...) atau JSON biasa
             if (content.includes('window.BARJAS_BACKUP_ENCRYPTED')) {
                 // Extract string dalam tanda petik
-                const match = content.match(/window\.BARJAS_BACKUP_ENCRYPTED\s*=\s*"([^"]+)"/);
-                if (match && match[1]) {
-                    restored = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
+                const match = content.match(/window\.BARJAS_BACKUP_ENCRYPTED\s*=\s*("|')([^"']+)\1/);
+                if (match && match[2]) {
+                    restored = BackupUtils.decode(match[2]);
                 } else {
                     throw new Error("Format reload.js tidak valid.");
                 }
             } else {
-                // Coba parse sebagai JSON biasa (legacy backup)
+                // Coba parse sebagai JSON biasa (legacy backup) atau base64
                 try {
-                    restored = JSON.parse(decodeURIComponent(escape(atob(content))));
+                    // Coba sebagai base64 dulu
+                    restored = BackupUtils.decode(content);
                 } catch (err) {
+                    // Jika gagal, coba parse sebagai JSON biasa
                     restored = JSON.parse(content);
                 }
             }
@@ -2761,9 +2819,9 @@ function restoreData() {
                 Object.assign(appSettings, restored.appSettings);
                 
                 // PASTIKAN KODE KEAMANAN TETAP DEFAULT JIKA KOSONG SETELAH RESTORE
-                 if (!appSettings.securityCode || appSettings.securityCode.trim() === '') {
-                     appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
-                 }
+                if (!appSettings.securityCode || appSettings.securityCode.trim() === '') {
+                    appSettings.securityCode = SECURITY_CONSTANTS.DEFAULT_PASS;
+                }
 
                 generatedCodes = restored.generatedCodes || {};
                 
@@ -2771,8 +2829,6 @@ function restoreData() {
                 if(restored.koordinatDesa) {
                     Object.assign(koordinatDesa, restored.koordinatDesa);
                 }
-                
-                // Update koordinat kecamatan jika ada
                 if(restored.koordinatKecamatan) {
                     Object.assign(koordinatKecamatan, restored.koordinatKecamatan);
                 }
@@ -2799,7 +2855,7 @@ function restoreData() {
             }
         } catch (error) {
             console.error(error);
-            showNotification('Gagal merestore data. File mungkin rusak.', 'error');
+            showNotification('Gagal merestore data. File mungkin rusak. ' + error.message, 'error');
         }
     };
     reader.readAsText(file);
