@@ -31,6 +31,9 @@ const SECURITY_CONSTANTS = {
 let pendingSecurityAction = null;
 let generatedPetaData = null; // Menyimpan data peta yang dihasilkan
 
+// --- KONSTANTA TAMBAHAN UNTUK PAGINATION (DIPERBAIKI) ---
+const maxPagesToShow = 5;
+
 // --- HELPER BACKUP ENCODE/DECODE (TAMBAHAN UNTUK KEANDALAN) ---
 const BackupUtils = {
     encode: function(obj) {
@@ -2494,13 +2497,6 @@ function handleReloadFromRepo() {
     document.body.appendChild(script);
 }
 
-function enableRestoreButton() {
-    const restoreDataBtn = document.getElementById('restoreDataBtn');
-    if (restoreDataBtn) {
-        restoreDataBtn.disabled = !this.files.length;
-    }
-}
-
 // ======================================================
 //  FUNGSI RESTORE (TETAP DAPAT MEMPROSES BACKUP LAMA)
 // ======================================================
@@ -3002,9 +2998,82 @@ if (typeof module !== 'undefined' && module.exports) {
     }
 }
 
+// --- FUNGSI PETA DASHBOARD (DIPERBAIKI - SEBELUMNYA TIDAK ADA) ---
+function initializeMapDashboard() {
+    if (typeof L === 'undefined') {
+        console.warn('Leaflet library tidak tersedia.');
+        return;
+    }
+
+    const mapContainer = document.getElementById('mapDashboard');
+    if (!mapContainer) return;
+
+    // Hapus peta lama jika ada
+    if (mapDashboard) {
+        mapDashboard.remove();
+        mapDashboard = null;
+    }
+
+    // Inisialisasi peta
+    mapDashboard = L.map('mapDashboard').setView([-7.75, 114.0], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mapDashboard);
+
+    // Tentukan data yang akan ditampilkan
+    let dataForMap = appData.length > 0 ? appData : (SAMPLE_DATA.data || []);
+    
+    // Jika tidak ada data, tampilkan pesan
+    if (dataForMap.length === 0) {
+        L.marker([-7.75, 114.0]).addTo(mapDashboard)
+            .bindPopup('Belum ada data penerima bantuan.')
+            .openPopup();
+        return;
+    }
+
+    // Kelompokkan berdasarkan desa untuk menghindari marker bertumpuk
+    const grouped = {};
+    dataForMap.forEach(item => {
+        const key = `${item.desa}, ${item.kecamatan}`;
+        if (!grouped[key]) {
+            grouped[key] = {
+                nama: item.nama,
+                desa: item.desa,
+                kecamatan: item.kecamatan,
+                koordinat: item.koordinat || getKoordinatDesa(item.desa, item.kecamatan),
+                count: 0,
+                bantuan: []
+            };
+        }
+        grouped[key].count++;
+        grouped[key].bantuan.push({
+            nama: item.nama,
+            jenis: item.jenisBantuan,
+            jumlah: item.jumlahBantuan,
+            satuan: item.satuanBantuan
+        });
+    });
+
+    // Tambahkan marker
+    Object.values(grouped).forEach(group => {
+        if (!group.koordinat || !group.koordinat.lat || !group.koordinat.lng) return;
+        
+        const popupContent = `
+            <strong>${group.desa}, ${group.kecamatan}</strong><br>
+            Jumlah Penerima: ${group.count}<br>
+            Contoh penerima: ${group.bantuan.slice(0, 3).map(b => b.nama).join(', ')}${group.bantuan.length > 3 ? '...' : ''}
+        `;
+        
+        L.marker([group.koordinat.lat, group.koordinat.lng])
+            .addTo(mapDashboard)
+            .bindPopup(popupContent);
+    });
+}
+
 // Ekspor fungsi ke global scope
 window.showDetailData = showDetailData;
 window.editData = editData;
 window.deleteData = deleteData;
 window.triggerSmartMenu = triggerSmartMenu;
 window.changePage = changePage;
+window.initializeMapDashboard = initializeMapDashboard; // <-- tambahkan ekspor
