@@ -369,6 +369,9 @@ function initializeApp() {
     // Fill filter dropdowns for data table
     fillFilterDropdownsForDataTable();
     
+    // FITUR BARU: Isi dropdown reload per kecamatan
+    fillReloadKecamatanDropdown();
+    
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tanggalTerima').value = today;
     
@@ -490,20 +493,27 @@ function setupEventListeners() {
         previewBtn.addEventListener('click', showPreview);
     }
     
-    // Export buttons
-    const exportButtons = {
-        'exportExcelBtn': () => exportData('excel'),
-        'exportCsvBtn': () => exportData('csv'),
-        'exportJsonBtn': () => exportData('json'),
-        'exportPdfBtn': () => exportData('pdf')
-    };
+    // --- PERBAIKAN EXPORT: Hanya Excel & PDF ---
+    const exportExcelBtn = document.getElementById('exportExcelBtn');
+    if (exportExcelBtn) {
+        exportExcelBtn.addEventListener('click', () => exportData('excel'));
+    }
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    if (exportPdfBtn) {
+        exportPdfBtn.addEventListener('click', () => exportData('pdf'));
+    }
     
-    Object.keys(exportButtons).forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.addEventListener('click', exportButtons[id]);
-        }
-    });
+    // --- FITUR BARU: Impor Data Excel ---
+    const importExcelBtn = document.getElementById('importExcelBtn');
+    if (importExcelBtn) {
+        importExcelBtn.addEventListener('click', importExcelData);
+    }
+    
+    // --- FITUR BARU: Reload Data Per Wilayah Kecamatan ---
+    const reloadWilayahBtn = document.getElementById('reloadWilayahBtn');
+    if (reloadWilayahBtn) {
+        reloadWilayahBtn.addEventListener('click', reloadKecamatanData);
+    }
     
     // System Management
     const backupDataBtn = document.getElementById('backupDataBtn');
@@ -912,6 +922,85 @@ function fillFilterDropdownsForDataTable() {
     }
 }
 
+// --- FITUR BARU: Isi dropdown reload per kecamatan ---
+function fillReloadKecamatanDropdown() {
+    const select = document.getElementById('reloadKecamatanSelect');
+    if (!select) return;
+    select.innerHTML = '';
+    select.add(new Option('Pilih Kecamatan', ''));
+    kecamatanList.forEach(kec => select.add(new Option(kec, kec)));
+}
+
+// --- FITUR BARU: Reload Data Per Wilayah Kecamatan ---
+function reloadKecamatanData() {
+    const select = document.getElementById('reloadKecamatanSelect');
+    const kecamatan = select.value;
+    if (!kecamatan) {
+        showNotification('Pilih kecamatan terlebih dahulu.', 'warning');
+        return;
+    }
+    
+    // Siapkan nama file
+    const fileName = `data_${kecamatan.toLowerCase()}.js`;
+    
+    showNotification(`Memuat data dari ${fileName}...`, 'info');
+    
+    // Hapus script lama jika ada
+    const oldScript = document.getElementById('reload-wilayah-script');
+    if (oldScript) oldScript.remove();
+    
+    const script = document.createElement('script');
+    script.id = 'reload-wilayah-script';
+    script.src = `./${fileName}?v=${new Date().getTime()}`;
+    
+    script.onload = function() {
+        // Cek apakah variabel global sesuai nama kecamatan didefinisikan
+        const varName = `DATA_KECAMATAN_${kecamatan.toUpperCase()}`;
+        const dataWilayah = window[varName];
+        
+        if (dataWilayah && Array.isArray(dataWilayah)) {
+            // Merge data baru ke appData (hindari duplikasi berdasarkan id)
+            let addedCount = 0;
+            const existingIds = new Set(appData.map(d => d.id));
+            
+            dataWilayah.forEach(item => {
+                if (!existingIds.has(item.id)) {
+                    appData.push(item);
+                    existingIds.add(item.id);
+                    addedCount++;
+                }
+            });
+            
+            saveData();
+            
+            // Filter tabel secara otomatis untuk kecamatan yang direload
+            document.getElementById('filterKecamatanData').value = kecamatan;
+            document.getElementById('filterDesaData').value = '';
+            handleDataTableFilter(); // Memicu pencarian/filter
+            
+            showNotification(`Berhasil reload ${kecamatan}: ${addedCount} data baru ditambahkan.`, 'success');
+            
+            // Update dashboard & peta
+            updateDashboard();
+            if (mapDashboard) initializeMapDashboard();
+        } else {
+            showNotification(`File ${fileName} tidak mengandung data yang valid.`, 'error');
+            console.error(`Variabel ${varName} tidak ditemukan atau bukan array.`);
+        }
+        
+        // Hapus variabel global agar tidak menumpuk
+        delete window[varName];
+        script.remove();
+    };
+    
+    script.onerror = function() {
+        showNotification(`Gagal memuat file ${fileName}. Pastikan file tersedia.`, 'error');
+        script.remove();
+    };
+    
+    document.body.appendChild(script);
+}
+
 // --- AUTHENTICATION ---
 function handleLogin(e) {
     e.preventDefault();
@@ -1124,7 +1213,7 @@ function handlePrivacyToggle(e) {
     
     // Jika user baru saja meng-uncheck (ingin mematikan sensor)
     if (!toggle.checked) {
-        // Tahan dulu secara visual (tetapkan kembali ke true sampai password benar)
+        // Tahan dulu secara visual (tetap kembali ke true sampai password benar)
         toggle.checked = true;
         
         // Buka modal minta password
@@ -2212,397 +2301,148 @@ function showPreview() {
     }
 }
 
+// --- PERBAIKAN EXPORT: Hanya Excel & PDF ---
 function exportData(format) {
     const dataToExport = getFilteredDataForExport('export');
-    if (dataToExport.length === 0) return showNotification('Tidak ada data untuk diekspor sesuai filter.', 'warning');
+    if (dataToExport.length === 0) {
+        return showNotification('Tidak ada data untuk diekspor sesuai filter.', 'warning');
+    }
 
     const timestamp = new Date().toISOString().slice(0, 10);
     const filename = `data_nelayan_${timestamp}`;
 
-    switch(format) {
-        case 'excel':
-            if (typeof XLSX === 'undefined') {
-                showNotification('Library XLSX tidak tersedia.', 'error');
-                return;
-            }
-            
-            const ws = XLSX.utils.json_to_sheet(dataToExport);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Data');
-            XLSX.writeFile(wb, `${filename}.xlsx`);
-            break;
-            
-        case 'csv':
-            if (typeof XLSX === 'undefined') {
-                showNotification('Library XLSX tidak tersedia.', 'error');
-                return;
-            }
-            
-            const csvWs = XLSX.utils.json_to_sheet(dataToExport);
-            const csv = XLSX.utils.sheet_to_csv(csvWs);
-            downloadFile(csv, 'text/csv', `${filename}.csv`);
-            break;
-            
-        case 'json':
-            downloadFile(JSON.stringify(dataToExport, null, 2), 'application/json', `${filename}.json`);
-            break;
-            
-        case 'pdf':
-            if (typeof window.jspdf === 'undefined') {
-                showNotification('Library jsPDF tidak tersedia.', 'error');
-                return;
-            }
-            
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape', 'pt', 'a4');
-            doc.text('DATA BANTUAN NELAYAN', doc.internal.pageSize.getWidth()/2, 40, {align: 'center'});
-            doc.autoTable({ 
-                body: dataToExport, 
-                startY: 60, 
-                theme: 'grid', 
-                headStyles: { 
-                    fillColor: [0, 95, 115] 
-                } 
-            });
-            doc.save(`${filename}.pdf`);
-            break;
-    }
-    showNotification(`Data berhasil diekspor ke format ${format.toUpperCase()}.`, 'success');
-}
-
-function downloadFile(content, mimeType, filename) {
-    try {
-        const blob = new Blob([content], { type: mimeType });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(link.href);
-    } catch (error) {
-        console.error('Error downloading file:', error);
-        showNotification('Gagal mengunduh file.', 'error');
-    }
-}
-
-// --- FITUR BARU: EKSTRAK DATA UNTUK PETA STATISTIK ---
-function generateDataPeta() {
-    const securityCode = document.getElementById('extractSecurityCode').value;
-    const errorElement = document.getElementById('extractSecurityCodeError');
-    
-    if (securityCode !== SECURITY_CONSTANTS.EXTRACT_CODE) {
-        if (errorElement) errorElement.style.display = 'block';
-        showNotification('Kode keamanan salah.', 'error');
-        return;
-    }
-    
-    if (errorElement) errorElement.style.display = 'none';
-    
-    if (appData.length === 0) {
-        // Jika tidak ada data di appData, gunakan data contoh
-        generatedPetaData = SAMPLE_DATA;
-        
-        // Tampilkan preview
-        const extractPreviewSection = document.getElementById('extractPreviewSection');
-        const extractPreview = document.getElementById('extractPreview');
-        
-        if (extractPreviewSection) extractPreviewSection.style.display = 'block';
-        if (extractPreview) extractPreview.innerHTML = JSON.stringify(generatedPetaData, null, 2);
-        
-        showNotification('Menggunakan data contoh karena database kosong.', 'warning');
-        return;
-    }
-    
-    // Proses data untuk statistik per desa
-    const dataByDesa = {};
-    
-    appData.forEach(item => {
-        const key = `${item.desa}, ${item.kecamatan}`;
-        
-        if (!dataByDesa[key]) {
-            dataByDesa[key] = {
-                key: key, // Simpan key untuk referensi
-                desa: item.desa,
-                kecamatan: item.kecamatan,
-                jumlahPenerima: 0,
-                jenisBantuan: {},
-                totalBantuanUang: 0,
-                totalBantuanBarang: 0,
-                totalBantuanJasa: 0,
-                tahunDistribusi: {},
-                kelompokDistribusi: {},
-                detailPenerima: [],
-                statistik: {
-                    uang: { jumlah: 0, nilai: 0 },
-                    barang: { jumlah: 0, nilai: 0 },
-                    jasa: { jumlah: 0, nilai: 0 }
-                },
-                koordinat: item.koordinat || getKoordinatDesa(item.desa, item.kecamatan)
-            };
+    if (format === 'excel') {
+        if (typeof XLSX === 'undefined') {
+            showNotification('Library XLSX tidak tersedia.', 'error');
+            return;
         }
-        
-        // Update statistik
-        dataByDesa[key].jumlahPenerima++;
-        
-        // Update jenis bantuan
-        if (!dataByDesa[key].jenisBantuan[item.jenisBantuan]) {
-            dataByDesa[key].jenisBantuan[item.jenisBantuan] = 0;
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Data Bantuan');
+        XLSX.writeFile(wb, `${filename}.xlsx`);
+        showNotification('Data berhasil diekspor ke Excel.', 'success');
+    } else if (format === 'pdf') {
+        if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+            showNotification('Library jsPDF tidak tersedia.', 'error');
+            return;
         }
-        dataByDesa[key].jenisBantuan[item.jenisBantuan]++;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape', 'pt', 'a4');
         
-        // Update distribusi tahun
-        if (!dataByDesa[key].tahunDistribusi[item.tahunAnggaran]) {
-            dataByDesa[key].tahunDistribusi[item.tahunAnggaran] = 0;
-        }
-        dataByDesa[key].tahunDistribusi[item.tahunAnggaran]++;
+        doc.setFontSize(16);
+        doc.text(appSettings.appName, doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
+        doc.setFontSize(11);
+        doc.text(appSettings.appSubtitle, doc.internal.pageSize.getWidth() / 2, 50, { align: 'center' });
         
-        // Update distribusi kelompok
-        const kelompok = item.namaKelompok || 'Individu';
-        if (!dataByDesa[key].kelompokDistribusi[kelompok]) {
-            dataByDesa[key].kelompokDistribusi[kelompok] = 0;
-        }
-        dataByDesa[key].kelompokDistribusi[kelompok]++;
+        const headers = [['No', 'Nama', 'NIK', 'Kecamatan', 'Desa', 'Jenis Bantuan', 'Nama Bantuan', 'Jumlah', 'Tanggal']];
+        const rows = dataToExport.map((d, i) => [
+            i + 1,
+            d.nama,
+            formatPrivacy(d.nik),
+            d.kecamatan,
+            d.desa,
+            d.jenisBantuan,
+            d.namaBantuan || '-',
+            `${formatNumber(d.jumlahBantuan)} ${d.satuanBantuan}`,
+            formatDate(d.tanggalTerima)
+        ]);
         
-        // Update statistik detail
-        const jumlah = parseFloat(item.jumlahBantuan) || 0;
-        if (item.jenisBantuan === 'Uang') {
-            dataByDesa[key].totalBantuanUang += jumlah;
-            dataByDesa[key].statistik.uang.jumlah++;
-            dataByDesa[key].statistik.uang.nilai += jumlah;
-        } else if (item.jenisBantuan === 'Barang') {
-            dataByDesa[key].totalBantuanBarang += jumlah;
-            dataByDesa[key].statistik.barang.jumlah++;
-            dataByDesa[key].statistik.barang.nilai += jumlah;
-        } else if (item.jenisBantuan === 'Jasa') {
-            dataByDesa[key].totalBantuanJasa += jumlah;
-            dataByDesa[key].statistik.jasa.jumlah++;
-            dataByDesa[key].statistik.jasa.nilai += jumlah;
-        }
-        
-        // Tambah detail penerima (tanpa data sensitif)
-        dataByDesa[key].detailPenerima.push({
-            nama: item.nama,
-            nik: formatPrivacy(item.nik),
-            whatsapp: formatPrivacy(item.whatsapp),
-            jenisBantuan: item.jenisBantuan,
-            namaBantuan: item.namaBantuan,
-            jumlah: item.jumlahBantuan,
-            satuan: item.satuanBantuan,
-            tahun: item.tahunAnggaran,
-            kelompok: item.namaKelompok || 'Individu',
-            jabatan: item.jabatan || '-',
-            tanggal: formatDate(item.tanggalTerima),
-            petugas: item.namaPetugas,
-            koordinat: item.koordinat || getKoordinatDesa(item.desa, item.kecamatan)
+        doc.autoTable({
+            head: headers,
+            body: rows,
+            startY: 70,
+            theme: 'grid',
+            headStyles: { fillColor: [0, 95, 115], textColor: 255 },
+            styles: { fontSize: 9, cellPadding: 4 }
         });
-    });
-    
-    // Konversi ke array dan format untuk peta
-    const dataPeta = {
-        metadata: {
-            generatedAt: new Date().toISOString(),
-            timestamp: Date.now(),
-            totalDesa: Object.keys(dataByDesa).length,
-            totalPenerima: appData.length,
-            sumber: 'Sistem Bantuan Nelayan Kab. Situbondo',
-            instansi: 'Dinas Peternakan dan Perikanan Kab. Situbondo',
-            bidang: 'Pemberdayaan Nelayan',
-            versi: '2.0',
-            lastUpdate: new Date().toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-        },
-        summary: {
-            totalBantuanUang: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanUang, 0),
-            totalBantuanBarang: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanBarang, 0),
-            totalBantuanJasa: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanJasa, 0),
-            desaTerbanyak: Object.entries(dataByDesa).sort((a, b) => b[1].jumlahPenerima - a[1].jumlahPenerima)[0] || null
-        },
-        data: Object.values(dataByDesa).map(item => {
-            // Format jenis bantuan untuk peta
-            const jenisBantuanFormatted = Object.keys(item.jenisBantuan).map(jenis => ({
-                jenis: jenis,
-                jumlah: item.jenisBantuan[jenis]
-            }));
-            
-            // Format tahun distribusi
-            const tahunDistribusiFormatted = Object.keys(item.tahunDistribusi).map(tahun => ({
-                tahun: tahun,
-                jumlah: item.tahunDistribusi[tahun]
-            }));
-            
-            // Format kelompok distribusi
-            const kelompokDistribusiFormatted = Object.keys(item.kelompokDistribusi).map(kelompok => ({
-                kelompok: kelompok,
-                jumlah: item.kelompokDistribusi[kelompok]
-            }));
-            
-            // Hitung total bantuan
-            const totalBantuan = item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa;
-            const maxPenerima = Math.max(...Object.values(dataByDesa).map(d => d.jumlahPenerima));
-            const warnaIntensitas = maxPenerima > 0 ? item.jumlahPenerima / maxPenerima : 0;
-            
-            // Buat ID unik dari desa dan kecamatan
-            const id = item.key.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-            
-            return {
-                id: id,
-                desa: item.desa,
-                kecamatan: item.kecamatan,
-                jumlahPenerima: item.jumlahPenerima,
-                totalBantuanBarang: item.totalBantuanBarang,
-                totalBantuanUang: item.totalBantuanUang,
-                totalBantuanJasa: item.totalBantuanJasa,
-                totalBantuan: totalBantuan,
-                rataBantuan: item.jumlahPenerima > 0 ? totalBantuan / item.jumlahPenerima : 0,
-                koordinat: item.koordinat,
-                tahunDistribusi: tahunDistribusiFormatted,
-                jenisBantuan: jenisBantuanFormatted,
-                kelompokDistribusi: kelompokDistribusiFormatted,
-                statistik: item.statistik,
-                detailPenerima: item.detailPenerima,
-                warnaIntensitas: warnaIntensitas,
-                popupContent: `
-                    <strong>${item.desa}, ${item.kecamatan}</strong><br>
-                    Jumlah Penerima: ${item.jumlahPenerima}<br>
-                    Total Bantuan: Rp ${formatNumber(totalBantuan)}<br>
-                    Uang: ${item.statistik.uang.jumlah} penerima (Rp ${formatNumber(item.totalBantuanUang)})<br>
-                    Barang: ${item.statistik.barang.jumlah} penerima (${formatNumber(item.totalBantuanBarang)} unit)<br>
-                    Jasa: ${item.statistik.jasa.jumlah} penerima (${formatNumber(item.totalBantuanJasa)} paket)<br>
-                    Koordinat: ${item.koordinat.lat.toFixed(6)}, ${item.koordinat.lng.toFixed(6)}
-                `
-            };
-        })
-    };
-    
-    // Simpan data untuk preview dan download
-    generatedPetaData = dataPeta;
-    
-    // Tampilkan preview
-    const extractPreviewSection = document.getElementById('extractPreviewSection');
-    const extractPreview = document.getElementById('extractPreview');
-    
-    if (extractPreviewSection) extractPreviewSection.style.display = 'block';
-    if (extractPreview) extractPreview.innerHTML = JSON.stringify(dataPeta, null, 2);
-    
-    showNotification('Data peta berhasil digenerate!', 'success');
+        
+        doc.save(`${filename}.pdf`);
+        showNotification('Data berhasil diekspor ke PDF.', 'success');
+    }
 }
 
-function downloadDataPeta() {
-    if (!generatedPetaData) {
-        showNotification('Generate data terlebih dahulu.', 'warning');
+// --- FITUR BARU: Impor Data Excel ---
+function importExcelData() {
+    const fileInput = document.getElementById('importExcelFile');
+    if (!fileInput.files || fileInput.files.length === 0) {
+        showNotification('Pilih file Excel terlebih dahulu.', 'warning');
         return;
     }
     
-    const timestamp = new Date().toISOString().slice(0, 10);
-    const fileContent = `// DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
-// Generated: ${new Date().toLocaleString('id-ID')}
-// Total Desa: ${generatedPetaData.metadata.totalDesa}
-// Total Penerima: ${generatedPetaData.metadata.totalPenerima}
-// Sumber: ${generatedPetaData.metadata.sumber}
-// Last Update: ${generatedPetaData.metadata.lastUpdate}
-
-window.DATA_PETA_STATISTIK = ${JSON.stringify(generatedPetaData, null, 2)};
-
-// Fungsi untuk memuat data peta
-function loadDataPetaStatistik() {
-    if (typeof DATA_PETA_STATISTIK !== 'undefined') {
-        console.log('Data peta statistik berhasil dimuat:', DATA_PETA_STATISTIK);
-        return DATA_PETA_STATISTIK;
-    }
-    return null;
-}
-
-// Fungsi untuk mendapatkan data berdasarkan desa
-function getDataByDesa(namaDesa, kecamatan) {
-    if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return null;
+    const file = fileInput.files[0];
+    const reader = new FileReader();
     
-    return DATA_PETA_STATISTIK.data.find(item => 
-        item.desa === namaDesa && item.kecamatan === kecamatan
-    );
-}
-
-// Fungsi untuk mendapatkan data berdasarkan kecamatan
-function getDataByKecamatan(kecamatan) {
-    if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return [];
-    
-    return DATA_PETA_STATISTIK.data.filter(item => item.kecamatan === kecamatan);
-}
-
-// Fungsi untuk mendapatkan semua data kecamatan
-function getAllKecamatanData() {
-    if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return {};
-    
-    const result = {};
-    DATA_PETA_STATISTIK.data.forEach(item => {
-        if (!result[item.kecamatan]) {
-            result[item.kecamatan] = {
-                kecamatan: item.kecamatan,
-                jumlahDesa: 0,
-                jumlahPenerima: 0,
-                totalBantuan: 0,
-                desa: []
-            };
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            
+            // Asumsikan baris pertama adalah header
+            const headers = jsonData[0];
+            const rows = jsonData.slice(1);
+            
+            const expectedHeaders = ['nama', 'nik', 'whatsapp', 'namaKelompok', 'jabatan', 'tahunAnggaran', 
+                                     'kecamatan', 'desa', 'alamat', 'jenisBantuan', 'namaBantuan', 
+                                     'jumlahBantuan', 'satuanBantuan', 'tanggalTerima', 'namaPetugas', 
+                                     'driveLink', 'kodeValidasi', 'keterangan'];
+            
+            let addedCount = 0;
+            const existingIds = new Set(appData.map(d => d.id));
+            
+            rows.forEach(row => {
+                if (row.length < 5) return; // baris kosong
+                
+                const item = {
+                    id: Date.now() + addedCount + Math.random(),
+                    tanggalInput: new Date().toISOString()
+                };
+                
+                for (let i = 0; i < expectedHeaders.length; i++) {
+                    if (row[i] !== undefined && row[i] !== null) {
+                        item[expectedHeaders[i]] = row[i].toString().trim();
+                    }
+                }
+                
+                if (item.nama && item.nik && item.kecamatan) {
+                    item.koordinat = getKoordinatDesa(item.desa, item.kecamatan);
+                    
+                    if (!item.whatsapp) item.whatsapp = '';
+                    if (!item.namaKelompok) item.namaKelompok = 'Individu';
+                    if (!item.jabatan) item.jabatan = 'Individu';
+                    if (!item.satuanBantuan) item.satuanBantuan = 'Rupiah';
+                    if (!item.kodeValidasi) item.kodeValidasi = '';
+                    if (!item.tahunAnggaran) item.tahunAnggaran = new Date().getFullYear();
+                    
+                    const exists = appData.some(d => d.nik === item.nik);
+                    if (!exists) {
+                        appData.push(item);
+                        existingIds.add(item.id);
+                        addedCount++;
+                    }
+                }
+            });
+            
+            if (addedCount > 0) {
+                saveData();
+                updateDashboard();
+                renderDataTable();
+                if (mapDashboard) initializeMapDashboard();
+                showNotification(`Berhasil mengimpor ${addedCount} data dari Excel.`, 'success');
+            } else {
+                showNotification('Tidak ada data baru yang diimpor (semua sudah ada atau format tidak sesuai).', 'info');
+            }
+            
+            fileInput.value = '';
+        } catch (error) {
+            console.error(error);
+            showNotification('Gagal membaca file Excel. Pastikan format benar.', 'error');
         }
-        result[item.kecamatan].jumlahDesa++;
-        result[item.kecamatan].jumlahPenerima += item.jumlahPenerima;
-        result[item.kecamatan].totalBantuan += item.totalBantuan;
-        result[item.kecamatan].desa.push(item);
-    });
-    
-    return result;
-}
-
-// Fungsi untuk update data secara realtime
-function updatePetaData(newData) {
-    if (!DATA_PETA_STATISTIK || !newData) return false;
-    
-    // Logika update data
-    console.log('Memperbarui data peta...');
-    return true;
-}
-
-// Ekspor untuk penggunaan global
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        DATA_PETA_STATISTIK,
-        loadDataPetaStatistik,
-        getDataByDesa,
-        getDataByKecamatan,
-        getAllKecamatanData,
-        updatePetaData
     };
-}`;
-
-    try {
-        const blob = new Blob([fileContent], { type: 'text/javascript' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'datapeta.js';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        // Hapus preview data setelah download
-        generatedPetaData = null;
-        const extractPreviewSection = document.getElementById('extractPreviewSection');
-        const extractPreview = document.getElementById('extractPreview');
-        
-        if (extractPreviewSection) extractPreviewSection.style.display = 'none';
-        if (extractPreview) extractPreview.innerHTML = '';
-        
-        showNotification('File datapeta.js berhasil didownload! Preview data telah dihapus.', 'success');
-    } catch (error) {
-        console.error('Error downloading datapeta.js:', error);
-        showNotification('Gagal mengunduh file datapeta.js.', 'error');
-    }
+    
+    reader.readAsArrayBuffer(file);
 }
 
 // --- BACKUP (RELOAD.JS) & RESTORE ---
@@ -2974,6 +2814,341 @@ function formatNumber(num) {
         return new Intl.NumberFormat('id-ID').format(num);
     } catch (error) {
         return num;
+    }
+}
+
+function downloadFile(content, mimeType, filename) {
+    try {
+        const blob = new Blob([content], { type: mimeType });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+    } catch (error) {
+        console.error('Error downloading file:', error);
+        showNotification('Gagal mengunduh file.', 'error');
+    }
+}
+
+// --- FITUR BARU: EKSTRAK DATA UNTUK PETA STATISTIK ---
+function generateDataPeta() {
+    const securityCode = document.getElementById('extractSecurityCode').value;
+    const errorElement = document.getElementById('extractSecurityCodeError');
+    
+    if (securityCode !== SECURITY_CONSTANTS.EXTRACT_CODE) {
+        if (errorElement) errorElement.style.display = 'block';
+        showNotification('Kode keamanan salah.', 'error');
+        return;
+    }
+    
+    if (errorElement) errorElement.style.display = 'none';
+    
+    if (appData.length === 0) {
+        // Jika tidak ada data di appData, gunakan data contoh
+        generatedPetaData = SAMPLE_DATA;
+        
+        // Tampilkan preview
+        const extractPreviewSection = document.getElementById('extractPreviewSection');
+        const extractPreview = document.getElementById('extractPreview');
+        
+        if (extractPreviewSection) extractPreviewSection.style.display = 'block';
+        if (extractPreview) extractPreview.innerHTML = JSON.stringify(generatedPetaData, null, 2);
+        
+        showNotification('Menggunakan data contoh karena database kosong.', 'warning');
+        return;
+    }
+    
+    // Proses data untuk statistik per desa
+    const dataByDesa = {};
+    
+    appData.forEach(item => {
+        const key = `${item.desa}, ${item.kecamatan}`;
+        
+        if (!dataByDesa[key]) {
+            dataByDesa[key] = {
+                key: key, // Simpan key untuk referensi
+                desa: item.desa,
+                kecamatan: item.kecamatan,
+                jumlahPenerima: 0,
+                jenisBantuan: {},
+                totalBantuanUang: 0,
+                totalBantuanBarang: 0,
+                totalBantuanJasa: 0,
+                tahunDistribusi: {},
+                kelompokDistribusi: {},
+                detailPenerima: [],
+                statistik: {
+                    uang: { jumlah: 0, nilai: 0 },
+                    barang: { jumlah: 0, nilai: 0 },
+                    jasa: { jumlah: 0, nilai: 0 }
+                },
+                koordinat: item.koordinat || getKoordinatDesa(item.desa, item.kecamatan)
+            };
+        }
+        
+        // Update statistik
+        dataByDesa[key].jumlahPenerima++;
+        
+        // Update jenis bantuan
+        if (!dataByDesa[key].jenisBantuan[item.jenisBantuan]) {
+            dataByDesa[key].jenisBantuan[item.jenisBantuan] = 0;
+        }
+        dataByDesa[key].jenisBantuan[item.jenisBantuan]++;
+        
+        // Update distribusi tahun
+        if (!dataByDesa[key].tahunDistribusi[item.tahunAnggaran]) {
+            dataByDesa[key].tahunDistribusi[item.tahunAnggaran] = 0;
+        }
+        dataByDesa[key].tahunDistribusi[item.tahunAnggaran]++;
+        
+        // Update distribusi kelompok
+        const kelompok = item.namaKelompok || 'Individu';
+        if (!dataByDesa[key].kelompokDistribusi[kelompok]) {
+            dataByDesa[key].kelompokDistribusi[kelompok] = 0;
+        }
+        dataByDesa[key].kelompokDistribusi[kelompok]++;
+        
+        // Update statistik detail
+        const jumlah = parseFloat(item.jumlahBantuan) || 0;
+        if (item.jenisBantuan === 'Uang') {
+            dataByDesa[key].totalBantuanUang += jumlah;
+            dataByDesa[key].statistik.uang.jumlah++;
+            dataByDesa[key].statistik.uang.nilai += jumlah;
+        } else if (item.jenisBantuan === 'Barang') {
+            dataByDesa[key].totalBantuanBarang += jumlah;
+            dataByDesa[key].statistik.barang.jumlah++;
+            dataByDesa[key].statistik.barang.nilai += jumlah;
+        } else if (item.jenisBantuan === 'Jasa') {
+            dataByDesa[key].totalBantuanJasa += jumlah;
+            dataByDesa[key].statistik.jasa.jumlah++;
+            dataByDesa[key].statistik.jasa.nilai += jumlah;
+        }
+        
+        // Tambah detail penerima (tanpa data sensitif)
+        dataByDesa[key].detailPenerima.push({
+            nama: item.nama,
+            nik: formatPrivacy(item.nik),
+            whatsapp: formatPrivacy(item.whatsapp),
+            jenisBantuan: item.jenisBantuan,
+            namaBantuan: item.namaBantuan,
+            jumlah: item.jumlahBantuan,
+            satuan: item.satuanBantuan,
+            tahun: item.tahunAnggaran,
+            kelompok: item.namaKelompok || 'Individu',
+            jabatan: item.jabatan || '-',
+            tanggal: formatDate(item.tanggalTerima),
+            petugas: item.namaPetugas,
+            koordinat: item.koordinat || getKoordinatDesa(item.desa, item.kecamatan)
+        });
+    });
+    
+    // Konversi ke array dan format untuk peta
+    const dataPeta = {
+        metadata: {
+            generatedAt: new Date().toISOString(),
+            timestamp: Date.now(),
+            totalDesa: Object.keys(dataByDesa).length,
+            totalPenerima: appData.length,
+            sumber: 'Sistem Bantuan Nelayan Kab. Situbondo',
+            instansi: 'Dinas Peternakan dan Perikanan Kab. Situbondo',
+            bidang: 'Pemberdayaan Nelayan',
+            versi: '2.0',
+            lastUpdate: new Date().toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        },
+        summary: {
+            totalBantuanUang: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanUang, 0),
+            totalBantuanBarang: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanBarang, 0),
+            totalBantuanJasa: Object.values(dataByDesa).reduce((sum, d) => sum + d.totalBantuanJasa, 0),
+            desaTerbanyak: Object.entries(dataByDesa).sort((a, b) => b[1].jumlahPenerima - a[1].jumlahPenerima)[0] || null
+        },
+        data: Object.values(dataByDesa).map(item => {
+            // Format jenis bantuan untuk peta
+            const jenisBantuanFormatted = Object.keys(item.jenisBantuan).map(jenis => ({
+                jenis: jenis,
+                jumlah: item.jenisBantuan[jenis]
+            }));
+            
+            // Format tahun distribusi
+            const tahunDistribusiFormatted = Object.keys(item.tahunDistribusi).map(tahun => ({
+                tahun: tahun,
+                jumlah: item.tahunDistribusi[tahun]
+            }));
+            
+            // Format kelompok distribusi
+            const kelompokDistribusiFormatted = Object.keys(item.kelompokDistribusi).map(kelompok => ({
+                kelompok: kelompok,
+                jumlah: item.kelompokDistribusi[kelompok]
+            }));
+            
+            // Hitung total bantuan
+            const totalBantuan = item.totalBantuanUang + item.totalBantuanBarang + item.totalBantuanJasa;
+            const maxPenerima = Math.max(...Object.values(dataByDesa).map(d => d.jumlahPenerima));
+            const warnaIntensitas = maxPenerima > 0 ? item.jumlahPenerima / maxPenerima : 0;
+            
+            // Buat ID unik dari desa dan kecamatan
+            const id = item.key.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+            
+            return {
+                id: id,
+                desa: item.desa,
+                kecamatan: item.kecamatan,
+                jumlahPenerima: item.jumlahPenerima,
+                totalBantuanBarang: item.totalBantuanBarang,
+                totalBantuanUang: item.totalBantuanUang,
+                totalBantuanJasa: item.totalBantuanJasa,
+                totalBantuan: totalBantuan,
+                rataBantuan: item.jumlahPenerima > 0 ? totalBantuan / item.jumlahPenerima : 0,
+                koordinat: item.koordinat,
+                tahunDistribusi: tahunDistribusiFormatted,
+                jenisBantuan: jenisBantuanFormatted,
+                kelompokDistribusi: kelompokDistribusiFormatted,
+                statistik: item.statistik,
+                detailPenerima: item.detailPenerima,
+                warnaIntensitas: warnaIntensitas,
+                popupContent: `
+                    <strong>${item.desa}, ${item.kecamatan}</strong><br>
+                    Jumlah Penerima: ${item.jumlahPenerima}<br>
+                    Total Bantuan: Rp ${formatNumber(totalBantuan)}<br>
+                    Uang: ${item.statistik.uang.jumlah} penerima (Rp ${formatNumber(item.totalBantuanUang)})<br>
+                    Barang: ${item.statistik.barang.jumlah} penerima (${formatNumber(item.totalBantuanBarang)} unit)<br>
+                    Jasa: ${item.statistik.jasa.jumlah} penerima (${formatNumber(item.totalBantuanJasa)} paket)<br>
+                    Koordinat: ${item.koordinat.lat.toFixed(6)}, ${item.koordinat.lng.toFixed(6)}
+                `
+            };
+        })
+    };
+    
+    // Simpan data untuk preview dan download
+    generatedPetaData = dataPeta;
+    
+    // Tampilkan preview
+    const extractPreviewSection = document.getElementById('extractPreviewSection');
+    const extractPreview = document.getElementById('extractPreview');
+    
+    if (extractPreviewSection) extractPreviewSection.style.display = 'block';
+    if (extractPreview) extractPreview.innerHTML = JSON.stringify(dataPeta, null, 2);
+    
+    showNotification('Data peta berhasil digenerate!', 'success');
+}
+
+function downloadDataPeta() {
+    if (!generatedPetaData) {
+        showNotification('Generate data terlebih dahulu.', 'warning');
+        return;
+    }
+    
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const fileContent = `// DATA PETA STATISTIK NELAYAN KAB. SITUBONDO
+// Generated: ${new Date().toLocaleString('id-ID')}
+// Total Desa: ${generatedPetaData.metadata.totalDesa}
+// Total Penerima: ${generatedPetaData.metadata.totalPenerima}
+// Sumber: ${generatedPetaData.metadata.sumber}
+// Last Update: ${generatedPetaData.metadata.lastUpdate}
+
+window.DATA_PETA_STATISTIK = ${JSON.stringify(generatedPetaData, null, 2)};
+
+// Fungsi untuk memuat data peta
+function loadDataPetaStatistik() {
+    if (typeof DATA_PETA_STATISTIK !== 'undefined') {
+        console.log('Data peta statistik berhasil dimuat:', DATA_PETA_STATISTIK);
+        return DATA_PETA_STATISTIK;
+    }
+    return null;
+}
+
+// Fungsi untuk mendapatkan data berdasarkan desa
+function getDataByDesa(namaDesa, kecamatan) {
+    if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return null;
+    
+    return DATA_PETA_STATISTIK.data.find(item => 
+        item.desa === namaDesa && item.kecamatan === kecamatan
+    );
+}
+
+// Fungsi untuk mendapatkan data berdasarkan kecamatan
+function getDataByKecamatan(kecamatan) {
+    if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return [];
+    
+    return DATA_PETA_STATISTIK.data.filter(item => item.kecamatan === kecamatan);
+}
+
+// Fungsi untuk mendapatkan semua data kecamatan
+function getAllKecamatanData() {
+    if (!DATA_PETA_STATISTIK || !DATA_PETA_STATISTIK.data) return {};
+    
+    const result = {};
+    DATA_PETA_STATISTIK.data.forEach(item => {
+        if (!result[item.kecamatan]) {
+            result[item.kecamatan] = {
+                kecamatan: item.kecamatan,
+                jumlahDesa: 0,
+                jumlahPenerima: 0,
+                totalBantuan: 0,
+                desa: []
+            };
+        }
+        result[item.kecamatan].jumlahDesa++;
+        result[item.kecamatan].jumlahPenerima += item.jumlahPenerima;
+        result[item.kecamatan].totalBantuan += item.totalBantuan;
+        result[item.kecamatan].desa.push(item);
+    });
+    
+    return result;
+}
+
+// Fungsi untuk update data secara realtime
+function updatePetaData(newData) {
+    if (!DATA_PETA_STATISTIK || !newData) return false;
+    
+    // Logika update data
+    console.log('Memperbarui data peta...');
+    return true;
+}
+
+// Ekspor untuk penggunaan global
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        DATA_PETA_STATISTIK,
+        loadDataPetaStatistik,
+        getDataByDesa,
+        getDataByKecamatan,
+        getAllKecamatanData,
+        updatePetaData
+    };
+}`;
+
+    try {
+        const blob = new Blob([fileContent], { type: 'text/javascript' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'datapeta.js';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Hapus preview data setelah download
+        generatedPetaData = null;
+        const extractPreviewSection = document.getElementById('extractPreviewSection');
+        const extractPreview = document.getElementById('extractPreview');
+        
+        if (extractPreviewSection) extractPreviewSection.style.display = 'none';
+        if (extractPreview) extractPreview.innerHTML = '';
+        
+        showNotification('File datapeta.js berhasil didownload! Preview data telah dihapus.', 'success');
+    } catch (error) {
+        console.error('Error downloading datapeta.js:', error);
+        showNotification('Gagal mengunduh file datapeta.js.', 'error');
     }
 }
 
