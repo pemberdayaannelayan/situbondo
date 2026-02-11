@@ -1,4 +1,9 @@
-// modal-manager.js
+/**
+ * MODAL MANAGER
+ * Mengelola modal gambar ikan dan kapal
+ * Versi: 1.0.0
+ */
+
 class ModalManager {
     constructor() {
         this.fishModal = null;
@@ -9,6 +14,7 @@ class ModalManager {
     init() {
         this.setupEventListeners();
         this.preloadImages();
+        this.ensureGlobalFunctions();
     }
 
     setupEventListeners() {
@@ -42,6 +48,55 @@ class ModalManager {
         if (boatInfoModal) {
             boatInfoModal.addEventListener('show.bs.modal', () => this.onBoatModalShow());
             boatInfoModal.addEventListener('hidden.bs.modal', () => this.cleanupModal());
+        }
+
+        // Event listener untuk tombol close di modal fishInfoModal
+        const fishModalCloseBtns = document.querySelectorAll('#fishInfoModal .btn-close, #fishInfoModal .btn-secondary');
+        fishModalCloseBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.closeFishModalSafely();
+            });
+        });
+
+        // Event listener untuk tombol close di modal boatInfoModal
+        const boatModalCloseBtns = document.querySelectorAll('#boatInfoModal .btn-close, #boatInfoModal .btn-secondary');
+        boatModalCloseBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.closeBoatModalSafely();
+            });
+        });
+    }
+
+    ensureGlobalFunctions() {
+        // Ensure global functions exist for backward compatibility
+        if (typeof window.showFishInfoModal === 'undefined') {
+            window.showFishInfoModal = () => this.showFishModal();
+        }
+        
+        if (typeof window.showBoatInfoModal === 'undefined') {
+            window.showBoatInfoModal = () => this.showBoatModal();
+        }
+        
+        if (typeof window.closeFishInfoModalSafely === 'undefined') {
+            window.closeFishInfoModalSafely = () => this.closeFishModalSafely();
+        }
+        
+        if (typeof window.closeBoatInfoModalSafely === 'undefined') {
+            window.closeBoatInfoModalSafely = () => this.closeBoatModalSafely();
+        }
+        
+        if (typeof window.goToInputDataAfterModal === 'undefined') {
+            window.goToInputDataAfterModal = () => this.goToInputDataAfterModal();
+        }
+        
+        if (typeof window.showSpecificFishImage === 'undefined') {
+            window.showSpecificFishImage = (num) => this.showSpecificFishImage(num);
+        }
+        
+        if (typeof window.showSpecificBoatImage === 'undefined') {
+            window.showSpecificBoatImage = (num) => this.showSpecificBoatImage(num);
         }
     }
 
@@ -229,12 +284,6 @@ class ModalManager {
 document.addEventListener('DOMContentLoaded', () => {
     window.modalManager = new ModalManager();
     
-    // Expose functions for global access (backward compatibility)
-    window.showFishInfoModal = () => window.modalManager.showFishModal();
-    window.showBoatInfoModal = () => window.modalManager.showBoatModal();
-    window.closeFishInfoModalSafely = () => window.modalManager.closeFishModalSafely();
-    window.closeBoatInfoModalSafely = () => window.modalManager.closeBoatModalSafely();
-    window.goToInputDataAfterModal = () => window.modalManager.goToInputDataAfterModal();
-    window.showSpecificFishImage = (num) => window.modalManager.showSpecificFishImage(num);
-    window.showSpecificBoatImage = (num) => window.modalManager.showSpecificBoatImage(num);
+    // Log initialization
+    console.log('Modal Manager initialized successfully');
 });
