@@ -18,8 +18,465 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
     
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <!-- INLINE CSS – menggantikan style.css, semua kelas kustom dipertahankan -->
+    <style>
+        /* ===== CUSTOM STYLES – SISTEM BANTUAN NELAYAN ===== */
+        :root {
+            --primary-color: #005f73;
+            --secondary-color: #0a9396;
+            --accent-color: #94d2bd;
+            --dark-blue: #0a2472;
+            --success: #2a9d8f;
+            --warning: #e9c46a;
+            --danger: #e76f51;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fc;
+            overflow-x: hidden;
+        }
+
+        /* Login Modal */
+        .login-modal .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .login-header {
+            background: linear-gradient(135deg, var(--primary-color), #003d4d);
+            padding: 30px 20px 20px;
+            color: white;
+        }
+        .logo-garuda {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        .btn-login {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(10,147,150,0.3);
+        }
+        .info-pill {
+            background: rgba(10,147,150,0.1);
+            border-radius: 50px;
+            padding: 12px 20px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        .login-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        /* Welcome Modal */
+        .welcome-modal .modal-content {
+            background: linear-gradient(145deg, #0a9396, #005f73);
+            color: white;
+            border: none;
+        }
+        .btn-welcome {
+            background: white;
+            color: var(--primary-color);
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 50px;
+        }
+        .btn-welcome:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+        }
+
+        /* Main App Layout */
+        .app-content-unauthenticated {
+            background: #f8f9fc;
+            min-height: 100vh;
+        }
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .app-header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+            border-left: 8px solid var(--primary-color);
+            position: relative;
+        }
+        .app-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 1.6rem;
+        }
+        .app-subtitle {
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+        .watermark {
+            position: absolute;
+            bottom: 15px;
+            right: 25px;
+            color: rgba(0,95,115,0.1);
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        /* Sidebar */
+        #sidebarMenu {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+            padding: 25px 15px !important;
+            height: fit-content;
+        }
+        .nav-pills .nav-link {
+            border-radius: 12px;
+            color: #495057;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .nav-pills .nav-link i {
+            width: 24px;
+            color: var(--primary-color);
+        }
+        .nav-pills .nav-link.active {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 5px 15px rgba(10,147,150,0.2);
+        }
+        .nav-pills .nav-link.active i {
+            color: white;
+        }
+
+        /* Dashboard Cards */
+        .stats-box {
+            background: white;
+            border-radius: 16px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            transition: all 0.3s;
+        }
+        .stats-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,95,115,0.1);
+        }
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid rgba(10,147,150,0.2);
+        }
+
+        /* Map Container */
+        #mapDashboard {
+            height: 450px;
+            width: 100%;
+            border-radius: 0 0 12px 12px;
+            z-index: 1;
+        }
+
+        /* Forms */
+        .whatsapp-toggle-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .whatsapp-input-container {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            overflow: hidden;
+            background: white;
+        }
+        .whatsapp-prefix {
+            background: #e9ecef;
+            padding: 0 12px;
+            font-weight: 600;
+            color: #495057;
+            line-height: 38px;
+        }
+        .whatsapp-input {
+            border: none;
+            border-left: 1px solid #ced4da;
+            border-radius: 0;
+        }
+        .btn-not-group {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-not-group:hover {
+            background: #5a6268;
+            color: white;
+        }
+
+        /* Region Active Badge */
+        .region-active-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        /* Error messages */
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+        .input-error {
+            border-color: var(--danger) !important;
+        }
+
+        /* Data Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: #f1f5f9;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 15px 10px;
+            font-size: 0.85rem;
+        }
+        .data-table td {
+            padding: 12px 10px;
+            vertical-align: middle;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        /* Privacy */
+        .privacy-blurred {
+            filter: blur(4px);
+            transition: filter 0.2s;
+            cursor: pointer;
+        }
+        .privacy-blurred:hover {
+            filter: blur(2px);
+        }
+
+        /* Smart Menu */
+        .smart-menu-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        .smart-menu-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, var(--primary-color), #003d4d);
+            border: none;
+            color: white;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0,95,115,0.4);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .smart-menu-toggle.active {
+            transform: rotate(45deg);
+            background: var(--danger);
+        }
+        .smart-menu-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: scale(0);
+            transition: all 0.3s;
+            position: relative;
+        }
+        .smart-menu-container.active .smart-menu-item {
+            transform: scale(1);
+        }
+        .smart-menu-item:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        .smart-menu-tooltip {
+            position: absolute;
+            right: 70px;
+            background: #1e293b;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .smart-menu-item:hover .smart-menu-tooltip {
+            opacity: 1;
+        }
+
+        /* Floating Action Button */
+        .floating-action-btn {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--success);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 20px rgba(42,157,143,0.4);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 9998;
+        }
+        .floating-action-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: #21867a;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10000;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 24px;
+        }
+        @media (max-width: 992px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            #sidebarMenu {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 280px;
+                height: 100vh;
+                z-index: 10001;
+                transition: left 0.3s;
+                border-radius: 0 20px 20px 0;
+                overflow-y: auto;
+            }
+            #sidebarMenu.mobile-show {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 10000;
+            }
+            .sidebar-overlay.mobile-show {
+                display: block;
+            }
+        }
+
+        /* Extract Preview */
+        .extract-preview {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow: auto;
+        }
+
+        /* Toast */
+        .notification-toast {
+            background: white;
+            border-left: 8px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        /* Print Preview Table */
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .preview-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+        }
+        .preview-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+        }
+
+        /* Responsive */
+        .text-purple { color: #6f42c1; }
+        .text-teal { color: #20c997; }
+        .text-orange { color: #fd7e14; }
+        .bg-purple { background: #6f42c1; }
+        .border-left-primary { border-left: 5px solid var(--primary-color) !important; }
+        .animate-fadeIn { animation: fadeIn 0.5s; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
     <!-- Login Modal -->
@@ -1126,7 +1583,7 @@
     <!-- Leaflet JS for Maps -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <!-- Main Application JavaScript (versi final) -->
-    <script src="main.js"></script>
+    <!-- Main Application JavaScript – nama file disesuaikan (URL encoded) -->
+    <script src="main%20(4).js"></script>
 </body>
 </html>
