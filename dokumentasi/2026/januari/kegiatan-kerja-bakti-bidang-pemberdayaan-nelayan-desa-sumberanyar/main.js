@@ -56,13 +56,25 @@ window.shareToWhatsApp = shareToWhatsApp;
 
 function copyLink() {
     const currentUrl = window.location.href;
-    navigator.clipboard.writeText(currentUrl).then(() => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(currentUrl).then(() => {
+            alert('Link berhasil disalin ke clipboard!');
+            closeShareModal();
+        }).catch(err => {
+            console.error('Gagal menyalin link: ', err);
+            alert('Gagal menyalin link. Silakan coba lagi.');
+        });
+    } else {
+        // Fallback untuk browser lama
+        const textarea = document.createElement('textarea');
+        textarea.value = currentUrl;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
         alert('Link berhasil disalin ke clipboard!');
         closeShareModal();
-    }).catch(err => {
-        console.error('Gagal menyalin link: ', err);
-        alert('Gagal menyalin link. Silakan coba lagi.');
-    });
+    }
 }
 window.copyLink = copyLink;
 
@@ -293,6 +305,10 @@ window.generatePDFReport = generatePDFReport;
 async function downloadPDF() {
     showLoading();
     try {
+        // Pastikan jsPDF tersedia
+        if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
+            throw new Error('jsPDF library not loaded');
+        }
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         const margin = 20;
@@ -309,13 +325,20 @@ async function downloadPDF() {
             await new Promise((resolve, reject) => {
                 logoImg.onload = resolve;
                 logoImg.onerror = () => {
-                    logoImg.src = placeholderLogo;
-                    resolve();
+                    // Fallback ke placeholder base64
+                    const placeholderImg = new Image();
+                    placeholderImg.onload = () => {
+                        logoImg.src = placeholderLogo;
+                        resolve();
+                    };
+                    placeholderImg.onerror = reject;
+                    placeholderImg.src = placeholderLogo;
                 };
                 logoImg.src = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
             });
             doc.addImage(logoImg, 'PNG', margin, yPos, logoWidth, logoHeight);
         } catch (e) {
+            // Fallback akhir
             const placeholderImg = new Image();
             placeholderImg.src = placeholderLogo;
             await new Promise(resolve => { placeholderImg.onload = resolve; });
@@ -417,9 +440,9 @@ async function downloadPDF() {
         try {
             const qrImg = new Image();
             qrImg.crossOrigin = 'Anonymous';
-            await new Promise(resolve => {
+            await new Promise((resolve, reject) => {
                 qrImg.onload = resolve;
-                qrImg.onerror = resolve;
+                qrImg.onerror = reject;
                 qrImg.src = qrCodeUrl;
             });
             const qrSize = 15;
@@ -442,7 +465,7 @@ async function downloadPDF() {
     } catch (error) {
         console.error('Error generating PDF:', error);
         hideLoading();
-        alert('PDF berhasil dibuat! Silakan cek folder download Anda.');
+        alert('Gagal mengunduh PDF. Silakan coba lagi atau hubungi administrator. Error: ' + error.message);
     }
 }
 window.downloadPDF = downloadPDF;
@@ -460,9 +483,11 @@ document.head.appendChild(style);
 
 // ==================== DOM CONTENT LOADED ====================
 document.addEventListener('DOMContentLoaded', function () {
-    // Inisialisasi AOS
+    // Inisialisasi AOS dengan pengecekan
     if (typeof AOS !== 'undefined') {
         AOS.init({ duration: 800, once: true, offset: 100 });
+    } else {
+        console.warn('AOS library not loaded. Animasi tidak aktif.');
     }
 
     // Set tahun footer
@@ -483,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Gallery modal
+    // Gallery modal dengan pengecekan bootstrap
     document.querySelectorAll('.gallery-item').forEach(item => {
         item.addEventListener('click', function () {
             const imgSrc = this.querySelector('img').src;
@@ -501,11 +526,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             `;
             document.body.insertAdjacentHTML('beforeend', modalHTML);
-            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-            modal.show();
-            document.getElementById('imageModal').addEventListener('hidden.bs.modal', function () {
-                this.remove();
-            });
+            
+            // Cek apakah bootstrap tersedia
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+                document.getElementById('imageModal').addEventListener('hidden.bs.modal', function () {
+                    this.remove();
+                });
+            } else {
+                console.error('Bootstrap JS not loaded. Modal tidak dapat ditampilkan.');
+                // Fallback sederhana
+                alert('Fitur modal tidak tersedia. Silakan muat ulang halaman.');
+                document.getElementById('imageModal').remove();
+            }
         });
     });
 
@@ -592,6 +626,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (footer) {
             footer.style.position = bodyHeight < windowHeight ? 'fixed' : 'relative';
             if (bodyHeight < windowHeight) footer.style.bottom = '0';
+            footer.style.width = '100%';
+            footer.style.left = '0';
         }
     }
     fixFooterPosition();
