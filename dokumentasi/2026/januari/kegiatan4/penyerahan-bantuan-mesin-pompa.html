@@ -6,6 +6,12 @@
     <title>Penyerahan dan Pelebelan Mesin Pompa Air kepada Pengelola TPI - Dinas Perikanan Situbondo</title>
     <meta name="description" content="Kegiatan penyerahan dan pelebelan mesin pompa air kepada pengelola TPI Besuki dan TPI Pandean yang diserahkan langsung oleh Kepala Bidang Pemberdayaan Nelayan Dinas Peternakan dan Perikanan Kabupaten Situbondo.">
     
+    <!-- Preconnect to CDNs -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     
@@ -13,36 +19,44 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <!-- jsPDF untuk generate PDF -->
+    <!-- jsPDF dan html2canvas (dengan fallback) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-L2BTcAygS0TkaWtOok5rzI3uJgOQKc0oxk7hHqMAnHkZMPggX7PTUKdMq36Z6N+sFql7F8rGNCGduK5zR50Tpw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Fallback kecil untuk inline */
+        .btn:focus-visible, a:focus-visible {
+            outline: 3px solid var(--secondary-blue);
+            outline-offset: 3px;
+        }
+    </style>
 </head>
 <body>
     <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-overlay" id="loadingOverlay" role="alert" aria-live="assertive" aria-label="Memuat, harap tunggu">
         <div class="loading-spinner"></div>
     </div>
 
     <!-- Share Modal -->
-    <div class="share-modal" id="shareModal" onclick="if(event.target===this) closeShareModal()">
+    <div class="share-modal" id="shareModal" onclick="if(event.target===this) closeShareModal()" role="dialog" aria-modal="true" aria-label="Bagikan kegiatan">
         <div class="share-modal-content">
             <h3 class="section-title">Bagikan Kegiatan Ini</h3>
             <p>Pilih opsi untuk membagikan informasi penyerahan bantuan:</p>
             <div class="share-buttons">
-                <button class="share-btn whatsapp" onclick="shareToWhatsApp()">
-                    <i class="fab fa-whatsapp"></i>
+                <button class="share-btn whatsapp" onclick="shareToWhatsApp()" aria-label="Bagikan ke WhatsApp">
+                    <i class="fab fa-whatsapp" aria-hidden="true"></i>
                     <span>Bagikan ke WhatsApp</span>
                 </button>
-                <button class="share-btn copy" onclick="copyLink()">
-                    <i class="fas fa-copy"></i>
+                <button class="share-btn copy" onclick="copyLink()" aria-label="Salin tautan">
+                    <i class="fas fa-copy" aria-hidden="true"></i>
                     <span>Salin Link</span>
                 </button>
             </div>
@@ -51,21 +65,21 @@
     </div>
 
     <!-- PDF Authorization Modal -->
-    <div class="pdf-auth-modal" id="pdfAuthModal" onclick="if(event.target===this) closePdfAuthModal()">
+    <div class="pdf-auth-modal" id="pdfAuthModal" onclick="if(event.target===this) closePdfAuthModal()" role="dialog" aria-modal="true" aria-label="Form otorisasi akses PDF">
         <div class="pdf-auth-content">
             <div class="auth-icon">
-                <i class="fas fa-lock"></i>
+                <i class="fas fa-lock" aria-hidden="true"></i>
             </div>
             
             <h3 class="section-title text-center">Otorisasi Akses Dokumen</h3>
             
             <div class="alert alert-warning" role="alert">
-                <i class="fas fa-exclamation-triangle me-2"></i>
+                <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
                 <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan
             </div>
             
             <div class="info-message">
-                <i class="fas fa-info-circle me-2"></i>
+                <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
                 <strong>Informasi Kode Keamanan:</strong> Untuk mendapatkan kode yang valid, harap hubungi petugas yang berwenang di Dinas Perikanan Situbondo.
             </div>
             
@@ -78,35 +92,37 @@
                            placeholder="8 digit kode keamanan"
                            maxlength="8"
                            inputmode="numeric"
-                           pattern="[0-9]*">
-                    <button type="button" class="password-toggle" id="passwordToggle" aria-label="Tampilkan/Sembunyikan kode">
-                        <i class="fas fa-eye"></i>
+                           pattern="[0-9]*"
+                           autocomplete="off"
+                           aria-describedby="errorMessage">
+                    <button type="button" class="password-toggle" id="passwordToggle" aria-label="Tampilkan atau sembunyikan kode">
+                        <i class="fas fa-eye" aria-hidden="true"></i>
                     </button>
                 </div>
-                <div class="error-message" id="errorMessage">
-                    <i class="fas fa-times-circle me-2"></i>
+                <div class="error-message" id="errorMessage" role="alert">
+                    <i class="fas fa-times-circle me-2" aria-hidden="true"></i>
                     <span id="errorText">Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
                 </div>
             </div>
             
             <div class="attempts-counter">
-                <i class="fas fa-shield-alt me-2"></i>
+                <i class="fas fa-shield-alt me-2" aria-hidden="true"></i>
                 Percobaan tersisa: <span id="attemptsLeft">3</span>
             </div>
             
             <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
                 <button class="btn btn-secondary mb-0" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;">
-                    <i class="fas fa-times me-2"></i>Batal
+                    <i class="fas fa-times me-2" aria-hidden="true"></i>Batal
                 </button>
                 <button class="btn btn-primary mb-0" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;">
-                    <i class="fas fa-check me-2"></i>Verifikasi
+                    <i class="fas fa-check me-2" aria-hidden="true"></i>Verifikasi
                 </button>
             </div>
         </div>
     </div>
 
     <!-- PDF Preview Modal -->
-    <div class="pdf-preview-modal" id="pdfPreviewModal" onclick="if(event.target===this) closePdfPreview()">
+    <div class="pdf-preview-modal" id="pdfPreviewModal" onclick="if(event.target===this) closePdfPreview()" role="dialog" aria-modal="true" aria-label="Pratinjau laporan PDF">
         <div class="pdf-preview-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
@@ -128,11 +144,12 @@
             <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com" aria-label="Beranda Dinas Perikanan Situbondo">
                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
                      alt="Logo Dinas Peternakan dan Perikanan Situbondo"
-                     onerror="this.onerror=null; this.src='https://placehold.co/200x80/1e3a8a/white?text=Dinas+Perikanan';">
+                     loading="eager"
+                     onerror="this.onerror=null; this.src='https://placehold.co/200x80/1e3a8a/white?text=Dinas+Perikanan&font=roboto';">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
+                <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -151,7 +168,7 @@
                     </li>
                     <li class="nav-item ms-lg-2">
                         <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 10px 24px; border-radius: 10px;">
-                            <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
+                            <i class="fas fa-phone-alt me-2" aria-hidden="true"></i>Hubungi Kami
                         </a>
                     </li>
                 </ul>
@@ -165,7 +182,7 @@
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center">
                     <span class="badge-category">
-                        <i class="fas fa-handshake"></i> PENYERAHAN BANTUAN PEMERINTAH
+                        <i class="fas fa-handshake" aria-hidden="true"></i> PENYERAHAN BANTUAN PEMERINTAH
                     </span>
                     <h1 data-aos="fade-up">Penyerahan dan Pelebelan Mesin Pompa Air kepada Pengelola TPI</h1>
                     <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
@@ -176,7 +193,7 @@
                         <div class="col-md-4">
                             <div class="info-card">
                                 <div class="info-icon">
-                                    <i class="fas fa-calendar-alt"></i>
+                                    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-white mb-2">Tanggal Kegiatan</h5>
@@ -187,7 +204,7 @@
                         <div class="col-md-4">
                             <div class="info-card">
                                 <div class="info-icon">
-                                    <i class="fas fa-map-marker-alt"></i>
+                                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-white mb-2">Lokasi</h5>
@@ -198,7 +215,7 @@
                         <div class="col-md-4">
                             <div class="info-card">
                                 <div class="info-icon">
-                                    <i class="fas fa-water"></i>
+                                    <i class="fas fa-water" aria-hidden="true"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-white mb-2">Jenis Bantuan</h5>
@@ -225,7 +242,7 @@
                             <p>Kegiatan penyerahan dan pelebelan mesin pompa air ini merupakan bentuk komitmen <strong>Pemerintah Daerah Kabupaten Situbondo</strong> melalui <strong>Dinas Peternakan dan Perikanan</strong> dalam mendukung operasional Tempat Pelelangan Ikan (TPI) di wilayah pesisir. Bantuan ini diberikan kepada pengelola <strong>TPI Besuki</strong> dan <strong>TPI Pandean</strong> sebagai upaya meningkatkan kualitas layanan dan kontribusi terhadap Pendapatan Asli Daerah (PAD).</p>
                             
                             <div class="highlight-box">
-                                <h5><i class="fas fa-bullseye"></i> Tujuan Penyerahan Bantuan</h5>
+                                <h5><i class="fas fa-bullseye" aria-hidden="true"></i> Tujuan Penyerahan Bantuan</h5>
                                 <p>Penyerahan mesin pompa air ini bertujuan untuk:</p>
                                 <ul>
                                     <li>Meningkatkan kualitas operasional TPI dalam menjaga kebersihan dan higienitas area pelelangan ikan</li>
@@ -249,7 +266,7 @@
                             <p>Dalam kesempatan penyerahan bantuan, <strong>Kepala Bidang Pemberdayaan Nelayan, SUGENG PURWO PRIYANTO, S.E., M.M.</strong> melakukan dialog langsung dengan pengelola TPI mengenai kondisi operasional dan perkembangan hasil tangkapan nelayan di wilayah masing-masing.</p>
                             
                             <div class="highlight-box">
-                                <h5><i class="fas fa-comments"></i> Poin-Poin Dialog</h5>
+                                <h5><i class="fas fa-comments" aria-hidden="true"></i> Poin-Poin Dialog</h5>
                                 <p>Beberapa poin penting yang dibahas dalam dialog antara lain:</p>
                                 <ul>
                                     <li>Kondisi operasional TPI dan kendala yang dihadapi dalam pelayanan</li>
@@ -280,7 +297,7 @@
                         <div class="mb-4">
                             <div class="location-card mb-4">
                                 <div class="location-icon">
-                                    <i class="fas fa-map-pin"></i>
+                                    <i class="fas fa-map-pin" aria-hidden="true"></i>
                                 </div>
                                 <h4>TPI Besuki</h4>
                                 <p class="text-muted mb-2"><strong>Tanggal:</strong> 21 Januari 2026</p>
@@ -290,7 +307,7 @@
                             
                             <div class="location-card">
                                 <div class="location-icon">
-                                    <i class="fas fa-map-pin"></i>
+                                    <i class="fas fa-map-pin" aria-hidden="true"></i>
                                 </div>
                                 <h4>TPI Pandean</h4>
                                 <p class="text-muted mb-2"><strong>Tanggal:</strong> 22 Januari 2026</p>
@@ -317,7 +334,7 @@
                         <h2 class="section-title">Fakta Singkat</h2>
                         <div class="d-flex align-items-center mb-3">
                             <div class="bg-success-teal p-2 rounded-circle me-3">
-                                <i class="fas fa-check text-white"></i>
+                                <i class="fas fa-check text-white" aria-hidden="true"></i>
                             </div>
                             <div>
                                 <h6 class="mb-1">2 Lokasi</h6>
@@ -326,7 +343,7 @@
                         </div>
                         <div class="d-flex align-items-center mb-3">
                             <div class="bg-warning-amber p-2 rounded-circle me-3">
-                                <i class="fas fa-tag text-white"></i>
+                                <i class="fas fa-tag text-white" aria-hidden="true"></i>
                             </div>
                             <div>
                                 <h6 class="mb-1">Barang Milik Daerah</h6>
@@ -335,7 +352,7 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <div class="bg-secondary-blue p-2 rounded-circle me-3">
-                                <i class="fas fa-hand-holding-usd text-white"></i>
+                                <i class="fas fa-hand-holding-usd text-white" aria-hidden="true"></i>
                             </div>
                             <div>
                                 <h6 class="mb-1">Dukung PAD</h6>
@@ -362,7 +379,7 @@
                 <div class="col-lg-3 col-md-6" data-aos="fade-up">
                     <div class="module-card">
                         <div class="module-icon">
-                            <i class="fas fa-clipboard-check"></i>
+                            <i class="fas fa-clipboard-check" aria-hidden="true"></i>
                         </div>
                         <h4>Persiapan Administrasi</h4>
                         <p class="text-muted">Verifikasi dokumen dan kelengkapan administrasi penyerahan bantuan mesin pompa air sebagai BMD.</p>
@@ -371,7 +388,7 @@
                 <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="module-card">
                         <div class="module-icon">
-                            <i class="fas fa-truck"></i>
+                            <i class="fas fa-truck" aria-hidden="true"></i>
                         </div>
                         <h4>Distribusi ke Lokasi</h4>
                         <p class="text-muted">Pengiriman mesin pompa air ke TPI Besuki dan TPI Pandean sesuai jadwal yang telah ditetapkan.</p>
@@ -380,7 +397,7 @@
                 <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="module-card">
                         <div class="module-icon">
-                            <i class="fas fa-handshake"></i>
+                            <i class="fas fa-handshake" aria-hidden="true"></i>
                         </div>
                         <h4>Serah Terima</h4>
                         <p class="text-muted">Penyerahan resmi oleh Kepala Bidang Pemberdayaan Nelayan kepada pengelola TPI.</p>
@@ -389,7 +406,7 @@
                 <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
                     <div class="module-card">
                         <div class="module-icon">
-                            <i class="fas fa-tag"></i>
+                            <i class="fas fa-tag" aria-hidden="true"></i>
                         </div>
                         <h4>Pelebelan BMD</h4>
                         <p class="text-muted">Pelebelan mesin pompa air sebagai Barang Milik Daerah oleh tim aset Dinas Perikanan.</p>
@@ -565,7 +582,7 @@
         </div>
     </section>
 
-    <!-- Impact Section (Mengganti Video Section) -->
+    <!-- Impact Section -->
     <section class="impact-section">
         <div class="container">
             <div class="row mb-5">
@@ -579,7 +596,7 @@
                 <div class="col-lg-4 col-md-6" data-aos="fade-up">
                     <div class="impact-card">
                         <div class="impact-icon">
-                            <i class="fas fa-hand-holding-usd"></i>
+                            <i class="fas fa-hand-holding-usd" aria-hidden="true"></i>
                         </div>
                         <h4>Peningkatan PAD</h4>
                         <p class="text-muted">Bantuan mesin pompa air mendukung operasional TPI yang optimal, berkontribusi pada peningkatan Pendapatan Asli Daerah melalui retribusi dan pelayanan yang lebih baik.</p>
@@ -589,7 +606,7 @@
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="impact-card">
                         <div class="impact-icon">
-                            <i class="fas fa-shield-alt"></i>
+                            <i class="fas fa-shield-alt" aria-hidden="true"></i>
                         </div>
                         <h4>Pengelolaan BMD yang Baik</h4>
                         <p class="text-muted">Pelebelan sebagai Barang Milik Daerah memastikan akuntabilitas dan pengelolaan aset yang transparan sesuai dengan peraturan yang berlaku.</p>
@@ -599,7 +616,7 @@
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="impact-card">
                         <div class="impact-icon">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-users" aria-hidden="true"></i>
                         </div>
                         <h4>Sinergi Stakeholder</h4>
                         <p class="text-muted">Kegiatan memperkuat hubungan antara pemerintah daerah dengan pengelola TPI dan nelayan, menciptakan ekosistem perikanan yang kolaboratif.</p>
@@ -616,14 +633,14 @@
                 <div class="col-lg-8 mx-auto text-center">
                     <h2 class="mb-4">Akses Laporan dan Bagikan Kegiatan</h2>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
-                        <button class="btn-download" onclick="openPdfAuthModal()">
-                            <i class="fas fa-download me-2"></i>Download Laporan Kegiatan (PDF)
+                        <button class="btn-download" onclick="openPdfAuthModal()" aria-label="Download laporan PDF">
+                            <i class="fas fa-download me-2" aria-hidden="true"></i>Download Laporan Kegiatan (PDF)
                         </button>
-                        <button class="btn-share" onclick="openShareModal()">
-                            <i class="fas fa-share-alt me-2"></i>Bagikan Kegiatan Ini
+                        <button class="btn-share" onclick="openShareModal()" aria-label="Bagikan kegiatan ini">
+                            <i class="fas fa-share-alt me-2" aria-hidden="true"></i>Bagikan Kegiatan Ini
                         </button>
-                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share">
-                            <i class="fas fa-images me-2"></i>Kegiatan Lainnya
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share" aria-label="Kegiatan lainnya">
+                            <i class="fas fa-images me-2" aria-hidden="true"></i>Kegiatan Lainnya
                         </a>
                     </div>
                 </div>
@@ -641,27 +658,28 @@
                              alt="Logo Dinas Peternakan dan Perikanan Situbondo" 
                              height="50" 
                              class="me-3"
+                             loading="lazy"
                              onerror="this.onerror=null; this.src='https://placehold.co/200x50/1e3a8a/white?text=Dinas+Perikanan';">
                     </div>
                     <p class="text-light mb-4" style="line-height: 1.7;">
                         Berkontribusi aktif dalam memajukan sektor perikanan tangkap dan memberdayakan masyarakat pesisir Situbondo melalui berbagai program inovatif dan berkelanjutan.
                     </p>
                     <div class="social-icons mt-4">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
                     </div>
                 </div>
                 
                 <div class="col-lg-3">
                     <h5>Tautan Cepat</h5>
                     <div class="footer-links mt-4">
-                        <a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2"></i>Beranda</a>
-                        <a href="https://www.dinasperikanansitubondo.com/simpadan"><i class="fas fa-mobile-alt me-2"></i>SIMPADAN</a>
-                        <a href="https://www.dinasperikanansitubondo.com/dokumentasi"><i class="fas fa-images me-2"></i>Dokumentasi</a>
-                        <a href="https://situbondokab.go.id/"><i class="fas fa-university me-2"></i>Pemkab Situbondo</a>
-                        <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i>Pengaduan</a>
+                        <a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2" aria-hidden="true"></i>Beranda</a>
+                        <a href="https://www.dinasperikanansitubondo.com/simpadan"><i class="fas fa-mobile-alt me-2" aria-hidden="true"></i>SIMPADAN</a>
+                        <a href="https://www.dinasperikanansitubondo.com/dokumentasi"><i class="fas fa-images me-2" aria-hidden="true"></i>Dokumentasi</a>
+                        <a href="https://situbondokab.go.id/"><i class="fas fa-university me-2" aria-hidden="true"></i>Pemkab Situbondo</a>
+                        <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2" aria-hidden="true"></i>Pengaduan</a>
                     </div>
                 </div>
                 
@@ -670,7 +688,7 @@
                     <div class="mt-4">
                         <div class="d-flex align-items-start mb-4">
                             <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0">
-                                <i class="fas fa-map-marker-alt text-white"></i>
+                                <i class="fas fa-map-marker-alt text-white" aria-hidden="true"></i>
                             </div>
                             <div>
                                 <span class="d-block text-white fw-bold">Alamat Kantor</span>
@@ -679,7 +697,7 @@
                         </div>
                         <div class="d-flex align-items-start mb-4">
                             <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0">
-                                <i class="fab fa-whatsapp text-white"></i>
+                                <i class="fab fa-whatsapp text-white" aria-hidden="true"></i>
                             </div>
                             <div>
                                 <span class="d-block text-white fw-bold">WhatsApp Admin</span>
@@ -688,7 +706,7 @@
                         </div>
                         <div class="d-flex align-items-start">
                             <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0">
-                                <i class="fas fa-envelope text-white"></i>
+                                <i class="fas fa-envelope text-white" aria-hidden="true"></i>
                             </div>
                             <div>
                                 <span class="d-block text-white fw-bold">Email</span>
@@ -703,7 +721,7 @@
             
             <div class="text-center text-light">
                 <p class="mb-2">&copy; <span id="currentYear">2026</span> Dinas Perikanan Situbondo. Hak Cipta Dilindungi.</p>
-                <small>Dibuat dengan <i class="fas fa-heart text-danger"></i> untuk Nelayan Situbondo</small>
+                <small>Dibuat dengan <i class="fas fa-heart text-danger" aria-hidden="true"></i> untuk Nelayan Situbondo</small>
             </div>
         </div>
     </footer>
