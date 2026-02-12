@@ -22,7 +22,7 @@ const kegiatanData = [
         "youtubeUrls": [
             "https://www.youtube.com/embed/6TbwAzsGcpM"
         ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan1/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html",
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html",
         "participants": 0,
         "duration": ""
     },
@@ -48,7 +48,7 @@ const kegiatanData = [
             "Terumbu Buatan"
         ],
         "youtubeUrls": [],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan2/pendampingan-penenggelaman-fist-apartment.html",
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html",
         "participants": 0,
         "duration": ""
     },
@@ -73,7 +73,7 @@ const kegiatanData = [
         "youtubeUrls": [
             "https://www.youtube.com/embed/5n4ySz4mEPE"
         ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan3/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
         "participants": 0,
         "duration": ""
     },
@@ -102,7 +102,7 @@ const kegiatanData = [
         "Pengelola TPI Besuki"
     ],
     "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan4/penyerahan-bantuan-mesin-pompa.html",
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-mesin-pompa.html",
     "participants": 0,
     "duration": ""
 },
@@ -129,7 +129,7 @@ const kegiatanData = [
         "Penyuluh Perikanan Situbondo"
     ],
     "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan5/mendampingi-dkp-jatim-verval-kelompok-nelayan.html",
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/mendampingi-dkp-jatim-verval-kelompok-nelayan.html",
     "participants": 0,
     "duration": ""
 },
@@ -154,7 +154,7 @@ const kegiatanData = [
         "Korban Banjir"
     ],
     "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan6/penyerahan-bantuan-sosial-kepada-masyarakat-korban-banjir-besuki.html",
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-sosial-kepada-masyarakat-korban-banjir-besuki.html",
     "participants": 0,
     "duration": ""
 },
