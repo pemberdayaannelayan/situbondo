@@ -24,16 +24,22 @@ window.addEventListener('scroll', function() {
 // ==================== GALLERY MODAL ====================
 document.querySelectorAll('.gallery-item').forEach(item => {
     item.addEventListener('click', function() {
+        // Hapus modal lama jika sudah ada
+        const existingModal = document.getElementById('imageModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
         const imgSrc = this.querySelector('img').src;
         const imgAlt = this.querySelector('img').alt;
         
         const modalHTML = `
-        <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content border-0">
                     <div class="modal-body p-0 position-relative">
                         <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded">
-                        <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                 </div>
             </div>
@@ -76,6 +82,7 @@ scrollTopBtn.style.zIndex = '1000';
 scrollTopBtn.style.display = 'none';
 scrollTopBtn.style.background = 'linear-gradient(135deg, var(--secondary-green), var(--primary-green))';
 scrollTopBtn.style.border = 'none';
+scrollTopBtn.setAttribute('aria-label', 'Kembali ke atas');
 document.body.appendChild(scrollTopBtn);
 
 window.addEventListener('scroll', function() {
@@ -177,6 +184,8 @@ function togglePasswordVisibility() {
     const passwordInput = document.getElementById('securityCodeInput');
     const toggleIcon = document.querySelector('#passwordToggle i');
     
+    if (!passwordInput || !toggleIcon) return;
+    
     isPasswordVisible = !isPasswordVisible;
     
     if (isPasswordVisible) {
@@ -261,17 +270,6 @@ function verifySecurityCode() {
     }
 }
 
-// Shake animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-`;
-document.head.appendChild(style);
-
 // ==================== PDF GENERATION ====================
 function showLoading() {
     document.getElementById('loadingOverlay').style.display = 'flex';
@@ -308,7 +306,8 @@ function generatePDFReport() {
                     <td style="width: 80px; vertical-align: middle; padding-top: 5px;">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
                              alt="Logo Kabupaten Situbondo" 
-                             style="width: 70px; height: 70px; object-fit: contain; display: block; border-radius: 0;">
+                             style="width: 70px; height: 70px; object-fit: contain; display: block; border-radius: 0;"
+                             onerror="this.style.display='none'">
                     </td>
                     <td style="vertical-align: middle; padding-left: 15px;">
                         <h2 style="margin: 0; font-size: 16px; font-weight: bold; letter-spacing: 0.5px;">PEMERINTAH KABUPATEN SITUBONDO</h2>
@@ -422,7 +421,8 @@ function generatePDFReport() {
                     <div class="qr-code" style="background: #ffffff; padding: 5px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); float: right;">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=0d6e3e&bgcolor=ffffff" 
                              alt="QR Code Sumber Laporan" 
-                             style="width: 70px; height: 70px; object-fit: contain;">
+                             style="width: 70px; height: 70px; object-fit: contain;"
+                             onerror="this.style.display='none'">
                     </div>
                     <p style="font-size: 9px; margin-top: 5px; color: #666; clear: both; text-align: right;">Scan untuk mengakses sumber laporan</p>
                 </div>
@@ -437,6 +437,13 @@ function generatePDFReport() {
 }
 
 async function downloadPDF() {
+    // Cek apakah library jsPDF tersedia
+    if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
+        alert('Library PDF tidak tersedia. Silakan refresh halaman atau periksa koneksi internet Anda.');
+        hideLoading();
+        return;
+    }
+
     showLoading();
     
     try {
@@ -660,17 +667,14 @@ async function downloadPDF() {
     }
 }
 
-// ==================== FOOTER POSITION ====================
+// ==================== FOOTER POSITION (CSS Flexbox digunakan, fungsi ini sebagai fallback) ====================
 function fixFooterPosition() {
     const footer = document.querySelector('.footer');
-    const bodyHeight = document.body.offsetHeight;
-    const windowHeight = window.innerHeight;
-    
-    if (bodyHeight < windowHeight) {
-        footer.style.position = 'fixed';
-        footer.style.bottom = '0';
-    } else {
+    if (footer) {
+        // CSS flexbox sudah mengatur, kita hanya memastikan tidak ada style inline yang mengganggu
         footer.style.position = 'relative';
+        footer.style.bottom = 'auto';
+        footer.style.marginTop = 'auto';
     }
 }
 
@@ -678,26 +682,37 @@ window.addEventListener('load', fixFooterPosition);
 window.addEventListener('resize', fixFooterPosition);
 
 // ==================== PASSWORD TOGGLE ====================
-document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
+const passwordToggle = document.getElementById('passwordToggle');
+if (passwordToggle) {
+    passwordToggle.addEventListener('click', togglePasswordVisibility);
+}
 
 // Enter key submit
-document.getElementById('securityCodeInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        verifySecurityCode();
-    }
-});
+const securityCodeInput = document.getElementById('securityCodeInput');
+if (securityCodeInput) {
+    securityCodeInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            verifySecurityCode();
+        }
+    });
+}
 
 // Close PDF auth modal when clicking outside
-document.getElementById('pdfAuthModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closePdfAuthModal();
-    }
-});
+const pdfAuthModal = document.getElementById('pdfAuthModal');
+if (pdfAuthModal) {
+    pdfAuthModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePdfAuthModal();
+        }
+    });
+}
 
 // Restrict input to numbers only
-document.getElementById('securityCodeInput').addEventListener('input', function(e) {
-    this.value = this.value.replace(/[^0-9]/g, '');
-});
+if (securityCodeInput) {
+    securityCodeInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+}
 
 // Debug: Tampilkan kode keamanan hari ini di console
 console.log("Kode keamanan hari ini:", generateSecurityCode());
