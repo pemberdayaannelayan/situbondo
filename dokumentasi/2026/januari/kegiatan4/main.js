@@ -13,18 +13,22 @@ function closeShareModal() {
 
 function shareToWhatsApp() {
     const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent('Penyerahan dan Pelebelan Mesin Pompa Air kepada Pengelola TPI\n\nKegiatan penyerahan dan pelebelan mesin pompa air kepada pengelola TPI Besuki dan TPI Pandean yang diserahkan langsung oleh Kepala Bidang Pemberdayaan Nelayan Dinas Peternakan dan Perikanan Kabupaten Situbondo.\n\nBaca selengkapnya di:');
+    const text = encodeURIComponent(
+        'Penyerahan dan Pelebelan Mesin Pompa Air kepada Pengelola TPI\n\n' +
+        'Kegiatan penyerahan dan pelebelan mesin pompa air kepada pengelola TPI Besuki dan TPI Pandean yang diserahkan langsung oleh Kepala Bidang Pemberdayaan Nelayan Dinas Peternakan dan Perikanan Kabupaten Situbondo.\n\n' +
+        'Baca selengkapnya di:'
+    );
     window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
 }
 
 function copyLink() {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
-        alert('Link berhasil disalin ke clipboard!');
+        alert('✅ Link berhasil disalin ke clipboard!');
         closeShareModal();
     }).catch(err => {
-        console.error('Gagal menyalin link: ', err);
-        alert('Gagal menyalin link. Silakan coba lagi.');
+        console.error('Gagal menyalin link:', err);
+        alert('❌ Gagal menyalin link. Silakan coba lagi atau salin manual.');
     });
 }
 
@@ -34,14 +38,14 @@ function copyLink() {
 let maxAttempts = 3;
 let currentAttempts = 0;
 let lockoutTime = 0;
-const lockoutDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+const lockoutDuration = 5 * 60 * 1000; // 5 menit
 
 function generateSecurityCode() {
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = now.getFullYear();
-    return day + month + year;
+    return day + month + year; // format: DDMMYYYY (8 digit)
 }
 
 function isLockedOut() {
@@ -59,13 +63,13 @@ function isLockedOut() {
         } else {
             lockoutTime = 0;
             currentAttempts = 0;
-            return { locked: false, message: '' };
         }
     }
     return { locked: false, message: '' };
 }
 
 let isPasswordVisible = false;
+
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('securityCodeInput');
     const toggleIcon = document.getElementById('passwordToggle')?.querySelector('i');
@@ -73,14 +77,8 @@ function togglePasswordVisibility() {
     if (!passwordInput || !toggleIcon) return;
     
     isPasswordVisible = !isPasswordVisible;
-    
-    if (isPasswordVisible) {
-        passwordInput.type = 'text';
-        toggleIcon.className = 'fas fa-eye-slash';
-    } else {
-        passwordInput.type = 'password';
-        toggleIcon.className = 'fas fa-eye';
-    }
+    passwordInput.type = isPasswordVisible ? 'text' : 'password';
+    toggleIcon.className = isPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye';
 }
 
 function openPdfAuthModal() {
@@ -98,10 +96,13 @@ function openPdfAuthModal() {
     const errorText = document.getElementById('errorText');
     const attemptsSpan = document.getElementById('attemptsLeft');
     
-    if (input) input.value = '';
+    if (input) {
+        input.value = '';
+        input.classList.remove('is-invalid');
+        input.style.animation = '';
+    }
     if (errorMsg) errorMsg.style.display = 'none';
     if (errorText) errorText.textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
-    if (input) input.classList.remove('is-invalid');
     if (attemptsSpan) attemptsSpan.textContent = maxAttempts - currentAttempts;
     
     modal.style.display = 'flex';
@@ -129,10 +130,10 @@ function verifySecurityCode() {
         return;
     }
     
-    const userInput = inputElement ? inputElement.value : '';
+    const userInput = inputElement ? inputElement.value.trim() : '';
     const correctCode = generateSecurityCode();
     
-    if (!userInput || userInput.length !== 8) {
+    if (!userInput || userInput.length !== 8 || !/^\d+$/.test(userInput)) {
         if (errorText) errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
         if (errorMsg) errorMsg.style.display = 'block';
         if (inputElement) {
@@ -149,14 +150,14 @@ function verifySecurityCode() {
     } else {
         currentAttempts++;
         
-        const attemptsLeft = maxAttempts - currentAttempts;
+        const attemptsLeft = Math.max(0, maxAttempts - currentAttempts);
         if (attemptsSpan) attemptsSpan.textContent = attemptsLeft;
         
         if (currentAttempts >= maxAttempts) {
             lockoutTime = new Date().getTime() + lockoutDuration;
-            if (errorText) errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
+            if (errorText) errorText.textContent = '❌ Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
         } else {
-            if (errorText) errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
+            if (errorText) errorText.textContent = `❌ Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
         }
         
         if (errorMsg) errorMsg.style.display = 'block';
@@ -208,7 +209,7 @@ function generatePDFReport() {
     <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #333;">
         <!-- Kop Surat -->
         <div style="margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 20px;">
-            <table style="width: 100%;">
+            <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td style="width: 80px; vertical-align: middle; padding-top: 5px;">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
@@ -303,8 +304,7 @@ function generatePDFReport() {
                     <p style="font-weight: bold; font-size: 12px; margin-top: 40px;">Pelapor,</p>
                 </div>
             </div>
-            <div style="width: 35%;">
-            </div>
+            <div style="width: 35%;"></div>
         </div>
         
         <!-- Footer dengan QR code -->
@@ -335,10 +335,16 @@ function generatePDFReport() {
     openPdfPreview();
 }
 
-// Placeholder logo untuk PDF fallback
+// Placeholder logo untuk PDF fallback (base64)
 const placeholderLogo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFjSURBVHgB7d2xTQNBEIXhsfAFARIgQzKgTToYAjg3j6JXODcPwdJgOSc/9Vx3/oPnOe6OnnH0l93Tsz+e3/kv3pnvxAAQIIAAIgwggAgDiCCAAAIIIICAIIAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQygT+3b89J+PF+c7T37S/tX53vP3nLq2X09r+f7cua+/V7PW5/ZZ1/L6fXc1/Nx/Bj7O8/HXyIABBBCABnQEcTAACgYgAADQAABBBgAAggwAAQQYAATfLZXKSDj7SwAAAAASUVORK5CYII=';
 
 async function downloadPDF() {
+    // Cek apakah jsPDF tersedia
+    if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+        alert('❌ Library PDF tidak tersedia. Silakan muat ulang halaman atau periksa koneksi internet Anda.');
+        return;
+    }
+    
     showLoading();
     
     try {
@@ -362,6 +368,7 @@ async function downloadPDF() {
         const logoWidth = 18;
         const logoHeight = 18;
         
+        // Logo
         try {
             const logoImg = new Image();
             logoImg.crossOrigin = 'Anonymous';
@@ -369,7 +376,7 @@ async function downloadPDF() {
             await new Promise((resolve, reject) => {
                 logoImg.onload = resolve;
                 logoImg.onerror = () => {
-                    console.log('Logo error, using placeholder');
+                    console.warn('Logo utama gagal, gunakan placeholder');
                     const placeholderImg = new Image();
                     placeholderImg.src = placeholderLogo;
                     placeholderImg.onload = () => {
@@ -380,10 +387,8 @@ async function downloadPDF() {
                 };
                 logoImg.src = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
             });
-            
-            doc.addImage(logoImg, 'PNG', margin, yPos, logoWidth, logoHeight);
         } catch (e) {
-            console.log('Using placeholder logo');
+            console.log('Fallback logo');
             const placeholderImg = new Image();
             placeholderImg.src = placeholderLogo;
             await new Promise(resolve => {
@@ -392,17 +397,18 @@ async function downloadPDF() {
             doc.addImage(placeholderImg, 'PNG', margin, yPos, logoWidth, logoHeight);
         }
         
+        // Header teks
         doc.setFontSize(11);
-        doc.setFont("helvetica", "bold");
-        doc.text("PEMERINTAH KABUPATEN SITUBONDO", 105, yPos + 5, { align: 'center' });
+        doc.setFont('helvetica', 'bold');
+        doc.text('PEMERINTAH KABUPATEN SITUBONDO', 105, yPos + 5, { align: 'center' });
         
         doc.setFontSize(12);
-        doc.text("DINAS PETERNAKAN DAN PERIKANAN", 105, yPos + 11, { align: 'center' });
+        doc.text('DINAS PETERNAKAN DAN PERIKANAN', 105, yPos + 11, { align: 'center' });
         
         doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.text("Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664", 105, yPos + 17, { align: 'center' });
-        doc.text("SITUBONDO 68312", 105, yPos + 22, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.text('Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664', 105, yPos + 17, { align: 'center' });
+        doc.text('SITUBONDO 68312', 105, yPos + 22, { align: 'center' });
         
         yPos += 30;
         
@@ -410,14 +416,15 @@ async function downloadPDF() {
         doc.line(margin, yPos, 210 - margin, yPos);
         yPos += 15;
         
+        // Judul Laporan
         doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
-        doc.text("LAPORAN KEGIATAN", 105, yPos, { align: 'center' });
+        doc.setFont('helvetica', 'bold');
+        doc.text('LAPORAN KEGIATAN', 105, yPos, { align: 'center' });
         yPos += 10;
         
         doc.setFontSize(14);
-        const title1 = "PENYERAHAN DAN PELEBELAN MESIN POMPA AIR";
-        const title2 = "KEPADA PENGELOLA TEMPAT PELELANGAN IKAN (TPI)";
+        const title1 = 'PENYERAHAN DAN PELEBELAN MESIN POMPA AIR';
+        const title2 = 'KEPADA PENGELOLA TEMPAT PELELANGAN IKAN (TPI)';
         
         const titleLines1 = doc.splitTextToSize(title1, 170);
         const titleLines2 = doc.splitTextToSize(title2, 170);
@@ -434,6 +441,7 @@ async function downloadPDF() {
         
         yPos += 10;
         
+        // Fungsi bantu untuk menambahkan teks
         function addText(title, content, isList = false, isNumberedList = false) {
             if (yPos > 270) {
                 doc.addPage();
@@ -441,12 +449,12 @@ async function downloadPDF() {
             }
             
             doc.setFontSize(12);
-            doc.setFont("helvetica", "bold");
+            doc.setFont('helvetica', 'bold');
             doc.text(title, margin, yPos);
             yPos += 8;
             
             doc.setFontSize(11);
-            doc.setFont("helvetica", "normal");
+            doc.setFont('helvetica', 'normal');
             
             if (isList) {
                 const items = content.split('\n');
@@ -480,44 +488,49 @@ async function downloadPDF() {
                     yPos += 6;
                 });
             }
-            
             yPos += 8;
         }
         
-        addText("I. LATAR BELAKANG", 
-            "Dalam rangka mendukung operasional Tempat Pelelangan Ikan (TPI) dan meningkatkan kontribusi terhadap Pendapatan Asli Daerah (PAD) Kabupaten Situbondo, Dinas Peternakan dan Perikanan Kabupaten Situbondo melaksanakan kegiatan penyerahan dan pelebelan mesin pompa air kepada pengelola TPI Besuki dan TPI Pandean. Kegiatan ini merupakan bentuk komitmen pemerintah daerah dalam pengembangan infrastruktur perikanan dan pemberdayaan masyarakat pesisir.");
+        // Isi laporan
+        addText('I. LATAR BELAKANG',
+            'Dalam rangka mendukung operasional Tempat Pelelangan Ikan (TPI) dan meningkatkan kontribusi terhadap Pendapatan Asli Daerah (PAD) Kabupaten Situbondo, Dinas Peternakan dan Perikanan Kabupaten Situbondo melaksanakan kegiatan penyerahan dan pelebelan mesin pompa air kepada pengelola TPI Besuki dan TPI Pandean. Kegiatan ini merupakan bentuk komitmen pemerintah daerah dalam pengembangan infrastruktur perikanan dan pemberdayaan masyarakat pesisir.');
         
-        addText("II. TUJUAN KEGIATAN", 
-            "Meningkatkan kualitas operasional TPI dalam menjaga kebersihan dan higienitas area pelelangan ikan\n" +
-            "Mendukung pengelola TPI dalam pelayanan kepada nelayan dan pembeli ikan\n" +
-            "Mengoptimalkan kontribusi TPI terhadap Pendapatan Asli Daerah (PAD) Kabupaten Situbondo\n" +
-            "Memastikan barang milik daerah (BMD) dikelola dengan baik dan berkelanjutan\n" +
-            "Memperkuat sinergi antara pemerintah daerah dengan pengelola TPI dan stakeholder perikanan", true, true);
+        addText('II. TUJUAN KEGIATAN',
+            'Meningkatkan kualitas operasional TPI dalam menjaga kebersihan dan higienitas area pelelangan ikan\n' +
+            'Mendukung pengelola TPI dalam pelayanan kepada nelayan dan pembeli ikan\n' +
+            'Mengoptimalkan kontribusi TPI terhadap Pendapatan Asli Daerah (PAD) Kabupaten Situbondo\n' +
+            'Memastikan barang milik daerah (BMD) dikelola dengan baik dan berkelanjutan\n' +
+            'Memperkuat sinergi antara pemerintah daerah dengan pengelola TPI dan stakeholder perikanan',
+            true, true);
         
-        addText("III. WAKTU DAN LOKASI KEGIATAN", 
-            "TPI Besuki: 21 Januari 2026\nDesa Pesisir, Kecamatan Besuki, Kabupaten Situbondo\n\nTPI Pandean: 22 Januari 2026\nDesa Wonorejo, Kecamatan Banyuputih, Kabupaten Situbondo", true);
+        addText('III. WAKTU DAN LOKASI KEGIATAN',
+            'TPI Besuki: 21 Januari 2026\nDesa Pesisir, Kecamatan Besuki, Kabupaten Situbondo\n\nTPI Pandean: 22 Januari 2026\nDesa Wonorejo, Kecamatan Banyuputih, Kabupaten Situbondo',
+            true);
         
-        addText("IV. PELAKSANA KEGIATAN", 
-            "Penanggung Jawab: Kepala Bidang Pemberdayaan Nelayan, SUGENG PURWO PRIYANTO, S.E., M.M.\n" +
-            "Tim Aset Dinas Peternakan dan Perikanan Kabupaten Situbondo\n" +
-            "Pengelola TPI Besuki dan TPI Pandean sebagai penerima bantuan", true);
+        addText('IV. PELAKSANA KEGIATAN',
+            'Penanggung Jawab: Kepala Bidang Pemberdayaan Nelayan, SUGENG PURWO PRIYANTO, S.E., M.M.\n' +
+            'Tim Aset Dinas Peternakan dan Perikanan Kabupaten Situbondo\n' +
+            'Pengelola TPI Besuki dan TPI Pandean sebagai penerima bantuan',
+            true);
         
-        addText("V. HASIL KEGIATAN", 
-            "Kegiatan penyerahan dan pelebelan mesin pompa air berlangsung dengan lancar sesuai jadwal yang telah ditetapkan. Proses penyerahan dilakukan langsung oleh Kepala Bidang Pemberdayaan Nelayan yang disertai dengan dialog mengenai kondisi operasional TPI dan perkembangan hasil tangkapan nelayan. Tim aset Dinas Peternakan dan Perikanan melakukan pelebelan mesin pompa air sebagai Barang Milik Daerah (BMD) serta memberikan arahan teknis mengenai perawatan dan penggunaan yang tepat.");
+        addText('V. HASIL KEGIATAN',
+            'Kegiatan penyerahan dan pelebelan mesin pompa air berlangsung dengan lancar sesuai jadwal yang telah ditetapkan. Proses penyerahan dilakukan langsung oleh Kepala Bidang Pemberdayaan Nelayan yang disertai dengan dialog mengenai kondisi operasional TPI dan perkembangan hasil tangkapan nelayan. Tim aset Dinas Peternakan dan Perikanan melakukan pelebelan mesin pompa air sebagai Barang Milik Daerah (BMD) serta memberikan arahan teknis mengenai perawatan dan penggunaan yang tepat.');
         
-        addText("VI. KESIMPULAN DAN REKOMENDASI", 
-            "Penyerahan mesin pompa air kepada pengelola TPI Besuki dan TPI Pandean telah berhasil dilaksanakan dengan baik. Bantuan ini diharapkan dapat meningkatkan kualitas operasional TPI, mendukung peningkatan Pendapatan Asli Daerah, dan memperkuat sinergi antara pemerintah daerah dengan stakeholder perikanan. Direkomendasikan untuk dilakukan monitoring berkala terhadap penggunaan dan kondisi mesin pompa air, serta evaluasi dampak bantuan terhadap kinerja TPI.");
+        addText('VI. KESIMPULAN DAN REKOMENDASI',
+            'Penyerahan mesin pompa air kepada pengelola TPI Besuki dan TPI Pandean telah berhasil dilaksanakan dengan baik. Bantuan ini diharapkan dapat meningkatkan kualitas operasional TPI, mendukung peningkatan Pendapatan Asli Daerah, dan memperkuat sinergi antara pemerintah daerah dengan stakeholder perikanan. Direkomendasikan untuk dilakukan monitoring berkala terhadap penggunaan dan kondisi mesin pompa air, serta evaluasi dampak bantuan terhadap kinerja TPI.');
         
+        // Tanda tangan
         if (yPos > 250) {
             doc.addPage();
             yPos = margin;
         }
         
         doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
         doc.text(`Situbondo, ${formattedDate}`, margin, yPos);
         yPos += 12;
-        doc.setFont("helvetica", "bold");
-        doc.text("Pelapor,", margin, yPos);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Pelapor,', margin, yPos);
         yPos += 25;
         
         doc.setLineWidth(0.1);
@@ -525,10 +538,11 @@ async function downloadPDF() {
         
         yPos += 5;
         doc.setFontSize(8);
-        doc.setFont("helvetica", "normal");
-        doc.text("Laporan ini dibuat secara otomatis oleh sistem Dinas Perikanan Situbondo", margin, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Laporan ini dibuat secara otomatis oleh sistem Dinas Perikanan Situbondo', margin, yPos);
         doc.text(`© ${currentDate.getFullYear()} Dinas Peternakan dan Perikanan Kabupaten Situbondo`, margin, yPos + 4);
         
+        // QR Code
         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=1e3a8a&bgcolor=ffffff`;
         try {
             const qrImg = new Image();
@@ -544,96 +558,108 @@ async function downloadPDF() {
             const qrX = 210 - margin - qrSize;
             const qrY = yPos - 9;
             
-            if (qrImg.complete && qrImg.naturalHeight !== 0) {
+            if (qrImg.complete && qrImg.naturalHeight > 0) {
                 doc.addImage(qrImg, 'PNG', qrX, qrY, qrSize, qrSize);
                 doc.setFontSize(6);
-                doc.text("Scan untuk", qrX + qrSize/2, qrY + qrSize + 3, { align: 'center' });
-                doc.text("mengakses", qrX + qrSize/2, qrY + qrSize + 6, { align: 'center' });
+                doc.text('Scan untuk', qrX + qrSize / 2, qrY + qrSize + 3, { align: 'center' });
+                doc.text('mengakses', qrX + qrSize / 2, qrY + qrSize + 6, { align: 'center' });
             }
         } catch (e) {
-            console.log('QR code generation failed, continuing without it');
+            console.warn('QR code gagal dimuat, dilewati.');
         }
         
-        const fileName = `Laporan_Penyerahan_Pompa_TPI_${currentDate.getFullYear()}${String(currentDate.getMonth()+1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}.pdf`;
+        const fileName = `Laporan_Penyerahan_Pompa_TPI_${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(currentDate.getDate()).padStart(2, '0')}.pdf`;
         doc.save(fileName);
         
         hideLoading();
         closePdfPreview();
         
         setTimeout(() => {
-            alert('Laporan PDF berhasil diunduh!');
-        }, 500);
+            alert('✅ Laporan PDF berhasil diunduh!');
+        }, 200);
         
     } catch (error) {
         console.error('Error generating PDF:', error);
         hideLoading();
-        alert('PDF berhasil dibuat! Silakan cek folder download Anda.');
+        alert('❌ Gagal membuat PDF. Silakan coba lagi atau hubungi administrator.');
     }
 }
 
 // ==================== GLOBAL IMAGE ERROR HANDLER ====================
 function handleImageErrors() {
     document.querySelectorAll('img').forEach(img => {
-        // Skip jika sudah ada onerror handler
         if (img.hasAttribute('data-error-handled')) return;
         
         img.setAttribute('data-error-handled', 'true');
         
-        img.addEventListener('error', function(e) {
-            // Mencegah infinite loop
-            if (this.src.includes('placehold.co') || this.src.includes('ui-avatars')) return;
-            
-            console.log('Image failed to load:', this.src);
-            
-            // Fallback default
-            if (this.alt && this.alt.includes('Logo')) {
-                this.src = 'https://placehold.co/200x80/1e3a8a/white?text=Logo';
-            } else if (this.closest('.speaker-image')) {
-                // Speaker image fallback
-                const name = this.alt || 'Person';
-                this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e3a8a&color=fff&size=400`;
-            } else {
-                // Generic fallback
-                this.src = 'https://placehold.co/600x400/1e3a8a/white?text=Gambar+Tidak+Tersedia';
+        // Cek apakah gambar sudah error saat inisialisasi
+        if (img.complete && img.naturalHeight === 0) {
+            triggerFallback(img);
+        }
+        
+        img.addEventListener('error', function (e) {
+            if (this.src.includes('placehold.co') || this.src.includes('ui-avatars') || this.src.includes('placeholder')) {
+                return;
             }
+            console.log('Image error:', this.src);
+            triggerFallback(this);
         });
     });
 }
 
+function triggerFallback(img) {
+    if (img.alt && img.alt.toLowerCase().includes('logo')) {
+        img.src = 'https://placehold.co/200x80/1e3a8a/white?text=Logo&font=roboto';
+    } else if (img.closest('.speaker-image')) {
+        const name = img.alt || 'Person';
+        img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e3a8a&color=fff&size=400`;
+    } else {
+        img.src = 'https://placehold.co/600x400/1e3a8a/white?text=Gambar+Tidak+Tersedia&font=roboto';
+    }
+}
+
 // ==================== INITIALIZATION (DOMContentLoaded) ====================
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize AOS
     if (typeof AOS !== 'undefined') {
         AOS.init({
             duration: 800,
             once: true,
-            offset: 100
+            offset: 100,
+            disable: window.innerWidth < 768 ? true : false // nonaktifkan di mobile untuk performa
         });
     }
 
-    // Set current year in footer
+    // Set current year di footer
     const yearSpan = document.getElementById('currentYear');
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-    // Navbar scroll effect
-    window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.navbar');
-        if (navbar) {
-            if (window.scrollY > 50) {
-                navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-            } else {
-                navbar.style.boxShadow = '0 2px 20px rgba(30, 58, 138, 0.08)';
-                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-            }
+    // Navbar scroll effect dengan debounce
+    let ticking = false;
+    window.addEventListener('scroll', function () {
+        if (!ticking) {
+            window.requestAnimationFrame(function () {
+                const navbar = document.querySelector('.navbar');
+                if (navbar) {
+                    if (window.scrollY > 50) {
+                        navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+                        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+                    } else {
+                        navbar.style.boxShadow = '0 2px 20px rgba(30, 58, 138, 0.08)';
+                        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+                    }
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
     });
 
-    // Gallery modal functionality
+    // Gallery modal (Bootstrap)
     const galleryItems = document.querySelectorAll('.gallery-item');
     galleryItems.forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             const img = this.querySelector('img');
             if (!img) return;
             
@@ -645,8 +671,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content border-0">
                         <div class="modal-body p-0 position-relative">
-                            <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded">
-                            <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                            <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded" style="max-height: 90vh; object-fit: contain;">
+                            <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white rounded-circle p-2" style="width: 40px; height: 40px;" data-bs-dismiss="modal" aria-label="Tutup"></button>
                         </div>
                     </div>
                 </div>
@@ -659,23 +685,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 const modal = new bootstrap.Modal(document.getElementById('imageModal'));
                 modal.show();
                 
-                document.getElementById('imageModal').addEventListener('hidden.bs.modal', function() {
+                document.getElementById('imageModal').addEventListener('hidden.bs.modal', function () {
                     this.remove();
                 });
             }
         });
     });
 
-    // Smooth scroll for anchor links
+    // Smooth scroll untuk anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            
             const targetId = this.getAttribute('href');
-            if(targetId === '#') return;
+            if (targetId === '#') return;
             
             const targetElement = document.querySelector(targetId);
-            if(targetElement) {
+            if (targetElement) {
                 window.scrollTo({
                     top: targetElement.offsetTop - 100,
                     behavior: 'smooth'
@@ -684,22 +709,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add scroll to top button
+    // Tombol scroll to top
     if (!document.getElementById('scrollTopBtn')) {
         const scrollTopBtn = document.createElement('button');
-        scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+        scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up" aria-hidden="true"></i>';
         scrollTopBtn.id = 'scrollTopBtn';
         scrollTopBtn.className = 'btn btn-primary position-fixed bottom-3 end-3 rounded-circle shadow-lg';
         scrollTopBtn.style.width = '50px';
         scrollTopBtn.style.height = '50px';
-        scrollTopBtn.style.zIndex = '1000';
+        scrollTopBtn.style.zIndex = '999';
         scrollTopBtn.style.display = 'none';
         scrollTopBtn.style.background = 'linear-gradient(135deg, var(--secondary-blue), var(--primary-blue))';
         scrollTopBtn.style.border = 'none';
+        scrollTopBtn.setAttribute('aria-label', 'Kembali ke atas');
         
         document.body.appendChild(scrollTopBtn);
         
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             if (window.scrollY > 300) {
                 scrollTopBtn.style.display = 'flex';
                 scrollTopBtn.style.alignItems = 'center';
@@ -709,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        scrollTopBtn.addEventListener('click', function() {
+        scrollTopBtn.addEventListener('click', function () {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
@@ -717,8 +743,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
+    // Tutup modal dengan tombol Escape
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeShareModal();
             closePdfPreview();
@@ -726,53 +752,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize password toggle
+    // Password toggle
     const toggleBtn = document.getElementById('passwordToggle');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', togglePasswordVisibility);
     }
     
-    // Allow pressing Enter to submit the security code
+    // Input kode keamanan
     const securityInput = document.getElementById('securityCodeInput');
     if (securityInput) {
-        securityInput.addEventListener('keypress', function(e) {
+        securityInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 verifySecurityCode();
             }
         });
         
-        // Restrict input to numbers only
-        securityInput.addEventListener('input', function(e) {
+        securityInput.addEventListener('input', function (e) {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
     }
 
-    // Fix footer position
-    function fixFooterPosition() {
-        const footer = document.querySelector('.footer');
-        if (!footer) return;
-        
-        const bodyHeight = document.body.offsetHeight;
-        const windowHeight = window.innerHeight;
-        
-        if (bodyHeight < windowHeight) {
-            footer.style.position = 'fixed';
-            footer.style.bottom = '0';
-            footer.style.left = '0';
-            footer.style.right = '0';
-        } else {
-            footer.style.position = 'relative';
-            footer.style.bottom = 'auto';
-        }
-    }
-
-    fixFooterPosition();
-    window.addEventListener('resize', fixFooterPosition);
-
-    // Handle broken images globally
+    // Global error handler untuk gambar
     handleImageErrors();
 
-    // Debug: Tampilkan kode keamanan saat ini di console untuk testing
-    console.log("Kode keamanan hari ini (testing):", generateSecurityCode());
+    // Debug: tampilkan kode keamanan di console (testing)
+    console.log('🔐 Kode keamanan hari ini (testing):', generateSecurityCode());
 });
