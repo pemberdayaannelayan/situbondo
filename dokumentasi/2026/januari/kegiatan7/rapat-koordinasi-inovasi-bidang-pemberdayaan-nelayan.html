@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Koordinasi Inovasi Aplikasi SIMPADAN Tangkap - Dinas Perikanan Situbondo</title>
     <meta name="description" content="Kegiatan koordinasi tentang inovasi bidang pemberdayaan nelayan yaitu aplikasi SIMPADAN Tangkap yang dilaunching di website www.dinasperikanansitubondo.com dengan menghadirkan Ketua BIPPD Situbondo dan Plt. Kepala Dinas Peternakan dan Perikanan.">
 
@@ -13,11 +14,11 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Poppins & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -26,7 +27,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- External CSS -->
+    <!-- External CSS (style.css) -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -36,7 +37,7 @@
     </div>
 
     <!-- Share Modal -->
-    <div class="share-modal" id="shareModal">
+    <div class="share-modal" id="shareModal" role="dialog" aria-modal="true" aria-label="Bagikan kegiatan">
         <div class="share-modal-content">
             <h3 class="section-title">Bagikan Kegiatan Ini</h3>
             <p>Pilih opsi untuk membagikan informasi koordinasi aplikasi SIMPADAN Tangkap:</p>
@@ -50,38 +51,34 @@
                     <span>Salin Link</span>
                 </button>
             </div>
-            <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding: 10px; border-radius: 10px;">Tutup</button>
+            <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding: 12px; border-radius: 50px;">Tutup</button>
         </div>
     </div>
 
     <!-- PDF Authorization Modal -->
-    <div class="pdf-auth-modal" id="pdfAuthModal">
+    <div class="pdf-auth-modal" id="pdfAuthModal" role="dialog" aria-modal="true" aria-label="Otorisasi akses PDF">
         <div class="pdf-auth-content">
             <div class="auth-icon">
                 <i class="fas fa-lock"></i>
             </div>
-            
             <h3 class="section-title text-center">Otorisasi Akses Dokumen</h3>
-            
             <div class="alert alert-warning" role="alert">
                 <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan
+                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan.
             </div>
-            
             <div class="info-message">
                 <i class="fas fa-info-circle me-2"></i>
                 <strong>Informasi Kode Keamanan:</strong> Untuk mendapatkan kode yang valid, harap hubungi petugas yang berwenang di Dinas Perikanan Situbondo.
             </div>
-            
             <div class="mb-4">
                 <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan</label>
                 <div class="input-group-password">
                     <input type="password" 
                            class="form-control form-control-lg" 
                            id="securityCodeInput" 
-                           placeholder="Masukkan 8 digit kode keamanan"
+                           placeholder="8 digit kode" 
                            maxlength="8"
-                           onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                           inputmode="numeric"
                            aria-label="Kode keamanan 8 digit angka">
                     <button type="button" class="password-toggle" id="passwordToggle" aria-label="Tampilkan/sembunyikan kode">
                         <i class="fas fa-eye"></i>
@@ -92,17 +89,15 @@
                     <span id="errorText">Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
                 </div>
             </div>
-            
             <div class="attempts-counter">
                 <i class="fas fa-shield-alt me-2"></i>
                 Percobaan tersisa: <span id="attemptsLeft">3</span>
             </div>
-            
-            <div class="d-flex justify-content-between mt-4 flex-wrap">
-                <button class="btn btn-secondary mb-2" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+            <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
+                <button class="btn btn-secondary flex-fill" onclick="closePdfAuthModal()" style="border-radius: 50px; padding: 12px;">
                     <i class="fas fa-times me-2"></i>Batal
                 </button>
-                <button class="btn btn-primary mb-2" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                <button class="btn btn-primary flex-fill" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; border-radius: 50px; padding: 12px;">
                     <i class="fas fa-check me-2"></i>Verifikasi
                 </button>
             </div>
@@ -110,18 +105,20 @@
     </div>
 
     <!-- PDF Preview Modal -->
-    <div class="pdf-preview-modal" id="pdfPreviewModal">
+    <div class="pdf-preview-modal" id="pdfPreviewModal" role="dialog" aria-modal="true" aria-label="Pratinjau PDF">
         <div class="pdf-preview-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
                 <button class="btn-close" onclick="closePdfPreview()" aria-label="Tutup pratinjau"></button>
             </div>
             <div class="pdf-preview" id="pdfPreviewContent">
-                <!-- PDF content will be generated here -->
+                <!-- PDF preview akan diisi oleh JavaScript -->
             </div>
-            <div class="d-flex justify-content-between mt-4 flex-wrap">
-                <button class="btn btn-secondary mb-2" onclick="closePdfPreview()" style="padding: 10px 20px; border-radius: 10px; min-width: 120px;">Tutup</button>
-                <button class="btn btn-primary mb-2" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 20px; border-radius: 10px; min-width: 120px;">Download PDF</button>
+            <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
+                <button class="btn btn-secondary flex-fill" onclick="closePdfPreview()" style="border-radius: 50px; padding: 12px;">Tutup</button>
+                <button class="btn btn-primary flex-fill" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; border-radius: 50px; padding: 12px;">
+                    <i class="fas fa-download me-2"></i>Download PDF
+                </button>
             </div>
         </div>
     </div>
@@ -133,13 +130,12 @@
                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
                      alt="Logo Dinas Peternakan dan Perikanan Situbondo" 
                      style="height: 48px; width: auto;"
-                     loading="lazy">
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=DPP&background=0d6e3e&color=fff&size=80'; this.alt='Logo Dinas';">
             </a>
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
             </button>
-            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
@@ -151,8 +147,8 @@
                     <li class="nav-item">
                         <a class="nav-link" href="https://www.dinasperikanansitubondo.com/simpadan">SIMPADAN</a>
                     </li>
-                    <li class="nav-item ms-2">
-                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 24px; border-radius: 10px;">
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 24px; border-radius: 50px;">
                             <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
                         </a>
                     </li>
@@ -165,15 +161,14 @@
     <section class="hero-section">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    <span class="badge-category">
+                <div class="col-lg-10 mx-auto text-center">
+                    <span class="badge-category" data-aos="fade-down">
                         <i class="fas fa-laptop-code"></i> INOVASI DIGITAL NELAYAN
                     </span>
                     <h1 data-aos="fade-up">Koordinasi Inovasi Aplikasi SIMPADAN Tangkap untuk Nelayan Situbondo</h1>
                     <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
                         Kegiatan koordinasi peluncuran aplikasi SIMPADAN Tangkap sebagai platform digital inovatif untuk pemberdayaan nelayan Situbondo, dengan menghadirkan Ketua BIPPD dan Plt. Kepala Dinas Peternakan dan Perikanan.
                     </p>
-                    
                     <div class="row g-4" data-aos="fade-up" data-aos-delay="200">
                         <div class="col-md-4">
                             <div class="info-card">
@@ -217,15 +212,13 @@
     <!-- Main Content -->
     <section class="py-5">
         <div class="container">
-            <div class="row">
+            <div class="row g-5">
                 <div class="col-lg-8">
                     <!-- Deskripsi Lengkap -->
                     <div class="content-box" data-aos="fade-up">
                         <h2 class="section-title">Transformasi Digital untuk Pemberdayaan Nelayan</h2>
-                        
                         <div class="description-text">
                             <p>Kegiatan koordinasi ini merupakan langkah strategis <strong>Dinas Peternakan dan Perikanan Kabupaten Situbondo</strong> dalam mengakselerasi transformasi digital sektor perikanan melalui peluncuran aplikasi <strong>SIMPADAN Tangkap</strong>. Platform digital ini dirancang khusus untuk meningkatkan efektivitas pemberdayaan nelayan dan optimalisasi pengelolaan data perikanan di wilayah Situbondo.</p>
-                            
                             <div class="highlight-box">
                                 <h5><i class="fas fa-bullseye"></i> Tujuan Kegiatan Koordinasi</h5>
                                 <p>Koordinasi ini bertujuan untuk:</p>
@@ -237,23 +230,17 @@
                                     <li>Memastikan keamanan, tampilan, dan fungsionalitas aplikasi yang optimal</li>
                                 </ul>
                             </div>
-                            
                             <p>Kegiatan dilaksanakan pada <strong>29 Januari 2026</strong> di Kantor Dinas Peternakan dan Perikanan Kabupaten Situbondo. Hadir dalam acara tersebut <strong>Bapak Marlutfi selaku Ketua BIPPD Situbondo</strong> dan <strong>Plt. Kepala Dinas Peternakan dan Perikanan, Ir. Muh Abdul Rahman, M.Si</strong> beserta jajaran staf bidang pemberdayaan nelayan.</p>
-                            
                             <p>Secara teknis, penggunaan aplikasi dijelaskan secara detail oleh <strong>Muhammad S</strong> sebagai developer dan tim IT yang juga merupakan staf bidang pemberdayaan nelayan. Presentasi mencakup seluruh fitur utama aplikasi serta roadmap pengembangan ke depan.</p>
                         </div>
                     </div>
-                    
                     <!-- Dialog dan Arahan -->
                     <div class="content-box" data-aos="fade-up" data-aos-delay="100">
                         <h2 class="section-title">Diskusi Strategis dan Arahan Pengembangan</h2>
-                        
                         <div class="description-text">
                             <p>Dalam forum koordinasi ini, terjadi diskusi produktif antara seluruh peserta rapat mengenai masa depan aplikasi SIMPADAN Tangkap dan kontribusinya terhadap pemberdayaan nelayan Situbondo.</p>
-                            
                             <div class="highlight-box">
                                 <h5><i class="fas fa-comments"></i> Poin-Poin Diskusi Utama</h5>
-                                <p>Beberapa poin penting yang dibahas dalam diskusi antara lain:</p>
                                 <ul>
                                     <li>Kebutuhan sistem satu data nelayan yang terintegrasi dalam aplikasi</li>
                                     <li>Peran aplikasi dalam mendukung peningkatan UMKM pengolahan perikanan</li>
@@ -262,21 +249,16 @@
                                     <li>Roadmap pengembangan fitur-fitur tambahan yang dibutuhkan nelayan</li>
                                 </ul>
                             </div>
-                            
                             <p><strong>Bapak Marlutfi selaku Ketua BIPPD</strong> memberikan apresiasi tinggi terhadap inisiatif digitalisasi ini dan berkomitmen untuk menyampaikan hasil rapat kepada <strong>Bapak Bupati Situbondo</strong>. Beliau menekankan pentingnya aplikasi ini sebagai alat strategis dalam meningkatkan kesejahteraan nelayan.</p>
-                            
                             <p><strong>Plt. Kepala Dinas, Ir. Muh Abdul Rahman, M.Si</strong> memberikan arahan agar aplikasi SIMPADAN Tangkap tidak hanya berfungsi sebagai sistem pelaporan, tetapi juga menjadi platform yang benar-benar memberdayakan nelayan dari hulu ke hilir.</p>
-                            
                             <p>Koordinasi ini menjadi landasan penting bagi pengembangan aplikasi SIMPADAN Tangkap yang lebih komprehensif dan bermanfaat bagi seluruh stakeholder perikanan di Kabupaten Situbondo.</p>
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-lg-4">
                     <!-- Peserta Utama -->
                     <div class="content-box" data-aos="fade-left">
                         <h2 class="section-title">Peserta Utama Kegiatan</h2>
-                        
                         <div class="mb-4">
                             <div class="location-card mb-4">
                                 <div class="location-icon">
@@ -287,7 +269,6 @@
                                 <p class="text-muted mb-2"><strong>Peran:</strong> Memberikan apresiasi dan menyampaikan hasil rapat ke Bupati</p>
                                 <p class="text-muted">Memberikan dukungan penuh terhadap inovasi digital untuk nelayan Situbondo.</p>
                             </div>
-                            
                             <div class="location-card mb-4">
                                 <div class="location-icon">
                                     <i class="fas fa-user-tie"></i>
@@ -297,7 +278,6 @@
                                 <p class="text-muted mb-2"><strong>Peran:</strong> Memberikan arahan strategis pengembangan aplikasi</p>
                                 <p class="text-muted">Memimpin implementasi transformasi digital di sektor perikanan Situbondo.</p>
                             </div>
-                            
                             <div class="location-card">
                                 <div class="location-icon">
                                     <i class="fas fa-laptop-code"></i>
@@ -308,25 +288,23 @@
                                 <p class="text-muted">Memaparkan detail teknis aplikasi SIMPADAN Tangkap dan roadmap pengembangan.</p>
                             </div>
                         </div>
-                        
                         <div class="mt-4">
                             <h5 class="section-title mb-3">Topik Terkait</h5>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge bg-light text-dark p-2 border">SIMPADAN Tangkap</span>
-                                <span class="badge bg-light text-dark p-2 border">Aplikasi Nelayan</span>
-                                <span class="badge bg-light text-dark p-2 border">Digitalisasi Perikanan</span>
-                                <span class="badge bg-light text-dark p-2 border">BIPPD Situbondo</span>
-                                <span class="badge bg-light text-dark p-2 border">Inovasi Digital</span>
-                                <span class="badge bg-light text-dark p-2 border">Pemberdayaan Nelayan</span>
+                                <span class="badge bg-light text-dark p-3 border rounded-pill">SIMPADAN Tangkap</span>
+                                <span class="badge bg-light text-dark p-3 border rounded-pill">Aplikasi Nelayan</span>
+                                <span class="badge bg-light text-dark p-3 border rounded-pill">Digitalisasi Perikanan</span>
+                                <span class="badge bg-light text-dark p-3 border rounded-pill">BIPPD Situbondo</span>
+                                <span class="badge bg-light text-dark p-3 border rounded-pill">Inovasi Digital</span>
+                                <span class="badge bg-light text-dark p-3 border rounded-pill">Pemberdayaan Nelayan</span>
                             </div>
                         </div>
                     </div>
-                    
                     <!-- Quick Facts -->
                     <div class="content-box" data-aos="fade-left" data-aos-delay="100">
                         <h2 class="section-title">Fakta Singkat</h2>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-success-teal p-2 rounded-circle me-3">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-success-teal p-3 rounded-circle me-3">
                                 <i class="fas fa-check text-white"></i>
                             </div>
                             <div>
@@ -334,8 +312,8 @@
                                 <p class="text-muted mb-0">SIMPADAN Tangkap</p>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-warning-amber p-2 rounded-circle me-3">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-warning-amber p-3 rounded-circle me-3">
                                 <i class="fas fa-users text-white"></i>
                             </div>
                             <div>
@@ -344,7 +322,7 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center">
-                            <div class="bg-secondary-green p-2 rounded-circle me-3">
+                            <div class="bg-secondary-green p-3 rounded-circle me-3">
                                 <i class="fas fa-chart-line text-white"></i>
                             </div>
                             <div>
@@ -367,7 +345,6 @@
                     <p class="text-muted mt-3">Proses sistematis dalam pengembangan dan implementasi aplikasi SIMPADAN Tangkap</p>
                 </div>
             </div>
-            
             <div class="row g-4">
                 <div class="col-lg-3 col-md-6" data-aos="fade-up">
                     <div class="module-card">
@@ -418,7 +395,6 @@
                     <p class="text-muted mt-3">Perwakilan stakeholder yang berperan penting dalam koordinasi pengembangan aplikasi</p>
                 </div>
             </div>
-            
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6" data-aos="fade-up">
                     <div class="speaker-card">
@@ -426,35 +402,33 @@
                             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat1.jpeg" 
                                  alt="Ketua BIPPD Situbondo - Marlutfi"
                                  loading="lazy"
-                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Marlutfi&background=0d6e3e&color=fff&size=400'">
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Marlutfi&background=0d6e3e&color=fff&size=400'; this.alt='Marlutfi';">
                         </div>
                         <h3 class="speaker-name">Marlutfi</h3>
                         <p class="speaker-role">Ketua BIPPD Situbondo</p>
                         <p class="speaker-desc">Memberikan apresiasi terhadap inovasi digital Dinas Perikanan dan berkomitmen menyampaikan hasil rapat kepada Bupati Situbondo untuk mendapatkan dukungan penuh.</p>
                     </div>
                 </div>
-                
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="speaker-card">
                         <div class="speaker-image">
                             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat2.jpeg" 
                                  alt="Plt. Kepala Dinas Peternakan dan Perikanan - Ir. Muh Abdul Rahman, M.Si"
                                  loading="lazy"
-                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Muh+Abdul+Rahman&background=2ecc71&color=fff&size=400'">
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Muh+Abdul+Rahman&background=2ecc71&color=fff&size=400'; this.alt='Ir. Muh Abdul Rahman';">
                         </div>
                         <h3 class="speaker-name">Ir. Muh Abdul Rahman, M.Si</h3>
                         <p class="speaker-role">Plt. Kepala Dinas Peternakan dan Perikanan</p>
                         <p class="speaker-desc">Memimpin implementasi transformasi digital di sektor perikanan Situbondo dan memberikan arahan strategis untuk pengembangan aplikasi yang memberdayakan nelayan.</p>
                     </div>
                 </div>
-                
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="speaker-card">
                         <div class="speaker-image">
                             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-rapat.jpeg" 
                                  alt="Kepala Bidang Pemberdayaan Nelayan - Sugeng Purwo Priyanto"
                                  loading="lazy"
-                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Sugeng+Purwo&background=1abc9c&color=fff&size=400'">
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Sugeng+Purwo&background=1abc9c&color=fff&size=400'; this.alt='Sugeng Purwo Priyanto';">
                         </div>
                         <h3 class="speaker-name">SUGENG PURWO PRIYANTO, S.E., M.M.</h3>
                         <p class="speaker-role">Kepala Bidang Pemberdayaan Nelayan</p>
@@ -474,7 +448,6 @@
                     <p class="text-muted mt-3">Momen penting dalam diskusi dan presentasi aplikasi SIMPADAN Tangkap</p>
                 </div>
             </div>
-            
             <div class="row g-4">
                 <!-- Foto 1 -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up">
@@ -482,7 +455,7 @@
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat1.jpeg" 
                              alt="Ketua BIPPD memberikan sambutan"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/0d6e3e/white?text=Sambutan+BIPPD'; this.alt='Sambutan BIPPD';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Sambutan Ketua BIPPD</h6>
@@ -491,14 +464,13 @@
                         </div>
                     </div>
                 </div>
-                
                 <!-- Foto 2 -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat2.jpeg" 
                              alt="Plt. Kadis memberikan arahan strategis"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/2ecc71/white?text=Arahan+Plt+Kadis'; this.alt='Arahan Plt Kadis';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Arahan Plt. Kepala Dinas</h6>
@@ -507,14 +479,13 @@
                         </div>
                     </div>
                 </div>
-                
                 <!-- Foto 3 -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-ketuabippd-rapat.jpeg" 
                              alt="Diskusi dengan Ketua BIPPD"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/1abc9c/white?text=Diskusi+BIPPD'; this.alt='Diskusi BIPPD';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Diskusi dengan Ketua BIPPD</h6>
@@ -523,14 +494,13 @@
                         </div>
                     </div>
                 </div>
-                
                 <!-- Foto 4 -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up">
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-rapat.jpeg" 
                              alt="Presentasi oleh Kabid Pemberdayaan Nelayan"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/0d9488/white?text=Presentasi+Kabid'; this.alt='Presentasi Kabid';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Presentasi Kabid</h6>
@@ -539,14 +509,13 @@
                         </div>
                     </div>
                 </div>
-                
                 <!-- Foto 5 -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat4.jpeg" 
                              alt="Sesi diskusi antar peserta"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/f59e0b/white?text=Sesi+Diskusi'; this.alt='Sesi Diskusi';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Sesi Diskusi Interaktif</h6>
@@ -555,14 +524,13 @@
                         </div>
                     </div>
                 </div>
-                
                 <!-- Foto 6 -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat5.jpeg" 
                              alt="Presentasi teknis aplikasi di proyektor"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/0d6e3e/white?text=Demo+Aplikasi'; this.alt='Demo Aplikasi';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Demo Aplikasi</h6>
@@ -575,7 +543,7 @@
         </div>
     </section>
 
-    <!-- Impact Section (Mengganti Video Section) -->
+    <!-- Impact Section -->
     <section class="impact-section">
         <div class="container">
             <div class="row mb-5">
@@ -584,7 +552,6 @@
                     <p class="text-muted mt-3">Kontribusi aplikasi SIMPADAN Tangkap terhadap transformasi digital sektor perikanan Situbondo</p>
                 </div>
             </div>
-            
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6" data-aos="fade-up">
                     <div class="impact-card">
@@ -595,7 +562,6 @@
                         <p class="text-muted">Terintegrasinya data nelayan dalam satu platform digital yang terpadu, akurat, dan mudah diakses oleh seluruh stakeholder terkait.</p>
                     </div>
                 </div>
-                
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="impact-card">
                         <div class="impact-icon">
@@ -605,7 +571,6 @@
                         <p class="text-muted">Platform untuk mendukung pengembangan UMKM pengolahan hasil perikanan melalui digitalisasi pemasaran dan manajemen.</p>
                     </div>
                 </div>
-                
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="impact-card">
                         <div class="impact-icon">
@@ -652,7 +617,7 @@
                              height="60" 
                              class="me-3"
                              loading="lazy"
-                             onerror="this.style.display='none'">
+                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=DPP&background=0d6e3e&color=fff&size=120'; this.alt='Logo Dinas';">
                     </div>
                     <p class="text-light mb-4" style="line-height: 1.7;">
                         Memimpin transformasi digital sektor perikanan Situbondo melalui inovasi teknologi untuk pemberdayaan nelayan yang berkelanjutan dan berdaya saing.
@@ -664,7 +629,6 @@
                         <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
-                
                 <div class="col-lg-3">
                     <h5>Tautan Cepat</h5>
                     <div class="footer-links mt-4">
@@ -675,7 +639,6 @@
                         <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i>Pengaduan</a>
                     </div>
                 </div>
-                
                 <div class="col-lg-5">
                     <h5>Kontak Kami</h5>
                     <div class="mt-4">
@@ -709,9 +672,7 @@
                     </div>
                 </div>
             </div>
-            
             <hr class="bg-light my-5">
-            
             <div class="text-center text-light">
                 <p class="mb-2">&copy; <span id="currentYear">2026</span> Dinas Perikanan Situbondo. Hak Cipta Dilindungi.</p>
                 <small>Dibuat dengan <i class="fas fa-heart text-danger"></i> untuk Nelayan Situbondo</small>
@@ -725,7 +686,7 @@
     <!-- AOS Animation -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- External JS -->
+    <!-- External JS (main.js) -->
     <script src="main.js"></script>
 </body>
 </html>
