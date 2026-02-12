@@ -1,1 +1,716 @@
-.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemusnahan Ikan Aligator Invasif di Situbondo - Dinas Peternakan & Perikanan Situbondo</title>
+    <meta name="description" content="Kegiatan pemusnahan ikan aligator invasif di Dinas Peternakan & Perikanan Situbondo yang dipimpin oleh Kepala Bidang Pemberdayaan Nelayan beserta tim, sesuai dengan peraturan kelautan dan perikanan.">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- jsPDF untuk generate PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <h3 class="section-title">Bagikan Kegiatan Ini</h3>
+            <p>Pilih opsi untuk membagikan informasi kegiatan:</p>
+            <div class="share-buttons">
+                <button class="share-btn whatsapp" onclick="shareToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>Bagikan ke WhatsApp</span>
+                </button>
+                <button class="share-btn copy" onclick="copyLink()">
+                    <i class="fas fa-copy"></i>
+                    <span>Salin Link</span>
+                </button>
+            </div>
+            <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding: 10px; border-radius: 10px;">Tutup</button>
+        </div>
+    </div>
+
+    <!-- PDF Authorization Modal -->
+    <div class="pdf-auth-modal" id="pdfAuthModal">
+        <div class="pdf-auth-content">
+            <div class="auth-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <h3 class="section-title text-center">Otorisasi Akses Dokumen</h3>
+            
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan
+            </div>
+            
+            <div class="info-message">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Informasi Kode Keamanan:</strong> Untuk mendapatkan kode yang valid, harap hubungi petugas yang berwenang di Dinas Perikanan Situbondo.
+            </div>
+            
+            <div class="mb-4">
+                <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan</label>
+                <div class="input-group-password">
+                    <input type="password" 
+                           class="form-control form-control-lg" 
+                           id="securityCodeInput" 
+                           placeholder="Masukkan 8 digit kode keamanan"
+                           maxlength="8"
+                           onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                    <button type="button" class="password-toggle" id="passwordToggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-times-circle me-2"></i>
+                    <span id="errorText">Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
+                </div>
+            </div>
+            
+            <div class="attempts-counter">
+                <i class="fas fa-shield-alt me-2"></i>
+                Percobaan tersisa: <span id="attemptsLeft">3</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                    <i class="fas fa-times me-2"></i>Batal
+                </button>
+                <button class="btn btn-primary mb-2" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                    <i class="fas fa-check me-2"></i>Verifikasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div class="pdf-preview-modal" id="pdfPreviewModal">
+        <div class="pdf-preview-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
+                <button class="btn-close" onclick="closePdfPreview()"></button>
+            </div>
+            <div class="pdf-preview" id="pdfPreviewContent">
+                <!-- PDF content will be generated here -->
+            </div>
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfPreview()" style="padding: 10px 20px; border-radius: 10px; min-width: 120px;">Tutup</button>
+                <button class="btn btn-primary mb-2" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 20px; border-radius: 10px; min-width: 120px;">Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com">
+                <!-- Logo baru (header) sesuai perintah -->
+                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
+                     alt="Logo Dinas Peternakan & Perikanan Situbondo">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com/dokumentasi">Dokumentasi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Pemusnahan Ikan Invasif</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com/simpadan">SIMPADAN</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 24px; border-radius: 10px;">
+                            <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="badge-category">
+                        <i class="fas fa-exclamation-triangle"></i> TINDAKAN KONSERVASI
+                    </span>
+                    <h1 data-aos="fade-up">Pemusnahan Ikan Aligator Invasif di Situbondo untuk Lindungi Ekosistem Perairan Lokal</h1>
+                    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
+                        Tindakan tegas Dinas Peternakan dan Perikanan Situbondo dalam memusnahkan ikan aligator invasif yang dilaporkan masyarakat, sesuai dengan peraturan perundang-undangan kelautan dan perikanan untuk menjaga keseimbangan ekosistem.
+                    </p>
+                    
+                    <div class="row g-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Tanggal Kegiatan</h5>
+                                    <p class="text-white mb-0">5 Februari 2026</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Lokasi</h5>
+                                    <p class="text-white mb-0">Dinas Peternakan & Perikanan Situbondo</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Status</h5>
+                                    <p class="text-white mb-0">Selesai Dilaksanakan</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Deskripsi Lengkap -->
+                    <div class="content-box" data-aos="fade-up">
+                        <h2 class="section-title">Tindakan Penegakan Hukum dan Konservasi Ekosistem Perairan</h2>
+                        
+                        <div class="description-text">
+                            <p>Berdasarkan laporan masyarakat Situbondo yang menemukan keberadaan ikan aligator (<em>Atractosteus spatula</em>) di perairan lokal, Dinas Peternakan dan Perikanan Situbondo melalui Bidang Pemberdayaan Nelayan segera melakukan respons dengan melaksanakan kegiatan pemusnahan pada tanggal 5 Februari 2026. Tindakan ini dipimpin langsung oleh <strong>Kepala Bidang Pemberdayaan Nelayan, SUGENG PURWO PRIYANTO, S.E., M.M.</strong> beserta staf, dengan pendampingan dari <strong>KRISTIAN HADI SURYA S, S.Pi</strong> sebagai Pengawas Perikanan dan Penyuluh Perikanan sesuai Surat Tugas dari Kepala Pangkalan Pengawasan Sumber Daya Kelautan dan Perikanan Beno Nomor: <strong>B. 239/PSDKPLan.4/KP.440/II/2026</strong>.</p>
+                            
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-scale-balanced"></i> Dasar Hukum dan Regulasi</h5>
+                                <p>Pemusnahan ikan aligator invasif ini dilaksanakan dengan mengacu pada peraturan perundang-undangan yang berlaku:</p>
+                                <ul>
+                                    <li>Undang-Undang Nomor 31 Tahun 2004 tentang Perikanan</li>
+                                    <li>Peraturan Menteri Kelautan dan Perikanan Nomor 41/PERMEN-KP/2014 tentang Larangan Pemasukan Jenis Ikan Berbahaya dari Luar Negeri ke Dalam Wilayah Negara Republik Indonesia</li>
+                                    <li>Peraturan Pemerintah Nomor 60 Tahun 2007 tentang Konservasi Sumber Daya Ikan</li>
+                                    <li>Keputusan Menteri Kelautan dan Perikanan tentang Jenis Ikan yang Dilarang Dimasukkan ke Dalam Wilayah Negara Republik Indonesia</li>
+                                </ul>
+                            </div>
+                            
+                            <p>Ikan aligator merupakan spesies invasif asli Amerika Utara yang memiliki potensi besar mengancam keanekaragaman hayati perairan Indonesia. Keberadaan spesies ini dapat menyebabkan gangguan ekologi yang serius, termasuk predasi terhadap ikan lokal, kompetisi sumber daya, dan perubahan struktur ekosistem perairan. Sebagai predator puncak, ikan aligator dapat memangsa berbagai jenis ikan kecil, udang, dan bahkan anak ikan dari spesies lokal yang memiliki nilai ekonomi penting.</p>
+                            
+                            <p>Kegiatan pemusnahan ini merupakan bentuk tanggung jawab pemerintah dalam melindungi ekosistem perairan Situbondo dari ancaman spesies asing invasif. Tindakan ini juga sejalan dengan komitmen Indonesia dalam konvensi internasional tentang keanekaragaman hayati dan pengendalian spesies asing invasif.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tindakan dan Solusi -->
+                    <div class="content-box" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="section-title">Prosedur Pemusnahan dan Edukasi Masyarakat</h2>
+                        
+                        <div class="description-text">
+                            <p>Kegiatan pemusnahan ikan aligator dilaksanakan dengan prosedur yang ketat, manusiawi, dan mengikuti protokol kesehatan hewan yang berlaku. Proses ini diawasi secara langsung oleh petugas yang berwenang untuk memastikan pelaksanaannya sesuai dengan standar operasional prosedur.</p>
+                            
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-clipboard-check"></i> Tahapan Pelaksanaan Pemusnahan</h5>
+                                <p>Pemusnahan dilaksanakan melalui tahapan yang sistematis:</p>
+                                <ol>
+                                    <li><strong>Identifikasi dan Verifikasi:</strong> Konfirmasi jenis ikan melalui pemeriksaan morfologi oleh ahli perikanan</li>
+                                    <li><strong>Dokumentasi:</strong> Pencatatan dan pengambilan bukti visual untuk keperluan pelaporan</li>
+                                    <li><strong>Proses Pemusnahan:</strong> Dilakukan dengan metode yang manusiawi sesuai standar kesejahteraan hewan</li>
+                                    <li><strong>Penguburan:</strong> Penanganan bangkai dengan metode penguburan yang aman dan higienis</li>
+                                    <li><strong>Pelaporan:</strong> Penyusunan laporan resmi untuk disampaikan kepada pihak berwenang</li>
+                                </ol>
+                            </div>
+                            
+                            <p>Selain sebagai tindakan penegakan hukum, kegiatan ini juga memiliki dimensi edukasi kepada masyarakat. Masyarakat diedukasi tentang bahaya memelihara, memperjualbelikan, atau melepaskan spesies asing invasif ke perairan umum. Beberapa poin penting yang disampaikan kepada masyarakat:</p>
+                            <ul>
+                                <li><strong>Dampak Ekologis:</strong> Ikan aligator dapat memangsa ikan-ikan lokal dan mengganggu keseimbangan ekosistem</li>
+                                <li><strong>Dampak Ekonomi:</strong> Penurunan populasi ikan ekonomis penting yang menjadi sumber penghidupan nelayan</li>
+                                <li><strong>Dampak Sosial:</strong> Potensi konflik antar pengguna perairan akibat perubahan komposisi ikan</li>
+                                <li><strong>Kewajiban Hukum:</strong> Sanksi bagi yang memelihara atau memperdagangkan spesies yang dilarang</li>
+                            </ul>
+                            
+                            <p>Kesadaran masyarakat Situbondo yang melaporkan keberadaan ikan aligator ini patut diapresiasi. Partisipasi aktif masyarakat merupakan komponen penting dalam sistem pengawasan sumber daya perikanan. Dinas Peternakan dan Perikanan Situbondo mengimbau masyarakat untuk terus berperan aktif melaporkan jika menemukan spesies asing invasif atau kegiatan yang dapat mengancam kelestarian ekosistem perairan.</p>
+                            
+                            <p>Melalui kegiatan ini, diharapkan tercipta sinergi antara pemerintah dan masyarakat dalam menjaga keberlanjutan sumber daya perikanan Situbondo untuk generasi sekarang dan mendatang.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Organizer -->
+                    <div class="content-box" data-aos="fade-left">
+                        <h2 class="section-title">Penanggung Jawab Kegiatan</h2>
+                        
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: var(--light-green);">
+                                <div class="bg-primary-green p-3 rounded-circle me-3">
+                                    <i class="fas fa-user-tie text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-green">SUGENG PURWO PRIYANTO, S.E., M.M.</h5>
+                                    <p class="text-muted mb-0">Kepala Bidang Pemberdayaan Nelayan</p>
+                                    <small class="text-muted">Penanggung Jawab Kegiatan</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: var(--light-green);">
+                                <div class="bg-secondary-green p-3 rounded-circle me-3">
+                                    <i class="fas fa-user-shield text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-green">KRISTIAN HADI SURYA S, S.Pi</h5>
+                                    <p class="text-muted mb-0">Pengawas Perikanan & Penyuluh Perikanan</p>
+                                    <small class="text-muted">Pendamping sesuai Surat Tugas</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center p-3 rounded" style="background: var(--light-green);">
+                                <div class="bg-accent-green p-3 rounded-circle me-3">
+                                    <i class="fas fa-users text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-green">Tim Teknis</h5>
+                                    <p class="text-muted mb-0">Staf Bidang Pemberdayaan Nelayan</p>
+                                    <small class="text-muted">Pelaksana Kegiatan</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h5 class="section-title mb-3">Dokumen Pendukung</h5>
+                            <div class="mb-3">
+                                <h6 class="fw-bold">Surat Tugas</h6>
+                                <p class="text-muted small">B. 239/PSDKPLan.4/KP.440/II/2026</p>
+                                <p class="text-muted small">Dari: Kepala Pangkalan Pengawasan Sumber Daya Kelautan dan Perikanan Beno</p>
+                            </div>
+                            
+                            <h5 class="section-title mb-3">Kategori Terkait</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark p-2 border">ikan invasif</span>
+                                <span class="badge bg-light text-dark p-2 border">konservasi</span>
+                                <span class="badge bg-light text-dark p-2 border">aligator fish</span>
+                                <span class="badge bg-light text-dark p-2 border">ekosistem perairan</span>
+                                <span class="badge bg-light text-dark p-2 border">perlindungan hayati</span>
+                                <span class="badge bg-light text-dark p-2 border">spesies asing</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Facts -->
+                    <div class="content-box" data-aos="fade-left" data-aos-delay="100">
+                        <h2 class="section-title">Fakta Singkat</h2>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-brown p-2 rounded-circle me-3">
+                                <i class="fas fa-fish text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Jenis Ikan</h6>
+                                <p class="text-muted mb-0">Ikan Aligator (Atractosteus spatula)</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-amber p-2 rounded-circle me-3">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Asal Spesies</h6>
+                                <p class="text-muted mb-0">Amerika Utara (Spesies Invasif)</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-teal p-2 rounded-circle me-3">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Status</h6>
+                                <p class="text-muted mb-0">Dilarang di Indonesia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section class="modules-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Dampak dan Bahaya Ikan Aligator Invasif</h2>
+                    <p class="text-muted mt-3">Mengapa ikan aligator harus dimusnahkan untuk melindungi ekosistem perairan lokal</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h4>Gangguan Ekologis</h4>
+                        <p class="text-muted">Memangsa ikan-ikan lokal, mengganggu rantai makanan, dan mengubah struktur komunitas perairan secara drastis.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Ancaman Ekonomi</h4>
+                        <p class="text-muted">Menurunkan populasi ikan ekonomis penting seperti nila, mas, dan lele yang menjadi sumber penghidupan nelayan.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-dna"></i>
+                        </div>
+                        <h4>Penurunan Biodiversitas</h4>
+                        <p class="text-muted">Mengancam keanekaragaman hayati perairan lokal dan berpotensi menyebabkan kepunahan spesies endemik.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h4>Pelanggaran Hukum</h4>
+                        <p class="text-muted">Memelihara, memperdagangkan, atau melepasliarkan spesies asing invasif merupakan tindakan melanggar hukum.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Speakers Section -->
+    <section class="speakers-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Penanggung Jawab dan Pelaksana</h2>
+                    <p class="text-muted mt-3">Tim yang terlibat dalam kegiatan pemusnahan ikan aligator invasif</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-penandatanganan-berkas-penyerahan-aligator.jpeg" 
+                                 alt="Kepala Bidang Pemberdayaan Nelayan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=SUGENG+PRIYANTO&background=1e5631&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">SUGENG PURWO PRIYANTO, S.E., M.M.</h3>
+                        <p class="speaker-role">Kepala Bidang Pemberdayaan Nelayan</p>
+                        <p class="speaker-desc">Memimpin langsung kegiatan pemusnahan ikan aligator invasif sebagai bentuk penegakan hukum dan perlindungan ekosistem perairan Situbondo.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-tim-bersama-aligator-sebelum-dikubur.jpeg" 
+                                 alt="Pengawas Perikanan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=KRISTIAN+HADI&background=4c9c4c&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">KRISTIAN HADI SURYA S, S.Pi</h3>
+                        <p class="speaker-role">Pengawas Perikanan & Penyuluh Perikanan</p>
+                        <p class="speaker-desc">Mendampingi kegiatan sesuai Surat Tugas dari Kepala Pangkalan Pengawasan Sumber Daya Kelautan dan Perikanan Beno, memastikan prosedur sesuai standar.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-penurunan-aligator-dari-kendaraan-dinas-2.jpeg" 
+                                 alt="Tim Teknis Bidang Pemberdayaan Nelayan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Tim+Teknis&background=6fcf97&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">Tim Teknis</h3>
+                        <p class="speaker-role">Staf Bidang Pemberdayaan Nelayan</p>
+                        <p class="speaker-desc">Melaksanakan prosedur pemusnahan dengan metode yang manusiawi dan sesuai protokol pengendalian spesies asing invasif.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Dokumentasi Kegiatan Pemusnahan</h2>
+                    <p class="text-muted mt-3">Proses pemusnahan ikan aligator invasif di Dinas Peternakan & Perikanan Situbondo</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Foto 1 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-penandatanganan-berkas-penyerahan-aligator.jpeg" 
+                             alt="Penandatanganan Berkas Penyerahan"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Penandatanganan Berkas</h6>
+                                <small class="text-white">Dokumentasi administrasi</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 2 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-penurunan-aligator-dari-kendaraan-dinas-1.jpeg" 
+                             alt="Penurunan dari Kendaraan Dinas"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1574362848146-df5fb45c5efe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Penurunan dari Kendaraan</h6>
+                                <small class="text-white">Tahap persiapan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 3 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-penurunan-aligator-dari-kendaraan-dinas-2.jpeg" 
+                             alt="Penurunan dari Kendaraan Dinas 2"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Proses Penurunan</h6>
+                                <small class="text-white">Persiapan lebih lanjut</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 4 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-tim-bersama-aligator-sebelum-dikubur.jpeg" 
+                             alt="Tim Bersama Ikan Aligator"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Tim dan Ikan Aligator</h6>
+                                <small class="text-white">Sebelum proses penguburan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 5 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/proses-penguburan-aligator-1.jpeg" 
+                             alt="Proses Penguburan 1"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Proses Penguburan</h6>
+                                <small class="text-white">Tahap penguburan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 6 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/proses-penguburan-aligator-2.jpeg" 
+                             alt="Proses Penguburan 2"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Penguburan Selesai</h6>
+                                <small class="text-white">Lokasi penguburan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Video Dokumentasi Pemusnahan</h2>
+                    <p class="text-muted mt-3">Rekaman lengkap kegiatan pemusnahan ikan aligator invasif di Situbondo</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-10 mx-auto" data-aos="fade-up">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/MBvFf_bLcCk?si=cyMfPnzlGXfdESlb" 
+                                title="Video Dokumentasi Pemusnahan Ikan Aligator Invasif" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen></iframe>
+                    </div>
+                    <div class="text-center mt-4">
+                        <h4>Dokumentasi Lengkap Pemusnahan Ikan Aligator</h4>
+                        <p>Video dokumentasi lengkap kegiatan pemusnahan ikan aligator invasif di Dinas Peternakan dan Perikanan Situbondo yang menampilkan proses pemusnahan dan penanganan bangkai sesuai protokol.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="action-buttons">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="mb-4">Akses Laporan dan Bagikan Kegiatan</h2>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <button class="btn-download" onclick="openPdfAuthModal()">
+                            <i class="fas fa-download me-2"></i>Download Laporan Kegiatan (PDF)
+                        </button>
+                        <button class="btn-share" onclick="openShareModal()">
+                            <i class="fas fa-share-alt me-2"></i>Bagikan Kegiatan Ini
+                        </button>
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share">
+                            <i class="fas fa-images me-2"></i>Kegiatan Lainnya
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <!-- Logo baru (footer) sesuai perintah -->
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
+                             alt="Logo Dinas Peternakan & Perikanan Situbondo" 
+                             height="60" 
+                             class="me-3">
+                    </div>
+                    <p class="text-light mb-4" style="line-height: 1.7;">
+                        Berkontribusi aktif dalam memajukan sektor perikanan tangkap dan memberdayakan masyarakat pesisir Situbondo melalui berbagai program inovatif dan berkelanjutan.
+                    </p>
+                    <div class="social-icons mt-4">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3">
+                    <h5>Tautan Cepat</h5>
+                    <div class="footer-links mt-4">
+                        <a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2"></i>Beranda</a>
+                        <a href="https://www.dinasperikanansitubondo.com/simpadan"><i class="fas fa-mobile-alt me-2"></i>SIMPADAN</a>
+                        <a href="https://www.dinasperikanansitubondo.com/dokumentasi"><i class="fas fa-images me-2"></i>Dokumentasi</a>
+                        <a href="https://situbondokab.go.id/"><i class="fas fa-university me-2"></i>Pemkab Situbondo</a>
+                        <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i>Pengaduan</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <h5>Kontak Kami</h5>
+                    <div class="mt-4">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Alamat Kantor</span>
+                                <small class="text-light">Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fab fa-whatsapp text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">WhatsApp Admin</span>
+                                <small class="text-light">0878 6561 4222</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Email</span>
+                                <small class="text-light">info@dinasperikanansitubondo.com</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="bg-light my-5">
+            
+            <div class="text-center text-light">
+                <p class="mb-2">&copy; <span id="currentYear">2026</span> Dinas Perikanan Situbondo. Hak Cipta Dilindungi.</p>
+                <small>Dibuat dengan <i class="fas fa-heart text-danger"></i> untuk Nelayan Situbondo</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- External JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
