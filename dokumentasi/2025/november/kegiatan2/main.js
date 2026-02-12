@@ -103,7 +103,8 @@ scrollTopBtn.addEventListener('click', function() {
     });
 });
 
-// Share functionality
+// ========== SHARE FUNCTIONS ==========
+
 function openShareModal() {
     document.getElementById('shareModal').style.display = 'flex';
 }
@@ -129,24 +130,37 @@ function copyLink() {
     });
 }
 
-// Close modals when clicking outside
-document.getElementById('shareModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeShareModal();
-    }
-});
+// ========== MODAL CLOSE HANDLERS ==========
 
-document.getElementById('securityModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeSecurityModal();
-    }
-});
+// Share Modal
+const shareModalEl = document.getElementById('shareModal');
+if (shareModalEl) {
+    shareModalEl.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeShareModal();
+        }
+    });
+}
 
-document.getElementById('pdfPreviewModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closePdfPreview();
-    }
-});
+// Security Modal
+const securityModalEl = document.getElementById('securityModal');
+if (securityModalEl) {
+    securityModalEl.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeSecurityModal();
+        }
+    });
+}
+
+// PDF Preview Modal
+const pdfPreviewModalEl = document.getElementById('pdfPreviewModal');
+if (pdfPreviewModalEl) {
+    pdfPreviewModalEl.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePdfPreview();
+        }
+    });
+}
 
 // Close modals with Escape key
 document.addEventListener('keydown', function(e) {
@@ -169,27 +183,39 @@ function generateSecurityCode() {
 }
 
 // Toggle password visibility
-document.getElementById('togglePassword').addEventListener('click', function() {
-    const passwordInput = document.getElementById('securityCode');
-    const icon = this.querySelector('i');
-    
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        passwordInput.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    }
-});
+const togglePasswordBtn = document.getElementById('togglePassword');
+if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', function() {
+        const passwordInput = document.getElementById('securityCode');
+        const icon = this.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+}
 
 // Open security modal
 function openSecurityModal() {
-    document.getElementById('securityCode').value = '';
-    document.getElementById('securityCode').type = 'password';
-    document.getElementById('togglePassword').querySelector('i').className = 'fas fa-eye';
-    document.getElementById('errorMessage').style.display = 'none';
+    const securityCodeInput = document.getElementById('securityCode');
+    if (securityCodeInput) {
+        securityCodeInput.value = '';
+        securityCodeInput.type = 'password';
+    }
+    const toggleIcon = document.querySelector('#togglePassword i');
+    if (toggleIcon) {
+        toggleIcon.className = 'fas fa-eye';
+    }
+    const errorMessage = document.getElementById('errorMessage');
+    if (errorMessage) {
+        errorMessage.style.display = 'none';
+    }
     window.currentSecurityCode = generateSecurityCode();
     document.getElementById('securityModal').style.display = 'flex';
 }
@@ -230,11 +256,14 @@ function verifySecurityCode() {
 }
 
 // Handle Enter key in security code input
-document.getElementById('securityCode').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        verifySecurityCode();
-    }
-});
+const securityCodeInput = document.getElementById('securityCode');
+if (securityCodeInput) {
+    securityCodeInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            verifySecurityCode();
+        }
+    });
+}
 
 // ========== PDF FUNCTIONS ==========
 
@@ -254,8 +283,8 @@ function closePdfPreview() {
     document.getElementById('pdfPreviewModal').style.display = 'none';
 }
 
-// Base64 encoded placeholder logo
-const placeholderLogo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFjSURBVHgB7d2xTQNBEIXhsfAFARIgQzKgTToYAjg3j6JXODcPwdJgOSc/9Vx3/oPnOe6OnnH0l93Tsz+e3/kv3pnvxAAQIIAAIgwggAgDiCCAAAIIIICAIIAAAggggAACCDAABBAgAEggAADQAABBoAAAggggAACCCDAABBAgAEggAACCAgCCCAgCCCAgCCAAAKCAAIICAIICDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQygT+3b89J+PF+c7T37S/tX53vP3nLq2X09r+f7cua+/V7PW5/ZZ1/L6fXc1/Nx/Bj7O8/HXyIABBBCABnQEcTAACgYgAADQAABBBgAAggwAAQQYAATfLZXKSDj7SwAAAAASUVORK5CYII=';
+// Placeholder logo untuk PDF (base64 - ikon ikan sederhana)
+const placeholderLogo = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSIzOCIgZmlsbD0iIzI3YWU2MCIvPjxwYXRoIGQ9Ik0yMCAzMGwxMCAxMEwyMCA1MHoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTYwIDMwbC0xMCAxMCAxMCAxMHoiIGZpbGw9IndoaXRlIi8+PC9zdmc+';
 
 function generatePDFReport() {
     showLoading();
@@ -274,7 +303,7 @@ function generatePDFReport() {
             <table style="width: 100%;">
                 <tr>
                     <td style="width: 80px; vertical-align: middle; padding-top: 5px;">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
+                        <img src="${placeholderLogo}" 
                              alt="Logo Kabupaten Situbondo" 
                              style="width: 70px; height: 70px; object-fit: contain; display: block; border-radius: 0;">
                     </td>
@@ -299,7 +328,7 @@ function generatePDFReport() {
             </h1>
         </div>
         
-        <!-- Isi Laporan -->
+        <!-- Isi Laporan (sama seperti sebelumnya) -->
         <div style="margin-bottom: 30px;">
             <h4 style="font-size: 13px; font-weight: bold; margin-bottom: 15px; color: #1abc9c;">I. LATAR BELAKANG</h4>
             <p style="text-align: justify; margin-bottom: 20px; font-size: 12px; line-height: 1.7; text-indent: 30px;">
@@ -426,26 +455,14 @@ async function downloadPDF() {
         const logoWidth = 18;
         const logoHeight = 18;
         
+        // Gunakan placeholder logo
         try {
-            const logoImg = new Image();
-            logoImg.crossOrigin = 'Anonymous';
-            
-            await new Promise((resolve, reject) => {
-                logoImg.onload = resolve;
-                logoImg.onerror = () => {
-                    logoImg.src = placeholderLogo;
-                    resolve();
-                };
-                logoImg.src = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
-            });
-            
-            doc.addImage(logoImg, 'PNG', margin, yPos, logoWidth, logoHeight);
-        } catch (e) {
-            console.log('Using placeholder logo');
             const placeholderImg = new Image();
             placeholderImg.src = placeholderLogo;
             await new Promise(resolve => { placeholderImg.onload = resolve; });
             doc.addImage(placeholderImg, 'PNG', margin, yPos, logoWidth, logoHeight);
+        } catch (e) {
+            console.log('Logo placeholder gagal dimuat, melanjutkan tanpa logo');
         }
         
         doc.setFontSize(11);
@@ -590,16 +607,31 @@ async function downloadPDF() {
 // Fix for footer positioning
 function fixFooterPosition() {
     const footer = document.querySelector('.footer');
-    const bodyHeight = document.body.offsetHeight;
+    const body = document.body;
+    const html = document.documentElement;
+    
+    const bodyHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
     const windowHeight = window.innerHeight;
     
     if (bodyHeight < windowHeight) {
-        footer.style.position = 'fixed';
+        footer.style.position = 'absolute';
         footer.style.bottom = '0';
+        footer.style.left = '0';
+        footer.style.right = '0';
+        body.style.position = 'relative';
+        body.style.minHeight = '100vh';
     } else {
         footer.style.position = 'relative';
+        footer.style.bottom = 'auto';
     }
 }
 
 window.addEventListener('load', fixFooterPosition);
 window.addEventListener('resize', fixFooterPosition);
+
+// Initial call in case DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(fixFooterPosition, 100);
+} else {
+    document.addEventListener('DOMContentLoaded', fixFooterPosition);
+}
