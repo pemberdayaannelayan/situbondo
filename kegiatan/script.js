@@ -22,7 +22,7 @@ const kegiatanData = [
         "youtubeUrls": [
             "https://www.youtube.com/embed/6TbwAzsGcpM"
         ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki.html",
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/kegiatan-pelatihan-teknologi-penangkapan-ikan-besuki",
         "participants": 0,
         "duration": ""
     },
@@ -48,7 +48,7 @@ const kegiatanData = [
             "Terumbu Buatan"
         ],
         "youtubeUrls": [],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment.html",
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2025/november/pendampingan-penenggelaman-fist-apartment",
         "participants": 0,
         "duration": ""
     },
@@ -73,7 +73,7 @@ const kegiatanData = [
         "youtubeUrls": [
             "https://www.youtube.com/embed/5n4ySz4mEPE"
         ],
-        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar.html",
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bidang-pemberdayaan-nelayan-desa-sumberanyar",
         "participants": 0,
         "duration": ""
     },
@@ -102,7 +102,7 @@ const kegiatanData = [
         "Pengelola TPI Besuki"
     ],
     "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-mesin-pompa.html",
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-mesin-pompa",
     "participants": 0,
     "duration": ""
 },
@@ -129,7 +129,7 @@ const kegiatanData = [
         "Penyuluh Perikanan Situbondo"
     ],
     "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/mendampingi-dkp-jatim-verval-kelompok-nelayan.html",
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/mendampingi-dkp-jatim-verval-kelompok-nelayan",
     "participants": 0,
     "duration": ""
 },
@@ -154,7 +154,7 @@ const kegiatanData = [
         "Korban Banjir"
     ],
     "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-sosial-kepada-masyarakat-korban-banjir-besuki.html",
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-sosial-kepada-masyarakat-korban-banjir-besuki",
     "participants": 0,
     "duration": ""
 },
@@ -183,7 +183,7 @@ const kegiatanData = [
         "SIMPADAN TANGKAP"
     ],
     "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat-koordinasi-inovasi-bidang-pemberdayaan-nelayan.html",
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat-koordinasi-inovasi-bidang-pemberdayaan-nelayan",
     "participants": 0,
     "duration": ""
 },
@@ -218,7 +218,7 @@ const kegiatanData = [
     "youtubeUrls": [
         "https://www.youtube.com/embed/AHszqcgzn3M"
     ],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/selametan-petik-laut-desa-ketah.html",
+    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/selametan-petik-laut-desa-ketah",
     "participants": 0,
     "duration": ""
 },
@@ -249,7 +249,7 @@ const kegiatanData = [
     "youtubeUrls": [
         "https://www.youtube.com/embed/MBvFf_bLcCk"
     ],
-    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/pemusnahan-aligator-ikan-invasif.html",
+    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/pemusnahan-aligator-ikan-invasif",
     "participants": 0,
     "duration": ""
 },
@@ -279,7 +279,7 @@ const kegiatanData = [
     "youtubeUrls": [
         "https://www.youtube.com/embed/ltIf0lYdyxU"
     ],
-    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari.html",
+    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari",
     "participants": 0,
     "duration": ""
 },
