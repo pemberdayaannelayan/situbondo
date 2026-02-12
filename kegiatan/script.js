@@ -254,7 +254,36 @@ const kegiatanData = [
     "participants": 0,
     "duration": ""
 },
-    
+        {
+    "id": 1770872421034,
+    "title": "Kerja Bakti Bersih Pantai Desa Kilensari Kecamatan Panarukan",
+    "date": "2026-02-12",
+    "description": "Kerja bakti bersih pantai Desa Kilensari Kecamatan Panarukan sesuai Intruksi Presiden RI  Jenderal TNI (Purn) H. Prabowo Subianto ",
+    "images": [
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-sebelum-kegiatan.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-arahan-komandan-kodim.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-upel-sebelum-kegiatan-dipimpin-kodim.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-1.jpeg",
+        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-2.jpeg"
+    ],
+    "type": "multimedia",
+    "category": "lainnya",
+    "location": "",
+    "tags": [
+        "Kerja Bakti",
+        "Bersih Pantai",
+        "Kodim",
+        "Dinas Peternakan dan Perikanan",
+        "Bidang Pemberdayaan Nelayan"
+    ],
+    "youtubeUrls": [
+        "https://www.youtube.com/embed/ltIf0lYdyxU"
+    ],
+    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari.html",
+    "participants": 0,
+    "duration": ""
+},
 ];
 
 // Inisialisasi AOS Animation
