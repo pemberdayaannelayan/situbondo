@@ -1,1 +1,698 @@
-.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kehadiran Dinas Peternakan Dan Perikanan Situbondo pada Acara Selametan Petik Laut Desa Ketah - Dinas Peternakan Perikanan Situbondo</title>
+    <meta name="description" content="Kegiatan kehadiran Dinas Peternakan Dan Perikanan Situbondo pada acara selametan petik laut di Desa Ketah, Kecamatan Suboh yang dihadiri Kepala Bidang Pemberdayaan Nelayan, Camat Suboh, Danramil, Kapolsek, Kasat Polairud, dan masyarakat nelayan.">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- jsPDF untuk generate PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <h3 class="section-title">Bagikan Kegiatan Ini</h3>
+            <p>Pilih opsi untuk membagikan informasi kegiatan:</p>
+            <div class="share-buttons">
+                <button class="share-btn whatsapp" onclick="shareToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>Bagikan ke WhatsApp</span>
+                </button>
+                <button class="share-btn copy" onclick="copyLink()">
+                    <i class="fas fa-copy"></i>
+                    <span>Salin Link</span>
+                </button>
+            </div>
+            <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding: 10px; border-radius: 10px;">Tutup</button>
+        </div>
+    </div>
+
+    <!-- PDF Authorization Modal -->
+    <div class="pdf-auth-modal" id="pdfAuthModal">
+        <div class="pdf-auth-content">
+            <div class="auth-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <h3 class="section-title text-center">Otorisasi Akses Dokumen</h3>
+            
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan
+            </div>
+            
+            <div class="info-message">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Informasi Kode Keamanan:</strong> Untuk mendapatkan kode yang valid, harap hubungi petugas yang berwenang di Dinas Perikanan Situbondo.
+            </div>
+            
+            <div class="mb-4">
+                <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan</label>
+                <div class="input-group-password">
+                    <input type="password" 
+                           class="form-control form-control-lg" 
+                           id="securityCodeInput" 
+                           placeholder="Masukkan 8 digit kode keamanan"
+                           maxlength="8"
+                           onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                    <button type="button" class="password-toggle" id="passwordToggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-times-circle me-2"></i>
+                    <span id="errorText">Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
+                </div>
+            </div>
+            
+            <div class="attempts-counter">
+                <i class="fas fa-shield-alt me-2"></i>
+                Percobaan tersisa: <span id="attemptsLeft">3</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                    <i class="fas fa-times me-2"></i>Batal
+                </button>
+                <button class="btn btn-primary mb-2" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                    <i class="fas fa-check me-2"></i>Verifikasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div class="pdf-preview-modal" id="pdfPreviewModal">
+        <div class="pdf-preview-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
+                <button class="btn-close" onclick="closePdfPreview()"></button>
+            </div>
+            <div class="pdf-preview" id="pdfPreviewContent">
+                <!-- PDF content will be generated here -->
+            </div>
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfPreview()" style="padding: 10px 20px; border-radius: 10px; min-width: 120px;">Tutup</button>
+                <button class="btn btn-primary mb-2" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 10px 20px; border-radius: 10px; min-width: 120px;">Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com">
+                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" alt="Logo Dinas Peternakan dan Perikanan" style="height: 48px;">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com/dokumentasi">Dokumentasi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Acara Petik Laut</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com/simpadan">SIMPADAN</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 10px 24px; border-radius: 10px;">
+                            <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="badge-category">
+                        <i class="fas fa-water"></i> BUDAYA MARITIM
+                    </span>
+                    <h1 data-aos="fade-up">Kehadiran Dinas Peternakan Dan Perikanan Situbondo pada Acara Selametan Petik Laut Desa Ketah</h1>
+                    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
+                        Partisipasi aktif Dinas Peternakan dan Perikanan Situbondo dalam kegiatan selametan petik laut yang diselenggarakan di Desa Ketah, Kecamatan Suboh, sebagai bentuk pelestarian budaya maritim dan pemberdayaan masyarakat nelayan.
+                    </p>
+                    
+                    <div class="row g-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Tanggal Kegiatan</h5>
+                                    <p class="text-white mb-0">2 Februari 2026</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Lokasi</h5>
+                                    <p class="text-white mb-0">Desa Ketah, Kecamatan Suboh</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Partisipan</h5>
+                                    <p class="text-white mb-0">Multi-stakeholder</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Deskripsi Lengkap -->
+                    <div class="content-box" data-aos="fade-up">
+                        <h2 class="section-title">Pelestarian Budaya Maritim dan Pemberdayaan Nelayan</h2>
+                        
+                        <div class="description-text">
+                            <p>Kegiatan selametan petik laut yang diselenggarakan di Desa Ketah, Kecamatan Suboh, merupakan tradisi tahunan masyarakat pesisir Situbondo yang sarat dengan nilai-nilai kearifan lokal dan spiritualitas maritim. Acara ini dihadiri secara langsung oleh <strong>Kepala Bidang Pemberdayaan Nelayan Dinas Peternakan & Perikanan Situbondo, SUGENG PURWO PRIYANTO, S.E., M.M.</strong> beserta staf, sebagai bentuk komitmen pemerintah daerah dalam melestarikan budaya maritim sekaligus mendukung pemberdayaan masyarakat nelayan.</p>
+                            
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-handshake"></i> Sinergi Antar Lembaga</h5>
+                                <p>Acara ini dihadiri oleh berbagai pihak penting yang menunjukkan kolaborasi yang solid antara pemerintah dan masyarakat, antara lain:</p>
+                                <ul>
+                                    <li><strong>Camat Suboh</strong> beserta jajarannya</li>
+                                    <li><strong>Kasipem Kecamatan Suboh</strong></li>
+                                    <li><strong>Danramil</strong> dan <strong>Kapolsek</strong> Kecamatan Suboh</li>
+                                    <li><strong>Kasat Polairud</strong> Polres Situbondo</li>
+                                    <li><strong>Masyarakat nelayan</strong> dari berbagai desa sekitar</li>
+                                </ul>
+                            </div>
+                            
+                            <p>Selametan petik laut bukan sekadar ritual tradisional, melainkan juga menjadi momentum penting untuk memperkuat kohesi sosial antar berbagai elemen masyarakat, mulai dari pemerintah daerah, aparat keamanan, hingga nelayan sebagai pelaku utama sektor perikanan. Kegiatan ini menjadi wadah dialog konstruktif antara pemerintah dengan masyarakat nelayan dalam membahas berbagai isu strategis sektor perikanan.</p>
+                            
+                            <p>Dengan kehadiran langsung jajaran Dinas Peternakan Dan Perikanan Situbondo, diharapkan dapat memperkuat hubungan antara pemerintah dengan masyarakat nelayan, sekaligus memberikan pemahaman yang lebih baik tentang berbagai program pemberdayaan yang telah dan akan dilaksanakan untuk meningkatkan kesejahteraan nelayan Situbondo.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tindakan dan Solusi -->
+                    <div class="content-box" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="section-title">Ragam Kegiatan dan Kemeriahan Acara</h2>
+                        
+                        <div class="description-text">
+                            <p>Acara selametan petik laut Desa Ketah tahun 2026 diisi dengan berbagai kegiatan yang mencerminkan kekayaan budaya dan semangat kebersamaan masyarakat pesisir Situbondo.</p>
+                            
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-trophy"></i> Perlombaan Hiasan Kapal dan Sampan</h5>
+                                <p>Sebagai puncak acara, diselenggarakan perlombaan hiasan cantik kapal dan sampan yang diikuti oleh <strong>10 jenis kapal</strong> dan <strong>11 jenis sampan</strong> dari berbagai kelompok nelayan. Kapal dan sampan yang dinilai memiliki nilai tertinggi berdasarkan kriteria yang ditetapkan panitia berhak mendapatkan hadiah uang tunai senilai jutaan rupiah.</p>
+                            </div>
+                            
+                            <p>Selain perlombaan hiasan kapal dan sampan, acara juga dimeriahkan dengan berbagai kegiatan lain, antara lain:</p>
+                            <ul>
+                                <li>Pertunjukan kesenian <strong>ludruk</strong> sebagai representasi budaya lokal Jawa Timur</li>
+                                <li>Prosesi ritual selametan petik laut dengan pembacaan doa dan sesaji</li>
+                                <li>Sosialisasi program pemberdayaan nelayan oleh Dinas Peternakan Dan Perikanan Situbondo</li>
+                                <li>Dialog interaktif antara pemerintah dengan masyarakat nelayan</li>
+                                <li>Pameran hasil tangkapan nelayan dan produk olahan ikan</li>
+                            </ul>
+                            
+                            <p>Kehadiran kesenian ludruk tidak hanya sebagai hiburan semata, tetapi juga menjadi media pelestarian budaya lokal yang sarat dengan nilai-nilai kearifan dan pendidikan moral. Pertunjukan ludruk yang disajikan mengandung pesan-pesan tentang kehidupan sosial, lingkungan, dan semangat kebersamaan yang sejalan dengan nilai-nilai kegiatan selametan petik laut.</p>
+                            
+                            <p>Melalui kegiatan ini, Dinas Peternakan Dan Perikanan Situbondo berkomitmen untuk terus mendukung pelestarian budaya maritim sekaligus memperkuat program pemberdayaan nelayan yang berkelanjutan dan berbasis kearifan lokal.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Organizer -->
+                    <div class="content-box" data-aos="fade-left">
+                        <h2 class="section-title">Pejabat yang Hadir</h2>
+                        
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: var(--light-blue);">
+                                <div class="bg-primary-blue p-3 rounded-circle me-3">
+                                    <i class="fas fa-user-tie text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-blue">SUGENG PURWO PRIYANTO, S.E., M.M.</h5>
+                                    <p class="text-muted mb-0">Kepala Bidang Pemberdayaan Nelayan</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: var(--light-blue);">
+                                <div class="bg-secondary-blue p-3 rounded-circle me-3">
+                                    <i class="fas fa-university text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-blue">Camat Suboh</h5>
+                                    <p class="text-muted mb-0">Perwakilan Pemerintah Kecamatan</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center p-3 rounded" style="background: var(--light-blue);">
+                                <div class="bg-accent-blue p-3 rounded-circle me-3">
+                                    <i class="fas fa-shield-alt text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-blue">Aparat Keamanan</h5>
+                                    <p class="text-muted mb-0">Danramil, Kapolsek, Kasat Polairud</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h5 class="section-title mb-3">Topik Terkait</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark p-2 border">petik laut</span>
+                                <span class="badge bg-light text-dark p-2 border">budaya maritim</span>
+                                <span class="badge bg-light text-dark p-2 border">desa ketah</span>
+                                <span class="badge bg-light text-dark p-2 border">kecamatan suboh</span>
+                                <span class="badge bg-light text-dark p-2 border">pemberdayaan nelayan</span>
+                                <span class="badge bg-light text-dark p-2 border">ludruk</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Facts -->
+                    <div class="content-box" data-aos="fade-left" data-aos-delay="100">
+                        <h2 class="section-title">Fakta Singkat</h2>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-teal p-2 rounded-circle me-3">
+                                <i class="fas fa-ship text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Perlombaan Kapal</h6>
+                                <p class="text-muted mb-0">10 kapal dan 11 sampan berpartisipasi</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-amber p-2 rounded-circle me-3">
+                                <i class="fas fa-theater-masks text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Hiburan Budaya</h6>
+                                <p class="text-muted mb-0">Pertunjukan ludruk lokal</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-sea-green p-2 rounded-circle me-3">
+                                <i class="fas fa-handshake text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Kolaborasi</h6>
+                                <p class="text-muted mb-0">Multi-stakeholder terlibat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section class="modules-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Aspek Kegiatan Petik Laut</h2>
+                    <p class="text-muted mt-3">Berbagai dimensi yang terkandung dalam kegiatan selametan petik laut Desa Ketah</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-pray"></i>
+                        </div>
+                        <h4>Aspek Spiritual</h4>
+                        <p class="text-muted">Ritual selametan sebagai bentuk rasa syukur kepada Tuhan Yang Maha Esa atas hasil laut yang melimpah.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Aspek Sosial</h4>
+                        <p class="text-muted">Memperkuat solidaritas dan kebersamaan antar masyarakat nelayan dan stakeholder terkait.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <h4>Aspek Budaya</h4>
+                        <p class="text-muted">Pelestarian tradisi dan kearifan lokal masyarakat pesisir melalui berbagai kesenian dan ritual.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <h4>Aspek Ekonomi</h4>
+                        <p class="text-muted">Pemberdayaan nelayan melalui berbagai program dan penguatan ekonomi masyarakat pesisir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Speakers Section -->
+    <section class="speakers-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Tokoh Penting dalam Acara</h2>
+                    <p class="text-muted mt-3">Perwakilan dari berbagai instansi yang hadir dalam kegiatan selametan petik laut</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-dan-staf-diperahu-sesajen.jpeg" 
+                                 alt="Kepala Bidang Pemberdayaan Nelayan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=SUGENG+PRIYANTO&background=1e3a8a&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">SUGENG PURWO PRIYANTO, S.E., M.M.</h3>
+                        <p class="speaker-role">Kepala Bidang Pemberdayaan Nelayan</p>
+                        <p class="speaker-desc">Memimpin delegasi Dinas Peternakan Dan Perikanan Situbondo, menyampaikan apresiasi terhadap pelestarian budaya maritim dan komitmen pemberdayaan nelayan berkelanjutan.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-para-pejabat-dipetiklaut.jpeg" 
+                                 alt="Pejabat Kecamatan Suboh"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Camat+Suboh&background=3b82f6&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">Camat Suboh</h3>
+                        <p class="speaker-role">Perwakilan Pemerintah Kecamatan</p>
+                        <p class="speaker-desc">Sebagai tuan rumah kegiatan, menyambut baik partisipasi semua pihak dan menekankan pentingnya sinergi untuk kemajuan masyarakat pesisir.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/petiklaut5.jpeg" 
+                                 alt="Perwakilan Masyarakat Nelayan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Masyarakat+Nelayan&background=60a5fa&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">Perwakilan Nelayan</h3>
+                        <p class="speaker-role">Masyarakat Nelayan Desa Ketah</p>
+                        <p class="speaker-desc">Menyampaikan aspirasi dan harapan masyarakat nelayan terkait pengembangan sektor perikanan dan pelestarian budaya maritim.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Dokumentasi Kegiatan</h2>
+                    <p class="text-muted mt-3">Momen-momen penting dalam pelaksanaan selametan petik laut Desa Ketah</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Foto 1 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-para-pejabat-dipetiklaut.jpeg" 
+                             alt="Foto bersama para pejabat"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Foto Bersama Pejabat</h6>
+                                <small class="text-white">Dokumentasi kehadiran pejabat</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 2 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-dan-staf-diperahu-sesajen.jpeg" 
+                             alt="Kegiatan di perahu sesajen"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1574362848146-df5fb45c5efe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Ritual di Perahu</h6>
+                                <small class="text-white">Aktivitas tradisi petik laut</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 3 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-ludruk.jpeg" 
+                             alt="Pertunjukan ludruk"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Pertunjukan Ludruk</h6>
+                                <small class="text-white">Hiburan budaya lokal</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 4 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-1.jpeg" 
+                             alt="Kapal dan perahu hias"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Kapal Hias</h6>
+                                <small class="text-white">Persiapan perlombaan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 5 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-2.jpeg" 
+                             alt="Kapal dan perahu hias 2"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Perahu Hias</h6>
+                                <small class="text-white">Dekorasi tradisional</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 6 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-3.jpeg" 
+                             alt="Kapal dan perahu hias 3"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Persiapan Lomba</h6>
+                                <small class="text-white">Kapal peserta lomba</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Video Dokumentasi Petik Laut</h2>
+                    <p class="text-muted mt-3">Rekaman lengkap suasana dan kegiatan selametan petik laut Desa Ketah</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-10 mx-auto" data-aos="fade-up">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/AHszqcgzn3M?si=a-yzZJZXTpInqjBv" 
+                                title="Video Dokumentasi Selametan Petik Laut Desa Ketah" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen></iframe>
+                    </div>
+                    <div class="text-center mt-4">
+                        <h4>Dokumentasi Lengkap Selametan Petik Laut</h4>
+                        <p>Video dokumentasi lengkap kegiatan selametan petik laut di Desa Ketah, Kecamatan Suboh, Situbondo yang menampilkan prosesi ritual.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="action-buttons">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="mb-4">Akses Laporan dan Bagikan Kegiatan</h2>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <button class="btn-download" onclick="openPdfAuthModal()">
+                            <i class="fas fa-download me-2"></i>Download Laporan Kegiatan (PDF)
+                        </button>
+                        <button class="btn-share" onclick="openShareModal()">
+                            <i class="fas fa-share-alt me-2"></i>Bagikan Kegiatan Ini
+                        </button>
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share">
+                            <i class="fas fa-images me-2"></i>Kegiatan Lainnya
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
+                             alt="Logo Dinas Peternakan dan Perikanan" 
+                             height="50" 
+                             class="me-3">
+                    </div>
+                    <p class="text-light mb-4" style="line-height: 1.7;">
+                        Berkontribusi aktif dalam memajukan sektor perikanan tangkap dan memberdayakan masyarakat pesisir Situbondo melalui berbagai program inovatif dan berkelanjutan.
+                    </p>
+                    <div class="social-icons mt-4">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3">
+                    <h5>Tautan Cepat</h5>
+                    <div class="footer-links mt-4">
+                        <a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2"></i>Beranda</a>
+                        <a href="https://www.dinasperikanansitubondo.com/simpadan"><i class="fas fa-mobile-alt me-2"></i>SIMPADAN</a>
+                        <a href="https://www.dinasperikanansitubondo.com/dokumentasi"><i class="fas fa-images me-2"></i>Dokumentasi</a>
+                        <a href="https://situbondokab.go.id/"><i class="fas fa-university me-2"></i>Pemkab Situbondo</a>
+                        <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i>Pengaduan</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <h5>Kontak Kami</h5>
+                    <div class="mt-4">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Alamat Kantor</span>
+                                <small class="text-light">Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fab fa-whatsapp text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">WhatsApp Admin</span>
+                                <small class="text-light">0878 6561 4222</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Email</span>
+                                <small class="text-light">info@dinasperikanansitubondo.com</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="bg-light my-5">
+            
+            <div class="text-center text-light">
+                <p class="mb-2">&copy; <span id="currentYear">2026</span> Dinas Perikanan Situbondo. Hak Cipta Dilindungi.</p>
+                <small>Dibuat dengan <i class="fas fa-heart text-danger"></i> untuk Nelayan Situbondo</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
