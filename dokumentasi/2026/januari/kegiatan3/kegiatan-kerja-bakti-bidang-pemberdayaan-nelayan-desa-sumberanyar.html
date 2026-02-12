@@ -1,1 +1,698 @@
-.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kerja Bakti Persiapan Peresmian Pasar Higienis Ikan Segar Mimbo - Dinas Perikanan Situbondo</title>
+    <meta name="description" content="Kegiatan kerja bakti dalam rangka persiapan peresmian pasar higienis ikan segar Mimbo yang dihadiri Camat Banyuputih beserta staf, Pemdes Sumberanyar, dan Tim Bidang Pemberdayaan Nelayan dari Dinas Peternakan dan Perikanan Kabupaten Situbondo.">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- jsPDF untuk generate PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <h3 class="section-title">Bagikan Kegiatan Ini</h3>
+            <p>Pilih opsi untuk membagikan informasi kerja bakti:</p>
+            <div class="share-buttons">
+                <button class="share-btn whatsapp" onclick="shareToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>Bagikan ke WhatsApp</span>
+                </button>
+                <button class="share-btn copy" onclick="copyLink()">
+                    <i class="fas fa-copy"></i>
+                    <span>Salin Link</span>
+                </button>
+            </div>
+            <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding: 10px; border-radius: 10px;">Tutup</button>
+        </div>
+    </div>
+
+    <!-- PDF Authorization Modal -->
+    <div class="pdf-auth-modal" id="pdfAuthModal">
+        <div class="pdf-auth-content">
+            <div class="auth-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <h3 class="section-title text-center">Otorisasi Akses Dokumen</h3>
+            
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan
+            </div>
+            
+            <div class="info-message">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Informasi Kode Keamanan:</strong> Untuk mendapatkan kode yang valid, harap hubungi petugas yang berwenang di Dinas Perikanan Situbondo.
+            </div>
+            
+            <div class="mb-4">
+                <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan</label>
+                <div class="input-group-password">
+                    <input type="password" 
+                           class="form-control form-control-lg" 
+                           id="securityCodeInput" 
+                           placeholder="Masukkan 8 digit kode keamanan"
+                           maxlength="8"
+                           onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                    <button type="button" class="password-toggle" id="passwordToggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-times-circle me-2"></i>
+                    <span id="errorText">Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
+                </div>
+            </div>
+            
+            <div class="attempts-counter">
+                <i class="fas fa-shield-alt me-2"></i>
+                Percobaan tersisa: <span id="attemptsLeft">3</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                    <i class="fas fa-times me-2"></i>Batal
+                </button>
+                <button class="btn btn-primary mb-2" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                    <i class="fas fa-check me-2"></i>Verifikasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div class="pdf-preview-modal" id="pdfPreviewModal">
+        <div class="pdf-preview-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
+                <button class="btn-close" onclick="closePdfPreview()"></button>
+            </div>
+            <div class="pdf-preview" id="pdfPreviewContent">
+                <!-- PDF content will be generated here -->
+            </div>
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfPreview()" style="padding: 10px 20px; border-radius: 10px; min-width: 120px;">Tutup</button>
+                <button class="btn btn-primary mb-2" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 20px; border-radius: 10px; min-width: 120px;">Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com">
+                <!-- REPLACED: Logo dan teks header diganti dengan gambar baru -->
+                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" alt="Logo Dinas Peternakan dan Perikanan Situbondo" height="48">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com/kegiatan">Dokumentasi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Kerja Bakti</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com/simpadan">SIMPADAN</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 24px; border-radius: 10px;">
+                            <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="badge-category">
+                        <i class="fas fa-hands-helping"></i> KERJA BAKTI MASYARAKAT
+                    </span>
+                    <h1 data-aos="fade-up">Kerja Bakti Persiapan Peresmian Pasar Higienis Ikan Segar Mimbo</h1>
+                    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
+                        Kegiatan kerja bakti dalam rangka persiapan peresmian pasar higienis ikan segar Mimbo yang dihadiri oleh Camat Banyuputih beserta staf, Pemdes Sumberanyar, dan Tim Bidang Pemberdayaan Nelayan dari Dinas Peternakan dan Perikanan Kabupaten Situbondo.
+                    </p>
+                    
+                    <div class="row g-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Tanggal Kegiatan</h5>
+                                    <p class="text-white mb-0">19 Januari 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Lokasi</h5>
+                                    <p class="text-white mb-0">Pasar Ikan Mimbo, Sumberanyar</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Partisipan</h5>
+                                    <p class="text-white mb-0">Multi-stakeholder</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Deskripsi Lengkap -->
+                    <div class="content-box" data-aos="fade-up">
+                        <h2 class="section-title">Sinergi untuk Pasar Higienis Ikan Segar</h2>
+                        
+                        <div class="description-text">
+                            <p>Kegiatan kerja bakti ini merupakan bagian dari persiapan menuju peresmian <strong>Pasar Higienis Ikan Segar Mimbo</strong> yang bertujuan meningkatkan kualitas penjualan ikan segar di wilayah pesisir Situbondo. Kegiatan ini melibatkan berbagai pihak yang menunjukkan komitmen bersama dalam pembangunan infrastruktur perikanan.</p>
+                            
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-exclamation-triangle"></i> Kendala yang Ditemui</h5>
+                                <p>Selama proses persiapan, ditemukan beberapa kendala teknis yang perlu segera diatasi, antara lain:</p>
+                                <ul>
+                                    <li><strong>Akses jalan ke pasar kurang tinggi</strong> sehingga menyulitkan transportasi ikan masuk dan keluar pasar</li>
+                                    <li><strong>Pasar tidak memiliki pintu muka yang mengarah ke pantai</strong> padahal lokasi pasar sangat dekat dengan pantai dan aktivitas nelayan</li>
+                                </ul>
+                            </div>
+                            
+                            <p>Untuk mengatasi kendala ini, <strong>Dinas Peternakan dan Perikanan Kabupaten Situbondo</strong> bersama dengan <strong>Pemerintah Desa Sumberanyar</strong> melakukan koordinasi intensif. Salah satu solusi yang sedang diupayakan adalah <strong>kerjasama dengan pemilik lahan di depan pasar</strong> yang saat ini masih milik pribadi.</p>
+                            
+                            <p>Dengan adanya kerja bakti ini, diharapkan pasar dapat segera difungsikan secara optimal untuk mendukung aktivitas perikanan di Mimbo dan sekitarnya, meningkatkan kualitas ikan yang dijual, serta memberikan kenyamanan bagi penjual dan pembeli.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tindakan dan Solusi -->
+                    <div class="content-box" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="section-title">Tindakan dan Solusi yang Dilakukan</h2>
+                        
+                        <div class="description-text">
+                            <p>Untuk mengatasi kendala yang ditemui, beberapa langkah strategis telah dan sedang dilakukan oleh seluruh pihak terkait:</p>
+                            
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-handshake"></i> Kerjasama Multi-Pihak</h5>
+                                <p><strong>Dinas Peternakan dan Perikanan Kabupaten Situbondo</strong> telah menginisiasi pertemuan dengan <strong>Pemerintah Desa Sumberanyar</strong> dan <strong>pemilik lahan pribadi</strong> untuk membahas kemungkinan pembuatan pintu muka pasar yang mengarah langsung ke pantai.</p>
+                            </div>
+                            
+                            <p>Beberapa upaya konkret yang telah dilakukan dalam kerja bakti ini antara lain:</p>
+                            <ul>
+                                <li>Pembersihan area pasar dari sampah dan kotoran</li>
+                                <li>Perbaikan infrastruktur dasar di dalam area pasar</li>
+                                <li>Koordinasi dengan pemilik lahan untuk akses pintu depan pasar</li>
+                                <li>Pemetaan ulang akses transportasi menuju pasar</li>
+                                <li>Persiapan sarana dan prasarana pendukung pasar higienis</li>
+                            </ul>
+                            
+                            <p>Kegiatan kerja bakti ini juga menjadi momentum penting untuk <strong>sosialisasi pentingnya pasar higienis</strong> kepada masyarakat sekitar, terutama para nelayan dan penjual ikan. Dengan pasar yang memenuhi standar higienis, diharapkan dapat meningkatkan nilai jual ikan dan kesehatan masyarakat.</p>
+                            
+                            <p>Melalui sinergi antara pemerintah daerah, desa, dan masyarakat, diharapkan <strong>Pasar Higienis Ikan Segar Mimbo</strong> dapat segera beroperasi dan memberikan manfaat maksimal bagi perekonomian masyarakat pesisir Situbondo.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Organizer -->
+                    <div class="content-box" data-aos="fade-left">
+                        <h2 class="section-title">Pihak Terkait</h2>
+                        
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: var(--light-green);">
+                                <div class="bg-primary-green p-3 rounded-circle me-3">
+                                    <i class="fas fa-university text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-green">Camat Banyuputih</h5>
+                                    <p class="text-muted mb-0">Beserta staf kecamatan</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: var(--light-green);">
+                                <div class="bg-secondary-green p-3 rounded-circle me-3">
+                                    <i class="fas fa-home text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-green">Pemdes Sumberanyar</h5>
+                                    <p class="text-muted mb-0">Pemerintah Desa Sumberanyar</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center p-3 rounded" style="background: var(--light-green);">
+                                <div class="bg-accent-green p-3 rounded-circle me-3">
+                                    <i class="fas fa-fish text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-primary-green">Dinas Perikanan</h5>
+                                    <p class="text-muted mb-0">Tim Pemberdayaan Nelayan Situbondo</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h5 class="section-title mb-3">Topik Terkait</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark p-2 border">kerja bakti</span>
+                                <span class="badge bg-light text-dark p-2 border">pasar higienis mimbo</span>
+                                <span class="badge bg-light text-dark p-2 border">ikan segar</span>
+                                <span class="badge bg-light text-dark p-2 border">banyuputih</span>
+                                <span class="badge bg-light text-dark p-2 border">sumberanyar</span>
+                                <span class="badge bg-light text-dark p-2 border">pemberdayaan nelayan</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Facts -->
+                    <div class="content-box" data-aos="fade-left" data-aos-delay="100">
+                        <h2 class="section-title">Fakta Singkat</h2>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-success-teal p-2 rounded-circle me-3">
+                                <i class="fas fa-check text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Sinergi Multi-Pihak</h6>
+                                <p class="text-muted mb-0">Kecamatan, desa, dan dinas terlibat</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-warning-amber p-2 rounded-circle me-3">
+                                <i class="fas fa-tools text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Fokus Perbaikan</h6>
+                                <p class="text-muted mb-0">Akses jalan dan pintu depan pasar</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3">
+                                <i class="fas fa-handshake text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Kolaborasi</h6>
+                                <p class="text-muted mb-0">Kerjasama dengan pemilik lahan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section class="modules-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Tahapan Persiapan Pasar Higienis</h2>
+                    <p class="text-muted mt-3">Langkah-langkah yang dilakukan dalam persiapan peresmian pasar higienis ikan segar Mimbo</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-road"></i>
+                        </div>
+                        <h4>Perbaikan Akses Jalan</h4>
+                        <p class="text-muted">Peningkatan ketinggian dan perbaikan akses jalan menuju pasar untuk memudahkan transportasi ikan.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <h4>Pintu Depan ke Pantai</h4>
+                        <p class="text-muted">Koordinasi untuk pembuatan pintu depan pasar yang langsung mengarah ke pantai dan aktivitas nelayan.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-broom"></i>
+                        </div>
+                        <h4>Pembersihan Area</h4>
+                        <p class="text-muted">Kerja bakti pembersihan area pasar dari sampah dan kotoran untuk menciptakan lingkungan higienis.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <h4>Koordinasi Stakeholder</h4>
+                        <p class="text-muted">Pertemuan dan koordinasi dengan semua pihak terkait untuk penyelesaian kendala secara bersama-sama.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Speakers Section -->
+    <section class="speakers-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Pihak yang Terlibat</h2>
+                    <p class="text-muted mt-3">Perwakilan dari berbagai instansi yang hadir dalam kegiatan kerja bakti</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg" 
+                                 alt="Camat Banyuputih"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Camat+Banyuputih&background=166534&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">Camat Banyuputih</h3>
+                        <p class="speaker-role">Perwakilan Kecamatan</p>
+                        <p class="speaker-desc">Memimpin kegiatan kerja bakti bersama staf kecamatan, berkoordinasi dengan desa dan dinas terkait untuk persiapan peresmian pasar higienis ikan segar Mimbo.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg" 
+                                 alt="Perangkat Desa Sumberanyar"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Desa+Sumberanyar&background=16a34a&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">Pemdes Sumberanyar</h3>
+                        <p class="speaker-role">Pemerintah Desa</p>
+                        <p class="speaker-desc">Berperan aktif dalam koordinasi dengan masyarakat dan pemilik lahan, serta memastikan pasar dapat berfungsi optimal untuk kesejahteraan warga desa.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti3.jpeg" 
+                                 alt="Tim Dinas Perikanan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Tim+Perikanan&background=22c55e&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">Tim Dinas Perikanan</h3>
+                        <p class="speaker-role">Bidang Pemberdayaan Nelayan</p>
+                        <p class="speaker-desc">Menyediakan pendampingan teknis, berkoordinasi dengan berbagai pihak, dan memastikan pasar memenuhi standar higienis untuk penjualan ikan segar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Galeri Foto Kegiatan</h2>
+                    <p class="text-muted mt-3">Dokumentasi visual kerja bakti persiapan peresmian pasar higienis ikan segar Mimbo</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Foto 1 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg" 
+                             alt="Koordinasi antar pihak terkait"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Koordinasi Awal</h6>
+                                <small class="text-white">Diskusi antara camat, desa, dan dinas</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 2 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg" 
+                             alt="Pembersihan area pasar"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1574231164645-d6f0e8553590?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Pembersihan Area</h6>
+                                <small class="text-white">Kerja bakti membersihkan lingkungan pasar</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 3 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti3.jpeg" 
+                             alt="Diskusi teknis tentang akses jalan"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Diskusi Teknis</h6>
+                                <small class="text-white">Membahas kendala akses jalan ke pasar</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto 5 -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti5.jpeg" 
+                             alt="Rencana pembuatan pintu depan ke pantai"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516937941344-00b4e0337589?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Rencana Pintu Depan</h6>
+                                <small class="text-white">Lokasi rencana pembuatan pintu ke pantai</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tambahan foto lain jika perlu -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg" 
+                             alt="Kegiatan kerja bakti lainnya"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Aktivitas Kerja Bakti</h6>
+                                <small class="text-white">Kegiatan gotong royong membersihkan area</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Foto tambahan -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg" 
+                             alt="Pembersihan area pasar"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1574231164645-d6f0e8553590?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Lingkungan Pasar</h6>
+                                <small class="text-white">Area pasar yang sudah dibersihkan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Video Dokumentasi Kerja Bakti</h2>
+                    <p class="text-muted mt-3">Rekaman kegiatan dan suasana kerja bakti persiapan pasar higienis ikan segar Mimbo</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-10 mx-auto" data-aos="fade-up">
+                    <div class="video-container">
+                        <!-- PERBAIKAN: Ganti URL YouTube dengan format embed yang benar -->
+                        <iframe src="https://www.youtube.com/embed/_GyZhrSfMWY?si=seLA4qx83_naXRI7" 
+                                title="Video Dokumentasi Kerja Bakti Persiapan Pasar Higienis Ikan Segar Mimbo" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen></iframe>
+                    </div>
+                    <div class="text-center mt-4">
+                        <h4>Dokumentasi Kerja Bakti Persiapan Pasar Higienis</h4>
+                        <p>Video dokumentasi lengkap kegiatan kerja bakti persiapan peresmian pasar higienis ikan segar Mimbo di Desa Sumberanyar, Kecamatan Banyuputih, Situbondo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="action-buttons">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="mb-4">Akses Laporan dan Bagikan Kegiatan</h2>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <button class="btn-download" onclick="openPdfAuthModal()">
+                            <i class="fas fa-download me-2"></i>Download Laporan Kegiatan (PDF)
+                        </button>
+                        <button class="btn-share" onclick="openShareModal()">
+                            <i class="fas fa-share-alt me-2"></i>Bagikan Kegiatan Ini
+                        </button>
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share">
+                            <i class="fas fa-images me-2"></i>Kegiatan Lainnya
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <!-- REPLACED: Logo dan teks footer diganti dengan gambar baru -->
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
+                             alt="Logo Dinas Peternakan dan Perikanan Situbondo" 
+                             height="50" 
+                             class="me-3">
+                    </div>
+                    <p class="text-light mb-4" style="line-height: 1.7;">
+                        Berkontribusi aktif dalam memajukan sektor perikanan tangkap dan memberdayakan masyarakat pesisir Situbondo melalui berbagai program inovatif dan berkelanjutan.
+                    </p>
+                    <div class="social-icons mt-4">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3">
+                    <h5>Tautan Cepat</h5>
+                    <div class="footer-links mt-4">
+                        <a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2"></i>Beranda</a>
+                        <a href="https://www.dinasperikanansitubondo.com/simpadan"><i class="fas fa-mobile-alt me-2"></i>SIMPADAN</a>
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan"><i class="fas fa-images me-2"></i>Dokumentasi</a>
+                        <a href="https://situbondokab.go.id/"><i class="fas fa-university me-2"></i>Pemkab Situbondo</a>
+                        <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i>Pengaduan</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <h5>Kontak Kami</h5>
+                    <div class="mt-4">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Alamat Kantor</span>
+                                <small class="text-light">Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fab fa-whatsapp text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">WhatsApp Admin</span>
+                                <small class="text-light">0878 6561 4222</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Email</span>
+                                <small class="text-light">info@dinasperikanansitubondo.com</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="bg-light my-5">
+            
+            <div class="text-center text-light">
+                <p class="mb-2">&copy; <span id="currentYear">2025</span> Dinas Perikanan Situbondo. Hak Cipta Dilindungi.</p>
+                <small>Dibuat dengan <i class="fas fa-heart text-danger"></i> untuk Nelayan Situbondo</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
