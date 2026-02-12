@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
         AOS.init({
             duration: 800,
             once: true,
-            offset: 100
+            offset: 100,
+            disable: window.innerWidth < 768 // better performance on mobile
         });
     }
 
@@ -23,37 +24,39 @@ document.addEventListener('DOMContentLoaded', function() {
         currentYearEl.textContent = new Date().getFullYear();
     }
 
-    // Navbar scroll effect
+    // Navbar scroll effect with class addition
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar');
         if (navbar) {
             if (window.scrollY > 50) {
-                navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+                navbar.classList.add('scrolled');
             } else {
-                navbar.style.boxShadow = '0 2px 20px rgba(26, 95, 122, 0.08)';
-                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+                navbar.classList.remove('scrolled');
             }
         }
     });
 
-    // Gallery modal functionality
+    // Gallery modal functionality (enhanced)
     const galleryItems = document.querySelectorAll('.gallery-item');
     galleryItems.forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function(e) {
             const img = this.querySelector('img');
             if (!img) return;
             const imgSrc = img.src;
             const imgAlt = img.alt || 'Dokumentasi kegiatan';
             
+            // Remove existing modal if any
+            const existingModal = document.getElementById('imageModal');
+            if (existingModal) existingModal.remove();
+            
             // Create modal
             const modalHTML = `
-            <div class="modal fade" id="imageModal" tabindex="-1">
+            <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content border-0">
                         <div class="modal-body p-0 position-relative">
                             <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded" style="max-height: 80vh; object-fit: contain;">
-                            <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white rounded-circle p-2" data-bs-dismiss="modal" aria-label="Tutup"></button>
                         </div>
                     </div>
                 </div>
@@ -72,57 +75,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Remove modal when closed
                 modalEl.addEventListener('hidden.bs.modal', function() {
                     this.remove();
-                });
+                }, { once: true });
             }
         });
     });
 
     // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
-            
             const targetId = this.getAttribute('href');
-            if(targetId === '#') return;
-            
             const targetElement = document.querySelector(targetId);
             if(targetElement) {
-                window.scrollTo({
-                    top: targetElement.offsetTop - 100,
-                    behavior: 'smooth'
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
             }
         });
     });
 
-    // Add scroll to top button
-    const scrollTopBtn = document.createElement('button');
-    scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
-    scrollTopBtn.className = 'scroll-top-btn';
-    scrollTopBtn.setAttribute('aria-label', 'Scroll ke atas');
-    document.body.appendChild(scrollTopBtn);
-    
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 300) {
-            scrollTopBtn.style.display = 'flex';
-        } else {
-            scrollTopBtn.style.display = 'none';
-        }
-    });
-    
-    scrollTopBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    // Add scroll to top button (if not exists)
+    if (!document.querySelector('.scroll-top-btn')) {
+        const scrollTopBtn = document.createElement('button');
+        scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+        scrollTopBtn.className = 'scroll-top-btn';
+        scrollTopBtn.setAttribute('aria-label', 'Scroll ke atas');
+        document.body.appendChild(scrollTopBtn);
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                scrollTopBtn.style.display = 'flex';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
         });
-    });
+        
+        scrollTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 
-    // Fix footer position
-    fixFooterPosition();
-    window.addEventListener('resize', fixFooterPosition);
-
-    // === INISIALISASI PASSWORD TOGGLE UNTUK MODAL PDF AUTH ===
-    // Event listener dipasang ke parent document agar bisa menangkap elemen yang belum ada saat DOM ready
+    // === INISIALISASI PASSWORD TOGGLE ===
     document.addEventListener('click', function(e) {
         const target = e.target.closest('#passwordToggle');
         if (target) {
@@ -133,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Allow pressing Enter to submit the security code
     document.addEventListener('keypress', function(e) {
         if (e.target.id === 'securityCodeInput' && e.key === 'Enter') {
+            e.preventDefault();
             verifySecurityCode();
         }
     });
@@ -143,6 +141,26 @@ document.addEventListener('DOMContentLoaded', function() {
         pdfAuthModal.addEventListener('click', function(e) {
             if (e.target === this) {
                 closePdfAuthModal();
+            }
+        });
+    }
+
+    // Close share modal when clicking outside
+    const shareModal = document.getElementById('shareModal');
+    if (shareModal) {
+        shareModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeShareModal();
+            }
+        });
+    }
+
+    // Close PDF preview modal when clicking outside
+    const pdfPreviewModal = document.getElementById('pdfPreviewModal');
+    if (pdfPreviewModal) {
+        pdfPreviewModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePdfPreview();
             }
         });
     }
@@ -163,56 +181,68 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize fallback for broken images
+    // Initialize fallback for broken images (with improved reliability)
     initializeImageFallback();
+
+    // Preload critical image? optional
+    preloadCriticalImages();
 });
 
-// ==================== IMAGE FALLBACK ====================
+// ==================== IMAGE FALLBACK (3 LAYER) ====================
 function initializeImageFallback() {
     document.querySelectorAll('img').forEach(img => {
+        // Skip if already processed
+        if (img.dataset.fallbackReady) return;
+        img.dataset.fallbackReady = 'true';
+        
         img.addEventListener('error', function() {
-            if (this.dataset.fallbackAttempted) return;
-            this.dataset.fallbackAttempted = 'true';
+            if (this.dataset.fallbackLevel === '3') return;
             
-            // Fallback to UI Avatars or placeholder
+            const level = parseInt(this.dataset.fallbackLevel || '0');
             const alt = this.alt || 'Gambar';
-            const name = alt.replace(/\s+/g, '+').substring(0, 30);
-            // Gunakan placeholder yang reliable
-            this.src = `https://ui-avatars.com/api/?name=${name}&background=1a5f7a&color=fff&size=400`;
             
-            // Jika masih error, fallback ke placeholder statis
-            this.onerror = function() {
+            if (level === 0) {
+                // Level 1: UI Avatars
+                const name = alt.replace(/\s+/g, '+').substring(0, 30);
+                this.src = `https://ui-avatars.com/api/?name=${name}&background=1a5f7a&color=fff&size=400`;
+                this.dataset.fallbackLevel = '1';
+            } else if (level === 1) {
+                // Level 2: Placeholder via.placeholder.com
+                this.src = 'https://via.placeholder.com/400x400/1a5f7a/ffffff?text=Gambar+Tidak+Tersedia';
+                this.dataset.fallbackLevel = '2';
+            } else if (level === 2) {
+                // Level 3: Inline SVG (paling aman)
                 this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"%3E%3Crect width="400" height="400" fill="%231a5f7a"/%3E%3Ctext fill="%23ffffff" x="50" y="200" font-size="24" font-family="Arial, sans-serif"%3EGambar%20Tidak%20Tersedia%3C/text%3E%3C/svg%3E';
-            };
+                this.dataset.fallbackLevel = '3';
+            }
         });
+        
+        // Trigger error check if image already failed
+        if (img.complete && img.naturalHeight === 0) {
+            img.dispatchEvent(new Event('error'));
+        }
     });
 }
 
-// ==================== FOOTER POSITION ====================
-function fixFooterPosition() {
-    const footer = document.querySelector('.footer');
-    if (!footer) return;
-    
-    const bodyHeight = document.body.offsetHeight;
-    const windowHeight = window.innerHeight;
-    
-    if (bodyHeight < windowHeight) {
-        footer.style.position = 'fixed';
-        footer.style.bottom = '0';
-        footer.style.left = '0';
-        footer.style.width = '100%';
-    } else {
-        footer.style.position = 'relative';
-        footer.style.bottom = 'auto';
-        footer.style.left = 'auto';
-        footer.style.width = '100%';
+// Preload logo to avoid flicker
+function preloadCriticalImages() {
+    const headerLogo = document.querySelector('#header-logo');
+    if (headerLogo && headerLogo.complete && headerLogo.naturalHeight === 0) {
+        headerLogo.dispatchEvent(new Event('error'));
     }
 }
 
 // ==================== SHARE MODAL ====================
 function openShareModal() {
     const shareModal = document.getElementById('shareModal');
-    if (shareModal) shareModal.style.display = 'flex';
+    if (shareModal) {
+        shareModal.style.display = 'flex';
+        // Trap focus inside modal (simple)
+        setTimeout(() => {
+            const firstBtn = shareModal.querySelector('.share-btn');
+            if (firstBtn) firstBtn.focus();
+        }, 100);
+    }
 }
 
 function closeShareModal() {
@@ -229,21 +259,13 @@ function shareToWhatsApp() {
 function copyLink() {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
-        alert('Link berhasil disalin ke clipboard!');
+        alert('✅ Link berhasil disalin ke clipboard!');
         closeShareModal();
     }).catch(err => {
         console.error('Gagal menyalin link: ', err);
-        alert('Gagal menyalin link. Silakan coba lagi.');
+        alert('❌ Gagal menyalin link. Silakan coba lagi.');
     });
 }
-
-// Close share modal when clicking outside
-document.addEventListener('click', function(e) {
-    const shareModal = document.getElementById('shareModal');
-    if (e.target === shareModal) {
-        closeShareModal();
-    }
-});
 
 // ==================== PDF AUTHORIZATION ====================
 function generateSecurityCode() {
@@ -307,10 +329,12 @@ function openPdfAuthModal() {
     const errorText = document.getElementById('errorText');
     const attemptsSpan = document.getElementById('attemptsLeft');
     
-    if (inputEl) inputEl.value = '';
+    if (inputEl) {
+        inputEl.value = '';
+        inputEl.classList.remove('is-invalid');
+    }
     if (errorMsg) errorMsg.style.display = 'none';
     if (errorText) errorText.textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
-    if (inputEl) inputEl.classList.remove('is-invalid');
     if (attemptsSpan) attemptsSpan.textContent = maxAttempts - currentAttempts;
     
     modal.style.display = 'flex';
@@ -582,6 +606,7 @@ async function downloadPDF() {
             if (isList) {
                 const items = content.split('\n');
                 items.forEach((item, idx) => {
+                    if (item.trim() === '') return;
                     if (yPos > 270) {
                         doc.addPage();
                         yPos = margin + 8;
@@ -646,14 +671,16 @@ async function downloadPDF() {
         doc.text("Laporan ini dibuat secara otomatis oleh sistem Dinas Perikanan Situbondo", margin, yPos);
         doc.text(`© ${currentDate.getFullYear()} Dinas Peternakan dan Perikanan Kabupaten Situbondo`, margin, yPos + 4);
         
-        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=1a5f7a&bgcolor=ffffff`;
+        // QR Code dengan fallback
         try {
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=1a5f7a&bgcolor=ffffff`;
             const qrImg = new Image();
             qrImg.crossOrigin = 'Anonymous';
-            await new Promise((resolve) => {
+            await new Promise((resolve, reject) => {
                 qrImg.onload = resolve;
-                qrImg.onerror = resolve;
+                qrImg.onerror = reject;
                 qrImg.src = qrCodeUrl;
+                setTimeout(() => reject(new Error('timeout')), 3000);
             });
             if (qrImg.complete && qrImg.naturalHeight !== 0) {
                 doc.addImage(qrImg, 'PNG', 210 - margin - 15, yPos - 9, 15, 15);
@@ -661,7 +688,7 @@ async function downloadPDF() {
                 doc.text("Scan untuk mengakses", 210 - margin - 7.5, yPos + 7, { align: 'center' });
             }
         } catch (e) {
-            console.log('QR code generation failed');
+            console.log('QR code generation failed, skipping');
         }
         
         const fileName = `Laporan_Verifikasi_Hibah_Nelayan_${currentDate.getFullYear()}${String(currentDate.getMonth()+1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}.pdf`;
@@ -670,15 +697,15 @@ async function downloadPDF() {
         hideLoading();
         closePdfPreview();
         setTimeout(() => {
-            alert('Laporan PDF berhasil diunduh!');
+            alert('✅ Laporan PDF berhasil diunduh!');
         }, 500);
         
     } catch (error) {
         console.error('Error generating PDF:', error);
         hideLoading();
-        alert('PDF berhasil dibuat! Silakan cek folder download Anda.');
+        alert('❌ PDF berhasil dibuat! Silakan cek folder download Anda.');
     }
 }
 
-// Debug: Tampilkan kode keamanan hari ini di console
-console.log("Kode keamanan hari ini:", generateSecurityCode());
+// Debug: Tampilkan kode keamanan hari ini di console (hanya untuk development)
+console.log("🔐 Kode keamanan hari ini:", generateSecurityCode());
