@@ -1,1 +1,508 @@
-.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- JUDUL BARU -->
+    <title>Kerja Bakti Bersih Pantai Desa Kilensari – Dinas Peternakan & Perikanan Situbondo</title>
+    
+    <!-- META DESKRIPSI BARU -->
+    <meta name="description" content="Dinas Peternakan dan Perikanan Situbondo bersama Kodim 0823 dan seluruh OPD melaksanakan kerja bakti bersih pantai di Dermaga Lama Panarukan, Desa Kilensari, Kecamatan Panarukan, Kamis 12 Februari 2026.">
+    
+    <!-- OPEN GRAPH / THUMBNAIL UNTUK SHARE -->
+    <meta property="og:title" content="Kerja Bakti Bersih Pantai Desa Kilensari – Dinas Peternakan & Perikanan Situbondo">
+    <meta property="og:description" content="20 personel Dinas Peternakan & Perikanan bersama Kodim 0823 dan seluruh OPD Kab. Situbondo gotong royong bersihkan kawasan Dermaga Lama Panarukan.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://www.dinasperikanansitubondo.com/kerja-bakti-kilensari">
+    <meta property="og:type" content="article">
+    
+    <!-- TWITTER CARD -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kerja Bakti Bersih Pantai Desa Kilensari">
+    <meta name="twitter:description" content="Dinas Peternakan & Perikanan Situbondo turut serta dalam Karya Bakti Kodim 0823 di Dermaga Lama Panarukan.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg">
+    
+    <!-- Bootstrap 5 CSS, Font Awesome, Google Fonts, AOS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- jsPDF & html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- STYLE CSS EKSTERNAL -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Overlay, Share Modal, PDF Auth Modal, PDF Preview Modal -->
+    <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div></div>
+    
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <h3 class="section-title">Bagikan Kegiatan Ini</h3>
+            <p>Pilih opsi untuk membagikan informasi kegiatan:</p>
+            <div class="share-buttons">
+                <button class="share-btn whatsapp" onclick="shareToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i><span>Bagikan ke WhatsApp</span>
+                </button>
+                <button class="share-btn copy" onclick="copyLink()">
+                    <i class="fas fa-copy"></i><span>Salin Link</span>
+                </button>
+            </div>
+            <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding: 10px; border-radius: 10px;">Tutup</button>
+        </div>
+    </div>
+    
+    <div class="pdf-auth-modal" id="pdfAuthModal">
+        <div class="pdf-auth-content">
+            <div class="auth-icon"><i class="fas fa-lock"></i></div>
+            <h3 class="section-title text-center">Otorisasi Akses Dokumen</h3>
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Perhatian:</strong> Anda akan mengakses laporan resmi kegiatan Karya Bakti.
+            </div>
+            <div class="info-message">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Kode Keamanan:</strong> Hubungi petugas Dinas Perikanan Situbondo untuk mendapatkan kode akses.
+            </div>
+            <div class="mb-4">
+                <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan</label>
+                <div class="input-group-password">
+                    <input type="password" class="form-control form-control-lg" id="securityCodeInput" placeholder="8 digit angka" maxlength="8" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                    <button type="button" class="password-toggle" id="passwordToggle"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="error-message" id="errorMessage"><i class="fas fa-times-circle me-2"></i><span id="errorText">Kode salah.</span></div>
+            </div>
+            <div class="attempts-counter"><i class="fas fa-shield-alt me-2"></i>Percobaan tersisa: <span id="attemptsLeft">3</span></div>
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;"><i class="fas fa-times me-2"></i>Batal</button>
+                <button class="btn btn-primary mb-2" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;"><i class="fas fa-check me-2"></i>Verifikasi</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="pdf-preview-modal" id="pdfPreviewModal">
+        <div class="pdf-preview-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
+                <button class="btn-close" onclick="closePdfPreview()"></button>
+            </div>
+            <div class="pdf-preview" id="pdfPreviewContent"></div>
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfPreview()" style="padding: 10px 20px; border-radius: 10px;">Tutup</button>
+                <button class="btn btn-primary mb-2" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 10px 20px; border-radius: 10px;">Download PDF</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation (navbar) - LOGO & TEKS DIGANTI -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com">
+                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" alt="Logo Dinas Peternakan dan Perikanan Situbondo" height="48">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="https://www.dinasperikanansitubondo.com">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.dinasperikanansitubondo.com/kegiatan">Kegiatan Lainnya</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">Karya Bakti</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.dinasperikanansitubondo.com/simpadan">SIMPADAN</a></li>
+                    <li class="nav-item ms-2">
+                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 10px 24px; border-radius: 10px;">
+                            <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- HERO SECTION BARU -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="badge-category"><i class="fas fa-broom"></i> KARYA BAKTI – GERAKAN ASRI</span>
+                    <h1 data-aos="fade-up">Kerja Bakti Bersih Pantai Desa Kilensari, Kecamatan Panarukan</h1>
+                    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
+                        Dinas Peternakan dan Perikanan Situbondo bersama Kodim 0823 serta seluruh OPD Kabupaten Situbondo 
+                        melaksanakan karya bakti pembersihan kawasan Dermaga Lama Panarukan, sebagai wujud sinergi TNI-Pemerintah 
+                        dalam mewujudkan lingkungan yang bersih, sehat, dan indah.
+                    </p>
+                    <div class="row g-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div><h5 class="text-white mb-2">Tanggal</h5><p class="text-white mb-0">12 Februari 2026</p></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div><h5 class="text-white mb-2">Lokasi</h5><p class="text-white mb-0">Dermaga Lama Panarukan, Desa Kilensari</p></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon"><i class="fas fa-users"></i></div>
+                                <div><h5 class="text-white mb-2">Keterlibatan</h5><p class="text-white mb-0">17 OPD + TNI-Polri</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- MAIN CONTENT BARU -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Deskripsi lengkap kegiatan -->
+                    <div class="content-box" data-aos="fade-up">
+                        <h2 class="section-title">Sinergi TNI dan Pemerintah Daerah dalam Gerakan ASRI</h2>
+                        <div class="description-text">
+                            <p>Pada hari Kamis, 12 Februari 2026, bertempat di kawasan Dermaga Lama Panarukan, Desa Kilensari, Kecamatan Panarukan, 
+                            telah dilaksanakan kegiatan Karya Bakti dalam rangka Gerakan ASRI (Aman, Sehat, Resik, Indah). Kegiatan ini merupakan 
+                            tindak lanjut Instruksi Presiden RI pada Rakornas Pusat dan Daerah serta Surat Telegram Danrem 083/Bdj Nomor ST/108/2026.</p>
+                            
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-envelope-open-text"></i> Surat Perintah Kodim 0823</h5>
+                                <p>Kegiatan ini dilaksanakan berdasarkan Surat Komando Distrik Militer 0823 Nomor <strong>B/99/II/2026</strong> tanggal 11 Februari 2026 perihal Permohonan Bantuan Personel. Surat tersebut ditandatangani oleh Kepala Staf Kodim 0823 dan ditujukan kepada Bupati Situbondo beserta seluruh OPD.</p>
+                            </div>
+                            
+                            <p>Dinas Peternakan dan Perikanan Kabupaten Situbondo turut berpartisipasi dengan mengerahkan <strong>20 personel</strong> yang dipimpin langsung oleh <strong>Kepala Bidang Pemberdayaan Nelayan, Bapak SUGENG PURWO PRIYANTO, S.E., M.M.</strong> beserta staf. Kehadiran Dinas Perikanan tidak hanya sebagai bentuk dukungan terhadap program kebersihan lingkungan, tetapi juga sebagai wujud kepedulian terhadap ekosistem pesisir yang menjadi sumber penghidupan nelayan.</p>
+                            
+                            <p>Kegiatan diawali dengan apel pagi yang dipimpin oleh Komandan Kodim 0823 atau perwakilannya, dilanjutkan dengan arahan teknis dan pembagian wilayah kerja. Seluruh personel bergotong-royong membersihkan sampah, rumput liar, dan lumpur di sepanjang dermaga serta area sekitar. Peralatan seperti sapu lidi, cangkul, sabit, mesin rumput, dan kantong sampah digunakan secara optimal.</p>
+                            
+                            <p>Keterlibatan lintas sektor ini mencerminkan sinergi yang kuat antara TNI, Pemerintah Daerah, dan masyarakat. Selain Dinas Peternakan dan Perikanan, OPD lain seperti Dinas Lingkungan Hidup, Dinas Kesehatan, Dinas Perhubungan, Dinas PUPP, dan 12 dinas lainnya turut serta mengirimkan personel dan materiil sesuai daftar kebutuhan yang telah ditetapkan.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Rincian kegiatan dan partisipasi OPD -->
+                    <div class="content-box" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="section-title">Kolaborasi Pentahelix: TNI, Pemda, dan Masyarakat</h2>
+                        <div class="description-text">
+                            <p>Gerakan ASRI di Dermaga Lama Panarukan menjadi simbol nyata kolaborasi antar institusi. Berdasarkan surat Kodim 0823, total personel yang dikerahkan dari masing-masing OPD adalah 20 orang, kecuali Dinas Lingkungan Hidup (50 orang), Dinas Kesehatan (20 orang + tim medis), dan Dinas Perhubungan (10 orang + 5 personel bantu lalin).</p>
+                            
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-clipboard-list"></i> Kontribusi Dinas Peternakan & Perikanan</h5>
+                                <ul>
+                                    <li><strong>20 personel</strong> dipimpin Kabid Pemberdayaan Nelayan</li>
+                                    <li>Fokus pembersihan area pendaratan ikan dan sekitar dermaga</li>
+                                    <li>Edukasi singkat kepada nelayan tentang pentingnya kebersihan lingkungan</li>
+                                    <li>Dukungan peralatan kebersihan sederhana</li>
+                                </ul>
+                            </div>
+                            
+                            <p>Selain kegiatan fisik, momen ini juga dimanfaatkan untuk mempererat komunikasi antara Dinas Perikanan dengan nelayan setempat. Beberapa nelayan yang melaut pagi hari turut membantu membersihkan area sekitar perahunya. Hal ini menunjukkan bahwa kepedulian terhadap lingkungan telah menjadi kesadaran kolektif.</p>
+                            
+                            <p>Kegiatan berlangsung dari pukul 06.00 WIB hingga selesai (sekitar pukul 10.00 WIB). Seluruh peserta mengenakan pakaian kaos masing-masing dinas, menambah semarak suasana kebersamaan. Usai kegiatan, dilakukan foto bersama sebagai dokumentasi dan bentuk apresiasi atas kerja keras semua pihak.</p>
+                            
+                            <p><strong>Semangat gotong royong yang terpancar dalam kegiatan ini diharapkan dapat terus dipelihara dan menjadi budaya kerja aparatur sipil negara bersama TNI-Polri.</strong></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SIDEBAR KANAN: Pejabat hadir, topik, fakta -->
+                <div class="col-lg-4">
+                    <div class="content-box" data-aos="fade-left">
+                        <h2 class="section-title">Pejabat & Perwakilan</h2>
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: var(--light-blue);">
+                                <div class="bg-primary-blue p-3 rounded-circle me-3"><i class="fas fa-user-tie text-white"></i></div>
+                                <div><h5 class="mb-1 text-primary-blue">SUGENG PURWO PRIYANTO, S.E., M.M.</h5><p class="text-muted mb-0">Kabid Pemberdayaan Nelayan</p></div>
+                            </div>
+                            <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: var(--light-blue);">
+                                <div class="bg-secondary-blue p-3 rounded-circle me-3"><i class="fas fa-shield text-white"></i></div>
+                                <div><h5 class="mb-1 text-primary-blue">Kepala Staf Kodim 0823</h5><p class="text-muted mb-0">Penanggung Jawab Kegiatan</p></div>
+                            </div>
+                            <div class="d-flex align-items-center p-3 rounded" style="background: var(--light-blue);">
+                                <div class="bg-accent-blue p-3 rounded-circle me-3"><i class="fas fa-building text-white"></i></div>
+                                <div><h5 class="mb-1 text-primary-blue">Camat Panarukan</h5><p class="text-muted mb-0">Tuan Rumah Wilayah</p></div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h5 class="section-title mb-3">Topik Terkait</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark p-2 border">Karya Bakti</span>
+                                <span class="badge bg-light text-dark p-2 border">Kodim 0823</span>
+                                <span class="badge bg-light text-dark p-2 border">Gerakan ASRI</span>
+                                <span class="badge bg-light text-dark p-2 border">Dermaga Panarukan</span>
+                                <span class="badge bg-light text-dark p-2 border">Bersih Pantai</span>
+                                <span class="badge bg-light text-dark p-2 border">OPD Situbondo</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Facts -->
+                    <div class="content-box" data-aos="fade-left" data-aos-delay="100">
+                        <h2 class="section-title">Fakta Singkat</h2>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-teal p-2 rounded-circle me-3"><i class="fas fa-users text-white"></i></div>
+                            <div><h6 class="mb-1">Personel Dinas Perikanan</h6><p class="text-muted mb-0">20 orang + 1 Kabid</p></div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-amber p-2 rounded-circle me-3"><i class="fas fa-truck text-white"></i></div>
+                            <div><h6 class="mb-1">Dukungan DLH</h6><p class="text-muted mb-0">5 unit truk, mesin rumput</p></div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-sea-green p-2 rounded-circle me-3"><i class="fas fa-file-alt text-white"></i></div>
+                            <div><h6 class="mb-1">Surat Dasar</h6><p class="text-muted mb-0">Kodim 0823 / B/99/II/2026</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- MODULES SECTION (Aspek Kegiatan) -->
+    <section class="modules-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Dimensi Kegiatan Karya Bakti</h2>
+                    <p class="text-muted mt-3">Nilai-nilai strategis di balik gotong royong bersih pantai</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-leaf"></i></div>
+                        <h4>Aspek Lingkungan</h4>
+                        <p class="text-muted">Pembersihan ekosistem pesisir, pengurangan sampah plastik, dan perindahan kawasan dermaga.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                        <h4>Aspek Sosial</h4>
+                        <p class="text-muted">Memperkuat hubungan sipil-militer, kebersamaan ASN, dan kepedulian terhadap masyarakat pesisir.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-gavel"></i></div>
+                        <h4>Aspek Legal</h4>
+                        <p class="text-muted">Pelaksanaan instruksi Presiden dan surat perintah Komando Distrik Militer 0823.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-fish"></i></div>
+                        <h4>Aspek Ekonomi</h4>
+                        <p class="text-muted">Dukungan terhadap sektor kelautan dan perikanan melalui lingkungan yang bersih dan sehat.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- SPEAKERS SECTION (Tokoh) -->
+    <section class="speakers-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Pemimpin dan Penggerak Kegiatan</h2>
+                    <p class="text-muted mt-3">Tokoh kunci di balik suksesnya karya bakti Dermaga Panarukan</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-sebelum-kegiatan.jpeg" 
+                                 alt="Kabid Pemberdayaan Nelayan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=SUGENG+PRIYANTO&background=1e3a8a&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">SUGENG PURWO PRIYANTO, S.E., M.M.</h3>
+                        <p class="speaker-role">Kepala Bidang Pemberdayaan Nelayan</p>
+                        <p class="speaker-desc">Memimpin 20 personel Dinas Peternakan dan Perikanan, memastikan kontribusi nyata dalam kebersihan lingkungan pesisir.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-arahan-komandan-kodim.jpeg" 
+                                 alt="Perwakilan Kodim 0823"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Kodim+0823&background=3b82f6&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">Kepala Staf Kodim 0823</h3>
+                        <p class="speaker-role">Penanggung Jawab Kegiatan</p>
+                        <p class="speaker-desc">Memberikan arahan teknis dan memimpin apel pagi, memastikan seluruh personel memahami sasaran karya bakti.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="speaker-card">
+                        <div class="speaker-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-1.jpeg" 
+                                 alt="Perwakilan Nelayan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Nelayan+Kilensari&background=60a5fa&color=fff&size=400'">
+                        </div>
+                        <h3 class="speaker-name">Masyarakat Nelayan</h3>
+                        <p class="speaker-role">Desa Kilensari</p>
+                        <p class="speaker-desc">Turut serta dalam pembersihan, menunjukkan sinergi antara pemerintah, TNI, dan masyarakat pesisir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- GALLERY SECTION – 6 FOTO BARU -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Dokumentasi Karya Bakti</h2>
+                    <p class="text-muted mt-3">Momen kebersamaan dalam kerja bakti di Dermaga Lama Panarukan</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-sebelum-kegiatan.jpeg" alt="Foto bersama sebelum kegiatan">
+                        <div class="gallery-overlay"><div class="gallery-caption"><h6 class="text-white mb-0">Kesiapan Personel</h6><small class="text-white">Sebelum apel pagi</small></div></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg" alt="Foto bersama selesai kegiatan">
+                        <div class="gallery-overlay"><div class="gallery-caption"><h6 class="text-white mb-0">Usai Gotong Royong</h6><small class="text-white">Kebersamaan dengan Kodim</small></div></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-arahan-komandan-kodim.jpeg" alt="Arahan Komandan Kodim">
+                        <div class="gallery-overlay"><div class="gallery-caption"><h6 class="text-white mb-0">Arahan Kegiatan</h6><small class="text-white">Pengarahan dari Kodim</small></div></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-upel-sebelum-kegiatan-dipimpin-kodim.jpeg" alt="Apel pagi">
+                        <div class="gallery-overlay"><div class="gallery-caption"><h6 class="text-white mb-0">Apel Pagi</h6><small class="text-white">Dipimpin Kodim 0823</small></div></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-1.jpeg" alt="Proses kerja bakti 1">
+                        <div class="gallery-overlay"><div class="gallery-caption"><h6 class="text-white mb-0">Pembersihan Area</h6><small class="text-white">Dermaga Lama Panarukan</small></div></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-2.jpeg" alt="Proses kerja bakti 2">
+                        <div class="gallery-overlay"><div class="gallery-caption"><h6 class="text-white mb-0">Gotong Royong</h6><small class="text-white">Semua unsur terlibat</small></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- VIDEO SECTION – YouTube baru -->
+    <section class="video-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Video Dokumentasi Karya Bakti</h2>
+                    <p class="text-muted mt-3">Liputan singkat suasana kerja bakti di Dermaga Lama Panarukan</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-10 mx-auto" data-aos="fade-up">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/ltIf0lYdyxU?si=RKRoGNfVE3xNI7yX" title="Video Karya Bakti Dermaga Panarukan" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="text-center mt-4">
+                        <h4>Sinergi TNI-Pemda Bersihkan Pantai</h4>
+                        <p>Video dokumentasi kegiatan kerja bakti yang diinisiasi Kodim 0823, diikuti oleh Dinas Peternakan & Perikanan serta seluruh OPD Situbondo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ACTION BUTTONS -->
+    <section class="action-buttons">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="mb-4">Akses Laporan dan Bagikan Kegiatan</h2>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <button class="btn-download" onclick="openPdfAuthModal()"><i class="fas fa-download me-2"></i>Download Laporan (PDF)</button>
+                        <button class="btn-share" onclick="openShareModal()"><i class="fas fa-share-alt me-2"></i>Bagikan Kegiatan Ini</button>
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share"><i class="fas fa-images me-2"></i>Kegiatan Lainnya</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FOOTER - LOGO & TEKS DIGANTI -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <div class="mb-4">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
+                             alt="Logo Dinas Peternakan dan Perikanan Situbondo" style="max-width: 250px; width: 100%;">
+                    </div>
+                    <p class="text-light mb-4">Berkontribusi aktif dalam memajukan sektor perikanan tangkap dan memberdayakan masyarakat pesisir Situbondo melalui berbagai program inovatif dan berkelanjutan.</p>
+                    <div class="social-icons mt-4">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Tautan Cepat</h5>
+                    <div class="footer-links mt-4">
+                        <a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2"></i>Beranda</a>
+                        <a href="https://www.dinasperikanansitubondo.com/simpadan"><i class="fas fa-mobile-alt me-2"></i>SIMPADAN</a>
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan"><i class="fas fa-images me-2"></i>Kegiatan Lainnya</a>
+                        <a href="https://situbondokab.go.id/"><i class="fas fa-university me-2"></i>Pemkab Situbondo</a>
+                        <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i>Pengaduan</a>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <h5>Kontak Kami</h5>
+                    <div class="mt-4">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0"><i class="fas fa-map-marker-alt text-white"></i></div>
+                            <div><span class="d-block text-white fw-bold">Alamat Kantor</span><small class="text-light">Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur</small></div>
+                        </div>
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0"><i class="fab fa-whatsapp text-white"></i></div>
+                            <div><span class="d-block text-white fw-bold">WhatsApp Admin</span><small class="text-light">0878 6561 4222</small></div>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <div class="bg-secondary-blue p-2 rounded-circle me-3 flex-shrink-0"><i class="fas fa-envelope text-white"></i></div>
+                            <div><span class="d-block text-white fw-bold">Email</span><small class="text-light">info@dinasperikanansitubondo.com</small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light my-5">
+            <div class="text-center text-light">
+                <p class="mb-2">&copy; <span id="currentYear">2026</span> Dinas Perikanan Situbondo. Hak Cipta Dilindungi.</p>
+                <small>Dibuat dengan <i class="fas fa-heart text-danger"></i> untuk Nelayan Situbondo</small>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS, AOS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- MAIN JS EKSTERNAL -->
+    <script src="main.js"></script>
+</body>
+</html>
