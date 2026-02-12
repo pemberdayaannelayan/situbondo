@@ -8,15 +8,22 @@ AOS.init({
 // Set current year in footer
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-// Navbar scroll effect
+// Navbar scroll effect (with requestAnimationFrame untuk performa)
+let ticking = false;
 window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-    } else {
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.08)';
-        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+    if (!ticking) {
+        window.requestAnimationFrame(function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.08)';
+                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+            }
+            ticking = false;
+        });
+        ticking = true;
     }
 });
 
@@ -130,11 +137,14 @@ function copyLink() {
 }
 
 // Close modal when clicking outside
-document.getElementById('shareModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeShareModal();
-    }
-});
+const shareModal = document.getElementById('shareModal');
+if (shareModal) {
+    shareModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeShareModal();
+        }
+    });
+}
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(e) {
@@ -151,18 +161,14 @@ document.addEventListener('keydown', function(e) {
 let maxAttempts = 3;
 let currentAttempts = 0;
 let lockoutTime = 0;
-const lockoutDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+const lockoutDuration = 5 * 60 * 1000; // 5 minutes
 
-// PERBAIKAN: Generate security code berdasarkan format DDMMYYYY
+// Generate security code based on DDMMYYYY
 function generateSecurityCode() {
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = now.getFullYear();
-    
-    // Format DDMMYYYY seperti yang diminta
-    // Contoh: 31 Januari 2026 -> 31012026
-    // Contoh: 01 Februari 2026 -> 01022026
     return day + month + year;
 }
 
@@ -180,7 +186,6 @@ function isLockedOut() {
                 message: `Akses terkunci. Silakan coba lagi dalam ${minutes} menit ${seconds} detik.`
             };
         } else {
-            // Lockout period has ended
             lockoutTime = 0;
             currentAttempts = 0;
             return { locked: false, message: '' };
@@ -193,7 +198,9 @@ function isLockedOut() {
 let isPasswordVisible = false;
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('securityCodeInput');
-    const toggleIcon = document.getElementById('passwordToggle').querySelector('i');
+    const toggleIcon = document.getElementById('passwordToggle')?.querySelector('i');
+    
+    if (!passwordInput || !toggleIcon) return;
     
     isPasswordVisible = !isPasswordVisible;
     
@@ -208,7 +215,6 @@ function togglePasswordVisibility() {
 
 // Open PDF authorization modal
 function openPdfAuthModal() {
-    // Check if user is locked out
     const lockoutStatus = isLockedOut();
     if (lockoutStatus.locked) {
         alert(lockoutStatus.message);
@@ -216,87 +222,94 @@ function openPdfAuthModal() {
     }
     
     // Reset form
-    document.getElementById('securityCodeInput').value = '';
-    document.getElementById('errorMessage').style.display = 'none';
-    document.getElementById('errorText').textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
-    document.getElementById('securityCodeInput').classList.remove('is-invalid');
+    const inputField = document.getElementById('securityCodeInput');
+    const errorMsg = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    if (inputField) {
+        inputField.value = '';
+        inputField.classList.remove('is-invalid');
+    }
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (errorText) errorText.textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
     
     // Update attempts counter
-    document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
+    const attemptsSpan = document.getElementById('attemptsLeft');
+    if (attemptsSpan) attemptsSpan.textContent = maxAttempts - currentAttempts;
     
     // Show modal
-    document.getElementById('pdfAuthModal').style.display = 'flex';
+    const modal = document.getElementById('pdfAuthModal');
+    if (modal) modal.style.display = 'flex';
     
     // Focus on input
     setTimeout(() => {
-        document.getElementById('securityCodeInput').focus();
+        if (inputField) inputField.focus();
     }, 300);
 }
 
 // Close PDF authorization modal
 function closePdfAuthModal() {
-    document.getElementById('pdfAuthModal').style.display = 'none';
+    const modal = document.getElementById('pdfAuthModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // Verify security code
 function verifySecurityCode() {
-    // Check if user is locked out
     const lockoutStatus = isLockedOut();
     if (lockoutStatus.locked) {
-        document.getElementById('errorText').textContent = lockoutStatus.message;
-        document.getElementById('errorMessage').style.display = 'block';
+        const errorText = document.getElementById('errorText');
+        const errorMsg = document.getElementById('errorMessage');
+        if (errorText) errorText.textContent = lockoutStatus.message;
+        if (errorMsg) errorMsg.style.display = 'block';
         return;
     }
     
-    const userInput = document.getElementById('securityCodeInput').value;
-    const correctCode = generateSecurityCode(); // Get the SECRET code
+    const userInput = document.getElementById('securityCodeInput')?.value || '';
+    const correctCode = generateSecurityCode();
     const errorMessage = document.getElementById('errorMessage');
     const errorText = document.getElementById('errorText');
     const inputElement = document.getElementById('securityCodeInput');
     
     // Validate input
     if (!userInput || userInput.length !== 8) {
-        errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
-        errorMessage.style.display = 'block';
-        inputElement.classList.add('is-invalid');
-        inputElement.focus();
+        if (errorText) errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
+        if (errorMessage) errorMessage.style.display = 'block';
+        if (inputElement) {
+            inputElement.classList.add('is-invalid');
+            inputElement.focus();
+        }
         return;
     }
     
-    // PERBAIKAN: Bandingkan langsung dengan kode yang benar
     if (userInput === correctCode) {
-        // Code is correct - reset attempts
+        // Code correct
         currentAttempts = 0;
         closePdfAuthModal();
         generatePDFReport();
     } else {
-        // Code is incorrect
+        // Code incorrect
         currentAttempts++;
         
-        // Update attempts counter
         const attemptsLeft = maxAttempts - currentAttempts;
-        document.getElementById('attemptsLeft').textContent = attemptsLeft;
+        const attemptsSpan = document.getElementById('attemptsLeft');
+        if (attemptsSpan) attemptsSpan.textContent = attemptsLeft;
         
         if (currentAttempts >= maxAttempts) {
-            // Lock user out
             lockoutTime = new Date().getTime() + lockoutDuration;
-            errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
+            if (errorText) errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
         } else {
-            errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
+            if (errorText) errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
         }
         
-        errorMessage.style.display = 'block';
-        inputElement.classList.add('is-invalid');
-        
-        // Shake animation for error
-        inputElement.style.animation = 'none';
-        setTimeout(() => {
-            inputElement.style.animation = 'shake 0.5s';
-        }, 10);
-        
-        // Clear input and focus
-        inputElement.value = '';
-        inputElement.focus();
+        if (errorMessage) errorMessage.style.display = 'block';
+        if (inputElement) {
+            inputElement.classList.add('is-invalid');
+            inputElement.style.animation = 'none';
+            setTimeout(() => {
+                inputElement.style.animation = 'shake 0.5s';
+            }, 10);
+            inputElement.value = '';
+            inputElement.focus();
+        }
     }
 }
 
@@ -313,26 +326,29 @@ document.head.appendChild(style);
 
 // PDF Generation Functions
 function showLoading() {
-    document.getElementById('loadingOverlay').style.display = 'flex';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'flex';
 }
 
 function hideLoading() {
-    document.getElementById('loadingOverlay').style.display = 'none';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 function openPdfPreview() {
-    document.getElementById('pdfPreviewModal').style.display = 'flex';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closePdfPreview() {
-    document.getElementById('pdfPreviewModal').style.display = 'none';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // Generate PDF report after successful authorization
 function generatePDFReport() {
     showLoading();
     
-    // Get current date for report
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', {
         day: 'numeric',
@@ -340,7 +356,6 @@ function generatePDFReport() {
         year: 'numeric'
     });
     
-    // Create PDF content with formal format
     const pdfContent = `
     <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #333;">
         <!-- Kop Surat -->
@@ -348,7 +363,7 @@ function generatePDFReport() {
             <table style="width: 100%;">
                 <tr>
                     <td style="width: 80px; vertical-align: middle; padding-top: 5px;">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAI2SURBVHgB7Zq9ThtBFMf/u3ewvQgKLAQC0lAgQbwF7yFvECh5A0RDkwYpBekJECI1DR0FvAIpKcgLIFJEgoKj2A6c3M/smHjHx3p3dmdnb3f9S7a9ntk9/Z+Z7+yZMyCEEEIIIYQQQgghhBBCiP8LlUoFSZJ4MpkMf9/c3NDtdkt/v93+QzHmr1+/6Pz8nD4/P+nj4yPLrq+vKcsy8rw8z+mr1yu8zEKe57NM51dXV+n5+bn4/L6jQc88z+lwOKSrqyuaTqc0m81oPp/TYrGg5XJJy+WS5vM5rVYr2mw2dHh4SMvlkh4fH2k+n9NqtWKZyAdls9lQnufF8zebDfX7fQrDkIZv38p7DQD98+6Lb8ulNBqN6Pj4mM7Ozmhvb48uLy/p6uqKxuMxTSYTur6+ZvsQnU5HOq4gDKbTKfV6PXIch77/OC/Jr5cA0I0/fRzxT2m9XtNqtSLf9+X9n5+fZ2QUyHq9ppOTExqNRnR2dkYXFxfkui6dnp7K+5/P5xRFEU2nU+n49vY2BUGgvB1qDQCW3W5H/X5fUuY4Dg2HQ3p6epJ5mGq1Kj3wfZ/6/T4dHh5Sq9WiVqtFs9mMLi8v2R6iUqnI+w+CAHcDrdVqUavVotvbW+VtUesA8PzT6bSo4/PzM+3v70tB4Dg0Go2K53h+27ZpMBhQp9Mh27ap3+/TdDql7XZLp6enxe9hO461HcfKfM/3fQrDUN4etQ6AorIsY9uf4fV3d3fy3nMchxaLhSzF8Yr1el1W8a4w+n53d0fb7VZe/yYBBgAAAAAAAAAAAAAAAAAAAACQ8R+5ljgXb9Fv9wAAAABJRU5ErkJggg==" 
                              alt="Logo Kabupaten Situbondo" 
                              style="width: 70px; height: 70px; object-fit: contain; display: block; border-radius: 0;">
                     </td>
@@ -428,7 +443,7 @@ function generatePDFReport() {
                 </div>
             </div>
             <div style="width: 35%;">
-                <!-- Kosongkan untuk QR code nanti -->
+                <!-- QR code akan ditambahkan nanti -->
             </div>
         </div>
         
@@ -440,10 +455,11 @@ function generatePDFReport() {
                     <p>© ${currentDate.getFullYear()} Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
                 </div>
                 <div style="text-align: right; width: 25%;">
-                    <div class="qr-code" style="background: #ffffff; padding: 5px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); float: right;">
+                    <div class="qr-code" style="background: #ffffff; padding: 5px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1; float: right;">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=166534&bgcolor=ffffff" 
                              alt="QR Code Sumber Laporan" 
-                             style="width: 70px; height: 70px; object-fit: contain;">
+                             style="width: 70px; height: 70px; object-fit: contain;"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'70\' height=\'70\' viewBox=\'0 0 70 70\'%3E%3Crect width=\'70\' height=\'70\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'10\' fill=\'%23166534\' text-anchor=\'middle\' dy=\'.3em\'%3EQR%20Code%3C/text%3E%3C/svg%3E';">
                     </div>
                     <p style="font-size: 9px; margin-top: 5px; color: #666; clear: both; text-align: right;">Scan untuk mengakses sumber laporan</p>
                 </div>
@@ -453,15 +469,14 @@ function generatePDFReport() {
     `;
     
     // Set content to preview
-    document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
+    const preview = document.getElementById('pdfPreviewContent');
+    if (preview) preview.innerHTML = pdfContent;
     
     hideLoading();
     openPdfPreview();
 }
 
-// Base64 encoded placeholder logo untuk menghindari CORS issues
-const placeholderLogo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFjSURBVHgB7d2xTQNBEIXhsfAFARIgQzKgTToYAjg3j6JXODcPwdJgOSc/9Vx3/oPnOe6OnnH0l93Tsz+e3/kv3pnvxAAQIIAAIgwggAgDiCCAAAIIIICAIIAAAggggAACCCDAABBAgAEggAADQAABBoAAAggggAACCCCAABBAgAEggAACCAgCCCAgCCCAgCCAAAKCAAIICAIICDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQygT+3b89J+PF+c7T37S/tX53vP3nLq2X09r+f7cua+/V7PW5/ZZ1/L6fXc1/Nx/Bj7O8/HXyIABBBCABnQEcTAACgYgAADQAABBBgAAggwAAQQYAATfLZXKSDj7SwAAAAASUVORK5CYII=';
-
+// PDF Download dengan jsPDF
 async function downloadPDF() {
     showLoading();
     
@@ -473,11 +488,9 @@ async function downloadPDF() {
             format: 'a4'
         });
         
-        // Set margins
         const margin = 20;
         let yPos = margin;
         
-        // Current date
         const currentDate = new Date();
         const formattedDate = currentDate.toLocaleDateString('id-ID', {
             day: 'numeric',
@@ -485,69 +498,38 @@ async function downloadPDF() {
             year: 'numeric'
         });
         
-        // Logo dimensions
         const logoWidth = 18;
         const logoHeight = 18;
         
-        // Try to load real logo, fallback to placeholder
-        try {
-            const logoImg = new Image();
-            logoImg.crossOrigin = 'Anonymous';
-            
-            await new Promise((resolve, reject) => {
-                logoImg.onload = resolve;
-                logoImg.onerror = () => {
-                    // Use placeholder if real logo fails
-                    logoImg.src = placeholderLogo;
-                    resolve();
-                };
-                logoImg.src = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
-            });
-            
-            // Add logo at the top-left
-            doc.addImage(logoImg, 'PNG', margin, yPos, logoWidth, logoHeight);
-        } catch (e) {
-            console.log('Using placeholder logo');
-            const placeholderImg = new Image();
-            placeholderImg.src = placeholderLogo;
-            await new Promise(resolve => {
-                placeholderImg.onload = resolve;
-            });
-            doc.addImage(placeholderImg, 'PNG', margin, yPos, logoWidth, logoHeight);
-        }
+        // Logo base64 (fallback langsung)
+        const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAI2SURBVHgB7Zq9ThtBFMf/u3ewvQgKLAQC0lAgQbwF7yFvECh5A0RDkwYpBekJECI1DR0FvAIpKcgLIFJEgoKj2A6c3M/smHjHx3p3dmdnb3f9S7a9ntk9/Z+Z7+yZMyCEEEIIIYQQQgghhBBCiP8LlUoFSZJ4MpkMf9/c3NDtdkt/v93+QzHmr1+/6Pz8nD4/P+nj4yPLrq+vKcsy8rw8z+mr1yu8zEKe57NM51dXV+n5+bn4/L6jQc88z+lwOKSrqyuaTqc0m81oPp/TYrGg5XJJy+WS5vM5rVYr2mw2dHh4SMvlkh4fH2k+n9NqtWKZyAdls9lQnufF8zebDfX7fQrDkIZv38p7DQD98+6Lb8ulNBqN6Pj4mM7Ozmhvb48uLy/p6uqKxuMxTSYTur6+ZvsQnU5HOq4gDKbTKfV6PXIch77/OC/Jr5cA0I0/fRzxT2m9XtNqtSLf9+X9n5+fZ2QUyHq9ppOTExqNRnR2dkYXFxfkui6dnp7K+5/P5xRFEU2nU+n49vY2BUGgvB1qDQCW3W5H/X5fUuY4Dg2HQ3p6epJ5mGq1Kj3wfZ/6/T4dHh5Sq9WiVqtFs9mMLi8v2R6iUqnI+w+CAHcDrdVqUavVotvbW+VtUesA8PzT6bSo4/PzM+3v70tB4Dg0Go2K53h+27ZpMBhQp9Mh27ap3+/TdDql7XZLp6enxe9hO461HcfKfM/3fQrDUN4etQ6AorIsY9uf4fV3d3fy3nMchxaLhSzF8Yr1el1W8a4w+n53d0fb7VZe/yYBBgAAAAAAAAAAAAAAAAAAAACQ8R+5ljgXb9Fv9wAAAABJRU5ErkJggg==';
         
-        // Add header text to the right of the logo
+        doc.addImage(logoBase64, 'PNG', margin, yPos, logoWidth, logoHeight);
+        
+        // Header teks
         doc.setFontSize(11);
         doc.setFont("helvetica", "bold");
         doc.text("PEMERINTAH KABUPATEN SITUBONDO", 105, yPos + 5, { align: 'center' });
-        
         doc.setFontSize(12);
         doc.text("DINAS PETERNAKAN DAN PERIKANAN", 105, yPos + 11, { align: 'center' });
-        
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.text("Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664", 105, yPos + 17, { align: 'center' });
         doc.text("SITUBONDO 68312", 105, yPos + 22, { align: 'center' });
         
         yPos += 30;
-        
-        // Add horizontal line
         doc.setLineWidth(0.5);
         doc.line(margin, yPos, 210 - margin, yPos);
         yPos += 15;
         
-        // Report title
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.text("LAPORAN KEGIATAN", 105, yPos, { align: 'center' });
         yPos += 10;
         
-        // Main title
         doc.setFontSize(14);
         const title1 = "KERJA BAKTI PERSIAPAN PERESMIAN";
         const title2 = "PASAR HIGIENIS IKAN SEGAR MIMBO";
-        
-        // Split jika terlalu panjang
         const titleLines1 = doc.splitTextToSize(title1, 170);
         const titleLines2 = doc.splitTextToSize(title2, 170);
         
@@ -555,29 +537,21 @@ async function downloadPDF() {
             doc.text(line, 105, yPos, { align: 'center' });
             yPos += 7;
         });
-        
         titleLines2.forEach(line => {
             doc.text(line, 105, yPos, { align: 'center' });
             yPos += 7;
         });
-        
         yPos += 10;
         
-        // Helper function untuk menambahkan teks dengan pemisahan yang baik
         function addText(title, content, isList = false, isNumberedList = false) {
-            // Check for page break
             if (yPos > 270) {
                 doc.addPage();
                 yPos = margin;
             }
-            
-            // Add title
             doc.setFontSize(12);
             doc.setFont("helvetica", "bold");
             doc.text(title, margin, yPos);
             yPos += 8;
-            
-            // Add content
             doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
             
@@ -588,7 +562,6 @@ async function downloadPDF() {
                         doc.addPage();
                         yPos = margin + 8;
                     }
-                    // Gunakan splitTextToSize untuk item yang panjang
                     const lines = doc.splitTextToSize(item, 160);
                     lines.forEach((line, lineIndex) => {
                         if (lineIndex === 0) {
@@ -604,7 +577,6 @@ async function downloadPDF() {
                     });
                 });
             } else {
-                // Split long text into lines with a max width of 170mm
                 const lines = doc.splitTextToSize(content, 170);
                 lines.forEach(line => {
                     if (yPos > 270) {
@@ -615,11 +587,9 @@ async function downloadPDF() {
                     yPos += 6;
                 });
             }
-            
-            yPos += 8; // Spacing between sections
+            yPos += 8;
         }
         
-        // Add content sections with improved text wrapping
         addText("I. LATAR BELAKANG", 
             "Dalam rangka persiapan peresmian Pasar Higienis Ikan Segar Mimbo, Dinas Peternakan dan Perikanan Kabupaten Situbondo bersama dengan Camat Banyuputih beserta staf, Pemerintah Desa Sumberanyar, dan Tim Bidang Pemberdayaan Nelayan melaksanakan kegiatan kerja bakti. Kegiatan ini bertujuan untuk mempersiapkan infrastruktur pasar agar memenuhi standar higienis dan dapat berfungsi optimal untuk mendukung aktivitas perikanan di wilayah pesisir Situbondo.");
         
@@ -632,7 +602,7 @@ async function downloadPDF() {
         
         addText("III. KENDALA YANG DIHADAPI", 
             "Akses jalan ke pasar kurang tinggi sehingga menyulitkan transportasi ikan\n" +
-            "Pasar tidak memiliki pintu muka yang mengarah ke pantai padahal lokasi sangat dekat dengan aktivitas nelayan", true);
+            "Pasar tidak memiliki pintu muka yang mengarah ke pantai padahal lokasi pasar sangat dekat dengan aktivitas nelayan", true);
         
         addText("IV. TINDAKAN YANG DILAKUKAN", 
             "Kerja bakti pembersihan area pasar dari sampah dan kotoran\n" +
@@ -643,7 +613,6 @@ async function downloadPDF() {
         addText("V. HASIL KEGIATAN", 
             "Kegiatan kerja bakti berlangsung dengan lancar dan diikuti dengan semangat oleh seluruh pihak terkait. Area pasar telah dibersihkan dan siap untuk dipersiapkan lebih lanjut. Telah dilakukan koordinasi intensif untuk mengatasi kendala akses jalan dan pintu depan pasar. Dengan sinergi yang terbangun antara kecamatan, desa, dan dinas, diharapkan Pasar Higienis Ikan Segar Mimbo dapat segera beroperasi dan memberikan manfaat maksimal bagi masyarakat pesisir Situbondo.");
         
-        // Add signature section
         if (yPos > 250) {
             doc.addPage();
             yPos = margin;
@@ -656,51 +625,20 @@ async function downloadPDF() {
         doc.text("Pelapor,", margin, yPos);
         yPos += 25;
         
-        // Draw a line above the footer
         doc.setLineWidth(0.1);
         doc.line(margin, yPos, 210 - margin, yPos);
-        
-        // Add footer text on the left
         yPos += 5;
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
         doc.text("Laporan ini dibuat secara otomatis oleh sistem Dinas Perikanan Situbondo", margin, yPos);
         doc.text(`© ${currentDate.getFullYear()} Dinas Peternakan dan Perikanan Kabupaten Situbondo`, margin, yPos + 4);
         
-        // Add QR Code on the right side, below the line
-        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=166534&bgcolor=ffffff`;
-        try {
-            const qrImg = new Image();
-            qrImg.crossOrigin = 'Anonymous';
-            
-            await new Promise(resolve => {
-                qrImg.onload = resolve;
-                qrImg.onerror = resolve; // Continue even if QR code fails
-                qrImg.src = qrCodeUrl;
-            });
-            
-            const qrSize = 15;
-            const qrX = 210 - margin - qrSize;
-            const qrY = yPos - 9;
-            
-            if (qrImg.complete && qrImg.naturalHeight !== 0) {
-                doc.addImage(qrImg, 'PNG', qrX, qrY, qrSize, qrSize);
-                doc.setFontSize(6);
-                doc.text("Scan untuk", qrX + qrSize/2, qrY + qrSize + 3, { align: 'center' });
-                doc.text("mengakses", qrX + qrSize/2, qrY + qrSize + 6, { align: 'center' });
-            }
-        } catch (e) {
-            console.log('QR code generation failed, continuing without it');
-        }
-        
-        // Save the PDF
         const fileName = `Laporan_Kerja_Bakti_Pasar_Higienis_Mimbo_${currentDate.getFullYear()}${String(currentDate.getMonth()+1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}.pdf`;
         doc.save(fileName);
         
         hideLoading();
         closePdfPreview();
         
-        // Show success message
         setTimeout(() => {
             alert('Laporan PDF berhasil diunduh!');
         }, 500);
@@ -712,45 +650,45 @@ async function downloadPDF() {
     }
 }
 
-// Fix for footer positioning
+// Fix footer position with flexbox fallback
 function fixFooterPosition() {
-    const footer = document.querySelector('.footer');
-    const bodyHeight = document.body.offsetHeight;
-    const windowHeight = window.innerHeight;
-    
-    if (bodyHeight < windowHeight) {
-        footer.style.position = 'fixed';
-        footer.style.bottom = '0';
-    } else {
-        footer.style.position = 'relative';
-    }
+    // Tidak perlu, karena body sudah display:flex + margin-top:auto di footer
 }
 
-// Call on load and resize
 window.addEventListener('load', fixFooterPosition);
 window.addEventListener('resize', fixFooterPosition);
 
 // Initialize password toggle
-document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
+const passwordToggle = document.getElementById('passwordToggle');
+if (passwordToggle) {
+    passwordToggle.addEventListener('click', togglePasswordVisibility);
+}
 
 // Allow pressing Enter to submit the security code
-document.getElementById('securityCodeInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        verifySecurityCode();
-    }
-});
+const securityInput = document.getElementById('securityCodeInput');
+if (securityInput) {
+    securityInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            verifySecurityCode();
+        }
+    });
+}
 
 // Close PDF auth modal when clicking outside
-document.getElementById('pdfAuthModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closePdfAuthModal();
-    }
-});
+const pdfAuthModal = document.getElementById('pdfAuthModal');
+if (pdfAuthModal) {
+    pdfAuthModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePdfAuthModal();
+        }
+    });
+}
 
 // Restrict input to numbers only
-document.getElementById('securityCodeInput').addEventListener('input', function(e) {
-    this.value = this.value.replace(/[^0-9]/g, '');
-});
+if (securityInput) {
+    securityInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+}
 
-// Debug: Tampilkan kode keamanan saat ini di console untuk testing
-console.log("Kode keamanan hari ini:", generateSecurityCode());
+// Kode keamanan tidak ditampilkan di console (dihapus)
