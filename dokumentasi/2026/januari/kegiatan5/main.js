@@ -9,24 +9,31 @@ let isPasswordVisible = false;
 // ==================== DOM CONTENT LOADED ====================
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize AOS
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 100
-    });
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    }
 
     // Set current year in footer
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    const currentYearEl = document.getElementById('currentYear');
+    if (currentYearEl) {
+        currentYearEl.textContent = new Date().getFullYear();
+    }
 
     // Navbar scroll effect
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 50) {
-            navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-        } else {
-            navbar.style.boxShadow = '0 2px 20px rgba(26, 95, 122, 0.08)';
-            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+        if (navbar) {
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                navbar.style.boxShadow = '0 2px 20px rgba(26, 95, 122, 0.08)';
+                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+            }
         }
     });
 
@@ -34,8 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const galleryItems = document.querySelectorAll('.gallery-item');
     galleryItems.forEach(item => {
         item.addEventListener('click', function() {
-            const imgSrc = this.querySelector('img').src;
-            const imgAlt = this.querySelector('img').alt;
+            const img = this.querySelector('img');
+            if (!img) return;
+            const imgSrc = img.src;
+            const imgAlt = img.alt || 'Dokumentasi kegiatan';
             
             // Create modal
             const modalHTML = `
@@ -43,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content border-0">
                         <div class="modal-body p-0 position-relative">
-                            <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded">
+                            <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded" style="max-height: 80vh; object-fit: contain;">
                             <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal"></button>
                         </div>
                     </div>
@@ -55,13 +64,16 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.insertAdjacentHTML('beforeend', modalHTML);
             
             // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-            modal.show();
-            
-            // Remove modal when closed
-            document.getElementById('imageModal').addEventListener('hidden.bs.modal', function() {
-                this.remove();
-            });
+            const modalEl = document.getElementById('imageModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+                
+                // Remove modal when closed
+                modalEl.addEventListener('hidden.bs.modal', function() {
+                    this.remove();
+                });
+            }
         });
     });
 
@@ -87,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollTopBtn = document.createElement('button');
     scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
     scrollTopBtn.className = 'scroll-top-btn';
+    scrollTopBtn.setAttribute('aria-label', 'Scroll ke atas');
     document.body.appendChild(scrollTopBtn);
     
     window.addEventListener('scroll', function() {
@@ -108,28 +121,39 @@ document.addEventListener('DOMContentLoaded', function() {
     fixFooterPosition();
     window.addEventListener('resize', fixFooterPosition);
 
-    // Initialize password toggle
-    document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
-    
+    // === INISIALISASI PASSWORD TOGGLE UNTUK MODAL PDF AUTH ===
+    // Event listener dipasang ke parent document agar bisa menangkap elemen yang belum ada saat DOM ready
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('#passwordToggle');
+        if (target) {
+            togglePasswordVisibility();
+        }
+    });
+
     // Allow pressing Enter to submit the security code
-    document.getElementById('securityCodeInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
+    document.addEventListener('keypress', function(e) {
+        if (e.target.id === 'securityCodeInput' && e.key === 'Enter') {
             verifySecurityCode();
         }
     });
-    
+
     // Close PDF auth modal when clicking outside
-    document.getElementById('pdfAuthModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closePdfAuthModal();
+    const pdfAuthModal = document.getElementById('pdfAuthModal');
+    if (pdfAuthModal) {
+        pdfAuthModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePdfAuthModal();
+            }
+        });
+    }
+
+    // Restrict input to numbers only
+    document.addEventListener('input', function(e) {
+        if (e.target.id === 'securityCodeInput') {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
         }
     });
-    
-    // Restrict input to numbers only
-    document.getElementById('securityCodeInput').addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
-    
+
     // Close modals with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -138,29 +162,62 @@ document.addEventListener('DOMContentLoaded', function() {
             closePdfAuthModal();
         }
     });
+
+    // Initialize fallback for broken images
+    initializeImageFallback();
 });
+
+// ==================== IMAGE FALLBACK ====================
+function initializeImageFallback() {
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('error', function() {
+            if (this.dataset.fallbackAttempted) return;
+            this.dataset.fallbackAttempted = 'true';
+            
+            // Fallback to UI Avatars or placeholder
+            const alt = this.alt || 'Gambar';
+            const name = alt.replace(/\s+/g, '+').substring(0, 30);
+            // Gunakan placeholder yang reliable
+            this.src = `https://ui-avatars.com/api/?name=${name}&background=1a5f7a&color=fff&size=400`;
+            
+            // Jika masih error, fallback ke placeholder statis
+            this.onerror = function() {
+                this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"%3E%3Crect width="400" height="400" fill="%231a5f7a"/%3E%3Ctext fill="%23ffffff" x="50" y="200" font-size="24" font-family="Arial, sans-serif"%3EGambar%20Tidak%20Tersedia%3C/text%3E%3C/svg%3E';
+            };
+        });
+    });
+}
 
 // ==================== FOOTER POSITION ====================
 function fixFooterPosition() {
     const footer = document.querySelector('.footer');
+    if (!footer) return;
+    
     const bodyHeight = document.body.offsetHeight;
     const windowHeight = window.innerHeight;
     
     if (bodyHeight < windowHeight) {
         footer.style.position = 'fixed';
         footer.style.bottom = '0';
+        footer.style.left = '0';
+        footer.style.width = '100%';
     } else {
         footer.style.position = 'relative';
+        footer.style.bottom = 'auto';
+        footer.style.left = 'auto';
+        footer.style.width = '100%';
     }
 }
 
 // ==================== SHARE MODAL ====================
 function openShareModal() {
-    document.getElementById('shareModal').style.display = 'flex';
+    const shareModal = document.getElementById('shareModal');
+    if (shareModal) shareModal.style.display = 'flex';
 }
 
 function closeShareModal() {
-    document.getElementById('shareModal').style.display = 'none';
+    const shareModal = document.getElementById('shareModal');
+    if (shareModal) shareModal.style.display = 'none';
 }
 
 function shareToWhatsApp() {
@@ -220,7 +277,9 @@ function isLockedOut() {
 
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('securityCodeInput');
-    const toggleIcon = document.getElementById('passwordToggle').querySelector('i');
+    const toggleIcon = document.querySelector('#passwordToggle i');
+    
+    if (!passwordInput || !toggleIcon) return;
     
     isPasswordVisible = !isPasswordVisible;
     
@@ -240,41 +299,56 @@ function openPdfAuthModal() {
         return;
     }
     
-    document.getElementById('securityCodeInput').value = '';
-    document.getElementById('errorMessage').style.display = 'none';
-    document.getElementById('errorText').textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
-    document.getElementById('securityCodeInput').classList.remove('is-invalid');
-    document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
-    document.getElementById('pdfAuthModal').style.display = 'flex';
+    const modal = document.getElementById('pdfAuthModal');
+    if (!modal) return;
+    
+    const inputEl = document.getElementById('securityCodeInput');
+    const errorMsg = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    const attemptsSpan = document.getElementById('attemptsLeft');
+    
+    if (inputEl) inputEl.value = '';
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (errorText) errorText.textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
+    if (inputEl) inputEl.classList.remove('is-invalid');
+    if (attemptsSpan) attemptsSpan.textContent = maxAttempts - currentAttempts;
+    
+    modal.style.display = 'flex';
     
     setTimeout(() => {
-        document.getElementById('securityCodeInput').focus();
+        if (inputEl) inputEl.focus();
     }, 300);
 }
 
 function closePdfAuthModal() {
-    document.getElementById('pdfAuthModal').style.display = 'none';
+    const modal = document.getElementById('pdfAuthModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function verifySecurityCode() {
     const lockoutStatus = isLockedOut();
     if (lockoutStatus.locked) {
-        document.getElementById('errorText').textContent = lockoutStatus.message;
-        document.getElementById('errorMessage').style.display = 'block';
+        const errorText = document.getElementById('errorText');
+        const errorMsg = document.getElementById('errorMessage');
+        if (errorText) errorText.textContent = lockoutStatus.message;
+        if (errorMsg) errorMsg.style.display = 'block';
         return;
     }
     
-    const userInput = document.getElementById('securityCodeInput').value;
+    const userInput = document.getElementById('securityCodeInput')?.value || '';
     const correctCode = generateSecurityCode();
     const errorMessage = document.getElementById('errorMessage');
     const errorText = document.getElementById('errorText');
     const inputElement = document.getElementById('securityCodeInput');
+    const attemptsSpan = document.getElementById('attemptsLeft');
     
     if (!userInput || userInput.length !== 8) {
-        errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
-        errorMessage.style.display = 'block';
-        inputElement.classList.add('is-invalid');
-        inputElement.focus();
+        if (errorText) errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
+        if (errorMessage) errorMessage.style.display = 'block';
+        if (inputElement) {
+            inputElement.classList.add('is-invalid');
+            inputElement.focus();
+        }
         return;
     }
     
@@ -285,42 +359,48 @@ function verifySecurityCode() {
     } else {
         currentAttempts++;
         const attemptsLeft = maxAttempts - currentAttempts;
-        document.getElementById('attemptsLeft').textContent = attemptsLeft;
+        if (attemptsSpan) attemptsSpan.textContent = attemptsLeft;
         
         if (currentAttempts >= maxAttempts) {
             lockoutTime = new Date().getTime() + lockoutDuration;
-            errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
+            if (errorText) errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
         } else {
-            errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
+            if (errorText) errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
         }
         
-        errorMessage.style.display = 'block';
-        inputElement.classList.add('is-invalid');
-        inputElement.style.animation = 'none';
-        setTimeout(() => {
-            inputElement.style.animation = 'shake 0.5s';
-        }, 10);
-        
-        inputElement.value = '';
-        inputElement.focus();
+        if (errorMessage) errorMessage.style.display = 'block';
+        if (inputElement) {
+            inputElement.classList.add('is-invalid');
+            inputElement.style.animation = 'none';
+            setTimeout(() => {
+                inputElement.style.animation = 'shake 0.5s';
+            }, 10);
+            
+            inputElement.value = '';
+            inputElement.focus();
+        }
     }
 }
 
 // ==================== PDF GENERATION ====================
 function showLoading() {
-    document.getElementById('loadingOverlay').style.display = 'flex';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'flex';
 }
 
 function hideLoading() {
-    document.getElementById('loadingOverlay').style.display = 'none';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 function openPdfPreview() {
-    document.getElementById('pdfPreviewModal').style.display = 'flex';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closePdfPreview() {
-    document.getElementById('pdfPreviewModal').style.display = 'none';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function generatePDFReport() {
@@ -418,7 +498,9 @@ function generatePDFReport() {
     </div>
     `;
     
-    document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
+    const previewContainer = document.getElementById('pdfPreviewContent');
+    if (previewContainer) previewContainer.innerHTML = pdfContent;
+    
     hideLoading();
     openPdfPreview();
 }
