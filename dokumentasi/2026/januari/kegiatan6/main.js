@@ -1,4 +1,5 @@
 // ==================== INISIALISASI & EVENT LISTENER ====================
+
 // Initialize AOS
 AOS.init({
     duration: 800,
@@ -60,8 +61,10 @@ galleryItems.forEach(item => {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
+        
         const targetId = this.getAttribute('href');
         if(targetId === '#') return;
+        
         const targetElement = document.querySelector(targetId);
         if(targetElement) {
             window.scrollTo({
@@ -82,6 +85,7 @@ scrollTopBtn.style.zIndex = '1000';
 scrollTopBtn.style.display = 'none';
 scrollTopBtn.style.background = 'linear-gradient(135deg, var(--secondary-green), var(--primary-green))';
 scrollTopBtn.style.border = 'none';
+
 document.body.appendChild(scrollTopBtn);
 
 window.addEventListener('scroll', function() {
@@ -102,21 +106,22 @@ scrollTopBtn.addEventListener('click', function() {
 });
 
 // ==================== SHARE FUNCTIONALITY ====================
-function openShareModal() {
+
+window.openShareModal = function() {
     document.getElementById('shareModal').style.display = 'flex';
 }
 
-function closeShareModal() {
+window.closeShareModal = function() {
     document.getElementById('shareModal').style.display = 'none';
 }
 
-function shareToWhatsApp() {
+window.shareToWhatsApp = function() {
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent('Penyaluran Bantuan Sosial Korban Banjir Besuki - Dinas Perikanan Situbondo\n\nKegiatan kemanusiaan Dinas Perikanan Situbondo bersama DINSOS dalam rangka memberikan bantuan sosial kepada warga korban banjir bandang di wilayah Besuki pada tanggal 26 Januari 2026.\n\nBaca selengkapnya di:');
     window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
 }
 
-function copyLink() {
+window.copyLink = function() {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
         alert('Link berhasil disalin ke clipboard!');
@@ -127,7 +132,7 @@ function copyLink() {
     });
 }
 
-// Close share modal when clicking outside
+// Close modal when clicking outside
 document.getElementById('shareModal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeShareModal();
@@ -135,13 +140,15 @@ document.getElementById('shareModal').addEventListener('click', function(e) {
 });
 
 // ==================== PDF AUTHORIZATION FUNCTIONS ====================
+
 // Security system variables
 let maxAttempts = 3;
 let currentAttempts = 0;
 let lockoutTime = 0;
 const lockoutDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+let isPasswordVisible = false;
 
-// Generate security code based on DDMMYYYY format
+// Generate security code berdasarkan format DDMMYYYY
 function generateSecurityCode() {
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
@@ -155,6 +162,7 @@ function isLockedOut() {
     if (lockoutTime > 0) {
         const currentTime = new Date().getTime();
         const timeRemaining = lockoutTime - currentTime;
+        
         if (timeRemaining > 0) {
             const minutes = Math.floor(timeRemaining / 60000);
             const seconds = Math.floor((timeRemaining % 60000) / 1000);
@@ -172,11 +180,12 @@ function isLockedOut() {
 }
 
 // Toggle password visibility
-let isPasswordVisible = false;
-function togglePasswordVisibility() {
+window.togglePasswordVisibility = function() {
     const passwordInput = document.getElementById('securityCodeInput');
-    const toggleIcon = document.getElementById('passwordToggle').querySelector('i');
+    const toggleIcon = document.querySelector('#passwordToggle i');
+    
     isPasswordVisible = !isPasswordVisible;
+    
     if (isPasswordVisible) {
         passwordInput.type = 'text';
         toggleIcon.className = 'fas fa-eye-slash';
@@ -187,30 +196,34 @@ function togglePasswordVisibility() {
 }
 
 // Open PDF authorization modal
-function openPdfAuthModal() {
+window.openPdfAuthModal = function() {
     const lockoutStatus = isLockedOut();
     if (lockoutStatus.locked) {
         alert(lockoutStatus.message);
         return;
     }
+    
     document.getElementById('securityCodeInput').value = '';
     document.getElementById('errorMessage').style.display = 'none';
     document.getElementById('errorText').textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
     document.getElementById('securityCodeInput').classList.remove('is-invalid');
+    
     document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
+    
     document.getElementById('pdfAuthModal').style.display = 'flex';
+    
     setTimeout(() => {
         document.getElementById('securityCodeInput').focus();
     }, 300);
 }
 
 // Close PDF authorization modal
-function closePdfAuthModal() {
+window.closePdfAuthModal = function() {
     document.getElementById('pdfAuthModal').style.display = 'none';
 }
 
 // Verify security code
-function verifySecurityCode() {
+window.verifySecurityCode = function() {
     const lockoutStatus = isLockedOut();
     if (lockoutStatus.locked) {
         document.getElementById('errorText').textContent = lockoutStatus.message;
@@ -238,6 +251,7 @@ function verifySecurityCode() {
         generatePDFReport();
     } else {
         currentAttempts++;
+        
         const attemptsLeft = maxAttempts - currentAttempts;
         document.getElementById('attemptsLeft').textContent = attemptsLeft;
         
@@ -250,16 +264,19 @@ function verifySecurityCode() {
         
         errorMessage.style.display = 'block';
         inputElement.classList.add('is-invalid');
+        
         inputElement.style.animation = 'none';
         setTimeout(() => {
             inputElement.style.animation = 'shake 0.5s';
         }, 10);
+        
         inputElement.value = '';
         inputElement.focus();
     }
 }
 
 // ==================== PDF GENERATION FUNCTIONS ====================
+
 function showLoading() {
     document.getElementById('loadingOverlay').style.display = 'flex';
 }
@@ -268,11 +285,11 @@ function hideLoading() {
     document.getElementById('loadingOverlay').style.display = 'none';
 }
 
-function openPdfPreview() {
+window.openPdfPreview = function() {
     document.getElementById('pdfPreviewModal').style.display = 'flex';
 }
 
-function closePdfPreview() {
+window.closePdfPreview = function() {
     document.getElementById('pdfPreviewModal').style.display = 'none';
 }
 
@@ -358,21 +375,11 @@ function generatePDFReport() {
                 Bantuan sosial yang disalurkan terdiri dari berbagai jenis kebutuhan dasar yang sangat diperlukan oleh masyarakat pasca bencana banjir:
             </p>
             <ol style="margin-bottom: 20px; padding-left: 25px; font-size: 12px; line-height: 1.7;">
-                <li style="margin-bottom: 10px; text-align: justify;">
-                    <strong>Ikan Tawar Segar:</strong> Sebagai sumber protein hewani berkualitas untuk menjaga asupan gizi keluarga.
-                </li>
-                <li style="margin-bottom: 10px; text-align: justify;">
-                    <strong>Mie Instan:</strong> Makanan praktis yang mudah diolah dengan peralatan terbatas di kondisi pasca bencana.
-                </li>
-                <li style="margin-bottom: 10px; text-align: justify;">
-                    <strong>Telur Ayam:</strong> Sumber protein dengan harga terjangkau yang dapat dikonsumsi oleh semua kelompok usia.
-                </li>
-                <li style="margin-bottom: 10px; text-align: justify;">
-                    <strong>Pakaian Layak Pakai:</strong> Untuk mengganti pakaian yang rusak atau hilang akibat terdampak banjir.
-                </li>
-                <li style="margin-bottom: 0; text-align: justify;">
-                    <strong>Bahan Pokok Tambahan:</strong> Sesuai dengan ketersediaan dan kebutuhan spesifik penerima bantuan.
-                </li>
+                <li style="margin-bottom: 10px; text-align: justify;"><strong>Ikan Tawar Segar:</strong> Sebagai sumber protein hewani berkualitas untuk menjaga asupan gizi keluarga.</li>
+                <li style="margin-bottom: 10px; text-align: justify;"><strong>Mie Instan:</strong> Makanan praktis yang mudah diolah dengan peralatan terbatas di kondisi pasca bencana.</li>
+                <li style="margin-bottom: 10px; text-align: justify;"><strong>Telur Ayam:</strong> Sumber protein dengan harga terjangkau yang dapat dikonsumsi oleh semua kelompok usia.</li>
+                <li style="margin-bottom: 10px; text-align: justify;"><strong>Pakaian Layak Pakai:</strong> Untuk mengganti pakaian yang rusak atau hilang akibat terdampak banjir.</li>
+                <li style="margin-bottom: 0; text-align: justify;"><strong>Bahan Pokok Tambahan:</strong> Sesuai dengan ketersediaan dan kebutuhan spesifik penerima bantuan.</li>
             </ol>
             
             <h4 style="font-size: 13px; font-weight: bold; margin-bottom: 15px; color: #0a6e4a;">VI. PROSES PENYALURAN</h4>
@@ -380,21 +387,11 @@ function generatePDFReport() {
                 Proses penyaluran bantuan dilaksanakan melalui beberapa tahapan yang terstruktur:
             </p>
             <ol style="margin-bottom: 20px; padding-left: 25px; font-size: 12px; line-height: 1.7;">
-                <li style="margin-bottom: 10px; text-align: justify;">
-                    <strong>Koordinasi dengan DINSOS:</strong> Melakukan koordinasi dengan Badan Penanggulangan Bencana Daerah untuk menentukan lokasi dan penerima bantuan.
-                </li>
-                <li style="margin-bottom: 10px; text-align: justify;">
-                    <strong>Verifikasi Penerima:</strong> Memastikan bantuan diberikan kepada masyarakat yang benar-benar terdampak dan membutuhkan.
-                </li>
-                <li style="margin-bottom: 10px; text-align: justify;">
-                    <strong>Packing dan Distribusi:</strong> Mengemas bantuan menjadi paket-paket siap salur dan mendistribusikan ke lokasi.
-                </li>
-                <li style="margin-bottom: 10px; text-align: justify;">
-                    <strong>Penyerahan Langsung:</strong> Menyerahkan bantuan secara langsung kepada penerima dengan sistem door to door.
-                </li>
-                <li style="margin-bottom: 0; text-align: justify;">
-                    <strong>Pendokumentasian:</strong> Mendokumentasikan seluruh proses penyaluran sebagai bentuk akuntabilitas.
-                </li>
+                <li style="margin-bottom: 10px; text-align: justify;"><strong>Koordinasi dengan DINSOS:</strong> Melakukan koordinasi dengan Badan Penanggulangan Bencana Daerah untuk menentukan lokasi dan penerima bantuan.</li>
+                <li style="margin-bottom: 10px; text-align: justify;"><strong>Verifikasi Penerima:</strong> Memastikan bantuan diberikan kepada masyarakat yang benar-benar terdampak dan membutuhkan.</li>
+                <li style="margin-bottom: 10px; text-align: justify;"><strong>Packing dan Distribusi:</strong> Mengemas bantuan menjadi paket-paket siap salur dan mendistribusikan ke lokasi.</li>
+                <li style="margin-bottom: 10px; text-align: justify;"><strong>Penyerahan Langsung:</strong> Menyerahkan bantuan secara langsung kepada penerima dengan sistem door to door.</li>
+                <li style="margin-bottom: 0; text-align: justify;"><strong>Pendokumentasian:</strong> Mendokumentasikan seluruh proses penyaluran sebagai bentuk akuntabilitas.</li>
             </ol>
             
             <h4 style="font-size: 13px; font-weight: bold; margin-bottom: 15px; color: #0a6e4a;">VII. HASIL DAN DAMPAK</h4>
@@ -457,13 +454,15 @@ function generatePDFReport() {
     `;
     
     document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
+    
     hideLoading();
     openPdfPreview();
 }
 
-// Download PDF
-async function downloadPDF() {
+// Download PDF with jsPDF
+window.downloadPDF = async function() {
     showLoading();
+    
     try {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({
@@ -474,6 +473,7 @@ async function downloadPDF() {
         
         const margin = 20;
         let yPos = margin;
+        
         const currentDate = new Date();
         const formattedDate = currentDate.toLocaleDateString('id-ID', {
             day: 'numeric',
@@ -487,14 +487,16 @@ async function downloadPDF() {
         try {
             const logoImg = new Image();
             logoImg.crossOrigin = 'Anonymous';
+            
             await new Promise((resolve, reject) => {
                 logoImg.onload = resolve;
                 logoImg.onerror = () => {
-                    logoImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFjSURBVHgB7d2xTQNBEIXhsfAFARIgQzKgTToYAjg3j6JXODcPwdJgOSc/9Vx3/oPnOe6OnnH0l93Tsz+e3/kv3pnvxAAQIIAAIgwggAgDiCCAAAIIIICAIIAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hutb2vZ';
+                    logoImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFjSURBVHgB7d2xTQNBEIXhsfAFARIgQzKgTToYAjg3j6JXODcPwdJgOSc/9Vx3/oPnOe6OnnH0l93Tsz+e3/kv3pnvxAAQIIAAIgwggAgDiCCAAAIIIICAIIAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hutb2vZ';
                     resolve();
                 };
                 logoImg.src = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
             });
+            
             doc.addImage(logoImg, 'PNG', margin, yPos, logoWidth, logoHeight);
         } catch (e) {
             console.log('Using placeholder logo');
@@ -509,34 +511,44 @@ async function downloadPDF() {
         doc.setFontSize(11);
         doc.setFont("helvetica", "bold");
         doc.text("PEMERINTAH KABUPATEN SITUBONDO", 105, yPos + 5, { align: 'center' });
+        
         doc.setFontSize(12);
         doc.text("DINAS PETERNAKAN DAN PERIKANAN", 105, yPos + 11, { align: 'center' });
+        
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.text("Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664", 105, yPos + 17, { align: 'center' });
         doc.text("SITUBONDO 68312", 105, yPos + 22, { align: 'center' });
+        
         yPos += 30;
+        
         doc.setLineWidth(0.5);
         doc.line(margin, yPos, 210 - margin, yPos);
         yPos += 15;
+        
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.text("LAPORAN KEGIATAN", 105, yPos, { align: 'center' });
         yPos += 10;
+        
         doc.setFontSize(14);
         const title1 = "PENYALURAN BANTUAN SOSIAL KEPADA KORBAN BANJIR";
         const title2 = "DI WILAYAH BESUKI KABUPATEN SITUBONDO";
         const title3 = "TANGGAL 26 JANUARI 2026";
+        
         const titleLines1 = doc.splitTextToSize(title1, 170);
         const titleLines2 = doc.splitTextToSize(title2, 170);
+        
         titleLines1.forEach(line => {
             doc.text(line, 105, yPos, { align: 'center' });
             yPos += 7;
         });
+        
         titleLines2.forEach(line => {
             doc.text(line, 105, yPos, { align: 'center' });
             yPos += 7;
         });
+        
         doc.setFontSize(12);
         doc.text(title3, 105, yPos, { align: 'center' });
         yPos += 10;
@@ -546,12 +558,15 @@ async function downloadPDF() {
                 doc.addPage();
                 yPos = margin;
             }
+            
             doc.setFontSize(12);
             doc.setFont("helvetica", "bold");
             doc.text(title, margin, yPos);
             yPos += 8;
+            
             doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
+            
             if (isList) {
                 const items = content.split('\n');
                 items.forEach((item, index) => {
@@ -584,57 +599,46 @@ async function downloadPDF() {
                     yPos += 6;
                 });
             }
+            
             yPos += 8;
         }
         
-        addText("I. LATAR BELAKANG", "Beberapa waktu lalu, wilayah Besuki Kabupaten Situbondo mengalami bencana banjir bandang yang mengakibatkan kerusakan infrastruktur dan dampak sosial ekonomi terhadap masyarakat. Sebagai bentuk kepedulian dan tanggung jawab sosial, Dinas Perikanan Situbondo melalui keluarga besar pegawai mengadakan pengumpulan donasi internal untuk memberikan bantuan kepada korban banjir. Kegiatan ini dilaksanakan sebagai wujud nyata solidaritas dan gotong royong dalam membantu masyarakat yang sedang mengalami kesulitan.");
+        addText("I. LATAR BELAKANG", 
+            "Beberapa waktu lalu, wilayah Besuki Kabupaten Situbondo mengalami bencana banjir bandang yang mengakibatkan kerusakan infrastruktur dan dampak sosial ekonomi terhadap masyarakat. Sebagai bentuk kepedulian dan tanggung jawab sosial, Dinas Perikanan Situbondo melalui keluarga besar pegawai mengadakan pengumpulan donasi internal untuk memberikan bantuan kepada korban banjir. Kegiatan ini dilaksanakan sebagai wujud nyata solidaritas dan gotong royong dalam membantu masyarakat yang sedang mengalami kesulitan.");
+        
         addText("II. TUJUAN KEGIATAN", 
-            "Meringankan beban masyarakat korban banjir bandang di wilayah Besuki\n" +
-            "Memenuhi kebutuhan dasar pangan masyarakat yang kehilangan akses ekonomi akibat bencana\n" +
-            "Memberikan dukungan psikologis dan moral melalui kepedulian nyata instansi pemerintah\n" +
-            "Memperkuat sinergi dan kerjasama antar instansi dalam penanganan pasca bencana\n" +
-            "Mewujudkan nilai-nilai kemanusiaan, solidaritas, dan gotong royong dalam kehidupan bermasyarakat", true, true);
+            "Meringankan beban masyarakat korban banjir bandang di wilayah Besuki\nMemenuhi kebutuhan dasar pangan masyarakat yang kehilangan akses ekonomi akibat bencana\nMemberikan dukungan psikologis dan moral melalui kepedulian nyata instansi pemerintah\nMemperkuat sinergi dan kerjasama antar instansi dalam penanganan pasca bencana\nMewujudkan nilai-nilai kemanusiaan, solidaritas, dan gotong royong dalam kehidupan bermasyarakat", true, true);
+        
         addText("III. WAKTU DAN LOKASI KEGIATAN", 
             "Kegiatan penyaluran bantuan sosial dilaksanakan pada 26 Januari 2026 bertempat di dapur umum penanggulangan bencana di wilayah Besuki, Kabupaten Situbondo. Penyaluran dilakukan secara langsung door to door kepada masyarakat terdampak banjir dengan memperhatikan protokol penyaluran bantuan yang baik.");
+        
         addText("IV. PESERTA KEGIATAN", 
-            "SUGENG PURWO PRIYANTO, S.E., M.M. (Kepala Bidang Pemberdayaan Nelayan Dinas Perikanan Situbondo)\n" +
-            "Staf Bidang Pemberdayaan Nelayan Dinas Perikanan Situbondo\n" +
-            "Tim DINSOS Kabupaten Situbondo\n" +
-            "Relawan dari keluarga besar Dinas Perikanan Situbondo\n" +
-            "Masyarakat korban banjir di wilayah Besuki\n" +
-            "Perangkat desa setempat", true);
+            "SUGENG PURWO PRIYANTO, S.E., M.M. (Kepala Bidang Pemberdayaan Nelayan Dinas Perikanan Situbondo)\nStaf Bidang Pemberdayaan Nelayan Dinas Perikanan Situbondo\nTim DINSOS Kabupaten Situbondo\nRelawan dari keluarga besar Dinas Perikanan Situbondo\nMasyarakat korban banjir di wilayah Besuki\nPerangkat desa setempat", true);
+        
         addText("V. JENIS BANTUAN YANG DISALURKAN", 
             "Bantuan sosial yang disalurkan terdiri dari berbagai jenis kebutuhan dasar yang sangat diperlukan oleh masyarakat pasca bencana banjir:");
+        
         addText("", 
-            "Ikan Tawar Segar: Sebagai sumber protein hewani berkualitas untuk menjaga asupan gizi keluarga.\n" +
-            "Mie Instan: Makanan praktis yang mudah diolah dengan peralatan terbatas di kondisi pasca bencana.\n" +
-            "Telur Ayam: Sumber protein dengan harga terjangkau yang dapat dikonsumsi oleh semua kelompok usia.\n" +
-            "Pakaian Layak Pakai: Untuk mengganti pakaian yang rusak atau hilang akibat terdampak banjir.\n" +
-            "Bahan Pokok Tambahan: Sesuai dengan ketersediaan dan kebutuhan spesifik penerima bantuan.", true, true);
+            "Ikan Tawar Segar: Sebagai sumber protein hewani berkualitas untuk menjaga asupan gizi keluarga.\nMie Instan: Makanan praktis yang mudah diolah dengan peralatan terbatas di kondisi pasca bencana.\nTelur Ayam: Sumber protein dengan harga terjangkau yang dapat dikonsumsi oleh semua kelompok usia.\nPakaian Layak Pakai: Untuk mengganti pakaian yang rusak atau hilang akibat terdampak banjir.\nBahan Pokok Tambahan: Sesuai dengan ketersediaan dan kebutuhan spesifik penerima bantuan.", true, true);
+        
         addText("VI. PROSES PENYALURAN", 
             "Proses penyaluran bantuan dilaksanakan melalui beberapa tahapan yang terstruktur:");
+        
         addText("", 
-            "Koordinasi dengan DINSOS: Melakukan koordinasi dengan Badan Penanggulangan Bencana Daerah untuk menentukan lokasi dan penerima bantuan.\n" +
-            "Verifikasi Penerima: Memastikan bantuan diberikan kepada masyarakat yang benar-benar terdampak dan membutuhkan.\n" +
-            "Packing dan Distribusi: Mengemas bantuan menjadi paket-paket siap salur dan mendistribusikan ke lokasi.\n" +
-            "Penyerahan Langsung: Menyerahkan bantuan secara langsung kepada penerima dengan sistem door to door.\n" +
-            "Pendokumentasian: Mendokumentasikan seluruh proses penyaluran sebagai bentuk akuntabilitas.", true, true);
+            "Koordinasi dengan DINSOS: Melakukan koordinasi dengan Badan Penanggulangan Bencana Daerah untuk menentukan lokasi dan penerima bantuan.\nVerifikasi Penerima: Memastikan bantuan diberikan kepada masyarakat yang benar-benar terdampak dan membutuhkan.\nPacking dan Distribusi: Mengemas bantuan menjadi paket-paket siap salur dan mendistribusikan ke lokasi.\nPenyerahan Langsung: Menyerahkan bantuan secara langsung kepada penerima dengan sistem door to door.\nPendokumentasian: Mendokumentasikan seluruh proses penyaluran sebagai bentuk akuntabilitas.", true, true);
+        
         addText("VII. HASIL DAN DAMPAK", 
             "Kegiatan penyaluran bantuan sosial telah berhasil dilaksanakan dengan baik dan memberikan dampak positif:");
+        
         addText("", 
-            "Bantuan berhasil disalurkan kepada 150 kepala keluarga korban banjir di wilayah Besuki.\n" +
-            "Kebutuhan pangan dasar masyarakat terpenuhi untuk beberapa hari ke depan.\n" +
-            "Terjalin sinergi yang baik antara Dinas Perikanan Situbondo dengan DINSOS dalam penanganan bencana.\n" +
-            "Masyarakat merasa mendapat dukungan moral dan psikologis dari pemerintah daerah.\n" +
-            "Nilai-nilai gotong royong dan solidaritas sosial semakin menguat di masyarakat.", true, true);
+            "Bantuan berhasil disalurkan kepada 150 kepala keluarga korban banjir di wilayah Besuki.\nKebutuhan pangan dasar masyarakat terpenuhi untuk beberapa hari ke depan.\nTerjalin sinergi yang baik antara Dinas Perikanan Situbondo dengan DINSOS dalam penanganan bencana.\nMasyarakat merasa mendapat dukungan moral dan psikologis dari pemerintah daerah.\nNilai-nilai gotong royong dan solidaritas sosial semakin menguat di masyarakat.", true, true);
+        
         addText("VIII. KESIMPULAN DAN REKOMENDASI", 
             "Kegiatan penyaluran bantuan sosial kepada korban banjir di wilayah Besuki telah dilaksanakan dengan sukses dan memberikan manfaat nyata bagi masyarakat terdampak. Beberapa kesimpulan yang dapat diambil:");
+        
         addText("", 
-            "Solidaritas internal instansi pemerintah dapat menjadi sumber daya penting dalam penanganan bencana.\n" +
-            "Kerjasama antar instansi meningkatkan efektivitas penyaluran bantuan.\n" +
-            "Bantuan tepat sasaran memberikan dampak signifikan bagi pemulihan masyarakat pasca bencana.\n" +
-            "Pendekatan door to door memastikan bantuan langsung sampai kepada yang membutuhkan.\n" +
-            "Kegiatan seperti ini perlu dilakukan secara berkelanjutan dengan mekanisme yang lebih terstruktur.", true, true);
+            "Solidaritas internal instansi pemerintah dapat menjadi sumber daya penting dalam penanganan bencana.\nKerjasama antar instansi meningkatkan efektivitas penyaluran bantuan.\nBantuan tepat sasaran memberikan dampak signifikan bagi pemulihan masyarakat pasca bencana.\nPendekatan door to door memastikan bantuan langsung sampai kepada yang membutuhkan.\nKegiatan seperti ini perlu dilakukan secara berkelanjutan dengan mekanisme yang lebih terstruktur.", true, true);
+        
         addText("", 
             "Direkomendasikan untuk membentuk tim khusus penanganan bencana di internal Dinas Perikanan Situbondo, serta mengembangkan sistem pengumpulan dan penyaluran bantuan yang lebih terstruktur untuk kesiapan menghadapi bencana di masa depan.");
         
@@ -642,14 +646,17 @@ async function downloadPDF() {
             doc.addPage();
             yPos = margin;
         }
+        
         doc.setFontSize(11);
         doc.text(`Situbondo, ${formattedDate}`, margin, yPos);
         yPos += 12;
         doc.setFont("helvetica", "bold");
         doc.text("Pelapor,", margin, yPos);
         yPos += 25;
+        
         doc.setLineWidth(0.1);
         doc.line(margin, yPos, 210 - margin, yPos);
+        
         yPos += 5;
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
@@ -660,14 +667,17 @@ async function downloadPDF() {
         try {
             const qrImg = new Image();
             qrImg.crossOrigin = 'Anonymous';
+            
             await new Promise(resolve => {
                 qrImg.onload = resolve;
                 qrImg.onerror = resolve;
                 qrImg.src = qrCodeUrl;
             });
+            
             const qrSize = 15;
             const qrX = 210 - margin - qrSize;
             const qrY = yPos - 9;
+            
             if (qrImg.complete && qrImg.naturalHeight !== 0) {
                 doc.addImage(qrImg, 'PNG', qrX, qrY, qrSize, qrSize);
                 doc.setFontSize(6);
@@ -680,11 +690,14 @@ async function downloadPDF() {
         
         const fileName = `Laporan_Bantuan_Sosial_Banjir_Besuki_${currentDate.getFullYear()}${String(currentDate.getMonth()+1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}.pdf`;
         doc.save(fileName);
+        
         hideLoading();
         closePdfPreview();
+        
         setTimeout(() => {
             alert('Laporan PDF berhasil diunduh!');
         }, 500);
+        
     } catch (error) {
         console.error('Error generating PDF:', error);
         hideLoading();
@@ -692,11 +705,14 @@ async function downloadPDF() {
     }
 }
 
+// ==================== ADDITIONAL FUNCTIONS ====================
+
 // Fix for footer positioning
 function fixFooterPosition() {
     const footer = document.querySelector('.footer');
     const bodyHeight = document.body.offsetHeight;
     const windowHeight = window.innerHeight;
+    
     if (bodyHeight < windowHeight) {
         footer.style.position = 'fixed';
         footer.style.bottom = '0';
@@ -704,26 +720,33 @@ function fixFooterPosition() {
         footer.style.position = 'relative';
     }
 }
+
 window.addEventListener('load', fixFooterPosition);
 window.addEventListener('resize', fixFooterPosition);
 
 // Initialize password toggle
 document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
+
+// Allow pressing Enter to submit the security code
 document.getElementById('securityCodeInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         verifySecurityCode();
     }
 });
+
+// Close PDF auth modal when clicking outside
 document.getElementById('pdfAuthModal').addEventListener('click', function(e) {
     if (e.target === this) {
         closePdfAuthModal();
     }
 });
+
+// Restrict input to numbers only
 document.getElementById('securityCodeInput').addEventListener('input', function(e) {
     this.value = this.value.replace(/[^0-9]/g, '');
 });
 
-// Close modal with Escape key
+// Close share modal with Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeShareModal();
@@ -732,5 +755,5 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Debug: Tampilkan kode keamanan saat ini di console untuk testing
+// Debug: tampilkan kode keamanan saat ini di console
 console.log("Kode keamanan hari ini:", generateSecurityCode());
