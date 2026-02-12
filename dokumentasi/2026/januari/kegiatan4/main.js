@@ -2,11 +2,13 @@
 
 // Share functionality
 function openShareModal() {
-    document.getElementById('shareModal').style.display = 'flex';
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closeShareModal() {
-    document.getElementById('shareModal').style.display = 'none';
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function shareToWhatsApp() {
@@ -66,7 +68,9 @@ function isLockedOut() {
 let isPasswordVisible = false;
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('securityCodeInput');
-    const toggleIcon = document.getElementById('passwordToggle').querySelector('i');
+    const toggleIcon = document.getElementById('passwordToggle')?.querySelector('i');
+    
+    if (!passwordInput || !toggleIcon) return;
     
     isPasswordVisible = !isPasswordVisible;
     
@@ -86,43 +90,55 @@ function openPdfAuthModal() {
         return;
     }
     
-    document.getElementById('securityCodeInput').value = '';
-    document.getElementById('errorMessage').style.display = 'none';
-    document.getElementById('errorText').textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
-    document.getElementById('securityCodeInput').classList.remove('is-invalid');
+    const modal = document.getElementById('pdfAuthModal');
+    if (!modal) return;
     
-    document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
+    const input = document.getElementById('securityCodeInput');
+    const errorMsg = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    const attemptsSpan = document.getElementById('attemptsLeft');
     
-    document.getElementById('pdfAuthModal').style.display = 'flex';
+    if (input) input.value = '';
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (errorText) errorText.textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
+    if (input) input.classList.remove('is-invalid');
+    if (attemptsSpan) attemptsSpan.textContent = maxAttempts - currentAttempts;
+    
+    modal.style.display = 'flex';
     
     setTimeout(() => {
-        document.getElementById('securityCodeInput').focus();
+        if (input) input.focus();
     }, 300);
 }
 
 function closePdfAuthModal() {
-    document.getElementById('pdfAuthModal').style.display = 'none';
+    const modal = document.getElementById('pdfAuthModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function verifySecurityCode() {
     const lockoutStatus = isLockedOut();
+    const errorMsg = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    const inputElement = document.getElementById('securityCodeInput');
+    const attemptsSpan = document.getElementById('attemptsLeft');
+    
     if (lockoutStatus.locked) {
-        document.getElementById('errorText').textContent = lockoutStatus.message;
-        document.getElementById('errorMessage').style.display = 'block';
+        if (errorText) errorText.textContent = lockoutStatus.message;
+        if (errorMsg) errorMsg.style.display = 'block';
         return;
     }
     
-    const userInput = document.getElementById('securityCodeInput').value;
+    const userInput = inputElement ? inputElement.value : '';
     const correctCode = generateSecurityCode();
-    const errorMessage = document.getElementById('errorMessage');
-    const errorText = document.getElementById('errorText');
-    const inputElement = document.getElementById('securityCodeInput');
     
     if (!userInput || userInput.length !== 8) {
-        errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
-        errorMessage.style.display = 'block';
-        inputElement.classList.add('is-invalid');
-        inputElement.focus();
+        if (errorText) errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
+        if (errorMsg) errorMsg.style.display = 'block';
+        if (inputElement) {
+            inputElement.classList.add('is-invalid');
+            inputElement.focus();
+        }
         return;
     }
     
@@ -134,43 +150,48 @@ function verifySecurityCode() {
         currentAttempts++;
         
         const attemptsLeft = maxAttempts - currentAttempts;
-        document.getElementById('attemptsLeft').textContent = attemptsLeft;
+        if (attemptsSpan) attemptsSpan.textContent = attemptsLeft;
         
         if (currentAttempts >= maxAttempts) {
             lockoutTime = new Date().getTime() + lockoutDuration;
-            errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
+            if (errorText) errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
         } else {
-            errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
+            if (errorText) errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
         }
         
-        errorMessage.style.display = 'block';
-        inputElement.classList.add('is-invalid');
-        inputElement.style.animation = 'none';
-        setTimeout(() => {
-            inputElement.style.animation = 'shake 0.5s';
-        }, 10);
-        
-        inputElement.value = '';
-        inputElement.focus();
+        if (errorMsg) errorMsg.style.display = 'block';
+        if (inputElement) {
+            inputElement.classList.add('is-invalid');
+            inputElement.style.animation = 'none';
+            setTimeout(() => {
+                inputElement.style.animation = 'shake 0.5s';
+            }, 10);
+            inputElement.value = '';
+            inputElement.focus();
+        }
     }
 }
 
 // ==================== PDF GENERATION ====================
 
 function showLoading() {
-    document.getElementById('loadingOverlay').style.display = 'flex';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'flex';
 }
 
 function hideLoading() {
-    document.getElementById('loadingOverlay').style.display = 'none';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 function openPdfPreview() {
-    document.getElementById('pdfPreviewModal').style.display = 'flex';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closePdfPreview() {
-    document.getElementById('pdfPreviewModal').style.display = 'none';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function generatePDFReport() {
@@ -192,7 +213,8 @@ function generatePDFReport() {
                     <td style="width: 80px; vertical-align: middle; padding-top: 5px;">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
                              alt="Logo Kabupaten Situbondo" 
-                             style="width: 70px; height: 70px; object-fit: contain; display: block; border-radius: 0;">
+                             style="width: 70px; height: 70px; object-fit: contain; display: block; border-radius: 0;"
+                             onerror="this.onerror=null; this.src='https://placehold.co/70x70/1e3a8a/white?text=Logo';">
                     </td>
                     <td style="vertical-align: middle; padding-left: 15px;">
                         <h2 style="margin: 0; font-size: 16px; font-weight: bold; letter-spacing: 0.5px;">PEMERINTAH KABUPATEN SITUBONDO</h2>
@@ -296,7 +318,8 @@ function generatePDFReport() {
                     <div class="qr-code" style="background: #ffffff; padding: 5px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); float: right;">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=1e3a8a&bgcolor=ffffff" 
                              alt="QR Code Sumber Laporan" 
-                             style="width: 70px; height: 70px; object-fit: contain;">
+                             style="width: 70px; height: 70px; object-fit: contain;"
+                             onerror="this.onerror=null; this.src='https://placehold.co/80x80/1e3a8a/white?text=QR';">
                     </div>
                     <p style="font-size: 9px; margin-top: 5px; color: #666; clear: both; text-align: right;">Scan untuk mengakses sumber laporan</p>
                 </div>
@@ -305,12 +328,14 @@ function generatePDFReport() {
     </div>
     `;
     
-    document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
+    const previewContent = document.getElementById('pdfPreviewContent');
+    if (previewContent) previewContent.innerHTML = pdfContent;
     
     hideLoading();
     openPdfPreview();
 }
 
+// Placeholder logo untuk PDF fallback
 const placeholderLogo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFjSURBVHgB7d2xTQNBEIXhsfAFARIgQzKgTToYAjg3j6JXODcPwdJgOSc/9Vx3/oPnOe6OnnH0l93Tsz+e3/kv3pnvxAAQIIAAIgwggAgDiCCAAAIIIICAIIAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQygT+3b89J+PF+c7T37S/tX53vP3nLq2X09r+f7cua+/V7PW5/ZZ1/L6fXc1/Nx/Bj7O8/HXyIABBBCABnQEcTAACgYgAADQAABBBgAAggwAAQQYAATfLZXKSDj7SwAAAAASUVORK5CYII=';
 
 async function downloadPDF() {
@@ -344,8 +369,14 @@ async function downloadPDF() {
             await new Promise((resolve, reject) => {
                 logoImg.onload = resolve;
                 logoImg.onerror = () => {
-                    logoImg.src = placeholderLogo;
-                    resolve();
+                    console.log('Logo error, using placeholder');
+                    const placeholderImg = new Image();
+                    placeholderImg.src = placeholderLogo;
+                    placeholderImg.onload = () => {
+                        doc.addImage(placeholderImg, 'PNG', margin, yPos, logoWidth, logoHeight);
+                        resolve();
+                    };
+                    placeholderImg.onerror = resolve;
                 };
                 logoImg.src = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
             });
@@ -503,7 +534,7 @@ async function downloadPDF() {
             const qrImg = new Image();
             qrImg.crossOrigin = 'Anonymous';
             
-            await new Promise(resolve => {
+            await new Promise((resolve) => {
                 qrImg.onload = resolve;
                 qrImg.onerror = resolve;
                 qrImg.src = qrCodeUrl;
@@ -540,28 +571,62 @@ async function downloadPDF() {
     }
 }
 
+// ==================== GLOBAL IMAGE ERROR HANDLER ====================
+function handleImageErrors() {
+    document.querySelectorAll('img').forEach(img => {
+        // Skip jika sudah ada onerror handler
+        if (img.hasAttribute('data-error-handled')) return;
+        
+        img.setAttribute('data-error-handled', 'true');
+        
+        img.addEventListener('error', function(e) {
+            // Mencegah infinite loop
+            if (this.src.includes('placehold.co') || this.src.includes('ui-avatars')) return;
+            
+            console.log('Image failed to load:', this.src);
+            
+            // Fallback default
+            if (this.alt && this.alt.includes('Logo')) {
+                this.src = 'https://placehold.co/200x80/1e3a8a/white?text=Logo';
+            } else if (this.closest('.speaker-image')) {
+                // Speaker image fallback
+                const name = this.alt || 'Person';
+                this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e3a8a&color=fff&size=400`;
+            } else {
+                // Generic fallback
+                this.src = 'https://placehold.co/600x400/1e3a8a/white?text=Gambar+Tidak+Tersedia';
+            }
+        });
+    });
+}
+
 // ==================== INITIALIZATION (DOMContentLoaded) ====================
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize AOS
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 100
-    });
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    }
 
     // Set current year in footer
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    const yearSpan = document.getElementById('currentYear');
+    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
     // Navbar scroll effect
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 50) {
-            navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-        } else {
-            navbar.style.boxShadow = '0 2px 20px rgba(30, 58, 138, 0.08)';
-            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+        if (navbar) {
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                navbar.style.boxShadow = '0 2px 20px rgba(30, 58, 138, 0.08)';
+                navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+            }
         }
     });
 
@@ -569,16 +634,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const galleryItems = document.querySelectorAll('.gallery-item');
     galleryItems.forEach(item => {
         item.addEventListener('click', function() {
-            const imgSrc = this.querySelector('img').src;
-            const imgAlt = this.querySelector('img').alt;
+            const img = this.querySelector('img');
+            if (!img) return;
+            
+            const imgSrc = img.src;
+            const imgAlt = img.alt;
             
             const modalHTML = `
-            <div class="modal fade" id="imageModal" tabindex="-1">
+            <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content border-0">
                         <div class="modal-body p-0 position-relative">
                             <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded">
-                            <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
                         </div>
                     </div>
                 </div>
@@ -587,12 +655,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             document.body.insertAdjacentHTML('beforeend', modalHTML);
             
-            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-            modal.show();
-            
-            document.getElementById('imageModal').addEventListener('hidden.bs.modal', function() {
-                this.remove();
-            });
+            if (typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+                
+                document.getElementById('imageModal').addEventListener('hidden.bs.modal', function() {
+                    this.remove();
+                });
+            }
         });
     });
 
@@ -615,47 +685,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add scroll to top button
-    const scrollTopBtn = document.createElement('button');
-    scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
-    scrollTopBtn.className = 'btn btn-primary position-fixed bottom-3 end-3 rounded-circle shadow-lg';
-    scrollTopBtn.style.width = '50px';
-    scrollTopBtn.style.height = '50px';
-    scrollTopBtn.style.zIndex = '1000';
-    scrollTopBtn.style.display = 'none';
-    scrollTopBtn.style.background = 'linear-gradient(135deg, var(--secondary-blue), var(--primary-blue))';
-    scrollTopBtn.style.border = 'none';
-    
-    document.body.appendChild(scrollTopBtn);
-    
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 300) {
-            scrollTopBtn.style.display = 'flex';
-            scrollTopBtn.style.alignItems = 'center';
-            scrollTopBtn.style.justifyContent = 'center';
-        } else {
-            scrollTopBtn.style.display = 'none';
-        }
-    });
-    
-    scrollTopBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    if (!document.getElementById('scrollTopBtn')) {
+        const scrollTopBtn = document.createElement('button');
+        scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+        scrollTopBtn.id = 'scrollTopBtn';
+        scrollTopBtn.className = 'btn btn-primary position-fixed bottom-3 end-3 rounded-circle shadow-lg';
+        scrollTopBtn.style.width = '50px';
+        scrollTopBtn.style.height = '50px';
+        scrollTopBtn.style.zIndex = '1000';
+        scrollTopBtn.style.display = 'none';
+        scrollTopBtn.style.background = 'linear-gradient(135deg, var(--secondary-blue), var(--primary-blue))';
+        scrollTopBtn.style.border = 'none';
+        
+        document.body.appendChild(scrollTopBtn);
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                scrollTopBtn.style.display = 'flex';
+                scrollTopBtn.style.alignItems = 'center';
+                scrollTopBtn.style.justifyContent = 'center';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
         });
-    });
-
-    // Close modal when clicking outside
-    document.getElementById('shareModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeShareModal();
-        }
-    });
-
-    document.getElementById('pdfAuthModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closePdfAuthModal();
-        }
-    });
+        
+        scrollTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 
     // Close modal with Escape key
     document.addEventListener('keydown', function(e) {
@@ -667,37 +727,52 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize password toggle
-    document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
+    const toggleBtn = document.getElementById('passwordToggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', togglePasswordVisibility);
+    }
     
     // Allow pressing Enter to submit the security code
-    document.getElementById('securityCodeInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            verifySecurityCode();
-        }
-    });
-    
-    // Restrict input to numbers only
-    document.getElementById('securityCodeInput').addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
+    const securityInput = document.getElementById('securityCodeInput');
+    if (securityInput) {
+        securityInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifySecurityCode();
+            }
+        });
+        
+        // Restrict input to numbers only
+        securityInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    }
 
     // Fix footer position
     function fixFooterPosition() {
         const footer = document.querySelector('.footer');
+        if (!footer) return;
+        
         const bodyHeight = document.body.offsetHeight;
         const windowHeight = window.innerHeight;
         
         if (bodyHeight < windowHeight) {
             footer.style.position = 'fixed';
             footer.style.bottom = '0';
+            footer.style.left = '0';
+            footer.style.right = '0';
         } else {
             footer.style.position = 'relative';
+            footer.style.bottom = 'auto';
         }
     }
 
     fixFooterPosition();
     window.addEventListener('resize', fixFooterPosition);
 
+    // Handle broken images globally
+    handleImageErrors();
+
     // Debug: Tampilkan kode keamanan saat ini di console untuk testing
-    console.log("Kode keamanan hari ini:", generateSecurityCode());
+    console.log("Kode keamanan hari ini (testing):", generateSecurityCode());
 });
