@@ -1,1 +1,699 @@
-.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penyaluran Bantuan Sosial Korban Banjir - Dinas Perikanan Situbondo</title>
+    <meta name="description" content="Kegiatan penyaluran bantuan sosial kepada korban banjir di wilayah Besuki oleh Dinas Perikanan Situbondo bersama DINSOS pada 26 Januari 2026">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- jsPDF untuk generate PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Style Eksternal -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <h3 class="section-title">Bagikan Kegiatan Ini</h3>
+            <p>Pilih opsi untuk membagikan informasi penyaluran bantuan sosial korban banjir:</p>
+            <div class="share-buttons">
+                <button class="share-btn whatsapp" onclick="shareToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>Bagikan ke WhatsApp</span>
+                </button>
+                <button class="share-btn copy" onclick="copyLink()">
+                    <i class="fas fa-copy"></i>
+                    <span>Salin Link</span>
+                </button>
+            </div>
+            <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding: 10px; border-radius: 10px;">Tutup</button>
+        </div>
+    </div>
+
+    <!-- PDF Authorization Modal -->
+    <div class="pdf-auth-modal" id="pdfAuthModal">
+        <div class="pdf-auth-content">
+            <div class="auth-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h3 class="section-title text-center">Otorisasi Akses Dokumen</h3>
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Perhatian:</strong> Anda telah memasuki hak akses yang membutuhkan otorisasi dan merupakan tindakan untuk mencetak dokumen pelaporan
+            </div>
+            <div class="info-message">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Informasi Kode Keamanan:</strong> Untuk mendapatkan kode yang valid, harap hubungi petugas yang berwenang di Dinas Perikanan Situbondo.
+            </div>
+            <div class="mb-4">
+                <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan</label>
+                <div class="input-group-password">
+                    <input type="password" 
+                           class="form-control form-control-lg" 
+                           id="securityCodeInput" 
+                           placeholder="Masukkan 8 digit kode keamanan"
+                           maxlength="8"
+                           onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                    <button type="button" class="password-toggle" id="passwordToggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-times-circle me-2"></i>
+                    <span id="errorText">Kode keamanan yang Anda masukkan salah. Silakan coba lagi.</span>
+                </div>
+            </div>
+            <div class="attempts-counter">
+                <i class="fas fa-shield-alt me-2"></i>
+                Percobaan tersisa: <span id="attemptsLeft">3</span>
+            </div>
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                    <i class="fas fa-times me-2"></i>Batal
+                </button>
+                <button class="btn btn-primary mb-2" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                    <i class="fas fa-check me-2"></i>Verifikasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div class="pdf-preview-modal" id="pdfPreviewModal">
+        <div class="pdf-preview-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
+                <button class="btn-close" onclick="closePdfPreview()"></button>
+            </div>
+            <div class="pdf-preview" id="pdfPreviewContent">
+                <!-- PDF content will be generated here -->
+            </div>
+            <div class="d-flex justify-content-between mt-4 flex-wrap">
+                <button class="btn btn-secondary mb-2" onclick="closePdfPreview()" style="padding: 10px 20px; border-radius: 10px; min-width: 120px;">Tutup</button>
+                <button class="btn btn-primary mb-2" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 20px; border-radius: 10px; min-width: 120px;">Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com">
+                <!-- LOGO BARU: header & footer sesuai perintah -->
+                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" alt="Logo Dinas Peternakan dan Perikanan Situbondo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com/dokumentasi">Dokumentasi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Bantuan Sosial</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.dinasperikanansitubondo.com/simpadan">SIMPADAN</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); border: none; padding: 10px 24px; border-radius: 10px;">
+                            <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="badge-category">
+                        <i class="fas fa-hands-helping"></i> BANTUAN SOSIAL
+                    </span>
+                    <h1 data-aos="fade-up">Penyaluran Bantuan Sosial untuk Korban Banjir di Wilayah Besuki</h1>
+                    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
+                        Kegiatan kemanusiaan Dinas Perikanan Situbondo bersama DINSOS dalam rangka memberikan bantuan sosial kepada warga korban banjir bandang di wilayah Besuki pada tanggal 26 Januari 2026.
+                    </p>
+                    <div class="row g-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Tanggal Kegiatan</h5>
+                                    <p class="text-white mb-0">26 Januari 2026</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Lokasi</h5>
+                                    <p class="text-white mb-0">Wilayah Besuki, Situbondo</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <div class="info-icon">
+                                    <i class="fas fa-hand-holding-heart"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-2">Jenis Bantuan</h5>
+                                    <p class="text-white mb-0">Sembako & Pakaian Layak Pakai</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Deskripsi Lengkap -->
+                    <div class="content-box" data-aos="fade-up">
+                        <h2 class="section-title">Penyaluran Bantuan Sosial Korban Banjir Besuki</h2>
+                        <div class="description-text">
+                            <p>Kegiatan penyaluran bantuan sosial ini merupakan bentuk kepedulian dan solidaritas <strong>Dinas Peternakan Dan Perikanan Situbondo</strong> terhadap masyarakat yang terdampak bencana banjir bandang di wilayah Besuki beberapa waktu lalu. Kegiatan dilaksanakan secara langsung di <strong>dapur umum penanggulangan bencana</strong> yang bekerja sama dengan <strong>DINSOS Kabupaten Situbondo</strong>.</p>
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-bullseye"></i> Tujuan Kegiatan Bantuan Sosial</h5>
+                                <p>Penyaluran bantuan ini bertujuan untuk:</p>
+                                <ul>
+                                    <li>Meringankan beban masyarakat korban banjir bandang di wilayah Besuki</li>
+                                    <li>Memenuhi kebutuhan dasar masyarakat yang kehilangan akses pangan</li>
+                                    <li>Memberikan dukungan psikologis melalui kepedulian dan perhatian</li>
+                                    <li>Memperkuat sinergi antar instansi dalam penanganan bencana</li>
+                                    <li>Mewujudkan nilai-nilai kemanusiaan dan gotong royong</li>
+                                </ul>
+                            </div>
+                            <p>Kegiatan dilaksanakan pada <strong>26 Januari 2026</strong> dengan melibatkan <strong>Kepala Bidang Pemberdayaan Nelayan Dinas Peternakan Dan Perikanan Situbondo, SUGENG PURWO PRIYANTO, S.E., M.M.</strong> beserta stafnya, serta <strong>tim dari DINSOS Kabupaten Situbondo</strong>. Bantuan sosial yang disalurkan berasal dari hasil pengumpulan donasi internal keluarga besar Dinas Peternakan dan Perikanan Kabupaten Situbondo.</p>
+                            <p>Proses penyaluran dilakukan dengan sistem door to door dan melalui dapur umum untuk memastikan bantuan tepat sasaran dan menjangkau masyarakat yang paling membutuhkan. Setiap paket bantuan diberikan secara langsung dengan memperhatikan protokol kesehatan dan prinsip keramahan.</p>
+                        </div>
+                    </div>
+                    <!-- Jenis Bantuan -->
+                    <div class="content-box" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="section-title">Jenis Bantuan yang Disalurkan</h2>
+                        <div class="description-text">
+                            <p>Bantuan sosial yang disalurkan dalam kegiatan ini terdiri dari berbagai jenis kebutuhan dasar yang sangat diperlukan oleh korban banjir, terutama untuk memenuhi kebutuhan pangan dan sandang.</p>
+                            <div class="highlight-box">
+                                <h5><i class="fas fa-box-open"></i> Daftar Paket Bantuan</h5>
+                                <p>Setiap paket bantuan berisi komponen-komponen berikut:</p>
+                                <ul>
+                                    <li><strong>Ikan Tawar Segar</strong> - sumber protein hewani berkualitas</li>
+                                    <li><strong>Mie Instan</strong> - makanan praktis dan mudah diolah</li>
+                                    <li><strong>Telur Ayam</strong> - sumber protein dengan harga terjangkau</li>
+                                    <li><strong>Pakaian Layak Pakai</strong> - untuk mengganti pakaian yang rusak akibat banjir</li>
+                                    <li><strong>Bahan Pokok Tambahan</strong> - sesuai ketersediaan dan kebutuhan</li>
+                                </ul>
+                            </div>
+                            <p><strong>Kepala Bidang Pemberdayaan Nelayan, SUGENG PURWO PRIYANTO, S.E., M.M.</strong> menyampaikan bahwa bantuan ini merupakan wujud nyata kepedulian keluarga besar Dinas Peternakan Dan Perikanan Situbondo terhadap sesama. "Dalam kondisi bencana seperti ini, solidaritas dan gotong royong menjadi modal utama untuk bangkit bersama," ujarnya.</p>
+                            <p><strong>Perwakilan DINSOS Situbondo</strong> menyambut baik inisiatif ini dan mengapresiasi kontribusi nyata Dinas Peternakan Dan Perikanan dalam penanganan pasca bencana. Kerja sama antar instansi seperti ini sangat penting untuk mempercepat proses pemulihan masyarakat terdampak.</p>
+                            <p>Kegiatan ini tidak hanya memberikan bantuan materiil, tetapi juga memberikan semangat dan harapan baru bagi masyarakat yang terdampak banjir. Dukungan moral dan psikologis ini diharapkan dapat memperkuat ketahanan masyarakat dalam menghadapi masa pemulihan pasca bencana.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <!-- Peserta Utama -->
+                    <div class="content-box" data-aos="fade-left">
+                        <h2 class="section-title">Pelaksana Kegiatan</h2>
+                        <div class="mb-4">
+                            <div class="location-card mb-4">
+                                <div class="location-icon">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <h4>Kepala Bidang Pemberdayaan Nelayan</h4>
+                                <p class="text-muted mb-2"><strong>Nama:</strong> SUGENG PURWO PRIYANTO, S.E., M.M.</p>
+                                <p class="text-muted mb-2"><strong>Peran:</strong> Koordinator penyaluran bantuan</p>
+                                <p class="text-muted">Memimpin tim dalam proses penyaluran dan memastikan bantuan tepat sasaran.</p>
+                            </div>
+                            <div class="location-card mb-4">
+                                <div class="location-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h4>Tim DINSOS Situbondo</h4>
+                                <p class="text-muted mb-2"><strong>Peran:</strong> Mitra penyaluran bantuan</p>
+                                <p class="text-muted mb-2"><strong>Tugas:</strong> Koordinasi lokasi dan penerima bantuan</p>
+                                <p class="text-muted">Memastikan bantuan tersalurkan ke masyarakat yang paling membutuhkan.</p>
+                            </div>
+                            <div class="location-card">
+                                <div class="location-icon">
+                                    <i class="fas fa-hands-helping"></i>
+                                </div>
+                                <h4>Keluarga Besar Dinas Peternakan Dan Perikanan</h4>
+                                <p class="text-muted mb-2"><strong>Kontribusi:</strong> Donatur dan relawan</p>
+                                <p class="text-muted mb-2"><strong>Peran:</strong> Pengumpulan dan penyaluran bantuan</p>
+                                <p class="text-muted">Berpartisipasi aktif dalam pengumpulan donasi dan penyaluran langsung.</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h5 class="section-title mb-3">Topik Terkait</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark p-2 border">Bantuan Sosial</span>
+                                <span class="badge bg-light text-dark p-2 border">Korban Banjir</span>
+                                <span class="badge bg-light text-dark p-2 border">DINSOS Situbondo</span>
+                                <span class="badge bg-light text-dark p-2 border">Dapur Umum</span>
+                                <span class="badge bg-light text-dark p-2 border">Gotong Royong</span>
+                                <span class="badge bg-light text-dark p-2 border">Kemanusiaan</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Item Bantuan Detail -->
+                    <div class="content-box" data-aos="fade-left" data-aos-delay="100">
+                        <h2 class="section-title">Detail Bantuan</h2>
+                        <div class="bantuan-item">
+                            <div class="bantuan-icon">
+                                <i class="fas fa-fish"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Ikan Tawar Segar</h6>
+                                <p class="text-muted mb-0">Sumber protein berkualitas untuk gizi keluarga</p>
+                            </div>
+                        </div>
+                        <div class="bantuan-item">
+                            <div class="bantuan-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Mie Instan</h6>
+                                <p class="text-muted mb-0">Makanan praktis mudah diolah</p>
+                            </div>
+                        </div>
+                        <div class="bantuan-item">
+                            <div class="bantuan-icon">
+                                <i class="fas fa-egg"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Telur Ayam</h6>
+                                <p class="text-muted mb-0">Protein hewani dengan harga terjangkau</p>
+                            </div>
+                        </div>
+                        <div class="bantuan-item">
+                            <div class="bantuan-icon">
+                                <i class="fas fa-tshirt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Pakaian Layak Pakai</h6>
+                                <p class="text-muted mb-0">Untuk mengganti pakaian yang rusak</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assistance Items Section -->
+    <section class="assistance-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Komponen Bantuan Sosial</h2>
+                    <p class="text-muted mt-3">Berbagai jenis bantuan yang disalurkan untuk memenuhi kebutuhan dasar korban banjir</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                    <div class="assistance-card">
+                        <div class="assistance-icon">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <h4>Ikan Tawar Segar</h4>
+                        <p class="text-muted">Sumber protein hewani berkualitas tinggi yang sangat diperlukan untuk pemulihan kesehatan masyarakat pasca bencana.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="assistance-card">
+                        <div class="assistance-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h4>Mie Instan</h4>
+                        <p class="text-muted">Makanan praktis yang mudah diolah dengan peralatan terbatas, sangat cocok untuk kondisi darurat pasca banjir.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="assistance-card">
+                        <div class="assistance-icon">
+                            <i class="fas fa-egg"></i>
+                        </div>
+                        <h4>Telur Ayam</h4>
+                        <p class="text-muted">Sumber protein dengan harga terjangkau yang mudah diolah dan dikonsumsi oleh semua kelompok usia.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="assistance-card">
+                        <div class="assistance-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h4>Pakaian Layak Pakai</h4>
+                        <p class="text-muted">Kebutuhan sandang untuk mengganti pakaian yang rusak atau hilang akibat terdampak banjir bandang.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="partners-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Tim dan Mitra Pelaksana</h2>
+                    <p class="text-muted mt-3">Para pihak yang berperan aktif dalam penyaluran bantuan sosial korban banjir</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="partner-card">
+                        <div class="partner-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-penyerahan-bantuan-sosial-korban-banjir-besuki.jpeg" 
+                                 alt="Kepala Bidang Pemberdayaan Nelayan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=SUGENG+PURWO&background=0a6e4a&color=fff&size=400'">
+                        </div>
+                        <h3 class="partner-name">SUGENG PURWO PRIYANTO, S.E., M.M.</h3>
+                        <p class="partner-role">Kepala Bidang Pemberdayaan Nelayan</p>
+                        <p class="partner-desc">Memimpin langsung proses penyaluran bantuan dan memastikan semua bantuan tersalurkan tepat sasaran kepada masyarakat yang paling membutuhkan.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="partner-card">
+                        <div class="partner-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-bersama-dinsos-situbondo.jpeg" 
+                                 alt="Tim DINSOS Situbondo"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=DINSOS+Situbondo&background=1da084&color=fff&size=400'">
+                        </div>
+                        <h3 class="partner-name">DINSOS Kabupaten Situbondo</h3>
+                        <p class="partner-role">Mitra Penyaluran Bantuan</p>
+                        <p class="partner-desc">Badan Penanggulangan Bencana Daerah yang berperan dalam koordinasi lokasi dan memastikan bantuan tepat sasaran kepada korban banjir.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="partner-card">
+                        <div class="partner-image">
+                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-dinsos-situbondo-1.jpeg" 
+                                 alt="Relawan dan Penerima Bantuan"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Relawan+Bantuan&background=3ddc97&color=fff&size=400'">
+                        </div>
+                        <h3 class="partner-name">Relawan dan Penerima Bantuan</h3>
+                        <p class="partner-role">Pelaksana dan Penerima Manfaat</p>
+                        <p class="partner-desc">Relawan dari Dinas Peternakan Dan Perikanan dan masyarakat penerima bantuan yang bersama-sama menjalankan proses penyaluran dengan semangat gotong royong.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Tahapan Penyaluran Bantuan</h2>
+                    <p class="text-muted mt-3">Proses sistematis dalam penyaluran bantuan sosial kepada korban banjir</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                    <div class="process-card">
+                        <div class="process-icon">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h4>Pengumpulan Donasi</h4>
+                        <p class="text-muted">Mengumpulkan bantuan dari keluarga besar Dinas Peternakan Dan Perikanan Situbondo melalui open donasi internal.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="process-card">
+                        <div class="process-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <h4>Sortir dan Packing</h4>
+                        <p class="text-muted">Memilah dan mengemas bantuan menjadi paket-paket siap salur sesuai dengan kebutuhan penerima.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="process-card">
+                        <div class="process-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h4>Distribusi ke Lokasi</h4>
+                        <p class="text-muted">Mengirimkan bantuan ke dapur umum dan lokasi terdampak banjir di wilayah Besuki.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="process-card">
+                        <div class="process-icon">
+                            <i class="fas fa-people-carry"></i>
+                        </div>
+                        <h4>Penyerahan Langsung</h4>
+                        <p class="text-muted">Menyalurkan bantuan secara langsung door to door kepada masyarakat korban banjir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Dokumentasi Penyaluran Bantuan</h2>
+                    <p class="text-muted mt-3">Momen penting dalam proses penyaluran bantuan sosial kepada korban banjir Besuki</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <!-- Foto 1 -->
+                <div class="col-lg-6 col-md-6" data-aos="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-penyerahan-bantuan-sosial-korban-banjir-besuki.jpeg" 
+                             alt="Penyerahan bantuan sosial kepada korban banjir"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1582211594533-268f4f1edcb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Penyerahan Bantuan Langsung</h6>
+                                <small class="text-white">Kepala Bidang menyerahkan bantuan kepada warga</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Foto 2 -->
+                <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-bersama-dinsos-situbondo.jpeg" 
+                             alt="Koordinasi dengan DINSOS Situbondo"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1582211594533-268f4f1edcb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Koordinasi dengan DINSOS</h6>
+                                <small class="text-white">Bersama tim DINSOS Situbondo di dapur umum</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Foto 3 -->
+                <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-dinsos-situbondo-1.jpeg" 
+                             alt="Foto bersama tim dan relawan"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1582211594533-268f4f1edcb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Foto Bersama Tim</h6>
+                                <small class="text-white">Dokumentasi bersama relawan dan penerima bantuan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Foto 4 -->
+                <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="gallery-item">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-dinsos-situbondo-1.jpeg" 
+                             alt="Proses packing bantuan"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1582211594533-268f4f1edcb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="gallery-overlay">
+                            <div class="gallery-caption">
+                                <h6 class="text-white mb-0">Proses Persiapan Bantuan</h6>
+                                <small class="text-white">Mempersiapkan paket bantuan sebelum disalurkan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="impact-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title d-inline-block">Dampak dan Manfaat Bantuan</h2>
+                    <p class="text-muted mt-3">Kontribusi bantuan sosial terhadap pemulihan masyarakat korban banjir</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="impact-card">
+                        <div class="impact-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h4>Pemenuhan Kebutuhan Pokok</h4>
+                        <p class="text-muted">Bantuan memastikan kebutuhan pangan dasar terpenuhi selama masa pemulihan pasca banjir, terutama bagi keluarga yang kehilangan akses ekonomi.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="impact-card">
+                        <div class="impact-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h4>Dukungan Psikologis</h4>
+                        <p class="text-muted">Kehadiran dan kepedulian memberikan dukungan moral yang sangat berarti bagi korban banjir, meningkatkan semangat untuk bangkit kembali.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="impact-card">
+                        <div class="impact-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <h4>Penguatan Gotong Royong</h4>
+                        <p class="text-muted">Kegiatan ini memperkuat nilai-nilai kebersamaan dan solidaritas sosial dalam masyarakat, terutama dalam menghadapi situasi darurat.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="action-buttons">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="mb-4">Akses Laporan dan Bagikan Kegiatan</h2>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <button class="btn-download" onclick="openPdfAuthModal()">
+                            <i class="fas fa-download me-2"></i>Download Laporan Kegiatan (PDF)
+                        </button>
+                        <button class="btn-share" onclick="openShareModal()">
+                            <i class="fas fa-share-alt me-2"></i>Bagikan Kegiatan Ini
+                        </button>
+                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share">
+                            <i class="fas fa-images me-2"></i>Lihat Dokumentasi Lain
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <!-- LOGO BARU: footer -->
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
+                             alt="Logo Dinas Peternakan dan Perikanan Situbondo" 
+                             height="50" 
+                             class="me-3">
+                    </div>
+                    <p class="text-light mb-4" style="line-height: 1.7;">
+                        Berkomitmen meningkatkan kesejahteraan masyarakat Situbondo melalui program pemberdayaan dan bantuan sosial yang tepat sasaran sesuai dengan kebutuhan riil di lapangan.
+                    </p>
+                    <div class="social-icons mt-4">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Tautan Cepat</h5>
+                    <div class="footer-links mt-4">
+                        <a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2"></i>Beranda</a>
+                        <a href="https://www.dinasperikanansitubondo.com/simpadan"><i class="fas fa-mobile-alt me-2"></i>SIMPADAN</a>
+                        <a href="https://www.dinasperikanansitubondo.com/dokumentasi"><i class="fas fa-images me-2"></i>Dokumentasi</a>
+                        <a href="https://situbondokab.go.id/"><i class="fas fa-university me-2"></i>Pemkab Situbondo</a>
+                        <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i>Pengaduan</a>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <h5>Kontak Kami</h5>
+                    <div class="mt-4">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Alamat Kantor</span>
+                                <small class="text-light">Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fab fa-whatsapp text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">WhatsApp Admin</span>
+                                <small class="text-light">0878 6561 4222</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <div class="bg-secondary-green p-2 rounded-circle me-3 flex-shrink-0">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-white fw-bold">Email</span>
+                                <small class="text-light">info@dinasperikanansitubondo.com</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light my-5">
+            <div class="text-center text-light">
+                <p class="mb-2">&copy; <span id="currentYear">2026</span> Dinas Perikanan Situbondo. Hak Cipta Dilindungi.</p>
+                <small>Dibuat dengan <i class="fas fa-heart text-danger"></i> untuk Masyarakat Situbondo</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- JavaScript Eksternal (semua fungsi & interaksi) -->
+    <script src="main.js" defer></script>
+</body>
+</html>
