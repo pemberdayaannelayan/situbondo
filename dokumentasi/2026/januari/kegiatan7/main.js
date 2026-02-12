@@ -1,23 +1,32 @@
 // ==================== INISIALISASI ====================
-// Initialize AOS
-AOS.init({
-    duration: 800,
-    once: true,
-    offset: 100
-});
+// Initialize AOS with safe check
+if (typeof AOS !== 'undefined') {
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+    });
+} else {
+    console.warn('AOS library not loaded yet');
+}
 
 // Set current year in footer
-document.getElementById('currentYear').textContent = new Date().getFullYear();
+const yearElement = document.getElementById('currentYear');
+if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+}
 
 // Navbar scroll effect
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-    } else {
-        navbar.style.boxShadow = '0 2px 20px rgba(13, 110, 62, 0.08)';
-        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+    if (navbar) {
+        if (window.scrollY > 50) {
+            navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+        } else {
+            navbar.style.boxShadow = '0 2px 20px rgba(13, 110, 62, 0.08)';
+            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+        }
     }
 });
 
@@ -30,8 +39,10 @@ document.querySelectorAll('.gallery-item').forEach(item => {
             existingModal.remove();
         }
 
-        const imgSrc = this.querySelector('img').src;
-        const imgAlt = this.querySelector('img').alt;
+        const img = this.querySelector('img');
+        if (!img) return;
+        const imgSrc = img.src;
+        const imgAlt = img.alt;
         
         const modalHTML = `
         <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
@@ -82,14 +93,14 @@ scrollTopBtn.style.zIndex = '1000';
 scrollTopBtn.style.display = 'none';
 scrollTopBtn.style.background = 'linear-gradient(135deg, var(--secondary-green), var(--primary-green))';
 scrollTopBtn.style.border = 'none';
+scrollTopBtn.style.alignItems = 'center';
+scrollTopBtn.style.justifyContent = 'center';
 scrollTopBtn.setAttribute('aria-label', 'Kembali ke atas');
 document.body.appendChild(scrollTopBtn);
 
 window.addEventListener('scroll', function() {
     if (window.scrollY > 300) {
         scrollTopBtn.style.display = 'flex';
-        scrollTopBtn.style.alignItems = 'center';
-        scrollTopBtn.style.justifyContent = 'center';
     } else {
         scrollTopBtn.style.display = 'none';
     }
@@ -104,36 +115,57 @@ scrollTopBtn.addEventListener('click', function() {
 
 // ==================== SHARE FUNCTIONALITY ====================
 function openShareModal() {
-    document.getElementById('shareModal').style.display = 'flex';
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closeShareModal() {
-    document.getElementById('shareModal').style.display = 'none';
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function shareToWhatsApp() {
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent('Koordinasi Inovasi Aplikasi SIMPADAN Tangkap untuk Nelayan Situbondo\n\nKegiatan koordinasi peluncuran aplikasi SIMPADAN Tangkap sebagai platform digital inovatif untuk pemberdayaan nelayan Situbondo, dengan menghadirkan Ketua BIPPD dan Plt. Kepala Dinas Peternakan dan Perikanan.\n\nBaca selengkapnya di:');
     window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+    closeShareModal();
 }
 
 function copyLink() {
     const currentUrl = window.location.href;
-    navigator.clipboard.writeText(currentUrl).then(() => {
-        alert('Link berhasil disalin ke clipboard!');
-        closeShareModal();
-    }).catch(err => {
-        console.error('Gagal menyalin link: ', err);
-        alert('Gagal menyalin link. Silakan coba lagi.');
-    });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(currentUrl).then(() => {
+            alert('✅ Link berhasil disalin ke clipboard!');
+            closeShareModal();
+        }).catch(err => {
+            console.error('Gagal menyalin link: ', err);
+            fallbackCopy();
+        });
+    } else {
+        fallbackCopy();
+    }
+}
+
+function fallbackCopy() {
+    const textarea = document.createElement('textarea');
+    textarea.value = window.location.href;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    alert('✅ Link berhasil disalin (fallback method)!');
+    closeShareModal();
 }
 
 // Close modal when clicking outside
-document.getElementById('shareModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeShareModal();
-    }
-});
+const shareModal = document.getElementById('shareModal');
+if (shareModal) {
+    shareModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeShareModal();
+        }
+    });
+}
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(e) {
@@ -168,7 +200,7 @@ function isLockedOut() {
             const seconds = Math.floor((timeRemaining % 60000) / 1000);
             return {
                 locked: true,
-                message: `Akses terkunci. Silakan coba lagi dalam ${minutes} menit ${seconds} detik.`
+                message: `🔒 Akses terkunci. Silakan coba lagi dalam ${minutes} menit ${seconds} detik.`
             };
         } else {
             lockoutTime = 0;
@@ -187,14 +219,8 @@ function togglePasswordVisibility() {
     if (!passwordInput || !toggleIcon) return;
     
     isPasswordVisible = !isPasswordVisible;
-    
-    if (isPasswordVisible) {
-        passwordInput.type = 'text';
-        toggleIcon.className = 'fas fa-eye-slash';
-    } else {
-        passwordInput.type = 'password';
-        toggleIcon.className = 'fas fa-eye';
-    }
+    passwordInput.type = isPasswordVisible ? 'text' : 'password';
+    toggleIcon.className = isPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye';
 }
 
 function openPdfAuthModal() {
@@ -204,20 +230,25 @@ function openPdfAuthModal() {
         return;
     }
     
-    document.getElementById('securityCodeInput').value = '';
-    document.getElementById('errorMessage').style.display = 'none';
-    document.getElementById('errorText').textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
-    document.getElementById('securityCodeInput').classList.remove('is-invalid');
-    document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
-    document.getElementById('pdfAuthModal').style.display = 'flex';
+    const modal = document.getElementById('pdfAuthModal');
+    const input = document.getElementById('securityCodeInput');
+    const errorMsg = document.getElementById('errorMessage');
+    const attemptsSpan = document.getElementById('attemptsLeft');
     
-    setTimeout(() => {
-        document.getElementById('securityCodeInput').focus();
-    }, 300);
+    if (input) input.value = '';
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (attemptsSpan) attemptsSpan.textContent = maxAttempts - currentAttempts;
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            if (input) input.focus();
+        }, 300);
+    }
 }
 
 function closePdfAuthModal() {
-    document.getElementById('pdfAuthModal').style.display = 'none';
+    const modal = document.getElementById('pdfAuthModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function verifySecurityCode() {
@@ -253,9 +284,9 @@ function verifySecurityCode() {
         
         if (currentAttempts >= maxAttempts) {
             lockoutTime = new Date().getTime() + lockoutDuration;
-            errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
+            errorText.textContent = '❌ Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
         } else {
-            errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
+            errorText.textContent = `❌ Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
         }
         
         errorMessage.style.display = 'block';
@@ -272,19 +303,23 @@ function verifySecurityCode() {
 
 // ==================== PDF GENERATION ====================
 function showLoading() {
-    document.getElementById('loadingOverlay').style.display = 'flex';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'flex';
 }
 
 function hideLoading() {
-    document.getElementById('loadingOverlay').style.display = 'none';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 function openPdfPreview() {
-    document.getElementById('pdfPreviewModal').style.display = 'flex';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closePdfPreview() {
-    document.getElementById('pdfPreviewModal').style.display = 'none';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function generatePDFReport() {
@@ -431,7 +466,11 @@ function generatePDFReport() {
     </div>
     `;
     
-    document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
+    const previewContainer = document.getElementById('pdfPreviewContent');
+    if (previewContainer) {
+        previewContainer.innerHTML = pdfContent;
+    }
+    
     hideLoading();
     openPdfPreview();
 }
@@ -439,7 +478,7 @@ function generatePDFReport() {
 async function downloadPDF() {
     // Cek apakah library jsPDF tersedia
     if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
-        alert('Library PDF tidak tersedia. Silakan refresh halaman atau periksa koneksi internet Anda.');
+        alert('⚠️ Library PDF tidak tersedia. Silakan refresh halaman atau periksa koneksi internet Anda.');
         hideLoading();
         return;
     }
@@ -657,21 +696,20 @@ async function downloadPDF() {
         hideLoading();
         closePdfPreview();
         setTimeout(() => {
-            alert('Laporan PDF berhasil diunduh!');
+            alert('✅ Laporan PDF berhasil diunduh!');
         }, 500);
         
     } catch (error) {
         console.error('Error generating PDF:', error);
         hideLoading();
-        alert('PDF berhasil dibuat! Silakan cek folder download Anda.');
+        alert('✅ PDF berhasil dibuat! Silakan cek folder download Anda.');
     }
 }
 
-// ==================== FOOTER POSITION (CSS Flexbox digunakan, fungsi ini sebagai fallback) ====================
+// ==================== FOOTER POSITION ====================
 function fixFooterPosition() {
     const footer = document.querySelector('.footer');
     if (footer) {
-        // CSS flexbox sudah mengatur, kita hanya memastikan tidak ada style inline yang mengganggu
         footer.style.position = 'relative';
         footer.style.bottom = 'auto';
         footer.style.marginTop = 'auto';
@@ -714,5 +752,15 @@ if (securityCodeInput) {
     });
 }
 
+// Close PDF preview modal when clicking outside
+const pdfPreviewModal = document.getElementById('pdfPreviewModal');
+if (pdfPreviewModal) {
+    pdfPreviewModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePdfPreview();
+        }
+    });
+}
+
 // Debug: Tampilkan kode keamanan hari ini di console
-console.log("Kode keamanan hari ini:", generateSecurityCode());
+console.log("🔐 Kode keamanan hari ini:", generateSecurityCode());
