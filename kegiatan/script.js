@@ -280,7 +280,7 @@ const kegiatanData = [
     "youtubeUrls": [
         "https://www.youtube.com/embed/ltIf0lYdyxU"
     ],
-    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari.html",
+    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari.html",
     "participants": 0,
     "duration": ""
 },
