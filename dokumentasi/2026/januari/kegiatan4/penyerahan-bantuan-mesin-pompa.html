@@ -2,15 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Penyerahan dan Pelebelan Mesin Pompa Air kepada Pengelola TPI - Dinas Perikanan Situbondo</title>
     <meta name="description" content="Kegiatan penyerahan dan pelebelan mesin pompa air kepada pengelola TPI Besuki dan TPI Pandean yang diserahkan langsung oleh Kepala Bidang Pemberdayaan Nelayan Dinas Peternakan dan Perikanan Kabupaten Situbondo.">
     
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome 6 (versi stabil) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -19,8 +19,8 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <!-- jsPDF untuk generate PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-L2BTcAygS0TkaWtOok5rzI3uJgOQKc0oxk7hHqMAnHkZMPggX7PTUKdMq36Z6N+sFql7F8rGNCGduK5zR50Tpw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Share Modal -->
-    <div class="share-modal" id="shareModal">
+    <div class="share-modal" id="shareModal" onclick="if(event.target===this) closeShareModal()">
         <div class="share-modal-content">
             <h3 class="section-title">Bagikan Kegiatan Ini</h3>
             <p>Pilih opsi untuk membagikan informasi penyerahan bantuan:</p>
@@ -51,7 +51,7 @@
     </div>
 
     <!-- PDF Authorization Modal -->
-    <div class="pdf-auth-modal" id="pdfAuthModal">
+    <div class="pdf-auth-modal" id="pdfAuthModal" onclick="if(event.target===this) closePdfAuthModal()">
         <div class="pdf-auth-content">
             <div class="auth-icon">
                 <i class="fas fa-lock"></i>
@@ -75,10 +75,11 @@
                     <input type="password" 
                            class="form-control form-control-lg" 
                            id="securityCodeInput" 
-                           placeholder="Masukkan 8 digit kode keamanan"
+                           placeholder="8 digit kode keamanan"
                            maxlength="8"
-                           onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                    <button type="button" class="password-toggle" id="passwordToggle">
+                           inputmode="numeric"
+                           pattern="[0-9]*">
+                    <button type="button" class="password-toggle" id="passwordToggle" aria-label="Tampilkan/Sembunyikan kode">
                         <i class="fas fa-eye"></i>
                     </button>
                 </div>
@@ -93,11 +94,11 @@
                 Percobaan tersisa: <span id="attemptsLeft">3</span>
             </div>
             
-            <div class="d-flex justify-content-between mt-4 flex-wrap">
-                <button class="btn btn-secondary mb-2" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+            <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
+                <button class="btn btn-secondary mb-0" onclick="closePdfAuthModal()" style="padding: 12px 20px; border-radius: 10px; min-width: 120px;">
                     <i class="fas fa-times me-2"></i>Batal
                 </button>
-                <button class="btn btn-primary mb-2" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;">
+                <button class="btn btn-primary mb-0" onclick="verifySecurityCode()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 12px 20px; border-radius: 10px; min-width: 120px;">
                     <i class="fas fa-check me-2"></i>Verifikasi
                 </button>
             </div>
@@ -105,18 +106,18 @@
     </div>
 
     <!-- PDF Preview Modal -->
-    <div class="pdf-preview-modal" id="pdfPreviewModal">
+    <div class="pdf-preview-modal" id="pdfPreviewModal" onclick="if(event.target===this) closePdfPreview()">
         <div class="pdf-preview-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
-                <button class="btn-close" onclick="closePdfPreview()"></button>
+                <button class="btn-close" onclick="closePdfPreview()" aria-label="Tutup"></button>
             </div>
             <div class="pdf-preview" id="pdfPreviewContent">
                 <!-- PDF content will be generated here -->
             </div>
-            <div class="d-flex justify-content-between mt-4 flex-wrap">
-                <button class="btn btn-secondary mb-2" onclick="closePdfPreview()" style="padding: 10px 20px; border-radius: 10px; min-width: 120px;">Tutup</button>
-                <button class="btn btn-primary mb-2" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 10px 20px; border-radius: 10px; min-width: 120px;">Download PDF</button>
+            <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
+                <button class="btn btn-secondary mb-0" onclick="closePdfPreview()" style="padding: 10px 20px; border-radius: 10px; min-width: 120px;">Tutup</button>
+                <button class="btn btn-primary mb-0" onclick="downloadPDF()" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 10px 20px; border-radius: 10px; min-width: 120px;">Download PDF</button>
             </div>
         </div>
     </div>
@@ -124,13 +125,13 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com">
-                <!-- Logo baru tanpa teks -->
+            <a class="navbar-brand" href="https://www.dinasperikanansitubondo.com" aria-label="Beranda Dinas Perikanan Situbondo">
                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
-                     alt="Logo Dinas Peternakan dan Perikanan Situbondo">
+                     alt="Logo Dinas Peternakan dan Perikanan Situbondo"
+                     onerror="this.onerror=null; this.src='https://placehold.co/200x80/1e3a8a/white?text=Dinas+Perikanan';">
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
             </button>
             
@@ -143,12 +144,12 @@
                         <a class="nav-link" href="https://www.dinasperikanansitubondo.com/dokumentasi">Dokumentasi</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Bantuan Pompa</a>
+                        <a class="nav-link active" aria-current="page" href="#">Bantuan Pompa</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="https://www.dinasperikanansitubondo.com/simpadan">SIMPADAN</a>
                     </li>
-                    <li class="nav-item ms-2">
+                    <li class="nav-item ms-lg-2">
                         <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); border: none; padding: 10px 24px; border-radius: 10px;">
                             <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
                         </a>
@@ -414,7 +415,8 @@
                         <div class="speaker-image">
                             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%20memberikan%20arahan.jpeg" 
                                  alt="Kepala Bidang Pemberdayaan Nelayan"
-                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Sugeng+Purwo&background=1e3a8a&color=fff&size=400'">
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Sugeng+Purwo+Priyanto&background=1e3a8a&color=fff&size=400&bold=true';">
                         </div>
                         <h3 class="speaker-name">SUGENG PURWO PRIYANTO, S.E., M.M.</h3>
                         <p class="speaker-role">Kepala Bidang Pemberdayaan Nelayan</p>
@@ -427,7 +429,8 @@
                         <div class="speaker-image">
                             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%20diskusi%201.jpeg" 
                                  alt="Tim Aset Dinas Perikanan"
-                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Tim+Aset&background=3b82f6&color=fff&size=400'">
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Tim+Aset&background=3b82f6&color=fff&size=400&bold=true';">
                         </div>
                         <h3 class="speaker-name">Tim Aset Dinas</h3>
                         <p class="speaker-role">Pengelola Barang Milik Daerah</p>
@@ -440,7 +443,8 @@
                         <div class="speaker-image">
                             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20besuki.jpeg" 
                                  alt="Pengelola TPI"
-                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Pengelola+TPI&background=60a5fa&color=fff&size=400'">
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Pengelola+TPI&background=60a5fa&color=fff&size=400&bold=true';">
                         </div>
                         <h3 class="speaker-name">Pengelola TPI</h3>
                         <p class="speaker-role">Penerima Bantuan</p>
@@ -467,7 +471,8 @@
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20besuki.jpeg" 
                              alt="Penyerahan mesin pompa air di TPI Besuki"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e3a8a/white?text=Penyerahan+di+TPI+Besuki';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Penyerahan di TPI Besuki</h6>
@@ -482,7 +487,8 @@
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg" 
                              alt="Penyerahan mesin pompa air di TPI Pandean"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e3a8a/white?text=Penyerahan+di+TPI+Pandean';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Penyerahan di TPI Pandean</h6>
@@ -497,7 +503,8 @@
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%202%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg" 
                              alt="Proses pelebelan mesin pompa air sebagai BMD"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e3a8a/white?text=Pelebelan+BMD';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Proses Pelebelan BMD</h6>
@@ -512,7 +519,8 @@
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/dialog-pengelola-tpi.jpeg" 
                              alt="Dialog dengan pengelola TPI"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e3a8a/white?text=Dialog+dengan+Pengelola';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Dialog dengan Pengelola</h6>
@@ -527,7 +535,8 @@
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%20memberikan%20arahan.jpeg" 
                              alt="Diskusi teknis mengenai penggunaan mesin"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e3a8a/white?text=Diskusi+Teknis';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Diskusi Teknis</h6>
@@ -542,7 +551,8 @@
                     <div class="gallery-item">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%20diskusi%201.jpeg" 
                              alt="Pemberian arahan oleh Kepala Bidang"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e3a8a/white?text=Pemberian+Arahan';">
                         <div class="gallery-overlay">
                             <div class="gallery-caption">
                                 <h6 class="text-white mb-0">Pemberian Arahan</h6>
@@ -626,21 +636,21 @@
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-4">
-                    <!-- Logo baru tanpa teks -->
                     <div class="d-flex align-items-center mb-4">
                         <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
                              alt="Logo Dinas Peternakan dan Perikanan Situbondo" 
                              height="50" 
-                             class="me-3">
+                             class="me-3"
+                             onerror="this.onerror=null; this.src='https://placehold.co/200x50/1e3a8a/white?text=Dinas+Perikanan';">
                     </div>
                     <p class="text-light mb-4" style="line-height: 1.7;">
                         Berkontribusi aktif dalam memajukan sektor perikanan tangkap dan memberdayakan masyarakat pesisir Situbondo melalui berbagai program inovatif dan berkelanjutan.
                     </p>
                     <div class="social-icons mt-4">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
                 
@@ -699,7 +709,7 @@
     </footer>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     
     <!-- AOS Animation -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
