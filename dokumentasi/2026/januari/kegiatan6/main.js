@@ -8,17 +8,22 @@ AOS.init({
 });
 
 // Set current year in footer
-document.getElementById('currentYear').textContent = new Date().getFullYear();
+const yearElement = document.getElementById('currentYear');
+if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+}
 
 // Navbar scroll effect
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-    } else {
-        navbar.style.boxShadow = '0 2px 20px rgba(10, 110, 74, 0.08)';
-        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+    if (navbar) {
+        if (window.scrollY > 50) {
+            navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+        } else {
+            navbar.style.boxShadow = '0 2px 20px rgba(10, 110, 74, 0.08)';
+            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+        }
     }
 });
 
@@ -26,8 +31,10 @@ window.addEventListener('scroll', function() {
 const galleryItems = document.querySelectorAll('.gallery-item');
 galleryItems.forEach(item => {
     item.addEventListener('click', function() {
-        const imgSrc = this.querySelector('img').src;
-        const imgAlt = this.querySelector('img').alt;
+        const img = this.querySelector('img');
+        if (!img) return;
+        const imgSrc = img.src;
+        const imgAlt = img.alt || 'Dokumentasi kegiatan';
         
         // Create modal
         const modalHTML = `
@@ -35,8 +42,8 @@ galleryItems.forEach(item => {
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content border-0">
                     <div class="modal-body p-0 position-relative">
-                        <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded">
-                        <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal"></button>
+                        <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded" loading="lazy">
+                        <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                 </div>
             </div>
@@ -47,13 +54,16 @@ galleryItems.forEach(item => {
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         
         // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-        modal.show();
-        
-        // Remove modal when closed
-        document.getElementById('imageModal').addEventListener('hidden.bs.modal', function() {
-            this.remove();
-        });
+        const modalElement = document.getElementById('imageModal');
+        if (modalElement && window.bootstrap) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            
+            // Remove modal when closed
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            }, { once: true });
+        }
     });
 });
 
@@ -85,6 +95,7 @@ scrollTopBtn.style.zIndex = '1000';
 scrollTopBtn.style.display = 'none';
 scrollTopBtn.style.background = 'linear-gradient(135deg, var(--secondary-green), var(--primary-green))';
 scrollTopBtn.style.border = 'none';
+scrollTopBtn.setAttribute('aria-label', 'Kembali ke atas');
 
 document.body.appendChild(scrollTopBtn);
 
@@ -108,11 +119,13 @@ scrollTopBtn.addEventListener('click', function() {
 // ==================== SHARE FUNCTIONALITY ====================
 
 window.openShareModal = function() {
-    document.getElementById('shareModal').style.display = 'flex';
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 window.closeShareModal = function() {
-    document.getElementById('shareModal').style.display = 'none';
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.style.display = 'none';
 }
 
 window.shareToWhatsApp = function() {
@@ -133,11 +146,14 @@ window.copyLink = function() {
 }
 
 // Close modal when clicking outside
-document.getElementById('shareModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeShareModal();
-    }
-});
+const shareModal = document.getElementById('shareModal');
+if (shareModal) {
+    shareModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeShareModal();
+        }
+    });
+}
 
 // ==================== PDF AUTHORIZATION FUNCTIONS ====================
 
@@ -184,6 +200,8 @@ window.togglePasswordVisibility = function() {
     const passwordInput = document.getElementById('securityCodeInput');
     const toggleIcon = document.querySelector('#passwordToggle i');
     
+    if (!passwordInput || !toggleIcon) return;
+    
     isPasswordVisible = !isPasswordVisible;
     
     if (isPasswordVisible) {
@@ -203,45 +221,60 @@ window.openPdfAuthModal = function() {
         return;
     }
     
-    document.getElementById('securityCodeInput').value = '';
-    document.getElementById('errorMessage').style.display = 'none';
-    document.getElementById('errorText').textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
-    document.getElementById('securityCodeInput').classList.remove('is-invalid');
+    const input = document.getElementById('securityCodeInput');
+    if (input) input.value = '';
     
-    document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
+    const errorMsg = document.getElementById('errorMessage');
+    if (errorMsg) errorMsg.style.display = 'none';
     
-    document.getElementById('pdfAuthModal').style.display = 'flex';
+    const errorText = document.getElementById('errorText');
+    if (errorText) errorText.textContent = 'Kode keamanan yang Anda masukkan salah. Silakan coba lagi.';
+    
+    const inputEl = document.getElementById('securityCodeInput');
+    if (inputEl) inputEl.classList.remove('is-invalid');
+    
+    const attemptsLeft = document.getElementById('attemptsLeft');
+    if (attemptsLeft) attemptsLeft.textContent = maxAttempts - currentAttempts;
+    
+    const modal = document.getElementById('pdfAuthModal');
+    if (modal) modal.style.display = 'flex';
     
     setTimeout(() => {
-        document.getElementById('securityCodeInput').focus();
+        const focusInput = document.getElementById('securityCodeInput');
+        if (focusInput) focusInput.focus();
     }, 300);
 }
 
 // Close PDF authorization modal
 window.closePdfAuthModal = function() {
-    document.getElementById('pdfAuthModal').style.display = 'none';
+    const modal = document.getElementById('pdfAuthModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // Verify security code
 window.verifySecurityCode = function() {
     const lockoutStatus = isLockedOut();
     if (lockoutStatus.locked) {
-        document.getElementById('errorText').textContent = lockoutStatus.message;
-        document.getElementById('errorMessage').style.display = 'block';
+        const errorText = document.getElementById('errorText');
+        if (errorText) errorText.textContent = lockoutStatus.message;
+        const errorMsg = document.getElementById('errorMessage');
+        if (errorMsg) errorMsg.style.display = 'block';
         return;
     }
     
-    const userInput = document.getElementById('securityCodeInput').value;
+    const userInput = document.getElementById('securityCodeInput')?.value || '';
     const correctCode = generateSecurityCode();
     const errorMessage = document.getElementById('errorMessage');
     const errorText = document.getElementById('errorText');
     const inputElement = document.getElementById('securityCodeInput');
     
     if (!userInput || userInput.length !== 8) {
-        errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
-        errorMessage.style.display = 'block';
-        inputElement.classList.add('is-invalid');
-        inputElement.focus();
+        if (errorText) errorText.textContent = 'Kode keamanan harus terdiri dari 8 digit angka.';
+        if (errorMessage) errorMessage.style.display = 'block';
+        if (inputElement) {
+            inputElement.classList.add('is-invalid');
+            inputElement.focus();
+        }
         return;
     }
     
@@ -253,44 +286,49 @@ window.verifySecurityCode = function() {
         currentAttempts++;
         
         const attemptsLeft = maxAttempts - currentAttempts;
-        document.getElementById('attemptsLeft').textContent = attemptsLeft;
+        const attemptsSpan = document.getElementById('attemptsLeft');
+        if (attemptsSpan) attemptsSpan.textContent = attemptsLeft;
         
         if (currentAttempts >= maxAttempts) {
             lockoutTime = new Date().getTime() + lockoutDuration;
-            errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
+            if (errorText) errorText.textContent = 'Terlalu banyak percobaan gagal. Akses terkunci selama 5 menit.';
         } else {
-            errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
+            if (errorText) errorText.textContent = `Kode keamanan salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
         }
         
-        errorMessage.style.display = 'block';
-        inputElement.classList.add('is-invalid');
-        
-        inputElement.style.animation = 'none';
-        setTimeout(() => {
-            inputElement.style.animation = 'shake 0.5s';
-        }, 10);
-        
-        inputElement.value = '';
-        inputElement.focus();
+        if (errorMessage) errorMessage.style.display = 'block';
+        if (inputElement) {
+            inputElement.classList.add('is-invalid');
+            inputElement.style.animation = 'none';
+            setTimeout(() => {
+                inputElement.style.animation = 'shake 0.5s';
+            }, 10);
+            inputElement.value = '';
+            inputElement.focus();
+        }
     }
 }
 
 // ==================== PDF GENERATION FUNCTIONS ====================
 
 function showLoading() {
-    document.getElementById('loadingOverlay').style.display = 'flex';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'flex';
 }
 
 function hideLoading() {
-    document.getElementById('loadingOverlay').style.display = 'none';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 window.openPdfPreview = function() {
-    document.getElementById('pdfPreviewModal').style.display = 'flex';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 window.closePdfPreview = function() {
-    document.getElementById('pdfPreviewModal').style.display = 'none';
+    const modal = document.getElementById('pdfPreviewModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // Generate PDF report after successful authorization
@@ -311,7 +349,7 @@ function generatePDFReport() {
             <table style="width: 100%;">
                 <tr>
                     <td style="width: 80px; vertical-align: middle; padding-top: 5px;">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
                              alt="Logo Kabupaten Situbondo" 
                              style="width: 70px; height: 70px; object-fit: contain; display: block; border-radius: 0;">
                     </td>
@@ -453,7 +491,8 @@ function generatePDFReport() {
     </div>
     `;
     
-    document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
+    const previewContainer = document.getElementById('pdfPreviewContent');
+    if (previewContainer) previewContainer.innerHTML = pdfContent;
     
     hideLoading();
     openPdfPreview();
@@ -491,10 +530,10 @@ window.downloadPDF = async function() {
             await new Promise((resolve, reject) => {
                 logoImg.onload = resolve;
                 logoImg.onerror = () => {
-                    logoImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFjSURBVHgB7d2xTQNBEIXhsfAFARIgQzKgTToYAjg3j6JXODcPwdJgOSc/9Vx3/oPnOe6OnnH0l93Tsz+e3/kv3pnvxAAQIIAAIgwggAgDiCCAAAIIIICAIIAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hutb2vZ';
+                    logoImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFjSURBVHgB7d2xTQNBEIXhsfAFARIgQzKgTToYAjg3j6JXODcPwdJgOSc/9Vx3/oPnOe6OnnH0l93Tsz+e3/kv3pnvxAAQIIAAIgwggAgDiCCAAAIIIICAIIAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hv3wWIIYAAIIIMAABhBAgAEggAADQAABBoAAAggggAACCDAABBAQBBBAQBBAAAFBAAEEBAEEEBAEEECAAQSRl/bVc52Z63K6r7c+87Nf3tpyuvfsbT3f2/Kje+6W073n9Tk9e/Z6Hutb2vZ';
                     resolve();
                 };
-                logoImg.src = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png';
+                logoImg.src = 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/main/LOGO%20KABUPATEN%20SITUBONDO.png';
             });
             
             doc.addImage(logoImg, 'PNG', margin, yPos, logoWidth, logoHeight);
@@ -713,11 +752,14 @@ function fixFooterPosition() {
     const bodyHeight = document.body.offsetHeight;
     const windowHeight = window.innerHeight;
     
-    if (bodyHeight < windowHeight) {
-        footer.style.position = 'fixed';
-        footer.style.bottom = '0';
-    } else {
-        footer.style.position = 'relative';
+    if (footer) {
+        if (bodyHeight < windowHeight) {
+            footer.style.position = 'fixed';
+            footer.style.bottom = '0';
+            footer.style.width = '100%';
+        } else {
+            footer.style.position = 'relative';
+        }
     }
 }
 
@@ -725,28 +767,40 @@ window.addEventListener('load', fixFooterPosition);
 window.addEventListener('resize', fixFooterPosition);
 
 // Initialize password toggle
-document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
+const passwordToggle = document.getElementById('passwordToggle');
+if (passwordToggle) {
+    passwordToggle.addEventListener('click', togglePasswordVisibility);
+}
 
 // Allow pressing Enter to submit the security code
-document.getElementById('securityCodeInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        verifySecurityCode();
-    }
-});
+const securityInput = document.getElementById('securityCodeInput');
+if (securityInput) {
+    securityInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            verifySecurityCode();
+        }
+    });
+}
 
 // Close PDF auth modal when clicking outside
-document.getElementById('pdfAuthModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closePdfAuthModal();
-    }
-});
+const pdfAuthModal = document.getElementById('pdfAuthModal');
+if (pdfAuthModal) {
+    pdfAuthModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePdfAuthModal();
+        }
+    });
+}
 
 // Restrict input to numbers only
-document.getElementById('securityCodeInput').addEventListener('input', function(e) {
-    this.value = this.value.replace(/[^0-9]/g, '');
-});
+const codeInput = document.getElementById('securityCodeInput');
+if (codeInput) {
+    codeInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+}
 
-// Close share modal with Escape key
+// Close modals with Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeShareModal();
@@ -755,5 +809,5 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Debug: tampilkan kode keamanan saat ini di console
+// Hanya tampilkan kode keamanan di console untuk debugging (bisa dihapus pada production)
 console.log("Kode keamanan hari ini:", generateSecurityCode());
