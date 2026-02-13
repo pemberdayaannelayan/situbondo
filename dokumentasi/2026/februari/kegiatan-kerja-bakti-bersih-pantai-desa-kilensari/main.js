@@ -59,7 +59,7 @@ function undo() {
         const previewDiv = document.getElementById('pdfPreviewContent');
         previewDiv.innerHTML = historyStack[historyIndex];
         // Pastikan QR code tergambar ulang dan perlindungan aktif
-        drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300); // ukuran besar untuk ketajaman
+        drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
         protectQRCode();
         // Reset selected image
         selectedImage = null;
@@ -370,7 +370,7 @@ function closePdfPreview() {
     if (isEditMode) toggleEditPreview();
 }
 
-// ========= FITUR EDIT PREVIEW =========
+// ========= FITUR EDIT PREVIEW (DIPERBAIKI DENGAN FOKUS) =========
 function toggleEditPreview() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     const btnEdit = document.getElementById('btnEditPreview');
@@ -381,6 +381,8 @@ function toggleEditPreview() {
     if (isEditMode) {
         previewDiv.contentEditable = "true";
         previewDiv.classList.add('editing-mode');
+        // Fokuskan area dokumen agar siap diedit
+        previewDiv.focus();
         btnEdit.innerHTML = '<i class="fas fa-lock me-2"></i>Selesai Edit';
         btnEdit.classList.remove('btn-warning');
         btnEdit.classList.add('btn-success');
@@ -573,14 +575,14 @@ function deleteSelectedImage() {
     saveState();
 }
 
-// ========= FUNGSI EDIT UMUM =========
+// ========= FUNGSI EDIT UMUM (DIPERBAIKI: FOKUSKAN PREVIEW) =========
 function execEditCommand(command, value = null) {
     if (!isEditMode) {
         alert('Aktifkan mode edit terlebih dahulu.');
         return;
     }
-    document.execCommand(command, false, value);
     document.getElementById('pdfPreviewContent').focus();
+    document.execCommand(command, false, value);
     saveState();
 }
 
@@ -887,7 +889,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     const previewDiv = document.getElementById('pdfPreviewContent');
     previewDiv.innerHTML = pdfContent;
     
-    drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300); // ukuran 300px untuk ketajaman
+    drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
     
     let width = '210mm';
     if (currentPaperSize === 'Letter') width = '216mm';
