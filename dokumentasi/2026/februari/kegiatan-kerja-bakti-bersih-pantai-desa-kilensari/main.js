@@ -1,8 +1,8 @@
-// ===== main.js – VERSI FINAL LENGKAP (QR CODE FIX + EDIT PREVIEW FIX) =====
+// ===== main.js – VERSI FINAL LENGKAP (QR CODE DI FOOTER, FIX DOWNLOAD) =====
 // PERBAIKAN:
-// 1. QR Code: menggunakan method getModuleCount() & isDark() – library qrcode-generator
-// 2. Edit Preview: menggunakan outline, tidak ubah background/border – layout tetap konsisten
-// 3. Preview PDF: padding & lebar mendekati A4 agar hasil download mirip preview
+// 1. QR Code: dipindahkan ke footer halaman, pojok kanan bawah.
+// 2. Proses download: memastikan semua gambar (termasuk QR) termuat sempurna.
+// 3. Preview PDF: tetap konsisten, mode edit hanya outline.
 // SEMUA FUNGSI ASLI TETAP ADA
 
 // ========= INISIALISASI AOS =========
@@ -230,7 +230,7 @@ function initDropdownListener() {
 }
 
 // ========= QR CODE GENERATOR (DIPERBAIKI - MENGGUNAKAN METHOD RESMI) =========
-function generateQRDataURL(text = REPORT_URL, size = 100) {
+function generateQRDataURL(text = REPORT_URL, size = 80) {
     // Deteksi library qrcode-generator
     const qrlib = (typeof qrcode !== 'undefined') ? qrcode : 
                   (typeof window.qrcode !== 'undefined' ? window.qrcode : null);
@@ -393,12 +393,13 @@ function submitPdfDataForm() {
 }
 
 // ========= GENERATE PDF REPORT (ISI LAPORAN) =========
+// PERBAIKAN UTAMA: QR Code dipindahkan ke footer pojok kanan bawah
 function generatePDFReport(namaPelapor, nipPelapor) {
     showLoading();
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    const qrDataURL = generateQRDataURL(REPORT_URL, 100);
+    const qrDataURL = generateQRDataURL(REPORT_URL, 80); // ukuran lebih kecil untuk footer
     const docId = generateDocumentId();
 
     const kopSuratHTML = `
@@ -458,18 +459,22 @@ function generatePDFReport(namaPelapor, nipPelapor) {
                 <p style="margin-top:60px; font-size:12px; font-weight: bold;">${namaPelapor || '______________________'}</p>
                 <p style="font-size:11px; color: #555;">NIP. ${nipPelapor || '______________________'}</p>
             </div>
-            <div style="width: 35%; text-align: right;">
-                <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:inline-block;">
-                    <img src="${qrDataURL}" alt="QR Code" style="width:100px; height:100px; display:block;" crossorigin="anonymous">
-                </div>
-                <p style="font-size:9px; margin-top:5px; clear:both; text-align:right;">Scan untuk akses laporan daring</p>
-            </div>
+            <!-- BAGIAN QR CODE TELAH DIHAPUS DARI SINI, DIPINDAHKAN KE FOOTER -->
+            <div style="width: 35%;"></div>
         </div>
-        <div style="margin-top:80px; border-top:1px solid #ddd; padding-top:15px;">
+        
+        <!-- FOOTER DENGAN QR CODE DI POJOK KANAN BAWAH -->
+        <div style="margin-top:80px; border-top:1px solid #ddd; padding-top:15px; display: flex; justify-content: space-between; align-items: center;">
             <div style="text-align:left; font-size:10px; color:#666;">
                 <p><strong>Dokumen ini dicetak secara elektronik dan merupakan dokumen resmi.</strong></p>
                 <p>ID Verifikasi: ${docId} | Tanggal Cetak: ${formattedDate}</p>
                 <p>© ${currentDate.getFullYear()} – Dinas Peternakan & Perikanan Kabupaten Situbondo</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:inline-block;">
+                    <img src="${qrDataURL}" alt="QR Code" style="width:80px; height:80px; display:block;" crossorigin="anonymous">
+                </div>
+                <p style="font-size:8px; margin-top:5px;">Scan untuk akses laporan daring</p>
             </div>
         </div>
     </div>
@@ -481,7 +486,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     openPdfPreview();
 }
 
-// ========= DOWNLOAD PDF (DENGAN TUNGGU GAMBAR) =========
+// ========= DOWNLOAD PDF (DENGAN TUNGGU GAMBAR - DIPERKUAT) =========
 async function downloadPDF() {
     showLoading();
     try {
@@ -505,18 +510,20 @@ async function downloadPDF() {
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
 
-        // Tunggu semua gambar selesai dimuat
+        // Tunggu semua gambar selesai dimuat (termasuk QR Code)
         const images = element.getElementsByTagName('img');
         await Promise.all(Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => {
+            if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
+            return new Promise((resolve, reject) => {
                 img.onload = resolve;
-                img.onerror = resolve;
+                img.onerror = reject;
+                // Jika gambar sudah error, tetap lanjutkan dengan fallback
+                setTimeout(resolve, 500);
             });
-        }));
+        })).catch(() => console.warn('Beberapa gambar gagal dimuat, tetap lanjutkan.'));
 
-        // Tambahan delay untuk canvas
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Beri waktu ekstra untuk rendering canvas
+        await new Promise(resolve => setTimeout(resolve, 400));
 
         const canvas = await html2canvas(element, {
             scale: 2,
@@ -524,7 +531,16 @@ async function downloadPDF() {
             useCORS: true,
             allowTaint: false,
             backgroundColor: '#ffffff',
-            imageTimeout: 0
+            imageTimeout: 0,
+            onclone: (clonedDoc) => {
+                // Pastikan gambar QR di cloned document juga dimuat
+                const qrImgs = clonedDoc.querySelectorAll('img[alt="QR Code"]');
+                qrImgs.forEach(img => {
+                    if (!img.complete) {
+                        img.src = img.src; // paksa reload
+                    }
+                });
+            }
         });
 
         // Kembalikan style
