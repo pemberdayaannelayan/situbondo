@@ -58,14 +58,11 @@ function undo() {
         historyIndex--;
         const previewDiv = document.getElementById('pdfPreviewContent');
         previewDiv.innerHTML = historyStack[historyIndex];
-        // Pastikan QR code tergambar ulang dan perlindungan aktif
         drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
         protectQRCode();
-        // Reset selected image
         selectedImage = null;
         document.getElementById('imageResizeSlider').value = 100;
         document.getElementById('imageResizeValue').textContent = '100%';
-        // Pasang ulang listener drag & drop jika perlu
         if (isEditMode) {
             enableDragAndDrop();
             previewDiv.addEventListener('click', handleImageSelection);
@@ -435,7 +432,7 @@ function toggleEditPreview() {
     }
 }
 
-// ========= DRAG & DROP GAMBAR =========
+// ========= DRAG & DROP GAMBAR (DIPERBAIKI) =========
 function enableDragAndDrop() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     // Set semua gambar (kecuali QR) menjadi draggable
@@ -499,13 +496,15 @@ function dropHandler(e) {
     if (!draggedElement) return;
     if (draggedElement.id === 'qrCodeCanvas' || draggedElement.closest('.pdf-footer')) return;
     
-    const dropTarget = e.target;
-    // Pastikan drop target adalah elemen dalam preview dan bukan area terlarang
+    // --- PERBAIKAN: tangani text node ---
+    let dropTarget = e.target;
+    if (dropTarget.nodeType === Node.TEXT_NODE) {
+        dropTarget = dropTarget.parentNode;
+    }
+    
     if (dropTarget.closest('.pdf-footer')) return;
     if (dropTarget.id === 'qrCodeCanvas') return;
     
-    // Sisipkan draggedElement sebelum atau sesudah dropTarget? 
-    // Kita akan letakkan setelah dropTarget jika dropTarget adalah teks atau elemen lain
     const parent = dropTarget.parentNode;
     if (parent && parent !== draggedElement.parentNode) {
         // Pindahkan ke parent yang berbeda
@@ -598,7 +597,7 @@ function deleteSelectedImage() {
     saveState();
 }
 
-// ========= FUNGSI EDIT UMUM (DIPERBAIKI) =========
+// ========= FUNGSI EDIT UMUM =========
 function execEditCommand(command, value = null) {
     if (!isEditMode) {
         alert('Aktifkan mode edit terlebih dahulu.');
