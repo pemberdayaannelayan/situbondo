@@ -1,13 +1,37 @@
-// ===== main.js – Semua fungsi dan event handler =====
-// TIDAK ADA PENGHAPUSAN FITUR, HANYA PENYEMPURNAAN
-// - QR code digenerate lokal dengan URL artikel yang benar
-// - Isi laporan PDF diselaraskan dengan artikel kegiatan
-// - QR code muncul di PDF (diperbaiki)
-// - Dihapus jabatan "Kepala Bidang..." di bawah NIP
-// - Ditambahkan ID dokumen resmi di footer PDF
+// ===== main.js – VERSI FINAL LENGKAP =====
+// SEMUA FUNGSI ASLI TETAP ADA, DITAMBAH:
+// 1. Perbaikan QR Code (muncul di PDF)
+// 2. Dropdown pilih nama + isi NIP otomatis (15 pegawai)
+// 3. Fitur Edit Dokumen langsung di preview
 
+// ========= INISIALISASI AOS =========
 AOS.init({ duration: 800, once: true, offset: 100 });
 document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+// ========= DATA PEGAWAI UNTUK DROPDOWN =========
+const pegawaiList = [
+    { nama: "SUGENG PURWO PRIYANTO, S.E., M.M.", nip: "197611032009031001" },
+    { nama: "MULYONO, S.H.", nip: "196901171990031002" },
+    { nama: "FERI ZAINUR ROFIQ, S.Pi., M.Si.", nip: "198203062010011023" },
+    { nama: "LEDY MATMIRA, S.Pi.", nip: "199806142022042002" },
+    { nama: "ARSYA CHAIRUL FAJRI, S.Sos.", nip: "199511122025211087" },
+    { nama: "FRANKY ARIS SANDI, S.Pd.", nip: "199211212025211100" },
+    { nama: "SIRRY NURIL FIJRIYA, S.E.", nip: "199209242025212099" },
+    { nama: "MUHAMMAD SALAM", nip: "198809122025211130" },
+    { nama: "IMAM ARSIDI, S.E.", nip: "197107072007011021" },
+    { nama: "AKHMAD FAUZI", nip: "196905052007011039" },
+    { nama: "YUSUF PRIADI", nip: "198004082010011002" },
+    { nama: "CHAIRUL IMAN TARYANTO", nip: "197604302014061001" },
+    { nama: "ANDI FEBRIYANTO, A.Md.Pi.", nip: "199402262023211013" },
+    { nama: "META HARIADI", nip: "197705142007011015" }
+];
+
+// ========= GLOBAL VARIABLES =========
+let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
+const lockoutDuration = 5 * 60 * 1000;
+let captchaResult = 0;
+let isEditMode = false; // mode edit preview
+const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari';
 
 // ========= NAVBAR SCROLL EFFECT =========
 window.addEventListener('scroll', function() {
@@ -89,15 +113,12 @@ document.getElementById('shareModal').addEventListener('click', function(e) { if
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeShareModal(); closePdfAuthModal(); closePdfPreview(); closePdfDataFormModal(); } });
 
 // ========= PDF AUTHORIZATION =========
-let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
-const lockoutDuration = 5 * 60 * 1000;
-
 function generateSecurityCode() {
     const now = new Date();
     const day = String(now.getDate()).padStart(2,'0');
     const month = String(now.getMonth()+1).padStart(2,'0');
     const year = now.getFullYear();
-    return day + month + year; // DDMMYYYY
+    return day + month + year;
 }
 
 function isLockedOut() {
@@ -175,88 +196,60 @@ const style = document.createElement('style');
 style.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 10%,30%,50%,70%,90%{transform:translateX(-5px)} 20%,40%,60%,80%{transform:translateX(5px)} }`;
 document.head.appendChild(style);
 
-// ========= FORM DATA PELAPOR =========
-let captchaResult = 0;
-
-function openPdfDataFormModal() {
-    const num1 = Math.floor(Math.random() * 5) + 3;
-    const num2 = Math.floor(Math.random() * 5) + 2;
-    captchaResult = num1 + num2;
-    document.getElementById('captchaQuestion').innerHTML = `${num1} + ${num2} = ?`;
-    document.getElementById('pdfDataForm').reset();
-    document.getElementById('namaPelapor').classList.remove('is-invalid');
-    document.getElementById('nipPelapor').classList.remove('is-invalid');
-    document.getElementById('captchaInput').classList.remove('is-invalid');
-    document.getElementById('captchaError').style.display = 'none';
-    document.getElementById('pdfDataFormModal').style.display = 'flex';
+// ========= DROPDOWN NAMA OTOMATIS =========
+function populateSelectNama() {
+    const selectEl = document.getElementById('selectNamaPelapor');
+    if (!selectEl) return;
+    selectEl.innerHTML = '<option value="" selected disabled>-- Pilih Nama --</option>';
+    pegawaiList.forEach(pegawai => {
+        const option = document.createElement('option');
+        option.value = pegawai.nip;
+        option.textContent = pegawai.nama;
+        selectEl.appendChild(option);
+    });
 }
 
-function closePdfDataFormModal() {
-    document.getElementById('pdfDataFormModal').style.display = 'none';
-}
-
-function submitPdfDataForm() {
-    const nama = document.getElementById('namaPelapor').value.trim();
-    const nip = document.getElementById('nipPelapor').value.trim();
-    const captchaAnswer = document.getElementById('captchaInput').value.trim();
-    const agreement = document.getElementById('agreementCheck').checked;
-
-    let isValid = true;
-    if (!nama) {
-        document.getElementById('namaPelapor').classList.add('is-invalid');
-        isValid = false;
-    } else { document.getElementById('namaPelapor').classList.remove('is-invalid'); }
-
-    if (!nip || nip.length !== 18) {
-        document.getElementById('nipPelapor').classList.add('is-invalid');
-        isValid = false;
-    } else { document.getElementById('nipPelapor').classList.remove('is-invalid'); }
-
-    if (!captchaAnswer || parseInt(captchaAnswer) !== captchaResult) {
-        document.getElementById('captchaInput').classList.add('is-invalid');
-        document.getElementById('captchaError').style.display = 'block';
-        isValid = false;
-    } else {
-        document.getElementById('captchaInput').classList.remove('is-invalid');
-        document.getElementById('captchaError').style.display = 'none';
+function initDropdownListener() {
+    const selectEl = document.getElementById('selectNamaPelapor');
+    if (selectEl) {
+        selectEl.addEventListener('change', function(e) {
+            const selectedNip = this.value;
+            if (!selectedNip) {
+                document.getElementById('namaPelapor').value = '';
+                document.getElementById('nipPelapor').value = '';
+                return;
+            }
+            const pegawai = pegawaiList.find(p => p.nip === selectedNip);
+            if (pegawai) {
+                document.getElementById('namaPelapor').value = pegawai.nama;
+                document.getElementById('nipPelapor').value = pegawai.nip;
+            }
+        });
     }
-
-    if (!agreement) {
-        alert('Anda harus menyetujui pernyataan sebelum dapat mengunduh laporan.');
-        isValid = false;
-    }
-
-    if (!isValid) return;
-
-    closePdfDataFormModal();
-    generatePDFReport(nama, nip);
 }
 
-// ========= GENERATE QR CODE LOKAL (DIPERBAIKI) =========
-// URL spesifik untuk QR code sesuai permintaan
-const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari';
-
-function generateQRDataURL(text = REPORT_URL, size = 90) {
-    // Pastikan library qrcode-generator tersedia
-    if (typeof qrcode === 'undefined' || typeof qrcode !== 'function') {
+// ========= QR CODE GENERATOR (DIPERBAIKI) =========
+function generateQRDataURL(text = REPORT_URL, size = 100) {
+    const qrlib = typeof window.qrcode !== 'undefined' ? window.qrcode : 
+                  (typeof qrcode !== 'undefined' ? qrcode : null);
+    
+    if (!qrlib || typeof qrlib !== 'function') {
         console.warn('QR Code library tidak tersedia, menggunakan fallback.');
         return generateFallbackQR(size);
     }
 
     try {
-        // Inisialisasi QR code dengan error correction level M (15%)
-        const qr = qrcode(0, 'M');
+        const qr = qrlib(6, 'H');
         qr.addData(text);
         qr.make();
 
-        const cellSize = 6; // Lebih besar agar lebih jelas saat di-resize
+        const cellSize = 5;
         const qrSize = qr.getModuleCount() * cellSize;
         const canvas = document.createElement('canvas');
         canvas.width = qrSize;
         canvas.height = qrSize;
         const ctx = canvas.getContext('2d');
         
-        // Gambar modul QR
         const modules = qr.getModules();
         for (let row = 0; row < modules.length; row++) {
             for (let col = 0; col < modules[row].length; col++) {
@@ -265,7 +258,6 @@ function generateQRDataURL(text = REPORT_URL, size = 90) {
             }
         }
 
-        // Resize ke ukuran yang diinginkan
         const resizedCanvas = document.createElement('canvas');
         resizedCanvas.width = size;
         resizedCanvas.height = size;
@@ -304,19 +296,108 @@ function generateDocumentId() {
     return `KBK-${day}${month}${year}-${random}`;
 }
 
-// ========= GENERATE PDF REPORT (ISI DISELARASKAN DENGAN ARTIKEL) =========
+// ========= LOADING OVERLAY =========
 function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
 function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
-function openPdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'flex'; }
-function closePdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'none'; }
 
+// ========= MODAL PREVIEW =========
+function openPdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'flex'; }
+function closePdfPreview() { 
+    document.getElementById('pdfPreviewModal').style.display = 'none';
+    if (isEditMode) toggleEditPreview(); // matikan mode edit jika aktif
+}
+
+// ========= FITUR EDIT PREVIEW =========
+function toggleEditPreview() {
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    const btnEdit = document.getElementById('btnEditPreview');
+    if (!previewDiv || !btnEdit) return;
+    
+    isEditMode = !isEditMode;
+    if (isEditMode) {
+        previewDiv.contentEditable = "true";
+        previewDiv.style.backgroundColor = "#fffef7";
+        previewDiv.style.border = "2px dashed #f97316";
+        btnEdit.innerHTML = '<i class="fas fa-lock me-2"></i>Selesai Edit';
+        btnEdit.classList.remove('btn-warning');
+        btnEdit.classList.add('btn-success');
+    } else {
+        previewDiv.contentEditable = "false";
+        previewDiv.style.backgroundColor = "white";
+        previewDiv.style.border = "1px solid #e2e8f0";
+        btnEdit.innerHTML = '<i class="fas fa-pencil-alt me-2"></i>Edit';
+        btnEdit.classList.remove('btn-success');
+        btnEdit.classList.add('btn-warning');
+    }
+}
+
+// ========= FORM DATA PELAPOR =========
+function openPdfDataFormModal() {
+    populateSelectNama();
+    initDropdownListener();
+    
+    const num1 = Math.floor(Math.random() * 5) + 3;
+    const num2 = Math.floor(Math.random() * 5) + 2;
+    captchaResult = num1 + num2;
+    document.getElementById('captchaQuestion').innerHTML = `${num1} + ${num2} = ?`;
+    
+    document.getElementById('pdfDataForm').reset();
+    document.getElementById('namaPelapor').classList.remove('is-invalid');
+    document.getElementById('nipPelapor').classList.remove('is-invalid');
+    document.getElementById('captchaInput').classList.remove('is-invalid');
+    document.getElementById('captchaError').style.display = 'none';
+    
+    document.getElementById('pdfDataFormModal').style.display = 'flex';
+}
+
+function closePdfDataFormModal() {
+    document.getElementById('pdfDataFormModal').style.display = 'none';
+}
+
+function submitPdfDataForm() {
+    const nama = document.getElementById('namaPelapor').value.trim();
+    const nip = document.getElementById('nipPelapor').value.trim();
+    const captchaAnswer = document.getElementById('captchaInput').value.trim();
+    const agreement = document.getElementById('agreementCheck').checked;
+
+    let isValid = true;
+    if (!nama) {
+        document.getElementById('namaPelapor').classList.add('is-invalid');
+        isValid = false;
+    } else { document.getElementById('namaPelapor').classList.remove('is-invalid'); }
+
+    if (!nip || nip.length !== 18 || !/^\d{18}$/.test(nip)) {
+        document.getElementById('nipPelapor').classList.add('is-invalid');
+        isValid = false;
+    } else { document.getElementById('nipPelapor').classList.remove('is-invalid'); }
+
+    if (!captchaAnswer || parseInt(captchaAnswer) !== captchaResult) {
+        document.getElementById('captchaInput').classList.add('is-invalid');
+        document.getElementById('captchaError').style.display = 'block';
+        isValid = false;
+    } else {
+        document.getElementById('captchaInput').classList.remove('is-invalid');
+        document.getElementById('captchaError').style.display = 'none';
+    }
+
+    if (!agreement) {
+        alert('Anda harus menyetujui pernyataan sebelum dapat mengunduh laporan.');
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
+    closePdfDataFormModal();
+    generatePDFReport(nama, nip);
+}
+
+// ========= GENERATE PDF REPORT (ISI LAPORAN) =========
 function generatePDFReport(namaPelapor, nipPelapor) {
     showLoading();
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    // Generate QR code dengan URL yang sudah ditentukan
-    const qrDataURL = generateQRDataURL(REPORT_URL, 90);
+    const qrDataURL = generateQRDataURL(REPORT_URL, 100);
     const docId = generateDocumentId();
 
     const kopSuratHTML = `
@@ -328,7 +409,6 @@ function generatePDFReport(namaPelapor, nipPelapor) {
         </div>
     `;
 
-    // Konten PDF – persis dengan artikel website, tanpa jabatan di bawah NIP
     const pdfContent = `
     <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 10px 15px;">
         ${kopSuratHTML}
@@ -376,11 +456,10 @@ function generatePDFReport(namaPelapor, nipPelapor) {
                 <p style="font-weight:bold; font-size:12px; margin-top:40px;">Pelapor,</p>
                 <p style="margin-top:60px; font-size:12px; font-weight: bold;">${namaPelapor || '______________________'}</p>
                 <p style="font-size:11px; color: #555;">NIP. ${nipPelapor || '______________________'}</p>
-                <!-- BARIS KEPALA BIDANG TELAH DIHAPUS sesuai permintaan -->
             </div>
             <div style="width: 35%; text-align: right;">
-                <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); float:right;">
-                    <img src="${qrDataURL}" alt="QR Code" style="width:90px; height:90px;">
+                <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:inline-block;">
+                    <img src="${qrDataURL}" alt="QR Code" style="width:100px; height:100px; display:block;" crossorigin="anonymous">
                 </div>
                 <p style="font-size:9px; margin-top:5px; clear:both; text-align:right;">Scan untuk akses laporan daring</p>
             </div>
@@ -396,11 +475,12 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     `;
     
     document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
+    if (isEditMode) toggleEditPreview(); // pastikan mode edit mati saat generate baru
     hideLoading();
     openPdfPreview();
 }
 
-// ========= DOWNLOAD PDF (MULTI HALAMAN, TIDAK TERPOTONG) =========
+// ========= DOWNLOAD PDF (DENGAN TUNGGU GAMBAR) =========
 async function downloadPDF() {
     showLoading();
     try {
@@ -414,30 +494,44 @@ async function downloadPDF() {
         const element = document.getElementById('pdfPreviewContent');
         if (!element) throw new Error('Preview tidak ditemukan');
 
+        // Simpan style asli
         const originalWidth = element.style.width;
+        const originalPadding = element.style.padding;
+        const originalBg = element.style.backgroundColor;
+        
         element.style.width = '210mm';
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
 
-        // Tunggu semua gambar (termasuk QR code) selesai dimuat
-        await Promise.all(Array.from(element.getElementsByTagName('img')).map(img => {
+        // Tunggu semua gambar selesai dimuat
+        const images = element.getElementsByTagName('img');
+        await Promise.all(Array.from(images).map(img => {
             if (img.complete) return Promise.resolve();
-            return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
         }));
+
+        // Tambahan delay untuk canvas
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         const canvas = await html2canvas(element, {
             scale: 2,
             logging: false,
             useCORS: true,
             allowTaint: false,
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            imageTimeout: 0
         });
 
+        // Kembalikan style
         element.style.width = originalWidth;
-        element.style.padding = '25px';
+        element.style.padding = originalPadding;
+        element.style.backgroundColor = originalBg;
 
-        const imgWidth = 210; // mm
-        const pageHeight = 297; // mm
+        const imgWidth = 210;
+        const pageHeight = 297;
         const margin = 15;
         const maxHeight = pageHeight - margin * 2;
 
@@ -482,12 +576,39 @@ async function downloadPDF() {
 }
 
 // ========= EVENT LISTENERS =========
+document.addEventListener('DOMContentLoaded', function() {
+    // Inisialisasi dropdown jika sudah ada
+    const selectEl = document.getElementById('selectNamaPelapor');
+    if (selectEl) {
+        populateSelectNama();
+        initDropdownListener();
+    }
+});
+
 document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
 document.getElementById('securityCodeInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') verifySecurityCode(); });
 document.getElementById('pdfAuthModal').addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
 document.getElementById('securityCodeInput').addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
 document.getElementById('pdfDataFormModal').addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
 document.getElementById('pdfPreviewModal').addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
+
+// ========= EXPOSE FUNCTIONS KE GLOBAL =========
+window.openShareModal = openShareModal;
+window.closeShareModal = closeShareModal;
+window.shareToWhatsApp = shareToWhatsApp;
+window.copyLink = copyLink;
+window.openPdfAuthModal = openPdfAuthModal;
+window.closePdfAuthModal = closePdfAuthModal;
+window.verifySecurityCode = verifySecurityCode;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.openPdfDataFormModal = openPdfDataFormModal;
+window.closePdfDataFormModal = closePdfDataFormModal;
+window.submitPdfDataForm = submitPdfDataForm;
+window.toggleEditPreview = toggleEditPreview;
+window.downloadPDF = downloadPDF;
+window.closePdfPreview = closePdfPreview;
+window.openPdfPreview = openPdfPreview;
+window.generatePDFReport = generatePDFReport;
 
 console.log("Kode hari ini:", generateSecurityCode());
 console.log("QR Code akan berisi URL:", REPORT_URL);
