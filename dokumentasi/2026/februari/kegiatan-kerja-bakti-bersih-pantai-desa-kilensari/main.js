@@ -26,8 +26,9 @@ const lockoutDuration = 5 * 60 * 1000;
 let captchaResult = 0;
 let isEditMode = false;
 const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari';
-let currentPaperSize = 'A4'; // default
+let currentPaperSize = 'A4';
 let currentZoom = 100;
+let selectedImage = null; // untuk resize dan layer
 
 // ========= NAVBAR SCROLL EFFECT =========
 window.addEventListener('scroll', function() {
@@ -296,10 +297,12 @@ function hideLoading() { document.getElementById('loadingOverlay').style.display
 // ========= MODAL PREVIEW =========
 function openPdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'flex'; 
-    // Inisialisasi slider zoom dan ukuran kertas
     initEditControls();
-    // Lindungi QR code agar tidak bisa diedit
     protectQRCode();
+    // Reset selected image
+    selectedImage = null;
+    document.getElementById('imageResizeValue').textContent = '100%';
+    document.getElementById('imageResizeSlider').value = 100;
 }
 function closePdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'none';
@@ -321,8 +324,9 @@ function toggleEditPreview() {
         btnEdit.classList.remove('btn-warning');
         btnEdit.classList.add('btn-success');
         toolbar.classList.add('show');
-        // Set contenteditable false untuk elemen yang dilindungi (QR code, footer)
         protectQRCode();
+        // Tambahkan event listener untuk menangkap gambar yang diklik
+        previewDiv.addEventListener('click', handleImageSelection);
     } else {
         previewDiv.contentEditable = "false";
         previewDiv.classList.remove('editing-mode');
@@ -330,37 +334,81 @@ function toggleEditPreview() {
         btnEdit.classList.remove('btn-success');
         btnEdit.classList.add('btn-warning');
         toolbar.classList.remove('show');
+        previewDiv.removeEventListener('click', handleImageSelection);
+        selectedImage = null;
     }
 }
 
-// Fungsi untuk melindungi QR code dan footer agar tidak terhapus/edit
-function protectQRCode() {
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    if (!previewDiv) return;
-    // Cari elemen canvas dan container QR, set contenteditable false
-    const qrCanvas = previewDiv.querySelector('#qrCodeCanvas');
-    if (qrCanvas) {
-        qrCanvas.setAttribute('contenteditable', 'false');
-        // Bungkus dalam div dengan class pdf-footer
-        let parent = qrCanvas.parentElement;
-        while (parent && parent !== previewDiv) {
-            parent.setAttribute('contenteditable', 'false');
-            parent = parent.parentElement;
+// Handler untuk memilih gambar saat diklik
+function handleImageSelection(e) {
+    const target = e.target;
+    if (target.tagName === 'IMG' && target.id !== 'qrCodeCanvas' && !target.closest('.pdf-footer')) {
+        selectedImage = target;
+        // Update slider value sesuai width %
+        const currentWidth = target.style.width;
+        let percent = 100;
+        if (currentWidth && currentWidth.includes('%')) {
+            percent = parseInt(currentWidth);
+        } else if (target.width) {
+            // kira-kira
+            percent = Math.round((target.width / target.naturalWidth) * 100);
         }
+        if (isNaN(percent)) percent = 100;
+        document.getElementById('imageResizeSlider').value = percent;
+        document.getElementById('imageResizeValue').textContent = percent + '%';
+    } else {
+        // Klik di luar gambar, hilangkan seleksi
+        selectedImage = null;
+        document.getElementById('imageResizeSlider').value = 100;
+        document.getElementById('imageResizeValue').textContent = '100%';
     }
-    // Lindungi semua elemen dengan class pdf-footer
-    const footers = previewDiv.querySelectorAll('.pdf-footer, div[style*="border-top"]'); // perkiraan
-    footers.forEach(el => el.setAttribute('contenteditable', 'false'));
 }
 
-// ========= EDIT TOOLBAR FUNCTIONS =========
+// ========= LAYER GAMBAR: Bawa ke Depan / Belakang =========
+function bringImageToFront() {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
+    if (selectedImage.id === 'qrCodeCanvas') { alert('QR Code tidak dapat diubah layernya.'); return; }
+    selectedImage.style.position = 'relative';
+    selectedImage.style.zIndex = '1000';
+}
+
+function sendImageToBack() {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
+    if (selectedImage.id === 'qrCodeCanvas') { alert('QR Code tidak dapat diubah layernya.'); return; }
+    selectedImage.style.position = 'relative';
+    selectedImage.style.zIndex = '-1';
+}
+
+// ========= RESIZE GAMBAR =========
+function resizeSelectedImage(percent) {
+    if (!isEditMode) { 
+        // Jika belum edit mode, slider tetap update tapi tidak berpengaruh
+        document.getElementById('imageResizeValue').textContent = percent + '%';
+        return; 
+    }
+    if (!selectedImage) {
+        document.getElementById('imageResizeValue').textContent = percent + '%';
+        return;
+    }
+    if (selectedImage.id === 'qrCodeCanvas') {
+        alert('QR Code tidak dapat diubah ukurannya.');
+        document.getElementById('imageResizeSlider').value = 100;
+        document.getElementById('imageResizeValue').textContent = '100%';
+        return;
+    }
+    selectedImage.style.width = percent + '%';
+    document.getElementById('imageResizeValue').textContent = percent + '%';
+}
+
+// ========= FUNGSI EDIT UMUM =========
 function execEditCommand(command, value = null) {
     if (!isEditMode) {
         alert('Aktifkan mode edit terlebih dahulu.');
         return;
     }
     document.execCommand(command, false, value);
-    // Fokus kembali ke preview
     document.getElementById('pdfPreviewContent').focus();
 }
 
@@ -376,9 +424,7 @@ function setLineHeight(value) {
         span.style.lineHeight = value;
         span.appendChild(range.extractContents());
         range.insertNode(span);
-        // Bersihkan jika hanya inline
     } else {
-        // Terapkan ke seluruh body preview? Tidak ideal. Alternatif: set style ke elemen paragraf terpilih.
         alert('Silakan pilih paragraf yang ingin diatur spasi.');
     }
 }
@@ -399,25 +445,28 @@ function uploadImage() {
                 img.src = ev.target.result;
                 img.style.maxWidth = '100%';
                 img.style.height = 'auto';
-                // Sisipkan di posisi kursor
+                img.style.position = 'relative'; // untuk z-index
+                img.style.zIndex = '1';
                 const selection = window.getSelection();
                 if (selection.rangeCount > 0) {
                     const range = selection.getRangeAt(0);
                     range.deleteContents();
                     range.insertNode(img);
-                    // Pindahkan kursor setelah gambar
                     range.setStartAfter(img);
                     range.collapse(true);
                     selection.removeAllRanges();
                     selection.addRange(range);
                 } else {
-                    // Jika tidak ada kursor, tambahkan di akhir
                     document.getElementById('pdfPreviewContent').appendChild(img);
                 }
+                // Pilih gambar yang baru saja ditambahkan
+                selectedImage = img;
+                document.getElementById('imageResizeSlider').value = 100;
+                document.getElementById('imageResizeValue').textContent = '100%';
             };
             reader.readAsDataURL(file);
         }
-        input.value = ''; // reset
+        input.value = '';
     };
 }
 
@@ -427,6 +476,8 @@ function initEditControls() {
     const zoomValue = document.getElementById('zoomValue');
     const paperSelect = document.getElementById('paperSizeSelect');
     const previewDiv = document.getElementById('pdfPreviewContent');
+    const resizeSlider = document.getElementById('imageResizeSlider');
+    const resizeValue = document.getElementById('imageResizeValue');
     
     if (zoomSlider) {
         zoomSlider.value = currentZoom;
@@ -447,12 +498,49 @@ function initEditControls() {
         paperSelect.value = currentPaperSize;
         paperSelect.onchange = function() {
             currentPaperSize = this.value;
-            let width = '210mm'; // default A4
+            let width = '210mm';
             if (currentPaperSize === 'Letter') width = '216mm';
-            else if (currentPaperSize === 'Legal') width = '216mm'; // panjang berbeda, tapi lebar sama, kita atur width saja
+            else if (currentPaperSize === 'Legal') width = '216mm';
             previewDiv.style.width = width;
         };
     }
+    
+    // Inisialisasi slider resize (tanpa mengubah gambar)
+    if (resizeSlider) {
+        resizeSlider.oninput = function() {
+            const val = this.value;
+            resizeValue.textContent = val + '%';
+            if (selectedImage && isEditMode) {
+                selectedImage.style.width = val + '%';
+            }
+        };
+    }
+}
+
+// ========= PERLINDUNGAN QR CODE =========
+function protectQRCode() {
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    if (!previewDiv) return;
+    // Cari canvas QR
+    const qrCanvas = previewDiv.querySelector('#qrCodeCanvas');
+    if (qrCanvas) {
+        qrCanvas.setAttribute('contenteditable', 'false');
+        qrCanvas.style.pointerEvents = 'none';
+        qrCanvas.style.userSelect = 'none';
+        // Lindungi parent sampai ke .pdf-footer
+        let parent = qrCanvas.parentElement;
+        while (parent && parent !== previewDiv) {
+            parent.setAttribute('contenteditable', 'false');
+            parent.style.pointerEvents = 'none';
+            parent = parent.parentElement;
+        }
+    }
+    // Lindungi semua elemen dengan class pdf-footer
+    const footers = previewDiv.querySelectorAll('.pdf-footer');
+    footers.forEach(el => {
+        el.setAttribute('contenteditable', 'false');
+        el.style.pointerEvents = 'none';
+    });
 }
 
 // ========= FORM DATA PELAPOR =========
@@ -531,8 +619,6 @@ function generatePDFReport(namaPelapor, nipPelapor) {
         </div>
     `;
 
-    // ===== STRUKTUR PDF: QR CODE DI FOOTER (CANVAS) =====
-    // Margin dan tata letak disesuaikan agar tanda tangan dekat footer
     const pdfContent = `
     <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 0; display: flex; flex-direction: column; min-height: 100%;">
         ${kopSuratHTML}
@@ -604,16 +690,13 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     const previewDiv = document.getElementById('pdfPreviewContent');
     previewDiv.innerHTML = pdfContent;
     
-    // GAMBAR QR CODE KE CANVAS
     drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 100);
     
-    // Terapkan ukuran kertas yang dipilih
     let width = '210mm';
     if (currentPaperSize === 'Letter') width = '216mm';
     else if (currentPaperSize === 'Legal') width = '216mm';
     previewDiv.style.width = width;
     
-    // Matikan mode edit jika aktif
     if (isEditMode) toggleEditPreview();
     
     hideLoading();
@@ -638,21 +721,18 @@ async function downloadPDF() {
         const element = document.getElementById('pdfPreviewContent');
         if (!element) throw new Error('Preview tidak ditemukan');
 
-        // Simpan style asli
         const originalWidth = element.style.width;
         const originalPadding = element.style.padding;
         const originalBg = element.style.backgroundColor;
         const originalTransform = element.style.transform;
         
-        // Set ke ukuran kertas yang sesuai untuk capture
         if (format === 'a4') element.style.width = '210mm';
         else if (format === 'letter') element.style.width = '216mm';
         else if (format === 'legal') element.style.width = '216mm';
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
-        element.style.transform = 'scale(1)'; // reset zoom
+        element.style.transform = 'scale(1)';
         
-        // Tunggu gambar selesai
         const images = element.getElementsByTagName('img');
         await Promise.all(Array.from(images).map(img => {
             if (img.complete) return Promise.resolve();
@@ -673,7 +753,6 @@ async function downloadPDF() {
             imageTimeout: 0
         });
 
-        // Kembalikan style
         element.style.width = originalWidth;
         element.style.padding = originalPadding;
         element.style.backgroundColor = originalBg;
@@ -731,7 +810,6 @@ document.addEventListener('DOMContentLoaded', function() {
         populateSelectNama();
         initDropdownListener();
     }
-    // Inisialisasi event untuk password toggle
     const pwToggle = document.getElementById('passwordToggle');
     if (pwToggle) pwToggle.addEventListener('click', togglePasswordVisibility);
     
@@ -741,7 +819,6 @@ document.addEventListener('DOMContentLoaded', function() {
         codeInput.addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
     }
     
-    // Modal click outside
     document.getElementById('pdfAuthModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
     document.getElementById('pdfDataFormModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
     document.getElementById('pdfPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
@@ -767,6 +844,9 @@ window.generatePDFReport = generatePDFReport;
 window.execEditCommand = execEditCommand;
 window.setLineHeight = setLineHeight;
 window.uploadImage = uploadImage;
+window.bringImageToFront = bringImageToFront;
+window.sendImageToBack = sendImageToBack;
+window.resizeSelectedImage = resizeSelectedImage;
 
 console.log("Kode hari ini:", generateSecurityCode());
 console.log("QR Code akan berisi URL:", REPORT_URL);
