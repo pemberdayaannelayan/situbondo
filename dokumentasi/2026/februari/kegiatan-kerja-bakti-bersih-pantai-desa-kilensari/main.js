@@ -1,8 +1,9 @@
-// ===== main.js – VERSI FINAL LENGKAP =====
-// SEMUA FUNGSI ASLI TETAP ADA, DITAMBAH:
-// 1. Perbaikan QR Code (muncul di PDF)
-// 2. Dropdown pilih nama + isi NIP otomatis (15 pegawai)
-// 3. Fitur Edit Dokumen langsung di preview
+// ===== main.js – VERSI FINAL LENGKAP (QR CODE FIX + EDIT PREVIEW FIX) =====
+// PERBAIKAN:
+// 1. QR Code: menggunakan method getModuleCount() & isDark() – library qrcode-generator
+// 2. Edit Preview: menggunakan outline, tidak ubah background/border – layout tetap konsisten
+// 3. Preview PDF: padding & lebar mendekati A4 agar hasil download mirip preview
+// SEMUA FUNGSI ASLI TETAP ADA
 
 // ========= INISIALISASI AOS =========
 AOS.init({ duration: 800, once: true, offset: 100 });
@@ -228,10 +229,11 @@ function initDropdownListener() {
     }
 }
 
-// ========= QR CODE GENERATOR (DIPERBAIKI) =========
+// ========= QR CODE GENERATOR (DIPERBAIKI - MENGGUNAKAN METHOD RESMI) =========
 function generateQRDataURL(text = REPORT_URL, size = 100) {
-    const qrlib = typeof window.qrcode !== 'undefined' ? window.qrcode : 
-                  (typeof qrcode !== 'undefined' ? qrcode : null);
+    // Deteksi library qrcode-generator
+    const qrlib = (typeof qrcode !== 'undefined') ? qrcode : 
+                  (typeof window.qrcode !== 'undefined' ? window.qrcode : null);
     
     if (!qrlib || typeof qrlib !== 'function') {
         console.warn('QR Code library tidak tersedia, menggunakan fallback.');
@@ -239,25 +241,26 @@ function generateQRDataURL(text = REPORT_URL, size = 100) {
     }
 
     try {
-        const qr = qrlib(6, 'H');
+        // typeNumber 0 = auto, error correction 'H'
+        const qr = qrlib(0, 'H');
         qr.addData(text);
         qr.make();
 
+        const moduleCount = qr.getModuleCount();
         const cellSize = 5;
-        const qrSize = qr.getModuleCount() * cellSize;
         const canvas = document.createElement('canvas');
-        canvas.width = qrSize;
-        canvas.height = qrSize;
+        canvas.width = moduleCount * cellSize;
+        canvas.height = moduleCount * cellSize;
         const ctx = canvas.getContext('2d');
-        
-        const modules = qr.getModules();
-        for (let row = 0; row < modules.length; row++) {
-            for (let col = 0; col < modules[row].length; col++) {
-                ctx.fillStyle = modules[row][col] ? '#1e3a8a' : '#ffffff';
+
+        for (let row = 0; row < moduleCount; row++) {
+            for (let col = 0; col < moduleCount; col++) {
+                ctx.fillStyle = qr.isDark(row, col) ? '#1e3a8a' : '#ffffff';
                 ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
             }
         }
 
+        // Resize ke ukuran yang diinginkan
         const resizedCanvas = document.createElement('canvas');
         resizedCanvas.width = size;
         resizedCanvas.height = size;
@@ -307,7 +310,7 @@ function closePdfPreview() {
     if (isEditMode) toggleEditPreview(); // matikan mode edit jika aktif
 }
 
-// ========= FITUR EDIT PREVIEW =========
+// ========= FITUR EDIT PREVIEW (PERBAIKAN: PAKAI OUTLINE, TIDAK UBAH LAYOUT) =========
 function toggleEditPreview() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     const btnEdit = document.getElementById('btnEditPreview');
@@ -316,15 +319,13 @@ function toggleEditPreview() {
     isEditMode = !isEditMode;
     if (isEditMode) {
         previewDiv.contentEditable = "true";
-        previewDiv.style.backgroundColor = "#fffef7";
-        previewDiv.style.border = "2px dashed #f97316";
+        previewDiv.classList.add('editing-mode'); // class khusus
         btnEdit.innerHTML = '<i class="fas fa-lock me-2"></i>Selesai Edit';
         btnEdit.classList.remove('btn-warning');
         btnEdit.classList.add('btn-success');
     } else {
         previewDiv.contentEditable = "false";
-        previewDiv.style.backgroundColor = "white";
-        previewDiv.style.border = "1px solid #e2e8f0";
+        previewDiv.classList.remove('editing-mode');
         btnEdit.innerHTML = '<i class="fas fa-pencil-alt me-2"></i>Edit';
         btnEdit.classList.remove('btn-success');
         btnEdit.classList.add('btn-warning');
@@ -410,7 +411,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     `;
 
     const pdfContent = `
-    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 10px 15px;">
+    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 0;">
         ${kopSuratHTML}
         
         <div style="text-align: center; margin-bottom: 25px;">
@@ -499,6 +500,7 @@ async function downloadPDF() {
         const originalPadding = element.style.padding;
         const originalBg = element.style.backgroundColor;
         
+        // Set sementara ke ukuran A4 untuk capture
         element.style.width = '210mm';
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
