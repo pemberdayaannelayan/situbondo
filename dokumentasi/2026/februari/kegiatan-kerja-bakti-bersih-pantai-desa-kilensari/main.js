@@ -355,7 +355,7 @@ function closePdfPreview() {
     if (isEditMode) toggleEditPreview();
 }
 
-// ========= FITUR EDIT PREVIEW (HANYA TEKS) =========
+// ========= FITUR EDIT PREVIEW (DENGAN FONT SIZE, FAMILY, COLOR) =========
 function toggleEditPreview() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     const btnEdit = document.getElementById('btnEditPreview');
@@ -402,24 +402,67 @@ function execEditCommand(command, value = null) {
     saveState();
 }
 
+// ===== FUNGSI BARU: UKURAN FONT, JENIS FONT, WARNA FONT =====
+function setFontSize(size) {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    applyStyleToSelection('fontSize', size + 'px');
+}
+
+function setFontFamily(family) {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    applyStyleToSelection('fontFamily', family);
+}
+
+function setFontColor(color) {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    applyStyleToSelection('color', color);
+}
+
 function setLineHeight(value) {
-    if (!isEditMode) {
-        alert('Aktifkan mode edit terlebih dahulu.');
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    applyStyleToSelection('lineHeight', value);
+}
+
+function applyStyleToSelection(styleProp, value) {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) {
+        alert('Silakan pilih teks terlebih dahulu.');
         return;
     }
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const span = document.createElement('span');
-        span.style.lineHeight = value;
-        span.appendChild(range.extractContents());
-        range.insertNode(span);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        saveState();
-    } else {
-        alert('Silakan pilih paragraf yang ingin diatur spasi.');
+    const range = selection.getRangeAt(0);
+    if (range.collapsed) {
+        alert('Silakan pilih teks terlebih dahulu.');
+        return;
     }
+    
+    // Pastikan pilihan berada di dalam preview
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    if (!previewDiv.contains(range.commonAncestorContainer)) {
+        alert('Pilihan teks harus berada di dalam area preview.');
+        return;
+    }
+    
+    // Buat span dengan style yang diinginkan
+    const span = document.createElement('span');
+    span.style[styleProp] = value;
+    
+    try {
+        // Coba surround konten yang dipilih dengan span
+        range.surroundContents(span);
+    } catch (e) {
+        // Jika gagal (karena range tidak sepenuhnya mencakup node), gunakan metode alternatif
+        const fragment = range.extractContents();
+        span.appendChild(fragment);
+        range.insertNode(span);
+    }
+    
+    // Bersihkan seleksi dan pilih span yang baru untuk memudahkan pengeditan lanjutan
+    selection.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.selectNodeContents(span);
+    selection.addRange(newRange);
+    
+    saveState();
 }
 
 // ========= ZOOM & PAPER SIZE =========
@@ -773,6 +816,9 @@ window.openPdfPreview = openPdfPreview;
 window.generatePDFReport = generatePDFReport;
 window.execEditCommand = execEditCommand;
 window.setLineHeight = setLineHeight;
+window.setFontSize = setFontSize;
+window.setFontFamily = setFontFamily;
+window.setFontColor = setFontColor;
 window.undo = undo;
 window.redo = redo;
 
