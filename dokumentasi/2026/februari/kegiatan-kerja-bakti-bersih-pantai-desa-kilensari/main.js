@@ -24,78 +24,7 @@ const pegawaiList = [
 let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
 const lockoutDuration = 5 * 60 * 1000;
 let captchaResult = 0;
-let isEditMode = false;
 const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari';
-let currentPaperSize = 'A4';
-let currentZoom = 100;
-let selectedImage = null;
-
-// Variabel untuk crop
-let cropImageSrc = null;
-let cropImageObj = new Image();
-let cropCanvas, cropCtx, cropOverlay;
-let isDragging = false;
-let startX, startY, endX, endY;
-let cropScale = 1;
-let cropRotate = 0;
-let cropRatio = 'free';
-
-// ========= UNDO / REDO HISTORY =========
-let historyStack = [];
-let historyIndex = -1;
-const MAX_HISTORY = 20;
-
-function saveState() {
-    if (!isEditMode) return;
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    if (!previewDiv) return;
-    const state = previewDiv.innerHTML;
-    // Hapus state setelah index saat ini
-    if (historyIndex < historyStack.length - 1) {
-        historyStack = historyStack.slice(0, historyIndex + 1);
-    }
-    historyStack.push(state);
-    if (historyStack.length > MAX_HISTORY) {
-        historyStack.shift();
-    } else {
-        historyIndex++;
-    }
-    console.log('State saved, index:', historyIndex);
-}
-
-function undo() {
-    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
-    if (historyIndex > 0) {
-        historyIndex--;
-        restoreState(historyIndex);
-    } else {
-        alert('Tidak ada yang dapat di-undo.');
-    }
-}
-
-function redo() {
-    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
-    if (historyIndex < historyStack.length - 1) {
-        historyIndex++;
-        restoreState(historyIndex);
-    } else {
-        alert('Tidak ada yang dapat di-redo.');
-    }
-}
-
-function restoreState(index) {
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    previewDiv.innerHTML = historyStack[index];
-    drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
-    protectQRCode();
-    selectedImage = null; // reset seleksi
-    document.getElementById('imageResizeSlider').value = 100;
-    document.getElementById('imageResizeValue').textContent = '100%';
-    if (isEditMode) {
-        // Pasang ulang listener untuk gambar (menggunakan delegation)
-        attachImageListeners();
-    }
-}
 
 // ========= NAVBAR SCROLL EFFECT =========
 window.addEventListener('scroll', function() {
@@ -364,311 +293,10 @@ function hideLoading() { document.getElementById('loadingOverlay').style.display
 // ========= MODAL PREVIEW =========
 function openPdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'flex'; 
-    initEditControls();
     protectQRCode();
-    selectedImage = null;
-    document.getElementById('imageResizeValue').textContent = '100%';
-    document.getElementById('imageResizeSlider').value = 100;
-    // Reset history jika belum ada
-    if (historyStack.length === 0) {
-        saveState();
-    }
 }
 function closePdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'none';
-    if (isEditMode) toggleEditPreview(); // matikan mode edit saat preview ditutup
-}
-
-// ========= FITUR EDIT PREVIEW (DENGAN EVENT DELEGATION) =========
-function toggleEditPreview() {
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    const btnEdit = document.getElementById('btnEditPreview');
-    const toolbar = document.getElementById('pdfEditToolbar');
-    if (!previewDiv || !btnEdit || !toolbar) {
-        console.error('Elemen tidak ditemukan');
-        return;
-    }
-    
-    isEditMode = !isEditMode;
-    console.log('Mode edit:', isEditMode);
-    
-    if (isEditMode) {
-        // Aktifkan edit
-        previewDiv.contentEditable = "true";
-        previewDiv.classList.add('editing-mode');
-        previewDiv.focus(); // fokus agar execCommand bekerja
-        
-        btnEdit.innerHTML = '<i class="fas fa-lock me-2"></i>Selesai Edit';
-        btnEdit.classList.remove('btn-warning');
-        btnEdit.classList.add('btn-success');
-        
-        // Tampilkan toolbar
-        toolbar.classList.add('show');
-        
-        // Lindungi QR code
-        protectQRCode();
-        
-        // Pasang listener untuk gambar (delegation)
-        attachImageListeners();
-        
-        // Simpan state awal
-        historyStack = [];
-        historyIndex = -1;
-        saveState();
-        
-        console.log('Mode edit aktif, toolbar ditampilkan');
-    } else {
-        // Nonaktifkan edit
-        previewDiv.contentEditable = "false";
-        previewDiv.classList.remove('editing-mode');
-        
-        btnEdit.innerHTML = '<i class="fas fa-pencil-alt me-2"></i>Edit';
-        btnEdit.classList.remove('btn-success');
-        btnEdit.classList.add('btn-warning');
-        
-        // Sembunyikan toolbar
-        toolbar.classList.remove('show');
-        
-        // Hapus listener
-        detachImageListeners();
-        selectedImage = null;
-    }
-}
-
-// ========= EVENT DELEGATION UNTUK SELEKSI GAMBAR =========
-function handleImageSelection(e) {
-    const target = e.target;
-    if (target.tagName === 'IMG' && target.id !== 'qrCodeCanvas' && !target.closest('.pdf-footer')) {
-        selectedImage = target;
-        let percent = 100;
-        if (target.style.width && target.style.width.includes('%')) {
-            percent = parseInt(target.style.width);
-        }
-        if (isNaN(percent)) percent = 100;
-        document.getElementById('imageResizeSlider').value = percent;
-        document.getElementById('imageResizeValue').textContent = percent + '%';
-        console.log('Gambar dipilih');
-    } else {
-        // Klik di luar gambar, hilangkan seleksi
-        selectedImage = null;
-        document.getElementById('imageResizeSlider').value = 100;
-        document.getElementById('imageResizeValue').textContent = '100%';
-    }
-}
-
-function attachImageListeners() {
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    // Hapus listener lama untuk menghindari duplikasi
-    previewDiv.removeEventListener('click', handleImageSelection);
-    // Pasang listener baru
-    previewDiv.addEventListener('click', handleImageSelection);
-}
-
-function detachImageListeners() {
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    previewDiv.removeEventListener('click', handleImageSelection);
-    selectedImage = null;
-}
-
-// ========= LAYER GAMBAR =========
-function bringImageToFront() {
-    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
-    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
-    if (selectedImage.id === 'qrCodeCanvas' || selectedImage.closest('.pdf-footer')) { alert('QR Code tidak dapat diubah layernya.'); return; }
-    selectedImage.style.position = 'relative';
-    selectedImage.style.zIndex = '1000';
-    saveState();
-}
-
-function sendImageToBack() {
-    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
-    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
-    if (selectedImage.id === 'qrCodeCanvas' || selectedImage.closest('.pdf-footer')) { alert('QR Code tidak dapat diubah layernya.'); return; }
-    selectedImage.style.position = 'relative';
-    selectedImage.style.zIndex = '-1';
-    saveState();
-}
-
-// ========= RESIZE GAMBAR =========
-function resizeSelectedImage(percent) {
-    if (!isEditMode) { 
-        document.getElementById('imageResizeValue').textContent = percent + '%';
-        return; 
-    }
-    if (!selectedImage) {
-        document.getElementById('imageResizeValue').textContent = percent + '%';
-        return;
-    }
-    if (selectedImage.id === 'qrCodeCanvas' || selectedImage.closest('.pdf-footer')) {
-        alert('QR Code tidak dapat diubah ukurannya.');
-        document.getElementById('imageResizeSlider').value = 100;
-        document.getElementById('imageResizeValue').textContent = '100%';
-        return;
-    }
-    selectedImage.style.width = percent + '%';
-    document.getElementById('imageResizeValue').textContent = percent + '%';
-    saveState();
-}
-
-// ========= HAPUS GAMBAR =========
-function deleteSelectedImage() {
-    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
-    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
-    if (selectedImage.id === 'qrCodeCanvas' || selectedImage.closest('.pdf-footer')) { alert('QR Code tidak dapat dihapus.'); return; }
-    selectedImage.remove();
-    selectedImage = null;
-    document.getElementById('imageResizeSlider').value = 100;
-    document.getElementById('imageResizeValue').textContent = '100%';
-    saveState();
-}
-
-// ========= FUNGSI EDIT UMUM =========
-function execEditCommand(command, value = null) {
-    if (!isEditMode) {
-        alert('Aktifkan mode edit terlebih dahulu.');
-        return;
-    }
-    // Fokuskan ke elemen preview
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    previewDiv.focus();
-    // Jalankan perintah
-    document.execCommand(command, false, value);
-    // Simpan state setelah perubahan
-    saveState();
-    console.log('Executed command:', command);
-}
-
-function setLineHeight(value) {
-    if (!isEditMode) {
-        alert('Aktifkan mode edit terlebih dahulu.');
-        return;
-    }
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const span = document.createElement('span');
-        span.style.lineHeight = value;
-        span.appendChild(range.extractContents());
-        range.insertNode(span);
-        // Hapus selection
-        selection.removeAllRanges();
-        selection.addRange(range);
-        saveState();
-    } else {
-        alert('Silakan pilih paragraf yang ingin diatur spasi.');
-    }
-}
-
-function uploadImage() {
-    if (!isEditMode) {
-        alert('Aktifkan mode edit terlebih dahulu.');
-        return;
-    }
-    const input = document.getElementById('imageUploadInput');
-    input.click();
-    input.onchange = function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                const img = document.createElement('img');
-                img.src = ev.target.result;
-                img.style.maxWidth = '100%';
-                img.style.height = 'auto';
-                img.style.position = 'relative';
-                img.style.zIndex = '1';
-                img.setAttribute('draggable', 'true');
-                
-                const selection = window.getSelection();
-                if (selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0);
-                    range.deleteContents();
-                    range.insertNode(img);
-                    range.setStartAfter(img);
-                    range.collapse(true);
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                } else {
-                    document.getElementById('pdfPreviewContent').appendChild(img);
-                }
-                selectedImage = img;
-                document.getElementById('imageResizeSlider').value = 100;
-                document.getElementById('imageResizeValue').textContent = '100%';
-                saveState();
-            };
-            reader.readAsDataURL(file);
-        }
-        input.value = '';
-    };
-}
-
-// ========= FLOAT GAMBAR =========
-function floatImage(direction) {
-    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
-    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
-    if (selectedImage.id === 'qrCodeCanvas' || selectedImage.closest('.pdf-footer')) { alert('QR Code tidak dapat diubah float-nya.'); return; }
-    selectedImage.style.float = direction;
-    if (direction === 'left') {
-        selectedImage.style.marginRight = '15px';
-        selectedImage.style.marginBottom = '10px';
-        selectedImage.style.marginLeft = '0';
-    } else if (direction === 'right') {
-        selectedImage.style.marginLeft = '15px';
-        selectedImage.style.marginBottom = '10px';
-        selectedImage.style.marginRight = '0';
-    } else {
-        selectedImage.style.marginRight = '0';
-        selectedImage.style.marginLeft = '0';
-        selectedImage.style.marginBottom = '0';
-    }
-    saveState();
-}
-
-// ========= ZOOM & PAPER SIZE =========
-function initEditControls() {
-    const zoomSlider = document.getElementById('zoomSlider');
-    const zoomValue = document.getElementById('zoomValue');
-    const paperSelect = document.getElementById('paperSizeSelect');
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    const resizeSlider = document.getElementById('imageResizeSlider');
-    const resizeValue = document.getElementById('imageResizeValue');
-    
-    if (zoomSlider) {
-        zoomSlider.value = currentZoom;
-        zoomValue.textContent = currentZoom + '%';
-        previewDiv.style.transform = `scale(${currentZoom / 100})`;
-        previewDiv.style.transformOrigin = 'top left';
-        
-        zoomSlider.oninput = function() {
-            const val = this.value;
-            currentZoom = val;
-            zoomValue.textContent = val + '%';
-            previewDiv.style.transform = `scale(${val / 100})`;
-            previewDiv.style.transformOrigin = 'top left';
-        };
-    }
-    
-    if (paperSelect) {
-        paperSelect.value = currentPaperSize;
-        paperSelect.onchange = function() {
-            currentPaperSize = this.value;
-            let width = '210mm';
-            if (currentPaperSize === 'Letter') width = '216mm';
-            else if (currentPaperSize === 'Legal') width = '216mm';
-            previewDiv.style.width = width;
-            saveState();
-        };
-    }
-    
-    if (resizeSlider) {
-        resizeSlider.oninput = function() {
-            const val = this.value;
-            resizeValue.textContent = val + '%';
-            if (selectedImage && isEditMode) {
-                selectedImage.style.width = val + '%';
-            }
-        };
-    }
 }
 
 // ========= PERLINDUNGAN QR CODE =========
@@ -835,16 +463,9 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     
     drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
     
-    let width = '210mm';
-    if (currentPaperSize === 'Letter') width = '216mm';
-    else if (currentPaperSize === 'Legal') width = '216mm';
-    previewDiv.style.width = width;
+    // Atur lebar sesuai ukuran kertas A4 (default)
+    previewDiv.style.width = '210mm';
     
-    // Jika mode edit aktif, matikan dulu lalu hidupkan ulang agar listener terpasang
-    if (isEditMode) {
-        toggleEditPreview(); // matikan
-    }
-    // Buka preview
     hideLoading();
     openPdfPreview();
 }
@@ -854,9 +475,7 @@ async function downloadPDF() {
     showLoading();
     try {
         const { jsPDF } = window.jspdf;
-        let format = 'a4';
-        if (currentPaperSize === 'Letter') format = 'letter';
-        else if (currentPaperSize === 'Legal') format = 'legal';
+        const format = 'a4'; // tetap A4
         
         const doc = new jsPDF({
             orientation: 'portrait',
@@ -870,14 +489,10 @@ async function downloadPDF() {
         const originalWidth = element.style.width;
         const originalPadding = element.style.padding;
         const originalBg = element.style.backgroundColor;
-        const originalTransform = element.style.transform;
         
-        if (format === 'a4') element.style.width = '210mm';
-        else if (format === 'letter') element.style.width = '216mm';
-        else if (format === 'legal') element.style.width = '216mm';
+        element.style.width = '210mm';
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
-        element.style.transform = 'scale(1)';
         
         const images = element.getElementsByTagName('img');
         await Promise.all(Array.from(images).map(img => {
@@ -902,9 +517,8 @@ async function downloadPDF() {
         element.style.width = originalWidth;
         element.style.padding = originalPadding;
         element.style.backgroundColor = originalBg;
-        element.style.transform = originalTransform;
 
-        const imgWidth = format === 'a4' ? 210 : 216;
+        const imgWidth = 210;
         const pageHeight = 297;
         const margin = 15;
         const maxHeight = pageHeight - margin * 2;
@@ -949,219 +563,6 @@ async function downloadPDF() {
     }
 }
 
-// ========= FUNGSI CROP GAMBAR (PERBAIKAN) =========
-function initCropModal() {
-    cropCanvas = document.getElementById('cropCanvas');
-    cropCtx = cropCanvas.getContext('2d');
-    cropOverlay = document.getElementById('cropOverlay');
-    
-    document.getElementById('cropRatio').addEventListener('change', (e) => {
-        cropRatio = e.target.value;
-        drawImageWithTransform();
-    });
-    
-    document.getElementById('cropZoom').addEventListener('input', (e) => {
-        cropScale = parseFloat(e.target.value);
-        document.getElementById('cropZoomValue').textContent = cropScale.toFixed(1) + 'x';
-        drawImageWithTransform();
-    });
-    
-    document.getElementById('cropRotate').addEventListener('input', (e) => {
-        cropRotate = parseInt(e.target.value);
-        drawImageWithTransform();
-    });
-    
-    document.getElementById('applyCropBtn').addEventListener('click', applyCrop);
-    
-    // Event mouse untuk memilih area crop
-    cropCanvas.addEventListener('mousedown', startCropDrag);
-    cropCanvas.addEventListener('mousemove', duringCropDrag);
-    cropCanvas.addEventListener('mouseup', endCropDrag);
-    cropCanvas.addEventListener('mouseleave', endCropDrag);
-}
-
-function openCropForSelected() {
-    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
-    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
-    if (selectedImage.id === 'qrCodeCanvas' || selectedImage.closest('.pdf-footer')) {
-        alert('Gambar tidak dapat di-crop.');
-        return;
-    }
-    
-    cropImageSrc = selectedImage.src;
-    
-    // Muat gambar ke objek Image untuk di-crop
-    cropImageObj = new Image();
-    cropImageObj.crossOrigin = 'anonymous';
-    cropImageObj.onload = function() {
-        // Atur ukuran canvas maksimal 600x400
-        let canvasWidth = cropImageObj.width;
-        let canvasHeight = cropImageObj.height;
-        const maxWidth = 600, maxHeight = 400;
-        
-        if (canvasWidth > maxWidth || canvasHeight > maxHeight) {
-            const ratio = Math.min(maxWidth / canvasWidth, maxHeight / canvasHeight);
-            canvasWidth = Math.floor(canvasWidth * ratio);
-            canvasHeight = Math.floor(canvasHeight * ratio);
-        }
-        
-        cropCanvas.width = canvasWidth;
-        cropCanvas.height = canvasHeight;
-        
-        cropScale = 1;
-        cropRotate = 0;
-        document.getElementById('cropZoom').value = 1;
-        document.getElementById('cropZoomValue').textContent = '1x';
-        document.getElementById('cropRotate').value = 0;
-        
-        drawImageWithTransform();
-        
-        // Reset overlay
-        cropOverlay.style.display = 'none';
-        
-        // Tampilkan modal Bootstrap
-        const modal = new bootstrap.Modal(document.getElementById('cropModal'));
-        modal.show();
-    };
-    cropImageObj.src = cropImageSrc;
-}
-
-function drawImageWithTransform() {
-    cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
-    
-    // Hitung dimensi setelah skala
-    let scaledWidth = cropImageObj.width * cropScale;
-    let scaledHeight = cropImageObj.height * cropScale;
-    
-    // Pusatkan gambar di canvas
-    let x = (cropCanvas.width - scaledWidth) / 2;
-    let y = (cropCanvas.height - scaledHeight) / 2;
-    
-    cropCtx.save();
-    cropCtx.translate(cropCanvas.width / 2, cropCanvas.height / 2);
-    cropCtx.rotate(cropRotate * Math.PI / 180);
-    cropCtx.drawImage(cropImageObj, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
-    cropCtx.restore();
-}
-
-function startCropDrag(e) {
-    if (!cropCanvas) return;
-    isDragging = true;
-    const rect = cropCanvas.getBoundingClientRect();
-    // Hitung koordinat relatif terhadap canvas (dalam piksel canvas)
-    const scaleX = cropCanvas.width / rect.width;
-    const scaleY = cropCanvas.height / rect.height;
-    startX = (e.clientX - rect.left) * scaleX;
-    startY = (e.clientY - rect.top) * scaleY;
-    endX = startX;
-    endY = startY;
-    cropOverlay.style.display = 'block';
-}
-
-function duringCropDrag(e) {
-    if (!isDragging) return;
-    const rect = cropCanvas.getBoundingClientRect();
-    const scaleX = cropCanvas.width / rect.width;
-    const scaleY = cropCanvas.height / rect.height;
-    let currentX = (e.clientX - rect.left) * scaleX;
-    let currentY = (e.clientY - rect.top) * scaleY;
-    
-    // Batasi agar tidak keluar canvas
-    endX = Math.min(cropCanvas.width, Math.max(0, currentX));
-    endY = Math.min(cropCanvas.height, Math.max(0, currentY));
-    
-    // Terapkan rasio jika dipilih
-    if (cropRatio !== 'free') {
-        const [wRatio, hRatio] = cropRatio.split(':').map(Number);
-        let width = Math.abs(endX - startX);
-        let height = width * (hRatio / wRatio);
-        
-        // Tentukan arah
-        if (endX > startX) {
-            // ke kanan
-            if (startY + height > cropCanvas.height) {
-                height = cropCanvas.height - startY;
-                width = height * (wRatio / hRatio);
-            }
-            endX = startX + width;
-            endY = startY + height;
-        } else {
-            // ke kiri
-            if (startY + height > cropCanvas.height) {
-                height = cropCanvas.height - startY;
-                width = height * (wRatio / hRatio);
-            }
-            endX = startX - width;
-            endY = startY + height;
-        }
-    }
-    
-    // Update posisi overlay
-    updateOverlay();
-}
-
-function endCropDrag() {
-    isDragging = false;
-}
-
-function updateOverlay() {
-    const left = Math.min(startX, endX);
-    const top = Math.min(startY, endY);
-    const width = Math.abs(endX - startX);
-    const height = Math.abs(endY - startY);
-    
-    cropOverlay.style.left = left + 'px';
-    cropOverlay.style.top = top + 'px';
-    cropOverlay.style.width = width + 'px';
-    cropOverlay.style.height = height + 'px';
-    cropOverlay.style.display = 'block';
-}
-
-function applyCrop() {
-    if (!selectedImage) return;
-    
-    const left = Math.min(startX, endX);
-    const top = Math.min(startY, endY);
-    const width = Math.abs(endX - startX);
-    const height = Math.abs(endY - startY);
-    
-    if (width < 5 || height < 5) {
-        alert('Area crop terlalu kecil.');
-        return;
-    }
-    
-    // Hitung rasio antara ukuran asli gambar dengan ukuran di canvas
-    const scaleX = cropImageObj.width / cropCanvas.width;
-    const scaleY = cropImageObj.height / cropCanvas.height;
-    
-    // Koordinat crop dalam gambar asli
-    const srcX = left * scaleX;
-    const srcY = top * scaleY;
-    const srcWidth = width * scaleX;
-    const srcHeight = height * scaleY;
-    
-    // Buat canvas untuk hasil crop dengan ukuran asli
-    const cropResultCanvas = document.createElement('canvas');
-    cropResultCanvas.width = srcWidth;
-    cropResultCanvas.height = srcHeight;
-    const resultCtx = cropResultCanvas.getContext('2d');
-    
-    // Gambar bagian yang dipilih dari gambar asli
-    resultCtx.drawImage(cropImageObj, srcX, srcY, srcWidth, srcHeight, 0, 0, srcWidth, srcHeight);
-    
-    // Dapatkan dataURL
-    const croppedDataURL = cropResultCanvas.toDataURL('image/png');
-    
-    // Ganti src gambar asli
-    selectedImage.src = croppedDataURL;
-    selectedImage.style.width = '100%'; // reset ukuran agar proporsional
-    selectedImage.style.height = 'auto';
-    
-    // Tutup modal
-    bootstrap.Modal.getInstance(document.getElementById('cropModal')).hide();
-    saveState();
-}
-
 // ========= EVENT LISTENERS =========
 document.addEventListener('DOMContentLoaded', function() {
     const selectEl = document.getElementById('selectNamaPelapor');
@@ -1181,9 +582,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('pdfAuthModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
     document.getElementById('pdfDataFormModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
     document.getElementById('pdfPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
-    
-    // Inisialisasi modal crop
-    initCropModal();
 });
 
 // ========= EXPOSE FUNCTIONS KE GLOBAL =========
@@ -1198,22 +596,10 @@ window.togglePasswordVisibility = togglePasswordVisibility;
 window.openPdfDataFormModal = openPdfDataFormModal;
 window.closePdfDataFormModal = closePdfDataFormModal;
 window.submitPdfDataForm = submitPdfDataForm;
-window.toggleEditPreview = toggleEditPreview;
 window.downloadPDF = downloadPDF;
 window.closePdfPreview = closePdfPreview;
 window.openPdfPreview = openPdfPreview;
 window.generatePDFReport = generatePDFReport;
-window.execEditCommand = execEditCommand;
-window.setLineHeight = setLineHeight;
-window.uploadImage = uploadImage;
-window.bringImageToFront = bringImageToFront;
-window.sendImageToBack = sendImageToBack;
-window.resizeSelectedImage = resizeSelectedImage;
-window.deleteSelectedImage = deleteSelectedImage;
-window.floatImage = floatImage;
-window.undo = undo;
-window.redo = redo;
-window.openCropForSelected = openCropForSelected;
 
 console.log("Kode hari ini:", generateSecurityCode());
 console.log("QR Code akan berisi URL:", REPORT_URL);
