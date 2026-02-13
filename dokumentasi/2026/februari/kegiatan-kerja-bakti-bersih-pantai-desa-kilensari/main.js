@@ -1,10 +1,3 @@
-// ===== main.js – VERSI FINAL LENGKAP (QR CODE FIX + EDIT PREVIEW FIX) =====
-// PERBAIKAN:
-// 1. QR Code: menggunakan method getModuleCount() & isDark() – library qrcode-generator
-// 2. Edit Preview: menggunakan outline, tidak ubah background/border – layout tetap konsisten
-// 3. Preview PDF: padding & lebar mendekati A4 agar hasil download mirip preview
-// SEMUA FUNGSI ASLI TETAP ADA
-
 // ========= INISIALISASI AOS =========
 AOS.init({ duration: 800, once: true, offset: 100 });
 document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -31,7 +24,7 @@ const pegawaiList = [
 let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
 const lockoutDuration = 5 * 60 * 1000;
 let captchaResult = 0;
-let isEditMode = false; // mode edit preview
+let isEditMode = false;
 const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari';
 
 // ========= NAVBAR SCROLL EFFECT =========
@@ -229,64 +222,61 @@ function initDropdownListener() {
     }
 }
 
-// ========= QR CODE GENERATOR (DIPERBAIKI - MENGGUNAKAN METHOD RESMI) =========
-function generateQRDataURL(text = REPORT_URL, size = 100) {
+// ========= QR CODE CANVAS DRAW (LANGSUNG KE CANVAS, TIDAK PAKAI IMG) =========
+function drawQRCodeOnCanvas(canvasElementOrId, text, size = 100) {
+    let canvas;
+    if (typeof canvasElementOrId === 'string') {
+        canvas = document.getElementById(canvasElementOrId);
+        if (!canvas) return false;
+    } else {
+        canvas = canvasElementOrId;
+    }
+    
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    
     // Deteksi library qrcode-generator
-    const qrlib = (typeof qrcode !== 'undefined') ? qrcode : 
-                  (typeof window.qrcode !== 'undefined' ? window.qrcode : null);
+    const qrlib = (typeof qrcode !== 'undefined') ? qrcode : (window.qrcode || null);
     
     if (!qrlib || typeof qrlib !== 'function') {
-        console.warn('QR Code library tidak tersedia, menggunakan fallback.');
-        return generateFallbackQR(size);
+        // Fallback: tampilkan teks URL
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = '#1e3a8a';
+        ctx.font = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('QR Unavailable', size/2, size/2 - 10);
+        ctx.font = '8px Arial';
+        ctx.fillText(text.substring(0, 22) + '...', size/2, size/2 + 15);
+        return false;
     }
-
+    
     try {
-        // typeNumber 0 = auto, error correction 'H'
         const qr = qrlib(0, 'H');
         qr.addData(text);
         qr.make();
-
         const moduleCount = qr.getModuleCount();
-        const cellSize = 5;
-        const canvas = document.createElement('canvas');
-        canvas.width = moduleCount * cellSize;
-        canvas.height = moduleCount * cellSize;
-        const ctx = canvas.getContext('2d');
-
+        const cellSize = size / moduleCount;
         for (let row = 0; row < moduleCount; row++) {
             for (let col = 0; col < moduleCount; col++) {
                 ctx.fillStyle = qr.isDark(row, col) ? '#1e3a8a' : '#ffffff';
                 ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
             }
         }
-
-        // Resize ke ukuran yang diinginkan
-        const resizedCanvas = document.createElement('canvas');
-        resizedCanvas.width = size;
-        resizedCanvas.height = size;
-        const resizedCtx = resizedCanvas.getContext('2d');
-        resizedCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, size, size);
-        
-        return resizedCanvas.toDataURL('image/png');
+        return true;
     } catch (e) {
-        console.error('Gagal generate QR code:', e);
-        return generateFallbackQR(size);
+        console.error('QR Code error:', e);
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = '#1e3a8a';
+        ctx.font = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Error', size/2, size/2);
+        return false;
     }
-}
-
-function generateFallbackQR(size) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, size, size);
-    ctx.fillStyle = '#1e3a8a';
-    ctx.font = 'bold 12px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('QR', size/2, size/2);
-    return canvas.toDataURL('image/png');
 }
 
 // ========= GENERATE ID DOKUMEN UNIK =========
@@ -307,10 +297,10 @@ function hideLoading() { document.getElementById('loadingOverlay').style.display
 function openPdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'flex'; }
 function closePdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'none';
-    if (isEditMode) toggleEditPreview(); // matikan mode edit jika aktif
+    if (isEditMode) toggleEditPreview();
 }
 
-// ========= FITUR EDIT PREVIEW (PERBAIKAN: PAKAI OUTLINE, TIDAK UBAH LAYOUT) =========
+// ========= FITUR EDIT PREVIEW =========
 function toggleEditPreview() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     const btnEdit = document.getElementById('btnEditPreview');
@@ -319,7 +309,7 @@ function toggleEditPreview() {
     isEditMode = !isEditMode;
     if (isEditMode) {
         previewDiv.contentEditable = "true";
-        previewDiv.classList.add('editing-mode'); // class khusus
+        previewDiv.classList.add('editing-mode');
         btnEdit.innerHTML = '<i class="fas fa-lock me-2"></i>Selesai Edit';
         btnEdit.classList.remove('btn-warning');
         btnEdit.classList.add('btn-success');
@@ -397,8 +387,6 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     showLoading();
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-
-    const qrDataURL = generateQRDataURL(REPORT_URL, 100);
     const docId = generateDocumentId();
 
     const kopSuratHTML = `
@@ -410,6 +398,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
         </div>
     `;
 
+    // ===== STRUKTUR PDF: QR CODE DI FOOTER (CANVAS) =====
     const pdfContent = `
     <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 0;">
         ${kopSuratHTML}
@@ -451,6 +440,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
             </p>
         </div>
         
+        <!-- TANDA TANGAN PELAPOR (KIRI) -->
         <div style="display: flex; justify-content: space-between; margin-top: 60px;">
             <div style="width: 60%;">
                 <p style="margin-bottom:5px; font-size:12px;">Situbondo, ${formattedDate}</p>
@@ -458,30 +448,37 @@ function generatePDFReport(namaPelapor, nipPelapor) {
                 <p style="margin-top:60px; font-size:12px; font-weight: bold;">${namaPelapor || '______________________'}</p>
                 <p style="font-size:11px; color: #555;">NIP. ${nipPelapor || '______________________'}</p>
             </div>
-            <div style="width: 35%; text-align: right;">
-                <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:inline-block;">
-                    <img src="${qrDataURL}" alt="QR Code" style="width:100px; height:100px; display:block;" crossorigin="anonymous">
-                </div>
-                <p style="font-size:9px; margin-top:5px; clear:both; text-align:right;">Scan untuk akses laporan daring</p>
-            </div>
+            <div style="width: 35%;"></div> <!-- kosong, QR pindah ke footer -->
         </div>
-        <div style="margin-top:80px; border-top:1px solid #ddd; padding-top:15px;">
+        
+        <!-- FOOTER DENGAN QR CODE (CANVAS) DAN URL FALLBACK -->
+        <div style="margin-top:80px; border-top:1px solid #ddd; padding-top:15px; display: flex; justify-content: space-between; align-items: center;">
             <div style="text-align:left; font-size:10px; color:#666;">
                 <p><strong>Dokumen ini dicetak secara elektronik dan merupakan dokumen resmi.</strong></p>
                 <p>ID Verifikasi: ${docId} | Tanggal Cetak: ${formattedDate}</p>
                 <p>© ${currentDate.getFullYear()} – Dinas Peternakan & Perikanan Kabupaten Situbondo</p>
             </div>
+            <div style="text-align:right;">
+                <canvas id="qrCodeCanvas" width="100" height="100" style="width:100px; height:100px; display:block; margin-bottom:5px;"></canvas>
+                <p style="font-size:8px; margin:0;">Scan untuk akses laporan daring</p>
+                <p style="font-size:7px; color:#999; margin-top:2px;">${REPORT_URL}</p>
+            </div>
         </div>
     </div>
     `;
     
-    document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
-    if (isEditMode) toggleEditPreview(); // pastikan mode edit mati saat generate baru
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    previewDiv.innerHTML = pdfContent;
+    
+    // GAMBAR QR CODE KE CANVAS (langsung, tanpa img)
+    drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 100);
+    
+    if (isEditMode) toggleEditPreview(); // matikan mode edit jika aktif
     hideLoading();
     openPdfPreview();
 }
 
-// ========= DOWNLOAD PDF (DENGAN TUNGGU GAMBAR) =========
+// ========= DOWNLOAD PDF (DENGAN CAPTURE CANVAS) =========
 async function downloadPDF() {
     showLoading();
     try {
@@ -500,12 +497,11 @@ async function downloadPDF() {
         const originalPadding = element.style.padding;
         const originalBg = element.style.backgroundColor;
         
-        // Set sementara ke ukuran A4 untuk capture
         element.style.width = '210mm';
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
 
-        // Tunggu semua gambar selesai dimuat
+        // Tunggu semua gambar (termasuk kop surat) selesai dimuat
         const images = element.getElementsByTagName('img');
         await Promise.all(Array.from(images).map(img => {
             if (img.complete) return Promise.resolve();
@@ -515,7 +511,7 @@ async function downloadPDF() {
             });
         }));
 
-        // Tambahan delay untuk canvas
+        // Delay tambahan untuk canvas (QR Code sudah digambar sebelumnya)
         await new Promise(resolve => setTimeout(resolve, 300));
 
         const canvas = await html2canvas(element, {
@@ -579,7 +575,6 @@ async function downloadPDF() {
 
 // ========= EVENT LISTENERS =========
 document.addEventListener('DOMContentLoaded', function() {
-    // Inisialisasi dropdown jika sudah ada
     const selectEl = document.getElementById('selectNamaPelapor');
     if (selectEl) {
         populateSelectNama();
