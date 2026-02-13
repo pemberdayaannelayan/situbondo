@@ -26,6 +26,8 @@ const lockoutDuration = 5 * 60 * 1000;
 let captchaResult = 0;
 let isEditMode = false;
 const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari';
+let currentPaperSize = 'A4'; // default
+let currentZoom = 100;
 
 // ========= NAVBAR SCROLL EFFECT =========
 window.addEventListener('scroll', function() {
@@ -236,11 +238,9 @@ function drawQRCodeOnCanvas(canvasElementOrId, text, size = 100) {
     canvas.height = size;
     const ctx = canvas.getContext('2d');
     
-    // Deteksi library qrcode-generator
     const qrlib = (typeof qrcode !== 'undefined') ? qrcode : (window.qrcode || null);
     
     if (!qrlib || typeof qrlib !== 'function') {
-        // Fallback: tampilkan teks URL
         ctx.fillStyle = '#f0f0f0';
         ctx.fillRect(0, 0, size, size);
         ctx.fillStyle = '#1e3a8a';
@@ -294,7 +294,13 @@ function showLoading() { document.getElementById('loadingOverlay').style.display
 function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 
 // ========= MODAL PREVIEW =========
-function openPdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'flex'; }
+function openPdfPreview() { 
+    document.getElementById('pdfPreviewModal').style.display = 'flex'; 
+    // Inisialisasi slider zoom dan ukuran kertas
+    initEditControls();
+    // Lindungi QR code agar tidak bisa diedit
+    protectQRCode();
+}
 function closePdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'none';
     if (isEditMode) toggleEditPreview();
@@ -304,7 +310,8 @@ function closePdfPreview() {
 function toggleEditPreview() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     const btnEdit = document.getElementById('btnEditPreview');
-    if (!previewDiv || !btnEdit) return;
+    const toolbar = document.getElementById('pdfEditToolbar');
+    if (!previewDiv || !btnEdit || !toolbar) return;
     
     isEditMode = !isEditMode;
     if (isEditMode) {
@@ -313,12 +320,138 @@ function toggleEditPreview() {
         btnEdit.innerHTML = '<i class="fas fa-lock me-2"></i>Selesai Edit';
         btnEdit.classList.remove('btn-warning');
         btnEdit.classList.add('btn-success');
+        toolbar.classList.add('show');
+        // Set contenteditable false untuk elemen yang dilindungi (QR code, footer)
+        protectQRCode();
     } else {
         previewDiv.contentEditable = "false";
         previewDiv.classList.remove('editing-mode');
         btnEdit.innerHTML = '<i class="fas fa-pencil-alt me-2"></i>Edit';
         btnEdit.classList.remove('btn-success');
         btnEdit.classList.add('btn-warning');
+        toolbar.classList.remove('show');
+    }
+}
+
+// Fungsi untuk melindungi QR code dan footer agar tidak terhapus/edit
+function protectQRCode() {
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    if (!previewDiv) return;
+    // Cari elemen canvas dan container QR, set contenteditable false
+    const qrCanvas = previewDiv.querySelector('#qrCodeCanvas');
+    if (qrCanvas) {
+        qrCanvas.setAttribute('contenteditable', 'false');
+        // Bungkus dalam div dengan class pdf-footer
+        let parent = qrCanvas.parentElement;
+        while (parent && parent !== previewDiv) {
+            parent.setAttribute('contenteditable', 'false');
+            parent = parent.parentElement;
+        }
+    }
+    // Lindungi semua elemen dengan class pdf-footer
+    const footers = previewDiv.querySelectorAll('.pdf-footer, div[style*="border-top"]'); // perkiraan
+    footers.forEach(el => el.setAttribute('contenteditable', 'false'));
+}
+
+// ========= EDIT TOOLBAR FUNCTIONS =========
+function execEditCommand(command, value = null) {
+    if (!isEditMode) {
+        alert('Aktifkan mode edit terlebih dahulu.');
+        return;
+    }
+    document.execCommand(command, false, value);
+    // Fokus kembali ke preview
+    document.getElementById('pdfPreviewContent').focus();
+}
+
+function setLineHeight(value) {
+    if (!isEditMode) {
+        alert('Aktifkan mode edit terlebih dahulu.');
+        return;
+    }
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.lineHeight = value;
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+        // Bersihkan jika hanya inline
+    } else {
+        // Terapkan ke seluruh body preview? Tidak ideal. Alternatif: set style ke elemen paragraf terpilih.
+        alert('Silakan pilih paragraf yang ingin diatur spasi.');
+    }
+}
+
+function uploadImage() {
+    if (!isEditMode) {
+        alert('Aktifkan mode edit terlebih dahulu.');
+        return;
+    }
+    const input = document.getElementById('imageUploadInput');
+    input.click();
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = document.createElement('img');
+                img.src = ev.target.result;
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                // Sisipkan di posisi kursor
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(img);
+                    // Pindahkan kursor setelah gambar
+                    range.setStartAfter(img);
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                } else {
+                    // Jika tidak ada kursor, tambahkan di akhir
+                    document.getElementById('pdfPreviewContent').appendChild(img);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+        input.value = ''; // reset
+    };
+}
+
+// ========= ZOOM & PAPER SIZE =========
+function initEditControls() {
+    const zoomSlider = document.getElementById('zoomSlider');
+    const zoomValue = document.getElementById('zoomValue');
+    const paperSelect = document.getElementById('paperSizeSelect');
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    
+    if (zoomSlider) {
+        zoomSlider.value = currentZoom;
+        zoomValue.textContent = currentZoom + '%';
+        previewDiv.style.transform = `scale(${currentZoom / 100})`;
+        previewDiv.style.transformOrigin = 'top left';
+        
+        zoomSlider.oninput = function() {
+            const val = this.value;
+            currentZoom = val;
+            zoomValue.textContent = val + '%';
+            previewDiv.style.transform = `scale(${val / 100})`;
+            previewDiv.style.transformOrigin = 'top left';
+        };
+    }
+    
+    if (paperSelect) {
+        paperSelect.value = currentPaperSize;
+        paperSelect.onchange = function() {
+            currentPaperSize = this.value;
+            let width = '210mm'; // default A4
+            if (currentPaperSize === 'Letter') width = '216mm';
+            else if (currentPaperSize === 'Legal') width = '216mm'; // panjang berbeda, tapi lebar sama, kita atur width saja
+            previewDiv.style.width = width;
+        };
     }
 }
 
@@ -399,8 +532,9 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     `;
 
     // ===== STRUKTUR PDF: QR CODE DI FOOTER (CANVAS) =====
+    // Margin dan tata letak disesuaikan agar tanda tangan dekat footer
     const pdfContent = `
-    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 0;">
+    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 0; display: flex; flex-direction: column; min-height: 100%;">
         ${kopSuratHTML}
         
         <div style="text-align: center; margin-bottom: 25px;">
@@ -411,7 +545,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
             <h2 style="font-size: 15px; font-weight: bold; color: #1e3a8a; margin-top: 0;">DERMAGA LAMA PANARUKAN</h2>
         </div>
         
-        <div style="margin-bottom: 25px;">
+        <div style="margin-bottom: 25px; flex: 1;">
             <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">I. DASAR PELAKSANAAN</h4>
             <p style="text-align:justify; margin-bottom:15px; font-size:12px; text-indent:30px;">
                 Kegiatan ini dilaksanakan berdasarkan Surat Komando Distrik Militer 0823 Nomor <strong>B/99/II/2026</strong> tanggal 11 Februari 2026 perihal Permohonan Bantuan Personel dalam rangka Gerakan ASRI (Aman, Sehat, Resik, Indah). Kegiatan juga merupakan tindak lanjut Instruksi Presiden RI pada Rakornas Pusat dan Daerah serta Telegram Danrem 083/Bdj Nomor ST/108/2026.
@@ -440,19 +574,19 @@ function generatePDFReport(namaPelapor, nipPelapor) {
             </p>
         </div>
         
-        <!-- TANDA TANGAN PELAPOR (KIRI) -->
-        <div style="display: flex; justify-content: space-between; margin-top: 60px;">
+        <!-- TANDA TANGAN PELAPOR (KIRI) - dirapatkan ke footer -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px;">
             <div style="width: 60%;">
                 <p style="margin-bottom:5px; font-size:12px;">Situbondo, ${formattedDate}</p>
-                <p style="font-weight:bold; font-size:12px; margin-top:40px;">Pelapor,</p>
-                <p style="margin-top:60px; font-size:12px; font-weight: bold;">${namaPelapor || '______________________'}</p>
+                <p style="font-weight:bold; font-size:12px; margin-top:20px;">Pelapor,</p>
+                <p style="margin-top:40px; font-size:12px; font-weight: bold;">${namaPelapor || '______________________'}</p>
                 <p style="font-size:11px; color: #555;">NIP. ${nipPelapor || '______________________'}</p>
             </div>
-            <div style="width: 35%;"></div> <!-- kosong, QR pindah ke footer -->
+            <div style="width: 35%;"></div>
         </div>
         
-        <!-- FOOTER DENGAN QR CODE (CANVAS) DAN URL FALLBACK -->
-        <div style="margin-top:80px; border-top:1px solid #ddd; padding-top:15px; display: flex; justify-content: space-between; align-items: center;">
+        <!-- FOOTER DENGAN QR CODE (CANVAS) DAN URL FALLBACK - dilindungi -->
+        <div class="pdf-footer" style="margin-top: 30px; border-top:1px solid #ddd; padding-top:15px; display: flex; justify-content: space-between; align-items: center;">
             <div style="text-align:left; font-size:10px; color:#666;">
                 <p><strong>Dokumen ini dicetak secara elektronik dan merupakan dokumen resmi.</strong></p>
                 <p>ID Verifikasi: ${docId} | Tanggal Cetak: ${formattedDate}</p>
@@ -470,10 +604,18 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     const previewDiv = document.getElementById('pdfPreviewContent');
     previewDiv.innerHTML = pdfContent;
     
-    // GAMBAR QR CODE KE CANVAS (langsung, tanpa img)
+    // GAMBAR QR CODE KE CANVAS
     drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 100);
     
-    if (isEditMode) toggleEditPreview(); // matikan mode edit jika aktif
+    // Terapkan ukuran kertas yang dipilih
+    let width = '210mm';
+    if (currentPaperSize === 'Letter') width = '216mm';
+    else if (currentPaperSize === 'Legal') width = '216mm';
+    previewDiv.style.width = width;
+    
+    // Matikan mode edit jika aktif
+    if (isEditMode) toggleEditPreview();
+    
     hideLoading();
     openPdfPreview();
 }
@@ -483,10 +625,14 @@ async function downloadPDF() {
     showLoading();
     try {
         const { jsPDF } = window.jspdf;
+        let format = 'a4';
+        if (currentPaperSize === 'Letter') format = 'letter';
+        else if (currentPaperSize === 'Legal') format = 'legal';
+        
         const doc = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4'
+            format: format
         });
 
         const element = document.getElementById('pdfPreviewContent');
@@ -496,12 +642,17 @@ async function downloadPDF() {
         const originalWidth = element.style.width;
         const originalPadding = element.style.padding;
         const originalBg = element.style.backgroundColor;
+        const originalTransform = element.style.transform;
         
-        element.style.width = '210mm';
+        // Set ke ukuran kertas yang sesuai untuk capture
+        if (format === 'a4') element.style.width = '210mm';
+        else if (format === 'letter') element.style.width = '216mm';
+        else if (format === 'legal') element.style.width = '216mm';
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
-
-        // Tunggu semua gambar (termasuk kop surat) selesai dimuat
+        element.style.transform = 'scale(1)'; // reset zoom
+        
+        // Tunggu gambar selesai
         const images = element.getElementsByTagName('img');
         await Promise.all(Array.from(images).map(img => {
             if (img.complete) return Promise.resolve();
@@ -511,7 +662,6 @@ async function downloadPDF() {
             });
         }));
 
-        // Delay tambahan untuk canvas (QR Code sudah digambar sebelumnya)
         await new Promise(resolve => setTimeout(resolve, 300));
 
         const canvas = await html2canvas(element, {
@@ -527,8 +677,9 @@ async function downloadPDF() {
         element.style.width = originalWidth;
         element.style.padding = originalPadding;
         element.style.backgroundColor = originalBg;
+        element.style.transform = originalTransform;
 
-        const imgWidth = 210;
+        const imgWidth = format === 'a4' ? 210 : 216;
         const pageHeight = 297;
         const margin = 15;
         const maxHeight = pageHeight - margin * 2;
@@ -580,14 +731,21 @@ document.addEventListener('DOMContentLoaded', function() {
         populateSelectNama();
         initDropdownListener();
     }
+    // Inisialisasi event untuk password toggle
+    const pwToggle = document.getElementById('passwordToggle');
+    if (pwToggle) pwToggle.addEventListener('click', togglePasswordVisibility);
+    
+    const codeInput = document.getElementById('securityCodeInput');
+    if (codeInput) {
+        codeInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') verifySecurityCode(); });
+        codeInput.addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
+    }
+    
+    // Modal click outside
+    document.getElementById('pdfAuthModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
+    document.getElementById('pdfDataFormModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
+    document.getElementById('pdfPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
 });
-
-document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
-document.getElementById('securityCodeInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') verifySecurityCode(); });
-document.getElementById('pdfAuthModal').addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
-document.getElementById('securityCodeInput').addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
-document.getElementById('pdfDataFormModal').addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
-document.getElementById('pdfPreviewModal').addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
 
 // ========= EXPOSE FUNCTIONS KE GLOBAL =========
 window.openShareModal = openShareModal;
@@ -606,6 +764,9 @@ window.downloadPDF = downloadPDF;
 window.closePdfPreview = closePdfPreview;
 window.openPdfPreview = openPdfPreview;
 window.generatePDFReport = generatePDFReport;
+window.execEditCommand = execEditCommand;
+window.setLineHeight = setLineHeight;
+window.uploadImage = uploadImage;
 
 console.log("Kode hari ini:", generateSecurityCode());
 console.log("QR Code akan berisi URL:", REPORT_URL);
