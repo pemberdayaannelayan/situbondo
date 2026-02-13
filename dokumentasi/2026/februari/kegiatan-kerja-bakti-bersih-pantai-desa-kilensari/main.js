@@ -1,7 +1,7 @@
-// ===== main.js – Semua fungsi dan event handler dari halaman Kerja Bakti =====
-// Dilarang menghapus/mengubah fitur. Ini adalah ekstraksi persis dari inline script.
+// ===== main.js – Semua fungsi dan event handler =====
+// DILARANG MENGHAPUS/MENGUBAH FITUR ESENSIAL. TELAH DITAMBAH FITUR FORM PELAPOR.
 
-// Initialize AOS
+// ========= INISIALISASI =========
 AOS.init({ duration: 800, once: true, offset: 100 });
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 
@@ -58,7 +58,7 @@ const scrollTopBtn = document.createElement('button');
 scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
 scrollTopBtn.className = 'btn btn-primary position-fixed bottom-3 end-3 rounded-circle shadow-lg';
 scrollTopBtn.style.width = '50px'; scrollTopBtn.style.height = '50px'; scrollTopBtn.style.zIndex = '1000'; scrollTopBtn.style.display = 'none';
-scrollTopBtn.style.background = 'linear-gradient(135deg, var(--secondary-blue), var(--primary-blue))'; scrollTopBtn.style.border = 'none';
+scrollTopBtn.style.background = 'linear-gradient(135deg, var(--orange-primary), #f59e0b)'; scrollTopBtn.style.border = 'none';
 document.body.appendChild(scrollTopBtn);
 window.addEventListener('scroll', function() {
     if (window.scrollY > 300) {
@@ -67,7 +67,7 @@ window.addEventListener('scroll', function() {
 });
 scrollTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-// Share functions
+// ========= SHARE FUNCTIONS =========
 function openShareModal() { document.getElementById('shareModal').style.display = 'flex'; }
 function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
 function shareToWhatsApp() {
@@ -81,9 +81,9 @@ function copyLink() {
     }).catch(() => alert('Gagal menyalin link.'));
 }
 document.getElementById('shareModal').addEventListener('click', function(e) { if (e.target === this) closeShareModal(); });
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeShareModal(); closePdfPreview(); closePdfAuthModal(); } });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeShareModal(); closePdfAuthModal(); closePdfPreview(); closePdfDataFormModal(); } });
 
-// ========= PDF AUTHORIZATION & GENERATION (KONTEKS DIUBAH) =========
+// ========= PDF AUTHORIZATION (KODE AKSES) =========
 let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
 const lockoutDuration = 5 * 60 * 1000;
 
@@ -92,7 +92,7 @@ function generateSecurityCode() {
     const day = String(now.getDate()).padStart(2,'0');
     const month = String(now.getMonth()+1).padStart(2,'0');
     const year = now.getFullYear();
-    return day + month + year; // format DDMMYYYY
+    return day + month + year; // DDMMYYYY
 }
 
 function isLockedOut() {
@@ -149,7 +149,8 @@ function verifySecurityCode() {
     if (userInput === correctCode) {
         currentAttempts = 0;
         closePdfAuthModal();
-        generatePDFReport();
+        // BUKA FORM DATA PELAPOR, BUKAN LANGSUNG GENERATE PDF
+        openPdfDataFormModal();
     } else {
         currentAttempts++;
         document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
@@ -165,39 +166,95 @@ function verifySecurityCode() {
     }
 }
 
-// Tambahkan style shake (sama persis dari script inline)
+// Style shake
 const style = document.createElement('style');
 style.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 10%,30%,50%,70%,90%{transform:translateX(-5px)} 20%,40%,60%,80%{transform:translateX(5px)} }`;
 document.head.appendChild(style);
 
+// ========= MODAL DATA PELAPOR (BARU) =========
+let captchaResult = 0;
+
+function openPdfDataFormModal() {
+    // Generate captcha sederhana (penjumlahan)
+    const num1 = Math.floor(Math.random() * 5) + 3; // 3-7
+    const num2 = Math.floor(Math.random() * 5) + 2; // 2-6
+    captchaResult = num1 + num2;
+    document.getElementById('captchaQuestion').innerHTML = `${num1} + ${num2} = ?`;
+    // Reset form
+    document.getElementById('pdfDataForm').reset();
+    document.getElementById('namaPelapor').classList.remove('is-invalid');
+    document.getElementById('nipPelapor').classList.remove('is-invalid');
+    document.getElementById('captchaInput').classList.remove('is-invalid');
+    document.getElementById('captchaError').style.display = 'none';
+    document.getElementById('pdfDataFormModal').style.display = 'flex';
+}
+
+function closePdfDataFormModal() {
+    document.getElementById('pdfDataFormModal').style.display = 'none';
+}
+
+function submitPdfDataForm() {
+    // Validasi semua field
+    const nama = document.getElementById('namaPelapor').value.trim();
+    const nip = document.getElementById('nipPelapor').value.trim();
+    const captchaAnswer = document.getElementById('captchaInput').value.trim();
+    const agreement = document.getElementById('agreementCheck').checked;
+
+    let isValid = true;
+    if (!nama) {
+        document.getElementById('namaPelapor').classList.add('is-invalid');
+        isValid = false;
+    } else { document.getElementById('namaPelapor').classList.remove('is-invalid'); }
+
+    if (!nip || nip.length !== 18) {
+        document.getElementById('nipPelapor').classList.add('is-invalid');
+        isValid = false;
+    } else { document.getElementById('nipPelapor').classList.remove('is-invalid'); }
+
+    if (!captchaAnswer || parseInt(captchaAnswer) !== captchaResult) {
+        document.getElementById('captchaInput').classList.add('is-invalid');
+        document.getElementById('captchaError').style.display = 'block';
+        isValid = false;
+    } else {
+        document.getElementById('captchaInput').classList.remove('is-invalid');
+        document.getElementById('captchaError').style.display = 'none';
+    }
+
+    if (!agreement) {
+        alert('Anda harus menyetujui pernyataan sebelum dapat mengunduh laporan.');
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
+    // Jika valid, generate PDF dengan data pelapor
+    closePdfDataFormModal();
+    generatePDFReport(nama, nip);
+}
+
+// ========= GENERATE PDF REPORT (KOP SURAT GAMBAR, NAMA & NIP PELAPOR) =========
 function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
 function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 function openPdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'flex'; }
 function closePdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'none'; }
 
-// GENERATE PDF REPORT (konten LAPORAN KARYA BAKTI)
-function generatePDFReport() {
+function generatePDFReport(namaPelapor, nipPelapor) {
     showLoading();
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-    const pdfContent = `
-    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #333;">
-        <!-- Kop Surat -->
-        <div style="margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 20px;">
-            <table style="width: 100%;">
-                <tr>
-                    <td style="width: 80px; vertical-align: middle;">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" 
-                             alt="Logo Situbondo" style="width: 70px; height: 70px; object-fit: contain;">
-                    </td>
-                    <td style="vertical-align: middle; padding-left: 15px;">
-                        <h2 style="margin:0; font-size:16px; font-weight:bold;">PEMERINTAH KABUPATEN SITUBONDO</h2>
-                        <h1 style="margin:5px 0; font-size:18px; font-weight:bold; color:#1e3a8a;">DINAS PETERNAKAN DAN PERIKANAN</h1>
-                        <p style="margin:0; font-size:12px;">Jl. PB SUDIRMAN No 77c SITUBONDO TELP/FAX (0338) 672664<br>SITUBONDO 68312</p>
-                    </td>
-                </tr>
-            </table>
+
+    // KOP SURAT MENGGUNAKAN GAMBAR (sesuai permintaan)
+    const kopSuratHTML = `
+        <div style="margin-bottom: 30px; text-align: center;">
+            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/kop-surat-resmi-dinas-peternakan-perikanan-situbondo.png" 
+                 alt="Kop Surat Dinas Peternakan dan Perikanan Situbondo" 
+                 style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;">
         </div>
+    `;
+
+    const pdfContent = `
+    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #333; padding: 20px;">
+        ${kopSuratHTML}
         
         <div style="text-align: center; margin-bottom: 30px;">
             <h3 style="margin-bottom: 10px; font-size: 14px; font-weight: bold;">LAPORAN KEGIATAN</h3>
@@ -234,17 +291,15 @@ function generatePDFReport() {
                 terjalin dengan sangat baik. Dinas Peternakan dan Perikanan turut serta membersihkan area pendaratan ikan dan memberikan 
                 edukasi singkat kepada nelayan sekitar.
             </p>
-            <p style="text-align:justify; font-size:12px; text-indent:30px;">
-                Seluruh peserta mengenakan pakaian kaos dinas masing-masing, dan kegiatan diakhiri dengan foto bersama. 
-                Kegiatan ini sekaligus menjadi ajang silaturahmi dan koordinasi lintas sektor.
-            </p>
         </div>
         
         <div style="display: flex; justify-content: space-between; margin-top: 80px;">
             <div style="width: 60%;">
                 <p style="margin-bottom:5px; font-size:12px;">Situbondo, ${formattedDate}</p>
                 <p style="font-weight:bold; font-size:12px; margin-top:40px;">Pelapor,</p>
-                <p style="margin-top:60px; font-size:12px;">SUGENG PURWO PRIYANTO, S.E., M.M.<br><span style="font-weight:normal;">Kepala Bidang Pemberdayaan Nelayan</span></p>
+                <p style="margin-top:60px; font-size:12px; font-weight: bold;">${namaPelapor || '______________________'}</p>
+                <p style="font-size:11px; color: #555;">NIP. ${nipPelapor || '______________________'}</p>
+                <p style="margin-top:5px; font-size:12px;">Kepala Bidang Pemberdayaan Nelayan</p>
             </div>
             <div style="width: 35%; text-align: right;">
                 <div class="qr-code" style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); float:right;">
@@ -262,12 +317,13 @@ function generatePDFReport() {
         </div>
     </div>
     `;
+    
     document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
     hideLoading();
     openPdfPreview();
 }
 
-// PDF Download (menggunakan jsPDF dan html2canvas)
+// ========= DOWNLOAD PDF =========
 async function downloadPDF() {
     showLoading();
     try {
@@ -291,9 +347,12 @@ async function downloadPDF() {
     }
 }
 
-// password toggle listener
+// ========= EVENT LISTENERS =========
 document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
 document.getElementById('securityCodeInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') verifySecurityCode(); });
 document.getElementById('pdfAuthModal').addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
 document.getElementById('securityCodeInput').addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
+document.getElementById('pdfDataFormModal').addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
+document.getElementById('pdfPreviewModal').addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
+
 console.log("Kode hari ini:", generateSecurityCode());
