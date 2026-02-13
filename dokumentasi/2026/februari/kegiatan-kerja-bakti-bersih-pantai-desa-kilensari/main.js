@@ -32,12 +32,10 @@ let selectedImage = null;
 
 // Variabel untuk crop
 let cropImageSrc = null;
-let cropCanvas = null;
-let cropCtx = null;
-let cropOverlay = null;
+let cropImageObj = new Image();
+let cropCanvas, cropCtx, cropOverlay;
 let isDragging = false;
 let startX, startY, endX, endY;
-let imageObj = new Image();
 let cropScale = 1;
 let cropRotate = 0;
 let cropRatio = 'free';
@@ -90,11 +88,11 @@ function restoreState(index) {
     previewDiv.innerHTML = historyStack[index];
     drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
     protectQRCode();
-    selectedImage = null;
+    selectedImage = null; // reset seleksi
     document.getElementById('imageResizeSlider').value = 100;
     document.getElementById('imageResizeValue').textContent = '100%';
     if (isEditMode) {
-        // Pasang ulang listener untuk gambar
+        // Pasang ulang listener untuk gambar (menggunakan delegation)
         attachImageListeners();
     }
 }
@@ -381,7 +379,7 @@ function closePdfPreview() {
     if (isEditMode) toggleEditPreview(); // matikan mode edit saat preview ditutup
 }
 
-// ========= FITUR EDIT PREVIEW (VERSI SANGAT SEDERHANA DAN TERUJI) =========
+// ========= FITUR EDIT PREVIEW (DENGAN EVENT DELEGATION) =========
 function toggleEditPreview() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     const btnEdit = document.getElementById('btnEditPreview');
@@ -410,11 +408,8 @@ function toggleEditPreview() {
         // Lindungi QR code
         protectQRCode();
         
-        // Pasang listener untuk gambar
+        // Pasang listener untuk gambar (delegation)
         attachImageListeners();
-        
-        // Listener untuk klik gambar
-        previewDiv.addEventListener('click', handleImageSelection);
         
         // Simpan state awal
         historyStack = [];
@@ -435,35 +430,12 @@ function toggleEditPreview() {
         toolbar.classList.remove('show');
         
         // Hapus listener
-        previewDiv.removeEventListener('click', handleImageSelection);
         detachImageListeners();
         selectedImage = null;
     }
 }
 
-// ========= LISTENER UNTUK GAMBAR =========
-function attachImageListeners() {
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    const imgs = previewDiv.querySelectorAll('img:not(#qrCodeCanvas)');
-    imgs.forEach(img => {
-        img.setAttribute('draggable', 'true');
-        img.addEventListener('click', (e) => {
-            e.stopPropagation();
-            handleImageSelection(e);
-        });
-    });
-}
-
-function detachImageListeners() {
-    const previewDiv = document.getElementById('pdfPreviewContent');
-    const imgs = previewDiv.querySelectorAll('img');
-    imgs.forEach(img => {
-        img.setAttribute('draggable', 'false');
-        img.removeEventListener('click', handleImageSelection);
-    });
-}
-
-// ========= HANDLER SELEKSI GAMBAR =========
+// ========= EVENT DELEGATION UNTUK SELEKSI GAMBAR =========
 function handleImageSelection(e) {
     const target = e.target;
     if (target.tagName === 'IMG' && target.id !== 'qrCodeCanvas' && !target.closest('.pdf-footer')) {
@@ -477,10 +449,25 @@ function handleImageSelection(e) {
         document.getElementById('imageResizeValue').textContent = percent + '%';
         console.log('Gambar dipilih');
     } else {
+        // Klik di luar gambar, hilangkan seleksi
         selectedImage = null;
         document.getElementById('imageResizeSlider').value = 100;
         document.getElementById('imageResizeValue').textContent = '100%';
     }
+}
+
+function attachImageListeners() {
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    // Hapus listener lama untuk menghindari duplikasi
+    previewDiv.removeEventListener('click', handleImageSelection);
+    // Pasang listener baru
+    previewDiv.addEventListener('click', handleImageSelection);
+}
+
+function detachImageListeners() {
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    previewDiv.removeEventListener('click', handleImageSelection);
+    selectedImage = null;
 }
 
 // ========= LAYER GAMBAR =========
@@ -535,7 +522,7 @@ function deleteSelectedImage() {
     saveState();
 }
 
-// ========= FUNGSI EDIT UMUM (PASTIKAN FOKUS) =========
+// ========= FUNGSI EDIT UMUM =========
 function execEditCommand(command, value = null) {
     if (!isEditMode) {
         alert('Aktifkan mode edit terlebih dahulu.');
@@ -591,10 +578,6 @@ function uploadImage() {
                 img.style.position = 'relative';
                 img.style.zIndex = '1';
                 img.setAttribute('draggable', 'true');
-                img.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    handleImageSelection(e);
-                });
                 
                 const selection = window.getSelection();
                 if (selection.rangeCount > 0) {
@@ -966,7 +949,7 @@ async function downloadPDF() {
     }
 }
 
-// ========= FUNGSI CROP GAMBAR =========
+// ========= FUNGSI CROP GAMBAR (PERBAIKAN) =========
 function initCropModal() {
     cropCanvas = document.getElementById('cropCanvas');
     cropCtx = cropCanvas.getContext('2d');
@@ -1004,35 +987,51 @@ function openCropForSelected() {
         alert('Gambar tidak dapat di-crop.');
         return;
     }
+    
     cropImageSrc = selectedImage.src;
     
     // Muat gambar ke objek Image untuk di-crop
-    imageObj = new Image();
-    imageObj.crossOrigin = 'anonymous';
-    imageObj.onload = function() {
-        // Atur ukuran canvas
-        cropCanvas.width = Math.min(600, imageObj.width);
-        cropCanvas.height = Math.min(400, imageObj.height);
+    cropImageObj = new Image();
+    cropImageObj.crossOrigin = 'anonymous';
+    cropImageObj.onload = function() {
+        // Atur ukuran canvas maksimal 600x400
+        let canvasWidth = cropImageObj.width;
+        let canvasHeight = cropImageObj.height;
+        const maxWidth = 600, maxHeight = 400;
+        
+        if (canvasWidth > maxWidth || canvasHeight > maxHeight) {
+            const ratio = Math.min(maxWidth / canvasWidth, maxHeight / canvasHeight);
+            canvasWidth = Math.floor(canvasWidth * ratio);
+            canvasHeight = Math.floor(canvasHeight * ratio);
+        }
+        
+        cropCanvas.width = canvasWidth;
+        cropCanvas.height = canvasHeight;
+        
         cropScale = 1;
         cropRotate = 0;
         document.getElementById('cropZoom').value = 1;
         document.getElementById('cropZoomValue').textContent = '1x';
         document.getElementById('cropRotate').value = 0;
+        
         drawImageWithTransform();
+        
+        // Reset overlay
+        cropOverlay.style.display = 'none';
         
         // Tampilkan modal Bootstrap
         const modal = new bootstrap.Modal(document.getElementById('cropModal'));
         modal.show();
     };
-    imageObj.src = cropImageSrc;
+    cropImageObj.src = cropImageSrc;
 }
 
 function drawImageWithTransform() {
     cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
     
-    // Hitung dimensi setelah skala dan rotasi
-    let scaledWidth = imageObj.width * cropScale;
-    let scaledHeight = imageObj.height * cropScale;
+    // Hitung dimensi setelah skala
+    let scaledWidth = cropImageObj.width * cropScale;
+    let scaledHeight = cropImageObj.height * cropScale;
     
     // Pusatkan gambar di canvas
     let x = (cropCanvas.width - scaledWidth) / 2;
@@ -1041,19 +1040,19 @@ function drawImageWithTransform() {
     cropCtx.save();
     cropCtx.translate(cropCanvas.width / 2, cropCanvas.height / 2);
     cropCtx.rotate(cropRotate * Math.PI / 180);
-    cropCtx.drawImage(imageObj, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
+    cropCtx.drawImage(cropImageObj, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
     cropCtx.restore();
-    
-    // Reset overlay
-    cropOverlay.style.display = 'none';
 }
 
 function startCropDrag(e) {
     if (!cropCanvas) return;
     isDragging = true;
     const rect = cropCanvas.getBoundingClientRect();
-    startX = (e.clientX - rect.left) * (cropCanvas.width / rect.width);
-    startY = (e.clientY - rect.top) * (cropCanvas.height / rect.height);
+    // Hitung koordinat relatif terhadap canvas (dalam piksel canvas)
+    const scaleX = cropCanvas.width / rect.width;
+    const scaleY = cropCanvas.height / rect.height;
+    startX = (e.clientX - rect.left) * scaleX;
+    startY = (e.clientY - rect.top) * scaleY;
     endX = startX;
     endY = startY;
     cropOverlay.style.display = 'block';
@@ -1062,24 +1061,39 @@ function startCropDrag(e) {
 function duringCropDrag(e) {
     if (!isDragging) return;
     const rect = cropCanvas.getBoundingClientRect();
-    endX = (e.clientX - rect.left) * (cropCanvas.width / rect.width);
-    endY = (e.clientY - rect.top) * (cropCanvas.height / rect.height);
+    const scaleX = cropCanvas.width / rect.width;
+    const scaleY = cropCanvas.height / rect.height;
+    let currentX = (e.clientX - rect.left) * scaleX;
+    let currentY = (e.clientY - rect.top) * scaleY;
     
     // Batasi agar tidak keluar canvas
-    endX = Math.min(cropCanvas.width, Math.max(0, endX));
-    endY = Math.min(cropCanvas.height, Math.max(0, endY));
+    endX = Math.min(cropCanvas.width, Math.max(0, currentX));
+    endY = Math.min(cropCanvas.height, Math.max(0, currentY));
     
     // Terapkan rasio jika dipilih
     if (cropRatio !== 'free') {
         const [wRatio, hRatio] = cropRatio.split(':').map(Number);
         let width = Math.abs(endX - startX);
         let height = width * (hRatio / wRatio);
-        if (startY + height > cropCanvas.height) {
-            height = cropCanvas.height - startY;
-            width = height * (wRatio / hRatio);
+        
+        // Tentukan arah
+        if (endX > startX) {
+            // ke kanan
+            if (startY + height > cropCanvas.height) {
+                height = cropCanvas.height - startY;
+                width = height * (wRatio / hRatio);
+            }
+            endX = startX + width;
+            endY = startY + height;
+        } else {
+            // ke kiri
+            if (startY + height > cropCanvas.height) {
+                height = cropCanvas.height - startY;
+                width = height * (wRatio / hRatio);
+            }
+            endX = startX - width;
+            endY = startY + height;
         }
-        endX = startX + (endX > startX ? width : -width);
-        endY = startY + (endY > startY ? height : -height);
     }
     
     // Update posisi overlay
@@ -1109,27 +1123,39 @@ function applyCrop() {
     const left = Math.min(startX, endX);
     const top = Math.min(startY, endY);
     const width = Math.abs(endX - startX);
-    const height = Math.abs(endY - endY);
+    const height = Math.abs(endY - startY);
     
     if (width < 5 || height < 5) {
         alert('Area crop terlalu kecil.');
         return;
     }
     
-    // Buat canvas sementara untuk hasil crop
+    // Hitung rasio antara ukuran asli gambar dengan ukuran di canvas
+    const scaleX = cropImageObj.width / cropCanvas.width;
+    const scaleY = cropImageObj.height / cropCanvas.height;
+    
+    // Koordinat crop dalam gambar asli
+    const srcX = left * scaleX;
+    const srcY = top * scaleY;
+    const srcWidth = width * scaleX;
+    const srcHeight = height * scaleY;
+    
+    // Buat canvas untuk hasil crop dengan ukuran asli
     const cropResultCanvas = document.createElement('canvas');
-    cropResultCanvas.width = width;
-    cropResultCanvas.height = height;
+    cropResultCanvas.width = srcWidth;
+    cropResultCanvas.height = srcHeight;
     const resultCtx = cropResultCanvas.getContext('2d');
     
-    // Gambar area yang dipilih dari cropCanvas
-    resultCtx.drawImage(cropCanvas, left, top, width, height, 0, 0, width, height);
+    // Gambar bagian yang dipilih dari gambar asli
+    resultCtx.drawImage(cropImageObj, srcX, srcY, srcWidth, srcHeight, 0, 0, srcWidth, srcHeight);
     
     // Dapatkan dataURL
     const croppedDataURL = cropResultCanvas.toDataURL('image/png');
     
     // Ganti src gambar asli
     selectedImage.src = croppedDataURL;
+    selectedImage.style.width = '100%'; // reset ukuran agar proporsional
+    selectedImage.style.height = 'auto';
     
     // Tutup modal
     bootstrap.Modal.getInstance(document.getElementById('cropModal')).hide();
