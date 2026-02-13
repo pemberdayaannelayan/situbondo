@@ -1,4 +1,4 @@
-// ===== main.js – VERSI FINAL EKSTREM =====
+// ===== main.js – VERSI FINAL EKSTREM (PERBAIKAN PDF ERROR) =====
 // - PDF profesional, kop surat besar & CORS proxy, QR code lokal
 // - Tanda tangan hanya Nama & NIP (tanpa jabatan berulang)
 // - Multi‑halaman, nomor halaman otomatis, anti terpotong
@@ -62,21 +62,25 @@ window.addEventListener('scroll', () => {
 });
 scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-// ========= SHARE FUNCTIONS =========
-window.openShareModal = () => document.getElementById('shareModal').style.display = 'flex';
-window.closeShareModal = () => document.getElementById('shareModal').style.display = 'none';
-window.shareToWhatsApp = () => {
+// ========= SHARE FUNCTIONS (DECLARATION) =========
+function openShareModal() {
+    document.getElementById('shareModal').style.display = 'flex';
+}
+function closeShareModal() {
+    document.getElementById('shareModal').style.display = 'none';
+}
+function shareToWhatsApp() {
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent('Dinas Peternakan & Perikanan Situbondo turut serta dalam Karya Bakti Bersih Pantai Desa Kilensari, Kamis 12 Februari 2026.');
     window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
-};
-window.copyLink = () => {
+}
+function copyLink() {
     navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('Link berhasil disalin!'); window.closeShareModal();
+        alert('Link berhasil disalin!');
+        closeShareModal();
     });
-};
-document.getElementById('shareModal')?.addEventListener('click', e => e.target === e.currentTarget && window.closeShareModal());
-document.addEventListener('keydown', e => e.key === 'Escape' && [window.closeShareModal, closePdfAuthModal, closePdfPreview, closePdfDataFormModal].forEach(fn => fn?.()));
+}
+document.getElementById('shareModal')?.addEventListener('click', e => e.target === e.currentTarget && closeShareModal());
 
 // ========= PDF AUTHORIZATION =========
 let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
@@ -100,15 +104,15 @@ function isLockedOut() {
 }
 
 let isPasswordVisible = false;
-window.togglePasswordVisibility = () => {
+function togglePasswordVisibility() {
     const input = document.getElementById('securityCodeInput');
     const icon = document.getElementById('passwordToggle').querySelector('i');
     isPasswordVisible = !isPasswordVisible;
     input.type = isPasswordVisible ? 'text' : 'password';
     icon.className = isPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye';
-};
+}
 
-window.openPdfAuthModal = () => {
+function openPdfAuthModal() {
     const lock = isLockedOut();
     if (lock.locked) return alert(lock.message);
     const el = document.getElementById('securityCodeInput');
@@ -117,11 +121,13 @@ window.openPdfAuthModal = () => {
     document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
     document.getElementById('pdfAuthModal').style.display = 'flex';
     setTimeout(() => el.focus(), 300);
-};
+}
 
-window.closePdfAuthModal = () => document.getElementById('pdfAuthModal').style.display = 'none';
+function closePdfAuthModal() {
+    document.getElementById('pdfAuthModal').style.display = 'none';
+}
 
-window.verifySecurityCode = () => {
+function verifySecurityCode() {
     const lock = isLockedOut();
     if (lock.locked) {
         document.getElementById('errorText').textContent = lock.message;
@@ -160,7 +166,7 @@ window.verifySecurityCode = () => {
         input.value = '';
         input.focus();
     }
-};
+}
 
 // Animasi shake
 document.head.appendChild(Object.assign(document.createElement('style'), {
@@ -170,7 +176,7 @@ document.head.appendChild(Object.assign(document.createElement('style'), {
 // ========= FORM DATA PELAPOR =========
 let captchaResult = 0;
 
-window.openPdfDataFormModal = () => {
+function openPdfDataFormModal() {
     const n1 = Math.floor(Math.random() * 5) + 3;
     const n2 = Math.floor(Math.random() * 5) + 2;
     captchaResult = n1 + n2;
@@ -179,11 +185,13 @@ window.openPdfDataFormModal = () => {
     ['namaPelapor', 'nipPelapor', 'captchaInput'].forEach(id => document.getElementById(id).classList.remove('is-invalid'));
     document.getElementById('captchaError').style.display = 'none';
     document.getElementById('pdfDataFormModal').style.display = 'flex';
-};
+}
 
-window.closePdfDataFormModal = () => document.getElementById('pdfDataFormModal').style.display = 'none';
+function closePdfDataFormModal() {
+    document.getElementById('pdfDataFormModal').style.display = 'none';
+}
 
-window.submitPdfDataForm = () => {
+function submitPdfDataForm() {
     const nama = document.getElementById('namaPelapor').value.trim();
     const nip = document.getElementById('nipPelapor').value.trim();
     const captchaAnswer = document.getElementById('captchaInput').value.trim();
@@ -202,59 +210,86 @@ window.submitPdfDataForm = () => {
 
     closePdfDataFormModal();
     generatePDFReport(nama, nip);
-};
-
-// ========= GENERATE PDF REPORT (DENGAN QR CODE LOKAL & KOP SURAT PROXY) =========
-window.showLoading = () => document.getElementById('loadingOverlay').style.display = 'flex';
-window.hideLoading = () => document.getElementById('loadingOverlay').style.display = 'none';
-window.openPdfPreview = () => document.getElementById('pdfPreviewModal').style.display = 'flex';
-window.closePdfPreview = () => document.getElementById('pdfPreviewModal').style.display = 'none';
-
-// Fungsi generate QR code lokal (data URL)
-function generateQRDataURL(text, size = 90) {
-    if (typeof qrcode === 'undefined') {
-        console.warn('qrcode-generator tidak tersedia, gunakan fallback.');
-        return 'https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=' + encodeURIComponent(text);
-    }
-    const qr = qrcode(0, 'H');
-    qr.addData(text);
-    qr.make();
-    const cellSize = 4;
-    const margin = 2;
-    const canvas = document.createElement('canvas');
-    const sz = qr.getModuleCount() * cellSize + margin * 2;
-    canvas.width = canvas.height = sz;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, sz, sz);
-    ctx.fillStyle = '#1e3a8a';
-    for (let r = 0; r < qr.getModuleCount(); r++) {
-        for (let c = 0; c < qr.getModuleCount(); c++) {
-            if (qr.isDark(r, c)) {
-                ctx.fillRect(c * cellSize + margin, r * cellSize + margin, cellSize, cellSize);
-            }
-        }
-    }
-    return canvas.toDataURL('image/png');
 }
 
-// Fungsi utama generate PDF (async)
+// ========= GENERATE PDF REPORT (QR LOKAL, KOP PROXY) =========
+function showLoading() {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+}
+function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+function openPdfPreview() {
+    document.getElementById('pdfPreviewModal').style.display = 'flex';
+}
+function closePdfPreview() {
+    document.getElementById('pdfPreviewModal').style.display = 'none';
+}
+
+// Fungsi generate QR code lokal (data URL) dengan fallback aman
+function generateQRDataURL(text, size = 90) {
+    if (typeof qrcode === 'undefined') {
+        console.warn('qrcode-generator tidak tersedia, gunakan fallback canvas teks.');
+        // Fallback: buat canvas dengan teks "QR"
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = '#1e3a8a';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('QR', size/2, size/2);
+        return canvas.toDataURL('image/png');
+    }
+    try {
+        const qr = qrcode(0, 'H');
+        qr.addData(text);
+        qr.make();
+        const cellSize = 4;
+        const margin = 2;
+        const canvas = document.createElement('canvas');
+        const sz = qr.getModuleCount() * cellSize + margin * 2;
+        canvas.width = canvas.height = sz;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, sz, sz);
+        ctx.fillStyle = '#1e3a8a';
+        for (let r = 0; r < qr.getModuleCount(); r++) {
+            for (let c = 0; c < qr.getModuleCount(); c++) {
+                if (qr.isDark(r, c)) {
+                    ctx.fillRect(c * cellSize + margin, r * cellSize + margin, cellSize, cellSize);
+                }
+            }
+        }
+        return canvas.toDataURL('image/png');
+    } catch (e) {
+        console.error('Gagal generate QR:', e);
+        // fallback canvas putih
+        const canvas = document.createElement('canvas');
+        canvas.width = 90;
+        canvas.height = 90;
+        return canvas.toDataURL('image/png');
+    }
+}
+
+// Fungsi utama generate PDF
 async function generatePDFReport(namaPelapor, nipPelapor) {
     showLoading();
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    // --- KOP SURAT: gunakan proxy CORS agar bisa dicapture html2canvas ---
+    // Kop surat via proxy CORS
     const kopSuratURL = 'https://images.weserv.nl/?url=raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/kop-surat-resmi-dinas-peternakan-perikanan-situbondo.png';
-    
-    // --- QR CODE: buat lokal (data URL) ---
+    // QR code lokal
     const qrDataURL = generateQRDataURL(window.location.href, 90);
 
-    // Konten HTML laporan (QR sudah data URL, kop surat via proxy)
     const pdfContent = `
     <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #2d3e50; padding: 5px 20px;">
         <div style="margin-bottom: 20px; text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 15px;">
-            <img src="${kopSuratURL}" alt="Kop Surat Dinas Peternakan & Perikanan Situbondo" 
+            <img src="${kopSuratURL}" alt="Kop Surat" 
                  style="width: 100%; max-width: 700px; height: auto; display: block; margin: 0 auto;" 
                  crossorigin="anonymous" loading="lazy">
         </div>
@@ -331,10 +366,10 @@ async function generatePDFReport(namaPelapor, nipPelapor) {
     previewDiv.style.borderRadius = '8px';
     previewDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
 
-    // Tunggu gambar kop surat (via proxy) selesai dimuat
+    // Tunggu semua gambar (kop surat, QR) selesai dimuat
     const imgs = previewDiv.getElementsByTagName('img');
     await Promise.all(Array.from(imgs).map(img => {
-        if (img.complete) return;
+        if (img.complete) return Promise.resolve();
         return new Promise(resolve => {
             img.onload = resolve;
             img.onerror = () => {
@@ -348,53 +383,63 @@ async function generatePDFReport(namaPelapor, nipPelapor) {
     openPdfPreview();
 }
 
-// ========= DOWNLOAD PDF – MULTI HALAMAN, ANTI TERPOTONG =========
-window.downloadPDF = async function () {
+// ========= DOWNLOAD PDF – PERBAIKAN TOTAL (CLONE, ANTI TERPOTONG) =========
+async function downloadPDF() {
     showLoading();
     try {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        if (!jsPDF) throw new Error('jsPDF tidak tersedia');
 
-        const element = document.getElementById('pdfPreviewContent');
-        if (!element) throw new Error('Preview tidak ditemukan');
+        const originalElement = document.getElementById('pdfPreviewContent');
+        if (!originalElement) throw new Error('Elemen preview tidak ditemukan');
 
-        // Simpan style asli
-        const originalWidth = element.style.width;
-        const originalPadding = element.style.padding;
-        const originalBoxShadow = element.style.boxShadow;
+        // Clone elemen agar tidak mengganggu tampilan asli
+        const cloneElement = originalElement.cloneNode(true);
+        cloneElement.style.width = '210mm';
+        cloneElement.style.padding = '10mm 12mm';
+        cloneElement.style.backgroundColor = 'white';
+        cloneElement.style.boxShadow = 'none';
+        cloneElement.style.borderRadius = '0';
+        cloneElement.style.position = 'absolute';
+        cloneElement.style.left = '-9999px';
+        cloneElement.style.top = '0';
+        document.body.appendChild(cloneElement);
 
-        // Atur khusus untuk capture
-        element.style.width = '210mm';
-        element.style.padding = '10mm 12mm';
-        element.style.backgroundColor = 'white';
-        element.style.boxShadow = 'none';
-        element.style.borderRadius = '0';
-
-        // Tunggu semua gambar (sudah ditunggu sebelumnya, tapi amankan)
-        await Promise.all(Array.from(element.getElementsByTagName('img')).map(img => {
-            if (img.complete) return;
+        // Tunggu semua gambar di clone selesai dimuat
+        const imgs = cloneElement.getElementsByTagName('img');
+        await Promise.all(Array.from(imgs).map(img => {
+            if (img.complete) return Promise.resolve();
             return new Promise(resolve => {
                 img.onload = resolve;
-                img.onerror = resolve;
+                img.onerror = () => {
+                    console.warn('Gambar gagal dimuat di clone:', img.src);
+                    resolve();
+                };
             });
         }));
 
-        const canvas = await html2canvas(element, {
-            scale: 2.2,
+        // Beri sedikit jeda untuk rendering
+        await new Promise(r => setTimeout(r, 300));
+
+        const canvas = await html2canvas(cloneElement, {
+            scale: 2,
             logging: false,
             useCORS: true,
             allowTaint: false,
             backgroundColor: '#ffffff',
             imageTimeout: 15000,
-            windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight
+            windowWidth: cloneElement.scrollWidth,
+            windowHeight: cloneElement.scrollHeight
         });
 
-        // Kembalikan style
-        element.style.width = originalWidth;
-        element.style.padding = originalPadding;
-        element.style.boxShadow = originalBoxShadow;
+        // Hapus clone dari DOM
+        document.body.removeChild(cloneElement);
 
+        if (canvas.width === 0 || canvas.height === 0) {
+            throw new Error('Canvas kosong, gagal render HTML');
+        }
+
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         const imgWidth = 210; // mm
         const pageHeight = 297; // mm
         const marginTop = 15;
@@ -411,9 +456,10 @@ window.downloadPDF = async function () {
             const ratio = canvas.height / imgHeight;
             const pageHeightPx = contentHeight * ratio;
             const startY = position * ratio;
+            const remainingHeight = canvas.height - startY;
 
             canvasPage.width = canvas.width;
-            canvasPage.height = Math.min(pageHeightPx, canvas.height - startY);
+            canvasPage.height = Math.min(pageHeightPx, remainingHeight);
 
             ctx.drawImage(canvas, 0, startY, canvas.width, canvasPage.height, 0, 0, canvas.width, canvasPage.height);
 
@@ -436,13 +482,23 @@ window.downloadPDF = async function () {
         closePdfPreview();
         alert('✅ PDF berhasil diunduh!');
     } catch (err) {
-        console.error('PDF Error:', err);
+        console.error('❌ PDF Error:', err);
         hideLoading();
-        alert('❌ Gagal mengunduh PDF. Coba lagi.');
+        alert('❌ Gagal mengunduh PDF. Cek koneksi dan library.\nError: ' + err.message);
     }
-};
+}
 
 // ========= EVENT LISTENERS =========
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        // Panggil fungsi global yang sudah dideklarasikan
+        if (typeof closeShareModal === 'function') closeShareModal();
+        if (typeof closePdfAuthModal === 'function') closePdfAuthModal();
+        if (typeof closePdfPreview === 'function') closePdfPreview();
+        if (typeof closePdfDataFormModal === 'function') closePdfDataFormModal();
+    }
+});
+
 document.getElementById('passwordToggle')?.addEventListener('click', togglePasswordVisibility);
 document.getElementById('securityCodeInput')?.addEventListener('keypress', e => e.key === 'Enter' && verifySecurityCode());
 document.getElementById('securityCodeInput')?.addEventListener('input', function () { this.value = this.value.replace(/[^0-9]/g, ''); });
