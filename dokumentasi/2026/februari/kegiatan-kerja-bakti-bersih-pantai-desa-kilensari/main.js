@@ -24,7 +24,58 @@ const pegawaiList = [
 let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
 const lockoutDuration = 5 * 60 * 1000;
 let captchaResult = 0;
+let isEditMode = false;
 const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari';
+let currentPaperSize = 'A4';
+let currentZoom = 100;
+
+// ========= UNDO / REDO HISTORY =========
+let historyStack = [];
+let historyIndex = -1;
+const MAX_HISTORY = 20;
+
+function saveState() {
+    if (!isEditMode) return;
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    if (!previewDiv) return;
+    const state = previewDiv.innerHTML;
+    if (historyIndex < historyStack.length - 1) {
+        historyStack = historyStack.slice(0, historyIndex + 1);
+    }
+    historyStack.push(state);
+    if (historyStack.length > MAX_HISTORY) {
+        historyStack.shift();
+    } else {
+        historyIndex++;
+    }
+}
+
+function undo() {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    if (historyIndex > 0) {
+        historyIndex--;
+        restoreState(historyIndex);
+    } else {
+        alert('Tidak ada yang dapat di-undo.');
+    }
+}
+
+function redo() {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        restoreState(historyIndex);
+    } else {
+        alert('Tidak ada yang dapat di-redo.');
+    }
+}
+
+function restoreState(index) {
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    previewDiv.innerHTML = historyStack[index];
+    drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
+    protectQRCode();
+}
 
 // ========= NAVBAR SCROLL EFFECT =========
 window.addEventListener('scroll', function() {
@@ -293,10 +344,117 @@ function hideLoading() { document.getElementById('loadingOverlay').style.display
 // ========= MODAL PREVIEW =========
 function openPdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'flex'; 
+    initEditControls();
     protectQRCode();
+    if (historyStack.length === 0) {
+        saveState();
+    }
 }
 function closePdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'none';
+    if (isEditMode) toggleEditPreview();
+}
+
+// ========= FITUR EDIT PREVIEW (HANYA TEKS) =========
+function toggleEditPreview() {
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    const btnEdit = document.getElementById('btnEditPreview');
+    const toolbar = document.getElementById('pdfEditToolbar');
+    if (!previewDiv || !btnEdit || !toolbar) return;
+    
+    isEditMode = !isEditMode;
+    
+    if (isEditMode) {
+        previewDiv.contentEditable = "true";
+        previewDiv.classList.add('editing-mode');
+        previewDiv.focus();
+        
+        btnEdit.innerHTML = '<i class="fas fa-lock me-2"></i>Selesai Edit';
+        btnEdit.classList.remove('btn-warning');
+        btnEdit.classList.add('btn-success');
+        
+        toolbar.classList.add('show');
+        protectQRCode();
+        
+        historyStack = [];
+        historyIndex = -1;
+        saveState();
+    } else {
+        previewDiv.contentEditable = "false";
+        previewDiv.classList.remove('editing-mode');
+        
+        btnEdit.innerHTML = '<i class="fas fa-pencil-alt me-2"></i>Edit';
+        btnEdit.classList.remove('btn-success');
+        btnEdit.classList.add('btn-warning');
+        
+        toolbar.classList.remove('show');
+    }
+}
+
+function execEditCommand(command, value = null) {
+    if (!isEditMode) {
+        alert('Aktifkan mode edit terlebih dahulu.');
+        return;
+    }
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    previewDiv.focus();
+    document.execCommand(command, false, value);
+    saveState();
+}
+
+function setLineHeight(value) {
+    if (!isEditMode) {
+        alert('Aktifkan mode edit terlebih dahulu.');
+        return;
+    }
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.lineHeight = value;
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        saveState();
+    } else {
+        alert('Silakan pilih paragraf yang ingin diatur spasi.');
+    }
+}
+
+// ========= ZOOM & PAPER SIZE =========
+function initEditControls() {
+    const zoomSlider = document.getElementById('zoomSlider');
+    const zoomValue = document.getElementById('zoomValue');
+    const paperSelect = document.getElementById('paperSizeSelect');
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    
+    if (zoomSlider) {
+        zoomSlider.value = currentZoom;
+        zoomValue.textContent = currentZoom + '%';
+        previewDiv.style.transform = `scale(${currentZoom / 100})`;
+        previewDiv.style.transformOrigin = 'top left';
+        
+        zoomSlider.oninput = function() {
+            const val = this.value;
+            currentZoom = val;
+            zoomValue.textContent = val + '%';
+            previewDiv.style.transform = `scale(${val / 100})`;
+            previewDiv.style.transformOrigin = 'top left';
+        };
+    }
+    
+    if (paperSelect) {
+        paperSelect.value = currentPaperSize;
+        paperSelect.onchange = function() {
+            currentPaperSize = this.value;
+            let width = '210mm';
+            if (currentPaperSize === 'Letter') width = '216mm';
+            else if (currentPaperSize === 'Legal') width = '216mm';
+            previewDiv.style.width = width;
+            saveState();
+        };
+    }
 }
 
 // ========= PERLINDUNGAN QR CODE =========
@@ -463,9 +621,14 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     
     drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
     
-    // Atur lebar sesuai ukuran kertas A4 (default)
-    previewDiv.style.width = '210mm';
+    let width = '210mm';
+    if (currentPaperSize === 'Letter') width = '216mm';
+    else if (currentPaperSize === 'Legal') width = '216mm';
+    previewDiv.style.width = width;
     
+    if (isEditMode) {
+        toggleEditPreview();
+    }
     hideLoading();
     openPdfPreview();
 }
@@ -475,7 +638,9 @@ async function downloadPDF() {
     showLoading();
     try {
         const { jsPDF } = window.jspdf;
-        const format = 'a4'; // tetap A4
+        let format = 'a4';
+        if (currentPaperSize === 'Letter') format = 'letter';
+        else if (currentPaperSize === 'Legal') format = 'legal';
         
         const doc = new jsPDF({
             orientation: 'portrait',
@@ -489,10 +654,14 @@ async function downloadPDF() {
         const originalWidth = element.style.width;
         const originalPadding = element.style.padding;
         const originalBg = element.style.backgroundColor;
+        const originalTransform = element.style.transform;
         
-        element.style.width = '210mm';
+        if (format === 'a4') element.style.width = '210mm';
+        else if (format === 'letter') element.style.width = '216mm';
+        else if (format === 'legal') element.style.width = '216mm';
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
+        element.style.transform = 'scale(1)';
         
         const images = element.getElementsByTagName('img');
         await Promise.all(Array.from(images).map(img => {
@@ -517,8 +686,9 @@ async function downloadPDF() {
         element.style.width = originalWidth;
         element.style.padding = originalPadding;
         element.style.backgroundColor = originalBg;
+        element.style.transform = originalTransform;
 
-        const imgWidth = 210;
+        const imgWidth = format === 'a4' ? 210 : 216;
         const pageHeight = 297;
         const margin = 15;
         const maxHeight = pageHeight - margin * 2;
@@ -596,10 +766,15 @@ window.togglePasswordVisibility = togglePasswordVisibility;
 window.openPdfDataFormModal = openPdfDataFormModal;
 window.closePdfDataFormModal = closePdfDataFormModal;
 window.submitPdfDataForm = submitPdfDataForm;
+window.toggleEditPreview = toggleEditPreview;
 window.downloadPDF = downloadPDF;
 window.closePdfPreview = closePdfPreview;
 window.openPdfPreview = openPdfPreview;
 window.generatePDFReport = generatePDFReport;
+window.execEditCommand = execEditCommand;
+window.setLineHeight = setLineHeight;
+window.undo = undo;
+window.redo = redo;
 
 console.log("Kode hari ini:", generateSecurityCode());
 console.log("QR Code akan berisi URL:", REPORT_URL);
