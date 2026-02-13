@@ -30,6 +30,18 @@ let currentPaperSize = 'A4';
 let currentZoom = 100;
 let selectedImage = null;
 
+// Variabel untuk crop
+let cropImageSrc = null;
+let cropCanvas = null;
+let cropCtx = null;
+let cropOverlay = null;
+let isDragging = false;
+let startX, startY, endX, endY;
+let imageObj = new Image();
+let cropScale = 1;
+let cropRotate = 0;
+let cropRatio = 'free';
+
 // ========= UNDO / REDO HISTORY =========
 let historyStack = [];
 let historyIndex = -1;
@@ -954,6 +966,176 @@ async function downloadPDF() {
     }
 }
 
+// ========= FUNGSI CROP GAMBAR =========
+function initCropModal() {
+    cropCanvas = document.getElementById('cropCanvas');
+    cropCtx = cropCanvas.getContext('2d');
+    cropOverlay = document.getElementById('cropOverlay');
+    
+    document.getElementById('cropRatio').addEventListener('change', (e) => {
+        cropRatio = e.target.value;
+        drawImageWithTransform();
+    });
+    
+    document.getElementById('cropZoom').addEventListener('input', (e) => {
+        cropScale = parseFloat(e.target.value);
+        document.getElementById('cropZoomValue').textContent = cropScale.toFixed(1) + 'x';
+        drawImageWithTransform();
+    });
+    
+    document.getElementById('cropRotate').addEventListener('input', (e) => {
+        cropRotate = parseInt(e.target.value);
+        drawImageWithTransform();
+    });
+    
+    document.getElementById('applyCropBtn').addEventListener('click', applyCrop);
+    
+    // Event mouse untuk memilih area crop
+    cropCanvas.addEventListener('mousedown', startCropDrag);
+    cropCanvas.addEventListener('mousemove', duringCropDrag);
+    cropCanvas.addEventListener('mouseup', endCropDrag);
+    cropCanvas.addEventListener('mouseleave', endCropDrag);
+}
+
+function openCropForSelected() {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
+    if (selectedImage.id === 'qrCodeCanvas' || selectedImage.closest('.pdf-footer')) {
+        alert('Gambar tidak dapat di-crop.');
+        return;
+    }
+    cropImageSrc = selectedImage.src;
+    
+    // Muat gambar ke objek Image untuk di-crop
+    imageObj = new Image();
+    imageObj.crossOrigin = 'anonymous';
+    imageObj.onload = function() {
+        // Atur ukuran canvas
+        cropCanvas.width = Math.min(600, imageObj.width);
+        cropCanvas.height = Math.min(400, imageObj.height);
+        cropScale = 1;
+        cropRotate = 0;
+        document.getElementById('cropZoom').value = 1;
+        document.getElementById('cropZoomValue').textContent = '1x';
+        document.getElementById('cropRotate').value = 0;
+        drawImageWithTransform();
+        
+        // Tampilkan modal Bootstrap
+        const modal = new bootstrap.Modal(document.getElementById('cropModal'));
+        modal.show();
+    };
+    imageObj.src = cropImageSrc;
+}
+
+function drawImageWithTransform() {
+    cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+    
+    // Hitung dimensi setelah skala dan rotasi
+    let scaledWidth = imageObj.width * cropScale;
+    let scaledHeight = imageObj.height * cropScale;
+    
+    // Pusatkan gambar di canvas
+    let x = (cropCanvas.width - scaledWidth) / 2;
+    let y = (cropCanvas.height - scaledHeight) / 2;
+    
+    cropCtx.save();
+    cropCtx.translate(cropCanvas.width / 2, cropCanvas.height / 2);
+    cropCtx.rotate(cropRotate * Math.PI / 180);
+    cropCtx.drawImage(imageObj, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
+    cropCtx.restore();
+    
+    // Reset overlay
+    cropOverlay.style.display = 'none';
+}
+
+function startCropDrag(e) {
+    if (!cropCanvas) return;
+    isDragging = true;
+    const rect = cropCanvas.getBoundingClientRect();
+    startX = (e.clientX - rect.left) * (cropCanvas.width / rect.width);
+    startY = (e.clientY - rect.top) * (cropCanvas.height / rect.height);
+    endX = startX;
+    endY = startY;
+    cropOverlay.style.display = 'block';
+}
+
+function duringCropDrag(e) {
+    if (!isDragging) return;
+    const rect = cropCanvas.getBoundingClientRect();
+    endX = (e.clientX - rect.left) * (cropCanvas.width / rect.width);
+    endY = (e.clientY - rect.top) * (cropCanvas.height / rect.height);
+    
+    // Batasi agar tidak keluar canvas
+    endX = Math.min(cropCanvas.width, Math.max(0, endX));
+    endY = Math.min(cropCanvas.height, Math.max(0, endY));
+    
+    // Terapkan rasio jika dipilih
+    if (cropRatio !== 'free') {
+        const [wRatio, hRatio] = cropRatio.split(':').map(Number);
+        let width = Math.abs(endX - startX);
+        let height = width * (hRatio / wRatio);
+        if (startY + height > cropCanvas.height) {
+            height = cropCanvas.height - startY;
+            width = height * (wRatio / hRatio);
+        }
+        endX = startX + (endX > startX ? width : -width);
+        endY = startY + (endY > startY ? height : -height);
+    }
+    
+    // Update posisi overlay
+    updateOverlay();
+}
+
+function endCropDrag() {
+    isDragging = false;
+}
+
+function updateOverlay() {
+    const left = Math.min(startX, endX);
+    const top = Math.min(startY, endY);
+    const width = Math.abs(endX - startX);
+    const height = Math.abs(endY - startY);
+    
+    cropOverlay.style.left = left + 'px';
+    cropOverlay.style.top = top + 'px';
+    cropOverlay.style.width = width + 'px';
+    cropOverlay.style.height = height + 'px';
+    cropOverlay.style.display = 'block';
+}
+
+function applyCrop() {
+    if (!selectedImage) return;
+    
+    const left = Math.min(startX, endX);
+    const top = Math.min(startY, endY);
+    const width = Math.abs(endX - startX);
+    const height = Math.abs(endY - endY);
+    
+    if (width < 5 || height < 5) {
+        alert('Area crop terlalu kecil.');
+        return;
+    }
+    
+    // Buat canvas sementara untuk hasil crop
+    const cropResultCanvas = document.createElement('canvas');
+    cropResultCanvas.width = width;
+    cropResultCanvas.height = height;
+    const resultCtx = cropResultCanvas.getContext('2d');
+    
+    // Gambar area yang dipilih dari cropCanvas
+    resultCtx.drawImage(cropCanvas, left, top, width, height, 0, 0, width, height);
+    
+    // Dapatkan dataURL
+    const croppedDataURL = cropResultCanvas.toDataURL('image/png');
+    
+    // Ganti src gambar asli
+    selectedImage.src = croppedDataURL;
+    
+    // Tutup modal
+    bootstrap.Modal.getInstance(document.getElementById('cropModal')).hide();
+    saveState();
+}
+
 // ========= EVENT LISTENERS =========
 document.addEventListener('DOMContentLoaded', function() {
     const selectEl = document.getElementById('selectNamaPelapor');
@@ -973,6 +1155,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('pdfAuthModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
     document.getElementById('pdfDataFormModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
     document.getElementById('pdfPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
+    
+    // Inisialisasi modal crop
+    initCropModal();
 });
 
 // ========= EXPOSE FUNCTIONS KE GLOBAL =========
@@ -1002,6 +1187,7 @@ window.deleteSelectedImage = deleteSelectedImage;
 window.floatImage = floatImage;
 window.undo = undo;
 window.redo = redo;
+window.openCropForSelected = openCropForSelected;
 
 console.log("Kode hari ini:", generateSecurityCode());
 console.log("QR Code akan berisi URL:", REPORT_URL);
