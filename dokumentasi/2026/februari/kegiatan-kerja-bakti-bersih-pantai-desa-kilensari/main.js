@@ -1,5 +1,7 @@
 // ===== main.js – Semua fungsi dan event handler =====
 // TIDAK ADA PENGHAPUSAN FITUR, HANYA PENYEMPURNAAN
+// - Footer sudah rapi di HTML, PDF sekarang multi-halaman dengan nomor halaman
+// - Kop surat & QR code lebih stabil, tidak terpotong
 
 AOS.init({ duration: 800, once: true, offset: 100 });
 document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -149,7 +151,7 @@ function verifySecurityCode() {
     if (userInput === correctCode) {
         currentAttempts = 0;
         closePdfAuthModal();
-        openPdfDataFormModal(); // BUKA FORM PELAPOR
+        openPdfDataFormModal();
     } else {
         currentAttempts++;
         document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
@@ -227,7 +229,7 @@ function submitPdfDataForm() {
     generatePDFReport(nama, nip);
 }
 
-// ========= GENERATE PDF REPORT =========
+// ========= GENERATE PDF REPORT (DIPERBAIKI: TIDAK TERPOTONG, MULTI HALAMAN) =========
 function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
 function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 function openPdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'flex'; }
@@ -238,48 +240,52 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
+    // Kop surat – menggunakan gambar dengan fallback base64 jika gagal (di sini kita gunakan URL)
     const kopSuratHTML = `
         <div style="margin-bottom: 30px; text-align: center;">
             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/kop-surat-resmi-dinas-peternakan-perikanan-situbondo.png" 
                  alt="Kop Surat Dinas Peternakan dan Perikanan Situbondo" 
-                 style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;">
+                 style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;"
+                 crossorigin="anonymous">
         </div>
     `;
 
+    // Konten laporan – diperbaiki layout agar lebih rapat dan rapi untuk PDF
     const pdfContent = `
-    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #333; padding: 20px;">
+    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 10px 15px;">
         ${kopSuratHTML}
         
-        <div style="text-align: center; margin-bottom: 30px;">
-            <h3 style="margin-bottom: 10px; font-size: 14px; font-weight: bold;">LAPORAN KEGIATAN</h3>
-            <h1 style="font-size: 16px; font-weight: bold; text-decoration: underline; color: #1e3a8a;">
-                KARYA BAKTI BERSIH PANTAI DESA KILENSARI<br>DERMAGA LAMA PANARUKAN
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h3 style="margin-bottom: 10px; font-size: 14px; font-weight: bold; text-transform: uppercase;">LAPORAN KEGIATAN</h3>
+            <h1 style="font-size: 16px; font-weight: bold; text-decoration: underline; color: #1e3a8a; margin-bottom: 5px;">
+                KARYA BAKTI BERSIH PANTAI DESA KILENSARI
             </h1>
+            <h2 style="font-size: 15px; font-weight: bold; color: #1e3a8a; margin-top: 0;">DERMAGA LAMA PANARUKAN</h2>
         </div>
         
-        <div style="margin-bottom: 30px;">
-            <h4 style="font-size:13px; font-weight:bold; margin-bottom:15px; color:#1e3a8a;">I. DASAR PELAKSANAAN</h4>
-            <p style="text-align:justify; margin-bottom:20px; font-size:12px; text-indent:30px;">
+        <div style="margin-bottom: 25px;">
+            <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">I. DASAR PELAKSANAAN</h4>
+            <p style="text-align:justify; margin-bottom:15px; font-size:12px; text-indent:30px;">
                 Surat Komando Distrik Militer 0823 Nomor <strong>B/99/II/2026</strong> tanggal 11 Februari 2026 perihal Permohonan Bantuan Personel, 
                 sebagai tindak lanjut Instruksi Presiden RI pada Rakornas Pusat dan Daerah serta Telegram Danrem 083/Bdj Nomor ST/108/2026.
             </p>
             
-            <h4 style="font-size:13px; font-weight:bold; margin-bottom:15px; color:#1e3a8a;">II. WAKTU DAN TEMPAT</h4>
-            <ul style="font-size:12px; line-height:1.7;">
+            <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">II. WAKTU DAN TEMPAT</h4>
+            <ul style="font-size:12px; line-height:1.6; padding-left: 20px;">
                 <li>Hari/Tanggal : Kamis, 12 Februari 2026</li>
                 <li>Waktu        : 06.00 WIB – selesai</li>
-                <li>Tempat       : Dermaga Lama Panarukan, Desa Kilensari, Kecamatan Panarukan</li>
+                <li>Tempat       : Dermaga Lama Panarukan, Desa Kilensari, Kecamatan Panarukan, Kabupaten Situbondo</li>
             </ul>
             
-            <h4 style="font-size:13px; font-weight:bold; margin-bottom:15px; color:#1e3a8a;">III. PERSONEL DAN MATERIIL</h4>
-            <ul style="font-size:12px; line-height:1.7;">
+            <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">III. PERSONEL DAN MATERIIL</h4>
+            <ul style="font-size:12px; line-height:1.6; padding-left: 20px;">
                 <li>Dinas Peternakan & Perikanan : 20 personel + Kabid Pemberdayaan Nelayan</li>
-                <li>Seluruh OPD Kab. Situbondo : masing-masing 20 personel (kecuali DLH 50, Dishub 10+5, Dinkes 20+tim)</li>
-                <li>Alat yang digunakan : sapu lidi, cangkul, sabit, mesin rumput, kantong sampah, 5 unit truk (DLH), unit ambulan (Dinkes)</li>
+                <li>Seluruh OPD Kab. Situbondo : masing-masing 20 personel (kecuali DLH 50, Dishub 10+5, Dinkes 20+tim medis)</li>
+                <li>Alat yang digunakan : sapu lidi, cangkul, sabit, mesin rumput, kantong sampah, 5 unit truk (DLH), 2 unit ambulan (Dinkes)</li>
             </ul>
             
-            <h4 style="font-size:13px; font-weight:bold; margin-bottom:15px; color:#1e3a8a;">IV. HASIL KEGIATAN</h4>
-            <p style="text-align:justify; font-size:12px; text-indent:30px;">
+            <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">IV. HASIL KEGIATAN</h4>
+            <p style="text-align:justify; font-size:12px; text-indent:30px; margin-bottom:15px;">
                 Kegiatan berjalan lancar dan tertib. Kawasan Dermaga Lama Panarukan yang sebelumnya tampak kumuh dan dipenuhi sampah 
                 serta rumput liar berhasil dibersihkan secara signifikan. Sinergi antara TNI, Polri, Pemerintah Daerah, dan masyarakat 
                 terjalin dengan sangat baik. Dinas Peternakan dan Perikanan turut serta membersihkan area pendaratan ikan dan memberikan 
@@ -287,7 +293,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
             </p>
         </div>
         
-        <div style="display: flex; justify-content: space-between; margin-top: 80px;">
+        <div style="display: flex; justify-content: space-between; margin-top: 60px;">
             <div style="width: 60%;">
                 <p style="margin-bottom:5px; font-size:12px;">Situbondo, ${formattedDate}</p>
                 <p style="font-weight:bold; font-size:12px; margin-top:40px;">Pelapor,</p>
@@ -298,12 +304,12 @@ function generatePDFReport(namaPelapor, nipPelapor) {
             <div style="width: 35%; text-align: right;">
                 <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); float:right;">
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=1e3a8a&bgcolor=ffffff" 
-                         alt="QR Code" style="width:70px; height:70px;">
+                         alt="QR Code" style="width:70px; height:70px;" crossorigin="anonymous">
                 </div>
                 <p style="font-size:9px; margin-top:5px; clear:both; text-align:right;">Scan untuk akses laporan</p>
             </div>
         </div>
-        <div style="margin-top:100px; border-top:1px solid #ddd; padding-top:15px;">
+        <div style="margin-top:80px; border-top:1px solid #ddd; padding-top:15px;">
             <div style="text-align:left; font-size:10px; color:#666;">
                 <p>Laporan resmi Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
                 <p>© ${currentDate.getFullYear()} – Dokumentasi Karya Bakti Kodim 0823</p>
@@ -317,25 +323,85 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     openPdfPreview();
 }
 
-// ========= DOWNLOAD PDF =========
+// ========= DOWNLOAD PDF – MULTI HALAMAN, TIDAK TERPOTONG =========
 async function downloadPDF() {
     showLoading();
     try {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
         const element = document.getElementById('pdfPreviewContent');
         if (!element) throw new Error('Preview tidak ditemukan');
-        const canvas = await html2canvas(element, { scale: 2, logging: false, useCORS: true, allowTaint: false });
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
+
+        // Atur lebar elemen agar sesuai A4 untuk capture (210mm)
+        const originalWidth = element.style.width;
+        element.style.width = '210mm';
+        element.style.padding = '10mm';
+        element.style.backgroundColor = 'white';
+
+        // Tunggu gambar selesai load (khususnya kop surat & QR)
+        await Promise.all(Array.from(element.getElementsByTagName('img')).map(img => {
+            if (img.complete) return;
+            return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+        }));
+
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff'
+        });
+
+        // Kembalikan style
+        element.style.width = originalWidth;
+        element.style.padding = '25px';
+
+        const imgWidth = 210; // mm
+        const pageHeight = 297; // mm
+        const margin = 15; // margin atas/bawah saat rendering
+        const maxHeight = pageHeight - margin * 2;
+
+        let imgHeight = (canvas.height * imgWidth) / canvas.width; // mm
+        let position = 0;
+        let pageCount = 1;
+
+        while (position < imgHeight) {
+            const canvasPage = document.createElement('canvas');
+            const ctx = canvasPage.getContext('2d');
+            const heightRatio = canvas.height / imgHeight;
+            const pageHeightPx = maxHeight * heightRatio;
+            const startY = position * heightRatio;
+            
+            canvasPage.width = canvas.width;
+            canvasPage.height = Math.min(pageHeightPx, canvas.height - startY);
+            
+            ctx.drawImage(canvas, 0, startY, canvas.width, canvasPage.height, 0, 0, canvas.width, canvasPage.height);
+            
+            const imgData = canvasPage.toDataURL('image/png');
+            
+            if (position > 0) doc.addPage();
+            doc.addImage(imgData, 'PNG', 0, margin, imgWidth, (canvasPage.height * imgWidth) / canvas.width, undefined, 'FAST');
+            
+            // Tambah nomor halaman
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Halaman ${pageCount}`, imgWidth - 20, pageHeight - 5);
+            
+            position += maxHeight;
+            pageCount++;
+        }
+
         doc.save(`Laporan_Karya_Bakti_Panarukan_${new Date().getTime()}.pdf`);
         hideLoading();
         closePdfPreview();
         alert('PDF berhasil diunduh!');
     } catch (err) {
-        console.error(err);
+        console.error('PDF Error:', err);
         hideLoading();
         alert('Gagal mengunduh PDF. Silakan coba lagi.');
     }
