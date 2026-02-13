@@ -1,7 +1,10 @@
 // ===== main.js – Semua fungsi dan event handler =====
 // TIDAK ADA PENGHAPUSAN FITUR, HANYA PENYEMPURNAAN
-// - QR code digenerate lokal (tidak bergantung API eksternal)
-// - Isi laporan PDF disesuaikan dengan artikel kegiatan
+// - QR code digenerate lokal dengan URL artikel yang benar
+// - Isi laporan PDF diselaraskan dengan artikel kegiatan
+// - QR code muncul di PDF (diperbaiki)
+// - Dihapus jabatan "Kepala Bidang..." di bawah NIP
+// - Ditambahkan ID dokumen resmi di footer PDF
 
 AOS.init({ duration: 800, once: true, offset: 100 });
 document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -229,34 +232,31 @@ function submitPdfDataForm() {
     generatePDFReport(nama, nip);
 }
 
-// ========= GENERATE QR CODE LOKAL =========
-function generateQRDataURL(text, size = 70) {
-    if (typeof qrcode === 'undefined') {
-        console.warn('QR Code library not loaded, menggunakan fallback placeholder.');
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f0f0f0';
-        ctx.fillRect(0, 0, size, size);
-        ctx.fillStyle = '#1e3a8a';
-        ctx.font = 'bold 10px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('QR', size/2, size/2);
-        return canvas.toDataURL('image/png');
+// ========= GENERATE QR CODE LOKAL (DIPERBAIKI) =========
+// URL spesifik untuk QR code sesuai permintaan
+const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari';
+
+function generateQRDataURL(text = REPORT_URL, size = 90) {
+    // Pastikan library qrcode-generator tersedia
+    if (typeof qrcode === 'undefined' || typeof qrcode !== 'function') {
+        console.warn('QR Code library tidak tersedia, menggunakan fallback.');
+        return generateFallbackQR(size);
     }
 
     try {
+        // Inisialisasi QR code dengan error correction level M (15%)
         const qr = qrcode(0, 'M');
         qr.addData(text);
         qr.make();
-        const cellSize = 4;
+
+        const cellSize = 6; // Lebih besar agar lebih jelas saat di-resize
         const qrSize = qr.getModuleCount() * cellSize;
         const canvas = document.createElement('canvas');
         canvas.width = qrSize;
         canvas.height = qrSize;
         const ctx = canvas.getContext('2d');
+        
+        // Gambar modul QR
         const modules = qr.getModules();
         for (let row = 0; row < modules.length; row++) {
             for (let col = 0; col < modules[row].length; col++) {
@@ -264,27 +264,44 @@ function generateQRDataURL(text, size = 70) {
                 ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
             }
         }
+
+        // Resize ke ukuran yang diinginkan
         const resizedCanvas = document.createElement('canvas');
         resizedCanvas.width = size;
         resizedCanvas.height = size;
         const resizedCtx = resizedCanvas.getContext('2d');
         resizedCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, size, size);
+        
         return resizedCanvas.toDataURL('image/png');
     } catch (e) {
         console.error('Gagal generate QR code:', e);
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f0f0f0';
-        ctx.fillRect(0, 0, size, size);
-        ctx.fillStyle = '#1e3a8a';
-        ctx.font = 'bold 10px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('QR', size/2, size/2);
-        return canvas.toDataURL('image/png');
+        return generateFallbackQR(size);
     }
+}
+
+function generateFallbackQR(size) {
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#1e3a8a';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('QR', size/2, size/2);
+    return canvas.toDataURL('image/png');
+}
+
+// ========= GENERATE ID DOKUMEN UNIK =========
+function generateDocumentId() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `KBK-${day}${month}${year}-${random}`;
 }
 
 // ========= GENERATE PDF REPORT (ISI DISELARASKAN DENGAN ARTIKEL) =========
@@ -298,7 +315,9 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    const qrDataURL = generateQRDataURL(window.location.href, 70);
+    // Generate QR code dengan URL yang sudah ditentukan
+    const qrDataURL = generateQRDataURL(REPORT_URL, 90);
+    const docId = generateDocumentId();
 
     const kopSuratHTML = `
         <div style="margin-bottom: 30px; text-align: center;">
@@ -309,7 +328,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
         </div>
     `;
 
-    // Konten PDF – persis dengan artikel website
+    // Konten PDF – persis dengan artikel website, tanpa jabatan di bawah NIP
     const pdfContent = `
     <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 10px 15px;">
         ${kopSuratHTML}
@@ -357,19 +376,20 @@ function generatePDFReport(namaPelapor, nipPelapor) {
                 <p style="font-weight:bold; font-size:12px; margin-top:40px;">Pelapor,</p>
                 <p style="margin-top:60px; font-size:12px; font-weight: bold;">${namaPelapor || '______________________'}</p>
                 <p style="font-size:11px; color: #555;">NIP. ${nipPelapor || '______________________'}</p>
-                <p style="margin-top:5px; font-size:12px;">Kepala Bidang Pemberdayaan Nelayan</p>
+                <!-- BARIS KEPALA BIDANG TELAH DIHAPUS sesuai permintaan -->
             </div>
             <div style="width: 35%; text-align: right;">
                 <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); float:right;">
-                    <img src="${qrDataURL}" alt="QR Code" style="width:70px; height:70px;">
+                    <img src="${qrDataURL}" alt="QR Code" style="width:90px; height:90px;">
                 </div>
-                <p style="font-size:9px; margin-top:5px; clear:both; text-align:right;">Scan untuk akses laporan</p>
+                <p style="font-size:9px; margin-top:5px; clear:both; text-align:right;">Scan untuk akses laporan daring</p>
             </div>
         </div>
         <div style="margin-top:80px; border-top:1px solid #ddd; padding-top:15px;">
             <div style="text-align:left; font-size:10px; color:#666;">
-                <p>Laporan resmi Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
-                <p>© ${currentDate.getFullYear()} – Dokumentasi Karya Bakti Kodim 0823</p>
+                <p><strong>Dokumen ini dicetak secara elektronik dan merupakan dokumen resmi.</strong></p>
+                <p>ID Verifikasi: ${docId} | Tanggal Cetak: ${formattedDate}</p>
+                <p>© ${currentDate.getFullYear()} – Dinas Peternakan & Perikanan Kabupaten Situbondo</p>
             </div>
         </div>
     </div>
@@ -399,8 +419,9 @@ async function downloadPDF() {
         element.style.padding = '10mm';
         element.style.backgroundColor = 'white';
 
+        // Tunggu semua gambar (termasuk QR code) selesai dimuat
         await Promise.all(Array.from(element.getElementsByTagName('img')).map(img => {
-            if (img.complete) return;
+            if (img.complete) return Promise.resolve();
             return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
         }));
 
@@ -469,3 +490,4 @@ document.getElementById('pdfDataFormModal').addEventListener('click', function(e
 document.getElementById('pdfPreviewModal').addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
 
 console.log("Kode hari ini:", generateSecurityCode());
+console.log("QR Code akan berisi URL:", REPORT_URL);
