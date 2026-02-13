@@ -65,6 +65,11 @@ function undo() {
         selectedImage = null;
         document.getElementById('imageResizeSlider').value = 100;
         document.getElementById('imageResizeValue').textContent = '100%';
+        // Pasang ulang listener drag & drop jika perlu
+        if (isEditMode) {
+            enableDragAndDrop();
+            previewDiv.addEventListener('click', handleImageSelection);
+        }
     } else {
         alert('Tidak ada yang dapat di-undo.');
     }
@@ -81,6 +86,10 @@ function redo() {
         selectedImage = null;
         document.getElementById('imageResizeSlider').value = 100;
         document.getElementById('imageResizeValue').textContent = '100%';
+        if (isEditMode) {
+            enableDragAndDrop();
+            previewDiv.addEventListener('click', handleImageSelection);
+        }
     } else {
         alert('Tidak ada yang dapat di-redo.');
     }
@@ -358,19 +367,17 @@ function openPdfPreview() {
     selectedImage = null;
     document.getElementById('imageResizeValue').textContent = '100%';
     document.getElementById('imageResizeSlider').value = 100;
-    // Simpan state awal untuk undo
-    if (isEditMode) {
-        historyStack = [];
-        historyIndex = -1;
+    // Reset history jika belum ada
+    if (historyStack.length === 0) {
         saveState();
     }
 }
 function closePdfPreview() { 
     document.getElementById('pdfPreviewModal').style.display = 'none';
-    if (isEditMode) toggleEditPreview();
+    if (isEditMode) toggleEditPreview(); // matikan mode edit saat preview ditutup
 }
 
-// ========= FITUR EDIT PREVIEW (DIPERBAIKI DENGAN FOKUS) =========
+// ========= FITUR EDIT PREVIEW (DIPERBAIKI) =========
 function toggleEditPreview() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     const btnEdit = document.getElementById('btnEditPreview');
@@ -379,34 +386,50 @@ function toggleEditPreview() {
     
     isEditMode = !isEditMode;
     if (isEditMode) {
+        // Aktifkan edit
         previewDiv.contentEditable = "true";
         previewDiv.classList.add('editing-mode');
-        // Fokuskan area dokumen agar siap diedit
+        // Fokus ke area dokumen
         previewDiv.focus();
+        // Ubah tampilan tombol
         btnEdit.innerHTML = '<i class="fas fa-lock me-2"></i>Selesai Edit';
         btnEdit.classList.remove('btn-warning');
         btnEdit.classList.add('btn-success');
         toolbar.classList.add('show');
+        
+        // Lindungi QR code dan footer
         protectQRCode();
-        // Aktifkan drag & drop untuk gambar
+        
+        // Aktifkan drag & drop
         enableDragAndDrop();
-        // Listener klik gambar
+        
+        // Listener untuk seleksi gambar
         previewDiv.addEventListener('click', handleImageSelection);
+        
+        // Listener untuk perubahan konten (simpan state)
+        previewDiv.addEventListener('input', function() {
+            saveState();
+        });
+        
         // Simpan state awal
         historyStack = [];
         historyIndex = -1;
         saveState();
-        // Listener untuk setiap perubahan (input)
-        previewDiv.addEventListener('input', saveState);
+        
     } else {
+        // Nonaktifkan edit
         previewDiv.contentEditable = "false";
         previewDiv.classList.remove('editing-mode');
         btnEdit.innerHTML = '<i class="fas fa-pencil-alt me-2"></i>Edit';
         btnEdit.classList.remove('btn-success');
         btnEdit.classList.add('btn-warning');
         toolbar.classList.remove('show');
+        
+        // Hapus listener
         previewDiv.removeEventListener('click', handleImageSelection);
         previewDiv.removeEventListener('input', saveState);
+        
+        // Nonaktifkan drag & drop
         disableDragAndDrop();
         selectedImage = null;
     }
@@ -575,14 +598,18 @@ function deleteSelectedImage() {
     saveState();
 }
 
-// ========= FUNGSI EDIT UMUM (DIPERBAIKI: FOKUSKAN PREVIEW) =========
+// ========= FUNGSI EDIT UMUM (DIPERBAIKI) =========
 function execEditCommand(command, value = null) {
     if (!isEditMode) {
         alert('Aktifkan mode edit terlebih dahulu.');
         return;
     }
-    document.getElementById('pdfPreviewContent').focus();
+    // Fokuskan ke elemen preview
+    const previewDiv = document.getElementById('pdfPreviewContent');
+    previewDiv.focus();
+    // Jalankan perintah
     document.execCommand(command, false, value);
+    // Simpan state setelah perubahan
     saveState();
 }
 
@@ -598,6 +625,9 @@ function setLineHeight(value) {
         span.style.lineHeight = value;
         span.appendChild(range.extractContents());
         range.insertNode(span);
+        // Hapus selection
+        selection.removeAllRanges();
+        selection.addRange(range);
         saveState();
     } else {
         alert('Silakan pilih paragraf yang ingin diatur spasi.');
@@ -660,9 +690,11 @@ function floatImage(direction) {
     if (direction === 'left') {
         selectedImage.style.marginRight = '15px';
         selectedImage.style.marginBottom = '10px';
+        selectedImage.style.marginLeft = '0';
     } else if (direction === 'right') {
         selectedImage.style.marginLeft = '15px';
         selectedImage.style.marginBottom = '10px';
+        selectedImage.style.marginRight = '0';
     } else {
         selectedImage.style.marginRight = '0';
         selectedImage.style.marginLeft = '0';
@@ -896,8 +928,11 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     else if (currentPaperSize === 'Legal') width = '216mm';
     previewDiv.style.width = width;
     
-    if (isEditMode) toggleEditPreview();
-    
+    // Jika mode edit aktif, matikan dulu lalu hidupkan ulang agar listener terpasang
+    if (isEditMode) {
+        toggleEditPreview(); // matikan
+    }
+    // Buka preview
     hideLoading();
     openPdfPreview();
 }
