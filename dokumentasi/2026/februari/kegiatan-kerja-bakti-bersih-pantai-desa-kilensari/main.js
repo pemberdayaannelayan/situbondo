@@ -1,23 +1,22 @@
 // ===== main.js – Semua fungsi dan event handler =====
-// DILARANG MENGHAPUS/MENGUBAH FITUR ESENSIAL. TELAH DITAMBAH FITUR FORM PELAPOR.
+// TIDAK ADA PENGHAPUSAN FITUR, HANYA PENYEMPURNAAN
 
-// ========= INISIALISASI =========
 AOS.init({ duration: 800, once: true, offset: 100 });
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-// Navbar scroll effect
+// ========= NAVBAR SCROLL EFFECT =========
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');
     if (window.scrollY > 50) {
-        navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+        navbar.style.boxShadow = '0 5px 20px rgba(0,0,0,0.08)';
+        navbar.style.backgroundColor = 'rgba(255,255,255,0.98)';
     } else {
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.08)';
-        navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        navbar.style.boxShadow = '0 2px 15px rgba(0,0,0,0.05)';
+        navbar.style.backgroundColor = 'rgba(255,255,255,0.98)';
     }
 });
 
-// Gallery modal click
+// ========= GALLERY MODAL =========
 const galleryItems = document.querySelectorAll('.gallery-item');
 galleryItems.forEach(item => {
     item.addEventListener('click', function() {
@@ -28,8 +27,8 @@ galleryItems.forEach(item => {
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content border-0">
                     <div class="modal-body p-0 position-relative">
-                        <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded">
-                        <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white" data-bs-dismiss="modal"></button>
+                        <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded" style="border-radius:16px !important;">
+                        <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white rounded-circle p-2" style="width:40px; height:40px;" data-bs-dismiss="modal"></button>
                     </div>
                 </div>
             </div>
@@ -42,7 +41,7 @@ galleryItems.forEach(item => {
     });
 });
 
-// Smooth scroll
+// ========= SMOOTH SCROLL =========
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
@@ -53,12 +52,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Scroll to top button
+// ========= SCROLL TO TOP BUTTON =========
 const scrollTopBtn = document.createElement('button');
 scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
 scrollTopBtn.className = 'btn btn-primary position-fixed bottom-3 end-3 rounded-circle shadow-lg';
-scrollTopBtn.style.width = '50px'; scrollTopBtn.style.height = '50px'; scrollTopBtn.style.zIndex = '1000'; scrollTopBtn.style.display = 'none';
-scrollTopBtn.style.background = 'linear-gradient(135deg, var(--orange-primary), #f59e0b)'; scrollTopBtn.style.border = 'none';
+scrollTopBtn.style.width = '50px'; scrollTopBtn.style.height = '50px'; scrollTopBtn.style.zIndex = '9999'; scrollTopBtn.style.display = 'none';
+scrollTopBtn.style.background = 'linear-gradient(135deg, #f97316, #f59e0b)'; scrollTopBtn.style.border = 'none';
+scrollTopBtn.style.bottom = '30px'; scrollTopBtn.style.right = '30px';
 document.body.appendChild(scrollTopBtn);
 window.addEventListener('scroll', function() {
     if (window.scrollY > 300) {
@@ -83,7 +83,7 @@ function copyLink() {
 document.getElementById('shareModal').addEventListener('click', function(e) { if (e.target === this) closeShareModal(); });
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeShareModal(); closePdfAuthModal(); closePdfPreview(); closePdfDataFormModal(); } });
 
-// ========= PDF AUTHORIZATION (KODE AKSES) =========
+// ========= PDF AUTHORIZATION =========
 let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
 const lockoutDuration = 5 * 60 * 1000;
 
@@ -149,8 +149,7 @@ function verifySecurityCode() {
     if (userInput === correctCode) {
         currentAttempts = 0;
         closePdfAuthModal();
-        // BUKA FORM DATA PELAPOR, BUKAN LANGSUNG GENERATE PDF
-        openPdfDataFormModal();
+        openPdfDataFormModal(); // BUKA FORM PELAPOR
     } else {
         currentAttempts++;
         document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
@@ -171,16 +170,14 @@ const style = document.createElement('style');
 style.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 10%,30%,50%,70%,90%{transform:translateX(-5px)} 20%,40%,60%,80%{transform:translateX(5px)} }`;
 document.head.appendChild(style);
 
-// ========= MODAL DATA PELAPOR (BARU) =========
+// ========= FORM DATA PELAPOR =========
 let captchaResult = 0;
 
 function openPdfDataFormModal() {
-    // Generate captcha sederhana (penjumlahan)
-    const num1 = Math.floor(Math.random() * 5) + 3; // 3-7
-    const num2 = Math.floor(Math.random() * 5) + 2; // 2-6
+    const num1 = Math.floor(Math.random() * 5) + 3;
+    const num2 = Math.floor(Math.random() * 5) + 2;
     captchaResult = num1 + num2;
     document.getElementById('captchaQuestion').innerHTML = `${num1} + ${num2} = ?`;
-    // Reset form
     document.getElementById('pdfDataForm').reset();
     document.getElementById('namaPelapor').classList.remove('is-invalid');
     document.getElementById('nipPelapor').classList.remove('is-invalid');
@@ -194,7 +191,6 @@ function closePdfDataFormModal() {
 }
 
 function submitPdfDataForm() {
-    // Validasi semua field
     const nama = document.getElementById('namaPelapor').value.trim();
     const nip = document.getElementById('nipPelapor').value.trim();
     const captchaAnswer = document.getElementById('captchaInput').value.trim();
@@ -227,12 +223,11 @@ function submitPdfDataForm() {
 
     if (!isValid) return;
 
-    // Jika valid, generate PDF dengan data pelapor
     closePdfDataFormModal();
     generatePDFReport(nama, nip);
 }
 
-// ========= GENERATE PDF REPORT (KOP SURAT GAMBAR, NAMA & NIP PELAPOR) =========
+// ========= GENERATE PDF REPORT =========
 function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
 function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 function openPdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'flex'; }
@@ -243,7 +238,6 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    // KOP SURAT MENGGUNAKAN GAMBAR (sesuai permintaan)
     const kopSuratHTML = `
         <div style="margin-bottom: 30px; text-align: center;">
             <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/kop-surat-resmi-dinas-peternakan-perikanan-situbondo.png" 
@@ -302,7 +296,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
                 <p style="margin-top:5px; font-size:12px;">Kepala Bidang Pemberdayaan Nelayan</p>
             </div>
             <div style="width: 35%; text-align: right;">
-                <div class="qr-code" style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); float:right;">
+                <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); float:right;">
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.href)}&color=1e3a8a&bgcolor=ffffff" 
                          alt="QR Code" style="width:70px; height:70px;">
                 </div>
@@ -331,7 +325,7 @@ async function downloadPDF() {
         const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         const element = document.getElementById('pdfPreviewContent');
         if (!element) throw new Error('Preview tidak ditemukan');
-        const canvas = await html2canvas(element, { scale: 2, logging: false, useCORS: true });
+        const canvas = await html2canvas(element, { scale: 2, logging: false, useCORS: true, allowTaint: false });
         const imgData = canvas.toDataURL('image/png');
         const imgWidth = 210;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
