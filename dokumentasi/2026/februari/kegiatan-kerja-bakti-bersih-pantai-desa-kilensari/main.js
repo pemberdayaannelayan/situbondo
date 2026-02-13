@@ -402,7 +402,7 @@ function execEditCommand(command, value = null) {
     saveState();
 }
 
-// ===== FUNGSI BARU: UKURAN FONT, JENIS FONT, WARNA FONT =====
+// ===== FUNGSI UNTUK MENERAPKAN STYLE KE TEKS TERPILIH =====
 function setFontSize(size) {
     if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
     applyStyleToSelection('fontSize', size + 'px');
@@ -676,7 +676,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     openPdfPreview();
 }
 
-// ========= DOWNLOAD PDF =========
+// ========= DOWNLOAD PDF (DENGAN SCALE 3 AGAR TAJAM) =========
 async function downloadPDF() {
     showLoading();
     try {
@@ -715,10 +715,12 @@ async function downloadPDF() {
             });
         }));
 
+        // Beri sedikit waktu agar font dan gambar siap
         await new Promise(resolve => setTimeout(resolve, 300));
 
+        // Gunakan scale 3 untuk hasil sangat tajam
         const canvas = await html2canvas(element, {
-            scale: 2,
+            scale: 3,          // dinaikkan dari 2 menjadi 3
             logging: false,
             useCORS: true,
             allowTaint: false,
