@@ -59,7 +59,7 @@ function undo() {
         const previewDiv = document.getElementById('pdfPreviewContent');
         previewDiv.innerHTML = historyStack[historyIndex];
         // Pastikan QR code tergambar ulang dan perlindungan aktif
-        drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 100);
+        drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300); // ukuran besar untuk ketajaman
         protectQRCode();
         // Reset selected image
         selectedImage = null;
@@ -76,7 +76,7 @@ function redo() {
         historyIndex++;
         const previewDiv = document.getElementById('pdfPreviewContent');
         previewDiv.innerHTML = historyStack[historyIndex];
-        drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 100);
+        drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300);
         protectQRCode();
         selectedImage = null;
         document.getElementById('imageResizeSlider').value = 100;
@@ -281,8 +281,8 @@ function initDropdownListener() {
     }
 }
 
-// ========= QR CODE CANVAS DRAW =========
-function drawQRCodeOnCanvas(canvasElementOrId, text, size = 100) {
+// ========= QR CODE CANVAS DRAW (UKURAN BESAR, WARNA BIRU TUA) =========
+function drawQRCodeOnCanvas(canvasElementOrId, text, size = 300) {
     let canvas;
     if (typeof canvasElementOrId === 'string') {
         canvas = document.getElementById(canvasElementOrId);
@@ -301,11 +301,11 @@ function drawQRCodeOnCanvas(canvasElementOrId, text, size = 100) {
         ctx.fillStyle = '#f0f0f0';
         ctx.fillRect(0, 0, size, size);
         ctx.fillStyle = '#1e3a8a';
-        ctx.font = 'bold 10px Arial';
+        ctx.font = 'bold ' + (size/20) + 'px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('QR Unavailable', size/2, size/2 - 10);
-        ctx.font = '8px Arial';
+        ctx.font = (size/30) + 'px Arial';
         ctx.fillText(text.substring(0, 22) + '...', size/2, size/2 + 15);
         return false;
     }
@@ -318,7 +318,7 @@ function drawQRCodeOnCanvas(canvasElementOrId, text, size = 100) {
         const cellSize = size / moduleCount;
         for (let row = 0; row < moduleCount; row++) {
             for (let col = 0; col < moduleCount; col++) {
-                ctx.fillStyle = qr.isDark(row, col) ? '#1e3a8a' : '#ffffff';
+                ctx.fillStyle = qr.isDark(row, col) ? '#1e3a8a' : '#ffffff'; // biru tua
                 ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
             }
         }
@@ -328,7 +328,7 @@ function drawQRCodeOnCanvas(canvasElementOrId, text, size = 100) {
         ctx.fillStyle = '#f0f0f0';
         ctx.fillRect(0, 0, size, size);
         ctx.fillStyle = '#1e3a8a';
-        ctx.font = 'bold 10px Arial';
+        ctx.font = 'bold ' + (size/20) + 'px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('Error', size/2, size/2);
@@ -648,6 +648,27 @@ function uploadImage() {
     };
 }
 
+// ========= FLOAT GAMBAR (WRAP TEXT) =========
+function floatImage(direction) {
+    if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
+    if (!selectedImage) { alert('Pilih gambar terlebih dahulu dengan mengkliknya.'); return; }
+    if (selectedImage.id === 'qrCodeCanvas' || selectedImage.closest('.pdf-footer')) { alert('QR Code tidak dapat diubah float-nya.'); return; }
+    selectedImage.style.float = direction;
+    // Tambahkan margin untuk jarak dengan teks
+    if (direction === 'left') {
+        selectedImage.style.marginRight = '15px';
+        selectedImage.style.marginBottom = '10px';
+    } else if (direction === 'right') {
+        selectedImage.style.marginLeft = '15px';
+        selectedImage.style.marginBottom = '10px';
+    } else {
+        selectedImage.style.marginRight = '0';
+        selectedImage.style.marginLeft = '0';
+        selectedImage.style.marginBottom = '0';
+    }
+    saveState();
+}
+
 // ========= ZOOM & PAPER SIZE =========
 function initEditControls() {
     const zoomSlider = document.getElementById('zoomSlider');
@@ -855,7 +876,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
                 <p>© ${currentDate.getFullYear()} – Dinas Peternakan & Perikanan Kabupaten Situbondo</p>
             </div>
             <div style="text-align:right;">
-                <canvas id="qrCodeCanvas" width="100" height="100" style="width:100px; height:100px; display:block; margin-bottom:5px;"></canvas>
+                <canvas id="qrCodeCanvas" width="300" height="300" style="width:100px; height:100px; display:block; margin-bottom:5px;"></canvas>
                 <p style="font-size:8px; margin:0;">Scan untuk akses laporan daring</p>
                 <p style="font-size:7px; color:#999; margin-top:2px;">${REPORT_URL}</p>
             </div>
@@ -866,7 +887,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     const previewDiv = document.getElementById('pdfPreviewContent');
     previewDiv.innerHTML = pdfContent;
     
-    drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 100);
+    drawQRCodeOnCanvas('qrCodeCanvas', REPORT_URL, 300); // ukuran 300px untuk ketajaman
     
     let width = '210mm';
     if (currentPaperSize === 'Letter') width = '216mm';
@@ -1024,6 +1045,7 @@ window.bringImageToFront = bringImageToFront;
 window.sendImageToBack = sendImageToBack;
 window.resizeSelectedImage = resizeSelectedImage;
 window.deleteSelectedImage = deleteSelectedImage;
+window.floatImage = floatImage;
 window.undo = undo;
 window.redo = redo;
 
