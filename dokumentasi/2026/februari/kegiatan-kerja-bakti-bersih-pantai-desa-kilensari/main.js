@@ -1,1092 +1,471 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    
-    <title>Kerja Bakti Bersih Pantai Desa Kilensari – Dinas Peternakan & Perikanan Situbondo</title>
-    
-    <meta name="description" content="Dinas Peternakan dan Perikanan Situbondo bersama Kodim 0823 serta seluruh OPD melaksanakan kerja bakti bersih pantai di Dermaga Lama Panarukan, Desa Kilensari, Kecamatan Panarukan, Kamis 12 Februari 2026.">
-    
-    <!-- Open Graph / Sosial Media -->
-    <meta property="og:title" content="Kerja Bakti Bersih Pantai Desa Kilensari – Dinas Peternakan & Perikanan Situbondo">
-    <meta property="og:description" content="20 personel Dinas Peternakan & Perikanan bersama Kodim 0823 dan seluruh OPD Kab. Situbondo gotong royong bersihkan kawasan Dermaga Lama Panarukan.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:url" content="https://www.dinasperikanansitubondo.com/kerja-bakti-kilensari">
-    <meta property="og:type" content="article">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Kerja Bakti Bersih Pantai Desa Kilensari">
-    <meta name="twitter:description" content="Dinas Peternakan & Perikanan Situbondo turut serta dalam Karya Bakti Kodim 0823 di Dermaga Lama Panarukan.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg">
-    
-    <!-- Bootstrap 5 CSS, Font Awesome, Google Fonts, AOS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
-    <!-- jsPDF & html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <!-- Library QR Code Generator (DITAMBAHKAN UNTUK QR LOKAL) -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    
-    <style>
-        /* ===== RESET & VARIABEL WARNA ===== */
-        :root {
-            --primary-blue: #1e3a8a;
-            --secondary-blue: #3b82f6;
-            --accent-blue: #60a5fa;
-            --light-blue: #eff6ff;
-            --teal: #0d9488;
-            --sea-green: #10b981;
-            --text-dark: #1f2937;
-            --text-gray: #6b7280;
-            --light-gray: #f9fafb;
-            --white: #ffffff;
-            --orange-primary: #f97316;
-            --orange-dark: #ea580c;
-            --orange-light: #ffedd5;
-        }
+// ===== main.js – Semua fungsi dan event handler =====
+// TIDAK ADA PENGHAPUSAN FITUR, HANYA PENYEMPURNAAN
+// - QR code digenerate lokal (tidak bergantung API eksternal)
+// - Isi laporan PDF disesuaikan dengan artikel kegiatan
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+AOS.init({ duration: 800, once: true, offset: 100 });
+document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text-gray);
-            line-height: 1.7;
-            background-color: var(--light-gray);
-            padding-top: 90px;
-        }
+// ========= NAVBAR SCROLL EFFECT =========
+window.addEventListener('scroll', function() {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.style.boxShadow = '0 5px 20px rgba(0,0,0,0.08)';
+        navbar.style.backgroundColor = 'rgba(255,255,255,0.98)';
+    } else {
+        navbar.style.boxShadow = '0 2px 15px rgba(0,0,0,0.05)';
+        navbar.style.backgroundColor = 'rgba(255,255,255,0.98)';
+    }
+});
 
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-
-        /* ===== NAVBAR ===== */
-        .navbar {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-            padding: 0.5rem 0;
-            transition: all 0.3s;
-        }
-
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .brand-logo {
-            height: 55px;
-            width: auto;
-        }
-
-        .naik-kelas-logo {
-            height: 50px;
-            width: auto;
-        }
-
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-            border-right: 2px solid rgba(249,115,22,0.3);
-            padding-right: 15px;
-            margin-right: 5px;
-        }
-
-        .brand-line-1, .brand-line-2 {
-            margin: 0;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #f97316;
-            letter-spacing: 0.5px;
-        }
-        .brand-line-2 {
-            font-size: 1.1rem;
-        }
-        .brand-line-3 {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--primary-blue);
-            letter-spacing: 0.8px;
-            margin-top: 2px;
-        }
-
-        .nav-link {
-            color: var(--text-dark) !important;
-            font-weight: 500;
-            padding: 0.5rem 1rem !important;
-            margin: 0 0.2rem;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
-        .nav-link:hover {
-            color: var(--orange-primary) !important;
-            background-color: rgba(249,115,22,0.08);
-        }
-        .nav-link.active {
-            color: var(--orange-primary) !important;
-            background-color: rgba(249,115,22,0.12);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--orange-primary), #f59e0b);
-            border: none;
-            transition: 0.3s;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #ea580c, #d97706);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(249,115,22,0.25);
-        }
-
-        /* ===== HERO SECTION ===== */
-        .hero-section {
-            background: linear-gradient(135deg, rgba(30,58,138,0.9), rgba(249,115,22,0.8)),
-                        url('https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/2026/februari/foto-bersama-saat-upel-sebelum-kegiatan-dipimpin-kodim.jpeg');
-            background-size: cover;
-            background-position: center 30%;
-            color: white;
-            padding: 80px 0 60px;
-            position: relative;
-            margin-top: -90px;
-        }
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 80px;
-            background: linear-gradient(to bottom, transparent, var(--light-gray));
-        }
-        .hero-section h1 {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .badge-category {
-            background: rgba(249,115,22,0.25);
-            color: white;
-            padding: 8px 24px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid rgba(255,255,255,0.3);
-            backdrop-filter: blur(5px);
-        }
-        .info-card {
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.25);
-            transition: 0.3s;
-            height: 100%;
-        }
-        .info-card:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-5px);
-        }
-        .info-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(249,115,22,0.3);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            color: white;
-            font-size: 1.8rem;
-        }
-
-        /* ===== CONTENT BOX ===== */
-        .section-title {
-            position: relative;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-            color: var(--primary-blue);
-        }
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 70px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--orange-primary), #fbbf24);
-            border-radius: 4px;
-        }
-        .content-box {
-            background: white;
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
-            margin-bottom: 30px;
-            border: 1px solid #edf2f7;
-            transition: 0.3s;
-        }
-        .content-box:hover {
-            box-shadow: 0 15px 40px rgba(249,115,22,0.08);
-            transform: translateY(-3px);
-        }
-        .highlight-box {
-            background: linear-gradient(145deg, #fff7ed, #ffedd5);
-            border-left: 6px solid var(--orange-primary);
-            padding: 25px;
-            border-radius: 16px;
-            margin: 25px 0;
-        }
-
-        /* ===== SPEAKER CARDS ===== */
-        .speakers-section {
-            padding: 80px 0;
-            background: #f8fafc;
-        }
-        .speaker-card {
-            background: white;
-            border-radius: 24px;
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.05);
-            height: 100%;
-            transition: 0.4s;
-            border: 1px solid #e9eef2;
-        }
-        .speaker-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 25px 50px rgba(249,115,22,0.12);
-        }
-        .speaker-image {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            overflow: hidden;
-            margin: 0 auto 20px;
-            border: 5px solid var(--orange-light);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .speaker-name {
-            color: var(--primary-blue);
-            font-size: 1.3rem;
-            margin-bottom: 8px;
-        }
-        .speaker-role {
-            color: var(--orange-primary);
-            background: rgba(249,115,22,0.1);
-            padding: 6px 18px;
-            border-radius: 50px;
-            display: inline-block;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        /* ===== GALLERY ===== */
-        .gallery-item {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            height: 260px;
-            margin-bottom: 25px;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            transition: 0.4s;
-        }
-        .gallery-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 35px rgba(249,115,22,0.2);
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: 0.6s;
-        }
-        .gallery-item:hover img {
-            transform: scale(1.1);
-        }
-
-        /* ===== MODULE CARD ===== */
-        .module-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px 20px;
-            height: 100%;
-            border: 1px solid #e2e8f0;
-            transition: 0.3s;
-            text-align: center;
-        }
-        .module-card:hover {
-            border-color: var(--orange-primary);
-            box-shadow: 0 15px 30px rgba(249,115,22,0.1);
-        }
-        .module-icon {
-            width: 70px;
-            height: 70px;
-            background: #fff7ed;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: var(--orange-primary);
-            font-size: 2rem;
-        }
-
-        /* ===== BUTTONS ===== */
-        .btn-download, .btn-share {
-            padding: 14px 32px;
-            border-radius: 14px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.3s;
-            font-size: 1rem;
-            border: none;
-            text-decoration: none;
-        }
-        .btn-download {
-            background: linear-gradient(135deg, var(--orange-primary), #f59e0b);
-            color: white;
-            box-shadow: 0 8px 18px rgba(249,115,22,0.2);
-        }
-        .btn-download:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 14px 28px rgba(249,115,22,0.3);
-            color: white;
-        }
-        .btn-share {
-            background: white;
-            color: var(--orange-primary);
-            border: 2px solid var(--orange-primary);
-        }
-        .btn-share:hover {
-            background: var(--orange-primary);
-            color: white;
-            transform: translateY(-4px);
-        }
-
-        /* ===== FOOTER – TIDAK BERANTAKAN, RAPIH ===== */
-        .footer {
-            background: var(--primary-blue);
-            color: white;
-            padding: 70px 0 30px;
-            margin-top: 80px;
-        }
-        .footer h5 {
-            color: white;
-            margin-bottom: 25px;
-            position: relative;
-            display: inline-block;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        .footer h5::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 45px;
-            height: 3px;
-            background: var(--orange-primary);
-            border-radius: 3px;
-        }
-        .footer-links a {
-            color: #d1d5db;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 12px;
-            transition: 0.3s;
-            font-size: 0.95rem;
-        }
-        .footer-links a:hover {
-            color: white;
-            padding-left: 8px;
-        }
-        .social-icons a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            color: white;
-            margin-right: 12px;
-            transition: 0.3s;
-        }
-        .social-icons a:hover {
-            background: var(--orange-primary);
-            transform: translateY(-3px);
-        }
-        .footer-contact-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
-        .footer-contact-icon {
-            background: rgba(255,255,255,0.1);
-            padding: 10px;
-            border-radius: 12px;
-            margin-right: 15px;
-            color: var(--orange-primary);
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        /* ===== MODAL ===== */
-        .pdf-auth-modal, .pdf-data-form-modal, .pdf-preview-modal, .share-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(5px);
-            z-index: 999999;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-        }
-        .pdf-auth-content, .pdf-data-form-content, .pdf-preview-content, .share-modal-content {
-            background: white;
-            border-radius: 24px;
-            padding: 35px;
-            max-width: 550px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-        }
-        .pdf-preview-content {
-            max-width: 800px;
-        }
-        .pdf-preview {
-            background: white;
-            padding: 25px;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            font-family: 'Times New Roman', Times, serif;
-            line-height: 1.5;
-        }
-        /* Kop surat gambar di PDF preview */
-        .pdf-preview img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto 20px;
-        }
-        .captcha-box {
-            background: #f1f5f9;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            text-align: center;
-            letter-spacing: 4px;
-        }
-        .form-control.is-invalid {
-            border-color: #dc3545;
-            background-image: none;
-        }
-        .btn-orange {
-            background: linear-gradient(135deg, var(--orange-primary), #f59e0b);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-        .btn-orange:hover {
-            background: linear-gradient(135deg, #ea580c, #d97706);
-            color: white;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 992px) {
-            body { padding-top: 80px; }
-            .navbar-brand { gap: 10px; }
-            .brand-logo { height: 45px; }
-            .naik-kelas-logo { height: 40px; }
-            .brand-line-1, .brand-line-2 { font-size: 0.95rem; }
-            .brand-line-3 { font-size: 0.65rem; }
-            .hero-section h1 { font-size: 2rem; }
-        }
-        @media (max-width: 768px) {
-            .navbar-brand { justify-content: center; }
-            .brand-text { border-right: none; padding-right: 0; }
-            .hero-section { padding: 60px 0 40px; }
-            .hero-section h1 { font-size: 1.8rem; }
-            .content-box { padding: 25px; }
-            .footer .row > div { margin-bottom: 30px; }
-        }
-        @media (max-width: 576px) {
-            .btn-download, .btn-share { width: 100%; justify-content: center; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- ===== LOADING OVERLAY ===== -->
-    <div class="loading-overlay" id="loadingOverlay" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999999; justify-content:center; align-items:center;">
-        <div style="width:50px; height:50px; border:5px solid #f3f3f3; border-top:5px solid var(--orange-primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
-    </div>
-    <style>
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-
-    <!-- ===== SHARE MODAL ===== -->
-    <div class="share-modal" id="shareModal">
-        <div class="share-modal-content">
-            <h3 class="section-title">Bagikan Kegiatan Ini</h3>
-            <p class="text-muted">Pilih opsi untuk membagikan informasi kegiatan:</p>
-            <div class="share-buttons" style="display: flex; flex-direction: column; gap: 15px; margin-top: 25px;">
-                <button class="share-btn whatsapp" onclick="shareToWhatsApp()" style="display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; border-radius:14px; background:#25D366; color:white; border:none; font-weight:600;">
-                    <i class="fab fa-whatsapp"></i> Bagikan ke WhatsApp
-                </button>
-                <button class="share-btn copy" onclick="copyLink()" style="display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; border-radius:14px; background:var(--secondary-blue); color:white; border:none; font-weight:600;">
-                    <i class="fas fa-copy"></i> Salin Link
-                </button>
+// ========= GALLERY MODAL =========
+const galleryItems = document.querySelectorAll('.gallery-item');
+galleryItems.forEach(item => {
+    item.addEventListener('click', function() {
+        const imgSrc = this.querySelector('img').src;
+        const imgAlt = this.querySelector('img').alt;
+        const modalHTML = `
+        <div class="modal fade" id="imageModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0">
+                    <div class="modal-body p-0 position-relative">
+                        <img src="${imgSrc}" alt="${imgAlt}" class="img-fluid w-100 rounded" style="border-radius:16px !important;">
+                        <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white rounded-circle p-2" style="width:40px; height:40px;" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
             </div>
-            <button class="btn btn-secondary mt-4 w-100" onclick="closeShareModal()" style="padding:12px; border-radius:12px;">Tutup</button>
         </div>
-    </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        modal.show();
+        document.getElementById('imageModal').addEventListener('hidden.bs.modal', function() { this.remove(); });
+    });
+});
 
-    <!-- ===== PDF AUTH MODAL (KODE AKSES) ===== -->
-    <div class="pdf-auth-modal" id="pdfAuthModal">
-        <div class="pdf-auth-content">
-            <div style="width:80px; height:80px; background:var(--orange-light); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; color:var(--orange-primary); font-size:2rem;">
-                <i class="fas fa-lock"></i>
+// ========= SMOOTH SCROLL =========
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if(targetId === '#') return;
+        const targetElement = document.querySelector(targetId);
+        if(targetElement) window.scrollTo({ top: targetElement.offsetTop - 100, behavior: 'smooth' });
+    });
+});
+
+// ========= SCROLL TO TOP BUTTON =========
+const scrollTopBtn = document.createElement('button');
+scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+scrollTopBtn.className = 'btn btn-primary position-fixed bottom-3 end-3 rounded-circle shadow-lg';
+scrollTopBtn.style.width = '50px'; scrollTopBtn.style.height = '50px'; scrollTopBtn.style.zIndex = '9999'; scrollTopBtn.style.display = 'none';
+scrollTopBtn.style.background = 'linear-gradient(135deg, #f97316, #f59e0b)'; scrollTopBtn.style.border = 'none';
+scrollTopBtn.style.bottom = '30px'; scrollTopBtn.style.right = '30px';
+document.body.appendChild(scrollTopBtn);
+window.addEventListener('scroll', function() {
+    if (window.scrollY > 300) {
+        scrollTopBtn.style.display = 'flex'; scrollTopBtn.style.alignItems = 'center'; scrollTopBtn.style.justifyContent = 'center';
+    } else { scrollTopBtn.style.display = 'none'; }
+});
+scrollTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+// ========= SHARE FUNCTIONS =========
+function openShareModal() { document.getElementById('shareModal').style.display = 'flex'; }
+function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
+function shareToWhatsApp() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('Dinas Peternakan & Perikanan Situbondo turut serta dalam Karya Bakti Bersih Pantai Desa Kilensari, Kamis 12 Februari 2026. Simak selengkapnya:');
+    window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+}
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link berhasil disalin!'); closeShareModal();
+    }).catch(() => alert('Gagal menyalin link.'));
+}
+document.getElementById('shareModal').addEventListener('click', function(e) { if (e.target === this) closeShareModal(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeShareModal(); closePdfAuthModal(); closePdfPreview(); closePdfDataFormModal(); } });
+
+// ========= PDF AUTHORIZATION =========
+let maxAttempts = 3, currentAttempts = 0, lockoutTime = 0;
+const lockoutDuration = 5 * 60 * 1000;
+
+function generateSecurityCode() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2,'0');
+    const month = String(now.getMonth()+1).padStart(2,'0');
+    const year = now.getFullYear();
+    return day + month + year; // DDMMYYYY
+}
+
+function isLockedOut() {
+    if (lockoutTime > 0) {
+        const timeRemaining = lockoutTime - new Date().getTime();
+        if (timeRemaining > 0) {
+            const minutes = Math.floor(timeRemaining / 60000);
+            const seconds = Math.floor((timeRemaining % 60000) / 1000);
+            return { locked: true, message: `Akses terkunci. Coba lagi dalam ${minutes} menit ${seconds} detik.` };
+        } else { lockoutTime = 0; currentAttempts = 0; }
+    }
+    return { locked: false, message: '' };
+}
+
+let isPasswordVisible = false;
+function togglePasswordVisibility() {
+    const input = document.getElementById('securityCodeInput');
+    const icon = document.getElementById('passwordToggle').querySelector('i');
+    isPasswordVisible = !isPasswordVisible;
+    input.type = isPasswordVisible ? 'text' : 'password';
+    icon.className = isPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye';
+}
+
+function openPdfAuthModal() {
+    const lock = isLockedOut();
+    if (lock.locked) { alert(lock.message); return; }
+    document.getElementById('securityCodeInput').value = '';
+    document.getElementById('errorMessage').style.display = 'none';
+    document.getElementById('securityCodeInput').classList.remove('is-invalid');
+    document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
+    document.getElementById('pdfAuthModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('securityCodeInput').focus(), 300);
+}
+
+function closePdfAuthModal() { document.getElementById('pdfAuthModal').style.display = 'none'; }
+
+function verifySecurityCode() {
+    const lock = isLockedOut();
+    if (lock.locked) {
+        document.getElementById('errorText').textContent = lock.message;
+        document.getElementById('errorMessage').style.display = 'block';
+        return;
+    }
+    const userInput = document.getElementById('securityCodeInput').value;
+    const correctCode = generateSecurityCode();
+    const errorMsg = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    const inputEl = document.getElementById('securityCodeInput');
+    
+    if (!userInput || userInput.length !== 8) {
+        errorText.textContent = 'Kode harus 8 digit angka.';
+        errorMsg.style.display = 'block'; inputEl.classList.add('is-invalid'); inputEl.focus(); return;
+    }
+    if (userInput === correctCode) {
+        currentAttempts = 0;
+        closePdfAuthModal();
+        openPdfDataFormModal();
+    } else {
+        currentAttempts++;
+        document.getElementById('attemptsLeft').textContent = maxAttempts - currentAttempts;
+        if (currentAttempts >= maxAttempts) {
+            lockoutTime = new Date().getTime() + lockoutDuration;
+            errorText.textContent = 'Terlalu banyak gagal. Akses terkunci 5 menit.';
+        } else {
+            errorText.textContent = `Kode salah. Percobaan ${currentAttempts} dari ${maxAttempts}.`;
+        }
+        errorMsg.style.display = 'block'; inputEl.classList.add('is-invalid');
+        inputEl.style.animation = 'none'; setTimeout(() => inputEl.style.animation = 'shake 0.5s', 10);
+        inputEl.value = ''; inputEl.focus();
+    }
+}
+
+// Style shake
+const style = document.createElement('style');
+style.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 10%,30%,50%,70%,90%{transform:translateX(-5px)} 20%,40%,60%,80%{transform:translateX(5px)} }`;
+document.head.appendChild(style);
+
+// ========= FORM DATA PELAPOR =========
+let captchaResult = 0;
+
+function openPdfDataFormModal() {
+    const num1 = Math.floor(Math.random() * 5) + 3;
+    const num2 = Math.floor(Math.random() * 5) + 2;
+    captchaResult = num1 + num2;
+    document.getElementById('captchaQuestion').innerHTML = `${num1} + ${num2} = ?`;
+    document.getElementById('pdfDataForm').reset();
+    document.getElementById('namaPelapor').classList.remove('is-invalid');
+    document.getElementById('nipPelapor').classList.remove('is-invalid');
+    document.getElementById('captchaInput').classList.remove('is-invalid');
+    document.getElementById('captchaError').style.display = 'none';
+    document.getElementById('pdfDataFormModal').style.display = 'flex';
+}
+
+function closePdfDataFormModal() {
+    document.getElementById('pdfDataFormModal').style.display = 'none';
+}
+
+function submitPdfDataForm() {
+    const nama = document.getElementById('namaPelapor').value.trim();
+    const nip = document.getElementById('nipPelapor').value.trim();
+    const captchaAnswer = document.getElementById('captchaInput').value.trim();
+    const agreement = document.getElementById('agreementCheck').checked;
+
+    let isValid = true;
+    if (!nama) {
+        document.getElementById('namaPelapor').classList.add('is-invalid');
+        isValid = false;
+    } else { document.getElementById('namaPelapor').classList.remove('is-invalid'); }
+
+    if (!nip || nip.length !== 18) {
+        document.getElementById('nipPelapor').classList.add('is-invalid');
+        isValid = false;
+    } else { document.getElementById('nipPelapor').classList.remove('is-invalid'); }
+
+    if (!captchaAnswer || parseInt(captchaAnswer) !== captchaResult) {
+        document.getElementById('captchaInput').classList.add('is-invalid');
+        document.getElementById('captchaError').style.display = 'block';
+        isValid = false;
+    } else {
+        document.getElementById('captchaInput').classList.remove('is-invalid');
+        document.getElementById('captchaError').style.display = 'none';
+    }
+
+    if (!agreement) {
+        alert('Anda harus menyetujui pernyataan sebelum dapat mengunduh laporan.');
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
+    closePdfDataFormModal();
+    generatePDFReport(nama, nip);
+}
+
+// ========= GENERATE QR CODE LOKAL =========
+function generateQRDataURL(text, size = 70) {
+    if (typeof qrcode === 'undefined') {
+        console.warn('QR Code library not loaded, menggunakan fallback placeholder.');
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = '#1e3a8a';
+        ctx.font = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('QR', size/2, size/2);
+        return canvas.toDataURL('image/png');
+    }
+
+    try {
+        const qr = qrcode(0, 'M');
+        qr.addData(text);
+        qr.make();
+        const cellSize = 4;
+        const qrSize = qr.getModuleCount() * cellSize;
+        const canvas = document.createElement('canvas');
+        canvas.width = qrSize;
+        canvas.height = qrSize;
+        const ctx = canvas.getContext('2d');
+        const modules = qr.getModules();
+        for (let row = 0; row < modules.length; row++) {
+            for (let col = 0; col < modules[row].length; col++) {
+                ctx.fillStyle = modules[row][col] ? '#1e3a8a' : '#ffffff';
+                ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+            }
+        }
+        const resizedCanvas = document.createElement('canvas');
+        resizedCanvas.width = size;
+        resizedCanvas.height = size;
+        const resizedCtx = resizedCanvas.getContext('2d');
+        resizedCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, size, size);
+        return resizedCanvas.toDataURL('image/png');
+    } catch (e) {
+        console.error('Gagal generate QR code:', e);
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = '#1e3a8a';
+        ctx.font = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('QR', size/2, size/2);
+        return canvas.toDataURL('image/png');
+    }
+}
+
+// ========= GENERATE PDF REPORT (ISI DISELARASKAN DENGAN ARTIKEL) =========
+function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
+function openPdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'flex'; }
+function closePdfPreview() { document.getElementById('pdfPreviewModal').style.display = 'none'; }
+
+function generatePDFReport(namaPelapor, nipPelapor) {
+    showLoading();
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const qrDataURL = generateQRDataURL(window.location.href, 70);
+
+    const kopSuratHTML = `
+        <div style="margin-bottom: 30px; text-align: center;">
+            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/kop-surat-resmi-dinas-peternakan-perikanan-situbondo.png" 
+                 alt="Kop Surat Dinas Peternakan dan Perikanan Situbondo" 
+                 style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;"
+                 crossorigin="anonymous">
+        </div>
+    `;
+
+    // Konten PDF – persis dengan artikel website
+    const pdfContent = `
+    <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.5; color: #333; padding: 10px 15px;">
+        ${kopSuratHTML}
+        
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h3 style="margin-bottom: 10px; font-size: 14px; font-weight: bold; text-transform: uppercase;">LAPORAN KEGIATAN</h3>
+            <h1 style="font-size: 16px; font-weight: bold; text-decoration: underline; color: #1e3a8a; margin-bottom: 5px;">
+                KARYA BAKTI BERSIH PANTAI DESA KILENSARI
+            </h1>
+            <h2 style="font-size: 15px; font-weight: bold; color: #1e3a8a; margin-top: 0;">DERMAGA LAMA PANARUKAN</h2>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">I. DASAR PELAKSANAAN</h4>
+            <p style="text-align:justify; margin-bottom:15px; font-size:12px; text-indent:30px;">
+                Kegiatan ini dilaksanakan berdasarkan Surat Komando Distrik Militer 0823 Nomor <strong>B/99/II/2026</strong> tanggal 11 Februari 2026 perihal Permohonan Bantuan Personel dalam rangka Gerakan ASRI (Aman, Sehat, Resik, Indah). Kegiatan juga merupakan tindak lanjut Instruksi Presiden RI pada Rakornas Pusat dan Daerah serta Telegram Danrem 083/Bdj Nomor ST/108/2026.
+            </p>
+            
+            <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">II. WAKTU DAN TEMPAT</h4>
+            <ul style="font-size:12px; line-height:1.6; padding-left: 20px;">
+                <li>Hari/Tanggal : Kamis, 12 Februari 2026</li>
+                <li>Waktu        : 06.00 WIB – selesai</li>
+                <li>Tempat       : Dermaga Lama Panarukan, Desa Kilensari, Kecamatan Panarukan, Kabupaten Situbondo</li>
+            </ul>
+            
+            <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">III. PERSONEL DAN MATERIIL</h4>
+            <ul style="font-size:12px; line-height:1.6; padding-left: 20px;">
+                <li>Dinas Peternakan & Perikanan : 20 personel dipimpin Kabid Pemberdayaan Nelayan, Sugeng Purwo Priyanto, S.E., M.M.</li>
+                <li>Seluruh OPD Kab. Situbondo : masing-masing 20 personel (kecuali DLH 50, Dishub 10+5, Dinkes 20+tim medis)</li>
+                <li>Alat yang digunakan : sapu lidi, cangkul, sabit, mesin rumput, kantong sampah, 5 unit truk (DLH), 2 unit ambulan (Dinkes)</li>
+            </ul>
+            
+            <h4 style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#1e3a8a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">IV. HASIL KEGIATAN</h4>
+            <p style="text-align:justify; font-size:12px; text-indent:30px; margin-bottom:15px;">
+                Kegiatan berjalan lancar dan tertib. Kawasan Dermaga Lama Panarukan yang sebelumnya tampak kumuh dan dipenuhi sampah serta rumput liar berhasil dibersihkan secara signifikan. Sinergi antara TNI, Polri, Pemerintah Daerah, dan masyarakat terjalin dengan sangat baik. Dinas Peternakan dan Perikanan turut serta membersihkan area pendaratan ikan dan memberikan edukasi singkat kepada nelayan sekitar.
+            </p>
+            <p style="text-align:justify; font-size:12px; text-indent:30px;">
+                Kegiatan ditutup dengan apel bersama yang dipimpin oleh Kepala Staf Kodim 0823. Apresiasi disampaikan kepada seluruh pihak, khususnya Dinas Peternakan dan Perikanan yang telah menunjukkan dedikasi tinggi dalam mendukung program kebersihan lingkungan pesisir.
+            </p>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 60px;">
+            <div style="width: 60%;">
+                <p style="margin-bottom:5px; font-size:12px;">Situbondo, ${formattedDate}</p>
+                <p style="font-weight:bold; font-size:12px; margin-top:40px;">Pelapor,</p>
+                <p style="margin-top:60px; font-size:12px; font-weight: bold;">${namaPelapor || '______________________'}</p>
+                <p style="font-size:11px; color: #555;">NIP. ${nipPelapor || '______________________'}</p>
+                <p style="margin-top:5px; font-size:12px;">Kepala Bidang Pemberdayaan Nelayan</p>
             </div>
-            <h3 class="section-title text-center">Otorisasi Dokumen</h3>
-            <div class="alert alert-warning d-flex align-items-center">
-                <i class="fas fa-exclamation-triangle me-2"></i> Anda akan mengakses laporan resmi kegiatan.
-            </div>
-            <div class="info-message bg-light p-3 rounded-3 mb-4" style="border-left:4px solid var(--orange-primary);">
-                <i class="fas fa-info-circle me-2 text-orange"></i> <strong>Kode Keamanan:</strong> Hubungi petugas Dinas Peternakan & Perikanan.
-            </div>
-            <div class="mb-4">
-                <label for="securityCodeInput" class="form-label fw-bold">Masukkan Kode Keamanan (8 digit angka)</label>
-                <div style="position:relative;">
-                    <input type="password" class="form-control form-control-lg" id="securityCodeInput" placeholder="Masukkan Password" maxlength="8" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                    <button type="button" class="password-toggle" id="passwordToggle" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); background:none; border:none; color:#6b7280; cursor:pointer;">
-                        <i class="fas fa-eye"></i>
-                    </button>
+            <div style="width: 35%; text-align: right;">
+                <div style="background:white; padding:5px; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1); float:right;">
+                    <img src="${qrDataURL}" alt="QR Code" style="width:70px; height:70px;">
                 </div>
-                <div class="error-message text-danger mt-2" id="errorMessage" style="display:none;">
-                    <i class="fas fa-times-circle me-1"></i><span id="errorText">Kode salah.</span>
-                </div>
+                <p style="font-size:9px; margin-top:5px; clear:both; text-align:right;">Scan untuk akses laporan</p>
             </div>
-            <div class="attempts-counter mb-3 text-muted"><i class="fas fa-shield-alt me-2"></i>Percobaan tersisa: <span id="attemptsLeft">3</span></div>
-            <div class="d-flex justify-content-between gap-3">
-                <button class="btn btn-secondary w-50" onclick="closePdfAuthModal()" style="padding:12px; border-radius:12px;">Batal</button>
-                <button class="btn btn-orange w-50" onclick="verifySecurityCode()">Verifikasi</button>
+        </div>
+        <div style="margin-top:80px; border-top:1px solid #ddd; padding-top:15px;">
+            <div style="text-align:left; font-size:10px; color:#666;">
+                <p>Laporan resmi Dinas Peternakan dan Perikanan Kabupaten Situbondo</p>
+                <p>© ${currentDate.getFullYear()} – Dokumentasi Karya Bakti Kodim 0823</p>
             </div>
         </div>
     </div>
-
-    <!-- ===== MODAL FORM DATA PELAPOR ===== -->
-    <div class="pdf-data-form-modal" id="pdfDataFormModal">
-        <div class="pdf-data-form-content">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="section-title mb-0">Lengkapi Data Pelapor</h3>
-                <button class="btn-close" onclick="closePdfDataFormModal()"></button>
-            </div>
-            <p class="text-muted mb-4" style="font-size:0.95rem;">Isi data dengan benar. Nama dan NIP akan tercetak otomatis di laporan PDF.</p>
-            <form id="pdfDataForm" onsubmit="event.preventDefault(); submitPdfDataForm();">
-                <div class="mb-3">
-                    <label for="namaPelapor" class="form-label fw-bold">Nama Lengkap <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control form-control-lg" id="namaPelapor" placeholder="Contoh: SUGENG PURWO PRIYANTO, S.E., M.M." required>
-                    <div class="invalid-feedback">Nama harus diisi.</div>
-                </div>
-                <div class="mb-3">
-                    <label for="nipPelapor" class="form-label fw-bold">NIP <span class="text-danger">* (18 digit angka)</span></label>
-                    <input type="text" class="form-control form-control-lg" id="nipPelapor" placeholder="18 digit NIP" maxlength="18" pattern="\d{18}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
-                    <div class="invalid-feedback">NIP harus 18 digit angka.</div>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Verifikasi Keamanan (Captcha)</label>
-                    <div class="captcha-box mb-2" id="captchaQuestion">2 + 3 = ?</div>
-                    <input type="text" class="form-control" id="captchaInput" placeholder="Masukkan hasil penjumlahan" required>
-                    <div id="captchaError" class="text-danger small mt-2" style="display: none;">Captcha salah, coba lagi.</div>
-                </div>
-                <div class="mb-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="agreementCheck" required style="cursor:pointer;">
-                        <label class="form-check-label" for="agreementCheck" style="font-size:0.9rem; cursor:pointer;">
-                            Saya menyatakan bahwa data yang saya masukkan adalah benar dan saya bertanggung jawab penuh atas penggunaan dokumen ini sesuai dengan ketentuan peraturan perundang-undangan yang berlaku. <span class="text-danger">(Wajib)</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between gap-3">
-                    <button type="button" class="btn btn-secondary w-50" onclick="closePdfDataFormModal()">Batal</button>
-                    <button type="submit" class="btn btn-orange w-50" id="btnGenerateLaporan">Generate PDF</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ===== MODAL PREVIEW PDF ===== -->
-    <div class="pdf-preview-modal" id="pdfPreviewModal">
-        <div class="pdf-preview-content">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="section-title mb-0">Pratinjau Laporan PDF</h3>
-                <button class="btn-close" onclick="closePdfPreview()"></button>
-            </div>
-            <div class="pdf-preview" id="pdfPreviewContent" style="background:white; padding:25px; border-radius:16px;">
-                <!-- konten akan diisi javascript -->
-            </div>
-            <div class="d-flex justify-content-between mt-4 gap-3">
-                <button class="btn btn-secondary w-50" onclick="closePdfPreview()" style="padding:12px; border-radius:12px;">Tutup</button>
-                <button class="btn btn-orange w-50" onclick="downloadPDF()">Download PDF</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-3" href="#">
-                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/LOGO%20KABUPATEN%20SITUBONDO.png" alt="Logo Pemerintah Kabupaten Situbondo" class="brand-logo">
-                <div class="brand-text d-flex flex-column">
-                    <h5 class="brand-line-1">DINAS PETERNAKAN</h5>
-                    <h5 class="brand-line-2">DAN PERIKANAN</h5>
-                    <span class="brand-line-3">KABUPATEN SITUBONDO</span>
-                </div>
-                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/naikkelas.png" alt="Situbondo Naik Kelas" class="naik-kelas-logo">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <i class="fas fa-bars" style="color:var(--orange-primary);"></i>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="https://www.dinasperikanansitubondo.com">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://www.dinasperikanansitubondo.com/kegiatan">Kegiatan Lainnya</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Karya Bakti</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://www.dinasperikanansitubondo.com/simpadan">SIMPADAN</a></li>
-                    <li class="nav-item ms-2">
-                        <a href="https://www.dinasperikanansitubondo.com#aduan" class="btn btn-primary" style="background: linear-gradient(135deg, var(--orange-primary), #f59e0b); border: none; padding: 10px 24px; border-radius: 12px;">
-                            <i class="fas fa-phone-alt me-2"></i>Hubungi Kami
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- ===== HERO SECTION ===== -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 mx-auto text-center">
-                    <span class="badge-category mb-4"><i class="fas fa-broom"></i> KARYA BAKTI – GERAKAN ASRI</span>
-                    <h1 data-aos="fade-up" class="mb-4">Kerja Bakti Bersih Pantai Desa Kilensari, Kecamatan Panarukan</h1>
-                    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100" style="color:rgba(255,255,255,0.95);">
-                        Dinas Peternakan dan Perikanan Situbondo bersama Kodim 0823 serta seluruh OPD Kabupaten Situbondo 
-                        melaksanakan karya bakti pembersihan kawasan Dermaga Lama Panarukan, sebagai wujud sinergi TNI-Pemerintah 
-                        dalam mewujudkan lingkungan yang bersih, sehat, dan indah.
-                    </p>
-                    <div class="row g-4" data-aos="fade-up" data-aos-delay="200">
-                        <div class="col-md-4">
-                            <div class="info-card">
-                                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
-                                <h5 class="text-white mb-2">Tanggal</h5>
-                                <p class="text-white mb-0">12 Februari 2026</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="info-card">
-                                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                                <h5 class="text-white mb-2">Lokasi</h5>
-                                <p class="text-white mb-0">Dermaga Lama Panarukan</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="info-card">
-                                <div class="info-icon"><i class="fas fa-users"></i></div>
-                                <h5 class="text-white mb-2">Keterlibatan</h5>
-                                <p class="text-white mb-0">17 OPD + TNI-Polri</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="content-box" data-aos="fade-up">
-                        <h2 class="section-title">Sinergi TNI dan Pemerintah Daerah dalam Gerakan ASRI</h2>
-                        <p>Pada hari Kamis, 12 Februari 2026, bertempat di kawasan Dermaga Lama Panarukan, Desa Kilensari, Kecamatan Panarukan, 
-                            telah dilaksanakan kegiatan Karya Bakti dalam rangka Gerakan ASRI (Aman, Sehat, Resik, Indah). Kegiatan ini merupakan 
-                            tindak lanjut Instruksi Presiden RI pada Rakornas Pusat dan Daerah serta Surat Telegram Danrem 083/Bdj Nomor ST/108/2026.</p>
-                        <div class="highlight-box">
-                            <h5><i class="fas fa-envelope-open-text" style="color:var(--orange-primary);"></i> Surat Perintah Kodim 0823</h5>
-                            <p class="mb-0">Kegiatan ini dilaksanakan berdasarkan Surat Komando Distrik Militer 0823 Nomor <strong>B/99/II/2026</strong> tanggal 11 Februari 2026 perihal Permohonan Bantuan Personel.</p>
-                        </div>
-                        <p>Dinas Peternakan dan Perikanan Kabupaten Situbondo turut berpartisipasi dengan mengerahkan <strong>20 personel</strong> yang dipimpin langsung oleh <strong>Kepala Bidang Pemberdayaan Nelayan, Bapak SUGENG PURWO PRIYANTO, S.E., M.M.</strong> beserta staf.</p>
-                    </div>
-                    <div class="content-box" data-aos="fade-up" data-aos-delay="100">
-                        <h2 class="section-title">Kolaborasi Pentahelix: TNI, Pemda, dan Masyarakat</h2>
-                        <p>Gerakan ASRI di Dermaga Lama Panarukan menjadi simbol nyata kolaborasi antar institusi. Berdasarkan surat Kodim 0823, total personel yang dikerahkan dari masing-masing OPD adalah 20 orang, kecuali Dinas Lingkungan Hidup (50 orang), Dinas Kesehatan (20 orang + tim medis), dan Dinas Perhubungan (10 orang + 5 personel bantu lalin).</p>
-                        <div class="highlight-box">
-                            <h5><i class="fas fa-clipboard-list" style="color:var(--orange-primary);"></i> Kontribusi Dinas Peternakan & Perikanan</h5>
-                            <ul class="mb-0">
-                                <li>20 personel dipimpin Kabid Pemberdayaan Nelayan</li>
-                                <li>Fokus pembersihan area pendaratan ikan dan dermaga</li>
-                                <li>Edukasi kepada nelayan tentang kebersihan lingkungan</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="content-box" data-aos="fade-left">
-                        <h2 class="section-title">Pejabat & Perwakilan</h2>
-                        <div class="d-flex align-items-center mb-4 p-3 rounded-3" style="background:#fff7ed;">
-                            <div style="width:60px; height:60px; background:var(--orange-primary); border-radius:16px; display:flex; align-items:center; justify-content:center; color:white; font-size:1.8rem; margin-right:15px;">
-                                <i class="fas fa-user-tie"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-1" style="color:var(--primary-blue); font-size:1.1rem;">SUGENG PURWO PRIYANTO, S.E., M.M.</h5>
-                                <p class="text-muted mb-0">Kabid Pemberdayaan Nelayan</p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center p-3 rounded-3" style="background:#eff6ff;">
-                            <div style="width:60px; height:60px; background:var(--secondary-blue); border-radius:16px; display:flex; align-items:center; justify-content:center; color:white; font-size:1.8rem; margin-right:15px;">
-                                <i class="fas fa-shield"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-1" style="color:var(--primary-blue); font-size:1.1rem;">Kepala Staf Kodim 0823</h5>
-                                <p class="text-muted mb-0">Penanggung Jawab</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== MODULES SECTION ===== -->
-    <section class="modules-section" style="padding: 60px 0; background: #f8fafc;">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="section-title d-inline-block">Dimensi Kegiatan Karya Bakti</h2>
-                    <p class="text-muted mt-3">Nilai-nilai strategis di balik gotong royong bersih pantai</p>
-                </div>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6" data-aos="fade-up">
-                    <div class="module-card">
-                        <div class="module-icon"><i class="fas fa-leaf"></i></div>
-                        <h4>Aspek Lingkungan</h4>
-                        <p class="text-muted">Pembersihan ekosistem pesisir, pengurangan sampah plastik.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="module-card">
-                        <div class="module-icon"><i class="fas fa-hand-holding-heart"></i></div>
-                        <h4>Aspek Sosial</h4>
-                        <p class="text-muted">Memperkuat hubungan sipil-militer, kebersamaan ASN.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="module-card">
-                        <div class="module-icon"><i class="fas fa-gavel"></i></div>
-                        <h4>Aspek Legal</h4>
-                        <p class="text-muted">Pelaksanaan instruksi Presiden dan surat perintah Kodim 0823.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="module-card">
-                        <div class="module-icon"><i class="fas fa-fish"></i></div>
-                        <h4>Aspek Ekonomi</h4>
-                        <p class="text-muted">Dukungan terhadap sektor kelautan dan perikanan.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== SPEAKERS SECTION ===== -->
-    <section class="speakers-section">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="section-title d-inline-block">Pemimpin dan Penggerak Kegiatan</h2>
-                    <p class="text-muted mt-3">Tokoh kunci di balik suksesnya karya bakti</p>
-                </div>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6" data-aos="fade-up">
-                    <div class="speaker-card">
-                        <div class="speaker-image">
-                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-sebelum-kegiatan.jpeg" alt="Kabid Pemberdayaan Nelayan" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=SUGENG+PRIYANTO&background=1e3a8a&color=fff&size=400';">
-                        </div>
-                        <h3 class="speaker-name">SUGENG PURWO PRIYANTO, S.E., M.M.</h3>
-                        <p class="speaker-role">Kepala Bidang Pemberdayaan Nelayan</p>
-                        <p class="speaker-desc text-muted">Memimpin 20 personel Dinas Peternakan dan Perikanan.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="speaker-card">
-                        <div class="speaker-image">
-                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-arahan-komandan-kodim.jpeg" alt="Kodim 0823" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=Kodim+0823&background=3b82f6&color=fff&size=400';">
-                        </div>
-                        <h3 class="speaker-name">Kepala Staf Kodim 0823</h3>
-                        <p class="speaker-role">Penanggung Jawab Kegiatan</p>
-                        <p class="speaker-desc text-muted">Memimpin apel pagi dan pengarahan teknis.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="speaker-card">
-                        <div class="speaker-image">
-                            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-1.jpeg" alt="Nelayan" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=Nelayan+Kilensari&background=60a5fa&color=fff&size=400';">
-                        </div>
-                        <h3 class="speaker-name">Masyarakat Nelayan</h3>
-                        <p class="speaker-role">Desa Kilensari</p>
-                        <p class="speaker-desc text-muted">Turut serta dalam pembersihan dermaga.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== GALLERY SECTION ===== -->
-    <section class="gallery-section" style="padding: 60px 0; background: white;">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="section-title d-inline-block">Dokumentasi Karya Bakti</h2>
-                    <p class="text-muted mt-3">Momen kebersamaan di Dermaga Lama Panarukan</p>
-                </div>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6" data-aos="fade-up">
-                    <div class="gallery-item">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-sebelum-kegiatan.jpeg" alt="Foto bersama sebelum kegiatan">
-                        <div class="gallery-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:20px; color:white; opacity:0; transition:0.3s;">
-                            <h6 class="mb-0">Kesiapan Personel</h6>
-                            <small>Sebelum apel</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="gallery-item">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg" alt="Foto bersama selesai kegiatan">
-                        <div class="gallery-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:20px; color:white; opacity:0; transition:0.3s;">
-                            <h6 class="mb-0">Usai Gotong Royong</h6>
-                            <small>Kebersamaan dengan Kodim</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="gallery-item">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-arahan-komandan-kodim.jpeg" alt="Arahan Komandan Kodim">
-                        <div class="gallery-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:20px; color:white; opacity:0; transition:0.3s;">
-                            <h6 class="mb-0">Arahan Kegiatan</h6>
-                            <small>Kodim 0823</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up">
-                    <div class="gallery-item">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-upel-sebelum-kegiatan-dipimpin-kodim.jpeg" alt="Apel pagi">
-                        <div class="gallery-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:20px; color:white; opacity:0; transition:0.3s;">
-                            <h6 class="mb-0">Apel Pagi</h6>
-                            <small>Dipimpin Kodim</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="gallery-item">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-1.jpeg" alt="Proses kerja bakti 1">
-                        <div class="gallery-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:20px; color:white; opacity:0; transition:0.3s;">
-                            <h6 class="mb-0">Pembersihan Area</h6>
-                            <small>Dermaga</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="gallery-item">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-2.jpeg" alt="Proses kerja bakti 2">
-                        <div class="gallery-overlay" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding:20px; color:white; opacity:0; transition:0.3s;">
-                            <h6 class="mb-0">Gotong Royong</h6>
-                            <small>Semua unsur</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== VIDEO SECTION ===== -->
-    <section class="video-section" style="padding: 60px 0; background: #f8fafc;">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="section-title d-inline-block">Video Dokumentasi Karya Bakti</h2>
-                    <p class="text-muted mt-3">Liputan singkat suasana kerja bakti</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-10 mx-auto" data-aos="fade-up">
-                    <div style="position:relative; padding-bottom:56.25%; border-radius:24px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
-                        <iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/ltIf0lYdyxU?si=RKRoGNfVE3xNI7yX" title="Video Karya Bakti" allowfullscreen></iframe>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== ACTION BUTTONS ===== -->
-    <section class="action-buttons" style="padding: 60px 0; background: white;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="mb-4" style="color:var(--primary-blue);">Akses Laporan dan Bagikan Kegiatan</h2>
-                    <div class="d-flex flex-wrap justify-content-center gap-3">
-                        <button class="btn-download" onclick="openPdfAuthModal()"><i class="fas fa-download me-2"></i>Download Laporan (PDF)</button>
-                        <button class="btn-share" onclick="openShareModal()"><i class="fas fa-share-alt me-2"></i>Bagikan Kegiatan Ini</button>
-                        <a href="https://www.dinasperikanansitubondo.com/kegiatan" class="btn-share"><i class="fas fa-images me-2"></i>Kegiatan Lainnya</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== FOOTER – DIPERBAIKI, RAPIH, TIDAK BERANTAKAN ===== -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row g-5">
-                <!-- Kolom 1: Logo dan Profil Dinas -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="d-flex flex-column">
-                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/logo-header-footer-website-dinas-peternakan-perikanan.png" 
-                             alt="Dinas Peternakan & Perikanan Situbondo" 
-                             style="height: 90px; width: auto; margin-bottom: 20px; align-self: flex-start;">
-                        <h5 style="color: white; margin-bottom: 15px; font-size: 1.1rem;">Dinas Peternakan & Perikanan</h5>
-                        <p style="color: #d1d5db; font-size: 0.9rem; line-height: 1.6;">
-                            Pemerintah Kabupaten Situbondo, Jawa Timur. Berkomitmen mewujudkan peternakan dan perikanan yang maju, mandiri, dan berkelanjutan.
-                        </p>
-                        <div class="social-icons mt-3">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-youtube"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Kolom 2: Tautan Cepat -->
-                <div class="col-lg-2 col-md-6">
-                    <h5>Tautan Cepat</h5>
-                    <div class="footer-links mt-4">
-                        <a href="https://www.dinasperikanansitubondo.com"><i class="fas fa-home me-2"></i>Beranda</a>
-                        <a href="https://www.dinasperikanansitubondo.com/simpadan"><i class="fas fa-mobile-alt me-2"></i>SIMPADAN</a>
-                        <a href="https://www.dinasperikanansitubondo.com/kegiatan"><i class="fas fa-images me-2"></i>Kegiatan</a>
-                        <a href="https://situbondokab.go.id/"><i class="fas fa-university me-2"></i>Pemkab Situbondo</a>
-                        <a href="https://www.dinasperikanansitubondo.com#aduan"><i class="fas fa-headset me-2"></i>Pengaduan</a>
-                    </div>
-                </div>
-                <!-- Kolom 3: Kontak -->
-                <div class="col-lg-3 col-md-6">
-                    <h5>Kontak Kami</h5>
-                    <div class="mt-4">
-                        <div class="footer-contact-item">
-                            <div class="footer-contact-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <div>
-                                <span class="d-block text-white fw-bold">Alamat Kantor</span>
-                                <small class="text-light">Jl. PB Sudirman No.77 C, Situbondo, Jawa Timur</small>
-                            </div>
-                        </div>
-                        <div class="footer-contact-item">
-                            <div class="footer-contact-icon">
-                                <i class="fab fa-whatsapp"></i>
-                            </div>
-                            <div>
-                                <span class="d-block text-white fw-bold">WhatsApp Admin</span>
-                                <small class="text-light">0878 6561 4222</small>
-                            </div>
-                        </div>
-                        <div class="footer-contact-item">
-                            <div class="footer-contact-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div>
-                                <span class="d-block text-white fw-bold">Email</span>
-                                <small class="text-light">info@dinasperikanansitubondo.com</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Kolom 4: Peta / Jam Operasional -->
-                <div class="col-lg-3 col-md-6">
-                    <h5>Jam Pelayanan</h5>
-                    <div class="mt-4">
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="footer-contact-icon" style="background: rgba(249,115,22,0.15);">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div>
-                                <span class="d-block text-white fw-bold">Senin – Kamis</span>
-                                <small class="text-light">07:30 – 16:00 WIB</small>
-                                <span class="d-block text-white fw-bold mt-2">Jumat</span>
-                                <small class="text-light">07:30 – 11:00 WIB</small>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-2">
-                            <span class="text-light" style="font-size: 0.85rem;">
-                                <i class="fas fa-dove me-1" style="color: var(--orange-primary);"></i> 
-                                #SitubondoNaikKelas
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr class="bg-light my-5" style="opacity:0.2;">
-            <div class="text-center text-light">
-                <p class="mb-2">&copy; <span id="currentYear">2026</span> Dinas Peternakan & Perikanan Kabupaten Situbondo. Hak Cipta Dilindungi.</p>
-                <small>Dibuat dengan <i class="fas fa-heart" style="color:var(--orange-primary);"></i> untuk Masyarakat Situbondo</small>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS & AOS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    `;
     
-    <!-- Main JavaScript (sudah diperbaiki dengan QR code lokal) -->
-    <script src="main.js"></script>
-</body>
-</html>
+    document.getElementById('pdfPreviewContent').innerHTML = pdfContent;
+    hideLoading();
+    openPdfPreview();
+}
+
+// ========= DOWNLOAD PDF (MULTI HALAMAN, TIDAK TERPOTONG) =========
+async function downloadPDF() {
+    showLoading();
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        const element = document.getElementById('pdfPreviewContent');
+        if (!element) throw new Error('Preview tidak ditemukan');
+
+        const originalWidth = element.style.width;
+        element.style.width = '210mm';
+        element.style.padding = '10mm';
+        element.style.backgroundColor = 'white';
+
+        await Promise.all(Array.from(element.getElementsByTagName('img')).map(img => {
+            if (img.complete) return;
+            return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+        }));
+
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff'
+        });
+
+        element.style.width = originalWidth;
+        element.style.padding = '25px';
+
+        const imgWidth = 210; // mm
+        const pageHeight = 297; // mm
+        const margin = 15;
+        const maxHeight = pageHeight - margin * 2;
+
+        let imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let position = 0;
+        let pageCount = 1;
+
+        while (position < imgHeight) {
+            const canvasPage = document.createElement('canvas');
+            const ctx = canvasPage.getContext('2d');
+            const heightRatio = canvas.height / imgHeight;
+            const pageHeightPx = maxHeight * heightRatio;
+            const startY = position * heightRatio;
+            
+            canvasPage.width = canvas.width;
+            canvasPage.height = Math.min(pageHeightPx, canvas.height - startY);
+            
+            ctx.drawImage(canvas, 0, startY, canvas.width, canvasPage.height, 0, 0, canvas.width, canvasPage.height);
+            
+            const imgData = canvasPage.toDataURL('image/png');
+            
+            if (position > 0) doc.addPage();
+            doc.addImage(imgData, 'PNG', 0, margin, imgWidth, (canvasPage.height * imgWidth) / canvas.width, undefined, 'FAST');
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Halaman ${pageCount}`, imgWidth - 20, pageHeight - 5);
+            
+            position += maxHeight;
+            pageCount++;
+        }
+
+        doc.save(`Laporan_Karya_Bakti_Kilensari_${new Date().getTime()}.pdf`);
+        hideLoading();
+        closePdfPreview();
+        alert('PDF berhasil diunduh!');
+    } catch (err) {
+        console.error('PDF Error:', err);
+        hideLoading();
+        alert('Gagal mengunduh PDF. Silakan coba lagi.');
+    }
+}
+
+// ========= EVENT LISTENERS =========
+document.getElementById('passwordToggle').addEventListener('click', togglePasswordVisibility);
+document.getElementById('securityCodeInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') verifySecurityCode(); });
+document.getElementById('pdfAuthModal').addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
+document.getElementById('securityCodeInput').addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
+document.getElementById('pdfDataFormModal').addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
+document.getElementById('pdfPreviewModal').addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
+
+console.log("Kode hari ini:", generateSecurityCode());
