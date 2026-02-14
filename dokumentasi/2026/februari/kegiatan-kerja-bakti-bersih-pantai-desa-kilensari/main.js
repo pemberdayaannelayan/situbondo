@@ -786,25 +786,28 @@ function showWelcomeNotification() {
         notif.style.display = 'none';
         sessionStorage.setItem('welcomeShown', 'true');
         
-        // Ganti dengan URL audio yang sesuai untuk kegiatan
-        const audio = new Audio('https://od.lk/s/MzVfNjY0ODYzNjlf/kegiatan-kerja-bakti-pantai-panaruka-bidangpn.mp3');
-        audio.play().catch(error => {
-            console.warn('Gagal memutar audio:', error);
-            alert('Maaf, audio tidak dapat diputar. Mungkin terjadi masalah jaringan atau format tidak didukung.');
-        });
+        const audioContainer = document.getElementById('audioPlayerContainer');
+        const audio = document.getElementById('audioPlayer');
+        if (audioContainer && audio) {
+            audioContainer.style.display = 'block';
+            // Coba putar audio (hanya berhasil jika ada interaksi pengguna)
+            audio.play().catch(error => {
+                console.warn('Gagal memutar audio:', error);
+                alert('Maaf, audio tidak dapat diputar. Mungkin terjadi masalah jaringan atau format tidak didukung.');
+            });
+        }
     });
 }
 
 // ========= CLOSE AUDIO PLAYER =========
 function closeAudioPlayer() {
     const container = document.getElementById('audioPlayerContainer');
+    const audio = document.getElementById('audioPlayer');
     if (container) {
         container.style.display = 'none';
-        const iframe = container.querySelector('iframe');
-        if (iframe) {
-            let src = iframe.src;
-            src = src.replace(/([?&])autoplay=1&?/, '$1').replace(/[?&]$/, '');
-            iframe.src = src;
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
         }
     }
 }
