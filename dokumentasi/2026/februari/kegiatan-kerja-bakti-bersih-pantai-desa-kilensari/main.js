@@ -795,13 +795,13 @@ function showWelcomeNotification() {
         sessionStorage.setItem('welcomeShown', 'true');
     });
     
-    // Tombol "Iya, Putar Audio"
+    // Tombol "Iya, Putar Audio" — dengan tautan baru
     document.getElementById('playAudioButton').addEventListener('click', function() {
         notif.style.display = 'none';
         sessionStorage.setItem('welcomeShown', 'true');
         
-        // Buat elemen audio dan putar
-        const audio = new Audio('https://voca.ro/19oJEdzKDZHZ');
+        // Buat elemen audio dan putar menggunakan tautan OpenDrive
+        const audio = new Audio('https://od.lk/s/MzVfNjY0ODYzNjlf/kegiatan-kerja-bakti-pantai-panaruka-bidangpn.mp3');
         audio.play().catch(error => {
             console.warn('Gagal memutar audio:', error);
             alert('Maaf, audio tidak dapat diputar. Mungkin terjadi masalah jaringan atau format tidak didukung.');
