@@ -778,6 +778,37 @@ async function downloadPDF() {
     }
 }
 
+// ========= NOTIFIKASI AWAL (AUDIO) =========
+function showWelcomeNotification() {
+    // Cek apakah sudah pernah ditampilkan di sesi ini
+    if (sessionStorage.getItem('welcomeShown')) return;
+    
+    const notif = document.getElementById('welcomeNotification');
+    if (!notif) return;
+    
+    // Tampilkan notifikasi
+    notif.style.display = 'flex';
+    
+    // Tombol "Nanti Saja"
+    document.getElementById('laterButton').addEventListener('click', function() {
+        notif.style.display = 'none';
+        sessionStorage.setItem('welcomeShown', 'true');
+    });
+    
+    // Tombol "Iya, Putar Audio"
+    document.getElementById('playAudioButton').addEventListener('click', function() {
+        notif.style.display = 'none';
+        sessionStorage.setItem('welcomeShown', 'true');
+        
+        // Buat elemen audio dan putar
+        const audio = new Audio('https://voca.ro/19oJEdzKDZHZ');
+        audio.play().catch(error => {
+            console.warn('Gagal memutar audio:', error);
+            alert('Maaf, audio tidak dapat diputar. Mungkin terjadi masalah jaringan atau format tidak didukung.');
+        });
+    });
+}
+
 // ========= EVENT LISTENERS =========
 document.addEventListener('DOMContentLoaded', function() {
     const selectEl = document.getElementById('selectNamaPelapor');
@@ -797,6 +828,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('pdfAuthModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfAuthModal(); });
     document.getElementById('pdfDataFormModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
     document.getElementById('pdfPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
+    
+    // Panggil notifikasi awal
+    showWelcomeNotification();
 });
 
 // ========= EXPOSE FUNCTIONS KE GLOBAL =========
