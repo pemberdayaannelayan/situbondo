@@ -29,6 +29,10 @@ const REPORT_URL = 'https://www.dinasperikanansitubondo.com/dokumentasi/2026/feb
 let currentPaperSize = 'A4';
 let currentZoom = 100;
 
+// Variabel untuk menyimpan data laporan terakhir
+let currentDocId = '';
+let currentReportTitle = '';
+
 // ========= UNDO / REDO HISTORY =========
 let historyStack = [];
 let historyIndex = -1;
@@ -355,7 +359,7 @@ function closePdfPreview() {
     if (isEditMode) toggleEditPreview();
 }
 
-// ========= FITUR EDIT PREVIEW (DENGAN FONT SIZE, FAMILY, COLOR) =========
+// ========= FITUR EDIT PREVIEW =========
 function toggleEditPreview() {
     const previewDiv = document.getElementById('pdfPreviewContent');
     const btnEdit = document.getElementById('btnEditPreview');
@@ -402,7 +406,6 @@ function execEditCommand(command, value = null) {
     saveState();
 }
 
-// ===== FUNGSI UNTUK MENERAPKAN STYLE KE TEKS TERPILIH =====
 function setFontSize(size) {
     if (!isEditMode) { alert('Aktifkan mode edit terlebih dahulu.'); return; }
     applyStyleToSelection('fontSize', size + 'px');
@@ -435,28 +438,23 @@ function applyStyleToSelection(styleProp, value) {
         return;
     }
     
-    // Pastikan pilihan berada di dalam preview
     const previewDiv = document.getElementById('pdfPreviewContent');
     if (!previewDiv.contains(range.commonAncestorContainer)) {
         alert('Pilihan teks harus berada di dalam area preview.');
         return;
     }
     
-    // Buat span dengan style yang diinginkan
     const span = document.createElement('span');
     span.style[styleProp] = value;
     
     try {
-        // Coba surround konten yang dipilih dengan span
         range.surroundContents(span);
     } catch (e) {
-        // Jika gagal (karena range tidak sepenuhnya mencakup node), gunakan metode alternatif
         const fragment = range.extractContents();
         span.appendChild(fragment);
         range.insertNode(span);
     }
     
-    // Bersihkan seleksi dan pilih span yang baru untuk memudahkan pengeditan lanjutan
     selection.removeAllRanges();
     const newRange = document.createRange();
     newRange.selectNodeContents(span);
@@ -465,27 +463,10 @@ function applyStyleToSelection(styleProp, value) {
     saveState();
 }
 
-// ========= ZOOM & PAPER SIZE =========
+// ========= PAPER SIZE =========
 function initEditControls() {
-    const zoomSlider = document.getElementById('zoomSlider');
-    const zoomValue = document.getElementById('zoomValue');
     const paperSelect = document.getElementById('paperSizeSelect');
     const previewDiv = document.getElementById('pdfPreviewContent');
-    
-    if (zoomSlider) {
-        zoomSlider.value = currentZoom;
-        zoomValue.textContent = currentZoom + '%';
-        previewDiv.style.transform = `scale(${currentZoom / 100})`;
-        previewDiv.style.transformOrigin = 'top left';
-        
-        zoomSlider.oninput = function() {
-            const val = this.value;
-            currentZoom = val;
-            zoomValue.textContent = val + '%';
-            previewDiv.style.transform = `scale(${val / 100})`;
-            previewDiv.style.transformOrigin = 'top left';
-        };
-    }
     
     if (paperSelect) {
         paperSelect.value = currentPaperSize;
@@ -581,6 +562,15 @@ function generatePDFReport(namaPelapor, nipPelapor) {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     const docId = generateDocumentId();
+    currentDocId = docId; // simpan untuk nama file
+
+    // Ambil judul laporan dari elemen tersembunyi #reportTitle
+    const titleElement = document.getElementById('reportTitle');
+    let rawTitle = titleElement ? titleElement.innerText.trim() : "Karya Bakti Bersih Pantai Desa Kilensari";
+    // Format judul untuk tampilan di PDF (kapital)
+    const displayTitle = rawTitle.toUpperCase();
+    // Format judul untuk nama file (tanpa spasi, underscore)
+    currentReportTitle = rawTitle.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
 
     const kopSuratHTML = `
         <div style="margin-bottom: 30px; text-align: center;">
@@ -598,7 +588,7 @@ function generatePDFReport(namaPelapor, nipPelapor) {
         <div style="text-align: center; margin-bottom: 25px;">
             <h3 style="margin-bottom: 10px; font-size: 14px; font-weight: bold; text-transform: uppercase;">LAPORAN KEGIATAN</h3>
             <h1 style="font-size: 16px; font-weight: bold; text-decoration: underline; color: #1e3a8a; margin-bottom: 5px;">
-                KARYA BAKTI BERSIH PANTAI DESA KILENSARI
+                ${displayTitle}
             </h1>
             <h2 style="font-size: 15px; font-weight: bold; color: #1e3a8a; margin-top: 0;">DERMAGA LAMA PANARUKAN</h2>
         </div>
@@ -715,12 +705,10 @@ async function downloadPDF() {
             });
         }));
 
-        // Beri sedikit waktu agar font dan gambar siap
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Gunakan scale 3 untuk hasil sangat tajam
         const canvas = await html2canvas(element, {
-            scale: 3,          // dinaikkan dari 2 menjadi 3
+            scale: 3,
             logging: false,
             useCORS: true,
             allowTaint: false,
@@ -767,7 +755,9 @@ async function downloadPDF() {
             pageCount++;
         }
 
-        doc.save(`Laporan_Karya_Bakti_Kilensari_${new Date().getTime()}.pdf`);
+        // Buat nama file sesuai format: LAPORAN_{JUDUL}_{KODEID}.pdf
+        const fileName = `LAPORAN_${currentReportTitle}_${currentDocId}.pdf`;
+        doc.save(fileName);
         hideLoading();
         closePdfPreview();
         alert('PDF berhasil diunduh!');
@@ -780,33 +770,43 @@ async function downloadPDF() {
 
 // ========= NOTIFIKASI AWAL (AUDIO) =========
 function showWelcomeNotification() {
-    // Cek apakah sudah pernah ditampilkan di sesi ini
     if (sessionStorage.getItem('welcomeShown')) return;
     
     const notif = document.getElementById('welcomeNotification');
     if (!notif) return;
     
-    // Tampilkan notifikasi
     notif.style.display = 'flex';
     
-    // Tombol "Nanti Saja"
     document.getElementById('laterButton').addEventListener('click', function() {
         notif.style.display = 'none';
         sessionStorage.setItem('welcomeShown', 'true');
     });
     
-    // Tombol "Iya, Putar Audio" — dengan tautan baru
     document.getElementById('playAudioButton').addEventListener('click', function() {
         notif.style.display = 'none';
         sessionStorage.setItem('welcomeShown', 'true');
         
-        // Buat elemen audio dan putar menggunakan tautan OpenDrive
+        // Ganti dengan URL audio yang sesuai untuk kegiatan
         const audio = new Audio('https://od.lk/s/MzVfNjY0ODYzNjlf/kegiatan-kerja-bakti-pantai-panaruka-bidangpn.mp3');
         audio.play().catch(error => {
             console.warn('Gagal memutar audio:', error);
             alert('Maaf, audio tidak dapat diputar. Mungkin terjadi masalah jaringan atau format tidak didukung.');
         });
     });
+}
+
+// ========= CLOSE AUDIO PLAYER =========
+function closeAudioPlayer() {
+    const container = document.getElementById('audioPlayerContainer');
+    if (container) {
+        container.style.display = 'none';
+        const iframe = container.querySelector('iframe');
+        if (iframe) {
+            let src = iframe.src;
+            src = src.replace(/([?&])autoplay=1&?/, '$1').replace(/[?&]$/, '');
+            iframe.src = src;
+        }
+    }
 }
 
 // ========= EVENT LISTENERS =========
@@ -829,7 +829,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('pdfDataFormModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfDataFormModal(); });
     document.getElementById('pdfPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closePdfPreview(); });
     
-    // Panggil notifikasi awal
     showWelcomeNotification();
 });
 
@@ -857,6 +856,7 @@ window.setFontFamily = setFontFamily;
 window.setFontColor = setFontColor;
 window.undo = undo;
 window.redo = redo;
+window.closeAudioPlayer = closeAudioPlayer;
 
 console.log("Kode hari ini:", generateSecurityCode());
 console.log("QR Code akan berisi URL:", REPORT_URL);
