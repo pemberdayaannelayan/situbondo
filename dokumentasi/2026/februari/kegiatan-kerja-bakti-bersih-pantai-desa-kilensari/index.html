@@ -65,6 +65,12 @@
             line-height: 1.7;
             background-color: var(--light-gray);
             padding-top: 90px;
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -842,23 +848,6 @@
             transform: translateY(-3px);
             box-shadow: 0 15px 30px rgba(249,115,22,0.4);
         }
-        @media (max-width: 576px) {
-            .welcome-card {
-                padding: 30px 20px;
-            }
-            .welcome-card h2 {
-                font-size: 1.8rem;
-            }
-            .welcome-card p {
-                font-size: 1rem;
-            }
-            .btn-welcome-secondary, .btn-welcome-primary {
-                padding: 12px 24px;
-                font-size: 1rem;
-                width: 100%;
-                justify-content: center;
-            }
-        }
 
         /* ===== AUDIO PLAYER CONTAINER ===== */
         #audioPlayerContainer {
@@ -866,17 +855,20 @@
             bottom: 20px;
             right: 20px;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            padding: 12px;
             display: none;
             z-index: 10000;
             border: 1px solid #e2e8f0;
+            max-width: calc(100% - 40px);
+            width: auto;
+            box-sizing: border-box;
         }
         #audioPlayerContainer .close-btn {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
         #audioPlayerContainer .close-btn button {
             border: none;
@@ -884,12 +876,18 @@
             cursor: pointer;
             color: #6b7280;
             font-size: 1.2rem;
+            padding: 0;
         }
         #audioPlayerContainer .close-btn button:hover {
             color: var(--orange-primary);
         }
+        #audioPlayerContainer iframe {
+            width: 100% !important;
+            height: 25px !important;
+            border-radius: 4px;
+        }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== RESPONSIVE IMPROVEMENTS ===== */
         @media (max-width: 992px) {
             body { padding-top: 80px; }
             .hero-section { 
@@ -914,7 +912,16 @@
             .hero-section h1 { font-size: 1.8rem; }
             .content-box { padding: 25px; }
             .footer .row > div { margin-bottom: 30px; }
-            .edit-toolbar { flex-direction: column; align-items: stretch; }
+            .edit-toolbar { 
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 15px;
+                gap: 8px;
+            }
+            .toolbar-group {
+                flex-shrink: 0;
+            }
             .naik-kelas-logo { height: 50px; }
             .pdf-auth-content, .pdf-data-form-content, .share-modal-content {
                 padding: 30px 20px;
@@ -923,9 +930,22 @@
             .modal-actions {
                 flex-direction: column;
             }
+            .pdf-preview-content {
+                padding: 20px;
+            }
         }
         @media (max-width: 576px) {
-            .btn-download, .btn-share { width: 100%; justify-content: center; }
+            .container {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .hero-section h1 {
+                font-size: 1.6rem;
+            }
+            .btn-download, .btn-share { 
+                width: 100%; 
+                justify-content: center; 
+            }
             .pdf-auth-content, .pdf-data-form-content, .share-modal-content {
                 padding: 25px 15px;
             }
@@ -935,6 +955,23 @@
             .pdf-data-form-content .row.g-2 > [class*="col-"] {
                 width: 100%;
                 margin-bottom: 10px;
+            }
+            #audioPlayerContainer {
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                width: auto;
+                max-width: none;
+            }
+            .modal-actions {
+                flex-direction: column;
+            }
+            .btn-download, .btn-share, .btn-download-modal {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+            }
+            .pdf-preview-content {
+                padding: 15px;
             }
         }
     </style>
@@ -969,7 +1006,7 @@
         <div class="close-btn">
             <button onclick="closeAudioPlayer()"><i class="fas fa-times"></i></button>
         </div>
-        <iframe src="https://www.opendrive.com/player/MzVfNjY0ODYzNjlfZUt5WEs" height="25" width="297" style="border:0" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
+        <iframe src="https://www.opendrive.com/player/MzVfNjY0ODYzNjlfZUt5WEs" height="25" style="border:0" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
     </div>
 
     <!-- ===== SHARE MODAL ===== -->
@@ -1572,11 +1609,13 @@
                                 <small class="text-light">07:30 – 11:00 WIB</small>
                             </div>
                         </div>
-                        <div class="mt-4 pt-2">
+                        <div class="mt-4 pt-2 d-flex justify-content-between align-items-center">
                             <span class="text-light" style="font-size: 0.85rem;">
                                 <i class="fas fa-dove me-1" style="color: var(--orange-primary);"></i> 
                                 #SitubondoNaikKelas
                             </span>
+                            <!-- Tombol putar audio di footer (opsional) -->
+                            <button class="btn-play-audio" onclick="showAudioPlayer()"><i class="fas fa-play"></i> Putar Audio</button>
                         </div>
                     </div>
                 </div>
@@ -2445,6 +2484,7 @@
         window.undo = undo;
         window.redo = redo;
         window.closeAudioPlayer = closeAudioPlayer;
+        window.showAudioPlayer = showAudioPlayer;
 
         console.log("Kode hari ini:", generateSecurityCode());
         console.log("QR Code akan berisi URL:", REPORT_URL);
