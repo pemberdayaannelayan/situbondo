@@ -2412,7 +2412,7 @@
                 sessionStorage.setItem('welcomeShown', 'true');
             });
             
-            // Tombol "Iya, Putar Audio" — tampilkan iframe player
+            // Tombol "Iya, Putar Audio" — tampilkan iframe player dengan autoplay
             document.getElementById('playAudioButton').addEventListener('click', function() {
                 notif.style.display = 'none';
                 sessionStorage.setItem('welcomeShown', 'true');
@@ -2420,18 +2420,35 @@
             });
         }
 
-        // ========= AUDIO PLAYER (iframe) =========
+        // ========= AUDIO PLAYER (iframe) dengan autoplay =========
         function showAudioPlayer() {
             const container = document.getElementById('audioPlayerContainer');
-            if (container) {
-                container.style.display = 'block';
+            if (!container) return;
+            
+            const iframe = container.querySelector('iframe');
+            if (iframe) {
+                let src = iframe.src;
+                // Tambahkan parameter autoplay jika belum ada
+                if (!src.includes('autoplay=1')) {
+                    const separator = src.includes('?') ? '&' : '?';
+                    iframe.src = src + separator + 'autoplay=1';
+                }
             }
+            container.style.display = 'block';
         }
 
         function closeAudioPlayer() {
             const container = document.getElementById('audioPlayerContainer');
             if (container) {
                 container.style.display = 'none';
+                // Hentikan audio dengan mereset src (opsional)
+                const iframe = container.querySelector('iframe');
+                if (iframe) {
+                    // Hapus autoplay agar tidak langsung main saat ditampilkan lagi
+                    let src = iframe.src;
+                    src = src.replace(/([?&])autoplay=1&?/, '$1').replace(/[?&]$/, '');
+                    iframe.src = src;
+                }
             }
         }
 
