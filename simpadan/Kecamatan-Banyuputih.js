@@ -1,5 +1,5 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: reload.js
+// File: Kecamatan-Banyuputih.js
 // Dibuat: 17/2/2026, 16.13.10
 // Jumlah Data: 1394
 
