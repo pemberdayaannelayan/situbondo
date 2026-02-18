@@ -1,7 +1,7 @@
-// DATA NELAYAN DESA ARJASA
-// File: arjasa.js
-// Dibuat: 18/2/2026, 07.30.37
-// Jumlah Data: 50
+// DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
+// File: Kecamatan-Arjasa.js
+// Dibuat: 18/2/2026, 15.18.32
+// Jumlah Data: 106
 
 window.SIMATA_BACKUP_DATA = [
   {
@@ -31,7 +31,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.8354,
@@ -60,7 +61,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.3606,
@@ -89,7 +91,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.214,
@@ -118,7 +121,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.9116,
@@ -147,7 +151,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.3184,
@@ -176,7 +181,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.7644,
@@ -205,7 +211,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.59,
@@ -234,7 +241,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.4963,
@@ -263,7 +271,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.048,
@@ -292,7 +301,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.483,
@@ -321,7 +331,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.3628,
@@ -350,7 +361,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.5688,
@@ -379,7 +391,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.4795,
@@ -408,7 +421,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.6128,
@@ -437,7 +451,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.7798,
@@ -466,7 +481,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.3555,
@@ -495,7 +511,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.7043,
@@ -524,7 +541,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.4692,
@@ -553,7 +571,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.5427,
@@ -582,7 +601,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.756,
@@ -611,7 +631,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.8254,
@@ -640,7 +661,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.8816,
@@ -669,7 +691,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.9355,
@@ -698,7 +721,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.538,
@@ -727,7 +751,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.8838,
@@ -756,7 +781,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.5715,
@@ -785,7 +811,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.9006,
@@ -814,7 +841,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.8044,
@@ -843,7 +871,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.2134,
@@ -872,7 +901,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.6868,
@@ -901,7 +931,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.8745,
@@ -930,7 +961,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.9248,
@@ -959,7 +991,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.005,
@@ -988,7 +1021,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.5203,
@@ -1017,36 +1051,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
-  },
-  {
-    "id": 1767830997224.3118,
-    "nama": "MARSUI",
-    "nik": "3512110107640126",
-    "whatsapp": "Tidak Ada",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": 1980,
-    "usia": 46,
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing Ulur",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-01-04",
-    "validator": "MUHAMMAD S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-S064PE",
-    "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-08T00:09:54.755Z",
-    "missingFields": [
-      "jenisIkan"
-    ],
-    "isComplete": false,
-    "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.1392,
@@ -1075,65 +1081,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
-  },
-  {
-    "id": 1767830997224.3804,
-    "nama": "MARTO",
-    "nik": "3512110107620162",
-    "whatsapp": "Tidak Ada",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": 1980,
-    "usia": 46,
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing Ulur",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-01-04",
-    "validator": "MUHAMMAD S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-9IVI2P",
-    "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-08T00:09:54.755Z",
-    "missingFields": [
-      "jenisIkan"
-    ],
-    "isComplete": false,
-    "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
-  },
-  {
-    "id": 1767830997224.8748,
-    "nama": "AHMAD DAITULLAH",
-    "nik": "3512111012910001",
-    "whatsapp": "Tidak Ada",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": 1980,
-    "usia": 46,
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing Ulur",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-01-04",
-    "validator": "MUHAMMAD S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-9730K1",
-    "keterangan": "Diimpor pada 4/1/2026, 17.48.57 | Data tidak lengkap: jenisIkan | Data tidak lengkap: jenisIkan",
-    "importDate": "2026-01-08T00:09:54.755Z",
-    "missingFields": [
-      "jenisIkan"
-    ],
-    "isComplete": false,
-    "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997224.3198,
@@ -1162,7 +1111,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.224Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.4968,
@@ -1191,7 +1141,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.1301,
@@ -1220,7 +1171,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.4321,
@@ -1249,7 +1201,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.2842,
@@ -1278,7 +1231,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.0583,
@@ -1307,7 +1261,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.302,
@@ -1336,7 +1291,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.028,
@@ -1365,7 +1321,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.0273,
@@ -1394,7 +1351,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.5874,
@@ -1423,7 +1381,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767830997225.896,
@@ -1452,9 +1411,10 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T00:09:57.225Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
-    {
+  {
     "id": 1767859810982.436,
     "nama": "ABDUL GANI",
     "nik": "3512112712860002",
@@ -1481,7 +1441,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.3083,
@@ -1510,7 +1471,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.384,
@@ -1539,7 +1501,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.8413,
@@ -1568,7 +1531,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.9097,
@@ -1597,7 +1561,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.8848,
@@ -1626,7 +1591,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.9304,
@@ -1655,7 +1621,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.5344,
@@ -1684,7 +1651,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.9187,
@@ -1713,7 +1681,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810982.7021,
@@ -1742,7 +1711,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.982Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.7246,
@@ -1771,7 +1741,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.6204,
@@ -1800,7 +1771,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.865,
@@ -1829,7 +1801,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.5151,
@@ -1858,7 +1831,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.4226,
@@ -1887,7 +1861,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.004,
@@ -1916,7 +1891,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.2578,
@@ -1945,7 +1921,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.77,
@@ -1974,7 +1951,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.2563,
@@ -2003,7 +1981,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.3953,
@@ -2032,7 +2011,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.8696,
@@ -2061,7 +2041,8 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
   {
     "id": 1767859810983.1458,
@@ -2090,9 +2071,10 @@ window.SIMATA_BACKUP_DATA = [
     ],
     "isComplete": false,
     "createdAt": "2026-01-08T08:10:10.983Z",
-    "createdBy": "System Import"
+    "createdBy": "System Import",
+    "alamat": ""
   },
-    {
+  {
     "id": 1771376854705,
     "nama": "SAPTO",
     "nik": "3512110107890131",
@@ -2530,29 +2512,6 @@ window.SIMATA_BACKUP_DATA = [
     "keterangan": ""
   },
   {
-    "id": 1771385913418,
-    "nama": "HADI SUPRAPTO",
-    "nik": "3512112802780001",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1978",
-    "usia": "48",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Mata Besar (Thunnus obesus), Ikan Layur (Trichiurus lepturus)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-UK4L91",
-    "keterangan": ""
-  },
-  {
     "id": 1771386152902,
     "nama": "MARTO",
     "nik": "3512110107620162",
@@ -2573,144 +2532,6 @@ window.SIMATA_BACKUP_DATA = [
     "validator": "Muhammad S",
     "driveLink": "",
     "kodeValidasi": "VLD-ZSYWBI",
-    "keterangan": ""
-  },
-  {
-    "id": 1771388081917,
-    "nama": "SUPRIYANTOSO",
-    "nik": "3512110107720118",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1972",
-    "usia": "54",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Petek (Leiognathus spp.), Ikan Kerapu (Epinephelus spp.), Ikan Kakap Merah (Lutjanus spp.)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-FY44RZ",
-    "keterangan": ""
-  },
-  {
-    "id": 1771391707529,
-    "nama": "JURI",
-    "nik": "3512110407520001",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1952",
-    "usia": "74",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Togek / Mendut (Star Triggerfish), Ikan Kembung Lelaki & Perempuan (Rastrelliger spp.)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-YN5P7H",
-    "keterangan": ""
-  },
-  {
-    "id": 1771392414554,
-    "nama": "HALIL",
-    "nik": "3512112105480001",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1948",
-    "usia": "78",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Lemuru (Sardinella lemuru), Ikan Bentong (Megalaspis cordyla), Ikan Banyar (Carangoides spp.)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-GZZFQM",
-    "keterangan": ""
-  },
-  {
-    "id": 1771392562099,
-    "nama": "ISMAIL GANI",
-    "nik": "3512112704690001",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1969",
-    "usia": "57",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-6KN452",
-    "keterangan": ""
-  },
-  {
-    "id": 1771392711407,
-    "nama": "KUSNO",
-    "nik": "3512110609700002",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1970",
-    "usia": "56",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-BFXMHL",
-    "keterangan": ""
-  },
-  {
-    "id": 1771392820634,
-    "nama": "SUBAIRI",
-    "nik": "3512110310780001",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1978",
-    "usia": "48",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Lamongan",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-6KA1D6",
     "keterangan": ""
   },
   {
@@ -2921,29 +2742,6 @@ window.SIMATA_BACKUP_DATA = [
     "keterangan": ""
   },
   {
-    "id": 1771398104333,
-    "nama": "SALIYE",
-    "nik": "3512112605700001",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1970",
-    "usia": "56",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Lamongan",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares), Ikan Tuna Mata Besar (Thunnus obesus)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-6MTLFK",
-    "keterangan": ""
-  },
-  {
     "id": 1771398454476,
     "nama": "NOVIONO",
     "nik": "3512141601930001",
@@ -2990,75 +2788,6 @@ window.SIMATA_BACKUP_DATA = [
     "keterangan": ""
   },
   {
-    "id": 1771399397131,
-    "nama": "TAUFIK",
-    "nik": "3512110601750002",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1975",
-    "usia": "51",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Lamongan",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-QN6283",
-    "keterangan": ""
-  },
-  {
-    "id": "1771399475009",
-    "nama": "SAYUTO",
-    "nik": "3512112002670002",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1967",
-    "usia": "59",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Lamongan",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-1XZ6GO",
-    "keterangan": ""
-  },
-  {
-    "id": 1771399642061,
-    "nama": "MARSUTO",
-    "nik": "3512110101630017",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1963",
-    "usia": "63",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Lamongan",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-KORXSZ",
-    "keterangan": ""
-  },
-  {
     "id": 1771399812161,
     "nama": "YUDI EKO PRASTIO",
     "nik": "3512171607930001",
@@ -3082,29 +2811,6 @@ window.SIMATA_BACKUP_DATA = [
     "keterangan": ""
   },
   {
-    "id": "1771399901998",
-    "nama": "ARIFIN",
-    "nik": "3512110107800198",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1975",
-    "usia": "51",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-H8NUPA",
-    "keterangan": ""
-  },
-  {
     "id": 1771400055179,
     "nama": "AHMAD DAITULLAH",
     "nik": "3512111012910001",
@@ -3125,29 +2831,6 @@ window.SIMATA_BACKUP_DATA = [
     "validator": "Muhammad S",
     "driveLink": "",
     "kodeValidasi": "VLD-T02U2K",
-    "keterangan": ""
-  },
-  {
-    "id": 1771400168587,
-    "nama": "ERNADI",
-    "nik": "3512111003660001",
-    "whatsapp": "00000000",
-    "profesi": "Nelayan Penuh Waktu",
-    "status": "Anak Buah Kapal",
-    "tahunLahir": "1966",
-    "usia": "60",
-    "alamat": "-",
-    "kecamatan": "Arjasa",
-    "desa": "Arjasa",
-    "alatTangkap": "Pancing",
-    "namaKapal": "-",
-    "jenisKapal": "-",
-    "jenisIkan": "Ikan Tuna Sirip Kuning (Thunnus albacares)",
-    "usahaSampingan": "",
-    "tanggalValidasi": "2026-02-18",
-    "validator": "Muhammad S",
-    "driveLink": "",
-    "kodeValidasi": "VLD-0RAQSG",
     "keterangan": ""
   },
   {
@@ -3242,5 +2925,4 @@ window.SIMATA_BACKUP_DATA = [
     "kodeValidasi": "VLD-RU2WBG",
     "keterangan": ""
   }
-
 ];
