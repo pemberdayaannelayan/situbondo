@@ -1,5 +1,5 @@
 // DATA NELAYAN GLOBAL - SISTEM PEMETAAN NELAYAN
-// File: reload.js
+// File: Kecamatan-Mangaran.js
 // Dibuat: 19/2/2026, 09.54.00
 // Jumlah Data: 1203
 
