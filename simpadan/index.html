@@ -2008,5 +2008,121 @@
         }
     </script>
 
+    <!-- PERBAIKAN CETAK PDF LAPORAN TERFILTER: Menghilangkan pemotongan data dan membagi ke beberapa halaman -->
+    <script>
+    (function() {
+        // Pastikan jsPDF dan autoTable tersedia
+        if (typeof window.jspdf === 'undefined' || typeof window.jspdf.autoTable === 'undefined') {
+            console.warn('jsPDF atau autoTable tidak tersedia. Periksa kembali pemuatan library.');
+            return;
+        }
+
+        /**
+         * Fungsi utama untuk mengekspor data tabel ke PDF dengan page break otomatis
+         */
+        function exportFilteredTableToPdf() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'landscape',  // agar kolom lebih lebar muat
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Judul dan tanggal
+            doc.setFontSize(14);
+            doc.text('Laporan Data Nelayan Terfilter', 14, 15);
+            doc.setFontSize(10);
+            doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, 14, 22);
+
+            // Ambil data dari tabel yang sudah difilter
+            const tbody = document.querySelector('#dataTable tbody');
+            if (!tbody) {
+                alert('Tabel data tidak ditemukan.');
+                return;
+            }
+
+            const rows = tbody.querySelectorAll('tr');
+            if (rows.length === 0 || (rows.length === 1 && rows[0].innerText.includes('Memuat'))) {
+                alert('Tidak ada data untuk diekspor.');
+                return;
+            }
+
+            // Siapkan header dan body (skip kolom checkbox, No, dan Aksi)
+            const headers = ['Identitas Nelayan', 'Kontak', 'Profesi & Status', 'Aset Kapal', 'API'];
+            const data = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 8) return; // baris kosong atau loading
+
+                // Ambil teks dari kolom indeks 2 s.d. 6
+                const identitas = cells[2]?.innerText.trim() || '';
+                const kontak    = cells[3]?.innerText.trim() || '';
+                const profesi   = cells[4]?.innerText.trim() || '';
+                const aset      = cells[5]?.innerText.trim() || '';
+                const api       = cells[6]?.innerText.trim() || '';
+
+                data.push([identitas, kontak, profesi, aset, api]);
+            });
+
+            if (data.length === 0) {
+                alert('Tidak ada data yang sesuai.');
+                return;
+            }
+
+            // Buat tabel dengan autoTable (menangani page break secara otomatis)
+            doc.autoTable({
+                head: [headers],
+                body: data,
+                startY: 30,
+                margin: { top: 30, left: 10, right: 10, bottom: 20 },
+                styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+                headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [245, 245, 245] },
+                columnStyles: {
+                    0: { cellWidth: 60 }, // Identitas (nama, NIK, alamat bisa panjang)
+                    1: { cellWidth: 30 }, // Kontak
+                    2: { cellWidth: 40 }, // Profesi
+                    3: { cellWidth: 40 }, // Aset Kapal
+                    4: { cellWidth: 50 }  // API
+                },
+                didDrawPage: function(data) {
+                    // Footer setiap halaman
+                    doc.setFontSize(8);
+                    doc.text('Dinas Perikanan Kabupaten Situbondo', 14, doc.internal.pageSize.height - 10);
+                    doc.text(`Halaman ${data.pageNumber}`, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 10);
+                }
+            });
+
+            // Simpan file PDF
+            doc.save(`Laporan_Nelayan_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+
+        /**
+         * Ganti tombol dengan elemen baru untuk menghapus semua event listener lama,
+         * lalu pasang event listener baru yang memanggil fungsi di atas.
+         */
+        function replaceButton(selector) {
+            document.querySelectorAll(selector).forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    exportFilteredTableToPdf();
+                });
+            });
+        }
+
+        // Jalankan setelah DOM siap
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                replaceButton('#btnUnduhTabelPdf, #btnUnduhFilteredPdf, #printPdfBtn, .btn-download-table-pdf, .btn-download-filtered-pdf');
+            });
+        } else {
+            replaceButton('#btnUnduhTabelPdf, #btnUnduhFilteredPdf, #printPdfBtn, .btn-download-table-pdf, .btn-download-filtered-pdf');
+        }
+    })();
+    </script>
+
 </body>
 </html>
