@@ -49,70 +49,61 @@
             justify-content: center;
         }
 
-        .container {
-            max-width: 1400px;
+        /* ===== OVERLAY LOGIN (MENUTUP SELURUH HALAMAN) ===== */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            margin: 0 auto;
-            background: rgba(255,255,255,0.6);
-            backdrop-filter: blur(4px);
-            border-radius: 48px;
-            box-shadow: 0 30px 50px -20px rgba(0, 30, 60, 0.4);
-            overflow: hidden;
-            padding: 32px;
-            border: 1px solid rgba(255,255,255,0.8);
-        }
-
-        /* ===== WELCOME NOTIFICATION (BARU) ===== */
-        .welcome-notification {
-            background: linear-gradient(135deg, var(--primary-blue), #1a4b6e);
-            color: white;
-            border-radius: 48px;
-            padding: 28px 32px;
-            margin-bottom: 28px;
+            height: 100%;
+            background: rgba(0, 20, 40, 0.8);
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
-            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.3);
-            border: 2px solid var(--accent-orange);
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
         }
-        .welcome-content {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            flex-wrap: wrap;
+        .login-modal {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 60px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 40px 60px -20px rgba(0,0,0,0.5);
+            border: 4px solid var(--accent-orange);
         }
-        .welcome-logo {
-            height: 80px;
+        .login-modal img {
+            height: 100px;
             width: auto;
+            margin-bottom: 20px;
             border-radius: 20px;
             background: white;
-            padding: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            padding: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .welcome-text h2 {
-            font-size: 2rem;
+        .login-modal h2 {
+            font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 5px;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            color: var(--primary-blue);
+            margin-bottom: 15px;
         }
-        .welcome-text p {
-            font-size: 1rem;
-            opacity: 0.9;
-            max-width: 600px;
+        .login-modal p {
+            color: var(--text-soft);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
         }
         .btn-login {
             background: var(--accent-orange);
             color: white;
             border: none;
-            padding: 14px 32px;
+            padding: 16px 40px;
             border-radius: 60px;
             font-weight: 700;
             cursor: pointer;
             transition: 0.2s;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             box-shadow: 0 8px 16px -6px #b35f00;
             display: inline-flex;
             align-items: center;
@@ -122,24 +113,10 @@
             background: #e07d00;
             transform: scale(1.02);
         }
-        .close-notification {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            padding: 0 20px;
-            border-radius: 50%;
-            transition: 0.2s;
-            line-height: 1;
-        }
-        .close-notification:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        @media (max-width: 700px) {
-            .welcome-content { justify-content: center; text-align: center; }
-            .welcome-notification { flex-direction: column; }
-            .btn-login { width: 100%; }
+
+        /* ===== KONTEN UTAMA (MULAI TERSEMBUNYI) ===== */
+        .main-content {
+            display: block; /* akan terlihat setelah overlay hilang */
         }
 
         /* ===== NOTIFIKASI DESKTOP ===== */
@@ -697,266 +674,265 @@
             .btn-home, .btn-refresh { width: 100%; justify-content: center; }
             .iframe-container { height: 450px; }
             .tip-card h3 { font-size: 1.6rem; }
+            .login-modal h2 { font-size: 2rem; }
         }
 
         @media print {
-            .notification-desktop, .btn-home, .btn-outline, .tips-footer, .btn, .fallback-link, .welcome-notification { display: none; }
+            .notification-desktop, .btn-home, .btn-outline, .tips-footer, .btn, .fallback-link, .login-overlay { display: none; }
             body { background: white; padding: 0; }
             .container { box-shadow: none; backdrop-filter: none; background: white; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- WELCOME NOTIFICATION (BARU) -->
-        <div class="welcome-notification" id="welcomeNotification">
-            <div class="welcome-content">
-                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpelmaritim/logo_simpel_maritim.png" alt="Logo SIMPEL MARITIM" class="welcome-logo" onerror="this.style.display='none'">
-                <div class="welcome-text">
-                    <h2>🌊 Selamat Datang di SIMPEL MARITIM</h2>
-                    <p>Sistem Monitoring Perairan & Laut Situbondo. Dapatkan informasi real-time suhu laut, tinggi gelombang, cuaca, arus, dan panduan nelayan terbaru. Silakan masuk untuk memulai.</p>
-                </div>
-            </div>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <button class="btn-login" id="loginButton"><i class="fas fa-sign-in-alt"></i> Login & Mulai</button>
-                <button class="close-notification" onclick="document.getElementById('welcomeNotification').style.display='none'"><i class="fas fa-times-circle"></i></button>
-            </div>
+    <!-- OVERLAY LOGIN (MENUTUP HALAMAN) -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-modal">
+            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpelmaritim/logo_simpel_maritim.png" alt="Logo SIMPEL MARITIM" onerror="this.style.display='none'">
+            <h2>🌊 SIMPEL MARITIM</h2>
+            <p>Sistem Monitoring Perairan & Laut Situbondo<br>Silakan masuk untuk mengakses informasi terkini.</p>
+            <button class="btn-login" id="loginButton"><i class="fas fa-sign-in-alt"></i> Login & Mulai</button>
         </div>
+    </div>
 
-        <!-- NOTIFIKASI DESKTOP -->
-        <div class="notification-desktop" id="desktopNotification">
-            <div class="notification-content">
-                <i class="fas fa-desktop"></i>
-                <div class="notification-text">
-                    <strong>💡 Anjuran Penggunaan:</strong> Untuk pengalaman terbaik, gunakan perangkat dengan layar lebar atau putar ponsel ke mode lanskap.
-                </div>
-            </div>
-            <button class="close-notification" onclick="document.getElementById('desktopNotification').style.display='none'">
-                <i class="fas fa-times-circle"></i>
-            </button>
-        </div>
-
-        <!-- HEADER DENGAN LOGO -->
-        <div class="header">
-            <div class="logo-container">
-                <!-- Logo teks (selalu tampil) -->
-                <div class="logo-text">
-                    <i class="fas fa-ship"></i>
-                    <div>
-                        <h1>SIMPEL MARITIM</h1>
-                        <p>Sistem Monitoring Perairan & Laut Situbondo</p>
+    <!-- KONTEN UTAMA (HALAMAN WEBSITE) -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <!-- NOTIFIKASI DESKTOP -->
+            <div class="notification-desktop" id="desktopNotification">
+                <div class="notification-content">
+                    <i class="fas fa-desktop"></i>
+                    <div class="notification-text">
+                        <strong>💡 Anjuran Penggunaan:</strong> Untuk pengalaman terbaik, gunakan perangkat dengan layar lebar atau putar ponsel ke mode lanskap.
                     </div>
                 </div>
-            </div>
-            <div class="header-actions">
-                <div class="date-time">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span id="currentDate"></span>
-                    <i class="fas fa-clock" style="margin-left: 8px;"></i>
-                    <span id="currentTime"></span>
-                </div>
-                <button class="btn-refresh" onclick="fetchAllData()">
-                    <i class="fas fa-sync-alt"></i> <span>Refresh Data</span>
+                <button class="close-notification" onclick="document.getElementById('desktopNotification').style.display='none'">
+                    <i class="fas fa-times-circle"></i>
                 </button>
-                <a href="https://www.dinasperikanansitubondo.com" target="_blank" rel="noopener noreferrer" class="btn-home">
-                    <i class="fas fa-home"></i> <span>Beranda</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- GRID DATA UTAMA (4 KOLOM) -->
-        <div class="stats-grid">
-            <!-- Suhu Laut -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <i class="fas fa-thermometer-half"></i>
-                    <h4>Suhu Laut</h4>
-                </div>
-                <div class="stat-value" id="suhuValueCard">-- <span class="unit">°C</span></div>
-                <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Perairan Situbondo</div>
-                <div class="stat-label" id="suhuTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
-                <button class="btn-outline" onclick="fetchAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
 
-            <!-- Tinggi Gelombang -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <i class="fas fa-water"></i>
-                    <h4>Tinggi Gelombang</h4>
-                </div>
-                <div class="stat-value" id="waveValueCard">-- <span class="unit">m</span></div>
-                <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Perairan Situbondo</div>
-                <div class="stat-label" id="waveTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
-                <div class="stat-label"><i class="fas fa-compass"></i> Arah: <span id="waveDirection">--</span>°</div>
-                <div class="stat-label"><i class="fas fa-hourglass-half"></i> Periode: <span id="wavePeriod">--</span> dtk</div>
-            </div>
-
-            <!-- Cuaca Terkini -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <i class="fas fa-cloud-sun"></i>
-                    <h4>Cuaca</h4>
-                </div>
-                <div class="stat-value" id="weatherTempCard">-- <span class="unit">°C</span></div>
-                <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Situbondo</div>
-                <div class="stat-label" id="weatherTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
-                <div class="stat-label"><i class="fas fa-wind"></i> Angin: <span id="windSpeed">--</span> km/j</div>
-                <div class="stat-label"><i class="fas fa-cloud"></i> <span id="weatherDesc">--</span></div>
-            </div>
-
-            <!-- Arus Laut -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <i class="fas fa-water"></i>
-                    <h4>Arus Laut</h4>
-                </div>
-                <div class="stat-value" id="currentSpeed">-- <span class="unit">m/s</span></div>
-                <div class="stat-label"><i class="fas fa-compass"></i> Arah: <span id="currentDirection">--</span>°</div>
-                <div class="stat-label"><i class="fas fa-clock"></i> <span id="currentTimeExtra">--</span></div>
-                <div class="stat-label"><i class="fas fa-flask"></i> Salinitas: <span id="salinityValue">--</span> PSU</div>
-                <div class="stat-label"><i class="fas fa-moon"></i> Fase Bulan: <span id="moonPhase">--</span> <span id="moonEmoji"></span></div>
-            </div>
-        </div>
-
-        <!-- ===== INFORMASI PENTING NELAYAN ===== -->
-        <section class="tips-section">
-            <div class="section-header">
-                <h2><i class="fas fa-lightbulb" style="color: var(--accent-orange);"></i> Panduan Lengkap Nelayan</h2>
-                <p class="section-subtitle">Tips keselamatan, mencari ikan, navigasi, dan merawat kapal</p>
-            </div>
-
-            <div class="tips-grid">
-                <!-- 1. KESELAMATAN DI LAUT -->
-                <div class="tip-card">
-                    <div class="tip-icon-wrapper">
-                        <i class="fas fa-life-ring"></i>
-                    </div>
-                    <h3>Keselamatan di Laut</h3>
-                    <ul class="tip-list">
-                        <li><i class="fas fa-check-circle"></i> <strong>Perlengkapan wajib:</strong> life jacket, pelampung, lampu sinyal, dan radio VHF.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Sebelum berlayar:</strong> periksa cuaca (BMKG), pastikan mesin dan bahan bakar cukup.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Jangan melaut sendirian:</strong> minimal 2 orang agar ada yang membantu jika terjadi darurat.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Perlengkapan darurat:</strong> kotak P3K, alat pemadam api, dan rakit penolong.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Komunikasi:</strong> pastikan ponsel dalam wadah kedap air dan bawa power bank.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Jika terjatuh:</strong> tetap tenang, gunakan pelampung, dan tunggu pertolongan.</li>
-                    </ul>
-                </div>
-
-                <!-- 2. CARA CERDAS MENCARI IKAN -->
-                <div class="tip-card">
-                    <div class="tip-icon-wrapper">
-                        <i class="fas fa-fish-fins"></i>
-                    </div>
-                    <h3>Cara Cerdas Mencari Ikan</h3>
-                    <ul class="tip-list">
-                        <li><i class="fas fa-check-circle"></i> <strong>Waktu terbaik:</strong> pagi buta (04.00–07.00) dan sore menjelang maghrib (15.00–18.00).</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Tanda-tanda ikan:</strong> burung laut berputar, lompatan ikan, dan perubahan warna air.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Struktur bawah air:</strong> rumpon buatan, karang, dan palung laut sering menjadi tempat berkumpul ikan.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Suhu ideal:</strong> ikan pelagis (tongkol, cakalang) suka suhu 28–30°C. Gunakan data suhu di atas.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Pengaruh arus:</strong> daerah pertemuan arus dingin dan hangat sering kaya plankton yang menarik ikan.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Bulan gelap vs terang:</strong> saat bulan baru, ikan cenderung naik ke permukaan karena minim cahaya.</li>
-                    </ul>
-                </div>
-
-                <!-- 3. MEMBACA CUACA & GELOMBANG -->
-                <div class="tip-card">
-                    <div class="tip-icon-wrapper">
-                        <i class="fas fa-cloud-rain"></i>
-                    </div>
-                    <h3>Membaca Cuaca & Gelombang</h3>
-                    <ul class="tip-list">
-                        <li><i class="fas fa-check-circle"></i> <strong>Gelombang tinggi:</strong> jika >2 meter, nelayan kecil sebaiknya tidak melaut.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Angin timur kencang (Juni–Agustus):</strong> pertanda gelombang besar di selatan Jawa, hindari laut lepas.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Peringatan dini:</strong> pantau aplikasi BMKG atau lihat tanda alam seperti langit gelap di arah laut.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Arus pecah:</strong> jika melihat ombak pecah di tengah laut, itu tanda adanya gosong atau arus kuat.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Kabut tebal:</strong> kurangi kecepatan, gunakan kompas, dan nyalakan lampu navigasi.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Badai petir:</strong> segera kembali ke pantai dan hindari tiang logam di kapal.</li>
-                    </ul>
-                </div>
-
-                <!-- 4. PERAWATAN KAPAL & MESIN -->
-                <div class="tip-card">
-                    <div class="tip-icon-wrapper">
+            <!-- HEADER DENGAN LOGO -->
+            <div class="header">
+                <div class="logo-container">
+                    <!-- Logo teks (selalu tampil) -->
+                    <div class="logo-text">
                         <i class="fas fa-ship"></i>
+                        <div>
+                            <h1>SIMPEL MARITIM</h1>
+                            <p>Sistem Monitoring Perairan & Laut Situbondo</p>
+                        </div>
                     </div>
-                    <h3>Perawatan Kapal & Mesin</h3>
-                    <ul class="tip-list">
-                        <li><i class="fas fa-check-circle"></i> <strong>Bersihkan lambung:</strong> dari teritip dan lumut setiap 3 bulan untuk menjaga kecepatan dan hemat BBM.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Periksa mesin:</strong> ganti oli secara rutin, cek filter bahan bakar, dan busi.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Bahan bakar:</strong> isi 2/3 tangki untuk perjalanan jauh, bawa cadangan.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Suku cadang wajib:</strong> baling-baling cadangan, tali, pompa air, dan peralatan las sederhana.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Lampu navigasi:</strong> pastikan berfungsi untuk keselamatan malam hari.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Lumasi mesin:</strong> setiap 50 jam pemakaian, gunakan grease tahan air.</li>
-                    </ul>
                 </div>
-
-                <!-- 5. NAVIGASI SEDERHANA -->
-                <div class="tip-card">
-                    <div class="tip-icon-wrapper">
-                        <i class="fas fa-compass"></i>
+                <div class="header-actions">
+                    <div class="date-time">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="currentDate"></span>
+                        <i class="fas fa-clock" style="margin-left: 8px;"></i>
+                        <span id="currentTime"></span>
                     </div>
-                    <h3>Navigasi Sederhana</h3>
-                    <ul class="tip-list">
-                        <li><i class="fas fa-check-circle"></i> <strong>Tanda darat:</strong> hafalkan bentuk gunung, pohon besar, atau bangunan tinggi sebagai patokan.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Kompas dan GPS:</strong> bawa kompas cadangan dan GPS genggam jika ada.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Mata angin:</strong> arah matahari terbit (timur) dan terbenam (barat) untuk orientasi.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Mengukur jarak:</strong> waktu tempuh dengan kecepatan rata-rata 10 knot = 18,5 km/jam.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Koordinat:</strong> catat titik-titik lokasi potensial (menggunakan GPS atau aplikasi peta).</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Jika tersesat:</strong> tetap tenang, ikuti arah pantai dengan melihat ombak (semakin besar semakin dekat laut dalam).</li>
-                    </ul>
-                </div>
-
-                <!-- 6. KONSERVASI LAUT -->
-                <div class="tip-card">
-                    <div class="tip-icon-wrapper">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <h3>Konservasi Laut</h3>
-                    <ul class="tip-list">
-                        <li><i class="fas fa-check-circle"></i> <strong>Dilarang:</strong> menggunakan bom, potasium, atau pukat harimau yang merusak ekosistem.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Ukuran ikan:</strong> tangkap ikan minimal di atas ukuran dewasa agar bisa berkembang biak.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Sampah:</strong> bawa kembali sampah plastik ke darat, jangan buang ke laut.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Kawasan lindung:</strong> hormati zona konservasi dan musim larangan tangkap.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Alat ramah lingkungan:</strong> gunakan pancing, jaring dengan mata besar (>2 inci) agar ikan kecil lolos.</li>
-                        <li><i class="fas fa-check-circle"></i> <strong>Laporkan:</strong> jika melihat aktivitas illegal fishing, segera laporkan ke syahbandar atau polisi.</li>
-                    </ul>
+                    <button class="btn-refresh" onclick="fetchAllData()">
+                        <i class="fas fa-sync-alt"></i> <span>Refresh Data</span>
+                    </button>
+                    <a href="https://www.dinasperikanansitubondo.com" target="_blank" rel="noopener noreferrer" class="btn-home">
+                        <i class="fas fa-home"></i> <span>Beranda</span>
+                    </a>
                 </div>
             </div>
-            <div class="tips-footer">
-                <button class="btn btn-orange" onclick="window.print()"><i class="fas fa-print"></i> Cetak Semua Tips</button>
-            </div>
-        </section>
 
-        <!-- PRAKIRAAN GELOMBANG BMKG -->
-        <div class="card">
-            <div class="card-header">
-                <h3><i class="fas fa-map-marked-alt" style="color:var(--primary-blue);"></i> Prakiraan Gelombang BMKG</h3>
-                <span class="badge"><i class="fas fa-check-circle"></i> Sumber Resmi</span>
+            <!-- GRID DATA UTAMA (4 KOLOM) -->
+            <div class="stats-grid">
+                <!-- Suhu Laut -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <i class="fas fa-thermometer-half"></i>
+                        <h4>Suhu Laut</h4>
+                    </div>
+                    <div class="stat-value" id="suhuValueCard">-- <span class="unit">°C</span></div>
+                    <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Perairan Situbondo</div>
+                    <div class="stat-label" id="suhuTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
+                    <button class="btn-outline" onclick="fetchAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+
+                <!-- Tinggi Gelombang -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <i class="fas fa-water"></i>
+                        <h4>Tinggi Gelombang</h4>
+                    </div>
+                    <div class="stat-value" id="waveValueCard">-- <span class="unit">m</span></div>
+                    <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Perairan Situbondo</div>
+                    <div class="stat-label" id="waveTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
+                    <div class="stat-label"><i class="fas fa-compass"></i> Arah: <span id="waveDirection">--</span>°</div>
+                    <div class="stat-label"><i class="fas fa-hourglass-half"></i> Periode: <span id="wavePeriod">--</span> dtk</div>
+                </div>
+
+                <!-- Cuaca Terkini -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <i class="fas fa-cloud-sun"></i>
+                        <h4>Cuaca</h4>
+                    </div>
+                    <div class="stat-value" id="weatherTempCard">-- <span class="unit">°C</span></div>
+                    <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Situbondo</div>
+                    <div class="stat-label" id="weatherTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
+                    <div class="stat-label"><i class="fas fa-wind"></i> Angin: <span id="windSpeed">--</span> km/j</div>
+                    <div class="stat-label"><i class="fas fa-cloud"></i> <span id="weatherDesc">--</span></div>
+                </div>
+
+                <!-- Arus Laut -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <i class="fas fa-water"></i>
+                        <h4>Arus Laut</h4>
+                    </div>
+                    <div class="stat-value" id="currentSpeed">-- <span class="unit">m/s</span></div>
+                    <div class="stat-label"><i class="fas fa-compass"></i> Arah: <span id="currentDirection">--</span>°</div>
+                    <div class="stat-label"><i class="fas fa-clock"></i> <span id="currentTimeExtra">--</span></div>
+                    <div class="stat-label"><i class="fas fa-flask"></i> Salinitas: <span id="salinityValue">--</span> PSU</div>
+                    <div class="stat-label"><i class="fas fa-moon"></i> Fase Bulan: <span id="moonPhase">--</span> <span id="moonEmoji"></span></div>
+                </div>
             </div>
-            <div class="iframe-container">
-                <iframe 
-                    src="https://maritim.bmkg.go.id/ofs" 
-                    title="BMKG Ocean Forecast System – Peta Prakiraan Gelombang"
-                    loading="lazy"
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation">
-                    <p>Browser tidak mendukung iframe. <a href="https://maritim.bmkg.go.id/ofs" target="_blank">Buka di tab baru</a>.</p>
-                </iframe>
+
+            <!-- ===== INFORMASI PENTING NELAYAN ===== -->
+            <section class="tips-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-lightbulb" style="color: var(--accent-orange);"></i> Panduan Lengkap Nelayan</h2>
+                    <p class="section-subtitle">Tips keselamatan, mencari ikan, navigasi, dan merawat kapal</p>
+                </div>
+
+                <div class="tips-grid">
+                    <!-- 1. KESELAMATAN DI LAUT -->
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper">
+                            <i class="fas fa-life-ring"></i>
+                        </div>
+                        <h3>Keselamatan di Laut</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Perlengkapan wajib:</strong> life jacket, pelampung, lampu sinyal, dan radio VHF.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Sebelum berlayar:</strong> periksa cuaca (BMKG), pastikan mesin dan bahan bakar cukup.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Jangan melaut sendirian:</strong> minimal 2 orang agar ada yang membantu jika terjadi darurat.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Perlengkapan darurat:</strong> kotak P3K, alat pemadam api, dan rakit penolong.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Komunikasi:</strong> pastikan ponsel dalam wadah kedap air dan bawa power bank.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Jika terjatuh:</strong> tetap tenang, gunakan pelampung, dan tunggu pertolongan.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 2. CARA CERDAS MENCARI IKAN -->
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper">
+                            <i class="fas fa-fish-fins"></i>
+                        </div>
+                        <h3>Cara Cerdas Mencari Ikan</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Waktu terbaik:</strong> pagi buta (04.00–07.00) dan sore menjelang maghrib (15.00–18.00).</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Tanda-tanda ikan:</strong> burung laut berputar, lompatan ikan, dan perubahan warna air.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Struktur bawah air:</strong> rumpon buatan, karang, dan palung laut sering menjadi tempat berkumpul ikan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Suhu ideal:</strong> ikan pelagis (tongkol, cakalang) suka suhu 28–30°C. Gunakan data suhu di atas.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Pengaruh arus:</strong> daerah pertemuan arus dingin dan hangat sering kaya plankton yang menarik ikan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Bulan gelap vs terang:</strong> saat bulan baru, ikan cenderung naik ke permukaan karena minim cahaya.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 3. MEMBACA CUACA & GELOMBANG -->
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper">
+                            <i class="fas fa-cloud-rain"></i>
+                        </div>
+                        <h3>Membaca Cuaca & Gelombang</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Gelombang tinggi:</strong> jika >2 meter, nelayan kecil sebaiknya tidak melaut.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Angin timur kencang (Juni–Agustus):</strong> pertanda gelombang besar di selatan Jawa, hindari laut lepas.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Peringatan dini:</strong> pantau aplikasi BMKG atau lihat tanda alam seperti langit gelap di arah laut.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Arus pecah:</strong> jika melihat ombak pecah di tengah laut, itu tanda adanya gosong atau arus kuat.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Kabut tebal:</strong> kurangi kecepatan, gunakan kompas, dan nyalakan lampu navigasi.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Badai petir:</strong> segera kembali ke pantai dan hindari tiang logam di kapal.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 4. PERAWATAN KAPAL & MESIN -->
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper">
+                            <i class="fas fa-ship"></i>
+                        </div>
+                        <h3>Perawatan Kapal & Mesin</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Bersihkan lambung:</strong> dari teritip dan lumut setiap 3 bulan untuk menjaga kecepatan dan hemat BBM.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Periksa mesin:</strong> ganti oli secara rutin, cek filter bahan bakar, dan busi.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Bahan bakar:</strong> isi 2/3 tangki untuk perjalanan jauh, bawa cadangan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Suku cadang wajib:</strong> baling-baling cadangan, tali, pompa air, dan peralatan las sederhana.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Lampu navigasi:</strong> pastikan berfungsi untuk keselamatan malam hari.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Lumasi mesin:</strong> setiap 50 jam pemakaian, gunakan grease tahan air.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 5. NAVIGASI SEDERHANA -->
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                        <h3>Navigasi Sederhana</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Tanda darat:</strong> hafalkan bentuk gunung, pohon besar, atau bangunan tinggi sebagai patokan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Kompas dan GPS:</strong> bawa kompas cadangan dan GPS genggam jika ada.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Mata angin:</strong> arah matahari terbit (timur) dan terbenam (barat) untuk orientasi.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Mengukur jarak:</strong> waktu tempuh dengan kecepatan rata-rata 10 knot = 18,5 km/jam.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Koordinat:</strong> catat titik-titik lokasi potensial (menggunakan GPS atau aplikasi peta).</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Jika tersesat:</strong> tetap tenang, ikuti arah pantai dengan melihat ombak (semakin besar semakin dekat laut dalam).</li>
+                        </ul>
+                    </div>
+
+                    <!-- 6. KONSERVASI LAUT -->
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3>Konservasi Laut</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Dilarang:</strong> menggunakan bom, potasium, atau pukat harimau yang merusak ekosistem.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Ukuran ikan:</strong> tangkap ikan minimal di atas ukuran dewasa agar bisa berkembang biak.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Sampah:</strong> bawa kembali sampah plastik ke darat, jangan buang ke laut.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Kawasan lindung:</strong> hormati zona konservasi dan musim larangan tangkap.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Alat ramah lingkungan:</strong> gunakan pancing, jaring dengan mata besar (>2 inci) agar ikan kecil lolos.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Laporkan:</strong> jika melihat aktivitas illegal fishing, segera laporkan ke syahbandar atau polisi.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tips-footer">
+                    <button class="btn btn-orange" onclick="window.print()"><i class="fas fa-print"></i> Cetak Semua Tips</button>
+                </div>
+            </section>
+
+            <!-- PRAKIRAAN GELOMBANG BMKG -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-map-marked-alt" style="color:var(--primary-blue);"></i> Prakiraan Gelombang BMKG</h3>
+                    <span class="badge"><i class="fas fa-check-circle"></i> Sumber Resmi</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe 
+                        src="https://maritim.bmkg.go.id/ofs" 
+                        title="BMKG Ocean Forecast System – Peta Prakiraan Gelombang"
+                        loading="lazy"
+                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation">
+                        <p>Browser tidak mendukung iframe. <a href="https://maritim.bmkg.go.id/ofs" target="_blank">Buka di tab baru</a>.</p>
+                    </iframe>
+                </div>
+                <div class="fallback-link">
+                    <a href="https://maritim.bmkg.go.id/ofs" target="_blank" rel="noopener noreferrer" class="btn">
+                        <i class="fas fa-external-link-alt"></i> Buka Halaman BMKG
+                    </a>
+                </div>
+                <div class="info-sumber">
+                    <i class="fas fa-info-circle"></i> Data dan peta interaktif disediakan langsung oleh BMKG.
+                </div>
             </div>
-            <div class="fallback-link">
-                <a href="https://maritim.bmkg.go.id/ofs" target="_blank" rel="noopener noreferrer" class="btn">
-                    <i class="fas fa-external-link-alt"></i> Buka Halaman BMKG
-                </a>
-            </div>
-            <div class="info-sumber">
-                <i class="fas fa-info-circle"></i> Data dan peta interaktif disediakan langsung oleh BMKG.
-            </div>
+
+            <!-- FOOTER -->
+            <footer class="footer">
+                <p><i class="far fa-copyright"></i> 2025 SIMPEL MARITIM – Dinas Peternakan Dan Perikanan Situbondo</p>
+                <p>Data real-time: Open-Meteo (suhu, gelombang, arus, salinitas) | Fase bulan: perhitungan internal | Prakiraan gelombang: BMKG</p>
+            </footer>
         </div>
-
-        <!-- FOOTER -->
-        <footer class="footer">
-            <p><i class="far fa-copyright"></i> 2025 SIMPEL MARITIM – Dinas Peternakan Dan Perikanan Situbondo</p>
-            <p>Data real-time: Open-Meteo (suhu, gelombang, arus, salinitas) | Fase bulan: perhitungan internal | Prakiraan gelombang: BMKG</p>
-        </footer>
     </div>
 
     <script>
@@ -1153,17 +1129,20 @@
 
         // ===== HANDLE LOGIN =====
         function handleLogin() {
-            fetchAllData(); // refresh data
-            document.getElementById('welcomeNotification').style.display = 'none'; // sembunyikan welcome notification
+            // Sembunyikan overlay
+            document.getElementById('loginOverlay').style.display = 'none';
+            // Refresh data
+            fetchAllData();
         }
 
         // Pasang event listener ke tombol login
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('loginButton').addEventListener('click', handleLogin);
-        });
+        document.getElementById('loginButton').addEventListener('click', handleLogin);
 
-        // Panggil semua data saat halaman dimuat
-        window.addEventListener('load', fetchAllData);
+        // Panggil semua data saat halaman dimuat (sebenarnya tidak perlu karena halaman tersembunyi, tapi untuk jaga-jaga jika ada yang lihat sebelum login, tetap panggil)
+        window.addEventListener('load', function() {
+            // Data akan dimuat setelah login, tapi untuk mengisi placeholder kita panggil sekarang juga agar saat login langsung muncul
+            fetchAllData();
+        });
         // Refresh otomatis setiap 30 menit
         setInterval(fetchAllData, 1800000);
     </script>
