@@ -6,471 +6,8 @@
     <title>SIMPEL MARITIM – Sistem Monitoring Perairan & Laut</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* ===== RESET & VARIABEL ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        :root {
-            --primary: #0f4c75;
-            --primary-light: #3282b8;
-            --primary-soft: #bbe1fa;
-            --secondary: #1e4a6b;
-            --accent: #00b8a9;
-            --background: #f4f9ff;
-            --surface: #ffffff;
-            --text-dark: #1e293b;
-            --text-soft: #334155;
-            --text-light: #64748b;
-            --border: #e2e8f0;
-            --card-shadow: 0 20px 30px -10px rgba(15, 76, 117, 0.15);
-            --hover-shadow: 0 25px 35px -8px rgba(15, 76, 117, 0.25);
-            --gradient-header: linear-gradient(145deg, #f0f9ff, #ffffff);
-        }
-
-        body {
-            background: linear-gradient(145deg, #daeef8 0%, #f0f7ff 100%);
-            color: var(--text-dark);
-            line-height: 1.5;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .container {
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            background-color: rgba(255,255,255,0.7);
-            backdrop-filter: blur(2px);
-            border-radius: 40px;
-            box-shadow: 0 30px 60px -15px rgba(0, 40, 80, 0.3);
-            overflow: hidden;
-            padding: 28px;
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-
-        /* ===== NOTIFIKASI DESKTOP ===== */
-        .notification-desktop {
-            background: #ffffffdd;
-            backdrop-filter: blur(8px);
-            border-left: 6px solid var(--primary);
-            border-radius: 20px;
-            padding: 16px 24px;
-            margin-bottom: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            box-shadow: 0 8px 20px -8px rgba(0,50,80,0.2);
-            border: 1px solid white;
-        }
-
-        .notification-content {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .notification-content i {
-            font-size: 2rem;
-            color: var(--primary);
-            background: var(--primary-soft);
-            padding: 10px;
-            border-radius: 50%;
-        }
-
-        .notification-text {
-            font-size: 0.95rem;
-            color: var(--text-soft);
-        }
-
-        .notification-text strong {
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .close-notification {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            color: var(--text-light);
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 30px;
-            transition: 0.2s;
-        }
-
-        .close-notification:hover {
-            background: #eef2f6;
-            color: var(--primary);
-        }
-
-        /* ===== HEADER ===== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 32px;
-            padding: 16px 20px;
-            background: var(--gradient-header);
-            border-radius: 40px;
-            box-shadow: 0 6px 12px -6px rgba(0,0,0,0.05);
-        }
-
-        .logo h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), #1b5f8a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.5px;
-        }
-
-        .logo p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-top: 4px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .date-time {
-            background: white;
-            padding: 10px 22px;
-            border-radius: 40px;
-            font-weight: 600;
-            color: var(--primary);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
-            border: 1px solid #d9e8f5;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-home {
-            background: white;
-            border: 1.5px solid var(--primary);
-            color: var(--primary);
-            padding: 10px 22px;
-            border-radius: 40px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 8px rgba(15,76,117,0.1);
-        }
-
-        .btn-home:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 10px 18px -6px var(--primary);
-        }
-
-        /* ===== CARD UMUM ===== */
-        .card {
-            background: var(--surface);
-            border-radius: 32px;
-            padding: 28px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255,255,255,0.7);
-            margin-bottom: 32px;
-            transition: box-shadow 0.3s;
-            backdrop-filter: blur(4px);
-        }
-
-        .card:hover {
-            box-shadow: var(--hover-shadow);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .card-header h3 {
-            font-weight: 700;
-            color: var(--text-dark);
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .badge {
-            background: var(--primary-soft);
-            color: var(--secondary);
-            padding: 6px 16px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ===== CARD DATA ===== */
-        .data-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .data-main {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-            flex-wrap: wrap;
-        }
-
-        .data-value-large {
-            font-size: 4rem;
-            font-weight: 800;
-            color: var(--primary);
-            line-height: 1;
-            text-shadow: 0 4px 12px rgba(15,76,117,0.2);
-        }
-
-        .data-unit {
-            font-size: 1.5rem;
-            color: var(--text-light);
-            margin-left: 8px;
-        }
-
-        .data-detail {
-            background: #f6fbfe;
-            padding: 16px 24px;
-            border-radius: 40px;
-            border: 1px solid #d2e6f5;
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .data-detail p {
-            margin: 8px 0;
-            color: var(--text-soft);
-            font-weight: 500;
-        }
-
-        .data-detail i {
-            color: var(--primary);
-            width: 28px;
-        }
-
-        .refresh-btn {
-            background: white;
-            border: 1.5px solid var(--primary);
-            color: var(--primary);
-            padding: 12px 28px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: auto;
-        }
-
-        .refresh-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .loading {
-            color: var(--text-light);
-            font-style: italic;
-            background: #ecf5fa;
-            padding: 8px 20px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        /* ===== GRID UNTUK 3 CARD ===== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border-radius: 28px;
-            padding: 24px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255,255,255,0.7);
-            transition: 0.2s;
-        }
-
-        .stat-card:hover {
-            box-shadow: var(--hover-shadow);
-        }
-
-        .stat-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-header i {
-            font-size: 2rem;
-            color: var(--primary);
-            background: var(--primary-soft);
-            padding: 12px;
-            border-radius: 50%;
-        }
-
-        .stat-header h4 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 6px 0;
-        }
-
-        /* ===== IFRAME ===== */
-        .iframe-container {
-            position: relative;
-            width: 100%;
-            height: 580px;
-            border-radius: 28px;
-            overflow: hidden;
-            border: 2px solid white;
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), 0 20px 30px -12px rgba(0,40,70,0.3);
-            background-color: #f1f9ff;
-        }
-
-        .iframe-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .fallback-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 32px;
-            border-radius: 60px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid transparent;
-        }
-
-        .btn:hover {
-            background: #1b5f8a;
-            transform: translateY(-2px);
-            box-shadow: 0 15px 25px -10px var(--primary);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-outline:hover {
-            background: #e3f0fa;
-            color: var(--primary);
-            transform: none;
-            box-shadow: none;
-        }
-
-        .info-sumber {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 16px;
-            text-align: right;
-            border-top: 1px dashed var(--border);
-            padding-top: 16px;
-        }
-
-        /* ===== FOOTER ===== */
-        .footer {
-            margin-top: 32px;
-            text-align: center;
-            color: var(--text-light);
-            font-size: 0.85rem;
-            border-top: 2px solid rgba(255,255,255,0.5);
-            padding-top: 24px;
-            background: rgba(255,255,255,0.5);
-            border-radius: 60px;
-            padding: 24px 20px 16px;
-        }
-
-        .footer p {
-            margin: 4px 0;
-        }
-
-        /* responsif */
-        @media (max-width: 600px) {
-            .data-main {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .refresh-btn {
-                margin-left: 0;
-            }
-            .iframe-container {
-                height: 450px;
-            }
-        }
-    </style>
+    <!-- Hubungkan file CSS eksternal -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -487,11 +24,19 @@
             </button>
         </div>
 
-        <!-- HEADER + TOMBOL BERANDA -->
+        <!-- HEADER DENGAN LOGO -->
         <div class="header">
-            <div class="logo">
-                <h1><i class="fas fa-ship" style="color: var(--primary);"></i> SIMPEL MARITIM</h1>
-                <p>Sistem Monitoring Perairan & Laut Situbondo</p>
+            <div class="logo-container">
+                <!-- TEMPAT LOGO: Ganti '#' dengan URL logo Anda, atau unggah logo ke folder yang sama -->
+                <img src="logo_simpel_maritim.png" alt="Logo SIMPEL MARITIM" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="logo-text" style="display:none;">
+                    <h1><i class="fas fa-ship" style="color: var(--primary-blue);"></i> SIMPEL MARITIM</h1>
+                    <p>Sistem Monitoring Perairan & Laut Situbondo</p>
+                </div>
+                <div class="logo-text" style="display:block;">
+                    <h1><i class="fas fa-ship" style="color: var(--primary-blue);"></i> SIMPEL MARITIM</h1>
+                    <p>Sistem Monitoring Perairan & Laut Situbondo</p>
+                </div>
             </div>
             <div class="header-actions">
                 <div class="date-time">
@@ -519,7 +64,7 @@
                 <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Perairan Situbondo</div>
                 <div class="stat-label" id="suhuTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
                 <div class="stat-label"><i class="fas fa-database"></i> Open-Meteo</div>
-                <button class="btn-outline refresh-btn" style="margin-top:16px;" onclick="fetchAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button class="btn-outline" style="margin-top:16px;" onclick="fetchAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
 
             <!-- Card Gelombang Laut Real-time -->
@@ -549,10 +94,114 @@
             </div>
         </div>
 
-        <!-- Card BMKG Ocean Forecast System (tetap) -->
+        <!-- ===== BAGIAN TIPS UNTUK NELAYAN (DENGAN AKSEN ORANGE) ===== -->
+        <div class="tips-section">
+            <div class="card-header">
+                <h3><i class="fas fa-lightbulb" style="color: var(--accent-orange);"></i> Informasi Penting untuk Nelayan</h3>
+                <span class="badge"><i class="fas fa-anchor"></i> Tips & Panduan</span>
+            </div>
+            
+            <div class="tips-grid">
+                <!-- Tip 1: Keselamatan Kerja -->
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-life-ring"></i>
+                    </div>
+                    <h4><i class="fas fa-check-circle" style="color: var(--accent-orange);"></i> Keselamatan di Laut</h4>
+                    <ul class="tip-list">
+                        <li><i class="fas fa-check"></i> Selalu gunakan life jacket saat berlayar</li>
+                        <li><i class="fas fa-check"></i> Periksa perkiraan cuaca sebelum berangkat</li>
+                        <li><i class="fas fa-check"></i> Bawa alat komunikasi darurat (VHF/radio)</li>
+                        <li><i class="fas fa-check"></i> Jangan melaut sendirian, minimal 2 orang</li>
+                        <li><i class="fas fa-check"></i> Pastikan mesin dan peralatan dalam kondisi baik</li>
+                    </ul>
+                </div>
+
+                <!-- Tip 2: Mencari Ikan -->
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                    <h4><i class="fas fa-map-pin" style="color: var(--accent-orange);"></i> Tips Mencari Ikan</h4>
+                    <ul class="tip-list">
+                        <li><i class="fas fa-check"></i> Ikan banyak berkumpul di sekitar rumpon dan karang</li>
+                        <li><i class="fas fa-check"></i> Waktu terbaik: pagi buta (04.00-07.00) atau sore menjelang maghrib</li>
+                        <li><i class="fas fa-check"></i> Perhatikan suhu laut ideal: 28-30°C untuk ikan pelagis</li>
+                        <li><i class="fas fa-check"></i> Daerah dengan perubahan warna air sering menjadi tempat ikan</li>
+                        <li><i class="fas fa-check"></i> Ikan cenderung berkumpul di area pertemuan arus</li>
+                    </ul>
+                </div>
+
+                <!-- Tip 3: Info Cuaca & Gelombang -->
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-cloud-rain"></i>
+                    </div>
+                    <h4><i class="fas fa-exclamation-triangle" style="color: var(--accent-orange);"></i> Waspada Cuaca</h4>
+                    <ul class="tip-list">
+                        <li><i class="fas fa-check"></i> Gelombang > 2 meter: tidak aman untuk nelayan kecil</li>
+                        <li><i class="fas fa-check"></i> Angin kencang dari Timur menandakan musim timur (gelombang tinggi)</li>
+                        <li><i class="fas fa-check"></i> Jika langit gelap di arah laut, segera kembali ke pantai</li>
+                        <li><i class="fas fa-check"></i> Pantau prakiraan BMKG setiap hari melalui menu di atas</li>
+                        <li><i class="fas fa-check"></i> Hindari melaut saat ada peringatan dini gelombang tinggi</li>
+                    </ul>
+                </div>
+
+                <!-- Tip 4: Perawatan Kapal -->
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-ship"></i>
+                    </div>
+                    <h4><i class="fas fa-wrench" style="color: var(--accent-orange);"></i> Perawatan Kapal</h4>
+                    <ul class="tip-list">
+                        <li><i class="fas fa-check"></i> Bersihkan lambung kapal dari teritip setiap 3 bulan</li>
+                        <li><i class="fas fa-check"></i> Periksa bahan bakar sebelum berlayar (isi 2/3 tangki)</li>
+                        <li><i class="fas fa-check"></i> Bawa suku cadang: busi, baling-baling cadangan, tali</li>
+                        <li><i class="fas fa-check"></i> Pastikan lampu navigasi berfungsi untuk malam hari</li>
+                        <li><i class="fas fa-check"></i> Lumasi mesin secara rutin agar awet</li>
+                    </ul>
+                </div>
+
+                <!-- Tip 5: Navigasi -->
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <h4><i class="fas fa-map" style="color: var(--accent-orange);"></i> Navigasi Sederhana</h4>
+                    <ul class="tip-list">
+                        <li><i class="fas fa-check"></i> Kenali tanda darat: gunung, pohon besar, bangunan tinggi</li>
+                        <li><i class="fas fa-check"></i> Bawa kompas cadangan dan GPS jika ada</li>
+                        <li><i class="fas fa-check"></i> Perhatikan arah datangnya gelombang untuk menentukan posisi</li>
+                        <li><i class="fas fa-check"></i> Jangan terlalu jauh jika tidak yakin dengan posisi</li>
+                        <li><i class="fas fa-check"></i> Catat koordinat spot ikan yang bagus untuk kunjungan berikutnya</li>
+                    </ul>
+                </div>
+
+                <!-- Tip 6: Konservasi -->
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h4><i class="fas fa-heart" style="color: var(--accent-orange);"></i> Menjaga Laut</h4>
+                    <ul class="tip-list">
+                        <li><i class="fas fa-check"></i> Jangan menangkap ikan dengan bom atau racun</li>
+                        <li><i class="fas fa-check"></i> Buang sampah di darat, jangan ke laut</li>
+                        <li><i class="fas fa-check"></i> Lepaskan ikan yang masih kecil agar bisa berkembang</li>
+                        <li><i class="fas fa-check"></i> Hormati kawasan konservasi dan larangan tangkap</li>
+                        <li><i class="fas fa-check"></i> Gunakan alat tangkap ramah lingkungan (pancing, jaring dengan mata besar)</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Tombol untuk mencetak tips atau menyimpan (opsional) -->
+            <div style="text-align: center; margin-top: 28px;">
+                <button class="btn btn-orange" onclick="window.print()"><i class="fas fa-print"></i> Cetak Tips untuk Nelayan</button>
+            </div>
+        </div>
+
+        <!-- Card BMKG Ocean Forecast System -->
         <div class="card">
             <div class="card-header">
-                <h3><i class="fas fa-map-marked-alt" style="color:var(--primary);"></i> Prakiraan Gelombang BMKG</h3>
+                <h3><i class="fas fa-map-marked-alt" style="color:var(--primary-blue);"></i> Prakiraan Gelombang BMKG</h3>
                 <span class="badge"><i class="fas fa-check-circle"></i> Sumber Resmi BMKG</span>
             </div>
             <div class="iframe-container">
@@ -577,7 +226,7 @@
         <!-- FOOTER -->
         <div class="footer">
             <p><i class="far fa-copyright"></i> 2025 SIMPEL MARITIM – Dinas Peternakan Dan Perikanan Situbondo</p>
-            <p style="margin-top: 6px;">Data suhu, gelombang: Open-Meteo Marine API | Cuaca: Open-Meteo Weather API | Prakiraan gelombang: BMKG</p>
+            <p style="margin-top: 6px;">Data real-time: Open-Meteo | Prakiraan gelombang: BMKG | Tips untuk nelayan</p>
         </div>
     </div>
 
@@ -600,7 +249,7 @@
 
         // ===== FUNGSI MEMANGGIL SEMUA DATA =====
         async function fetchAllData() {
-            // Tampilkan loading di semua card
+            // Tampilkan loading
             document.getElementById('suhuValueCard').innerHTML = '-- <span style="font-size:1.2rem;">°C</span>';
             document.getElementById('suhuTimeCard').innerHTML = '<i class="fas fa-clock"></i> Memuat...';
             document.getElementById('waveValueCard').innerHTML = '-- <span style="font-size:1.2rem;">m</span>';
@@ -612,7 +261,6 @@
             document.getElementById('windSpeed').textContent = '--';
             document.getElementById('weatherDesc').textContent = '--';
 
-            // Panggil ketiga API secara paralel
             await Promise.allSettled([
                 fetchSeaTemperature(),
                 fetchWaveData(),
@@ -620,7 +268,7 @@
             ]);
         }
 
-        // 1. AMBIL DATA SUHU LAUT (sama seperti sebelumnya)
+        // 1. AMBIL DATA SUHU LAUT
         async function fetchSeaTemperature() {
             try {
                 const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=sea_surface_temperature&timezone=auto&past_days=1&forecast_days=1`;
@@ -655,10 +303,9 @@
             }
         }
 
-        // 2. AMBIL DATA GELOMBANG LAUT (tinggi, arah, periode)
+        // 2. AMBIL DATA GELOMBANG LAUT
         async function fetchWaveData() {
             try {
-                // Gunakan model ncep_gfswave025 untuk memastikan data tersedia [citation:10]
                 const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=wave_height,wave_direction,wave_period&models=ncep_gfswave025&timezone=auto&forecast_days=1`;
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error ${response.status}`);
@@ -699,10 +346,9 @@
             }
         }
 
-        // 3. AMBIL DATA CUACA TERKINI (suhu udara, angin, kondisi)
+        // 3. AMBIL DATA CUACA TERKINI
         async function fetchWeatherData() {
             try {
-                // Gunakan weather API untuk cuaca darat [citation:2]
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&timezone=auto`;
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error ${response.status}`);
@@ -716,7 +362,6 @@
                     document.getElementById('weatherTimeCard').innerHTML = '<i class="fas fa-clock"></i> ' + timeStr;
                     document.getElementById('windSpeed').textContent = weather.windspeed;
                     
-                    // Kode cuaca ke deskripsi (sederhana)
                     const weatherCodes = {
                         0: 'Cerah',
                         1: 'Cerah berawan',
@@ -753,7 +398,6 @@
 
         // Panggil semua data saat halaman dimuat
         window.addEventListener('load', fetchAllData);
-
         // Refresh otomatis setiap 30 menit
         setInterval(fetchAllData, 1800000);
     </script>
