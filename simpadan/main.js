@@ -1990,7 +1990,7 @@ function generateFilteredPdf() {
                     doc.setTextColor(12, 36, 97);
                     doc.text("DOKUMEN INI TELAH DIVALIDASI", 25, pageHeight - 30);
                     doc.text("SECARA ELEKTRONIK OLEH", 25, pageHeight - 26);
-                    doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", 25, pageHeight - 22);
+                    doc.text("SIMPADAN TANGKAP", 25, pageHeight - 22);
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(7);
                     doc.text("Dinas Perikanan Kabupaten Situbondo", 25, pageHeight - 18);
