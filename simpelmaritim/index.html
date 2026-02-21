@@ -53,6 +53,9 @@
                     <i class="fas fa-clock" style="margin-left: 8px;"></i>
                     <span id="currentTime"></span>
                 </div>
+                <button class="btn-refresh" onclick="fetchAllData()">
+                    <i class="fas fa-sync-alt"></i> <span>Refresh Data</span>
+                </button>
                 <a href="https://www.dinasperikanansitubondo.com" target="_blank" rel="noopener noreferrer" class="btn-home">
                     <i class="fas fa-home"></i> <span>Beranda</span>
                 </a>
@@ -106,6 +109,7 @@
                     <h4>Arus Laut</h4>
                 </div>
                 <div class="stat-value" id="currentSpeed">-- <span class="unit">m/s</span></div>
+                <div class="stat-label"><i class="fas fa-compass"></i> Arah: <span id="currentDirection">--</span>°</div>
                 <div class="stat-label"><i class="fas fa-clock"></i> <span id="currentTimeExtra">--</span></div>
                 <div class="stat-label"><i class="fas fa-flask"></i> Salinitas: <span id="salinityValue">--</span> PSU</div>
                 <div class="stat-label"><i class="fas fa-moon"></i> Fase Bulan: <span id="moonPhase">--</span> <span id="moonEmoji"></span></div>
@@ -139,7 +143,6 @@
                 <!-- 2. CARA CERDAS MENCARI IKAN -->
                 <div class="tip-card">
                     <div class="tip-icon-wrapper">
-                        <!-- Ikon diganti dengan fa-fish-fins yang lebih detail -->
                         <i class="fas fa-fish-fins"></i>
                     </div>
                     <h3>Cara Cerdas Mencari Ikan</h3>
@@ -172,7 +175,6 @@
                 <!-- 4. PERAWATAN KAPAL & MESIN -->
                 <div class="tip-card">
                     <div class="tip-icon-wrapper">
-                        <!-- Ikon perahu dipertahankan -->
                         <i class="fas fa-ship"></i>
                     </div>
                     <h3>Perawatan Kapal & Mesin</h3>
@@ -274,22 +276,8 @@
 
         // ===== FUNGSI MEMANGGIL SEMUA DATA =====
         async function fetchAllData() {
-            // Reset tampilan
-            document.getElementById('suhuValueCard').innerHTML = '-- <span class="unit">°C</span>';
-            document.getElementById('suhuTimeCard').innerHTML = '<i class="fas fa-clock"></i> Memuat...';
-            document.getElementById('waveValueCard').innerHTML = '-- <span class="unit">m</span>';
-            document.getElementById('waveTimeCard').innerHTML = '<i class="fas fa-clock"></i> Memuat...';
-            document.getElementById('waveDirection').textContent = '--';
-            document.getElementById('wavePeriod').textContent = '--';
-            document.getElementById('weatherTempCard').innerHTML = '-- <span class="unit">°C</span>';
-            document.getElementById('weatherTimeCard').innerHTML = '<i class="fas fa-clock"></i> Memuat...';
-            document.getElementById('windSpeed').textContent = '--';
-            document.getElementById('weatherDesc').textContent = '--';
-            document.getElementById('currentSpeed').innerHTML = '-- <span class="unit">m/s</span>';
-            document.getElementById('currentTimeExtra').textContent = '--';
-            document.getElementById('salinityValue').textContent = '--';
-            document.getElementById('moonPhase').textContent = '--';
-            document.getElementById('moonEmoji').textContent = '';
+            // Tampilkan status memuat
+            setLoadingState(true);
 
             await Promise.allSettled([
                 fetchSeaTemperature(),
@@ -298,6 +286,20 @@
                 fetchMarineExtra(),
                 calculateMoonPhase()
             ]);
+
+            setLoadingState(false);
+        }
+
+        function setLoadingState(isLoading) {
+            // Opsional: ubah tampilan tombol refresh jika ingin
+            const refreshBtn = document.querySelector('.btn-refresh i');
+            if (refreshBtn) {
+                if (isLoading) {
+                    refreshBtn.className = 'fas fa-spinner fa-pulse';
+                } else {
+                    refreshBtn.className = 'fas fa-sync-alt';
+                }
+            }
         }
 
         // 1. SUHU LAUT
@@ -320,7 +322,7 @@
                     document.getElementById('suhuTimeCard').innerHTML = '<i class="fas fa-clock"></i> ' + timeStr;
                 } else throw new Error('Data suhu tidak tersedia');
             } catch (error) {
-                console.error(error);
+                console.error('Suhu error:', error);
                 document.getElementById('suhuTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal memuat';
             }
         }
@@ -351,7 +353,7 @@
                     document.getElementById('wavePeriod').textContent = latestPeriod ? latestPeriod.toFixed(1) : '--';
                 } else throw new Error('Data gelombang tidak tersedia');
             } catch (error) {
-                console.error(error);
+                console.error('Gelombang error:', error);
                 document.getElementById('waveTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal';
             }
         }
@@ -377,7 +379,7 @@
                     document.getElementById('weatherDesc').textContent = weatherCodes[weather.weathercode] || 'Kondisi khusus';
                 } else throw new Error('Data cuaca tidak tersedia');
             } catch (error) {
-                console.error(error);
+                console.error('Cuaca error:', error);
                 document.getElementById('weatherTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal';
             }
         }
@@ -401,9 +403,21 @@
                     document.getElementById('currentSpeed').innerHTML = (currentVal ? currentVal.toFixed(2) : '--') + ' <span class="unit">m/s</span>';
                     document.getElementById('salinityValue').textContent = (salVal ? salVal.toFixed(1) : '--');
                     document.getElementById('currentTimeExtra').textContent = timeStr;
+                    // Arah arus tidak tersedia dari API, tampilkan placeholder
+                    document.getElementById('currentDirection').textContent = '--';
+                } else {
+                    // Tidak ada data arus
+                    document.getElementById('currentSpeed').innerHTML = '-- <span class="unit">m/s</span>';
+                    document.getElementById('salinityValue').textContent = '--';
+                    document.getElementById('currentTimeExtra').textContent = '--';
+                    document.getElementById('currentDirection').textContent = '--';
                 }
             } catch (error) {
-                console.error('Gagal arus/salinitas', error);
+                console.error('Arus/salinitas error:', error);
+                document.getElementById('currentSpeed').innerHTML = '-- <span class="unit">m/s</span>';
+                document.getElementById('salinityValue').textContent = '--';
+                document.getElementById('currentTimeExtra').textContent = '--';
+                document.getElementById('currentDirection').textContent = '--';
             }
         }
 
