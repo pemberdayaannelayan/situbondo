@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
     <title>SIMPEL MARITIM - Sistem Monitoring Perairan & Laut</title>
-    <!-- Font Awesome 6 (gratis) -->
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Chart.js 3 -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
-        /* Reset dan dasar */
         * {
             margin: 0;
             padding: 0;
@@ -31,7 +28,6 @@
             overflow: hidden;
             padding: 24px;
         }
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -65,10 +61,6 @@
             align-items: center;
             gap: 8px;
         }
-        .date-time i {
-            color: #0f4c75;
-        }
-        /* Baris kartu statistik */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -112,35 +104,26 @@
             margin-top: 8px;
             color: #10b981;
         }
-        /* Grid konten utama (peta dan grafik) */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-        @media (max-width: 768px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
         .card {
             background: white;
             border-radius: 24px;
             padding: 20px;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
             border: 1px solid #e9f0f9;
+            margin-bottom: 32px;
         }
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .card-header h3 {
             font-weight: 600;
             color: #1e293b;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
         .badge {
             background: #dbeafe;
@@ -150,84 +133,53 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
-        /* Peta tiruan */
-        .map-container {
-            background: #bbd4f0;
-            border-radius: 16px;
-            height: 250px;
+        .iframe-container {
             position: relative;
-            overflow: hidden;
-            background-image: radial-gradient(circle at 30% 40%, #9bb9e0 2px, transparent 2px), 
-                              radial-gradient(circle at 70% 60%, #9bb9e0 2px, transparent 2px),
-                              linear-gradient(125deg, #6d98c2 0%, #b3d0f0 100%);
-            background-size: 50px 50px, 80px 80px, cover;
-        }
-        .map-marker {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: #ef4444;
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .marker-1 { top: 30%; left: 45%; }
-        .marker-2 { top: 60%; left: 30%; background-color: #f59e0b; }
-        .marker-3 { top: 55%; left: 70%; background-color: #3b82f6; }
-        .marker-4 { top: 20%; left: 65%; background-color: #10b981; }
-        .map-legend {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background: rgba(255,255,255,0.8);
-            padding: 4px 10px;
+            width: 100%;
+            height: 550px;
             border-radius: 20px;
-            font-size: 0.7rem;
-            display: flex;
-            gap: 12px;
-            backdrop-filter: blur(2px);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            background-color: #f1f5f9;
         }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .legend-color {
-            width: 8px;
-            height: 8px;
-            border-radius: 4px;
-        }
-        .map-controls {
+        .iframe-container iframe {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            background: rgba(255,255,255,0.7);
-            border-radius: 30px;
-            padding: 4px;
-            backdrop-filter: blur(2px);
-        }
-        .map-controls button {
-            background: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+        }
+        .fallback-link {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .btn {
+            background-color: #0f4c75;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
             cursor: pointer;
-            color: #1e293b;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
-        .map-controls button:hover {
-            background: #d1d5db;
+        .btn i {
+            margin-right: 8px;
         }
-        /* Grafik */
-        .chart-container {
-            height: 250px;
-            position: relative;
+        .btn:hover {
+            background-color: #1b5f8a;
         }
-        canvas {
-            max-width: 100%;
-            height: auto !important;
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #0f4c75;
+            color: #0f4c75;
         }
-        /* Tabel */
+        .btn-outline:hover {
+            background: #e6f0fa;
+        }
         .table-wrapper {
             overflow-x: auto;
             border-radius: 16px;
@@ -256,6 +208,7 @@
             border-radius: 30px;
             font-size: 0.75rem;
             font-weight: 600;
+            display: inline-block;
         }
         .status-badge.warning {
             background: #fee2e2;
@@ -265,7 +218,6 @@
             background: #dcfce7;
             color: #166534;
         }
-        /* Footer */
         .footer {
             margin-top: 32px;
             text-align: center;
@@ -274,33 +226,18 @@
             border-top: 1px solid #e2e8f0;
             padding-top: 24px;
         }
-        .btn {
-            background-color: #0f4c75;
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #0f4c75;
-            color: #0f4c75;
-        }
-        .btn-outline:hover {
-            background: #e6f0fa;
-        }
-        .btn:hover {
-            background-color: #1b5f8a;
-        }
         .flex-row {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             align-items: center;
             justify-content: space-between;
+        }
+        .info-sumber {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 12px;
+            text-align: right;
         }
     </style>
 </head>
@@ -320,7 +257,7 @@
             </div>
         </div>
 
-        <!-- Kartu Statistik -->
+        <!-- Statistik -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-title"><i class="fas fa-satellite-dish"></i> Stasiun Aktif</div>
@@ -344,59 +281,38 @@
             </div>
         </div>
 
-        <!-- Konten Utama: Peta dan Grafik -->
-        <div class="main-grid">
-            <!-- Kartu Peta -->
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-map-marked-alt" style="margin-right: 8px; color:#0f4c75;"></i> Peta Real-time Perairan</h3>
-                    <span class="badge">Update 5 menit lalu</span>
-                </div>
-                <div class="map-container">
-                    <!-- penanda tiruan -->
-                    <div class="map-marker marker-1"></div>
-                    <div class="map-marker marker-2"></div>
-                    <div class="map-marker marker-3"></div>
-                    <div class="map-marker marker-4"></div>
-                    <!-- kontrol peta tiruan -->
-                    <div class="map-controls">
-                        <button><i class="fas fa-plus"></i></button>
-                        <button><i class="fas fa-minus"></i></button>
-                        <button><i class="fas fa-location-dot"></i></button>
-                    </div>
-                    <div class="map-legend">
-                        <span class="legend-item"><span class="legend-color" style="background:#ef4444;"></span> Kapal</span>
-                        <span class="legend-item"><span class="legend-color" style="background:#f59e0b;"></span> Anjungan</span>
-                        <span class="legend-item"><span class="legend-color" style="background:#3b82f6;"></span> Pelabuhan</span>
-                    </div>
-                </div>
-                <div class="flex-row" style="margin-top: 16px;">
-                    <div><i class="fas fa-location-dot" style="color:#0f4c75;"></i> 15 kapal di sekitar Selat Malaka</div>
-                    <button class="btn btn-outline" style="padding:6px 16px;"><i class="fas fa-expand"></i> Perbesar</button>
-                </div>
+        <!-- Konten Utama: BMKG Ocean Forecast System -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-map-marked-alt" style="margin-right: 8px; color:#0f4c75;"></i> Prakiraan Gelombang BMKG (Ocean Forecast System)</h3>
+                <span class="badge"><i class="fas fa-external-link-alt"></i> Sumber resmi BMKG</span>
             </div>
-
-            <!-- Kartu Grafik -->
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-chart-line" style="margin-right: 8px; color:#0f4c75;"></i> Suhu Permukaan Laut</h3>
-                    <span class="badge">7 hari terakhir</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="temperatureChart"></canvas>
-                </div>
-                <div class="flex-row" style="margin-top: 16px;">
-                    <div><i class="fas fa-water" style="color:#0f4c75;"></i> Rata-rata 28.2 - 29.1 °C</div>
-                    <button class="btn btn-outline" style="padding:6px 16px;"><i class="fas fa-download"></i> Data</button>
-                </div>
+            <!-- Iframe BMKG OFS -->
+            <div class="iframe-container">
+                <iframe 
+                    src="https://maritim.bmkg.go.id/ofs" 
+                    title="BMKG Ocean Forecast System"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation">
+                    <p>Browser tidak mendukung iframe. <a href="https://maritim.bmkg.go.id/ofs" target="_blank">Buka di tab baru</a>.</p>
+                </iframe>
+            </div>
+            <!-- Tautan cadangan jika iframe tidak tampil atau ingin dibuka di tab baru -->
+            <div class="fallback-link">
+                <a href="https://maritim.bmkg.go.id/ofs" target="_blank" rel="noopener noreferrer" class="btn">
+                    <i class="fas fa-external-link-alt"></i> Buka Halaman BMKG OFS di Tab Baru
+                </a>
+            </div>
+            <div class="info-sumber">
+                <i class="fas fa-info-circle"></i> Data dan peta interaktif disediakan langsung oleh BMKG. Jika peta tidak muncul, gunakan tombol di atas.
             </div>
         </div>
 
-        <!-- Tabel Aktivitas Terkini -->
+        <!-- Tabel Aktivitas Kapal Terkini -->
         <div style="margin-top: 32px;">
             <div class="card-header" style="margin-bottom: 16px; padding:0;">
                 <h3><i class="fas fa-list" style="margin-right: 8px; color:#0f4c75;"></i> Aktivitas Kapal Terkini</h3>
-                <button class="btn btn-outline"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button class="btn btn-outline" onclick="alert('Memperbarui data... (simulasi)')"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -458,13 +374,13 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p><i class="far fa-copyright"></i> 2025 SIMPEL MARITIM - Kementerian Kelautan dan Perikanan (Demo)</p>
-            <p style="margin-top: 8px;">Data simulasi untuk tujuan presentasi. Versi 1.0</p>
+            <p><i class="far fa-copyright"></i> 2025 SIMPEL MARITIM - Dinas Perikanan Situbondo (Demo)</p>
+            <p style="margin-top: 8px;">Data prakiraan gelombang bersumber dari BMKG. Data kapal adalah simulasi.</p>
         </div>
     </div>
 
     <script>
-        // Menampilkan tanggal dan waktu terkini dalam format Indonesia
+        // Menampilkan tanggal dan waktu terkini
         function updateDateTime() {
             const now = new Date();
             const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -475,46 +391,6 @@
         }
         updateDateTime();
         setInterval(updateDateTime, 1000);
-
-        // Inisialisasi grafik suhu
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('temperatureChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-                    datasets: [
-                        {
-                            label: 'Suhu (°C)',
-                            data: [28.3, 28.6, 28.8, 29.0, 28.7, 28.4, 28.5],
-                            borderColor: '#0f4c75',
-                            backgroundColor: 'rgba(15, 76, 117, 0.1)',
-                            tension: 0.3,
-                            fill: true,
-                            pointBackgroundColor: '#3282b8',
-                            pointBorderColor: 'white',
-                            borderWidth: 3
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { backgroundColor: '#0f4c75' }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 27,
-                            max: 30,
-                            grid: { color: '#e2e8f0' }
-                        }
-                    }
-                }
-            });
-        });
     </script>
 </body>
 </html>
