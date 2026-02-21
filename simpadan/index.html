@@ -2008,8 +2008,7 @@
         }
     </script>
 
-    <!-- ========== PERBAIKAN CETAK PDF LAPORAN ========== -->
-    <!-- Skrip ini menggantikan skrip "PERBAIKAN CETAK PDF LAPORAN TERFILTER" sebelumnya -->
+    <!-- ========== PERBAIKAN CETAK PDF LAPORAN (TIDAK TERPOTONG) ========== -->
     <script>
     (function() {
         // Pastikan jsPDF dan autoTable tersedia
@@ -2056,6 +2055,7 @@
                     const doc = new jsPDF('landscape', 'mm', 'a4');
                     const pageWidth = doc.internal.pageSize.width;
                     const pageHeight = doc.internal.pageSize.height;
+                    const marginBottom = 60; // mm, ruang untuk footer
 
                     // Header halaman pertama
                     doc.setFillColor(12, 36, 97);
@@ -2126,7 +2126,7 @@
                         head: [[ 'No', 'Nama', 'Nomor HP', 'NIK', 'Alamat', 'Desa', 'Kecamatan' ]],
                         body: tableData,
                         startY: 72,
-                        margin: { left: 15, right: 15, bottom: 35 },
+                        margin: { left: 15, right: 15, bottom: marginBottom },
                         headStyles: { fillColor: [12, 36, 97], textColor: 255, fontStyle: 'bold', fontSize: 9, halign: 'center' },
                         bodyStyles: { fontSize: 8, cellPadding: 2 },
                         alternateRowStyles: { fillColor: [245, 245, 245] },
@@ -2146,47 +2146,55 @@
                             
                             doc.setDrawColor(200, 200, 200);
                             doc.setLineWidth(0.5);
-                            doc.line(20, pageHeight - 32, pageWidth - 20, pageHeight - 32);
+                            doc.line(20, pageHeight - 42, pageWidth - 20, pageHeight - 42); // garis pemisah footer
 
-                            // Kiri footer
+                            // Footer kiri (teks keterangan)
                             doc.setFont('helvetica', 'bold');
                             doc.setFontSize(8);
                             doc.setTextColor(12, 36, 97);
-                            doc.text("DOKUMEN INI TELAH DIVALIDASI", 25, pageHeight - 22);
-                            doc.text("SECARA ELEKTRONIK OLEH", 25, pageHeight - 18);
-                            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", 25, pageHeight - 14);
+                            doc.text("DOKUMEN INI TELAH DIVALIDASI", 25, pageHeight - 32);
+                            doc.text("SECARA ELEKTRONIK OLEH", 25, pageHeight - 28);
+                            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", 25, pageHeight - 24);
                             doc.setFont('helvetica', 'normal');
                             doc.setFontSize(7);
-                            doc.text("Dinas Perikanan Kabupaten Situbondo", 25, pageHeight - 8);
+                            doc.text("Dinas Perikanan Kabupaten Situbondo", 25, pageHeight - 18);
                             doc.setTextColor(230, 126, 34);
-                            doc.text("www.dinasperikanansitubondo.com/simpadan", 25, pageHeight - 4);
+                            doc.text("www.dinasperikanansitubondo.com/simpadan", 25, pageHeight - 14);
 
-                            // Kanan hanya di halaman terakhir
+                            // Footer kanan (tanda tangan) hanya di halaman terakhir
                             if (currentPage === pageCount) {
                                 const rightX = pageWidth - 85;
-                                const rightY = pageHeight - 32;
+                                const footerTop = pageHeight - 50; // awal footer kanan
+                                let y = footerTop;
+
                                 doc.setFont('helvetica', 'normal');
                                 doc.setFontSize(9);
                                 doc.setTextColor(0, 0, 0);
                                 const formattedDate = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
-                                doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY + 2, {align:'center'});
-                                doc.text(officialPosition, rightX + 32, rightY + 8, {align:'center'});
-                                if (qrImageData) doc.addImage(qrImageData, 'PNG', rightX + 19, rightY + 12, 25, 25);
+                                doc.text(`Situbondo, ${formattedDate}`, rightX + 32, y, {align:'center'});
+                                y += 6;
+                                doc.text(officialPosition, rightX + 32, y, {align:'center'});
+                                y += 6;
+                                if (qrImageData) doc.addImage(qrImageData, 'PNG', rightX + 19, y, 25, 25);
+                                y += 25; // setelah QR
                                 doc.setDrawColor(0, 0, 0);
-                                doc.line(rightX + 5, rightY + 42, rightX + 60, rightY + 42);
+                                doc.line(rightX + 5, y, rightX + 60, y);
+                                y += 5;
                                 doc.setFont('helvetica', 'bold');
                                 doc.setFontSize(9);
-                                doc.text(officialName, rightX + 32, rightY + 47, {align:'center'});
+                                doc.text(officialName, rightX + 32, y, {align:'center'});
+                                y += 5;
                                 doc.setFont('helvetica', 'normal');
                                 doc.setFontSize(8);
-                                doc.text(`NIP. ${officialNip}`, rightX + 32, rightY + 52, {align:'center'});
+                                doc.text(`NIP. ${officialNip}`, rightX + 32, y, {align:'center'});
                             }
 
+                            // Info cetak di tengah footer
                             doc.setFontSize(7);
                             doc.setTextColor(100);
                             const printTime = new Date().toLocaleString('id-ID');
-                            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth/2, pageHeight - 12, { align:'center' });
-                            doc.text(`Total Data: ${filteredData.length} records`, pageWidth/2, pageHeight - 7, { align:'center' });
+                            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth/2, pageHeight - 22, { align:'center' });
+                            doc.text(`Total Data: ${filteredData.length} records`, pageWidth/2, pageHeight - 17, { align:'center' });
                         }
                     });
 
@@ -2280,6 +2288,7 @@
                     const doc = new jsPDF('landscape', 'mm', 'a4');
                     const pageWidth = doc.internal.pageSize.width;
                     const pageHeight = doc.internal.pageSize.height;
+                    const marginBottom = 60; // mm, ruang untuk footer
 
                     // Header halaman pertama
                     doc.setFillColor(12, 36, 97);
@@ -2338,7 +2347,7 @@
                         head: [[ 'No', 'Desa/Kelurahan', 'Total Nelayan', 'Pemilik Kapal', 'ABK', 'Penuh Waktu', 'Sambilan Utama', 'Sambilan Tambahan' ]],
                         body: tableRows,
                         startY: 72,
-                        margin: { left: 20, right: 20, bottom: 35 },
+                        margin: { left: 20, right: 20, bottom: marginBottom },
                         headStyles: { fillColor: [12, 36, 97], textColor: 255, fontStyle: 'bold', fontSize: 9, halign: 'center' },
                         bodyStyles: { fontSize: 8, cellPadding: 2 },
                         alternateRowStyles: { fillColor: [245, 245, 245] },
@@ -2366,47 +2375,55 @@
                             
                             doc.setDrawColor(200, 200, 200);
                             doc.setLineWidth(0.5);
-                            doc.line(20, pageHeight - 32, pageWidth - 20, pageHeight - 32);
+                            doc.line(20, pageHeight - 42, pageWidth - 20, pageHeight - 42); // garis pemisah footer
 
-                            // Kiri footer
+                            // Footer kiri (teks keterangan)
                             doc.setFont('helvetica', 'bold');
                             doc.setFontSize(8);
                             doc.setTextColor(12, 36, 97);
-                            doc.text("DOKUMEN INI TELAH DIVALIDASI", 25, pageHeight - 22);
-                            doc.text("SECARA ELEKTRONIK OLEH", 25, pageHeight - 18);
-                            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", 25, pageHeight - 14);
+                            doc.text("DOKUMEN INI TELAH DIVALIDASI", 25, pageHeight - 32);
+                            doc.text("SECARA ELEKTRONIK OLEH", 25, pageHeight - 28);
+                            doc.text("SISTEM SATU DATA NELAYAN (SIMPADAN TANGKAP)", 25, pageHeight - 24);
                             doc.setFont('helvetica', 'normal');
                             doc.setFontSize(7);
-                            doc.text("Dinas Perikanan Kabupaten Situbondo", 25, pageHeight - 8);
+                            doc.text("Dinas Perikanan Kabupaten Situbondo", 25, pageHeight - 18);
                             doc.setTextColor(230, 126, 34);
-                            doc.text("www.dinasperikanansitubondo.com/simpadan", 25, pageHeight - 4);
+                            doc.text("www.dinasperikanansitubondo.com/simpadan", 25, pageHeight - 14);
 
-                            // Kanan hanya di halaman terakhir
+                            // Footer kanan (tanda tangan) hanya di halaman terakhir
                             if (currentPage === pageCount) {
                                 const rightX = pageWidth - 85;
-                                const rightY = pageHeight - 32;
+                                const footerTop = pageHeight - 50; // awal footer kanan
+                                let y = footerTop;
+
                                 doc.setFont('helvetica', 'normal');
                                 doc.setFontSize(9);
                                 doc.setTextColor(0, 0, 0);
                                 const formattedDate = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
-                                doc.text(`Situbondo, ${formattedDate}`, rightX + 32, rightY + 2, {align:'center'});
-                                doc.text(officialPosition, rightX + 32, rightY + 8, {align:'center'});
-                                if (qrImageData) doc.addImage(qrImageData, 'PNG', rightX + 19, rightY + 12, 25, 25);
+                                doc.text(`Situbondo, ${formattedDate}`, rightX + 32, y, {align:'center'});
+                                y += 6;
+                                doc.text(officialPosition, rightX + 32, y, {align:'center'});
+                                y += 6;
+                                if (qrImageData) doc.addImage(qrImageData, 'PNG', rightX + 19, y, 25, 25);
+                                y += 25; // setelah QR
                                 doc.setDrawColor(0, 0, 0);
-                                doc.line(rightX + 5, rightY + 42, rightX + 60, rightY + 42);
+                                doc.line(rightX + 5, y, rightX + 60, y);
+                                y += 5;
                                 doc.setFont('helvetica', 'bold');
                                 doc.setFontSize(9);
-                                doc.text(officialName, rightX + 32, rightY + 47, {align:'center'});
+                                doc.text(officialName, rightX + 32, y, {align:'center'});
+                                y += 5;
                                 doc.setFont('helvetica', 'normal');
                                 doc.setFontSize(8);
-                                doc.text(`NIP. ${officialNip}`, rightX + 32, rightY + 52, {align:'center'});
+                                doc.text(`NIP. ${officialNip}`, rightX + 32, y, {align:'center'});
                             }
 
+                            // Info cetak di tengah footer
                             doc.setFontSize(7);
                             doc.setTextColor(100);
                             const printTime = new Date().toLocaleString('id-ID');
-                            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth/2, pageHeight - 12, { align:'center' });
-                            doc.text(`Total Data Terfilter: ${filteredData.length} records`, pageWidth/2, pageHeight - 7, { align:'center' });
+                            doc.text(`Dicetak : ${printTime} | ID Dokumen: ${printId}`, pageWidth/2, pageHeight - 22, { align:'center' });
+                            doc.text(`Total Data Terfilter: ${filteredData.length} records`, pageWidth/2, pageHeight - 17, { align:'center' });
                         }
                     });
 
