@@ -2017,9 +2017,7 @@
             return;
         }
 
-        /**
-         * Fungsi untuk mengekspor semua data terfilter ke PDF (tabel individu)
-         */
+        // ==================== FUNGSI CETAK TABEL DATA TERFILTER (SEMUA DATA) ====================
         function exportFullDataPdf() {
             if (typeof getFilteredData !== 'function') {
                 alert('Fungsi pengambilan data tidak ditemukan.');
@@ -2042,6 +2040,7 @@
             qrContainer.style.left = '-9999px';
             document.body.appendChild(qrContainer);
 
+            // Ambil data pejabat dari appSettings (global)
             const officialName = (typeof appSettings !== 'undefined' && appSettings.officialName) ? appSettings.officialName : 'Pejabat';
             const officialPosition = (typeof appSettings !== 'undefined' && appSettings.officialPosition) ? appSettings.officialPosition : 'Jabatan';
             const officialNip = (typeof appSettings !== 'undefined' && appSettings.officialNip) ? appSettings.officialNip : '-';
@@ -2055,7 +2054,7 @@
                     const doc = new jsPDF('landscape', 'mm', 'a4');
                     const pageWidth = doc.internal.pageSize.width;
                     const pageHeight = doc.internal.pageSize.height;
-                    const marginBottom = 65; // mm, ruang untuk footer (ditambah jadi 65mm)
+                    const marginBottom = 70; // mm, ruang untuk footer (diperbesar)
 
                     // Header halaman pertama
                     doc.setFillColor(12, 36, 97);
@@ -2108,7 +2107,7 @@
                     if (qrCanvas) qrImageData = qrCanvas.toDataURL('image/png');
                     document.body.removeChild(qrContainer);
 
-                    // Data tabel
+                    // Data tabel (semua data terfilter)
                     const maskFunc = (typeof maskData === 'function') ? maskData : (x => x);
                     const tableData = filteredData.map((d, index) => [
                         index + 1,
@@ -2148,7 +2147,7 @@
                             doc.setLineWidth(0.5);
                             doc.line(20, pageHeight - 42, pageWidth - 20, pageHeight - 42); // garis pemisah footer
 
-                            // Footer kiri (teks keterangan)
+                            // Footer kiri (setiap halaman)
                             doc.setFont('helvetica', 'bold');
                             doc.setFontSize(8);
                             doc.setTextColor(12, 36, 97);
@@ -2161,10 +2160,10 @@
                             doc.setTextColor(230, 126, 34);
                             doc.text("www.dinasperikanansitubondo.com/simpadan", 25, pageHeight - 14);
 
-                            // Footer kanan (tanda tangan) hanya di halaman terakhir
+                            // Footer kanan (hanya di halaman terakhir)
                             if (currentPage === pageCount) {
                                 const rightX = pageWidth - 85;
-                                const footerTop = pageHeight - 55; // awal footer kanan (dinaikkan 5mm)
+                                const footerTop = pageHeight - 55; // awal footer kanan
                                 let y = footerTop;
 
                                 doc.setFont('helvetica', 'normal');
@@ -2214,9 +2213,7 @@
             }, 500);
         }
 
-        /**
-         * Fungsi untuk mengekspor laporan rekap per desa (tidak terpotong)
-         */
+        // ==================== FUNGSI CETAK REKAPITULASI PER DESA ====================
         function exportRekapPdf() {
             if (typeof getFilteredData !== 'function') {
                 alert('Fungsi pengambilan data tidak ditemukan.');
@@ -2260,7 +2257,7 @@
                 desaStats[desa].sambilanTambahan
             ]);
 
-            // Total baris
+            // Baris total
             const total = filteredData.length;
             const totalOwner = sortedDesa.reduce((sum, d) => sum + desaStats[d].owner, 0);
             const totalAbk = sortedDesa.reduce((sum, d) => sum + desaStats[d].abk, 0);
@@ -2288,7 +2285,7 @@
                     const doc = new jsPDF('landscape', 'mm', 'a4');
                     const pageWidth = doc.internal.pageSize.width;
                     const pageHeight = doc.internal.pageSize.height;
-                    const marginBottom = 65; // mm, ruang untuk footer (ditambah jadi 65mm)
+                    const marginBottom = 70; // mm, ruang untuk footer (diperbesar)
 
                     // Header halaman pertama
                     doc.setFillColor(12, 36, 97);
@@ -2341,7 +2338,7 @@
                     if (qrCanvas) qrImageData = qrCanvas.toDataURL('image/png');
                     document.body.removeChild(qrContainer);
 
-                    const columnWidths = [15, 50, 25, 25, 25, 25, 25, 25]; // Total 215mm
+                    const columnWidths = [15, 50, 25, 25, 25, 25, 25, 25]; // Total 215mm (masih muat di A4 landscape)
 
                     doc.autoTable({
                         head: [[ 'No', 'Desa/Kelurahan', 'Total Nelayan', 'Pemilik Kapal', 'ABK', 'Penuh Waktu', 'Sambilan Utama', 'Sambilan Tambahan' ]],
@@ -2377,7 +2374,7 @@
                             doc.setLineWidth(0.5);
                             doc.line(20, pageHeight - 42, pageWidth - 20, pageHeight - 42); // garis pemisah footer
 
-                            // Footer kiri (teks keterangan)
+                            // Footer kiri (setiap halaman)
                             doc.setFont('helvetica', 'bold');
                             doc.setFontSize(8);
                             doc.setTextColor(12, 36, 97);
@@ -2390,10 +2387,10 @@
                             doc.setTextColor(230, 126, 34);
                             doc.text("www.dinasperikanansitubondo.com/simpadan", 25, pageHeight - 14);
 
-                            // Footer kanan (tanda tangan) hanya di halaman terakhir
+                            // Footer kanan (hanya di halaman terakhir)
                             if (currentPage === pageCount) {
                                 const rightX = pageWidth - 85;
-                                const footerTop = pageHeight - 55; // awal footer kanan (dinaikkan 5mm)
+                                const footerTop = pageHeight - 55; // awal footer kanan
                                 let y = footerTop;
 
                                 doc.setFont('helvetica', 'normal');
@@ -2443,7 +2440,12 @@
             }, 500);
         }
 
-        // Pasang event listener ke tombol-tombol yang sesuai
+        // ==================== MENIMPA FUNGSI LAMA DI MAIN.JS ====================
+        // Dengan ini, tombol yang memanggil printData atau generateFilteredPdf akan menggunakan fungsi baru
+        window.printData = exportRekapPdf;
+        window.generateFilteredPdf = exportFullDataPdf;
+
+        // ==================== PASANG EVENT LISTENER KE TOMBOL ====================
         function bindPdfButtons() {
             // Tombol untuk tabel data individu
             const btnTabel = document.getElementById('btnUnduhTabelPdf');
