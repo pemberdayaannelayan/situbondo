@@ -62,7 +62,87 @@
             border: 1px solid rgba(255,255,255,0.8);
         }
 
-        /* ===== NOTIFIKASI ===== */
+        /* ===== WELCOME NOTIFICATION (BARU) ===== */
+        .welcome-notification {
+            background: linear-gradient(135deg, var(--primary-blue), #1a4b6e);
+            color: white;
+            border-radius: 48px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.3);
+            border: 2px solid var(--accent-orange);
+        }
+        .welcome-content {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .welcome-logo {
+            height: 80px;
+            width: auto;
+            border-radius: 20px;
+            background: white;
+            padding: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .welcome-text h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .welcome-text p {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        .btn-login {
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 16px -6px #b35f00;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-login:hover {
+            background: #e07d00;
+            transform: scale(1.02);
+        }
+        .close-notification {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0 20px;
+            border-radius: 50%;
+            transition: 0.2s;
+            line-height: 1;
+        }
+        .close-notification:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        @media (max-width: 700px) {
+            .welcome-content { justify-content: center; text-align: center; }
+            .welcome-notification { flex-direction: column; }
+            .btn-login { width: 100%; }
+        }
+
+        /* ===== NOTIFIKASI DESKTOP ===== */
         .notification-desktop {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(8px);
@@ -620,7 +700,7 @@
         }
 
         @media print {
-            .notification-desktop, .btn-home, .btn-outline, .tips-footer, .btn, .fallback-link { display: none; }
+            .notification-desktop, .btn-home, .btn-outline, .tips-footer, .btn, .fallback-link, .welcome-notification { display: none; }
             body { background: white; padding: 0; }
             .container { box-shadow: none; backdrop-filter: none; background: white; }
         }
@@ -628,6 +708,21 @@
 </head>
 <body>
     <div class="container">
+        <!-- WELCOME NOTIFICATION (BARU) -->
+        <div class="welcome-notification" id="welcomeNotification">
+            <div class="welcome-content">
+                <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpelmaritim/logo_simpel_maritim.png" alt="Logo SIMPEL MARITIM" class="welcome-logo" onerror="this.style.display='none'">
+                <div class="welcome-text">
+                    <h2>🌊 Selamat Datang di SIMPEL MARITIM</h2>
+                    <p>Sistem Monitoring Perairan & Laut Situbondo. Dapatkan informasi real-time suhu laut, tinggi gelombang, cuaca, arus, dan panduan nelayan terbaru. Silakan masuk untuk memulai.</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button class="btn-login" id="loginButton"><i class="fas fa-sign-in-alt"></i> Login & Mulai</button>
+                <button class="close-notification" onclick="document.getElementById('welcomeNotification').style.display='none'"><i class="fas fa-times-circle"></i></button>
+            </div>
+        </div>
+
         <!-- NOTIFIKASI DESKTOP -->
         <div class="notification-desktop" id="desktopNotification">
             <div class="notification-content">
@@ -1055,6 +1150,17 @@
             document.getElementById('moonPhase').textContent = phaseName;
             document.getElementById('moonEmoji').textContent = emoji;
         }
+
+        // ===== HANDLE LOGIN =====
+        function handleLogin() {
+            fetchAllData(); // refresh data
+            document.getElementById('welcomeNotification').style.display = 'none'; // sembunyikan welcome notification
+        }
+
+        // Pasang event listener ke tombol login
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginButton').addEventListener('click', handleLogin);
+        });
 
         // Panggil semua data saat halaman dimuat
         window.addEventListener('load', fetchAllData);
