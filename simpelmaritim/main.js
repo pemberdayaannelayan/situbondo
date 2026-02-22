@@ -41,7 +41,7 @@ function addMarkerToMap(lat, lng, keterangan, saveToLocal = true) {
     const popupContent = `
         <b>Keterangan:</b> ${keterangan}<br>
         <b>Koordinat:</b> ${lat.toFixed(5)}, ${lng.toFixed(5)}<br>
-        <div style="display:flex; gap:5px; margin-top:8px;">
+        <div style="display:flex; gap:5px; margin-top:8px; flex-wrap:wrap;">
             <button onclick="setAsStart(${lat}, ${lng})" style="padding:5px 10px;background:#27ae60;color:white;border:none;border-radius:20px;cursor:pointer;">
                 <i class="fas fa-play"></i> Awal
             </button>
@@ -485,7 +485,6 @@ function initParticles() {
     let w, h, particles = [];
     let mouse = { x: null, y: null, radius: 150 };
 
-    // Pastikan canvas terlihat
     canvas.style.display = 'block';
 
     window.addEventListener('mousemove', (e) => {
@@ -498,19 +497,18 @@ function initParticles() {
     function create(count = 150) {
         for(let i=0; i<count; i++) particles.push({
             x: Math.random()*w, y: Math.random()*h,
-            r: Math.random()*3 + 1.5, // ukuran kecil seperti bintang
-            sx: (Math.random()-0.5)*0.08, // gerak sangat lambat
+            r: Math.random()*3 + 1.5,
+            sx: (Math.random()-0.5)*0.08,
             sy: (Math.random()-0.5)*0.04,
             opacity: Math.random()*0.6 + 0.4,
-            speedOp: Math.random()*0.01 + 0.005, // kecepatan kedip
-            color: `rgba(255, 255, 200, 1)` // warna putih kekuningan
+            speedOp: Math.random()*0.01 + 0.005,
+            color: `rgba(255, 255, 200, 1)`
         });
     }
 
     function draw() {
         ctx.clearRect(0,0,w,h);
         for(let p of particles) {
-            // efek kedip: ubah opacity berdasarkan waktu
             p.opacity += p.speedOp;
             if (p.opacity > 1 || p.opacity < 0.2) p.speedOp *= -1;
             ctx.beginPath();
@@ -525,7 +523,6 @@ function initParticles() {
 
     function update() {
         for(let p of particles) {
-            // Interaksi mouse (partikel menjauh)
             if (mouse.x && mouse.y) {
                 let dx = mouse.x - p.x;
                 let dy = mouse.y - p.y;
@@ -563,7 +560,6 @@ function stopParticles() {
         cancelAnimationFrame(particleAnimationFrame);
         particleAnimationFrame = null;
     }
-    // Sembunyikan canvas
     const canvas = document.getElementById('particle-canvas');
     if (canvas) canvas.style.display = 'none';
 }
