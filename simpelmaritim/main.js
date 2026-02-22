@@ -221,14 +221,13 @@ window.restoreData = function(event) {
     reader.readAsText(file);
 };
 
-// ===== DATA MARITIM =====
+// ===== DATA MARITIM (Arus Laut dihapus) =====
 window.fetchAllData = async function() {
     setLoadingState(true);
     await Promise.allSettled([
         fetchSeaTemperature(),
         fetchWaveData(),
         fetchWeatherData(),
-        fetchMarineExtra(),
         calculateMoonPhase()
     ]);
     setLoadingState(false);
@@ -288,29 +287,6 @@ async function fetchWeatherData() {
         } else throw new Error();
     } catch {
         document.getElementById('weatherTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal';
-    }
-}
-
-async function fetchMarineExtra() {
-    try {
-        const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=ocean_current_velocity,salinity&timezone=auto&forecast_days=1`;
-        const resp = await fetch(url); if(!resp.ok) throw new Error();
-        const data = await resp.json();
-        const currents = data.hourly.ocean_current_velocity, sals = data.hourly.salinity, times = data.hourly.time;
-        let idx = currents.length-1; while(idx>=0 && currents[idx]===null) idx--;
-        if(idx>=0) {
-            document.getElementById('currentSpeed').innerHTML = (currents[idx] ? currents[idx].toFixed(2) : '--')+' <span class="unit">m/s</span>';
-            document.getElementById('salinityValue').textContent = sals?.[idx]?.toFixed(1) || '--';
-            document.getElementById('currentTimeExtra').textContent = new Date(times[idx]+'Z').toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-        } else {
-            document.getElementById('currentSpeed').innerHTML = '-- <span class="unit">m/s</span>';
-            document.getElementById('salinityValue').textContent = '--';
-            document.getElementById('currentTimeExtra').textContent = '--';
-        }
-    } catch {
-        document.getElementById('currentSpeed').innerHTML = '-- <span class="unit">m/s</span>';
-        document.getElementById('salinityValue').textContent = '--';
-        document.getElementById('currentTimeExtra').textContent = '--';
     }
 }
 
@@ -454,6 +430,11 @@ document.getElementById('notifTidak').addEventListener('click', function() {
 document.getElementById('notifIya').addEventListener('click', function() {
     window.open('https://nowcasting.bmkg.go.id/bs/jatim/', '_blank');
 });
+
+// ===== AUDIO PLAYER (TAMBAHAN) =====
+window.closeAudioPlayer = function() {
+    document.getElementById('audioPlayerContainer').style.display = 'none';
+};
 
 // ===== LOGIN =====
 document.getElementById('loginButton').addEventListener('click', ()=>{
