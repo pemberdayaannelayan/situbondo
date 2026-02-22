@@ -735,12 +735,34 @@
         .btn-map-danger:hover {
             background: #c0392b !important;
         }
-        /* Tombol baru untuk lokasi */
         .btn-map-success {
             background: #27ae60 !important;
         }
         .btn-map-success:hover {
             background: #2ecc71 !important;
+        }
+        .btn-map-warning {
+            background: #f39c12 !important;
+        }
+        .btn-map-warning:hover {
+            background: #e67e22 !important;
+        }
+
+        /* Info jarak dan waktu */
+        .route-info {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(5px);
+            border-radius: 40px;
+            padding: 16px 24px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-blue);
+            border: 2px solid var(--accent-orange);
+            display: none;
+        }
+        .route-info.show {
+            display: block;
         }
 
         /* ===== CARD PETA BMKG ===== */
@@ -1108,11 +1130,11 @@
                 </div>
             </section>
 
-            <!-- ===== FITUR BARU: PETA NELAYAN dengan Lokasi Otomatis ===== -->
+            <!-- ===== FITUR BARU: PETA NELAYAN dengan Lokasi Otomatis dan Analisis Rute ===== -->
             <section class="map-section">
                 <div class="section-header">
                     <h2><i class="fas fa-map-marked-alt"></i> Peta Nelayan & Titik Penting</h2>
-                    <p class="section-subtitle">Klik pada peta untuk menambah marker (titik koordinat) dengan keterangan. Gunakan fitur di bawah untuk mendapatkan posisi otomatis dan membuat rute.</p>
+                    <p class="section-subtitle">Klik pada peta untuk menambah marker. Klik marker untuk opsi jadikan titik awal/tujuan.</p>
                 </div>
                 <div class="map-controls">
                     <input type="text" id="startLat" placeholder="Latitude Awal (contoh: -7.7)" value="-7.7">
@@ -1120,16 +1142,18 @@
                     <input type="text" id="endLat" placeholder="Latitude Tujuan" value="-7.8">
                     <input type="text" id="endLon" placeholder="Longitude Tujuan" value="114.1">
                     <button id="routeBtn" class="btn-map-success"><i class="fas fa-route"></i> Tampilkan Rute</button>
-                    <button id="clearMarkersBtn" class="btn-map-danger"><i class="fas fa-trash-alt"></i> Hapus Semua Marker</button>
                     <button id="myLocationBtn" class="btn-map-success"><i class="fas fa-location-dot"></i> 📍 Lokasi Saya</button>
-                    <button id="setStartLocationBtn"><i class="fas fa-map-pin"></i> 📍 Lokasi Saya sbg Awal</button>
-                    <button id="setEndLocationBtn"><i class="fas fa-map-pin"></i> 📍 Lokasi Saya sbg Tujuan</button>
+                    <button id="setStartLocationBtn" class="btn-map-warning"><i class="fas fa-map-pin"></i> 📍 Saya sbg Awal</button>
+                    <button id="setEndLocationBtn" class="btn-map-warning"><i class="fas fa-map-pin"></i> 📍 Saya sbg Tujuan</button>
+                    <button id="checkRouteToDestinationBtn" class="btn-map-success"><i class="fas fa-search-location"></i> 🔍 Cek Posisi & Rute ke Tujuan</button>
+                    <button id="clearMarkersBtn" class="btn-map-danger"><i class="fas fa-trash-alt"></i> Hapus Semua Marker</button>
                 </div>
                 <div class="map-container">
                     <div id="map"></div>
                 </div>
+                <div id="routeInfo" class="route-info"></div>
                 <p style="text-align: center; margin-top: 15px; color: var(--text-light);">
-                    <i class="fas fa-info-circle"></i> Klik pada peta untuk menambah marker. Klik marker untuk melihat keterangan atau menghapus.
+                    <i class="fas fa-info-circle"></i> Klik marker untuk melihat opsi jadikan titik awal atau tujuan.
                 </p>
             </section>
 
@@ -1204,12 +1228,21 @@
         // Fungsi menambah marker ke peta dan ke localStorage
         function addMarkerToMap(lat, lng, keterangan, saveToLocal = true) {
             const marker = L.marker([lat, lng]).addTo(markerLayer);
+            // Tambahkan tombol di popup untuk set sebagai awal/tujuan
             const popupContent = `
                 <b>Keterangan:</b> ${keterangan}<br>
                 <b>Koordinat:</b> ${lat.toFixed(5)}, ${lng.toFixed(5)}<br>
-                <button onclick="deleteMarker(this, ${lat}, ${lng})" style="margin-top:8px;padding:5px 10px;background:#ff6b6b;color:white;border:none;border-radius:20px;cursor:pointer;">
-                    <i class="fas fa-trash"></i> Hapus
-                </button>
+                <div style="display:flex; gap:5px; margin-top:8px;">
+                    <button onclick="setAsStart(${lat}, ${lng})" style="padding:5px 10px;background:#27ae60;color:white;border:none;border-radius:20px;cursor:pointer;">
+                        <i class="fas fa-play"></i> Awal
+                    </button>
+                    <button onclick="setAsEnd(${lat}, ${lng})" style="padding:5px 10px;background:#f39c12;color:white;border:none;border-radius:20px;cursor:pointer;">
+                        <i class="fas fa-flag-checkered"></i> Tujuan
+                    </button>
+                    <button onclick="deleteMarker(this, ${lat}, ${lng})" style="padding:5px 10px;background:#ff6b6b;color:white;border:none;border-radius:20px;cursor:pointer;">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </div>
             `;
             marker.bindPopup(popupContent);
 
@@ -1218,6 +1251,19 @@
                 localStorage.setItem('nelayanMarkers', JSON.stringify(markersData));
             }
         }
+
+        // Fungsi untuk mengisi input start/end dari marker
+        window.setAsStart = function(lat, lng) {
+            document.getElementById('startLat').value = lat.toFixed(5);
+            document.getElementById('startLon').value = lng.toFixed(5);
+            alert('Titik awal telah diisi. Silakan klik "Tampilkan Rute" jika tujuan sudah ditentukan.');
+        };
+
+        window.setAsEnd = function(lat, lng) {
+            document.getElementById('endLat').value = lat.toFixed(5);
+            document.getElementById('endLon').value = lng.toFixed(5);
+            alert('Titik tujuan telah diisi. Silakan klik "Tampilkan Rute" jika titik awal sudah ditentukan.');
+        };
 
         // Fungsi menghapus marker (dipanggil dari popup)
         window.deleteMarker = function(btn, lat, lng) {
@@ -1241,13 +1287,8 @@
             }
         });
 
-        // Fungsi routing
-        document.getElementById('routeBtn').addEventListener('click', function() {
-            const startLat = parseFloat(document.getElementById('startLat').value);
-            const startLon = parseFloat(document.getElementById('startLon').value);
-            const endLat = parseFloat(document.getElementById('endLat').value);
-            const endLon = parseFloat(document.getElementById('endLon').value);
-
+        // Fungsi routing dan menampilkan info jarak & waktu
+        function showRoute(startLat, startLon, endLat, endLon) {
             if (isNaN(startLat) || isNaN(startLon) || isNaN(endLat) || isNaN(endLon)) {
                 alert('Masukkan koordinat yang valid!');
                 return;
@@ -1266,12 +1307,44 @@
                 routeWhileDragging: true,
                 showAlternatives: true,
                 fitSelectedRoutes: true,
-                lineOptions: { styles: [{ color: '#f18f01', weight: 5 }] }
+                lineOptions: { styles: [{ color: '#f18f01', weight: 5 }] },
+                // Tampilkan ringkasan rute
+                createMarker: function() { return null; } // Jangan buat marker tambahan
             }).addTo(map);
+
+            // Event ketika rute ditemukan
+            routingControl.on('routesfound', function(e) {
+                const routes = e.routes;
+                const route = routes[0]; // Ambil rute pertama
+                const distance = route.summary.totalDistance / 1000; // km
+                const timeSeconds = route.summary.totalTime; // detik (estimasi dari routing machine)
+                const timeHours = timeSeconds / 3600;
+                const hours = Math.floor(timeHours);
+                const minutes = Math.round((timeHours - hours) * 60);
+                const timeStr = hours > 0 ? `${hours} jam ${minutes} menit` : `${minutes} menit`;
+
+                // Tampilkan info
+                const infoDiv = document.getElementById('routeInfo');
+                infoDiv.innerHTML = `<i class="fas fa-info-circle"></i> Jarak: ${distance.toFixed(2)} km | Estimasi waktu: ${timeStr} (kecepatan rata-rata kendaraan)`;
+                infoDiv.classList.add('show');
+            });
+
+            routingControl.on('routingerror', function() {
+                document.getElementById('routeInfo').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menghitung rute.';
+                document.getElementById('routeInfo').classList.add('show');
+            });
+        }
+
+        // Tombol Tampilkan Rute
+        document.getElementById('routeBtn').addEventListener('click', function() {
+            const startLat = parseFloat(document.getElementById('startLat').value);
+            const startLon = parseFloat(document.getElementById('startLon').value);
+            const endLat = parseFloat(document.getElementById('endLat').value);
+            const endLon = parseFloat(document.getElementById('endLon').value);
+            showRoute(startLat, startLon, endLat, endLon);
         });
 
         // ===== FITUR GEOLOKASI =====
-        // Mendapatkan posisi saat ini
         function getCurrentPosition(callback) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -1291,7 +1364,7 @@
                 const keterangan = prompt('Masukkan keterangan untuk lokasi Anda:');
                 if (keterangan !== null && keterangan.trim() !== '') {
                     addMarkerToMap(lat, lon, keterangan, true);
-                    map.setView([lat, lon], 14); // Perbesar ke lokasi
+                    map.setView([lat, lon], 14);
                 }
             });
         });
@@ -1301,18 +1374,33 @@
             getCurrentPosition((lat, lon) => {
                 document.getElementById('startLat').value = lat.toFixed(5);
                 document.getElementById('startLon').value = lon.toFixed(5);
-                // Tambahkan marker otomatis? Bisa opsional, tapi kita biarkan pengguna memutuskan
-                // Agar tidak terlalu banyak marker, kita hanya isi input.
-                alert('Koordinat awal telah diisi. Sekarang Anda bisa mengisi titik tujuan dan tekan Tampilkan Rute.');
+                alert('Koordinat awal telah diisi.');
             });
         });
 
-        // Tombol Lokasi Saya sebagai Tujuan
+        // Tombol Lokasi Saya sebagai Titik Tujuan
         document.getElementById('setEndLocationBtn').addEventListener('click', function() {
             getCurrentPosition((lat, lon) => {
                 document.getElementById('endLat').value = lat.toFixed(5);
                 document.getElementById('endLon').value = lon.toFixed(5);
-                alert('Koordinat tujuan telah diisi. Sekarang Anda bisa mengisi titik awal dan tekan Tampilkan Rute.');
+                alert('Koordinat tujuan telah diisi.');
+            });
+        });
+
+        // Tombol Cek Posisi & Rute ke Tujuan
+        document.getElementById('checkRouteToDestinationBtn').addEventListener('click', function() {
+            getCurrentPosition((lat, lon) => {
+                // Isi titik awal dengan posisi saat ini
+                document.getElementById('startLat').value = lat.toFixed(5);
+                document.getElementById('startLon').value = lon.toFixed(5);
+                // Ambil titik tujuan dari input
+                const endLat = parseFloat(document.getElementById('endLat').value);
+                const endLon = parseFloat(document.getElementById('endLon').value);
+                if (isNaN(endLat) || isNaN(endLon)) {
+                    alert('Titik tujuan belum diisi. Isi tujuan terlebih dahulu.');
+                    return;
+                }
+                showRoute(lat, lon, endLat, endLon);
             });
         });
 
@@ -1338,7 +1426,6 @@
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    // Validasi sederhana
                     if (data.agenda !== undefined && data.markers !== undefined) {
                         localStorage.setItem('nelayanAgenda', JSON.stringify(data.agenda));
                         localStorage.setItem('nelayanMarkers', JSON.stringify(data.markers));
@@ -1493,7 +1580,6 @@
                 return;
             }
             noAgenda.style.display = 'none';
-            // Urutkan berdasarkan waktu
             agendaList.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
             let html = '';
             agendaList.forEach((item, index) => {
@@ -1533,16 +1619,13 @@
             document.getElementById('agendaDesc').value = '';
         });
 
-        // Notifikasi: cek setiap menit apakah ada agenda dalam 15 menit ke depan
         function checkAgendaNotifications() {
             const now = new Date();
             agendaList.forEach(item => {
                 const itemTime = new Date(item.dateTime);
                 const diffMs = itemTime - now;
                 const diffMin = Math.round(diffMs / 60000);
-                // Jika waktu agenda antara 0 hingga 15 menit dari sekarang, dan belum pernah ditampilkan
                 if (diffMin >= 0 && diffMin <= 15) {
-                    // Tampilkan notifikasi browser
                     if (Notification.permission === 'granted') {
                         new Notification('🔔 Agenda Nelayan', {
                             body: `${item.title} - ${item.desc || 'Tanpa deskripsi'}\nWaktu: ${itemTime.toLocaleString('id-ID')}`,
@@ -1560,21 +1643,17 @@
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             fetchAllData();
-            initMap(); // Inisialisasi peta setelah login
+            initMap();
             if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
                 Notification.requestPermission();
             }
         });
 
-        // LOAD (hanya persiapan, tanpa menampilkan konten sebelum login)
+        // LOAD
         window.addEventListener('load', ()=>{
-            // Sembunyikan konten utama sampai login
             document.getElementById('mainContent').style.display = 'none';
-            // Inisialisasi partikel
             initParticles();
-            // Render agenda (kalau sudah ada data)
             renderAgenda();
-            // Set interval notifikasi
             setInterval(checkAgendaNotifications, 60000);
         });
 
