@@ -1,545 +1,370 @@
-// ===== GLOBAL VARIABLES =====
-let map, markerLayer, routingControl;
-let markersData = JSON.parse(localStorage.getItem('nelayanMarkers')) || [];
-let agendaList = JSON.parse(localStorage.getItem('nelayanAgenda')) || [];
-let editingIndex = -1; // Untuk agenda edit
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>SIMPEL MARITIM – Nelayan Cerdas & Aman</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- Leaflet (OpenStreetMap) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <!-- CSS Eksternal -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
 
-const LAT = -7.7, LON = 114.0;
-
-// ===== TANGGAL & WAKTU =====
-function updateDateTime() {
-    const now = new Date();
-    document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-    document.getElementById('currentTime').textContent = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-}
-updateDateTime();
-setInterval(updateDateTime,1000);
-
-// ===== INISIALISASI PETA =====
-function initMap() {
-    if (map) return;
-    map = L.map('map').setView([LAT, LON], 10);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    markerLayer = L.layerGroup().addTo(map);
-    markersData.forEach(m => addMarkerToMap(m.lat, m.lng, m.keterangan, false));
-
-    map.on('click', function(e) {
-        const { lat, lng } = e.latlng;
-        const keterangan = prompt('Masukkan keterangan untuk titik ini:');
-        if (keterangan !== null && keterangan.trim() !== '') {
-            addMarkerToMap(lat, lng, keterangan, true);
-        }
-    });
-}
-
-function addMarkerToMap(lat, lng, keterangan, saveToLocal = true) {
-    const marker = L.marker([lat, lng]).addTo(markerLayer);
-    const popupContent = `
-        <b>Keterangan:</b> ${keterangan}<br>
-        <b>Koordinat:</b> ${lat.toFixed(5)}, ${lng.toFixed(5)}<br>
-        <div style="display:flex; gap:5px; margin-top:8px;">
-            <button onclick="setAsStart(${lat}, ${lng})" style="padding:5px 10px;background:#27ae60;color:white;border:none;border-radius:20px;cursor:pointer;">
-                <i class="fas fa-play"></i> Awal
-            </button>
-            <button onclick="setAsEnd(${lat}, ${lng})" style="padding:5px 10px;background:#f39c12;color:white;border:none;border-radius:20px;cursor:pointer;">
-                <i class="fas fa-flag-checkered"></i> Tujuan
-            </button>
-            <button onclick="deleteMarker(this, ${lat}, ${lng})" style="padding:5px 10px;background:#ff6b6b;color:white;border:none;border-radius:20px;cursor:pointer;">
-                <i class="fas fa-trash"></i> Hapus
-            </button>
+    <!-- OVERLAY LOGIN -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-modal">
+            <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpelmaritim/logo_simpel_maritim.png" alt="Logo SIMPEL MARITIM" onerror="this.style.display='none'">
+            <h2>SIMPEL MARITIM</h2>
+            <p>Sistem Monitoring Perairan & Laut Situbondo<br>Silakan masuk untuk mengakses informasi terkini.</p>
+            <button class="btn-login" id="loginButton"><i class="fas fa-ship"></i> Login & Mulai</button>
         </div>
-    `;
-    marker.bindPopup(popupContent);
+    </div>
 
-    if (saveToLocal) {
-        markersData.push({ lat, lng, keterangan });
-        localStorage.setItem('nelayanMarkers', JSON.stringify(markersData));
-    }
-}
-
-window.setAsStart = function(lat, lng) {
-    document.getElementById('startLat').value = lat.toFixed(5);
-    document.getElementById('startLon').value = lng.toFixed(5);
-    alert('Titik awal telah diisi. Silakan klik "Tampilkan Rute" jika tujuan sudah ditentukan.');
-};
-
-window.setAsEnd = function(lat, lng) {
-    document.getElementById('endLat').value = lat.toFixed(5);
-    document.getElementById('endLon').value = lng.toFixed(5);
-    alert('Titik tujuan telah diisi. Silakan klik "Tampilkan Rute" jika titik awal sudah ditentukan.');
-};
-
-window.deleteMarker = function(btn, lat, lng) {
-    markerLayer.eachLayer(layer => {
-        if (layer.getLatLng && layer.getLatLng().lat === lat && layer.getLatLng().lng === lng) {
-            markerLayer.removeLayer(layer);
-        }
-    });
-    markersData = markersData.filter(m => !(m.lat === lat && m.lng === lng));
-    localStorage.setItem('nelayanMarkers', JSON.stringify(markersData));
-};
-
-document.getElementById('clearMarkersBtn').addEventListener('click', function() {
-    if (confirm('Hapus semua marker?')) {
-        markerLayer.clearLayers();
-        markersData = [];
-        localStorage.removeItem('nelayanMarkers');
-    }
-});
-
-function showRoute(startLat, startLon, endLat, endLon) {
-    if (isNaN(startLat) || isNaN(startLon) || isNaN(endLat) || isNaN(endLon)) {
-        alert('Masukkan koordinat yang valid!');
-        return;
-    }
-    if (routingControl) map.removeControl(routingControl);
-    routingControl = L.Routing.control({
-        waypoints: [L.latLng(startLat, startLon), L.latLng(endLat, endLon)],
-        routeWhileDragging: true,
-        showAlternatives: true,
-        fitSelectedRoutes: true,
-        lineOptions: { styles: [{ color: '#f18f01', weight: 5 }] },
-        createMarker: function() { return null; }
-    }).addTo(map);
-
-    routingControl.on('routesfound', function(e) {
-        const route = e.routes[0];
-        const distance = route.summary.totalDistance / 1000;
-        const timeSeconds = route.summary.totalTime;
-        const timeHours = timeSeconds / 3600;
-        const hours = Math.floor(timeHours);
-        const minutes = Math.round((timeHours - hours) * 60);
-        const timeStr = hours > 0 ? `${hours} jam ${minutes} menit` : `${minutes} menit`;
-        const infoDiv = document.getElementById('routeInfo');
-        infoDiv.innerHTML = `<i class="fas fa-info-circle"></i> Jarak: ${distance.toFixed(2)} km | Estimasi waktu: ${timeStr} (kecepatan rata-rata kendaraan)`;
-        infoDiv.classList.add('show');
-    });
-    routingControl.on('routingerror', function() {
-        document.getElementById('routeInfo').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menghitung rute.';
-        document.getElementById('routeInfo').classList.add('show');
-    });
-}
-
-document.getElementById('routeBtn').addEventListener('click', function() {
-    const startLat = parseFloat(document.getElementById('startLat').value);
-    const startLon = parseFloat(document.getElementById('startLon').value);
-    const endLat = parseFloat(document.getElementById('endLat').value);
-    const endLon = parseFloat(document.getElementById('endLon').value);
-    showRoute(startLat, startLon, endLat, endLon);
-});
-
-// ===== GEOLOKASI =====
-function getCurrentPosition(callback) {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => callback(position.coords.latitude, position.coords.longitude),
-            error => alert('Gagal mendapatkan lokasi: ' + error.message)
-        );
-    } else {
-        alert('Browser tidak mendukung geolokasi.');
-    }
-}
-
-document.getElementById('myLocationBtn').addEventListener('click', function() {
-    getCurrentPosition((lat, lon) => {
-        const keterangan = prompt('Masukkan keterangan untuk lokasi Anda:');
-        if (keterangan !== null && keterangan.trim() !== '') {
-            addMarkerToMap(lat, lon, keterangan, true);
-            map.setView([lat, lon], 14);
-        }
-    });
-});
-
-document.getElementById('setStartLocationBtn').addEventListener('click', function() {
-    getCurrentPosition((lat, lon) => {
-        document.getElementById('startLat').value = lat.toFixed(5);
-        document.getElementById('startLon').value = lon.toFixed(5);
-        alert('Koordinat awal telah diisi.');
-    });
-});
-
-document.getElementById('setEndLocationBtn').addEventListener('click', function() {
-    getCurrentPosition((lat, lon) => {
-        document.getElementById('endLat').value = lat.toFixed(5);
-        document.getElementById('endLon').value = lon.toFixed(5);
-        alert('Koordinat tujuan telah diisi.');
-    });
-});
-
-document.getElementById('checkRouteToDestinationBtn').addEventListener('click', function() {
-    getCurrentPosition((lat, lon) => {
-        document.getElementById('startLat').value = lat.toFixed(5);
-        document.getElementById('startLon').value = lon.toFixed(5);
-        const endLat = parseFloat(document.getElementById('endLat').value);
-        const endLon = parseFloat(document.getElementById('endLon').value);
-        if (isNaN(endLat) || isNaN(endLon)) {
-            alert('Titik tujuan belum diisi. Isi tujuan terlebih dahulu.');
-            return;
-        }
-        showRoute(lat, lon, endLat, endLon);
-    });
-});
-
-// ===== BACKUP & RESTORE =====
-window.backupData = function() {
-    const data = {
-        agenda: agendaList,
-        markers: markersData
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `simpelmaritim_backup_${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-};
-
-window.restoreData = function(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (data.agenda !== undefined && data.markers !== undefined) {
-                localStorage.setItem('nelayanAgenda', JSON.stringify(data.agenda));
-                localStorage.setItem('nelayanMarkers', JSON.stringify(data.markers));
-                alert('Data berhasil dipulihkan! Halaman akan dimuat ulang.');
-                location.reload();
-            } else {
-                alert('File backup tidak valid.');
-            }
-        } catch (err) {
-            alert('Gagal membaca file: ' + err);
-        }
-    };
-    reader.readAsText(file);
-};
-
-// ===== DATA MARITIM =====
-window.fetchAllData = async function() {
-    setLoadingState(true);
-    await Promise.allSettled([
-        fetchSeaTemperature(),
-        fetchWaveData(),
-        fetchWeatherData(),
-        fetchMarineExtra(),
-        calculateMoonPhase()
-    ]);
-    setLoadingState(false);
-};
-
-function setLoadingState(isLoading) {
-    const refreshBtn = document.querySelector('.btn-refresh i');
-    if(refreshBtn) refreshBtn.className = isLoading ? 'fas fa-spinner fa-pulse' : 'fas fa-sync-alt';
-}
-
-async function fetchSeaTemperature() {
-    try {
-        const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=sea_surface_temperature&timezone=auto&past_days=1&forecast_days=1`;
-        const resp = await fetch(url); if(!resp.ok) throw new Error();
-        const data = await resp.json();
-        const times = data.hourly.time, temps = data.hourly.sea_surface_temperature;
-        let idx = temps.length-1; while(idx>=0 && temps[idx]===null) idx--;
-        if(idx>=0) {
-            document.getElementById('suhuValueCard').innerHTML = temps[idx].toFixed(1)+' <span class="unit">°C</span>';
-            document.getElementById('suhuTimeCard').innerHTML = '<i class="fas fa-clock"></i> '+new Date(times[idx]+'Z').toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
-        } else throw new Error();
-    } catch {
-        document.getElementById('suhuTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal memuat';
-    }
-}
-
-async function fetchWaveData() {
-    try {
-        const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=wave_height,wave_direction,wave_period&models=ncep_gfswave025&timezone=auto&forecast_days=1`;
-        const resp = await fetch(url); if(!resp.ok) throw new Error();
-        const data = await resp.json();
-        const times = data.hourly.time, heights = data.hourly.wave_height, dirs = data.hourly.wave_direction, pers = data.hourly.wave_period;
-        let idx = heights.length-1; while(idx>=0 && heights[idx]===null) idx--;
-        if(idx>=0) {
-            document.getElementById('waveValueCard').innerHTML = (heights[idx] ? heights[idx].toFixed(1) : '--')+' <span class="unit">m</span>';
-            document.getElementById('waveTimeCard').innerHTML = '<i class="fas fa-clock"></i> '+new Date(times[idx]+'Z').toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
-            document.getElementById('waveDirection').textContent = dirs?.[idx]?.toFixed(0) || '--';
-            document.getElementById('wavePeriod').textContent = pers?.[idx]?.toFixed(1) || '--';
-        } else throw new Error();
-    } catch {
-        document.getElementById('waveTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal';
-    }
-}
-
-async function fetchWeatherData() {
-    try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&timezone=auto`;
-        const resp = await fetch(url); if(!resp.ok) throw new Error();
-        const data = await resp.json();
-        if(data.current_weather) {
-            const w = data.current_weather;
-            document.getElementById('weatherTempCard').innerHTML = w.temperature+' <span class="unit">°C</span>';
-            document.getElementById('weatherTimeCard').innerHTML = '<i class="fas fa-clock"></i> '+new Date(w.time+'Z').toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
-            document.getElementById('windSpeed').textContent = w.windspeed;
-            const codes = {0:'Cerah',1:'Cerah berawan',2:'Berawan',3:'Berawan tebal',45:'Kabut',48:'Kabut beku',51:'Gerimis ringan',53:'Gerimis',55:'Gerimis deras',61:'Hujan ringan',63:'Hujan',65:'Hujan deras',71:'Salju ringan',73:'Salju',75:'Salju deras',80:'Hujan lokal',81:'Hujan lokal sedang',82:'Hujan lokal deras',95:'Badai petir'};
-            document.getElementById('weatherDesc').textContent = codes[w.weathercode] || 'Kondisi khusus';
-        } else throw new Error();
-    } catch {
-        document.getElementById('weatherTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal';
-    }
-}
-
-async function fetchMarineExtra() {
-    try {
-        const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=ocean_current_velocity,salinity&timezone=auto&forecast_days=1`;
-        const resp = await fetch(url); if(!resp.ok) throw new Error();
-        const data = await resp.json();
-        const currents = data.hourly.ocean_current_velocity, sals = data.hourly.salinity, times = data.hourly.time;
-        let idx = currents.length-1; while(idx>=0 && currents[idx]===null) idx--;
-        if(idx>=0) {
-            document.getElementById('currentSpeed').innerHTML = (currents[idx] ? currents[idx].toFixed(2) : '--')+' <span class="unit">m/s</span>';
-            document.getElementById('salinityValue').textContent = sals?.[idx]?.toFixed(1) || '--';
-            document.getElementById('currentTimeExtra').textContent = new Date(times[idx]+'Z').toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-        } else {
-            document.getElementById('currentSpeed').innerHTML = '-- <span class="unit">m/s</span>';
-            document.getElementById('salinityValue').textContent = '--';
-            document.getElementById('currentTimeExtra').textContent = '--';
-        }
-    } catch {
-        document.getElementById('currentSpeed').innerHTML = '-- <span class="unit">m/s</span>';
-        document.getElementById('salinityValue').textContent = '--';
-        document.getElementById('currentTimeExtra').textContent = '--';
-    }
-}
-
-function calculateMoonPhase() {
-    const now = new Date();
-    const y = now.getFullYear(), m = now.getMonth()+1, d = now.getDate();
-    const yy = (m<=2) ? y-1 : y;
-    const mm = (m<=2) ? m+12 : m;
-    const A = Math.floor(yy/100);
-    const B = 2 - A + Math.floor(A/4);
-    const jd = Math.floor(365.25*(yy+4716)) + Math.floor(30.6001*(mm+1)) + d + B - 1524.5;
-    const newMoonRef = 2451550.1;
-    const days = jd - newMoonRef;
-    const phase = (days / 29.53058867) % 1;
-    let name, emoji;
-    if(phase < 0.03 || phase >= 0.97) { name = 'Bulan Baru'; emoji = '🌑'; }
-    else if(phase < 0.22) { name = 'Sabit Muda'; emoji = '🌒'; }
-    else if(phase < 0.28) { name = 'Kuartal Pertama'; emoji = '🌓'; }
-    else if(phase < 0.47) { name = 'Cembung Awal'; emoji = '🌔'; }
-    else if(phase < 0.53) { name = 'Purnama'; emoji = '🌕'; }
-    else if(phase < 0.72) { name = 'Cembung Akhir'; emoji = '🌖'; }
-    else if(phase < 0.78) { name = 'Kuartal Akhir'; emoji = '🌗'; }
-    else { name = 'Sabit Tua'; emoji = '🌘'; }
-    document.getElementById('moonPhase').textContent = name;
-    document.getElementById('moonEmoji').textContent = emoji;
-}
-
-// ===== AGENDA (DITINGKATKAN) =====
-function saveAgenda() {
-    localStorage.setItem('nelayanAgenda', JSON.stringify(agendaList));
-    renderAgenda();
-}
-
-function renderAgenda() {
-    const container = document.getElementById('agendaItems');
-    const noAgenda = document.getElementById('noAgenda');
-    if (agendaList.length === 0) {
-        container.innerHTML = '';
-        noAgenda.style.display = 'block';
-        return;
-    }
-    noAgenda.style.display = 'none';
-    agendaList.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
-    let html = '';
-    agendaList.forEach((item, index) => {
-        const d = new Date(item.dateTime);
-        const formatted = d.toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' });
-        html += `
-            <div class="agenda-item" data-idx="${index}">
-                <div class="agenda-info">
-                    <h4>${item.title}</h4>
-                    <p>${item.desc || 'Tidak ada deskripsi'}</p>
-                    <small><i class="fas fa-clock"></i> ${formatted}</small>
+    <!-- KONTEN UTAMA -->
+    <div class="main-content" id="mainContent" style="display: none;">
+        <div class="container">
+            <!-- NOTIFIKASI DESKTOP -->
+            <div class="notification-desktop" id="desktopNotification">
+                <div class="notification-content">
+                    <div class="notification-text">
+                        <strong>💡 Anjuran Penggunaan:</strong> Untuk pengalaman terbaik, gunakan perangkat dengan layar lebar atau putar ponsel ke mode lanskap.
+                    </div>
                 </div>
-                <div class="agenda-actions">
-                    <button class="edit-agenda" onclick="editAgenda(${index})"><i class="fas fa-edit"></i></button>
-                    <button class="delete-agenda" onclick="deleteAgenda(${index})"><i class="fas fa-trash"></i></button>
+                <button class="close-notification" onclick="document.getElementById('desktopNotification').style.display='none'">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+
+            <!-- HEADER DIPERBAIKI (DUA BARIS) -->
+            <div class="header">
+                <div class="header-top">
+                    <div class="logo-container">
+                        <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpelmaritim/logo_simpel_maritim.png" alt="SIMPEL MARITIM" class="logo-img" onerror="this.style.display='none'">
+                        <div class="logo-text">
+                            <h1>SIMPEL MARITIM</h1>
+                            <p>Sistem Monitoring Perairan & Laut Situbondo</p>
+                        </div>
+                    </div>
+                    <div class="date-time" id="dateTimeDisplay">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="currentDate"></span>
+                        <i class="fas fa-clock" style="margin-left: 8px;"></i>
+                        <span id="currentTime"></span>
+                    </div>
+                </div>
+                <div class="header-bottom">
+                    <div class="header-actions">
+                        <button class="btn-refresh" onclick="fetchAllData()">
+                            <i class="fas fa-sync-alt"></i> <span>Refresh Data</span>
+                        </button>
+                        <button class="btn-backup" onclick="backupData()">
+                            <i class="fas fa-download"></i> <span>Simpan Data</span>
+                        </button>
+                        <button class="btn-restore" onclick="document.getElementById('restoreFile').click()">
+                            <i class="fas fa-upload"></i> <span>Pulihkan Data</span>
+                        </button>
+                        <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreData(event)">
+                        <a href="https://www.dinasperikanansitubondo.com" target="_blank" rel="noopener noreferrer" class="btn-home">
+                            <i class="fas fa-home"></i> <span>Beranda</span>
+                        </a>
+                    </div>
                 </div>
             </div>
-        `;
-    });
-    container.innerHTML = html;
-}
 
-window.deleteAgenda = function(index) {
-    agendaList.splice(index, 1);
-    saveAgenda();
-};
+            <!-- GRID DATA UTAMA -->
+            <div class="stats-grid">
+                <!-- Suhu Laut -->
+                <div class="stat-card">
+                    <div class="stat-header"><i class="fas fa-thermometer-half"></i><h4>Suhu Laut</h4></div>
+                    <div class="stat-value" id="suhuValueCard">-- <span class="unit">°C</span></div>
+                    <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Perairan Situbondo</div>
+                    <div class="stat-label" id="suhuTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
+                    <button class="btn-outline" onclick="fetchAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <!-- Tinggi Gelombang -->
+                <div class="stat-card">
+                    <div class="stat-header"><i class="fas fa-water"></i><h4>Tinggi Gelombang</h4></div>
+                    <div class="stat-value" id="waveValueCard">-- <span class="unit">m</span></div>
+                    <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Perairan Situbondo</div>
+                    <div class="stat-label" id="waveTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
+                    <div class="stat-label"><i class="fas fa-compass"></i> Arah: <span id="waveDirection">--</span>°</div>
+                    <div class="stat-label"><i class="fas fa-hourglass-half"></i> Periode: <span id="wavePeriod">--</span> dtk</div>
+                </div>
+                <!-- Cuaca Terkini -->
+                <div class="stat-card">
+                    <div class="stat-header"><i class="fas fa-cloud-sun"></i><h4>Cuaca</h4></div>
+                    <div class="stat-value" id="weatherTempCard">-- <span class="unit">°C</span></div>
+                    <div class="stat-label"><i class="fas fa-map-marker-alt"></i> Situbondo</div>
+                    <div class="stat-label" id="weatherTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
+                    <div class="stat-label"><i class="fas fa-wind"></i> Angin: <span id="windSpeed">--</span> km/j</div>
+                    <div class="stat-label"><i class="fas fa-cloud"></i> <span id="weatherDesc">--</span></div>
+                </div>
+                <!-- Arus Laut -->
+                <div class="stat-card">
+                    <div class="stat-header"><i class="fas fa-water"></i><h4>Arus Laut</h4></div>
+                    <div class="stat-value" id="currentSpeed">-- <span class="unit">m/s</span></div>
+                    <div class="stat-label"><i class="fas fa-compass"></i> Arah: <span id="currentDirection">--</span>°</div>
+                    <div class="stat-label"><i class="fas fa-clock"></i> <span id="currentTimeExtra">--</span></div>
+                    <div class="stat-label"><i class="fas fa-flask"></i> Salinitas: <span id="salinityValue">--</span> PSU</div>
+                    <div class="stat-label"><i class="fas fa-moon"></i> Fase Bulan: <span id="moonPhase">--</span> <span id="moonEmoji"></span></div>
+                </div>
+            </div>
 
-window.editAgenda = function(index) {
-    const item = agendaList[index];
-    document.getElementById('agendaTitle').value = item.title;
-    document.getElementById('agendaDateTime').value = item.dateTime.slice(0,16); // format yyyy-mm-ddThh:mm
-    document.getElementById('agendaDesc').value = item.desc || '';
-    document.getElementById('agendaFormTitle').innerText = 'Edit Agenda';
-    document.getElementById('addAgendaBtn').innerHTML = '<i class="fas fa-save"></i> Update Agenda';
-    document.getElementById('cancelEditBtn').style.display = 'block';
-    editingIndex = index;
-};
+            <!-- PANDUAN LENGKAP NELAYAN -->
+            <section class="tips-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-lightbulb"></i> Panduan Lengkap Nelayan</h2>
+                    <p class="section-subtitle">Tips keselamatan, mencari ikan, navigasi, merawat kapal, dan konservasi laut</p>
+                </div>
+                <div class="tips-grid">
+                    <!-- konten tips tetap sama, disalin dari kode asli -->
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper"><i class="fas fa-life-ring"></i></div>
+                        <h3>Keselamatan di Laut</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Perlengkapan wajib:</strong> life jacket, pelampung cincin, lampu sinyal (senter/strobe), radio VHF/handheld, EPIRB jika ada, dan alat apung cadangan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Pengecekan pra-berlayar:</strong> periksa prakiraan cuaca BMKG (gelombang & angin), pastikan mesin dalam kondisi prima, bahan bakar cukup 30% lebih dari perkiraan, dan tidak ada kebocoran lambung.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Komunikasi darurat:</strong> bawa ponsel dalam wadah kedap air, power bank, dan peluit. Informasikan rencana melaut (posisi, waktu kembali) ke keluarga atau syahbandar.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Jika terjatuh ke laut:</strong> tetap tenang, mengapung dengan pelampung, kumpulkan energi, lambaikan tangan atau gunakan peluit. Jangan berenang melawan arus.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Prosedur kabut/visibilitas rendah:</strong> kurangi kecepatan, nyalakan lampu navigasi, gunakan kompas, dan bunyikan suling kabut secara teratur.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Perlengkapan P3K:</strong> kotak P3K tahan air berisi obat anti mabuk laut, perban, antiseptik, dan obat pribadi.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Hindari melaut sendirian:</strong> minimal 2 orang agar bisa saling bantu dalam keadaan darurat.</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper"><i class="fas fa-fish-fins"></i></div>
+                        <h3>Cara Cerdas Mencari Ikan</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Waktu terbaik:</strong> subuh (pukul 04.00–07.00) dan senja (15.00–18.00) saat ikan pelagis aktif mencari makan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Tanda visual:</strong> burung laut berputar/nyelam, lompatan ikan, riak tidak biasa, atau perubahan warna air (gelap karena plankton).</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Memanfaatkan rumpon:</strong> pasang rumpon buatan di kedalaman 20–50 m untuk mengumpulkan ikan. Catat koordinatnya.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Suhu ideal:</strong> ikan tongkol, cakalang, kembung suka suhu 28–30°C. Gunakan termometer permukaan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Pengaruh arus dan front:</strong> daerah pertemuan arus dingin dan hangat kaya plankton – tempat ikan berkumpul.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Fase bulan:</strong> saat bulan baru (gelap) ikan cenderung naik ke permukaan; saat bulan terang ikan menyebar.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Ekolokasi sederhana:</strong> perhatikan gema di fish finder atau uji coba dengan pancing umpan di beberapa kedalaman.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Struktur bawah air:</strong> karang, palung, mulut sungai, dan kapal tenggelam adalah hotspot ikan.</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper"><i class="fas fa-cloud-rain"></i></div>
+                        <h3>Membaca Cuaca & Gelombang</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Tinggi gelombang:</strong> 0–0,5 m (tenang), 0,5–1,25 m (sedang), 1,25–2 m (tinggi). Nelayan kecil sebaiknya tidak melaut jika >1,5 m.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Angin musim:</strong> angin barat (Des–Feb) biasanya membawa hujan, angin timur (Jun–Agu) kencang dan gelombang tinggi di laut lepas.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Tanda alam cuaca buruk:</strong> langit gelap tiba-tiba, angin bertiup kencang dan dingin, ombak tidak beraturan, atau burung terbang ke darat.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Arus pecah (rip current):</strong> gelombang yang tidak pecah di suatu jalur menandakan arus kuat menjauhi pantai – hindari daerah itu.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Kabut tebal:</strong> kurangi kecepatan, gunakan kompas dan GPS, nyalakan lampu kabut, dan dengarkan suara ombak atau tanda darat.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Badai petir:</strong> segera kembali ke pantai, hindari tiang logam, matikan peralatan elektronik yang tidak perlu.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Peringatan dini:</strong> pantau aplikasi BMKG, radio maritim, atau lihat awan kumulonimbus (tinggi menjulang seperti kembang kol).</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper"><i class="fas fa-ship"></i></div>
+                        <h3>Perawatan Kapal & Mesin</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Bersihkan lambung (hulling):</strong> angkat kapal setiap 3 bulan untuk membersihkan teritip dan lumut – bisa menghemat bahan bakar hingga 20%.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Perawatan mesin:</strong> ganti oli setiap 100 jam operasi, bersihkan filter solar, periksa busi dan kabel, serta pastikan sistem pendingin air lancar.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Bahan bakar:</strong> isi tangki 2/3 untuk perjalanan jauh (menghemat berat), bawa cadangan dalam jerigen aman. Gunakan bahan bakar bersih.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Suku cadang wajib:</strong> bawa baling-baling cadangan, kopling, tali, pompa air, dan tool kit lengkap.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Lampu navigasi:</strong> periksa lampu merkah (hijau kanan, merah kiri, putih buritan) sebelum berlayar, bawa bohlam cadangan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Lumasi bagian bergerak:</strong> beri gemuk pada bantalan poros baling-baling setiap 50 jam pemakaian.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Periksa anoda korban (zinc anode):</strong> ganti jika sudah keropos untuk mencegah korosi lambung logam.</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper"><i class="fas fa-compass"></i></div>
+                        <h3>Navigasi Sederhana</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Mengenal tanda darat:</strong> hafalkan bentuk gunung, tanjung, pohon besar, bangunan tinggi sebagai patokan visual.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Kompas dan GPS:</strong> selalu bawa kompas cadangan (manual). Tandai titik-titik potensial (rumpon, karang) di GPS atau tulis koordinat.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Mata angin sederhana:</strong> matahari terbit = timur, terbenam = barat. Pada malam hari, rasi bintang pari (Crux) menunjukkan selatan.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Jika tersesat:</strong> ikuti arah pantai (biasanya gelombang datang dari laut lepas). Jangan panik, hemat bahan bakar.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Mengukur kedalaman:</strong> gunakan tali pemberat atau fish finder. Hindari daerah dengan kedalaman tiba-tiba dangkal (gosong).</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Peta laut sederhana:</strong> pelajari kontur kedalaman dan lokasi bahaya (karang, kabel laut) sebelum berlayar.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Navigasi saat hujan/terbatas:</strong> andalkan kompas dan GPS, kurangi kecepatan, dan dengarkan suara ombak di karang.</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon-wrapper"><i class="fas fa-leaf"></i></div>
+                        <h3>Konservasi Laut</h3>
+                        <ul class="tip-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>Larang alat destruktif:</strong> bom ikan, potasium (sianida), pukat harimau, dan cantrang merusak ekosistem. Gunakan pancing, jaring insang dengan mata jaring >2,5 inci.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Ukuran layak tangkap:</strong> jangan tangkap ikan di bawah ukuran dewasa (misal: tongkol >30 cm, kembung >20 cm) agar bisa berkembang biak.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Kelola sampah:</strong> bawa kembali sampah plastik, jaring rusak, dan sisa makanan ke darat. Jangan buang ke laut.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Hormati kawasan konservasi:</strong> jika ada zona larang tangkap (marine protected area), hindari melaut di sana.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Bycatch handling:</strong> jika tertangkap penyu, lumba-lumba, atau hiu yang dilindungi, lepaskan dengan hati-hati segera.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Gunakan alat ramah lingkungan:</strong> pancing ulur, bubu, rawai, jaring insang hanyut selektif.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>Edukasi sesama:</strong> ajak nelayan lain menjaga laut demi keberlanjutan hasil tangkapan jangka panjang.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
 
-window.cancelEdit = function() {
-    document.getElementById('agendaTitle').value = '';
-    document.getElementById('agendaDateTime').value = '';
-    document.getElementById('agendaDesc').value = '';
-    document.getElementById('agendaFormTitle').innerText = 'Tambah Agenda';
-    document.getElementById('addAgendaBtn').innerHTML = '<i class="fas fa-plus-circle"></i> Simpan Agenda';
-    document.getElementById('cancelEditBtn').style.display = 'none';
-    editingIndex = -1;
-};
+            <!-- MATERI EDUKASI & TUTORIAL -->
+            <section class="edu-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-graduation-cap"></i> Materi Edukasi & Tutorial</h2>
+                    <p class="section-subtitle">Penangkapan ikan yang cerdas, aman, dan ramah lingkungan</p>
+                </div>
+                <div class="edu-grid">
+                    <div class="edu-card">
+                        <h3><i class="fas fa-fish"></i> Teknik Penangkapan Ikan Ramah Lingkungan</h3>
+                        <ul class="edu-list">
+                            <li><i class="fas fa-angle-right"></i> <strong>Pancing ulur (handline):</strong> gunakan umpan hidup atau umpan buatan, turunkan hingga kedalaman target. Cocok untuk ikan dasar dan pelagis.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Rawai (longline):</strong> rentangkan tali utama dengan puluhan pancing. Pasang pelampung dan pemberat. Target: ikan besar seperti tuna, kakap.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Bubu (fish trap):</strong> tempatkan di dasar dekat karang atau rumpon. Beri umpan, periksa setiap 1-2 hari.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Jaring insang (gillnet):</strong> pasang melintang arus, ukuran mata jaring disesuaikan dengan target ikan. Perhatikan agar tidak hanyut.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Penggunaan rumpon:</strong> buat rumpon dari bambu dan sabut kelapa, pasang di kedalaman 30-50 m. Ikan akan berkumpul di sekitarnya.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Hindari:</strong> pukat harimau, bom, dan potasium karena merusak ekosistem.</li>
+                        </ul>
+                    </div>
+                    <div class="edu-card">
+                        <h3><i class="fas fa-hard-hat"></i> Keselamatan Kerja di Atas Kapal</h3>
+                        <ul class="edu-list">
+                            <li><i class="fas fa-angle-right"></i> <strong>Peralatan keselamatan:</strong> past tersedia life jacket untuk setiap ABK, pelampung cincin, dan alat apung.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Pencegahan kebakaran:</strong> sediakan alat pemadam api (APAR) di ruang mesin dan dapur. Larang merokok saat mengisi bahan bakar.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Pertolongan pertama:</strong> bawa kotak P3K lengkap dengan obat anti mabuk, perban, dan antiseptik.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Manuver darurat:</strong> semua awak harus tahu cara mengoperasikan radio, menyalakan lampu tanda bahaya, dan menurunkan sekoci.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Latihan rutin:</strong> lakukan simulasi orang jatuh ke laut dan kebakaran setiap 3 bulan.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Kesehatan:</strong> hindari kelelahan, atur jadwal istirahat, minum air cukup, dan waspadai hipotermia jika cuaca dingin.</li>
+                        </ul>
+                    </div>
+                    <div class="edu-card">
+                        <h3><i class="fas fa-sun-o"></i> Cara Membaca Tanda Alam</h3>
+                        <ul class="edu-list">
+                            <li><i class="fas fa-angle-right"></i> <strong>Awan Cumulonimbus:</strong> menjulang tinggi seperti menara – pertanda badai, segera mendekat ke pantai.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Angin kencang tiba-tiba:</strong> biasanya datang sebelum hujan deras. Turunkan layar, kencangkan tali.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Burung laut:</strong> jika banyak burung berputar dan menyelam, pasti ada gerombolan ikan di bawah.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Warna air:</strong> hijau kebiruan menandakan plankton, menandakan ikan banyak. Air coklat keruh dekat muara sering banyak udang atau ikan bandeng.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Ombak pecah di laut dalam:</strong> menandakan ada gosong atau karang – hindari.</li>
+                        </ul>
+                    </div>
+                    <div class="edu-card">
+                        <h3><i class="fas fa-tools"></i> Perawatan Rutin Mesin Kapal</h3>
+                        <ul class="edu-list">
+                            <li><i class="fas fa-angle-right"></i> <strong>Setiap 50 jam:</strong> periksa oli mesin, bersihkan saringan bahan bakar, periksa air pendingin.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Setiap 100 jam:</strong> ganti oli, ganti filter oli, periksa busi dan kabel busi.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Setiap 300 jam:</strong> periksa injektor, setel katup, bersihkan tangki bahan bakar.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Musim hujan:</strong> lebih sering periksa karena air bisa masuk ke bahan bakar.</li>
+                            <li><i class="fas fa-angle-right"></i> <strong>Sebelum melaut:</strong> cek putaran mesin, pastikan tidak ada suara aneh, dan lihat apakah ada kebocoran.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
 
-document.getElementById('addAgendaBtn').addEventListener('click', function() {
-    const title = document.getElementById('agendaTitle').value.trim();
-    const dateTime = document.getElementById('agendaDateTime').value;
-    const desc = document.getElementById('agendaDesc').value.trim();
-    if (!title || !dateTime) {
-        alert('Judul dan waktu harus diisi!');
-        return;
-    }
-    if (editingIndex === -1) {
-        agendaList.push({ title, dateTime, desc });
-    } else {
-        agendaList[editingIndex] = { title, dateTime, desc };
-        cancelEdit();
-    }
-    saveAgenda();
-});
+            <!-- AGENDA NELAYAN (DITINGKATKAN) -->
+            <section class="agenda-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-check"></i> Agenda Nelayan</h2>
+                    <p class="section-subtitle">Catat jadwal melaut, perawatan kapal, atau kegiatan kelompok – dapatkan notifikasi pengingat</p>
+                </div>
+                <div class="agenda-container">
+                    <!-- Form Tambah/Edit Agenda -->
+                    <div class="agenda-form">
+                        <h3 id="agendaFormTitle">Tambah Agenda</h3>
+                        <div class="form-group">
+                            <label>Judul Kegiatan</label>
+                            <input type="text" id="agendaTitle" placeholder="Contoh: Perbaikan mesin, Melaut, Rapat kelompok...">
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal & Waktu</label>
+                            <input type="datetime-local" id="agendaDateTime">
+                        </div>
+                        <div class="form-group">
+                            <label>Deskripsi (opsional)</label>
+                            <textarea id="agendaDesc" rows="3" placeholder="Detail kegiatan..."></textarea>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-agenda" id="addAgendaBtn"><i class="fas fa-plus-circle"></i> <span>Simpan Agenda</span></button>
+                            <button class="btn-agenda" id="cancelEditBtn" style="background: #6c757d; display: none;" onclick="cancelEdit()"><i class="fas fa-times"></i> Batal</button>
+                        </div>
+                    </div>
+                    <!-- Daftar Agenda -->
+                    <div class="agenda-list">
+                        <h3>Agenda Mendatang</h3>
+                        <div id="agendaItems"></div>
+                        <p id="noAgenda" style="color: var(--text-light); text-align: center; padding: 20px;">Belum ada agenda. Tambahkan sekarang!</p>
+                    </div>
+                </div>
+            </section>
 
-document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+            <!-- PETA NELAYAN dengan Lokasi Otomatis dan Analisis Rute -->
+            <section class="map-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-map-marked-alt"></i> Peta Nelayan & Titik Penting</h2>
+                    <p class="section-subtitle">Klik pada peta untuk menambah marker. Klik marker untuk opsi jadikan titik awal/tujuan.</p>
+                </div>
+                <div class="map-controls">
+                    <input type="text" id="startLat" placeholder="Latitude Awal (contoh: -7.7)" value="-7.7">
+                    <input type="text" id="startLon" placeholder="Longitude Awal (contoh: 114.0)" value="114.0">
+                    <input type="text" id="endLat" placeholder="Latitude Tujuan" value="-7.8">
+                    <input type="text" id="endLon" placeholder="Longitude Tujuan" value="114.1">
+                    <button id="routeBtn" class="btn-map-success"><i class="fas fa-route"></i> Tampilkan Rute</button>
+                    <button id="myLocationBtn" class="btn-map-success"><i class="fas fa-location-dot"></i> 📍 Lokasi Saya</button>
+                    <button id="setStartLocationBtn" class="btn-map-warning"><i class="fas fa-map-pin"></i> 📍 Saya sbg Awal</button>
+                    <button id="setEndLocationBtn" class="btn-map-warning"><i class="fas fa-map-pin"></i> 📍 Saya sbg Tujuan</button>
+                    <button id="checkRouteToDestinationBtn" class="btn-map-success"><i class="fas fa-search-location"></i> 🔍 Cek Posisi & Rute ke Tujuan</button>
+                    <button id="clearMarkersBtn" class="btn-map-danger"><i class="fas fa-trash-alt"></i> Hapus Semua Marker</button>
+                </div>
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+                <div id="routeInfo" class="route-info"></div>
+                <p style="text-align: center; margin-top: 15px; color: var(--text-light);">
+                    <i class="fas fa-info-circle"></i> Klik marker untuk melihat opsi jadikan titik awal atau tujuan.
+                </p>
+            </section>
 
-function checkAgendaNotifications() {
-    const now = new Date();
-    agendaList.forEach(item => {
-        const itemTime = new Date(item.dateTime);
-        const diffMs = itemTime - now;
-        const diffMin = Math.round(diffMs / 60000);
-        if (diffMin >= 0 && diffMin <= 15) {
-            if (Notification.permission === 'granted') {
-                new Notification('🔔 Agenda Nelayan', {
-                    body: `${item.title} - ${item.desc || 'Tanpa deskripsi'}\nWaktu: ${itemTime.toLocaleString('id-ID')}`,
-                    icon: 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpelmaritim/logo_simpel_maritim.png'
-                });
-            } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission();
-            }
-        }
-    });
-}
+            <!-- PRAKIRAAN GELOMBANG BMKG -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-map-marked-alt"></i> Prakiraan Gelombang BMKG</h3>
+                    <span class="badge"><i class="fas fa-check-circle"></i> Resmi</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="https://maritim.bmkg.go.id/ofs" title="BMKG Ocean Forecast" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"></iframe>
+                </div>
+                <div class="fallback-link" style="text-align:center; margin-top:24px;">
+                    <a href="https://maritim.bmkg.go.id/ofs" target="_blank" class="btn">
+                        <i class="fas fa-external-link-alt"></i> Buka Halaman BMKG
+                    </a>
+                </div>
+            </div>
 
-// ===== FLOATING NOTIFICATION =====
-function showFloatingNotification() {
-    const notif = document.getElementById('floatingNotif');
-    const isDismissed = localStorage.getItem('floatingNotifDismissed') === 'true';
-    if (!isDismissed) notif.style.display = 'block';
-}
+            <footer class="footer">
+                <p><i class="far fa-copyright"></i> 2025 SIMPEL MARITIM – Dinas Peternakan Dan Perikanan Situbondo</p>
+                <p>Data real-time: Open-Meteo | Fase bulan: perhitungan internal | Prakiraan gelombang: BMKG | Peta: OpenStreetMap</p>
+            </footer>
+        </div>
+    </div>
 
-document.getElementById('notifTidak').addEventListener('click', function() {
-    document.getElementById('floatingNotif').style.display = 'none';
-    localStorage.setItem('floatingNotifDismissed', 'true');
-});
+    <!-- FLOATING NOTIFICATION (DIPERBAIKI TEKSNYA) -->
+    <div class="floating-notification" id="floatingNotif" style="display: none;">
+        <div class="notif-header">
+            <i class="fas fa-bullhorn"></i>
+            <h4>Informasi Cuaca Terkini Jawa Timur</h4>
+        </div>
+        <p>
+            <strong>📢 Perhatian Nelayan!</strong><br>
+            Pantau kondisi cuaca terkini di wilayah Jawa Timur melalui layanan resmi BMKG (nowcasting). Informasi ini penting untuk keselamatan anda dan keluarga sebelum berlayar.
+        </p>
+        <div class="notif-actions">
+            <button class="notif-btn notif-btn-secondary" id="notifTidak"><i class="fas fa-times"></i> Tidak</button>
+            <button class="notif-btn notif-btn-primary" id="notifIya"><i class="fas fa-external-link-alt"></i> Lihat Sekarang</button>
+        </div>
+    </div>
 
-document.getElementById('notifIya').addEventListener('click', function() {
-    window.open('https://nowcasting.bmkg.go.id/bs/jatim/', '_blank');
-});
-
-// ===== LOGIN =====
-document.getElementById('loginButton').addEventListener('click', ()=>{
-    document.getElementById('loginOverlay').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    fetchAllData();
-    initMap();
-    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-        Notification.requestPermission();
-    }
-    showFloatingNotification();
-});
-
-// ===== LOAD & INTERVALS =====
-window.addEventListener('load', ()=>{
-    document.getElementById('mainContent').style.display = 'none';
-    initParticles();
-    renderAgenda();
-    setInterval(checkAgendaNotifications, 60000);
-});
-
-setInterval(fetchAllData, 1800000);
-
-// ===== PARTICLE EFFECT (DITINGKATKAN) =====
-function initParticles() {
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let w, h, particles = [];
-    let mouse = { x: null, y: null, radius: 150 };
-
-    window.addEventListener('mousemove', (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    });
-
-    function resize() { w = window.innerWidth; h = window.innerHeight; canvas.width = w; canvas.height = h; }
-
-    function create(count = 120) {
-        for(let i=0; i<count; i++) particles.push({
-            x: Math.random()*w, y: Math.random()*h,
-            r: Math.random()*8 + 3,
-            sx: (Math.random()-0.5)*0.4,
-            sy: (Math.random()-0.5)*0.2,
-            color: `rgba(${255}, ${200 + Math.random()*55}, ${100}, ${Math.random()*0.5+0.2})` // warna orange/warni
-        });
-    }
-
-    function draw() {
-        ctx.clearRect(0,0,w,h);
-        for(let p of particles) {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
-            ctx.fillStyle = p.color;
-            ctx.shadowColor = 'rgba(241,143,1,0.6)';
-            ctx.shadowBlur = 20;
-            ctx.fill();
-        }
-        ctx.shadowBlur = 0;
-    }
-
-    function update() {
-        for(let p of particles) {
-            // Interaksi mouse: tolak jika dekat
-            if (mouse.x && mouse.y) {
-                let dx = mouse.x - p.x;
-                let dy = mouse.y - p.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist < mouse.radius) {
-                    let angle = Math.atan2(dy, dx);
-                    let force = (mouse.radius - dist) / mouse.radius;
-                    p.x -= Math.cos(angle) * force * 2;
-                    p.y -= Math.sin(angle) * force * 2;
-                }
-            }
-
-            p.x += p.sx;
-            p.y += p.sy;
-
-            if(p.x < 0) p.x = w;
-            if(p.x > w) p.x = 0;
-            if(p.y < 0) p.y = h;
-            if(p.y > h) p.y = 0;
-        }
-    }
-
-    function animate() { update(); draw(); requestAnimationFrame(animate); }
-
-    window.addEventListener('resize', ()=>{ resize(); particles = []; create(150); });
-    resize(); create(150); animate();
-}
+    <!-- Leaflet JS & Routing Machine -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <!-- JavaScript Eksternal -->
+    <script src="main.js"></script>
+</body>
+</html>
