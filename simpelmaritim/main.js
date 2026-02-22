@@ -91,6 +91,11 @@ function initMap() {
             addMarkerToMap(lat, lng, keterangan, true);
         }
     });
+
+    // Perbaiki tampilan peta saat orientasi berubah
+    window.addEventListener('resize', function() {
+        if (map) setTimeout(() => map.invalidateSize(), 100);
+    });
 }
 
 function addMarkerToMap(lat, lng, keterangan, saveToLocal = true) {
@@ -509,6 +514,7 @@ setInterval(fetchAllData, 1800000);
 // ===== PARTICLE EFFECT =====
 function initParticles() {
     const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let w, h, particles = [];
     let mouse = { x: null, y: null, radius: 150 };
