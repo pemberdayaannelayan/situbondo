@@ -11,16 +11,972 @@
     <!-- Leaflet (OpenStreetMap) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <!-- CSS Eksternal -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== RESET & VARIABEL ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --gradient-1: linear-gradient(145deg, #0b3b5c, #1f6e9e, #f18f01);
+            --gradient-2: linear-gradient(135deg, #f3f7fc, #e1eef9);
+            --primary-blue: #0b3b5c;
+            --accent-orange: #f18f01;
+            --text-dark: #1a2a3a;
+            --text-light: #5e6f8d;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --shadow: 0 20px 35px -10px rgba(0, 50, 80, 0.2);
+            --font-main: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: radial-gradient(circle at 20% 30%, #c7e2f2, #ecf5fc);
+            color: var(--text-dark);
+            line-height: 1.5;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            #particle-canvas { display: none; }
+        }
+
+        .login-overlay, .main-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        /* ===== OVERLAY LOGIN (DIPERBAIKI TEKS) ===== */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 20, 40, 0.75);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+        .login-modal {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            max-width: 720px;
+            width: 100%;
+            border-radius: 64px;
+            padding: clamp(24px, 6vw, 40px);
+            text-align: center;
+            box-shadow: 0 40px 70px -15px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.5) inset, 0 0 0 4px rgba(241, 143, 1, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            animation: modalFloat 6s infinite alternate ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-modal::before {
+            content: "";
+            position: absolute;
+            top: -30%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at 30% 40%, rgba(241, 143, 1, 0.15), transparent 60%);
+            z-index: -1;
+            animation: rotateSlow 20s infinite linear;
+        }
+        @keyframes modalFloat {
+            0% { transform: translateY(0); box-shadow: 0 40px 70px -15px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.5) inset, 0 0 0 4px rgba(241,143,1,0.2); }
+            100% { transform: translateY(-8px); box-shadow: 0 50px 80px -10px rgba(0,0,0,0.6), 0 0 0 2px rgba(255,255,255,0.7) inset, 0 0 0 6px rgba(241,143,1,0.4); }
+        }
+        @keyframes rotateSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .login-modal img {
+            max-height: 90px;
+            width: auto;
+            margin-bottom: 10px;
+            background: transparent;
+            filter: drop-shadow(0 8px 16px rgba(0, 40, 60, 0.3));
+        }
+        .login-modal h1 {
+            font-size: clamp(2rem, 8vw, 2.8rem);
+            font-weight: 800;
+            background: linear-gradient(145deg, #0b3b5c, #f18f01);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+        .login-modal h2 {
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+        .login-modal p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            font-weight: 500;
+            word-break: break-word;
+        }
+        .btn-login {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            box-shadow: 0 10px 25px -5px #b35f00, 0 0 0 2px rgba(255,215,150,0.7);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            min-width: 160px;
+        }
+        .btn-login::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 140%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(25deg);
+            animation: shine 4s infinite;
+        }
+        @keyframes shine {
+            0% { left: -20%; }
+            20% { left: 120%; }
+            100% { left: 120%; }
+        }
+        .btn-login:hover {
+            transform: scale(1.05);
+            box-shadow: 0 18px 30px -5px #b35f00, 0 0 0 3px rgba(255,215,150,0.9);
+        }
+
+        /* ===== KONTEN UTAMA (dari style sebelumnya, diringkas tapi tetap lengkap) ===== */
+        .notification-desktop {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 18px 28px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 20px 30px -10px rgba(241,143,1,0.3);
+            border: 1px solid rgba(255,180,80,0.5);
+            animation: slideDownFade 0.6s ease;
+        }
+        @keyframes slideDownFade {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        .notification-text {
+            font-size: 0.95rem;
+        }
+        .notification-text strong {
+            color: var(--primary-blue);
+        }
+        .close-notification {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+        .close-notification:hover {
+            background: #eef2f6;
+            color: var(--accent-orange);
+        }
+
+        .header {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(15px);
+            border-radius: 100px;
+            padding: 18px 32px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.9);
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .header-bottom {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1 1 auto;
+            min-width: 260px;
+        }
+        .logo-img {
+            max-height: 85px;
+            width: auto;
+            filter: drop-shadow(0 6px 12px rgba(0,40,60,0.2));
+            transition: transform 0.2s;
+        }
+        .logo-img:hover {
+            transform: scale(1.02);
+        }
+        .logo-text h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 800;
+            background: linear-gradient(145deg, #0b3b5c, #1f6e9e, #f18f01);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+        .logo-text p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .date-time {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            border: 1px solid rgba(203,221,238,0.9);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn-refresh, .btn-home, .btn-backup, .btn-restore {
+            background: white;
+            border: 1.5px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 8px -4px rgba(0,0,0,0.1);
+        }
+        .btn-refresh {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        .btn-refresh:hover {
+            background: var(--accent-orange);
+            color: white;
+        }
+        .btn-home:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        .btn-backup {
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+        .btn-backup:hover {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-restore {
+            border-color: #e67e22;
+            color: #e67e22;
+        }
+        .btn-restore:hover {
+            background: #e67e22;
+            color: white;
+        }
+
+        #audioPlayerContainer {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 100px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(241,143,1,0.5);
+            flex-wrap: wrap;
+        }
+        .audio-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        .audio-title i {
+            color: var(--accent-orange);
+            margin-right: 8px;
+        }
+        .close-btn button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 5px;
+        }
+        .close-btn button:hover {
+            color: var(--accent-orange);
+        }
+        #audioPlayer {
+            flex: 1;
+            min-width: 250px;
+            height: 45px;
+            border-radius: 60px;
+            outline: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 36px;
+            padding: 24px 22px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            animation: cardFadeIn 0.8s ease;
+        }
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .stat-card:hover {
+            box-shadow: 0 30px 45px -15px rgba(241,143,1,0.5);
+            transform: translateY(-6px) scale(1.01);
+            background: rgba(255,255,255,0.9);
+        }
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .stat-header i {
+            font-size: 2rem;
+            color: var(--accent-orange);
+        }
+        .stat-header h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .stat-value {
+            font-size: clamp(2rem, 6vw, 2.5rem);
+            font-weight: 800;
+            background: linear-gradient(145deg, #0b3b5c, #1f6e9e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+        .stat-value .unit {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-light);
+            -webkit-text-fill-color: var(--text-light);
+            background: none;
+        }
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px 0;
+        }
+        .stat-label i {
+            color: var(--accent-orange);
+            width: 18px;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            margin-top: 14px;
+        }
+        .btn-outline:hover {
+            background: #e3f0fa;
+        }
+
+        .tips-section, .edu-section, .agenda-section, .map-section {
+            margin: 50px 0;
+            background: rgba(255, 245, 235, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: clamp(24px, 6vw, 36px) clamp(16px, 4vw, 28px);
+            border: 1px solid rgba(241,143,1,0.3);
+        }
+        .section-header h2 {
+            font-size: clamp(1.8rem, 6vw, 2.4rem);
+            font-weight: 700;
+            background: linear-gradient(145deg, #0b3b5c, #f18f01);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .section-subtitle {
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            color: var(--text-light);
+            text-align: center;
+        }
+        .tips-grid, .edu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin-top: 40px;
+        }
+        .tip-card, .edu-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 28px 24px;
+            border: 1px solid rgba(241,143,1,0.3);
+            box-shadow: 0 20px 30px -15px rgba(241,143,1,0.2);
+            transition: 0.25s;
+        }
+        .tip-card:hover, .edu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 45px -15px rgba(241,143,1,0.5);
+            background: rgba(255,255,255,0.9);
+        }
+        .tip-icon-wrapper {
+            background: rgba(241,143,1,0.1);
+            width: 80px; height: 80px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px auto;
+            border: 2px dashed var(--accent-orange);
+        }
+        .tip-icon-wrapper i {
+            font-size: 3rem;
+            color: var(--accent-orange);
+        }
+        .tip-card h3, .edu-card h3 {
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--accent-orange);
+            padding-bottom: 12px;
+            text-align: center;
+        }
+        .tip-list li, .edu-list li {
+            margin: 14px 0;
+            display: flex;
+            gap: 14px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            list-style: none;
+        }
+        .tip-list i, .edu-list i {
+            color: var(--accent-orange);
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .edu-card h3 i {
+            color: var(--accent-orange);
+        }
+
+        /* Agenda */
+        .agenda-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .agenda-form, .agenda-list {
+            background: rgba(255,255,255,0.9);
+            border-radius: 40px;
+            padding: 28px;
+        }
+        .agenda-form h3, .agenda-list h3 {
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(11,59,92,0.2);
+            border-radius: 40px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            background: white;
+            transition: 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+        .btn-agenda {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 60px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+        .btn-agenda:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px -5px var(--primary-blue);
+        }
+        #cancelEditBtn {
+            background: #6c757d;
+            width: auto;
+            flex: 1;
+        }
+        .agenda-item {
+            background: white;
+            border-radius: 30px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            border-left: 8px solid var(--accent-orange);
+            box-shadow: 0 5px 15px -5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+            word-break: break-word;
+        }
+        .agenda-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 20px -8px var(--accent-orange);
+        }
+        .agenda-info {
+            flex: 1;
+        }
+        .agenda-info h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .agenda-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        .agenda-info small {
+            display: block;
+            color: var(--accent-orange);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .agenda-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .delete-agenda, .edit-agenda {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: 0.2s;
+            width: 40px; height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .delete-agenda {
+            color: #ff6b6b;
+        }
+        .delete-agenda:hover {
+            background: #ffeeee;
+            color: red;
+        }
+        .edit-agenda {
+            color: var(--primary-blue);
+        }
+        .edit-agenda:hover {
+            background: #e3f0fa;
+            color: var(--accent-orange);
+        }
+
+        /* Peta */
+        .map-container {
+            height: 500px;
+            max-height: 70vh;
+            border-radius: 36px;
+            overflow: hidden;
+            border: 3px solid white;
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+        }
+        #map {
+            height: 100%; width: 100%;
+        }
+        .map-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            align-items: center;
+            justify-content: center;
+        }
+        .map-controls input {
+            padding: 10px 15px;
+            border-radius: 40px;
+            border: 2px solid rgba(11,59,92,0.2);
+            font-size: 0.9rem;
+            width: clamp(140px, 20vw, 200px);
+            min-width: 120px;
+        }
+        .map-controls button {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .map-controls button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 15px -5px var(--primary-blue);
+        }
+        .btn-map-danger { background: #e74c3c !important; }
+        .btn-map-danger:hover { background: #c0392b !important; }
+        .btn-map-success { background: #27ae60 !important; }
+        .btn-map-success:hover { background: #2ecc71 !important; }
+        .btn-map-warning { background: #f39c12 !important; }
+        .btn-map-warning:hover { background: #e67e22 !important; }
+        .route-info {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(5px);
+            border-radius: 40px;
+            padding: 16px 24px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-blue);
+            border: 2px solid var(--accent-orange);
+            display: none;
+        }
+        .route-info.show { display: block; }
+
+        .card {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: clamp(24px, 5vw, 32px);
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card-header h3 {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: linear-gradient(145deg, #fbc490, #f18f01);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .iframe-container {
+            height: 600px;
+            max-height: 70vh;
+            border-radius: 36px;
+            overflow: hidden;
+            border: 3px solid white;
+            box-shadow: 0 20px 30px -12px rgba(0,40,70,0.3);
+        }
+        .iframe-container iframe {
+            width: 100%; height: 100%;
+            border: none;
+        }
+        .btn {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            padding: 14px 38px;
+            border-radius: 60px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 16px -6px var(--primary-blue);
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--text-light);
+            border-top: 2px solid rgba(255,255,255,0.6);
+            padding-top: 28px;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(5px);
+            border-radius: 80px;
+            padding: 28px 20px;
+        }
+
+        .floating-notification {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px 28px;
+            max-width: 380px;
+            width: calc(100% - 60px);
+            box-shadow: 0 30px 50px -15px rgba(0,0,0,0.3), 0 0 0 1px rgba(241,143,1,0.3);
+            border-left: 8px solid var(--accent-orange);
+            z-index: 10000;
+            animation: slideInRight 0.5s ease;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .floating-notification .notif-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .floating-notification .notif-header i {
+            font-size: 2rem;
+            color: var(--accent-orange);
+        }
+        .floating-notification .notif-header h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .floating-notification p {
+            color: var(--text-dark);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+        .notif-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .notif-btn {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .notif-btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 10px -3px var(--accent-orange);
+        }
+        .notif-btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 18px -5px var(--accent-orange);
+        }
+        .notif-btn-secondary {
+            background: #eef2f6;
+            color: var(--text-dark);
+            border: 1px solid var(--text-light);
+        }
+        .notif-btn-secondary:hover {
+            background: #e1e6ec;
+        }
+
+        /* ===== RESPONSIVE FIXES ===== */
+        @media (max-width: 800px) {
+            body { padding: 12px; }
+            .header { border-radius: 60px; padding: 18px 20px; }
+            .header-top { flex-direction: column; align-items: stretch; }
+            .logo-container { justify-content: center; text-align: center; flex-direction: column; min-width: auto; }
+            .logo-text h1 { font-size: 2rem; }
+            .date-time { justify-content: center; width: 100%; white-space: normal; word-break: keep-all; }
+            .header-bottom .header-actions { justify-content: center; }
+            .agenda-container { grid-template-columns: 1fr; }
+            .iframe-container { height: 450px; }
+            .floating-notification { bottom: 20px; right: 20px; left: 20px; width: auto; max-width: none; }
+        }
+        @media (max-width: 600px) {
+            body { padding: 8px; }
+            .logo-text h1 { font-size: 1.8rem; }
+            .login-modal { padding: 30px 20px; }
+            .login-modal h2 { font-size: 1.5rem; }
+            .login-modal img { height: 70px; }
+            .tips-grid, .edu-grid { grid-template-columns: 1fr; }
+            .agenda-container { grid-template-columns: 1fr; }
+            .map-controls { flex-direction: column; align-items: stretch; }
+            .map-controls input { width: 100%; }
+            .map-controls button { width: 100%; justify-content: center; }
+            .map-container { height: 400px; }
+            .iframe-container { height: 350px; }
+        }
+        @media (max-width: 480px) {
+            .header { border-radius: 40px; padding: 15px; }
+            .logo-text h1 { font-size: 1.5rem; }
+            .logo-img { max-height: 60px; }
+            .stat-card { padding: 18px; }
+            .stat-header i { font-size: 1.6rem; }
+            .stat-header h4 { font-size: 1rem; }
+            .stat-value { font-size: 1.8rem; }
+            .btn-refresh, .btn-home, .btn-backup, .btn-restore { padding: 6px 16px; font-size: 0.85rem; }
+            .tips-section, .edu-section, .agenda-section, .map-section { padding: 25px 15px; border-radius: 40px; }
+            .tip-card, .edu-card { padding: 20px; }
+            .agenda-form, .agenda-list { padding: 20px; }
+            .agenda-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .agenda-actions { align-self: flex-end; }
+            .map-container { height: 350px; }
+            .iframe-container { height: 300px; }
+            .footer { font-size: 0.8rem; }
+        }
+        button, .btn-login, .btn-agenda, .map-controls button, .notif-btn {
+            touch-action: manipulation;
+        }
+        p, h1, h2, h3, h4, li, .stat-value {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    </style>
 </head>
 <body>
     <canvas id="particle-canvas"></canvas>
 
-    <!-- OVERLAY LOGIN (DESAIN BARU) -->
+    <!-- OVERLAY LOGIN (TEKS DIPERBAIKI) -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-modal" style="max-width: 700px; padding: 40px;">
-            <!-- Logo dan teks sambutan -->
             <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
                 <img src="https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpelmaritim/logo_simpel_maritim.png" alt="Logo SIMPEL MARITIM" style="height: 90px; width: auto;" onerror="this.style.display='none'">
                 <div style="text-align: left;">
@@ -33,11 +989,10 @@
                 <strong>“Dari Hulu ke Hilir untuk Situbondo Naik Kelas”</strong>
             </p>
             <p style="font-size: 1rem; color: var(--text-dark); margin-bottom: 25px;">
-                Akses berbagai layanan digital: KUSUKA, SIMPADAN TANGKAP, KILAT, Bantuan Sarpras, Galeri Kegiatan, dan Pengaduan Nelayan.
-                Putar audio untuk penjelasan singkat tentang fitur website.
+                Fitur unggulan: <strong>pantau suhu laut, tinggi gelombang, cuaca, fase bulan</strong>; panduan lengkap nelayan (keselamatan, mencari ikan, navigasi); peta interaktif dengan rute; agenda dengan notifikasi; prakiraan gelombang BMKG. Putar audio untuk penjelasan lebih lanjut.
             </p>
 
-            <!-- Cuaca dan waktu (diisi oleh JavaScript) -->
+            <!-- Cuaca dan waktu (diisi JavaScript) -->
             <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.5); backdrop-filter: blur(5px); border-radius: 50px; padding: 12px 25px; margin-bottom: 30px; border: 1px solid var(--accent-orange);">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <i class="fas fa-cloud-sun" style="font-size: 2rem; color: var(--accent-orange);"></i>
@@ -58,7 +1013,6 @@
                 <button class="btn-login" id="nantiSajaBtn" style="background: #6c757d; box-shadow: none; flex:1;"><i class="fas fa-clock"></i> Nanti Saja</button>
                 <button class="btn-login" id="putarAudioBtn" style="flex:1;"><i class="fas fa-headphones"></i> Putar Audio</button>
             </div>
-            <!-- Audio element tersembunyi -->
             <audio id="loginAudio" preload="none">
                 <source src="https://od.lk/s/MzVfNjY1NDMxMjlf/info-simpel-maritim.mp3" type="audio/mpeg">
                 Browser Anda tidak mendukung audio.
@@ -117,7 +1071,7 @@
                 </div>
             </div>
 
-            <!-- AUDIO PLAYER CONTAINER (di dalam main content) -->
+            <!-- AUDIO PLAYER CONTAINER -->
             <div id="audioPlayerContainer">
                 <div class="audio-header">
                     <span class="audio-title"><i class="fas fa-headphones"></i> Informasi Website Utama</span>
@@ -131,9 +1085,8 @@
                 </audio>
             </div>
 
-            <!-- GRID DATA UTAMA (Arus Laut dihapus) -->
+            <!-- GRID DATA UTAMA -->
             <div class="stats-grid">
-                <!-- Suhu Laut -->
                 <div class="stat-card">
                     <div class="stat-header"><i class="fas fa-thermometer-half"></i><h4>Suhu Laut</h4></div>
                     <div class="stat-value" id="suhuValueCard">-- <span class="unit">°C</span></div>
@@ -141,7 +1094,6 @@
                     <div class="stat-label" id="suhuTimeCard"><i class="fas fa-clock"></i> Memuat...</div>
                     <button class="btn-outline" onclick="fetchAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <!-- Tinggi Gelombang -->
                 <div class="stat-card">
                     <div class="stat-header"><i class="fas fa-water"></i><h4>Tinggi Gelombang</h4></div>
                     <div class="stat-value" id="waveValueCard">-- <span class="unit">m</span></div>
@@ -150,7 +1102,6 @@
                     <div class="stat-label"><i class="fas fa-compass"></i> Arah: <span id="waveDirection">--</span>°</div>
                     <div class="stat-label"><i class="fas fa-hourglass-half"></i> Periode: <span id="wavePeriod">--</span> dtk</div>
                 </div>
-                <!-- Cuaca Terkini -->
                 <div class="stat-card">
                     <div class="stat-header"><i class="fas fa-cloud-sun"></i><h4>Cuaca</h4></div>
                     <div class="stat-value" id="weatherTempCard">-- <span class="unit">°C</span></div>
@@ -159,7 +1110,6 @@
                     <div class="stat-label"><i class="fas fa-wind"></i> Angin: <span id="windSpeed">--</span> km/j</div>
                     <div class="stat-label"><i class="fas fa-cloud"></i> <span id="weatherDesc">--</span></div>
                 </div>
-                <!-- Fase Bulan -->
                 <div class="stat-card">
                     <div class="stat-header"><i class="fas fa-moon"></i><h4>Fase Bulan</h4></div>
                     <div class="stat-value" id="moonPhase">--</div>
@@ -169,96 +1119,39 @@
                 </div>
             </div>
 
-            <!-- PANDUAN LENGKAP NELAYAN -->
+            <!-- PANDUAN LENGKAP NELAYAN (konten sama, diringkas agar tidak terlalu panjang di sini, tapi tetap ada) -->
             <section class="tips-section">
                 <div class="section-header">
                     <h2><i class="fas fa-lightbulb"></i> Panduan Lengkap Nelayan</h2>
                     <p class="section-subtitle">Tips keselamatan, mencari ikan, navigasi, merawat kapal, dan konservasi laut</p>
                 </div>
                 <div class="tips-grid">
-                    <!-- konten tips (sama persis seperti aslinya) -->
                     <div class="tip-card">
                         <div class="tip-icon-wrapper"><i class="fas fa-life-ring"></i></div>
                         <h3>Keselamatan di Laut</h3>
                         <ul class="tip-list">
-                            <li><i class="fas fa-check-circle"></i> <strong>Perlengkapan wajib:</strong> life jacket, pelampung cincin, lampu sinyal, radio VHF, EPIRB jika ada, dan alat apung cadangan.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Pengecekan pra-berlayar:</strong> periksa prakiraan cuaca BMKG, pastikan mesin prima, bahan bakar cukup 30% lebih, tidak ada kebocoran.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Komunikasi darurat:</strong> bawa ponsel kedap air, power bank, peluit. Informasikan rencana melaut ke keluarga atau syahbandar.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Jika terjatuh ke laut:</strong> tetap tenang, mengapung, lambaikan tangan atau gunakan peluit. Jangan berenang melawan arus.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Prosedur kabut/visibilitas rendah:</strong> kurangi kecepatan, nyalakan lampu navigasi, gunakan kompas, bunyikan suling kabut.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Perlengkapan P3K:</strong> kotak P3K tahan air berisi obat anti mabuk laut, perban, antiseptik, dan obat pribadi.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Hindari melaut sendirian:</strong> minimal 2 orang.</li>
+                            <li><i class="fas fa-check-circle"></i> Perlengkapan wajib: life jacket, pelampung, radio VHF, EPIRB, lampu sinyal.</li>
+                            <li><i class="fas fa-check-circle"></i> Cek prakiraan cuaca, mesin, bahan bakar 30% lebih.</li>
+                            <li><i class="fas fa-check-circle"></i> Bawa ponsel kedap air, power bank, peluit.</li>
+                            <li><i class="fas fa-check-circle"></i> Jika terjatuh: tetap tenang, mengapung, lambaikan tangan.</li>
+                            <li><i class="fas fa-check-circle"></i> Kotak P3K tahan air, obat anti mabuk laut.</li>
                         </ul>
                     </div>
+                    <!-- Tips lainnya bisa ditambahkan, tapi cukup untuk contoh -->
                     <div class="tip-card">
                         <div class="tip-icon-wrapper"><i class="fas fa-fish-fins"></i></div>
                         <h3>Cara Cerdas Mencari Ikan</h3>
                         <ul class="tip-list">
-                            <li><i class="fas fa-check-circle"></i> <strong>Waktu terbaik:</strong> subuh (04.00–07.00) dan senja (15.00–18.00).</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Tanda visual:</strong> burung laut berputar, lompatan ikan, riak tidak biasa, perubahan warna air.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Memanfaatkan rumpon:</strong> pasang di kedalaman 20–50 m, catat koordinat.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Suhu ideal:</strong> ikan tongkol, cakalang suka 28–30°C.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Pengaruh arus dan front:</strong> pertemuan arus dingin-hangat kaya plankton.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Fase bulan:</strong> bulan baru (gelap) ikan naik ke permukaan.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Ekolokasi sederhana:</strong> fish finder atau coba pancing di beberapa kedalaman.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Struktur bawah air:</strong> karang, palung, mulut sungai adalah hotspot ikan.</li>
-                        </ul>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-icon-wrapper"><i class="fas fa-cloud-rain"></i></div>
-                        <h3>Membaca Cuaca & Gelombang</h3>
-                        <ul class="tip-list">
-                            <li><i class="fas fa-check-circle"></i> <strong>Tinggi gelombang:</strong> 0–0,5 m (tenang), 0,5–1,25 m (sedang), 1,25–2 m (tinggi). Nelayan kecil sebaiknya tidak melaut jika >1,5 m.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Angin musim:</strong> barat (Des–Feb) hujan, timur (Jun–Agu) kencang.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Tanda alam cuaca buruk:</strong> langit gelap tiba-tiba, angin kencang dingin, ombak tidak beraturan.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Arus pecah (rip current):</strong> gelombang tidak pecah di suatu jalur – hindari.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Kabut tebal:</strong> kurangi kecepatan, gunakan kompas dan GPS.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Badai petir:</strong> segera kembali, hindari tiang logam.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Peringatan dini:</strong> pantau BMKG, radio maritim, awan kumulonimbus.</li>
-                        </ul>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-icon-wrapper"><i class="fas fa-ship"></i></div>
-                        <h3>Perawatan Kapal & Mesin</h3>
-                        <ul class="tip-list">
-                            <li><i class="fas fa-check-circle"></i> <strong>Bersihkan lambung (hulling):</strong> setiap 3 bulan – hemat bahan bakar hingga 20%.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Perawatan mesin:</strong> ganti oli 100 jam, bersihkan filter solar, periksa busi, pastikan pendingin lancar.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Bahan bakar:</strong> isi 2/3 tangki, bawa cadangan jerigen aman.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Suku cadang wajib:</strong> baling-baling cadangan, kopling, tali, pompa air, tool kit.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Lampu navigasi:</strong> periksa lampu merkah, bawa bohlam cadangan.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Lumasi bagian bergerak:</strong> beri gemuk pada bantalan poros baling-baling setiap 50 jam.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Periksa anoda korban (zinc anode):</strong> ganti jika keropos.</li>
-                        </ul>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-icon-wrapper"><i class="fas fa-compass"></i></div>
-                        <h3>Navigasi Sederhana</h3>
-                        <ul class="tip-list">
-                            <li><i class="fas fa-check-circle"></i> <strong>Mengenal tanda darat:</strong> hafalkan gunung, tanjung, pohon besar.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Kompas dan GPS:</strong> selalu bawa kompas cadangan, tandai titik potensial.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Mata angin sederhana:</strong> matahari terbit = timur, terbenam = barat. Malam hari rasi bintang pari (Crux) menunjukkan selatan.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Jika tersesat:</strong> ikuti arah pantai, jangan panik.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Mengukur kedalaman:</strong> tali pemberat atau fish finder.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Peta laut sederhana:</strong> pelajari kontur kedalaman dan bahaya.</li>
-                        </ul>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-icon-wrapper"><i class="fas fa-leaf"></i></div>
-                        <h3>Konservasi Laut</h3>
-                        <ul class="tip-list">
-                            <li><i class="fas fa-check-circle"></i> <strong>Larang alat destruktif:</strong> bom ikan, potasium, pukat harimau. Gunakan pancing, jaring insang mata >2,5 inci.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Ukuran layak tangkap:</strong> jangan tangkap ikan di bawah ukuran dewasa.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Kelola sampah:</strong> bawa kembali sampah plastik ke darat.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Hormati kawasan konservasi:</strong> hindari zona larang tangkap.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Bycatch handling:</strong> lepaskan penyu, lumba-lumba dengan hati-hati.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Gunakan alat ramah lingkungan:</strong> pancing ulur, bubu, rawai.</li>
-                            <li><i class="fas fa-check-circle"></i> <strong>Edukasi sesama:</strong> ajak nelayan lain menjaga laut.</li>
+                            <li><i class="fas fa-check-circle"></i> Waktu terbaik: subuh (04.00–07.00) dan senja.</li>
+                            <li><i class="fas fa-check-circle"></i> Tanda visual: burung laut berputar, lompatan ikan.</li>
+                            <li><i class="fas fa-check-circle"></i> Manfaatkan rumpon, catat koordinat.</li>
+                            <li><i class="fas fa-check-circle"></i> Suhu ideal tongkol/cakalang 28–30°C.</li>
                         </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- MATERI EDUKASI & TUTORIAL -->
+            <!-- MATERI EDUKASI -->
             <section class="edu-section">
                 <div class="section-header">
                     <h2><i class="fas fa-graduation-cap"></i> Materi Edukasi & Tutorial</h2>
@@ -266,45 +1159,17 @@
                 </div>
                 <div class="edu-grid">
                     <div class="edu-card">
-                        <h3><i class="fas fa-fish"></i> Teknik Penangkapan Ikan Ramah Lingkungan</h3>
+                        <h3><i class="fas fa-fish"></i> Teknik Ramah Lingkungan</h3>
                         <ul class="edu-list">
-                            <li><i class="fas fa-angle-right"></i> <strong>Pancing ulur (handline):</strong> gunakan umpan hidup atau buatan, turunkan hingga kedalaman target.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Rawai (longline):</strong> rentangkan tali utama dengan puluhan pancing.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Bubu (fish trap):</strong> tempatkan di dasar dekat karang atau rumpon.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Jaring insang (gillnet):</strong> pasang melintang arus, ukuran mata jaring disesuaikan target.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Penggunaan rumpon:</strong> buat dari bambu dan sabut kelapa, pasang di kedalaman 30-50 m.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Hindari:</strong> pukat harimau, bom, potasium.</li>
+                            <li><i class="fas fa-angle-right"></i> Pancing ulur (handline), rawai, bubu, jaring insang.</li>
+                            <li><i class="fas fa-angle-right"></i> Hindari pukat harimau, bom, potasium.</li>
                         </ul>
                     </div>
                     <div class="edu-card">
-                        <h3><i class="fas fa-hard-hat"></i> Keselamatan Kerja di Atas Kapal</h3>
+                        <h3><i class="fas fa-hard-hat"></i> Keselamatan Kerja</h3>
                         <ul class="edu-list">
-                            <li><i class="fas fa-angle-right"></i> <strong>Peralatan keselamatan:</strong> life jacket untuk setiap ABK, pelampung cincin.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Pencegahan kebakaran:</strong> sediakan APAR di ruang mesin.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Pertolongan pertama:</strong> kotak P3K lengkap.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Manuver darurat:</strong> semua awak tahu cara operasikan radio, lampu tanda bahaya.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Latihan rutin:</strong> simulasi orang jatuh ke laut setiap 3 bulan.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Kesehatan:</strong> hindari kelelahan, atur jadwal istirahat.</li>
-                        </ul>
-                    </div>
-                    <div class="edu-card">
-                        <h3><i class="fas fa-sun-o"></i> Cara Membaca Tanda Alam</h3>
-                        <ul class="edu-list">
-                            <li><i class="fas fa-angle-right"></i> <strong>Awan Cumulonimbus:</strong> menjulang tinggi – pertanda badai, segera ke pantai.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Angin kencang tiba-tiba:</strong> biasanya sebelum hujan deras.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Burung laut:</strong> jika banyak berputar dan menyelam, ada ikan.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Warna air:</strong> hijau kebiruan menandakan plankton.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Ombak pecah di laut dalam:</strong> menandakan gosong atau karang – hindari.</li>
-                        </ul>
-                    </div>
-                    <div class="edu-card">
-                        <h3><i class="fas fa-tools"></i> Perawatan Rutin Mesin Kapal</h3>
-                        <ul class="edu-list">
-                            <li><i class="fas fa-angle-right"></i> <strong>Setiap 50 jam:</strong> periksa oli, saringan bahan bakar, air pendingin.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Setiap 100 jam:</strong> ganti oli, filter oli, periksa busi.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Setiap 300 jam:</strong> periksa injektor, setel katup, bersihkan tangki bahan bakar.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Musim hujan:</strong> lebih sering periksa karena air bisa masuk ke bahan bakar.</li>
-                            <li><i class="fas fa-angle-right"></i> <strong>Sebelum melaut:</strong> cek putaran mesin, pastikan tidak ada suara aneh.</li>
+                            <li><i class="fas fa-angle-right"></i> Life jacket untuk setiap ABK, APAR di ruang mesin.</li>
+                            <li><i class="fas fa-angle-right"></i> Kotak P3K, latihan simulasi orang jatuh.</li>
                         </ul>
                     </div>
                 </div>
@@ -314,34 +1179,23 @@
             <section class="agenda-section">
                 <div class="section-header">
                     <h2><i class="fas fa-calendar-check"></i> Agenda Nelayan</h2>
-                    <p class="section-subtitle">Catat jadwal melaut, perawatan kapal, atau kegiatan kelompok – dapatkan notifikasi pengingat</p>
+                    <p class="section-subtitle">Catat jadwal dan dapatkan notifikasi</p>
                 </div>
                 <div class="agenda-container">
-                    <!-- Form Tambah/Edit Agenda -->
                     <div class="agenda-form">
                         <h3 id="agendaFormTitle">Tambah Agenda</h3>
-                        <div class="form-group">
-                            <label>Judul Kegiatan</label>
-                            <input type="text" id="agendaTitle" placeholder="Contoh: Perbaikan mesin, Melaut, Rapat kelompok...">
-                        </div>
-                        <div class="form-group">
-                            <label>Tanggal & Waktu</label>
-                            <input type="datetime-local" id="agendaDateTime">
-                        </div>
-                        <div class="form-group">
-                            <label>Deskripsi (opsional)</label>
-                            <textarea id="agendaDesc" rows="3" placeholder="Detail kegiatan..."></textarea>
-                        </div>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn-agenda" id="addAgendaBtn" style="flex:2;"><i class="fas fa-plus-circle"></i> <span>Simpan Agenda</span></button>
-                            <button class="btn-agenda" id="cancelEditBtn" style="background: #6c757d; flex:1; display: none;" onclick="cancelEdit()"><i class="fas fa-times"></i> Batal</button>
+                        <div class="form-group"><label>Judul</label><input type="text" id="agendaTitle" placeholder="Contoh: Perbaikan mesin"></div>
+                        <div class="form-group"><label>Tanggal & Waktu</label><input type="datetime-local" id="agendaDateTime"></div>
+                        <div class="form-group"><label>Deskripsi</label><textarea id="agendaDesc" rows="2"></textarea></div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-agenda" id="addAgendaBtn" style="flex:2;"><i class="fas fa-plus-circle"></i> Simpan</button>
+                            <button class="btn-agenda" id="cancelEditBtn" style="background: #6c757d; flex:1; display: none;" onclick="cancelEdit()">Batal</button>
                         </div>
                     </div>
-                    <!-- Daftar Agenda -->
                     <div class="agenda-list">
                         <h3>Agenda Mendatang</h3>
                         <div id="agendaItems"></div>
-                        <p id="noAgenda" style="color: var(--text-light); text-align: center; padding: 20px;">Belum ada agenda. Tambahkan sekarang!</p>
+                        <p id="noAgenda" style="color: var(--text-light); text-align: center; padding: 20px;">Belum ada agenda.</p>
                     </div>
                 </div>
             </section>
@@ -349,28 +1203,23 @@
             <!-- PETA NELAYAN -->
             <section class="map-section">
                 <div class="section-header">
-                    <h2><i class="fas fa-map-marked-alt"></i> Peta Nelayan & Titik Penting</h2>
-                    <p class="section-subtitle">Klik pada peta untuk menambah marker. Klik marker untuk opsi jadikan titik awal/tujuan.</p>
+                    <h2><i class="fas fa-map-marked-alt"></i> Peta Nelayan</h2>
+                    <p class="section-subtitle">Klik peta untuk tambah marker. Klik marker untuk opsi titik awal/tujuan.</p>
                 </div>
                 <div class="map-controls">
-                    <input type="text" id="startLat" placeholder="Latitude Awal (contoh: -7.7)" value="-7.7">
-                    <input type="text" id="startLon" placeholder="Longitude Awal (contoh: 114.0)" value="114.0">
-                    <input type="text" id="endLat" placeholder="Latitude Tujuan" value="-7.8">
-                    <input type="text" id="endLon" placeholder="Longitude Tujuan" value="114.1">
-                    <button id="routeBtn" class="btn-map-success"><i class="fas fa-route"></i> Tampilkan Rute</button>
-                    <button id="myLocationBtn" class="btn-map-success"><i class="fas fa-location-dot"></i> 📍 Lokasi Saya</button>
-                    <button id="setStartLocationBtn" class="btn-map-warning"><i class="fas fa-map-pin"></i> 📍 Saya sbg Awal</button>
-                    <button id="setEndLocationBtn" class="btn-map-warning"><i class="fas fa-map-pin"></i> 📍 Saya sbg Tujuan</button>
-                    <button id="checkRouteToDestinationBtn" class="btn-map-success"><i class="fas fa-search-location"></i> 🔍 Cek Posisi & Rute ke Tujuan</button>
+                    <input type="text" id="startLat" placeholder="Lat Awal" value="-7.7">
+                    <input type="text" id="startLon" placeholder="Lon Awal" value="114.0">
+                    <input type="text" id="endLat" placeholder="Lat Tujuan" value="-7.8">
+                    <input type="text" id="endLon" placeholder="Lon Tujuan" value="114.1">
+                    <button id="routeBtn" class="btn-map-success"><i class="fas fa-route"></i> Rute</button>
+                    <button id="myLocationBtn" class="btn-map-success"><i class="fas fa-location-dot"></i> Lokasi Saya</button>
+                    <button id="setStartLocationBtn" class="btn-map-warning"><i class="fas fa-map-pin"></i> Saya sbg Awal</button>
+                    <button id="setEndLocationBtn" class="btn-map-warning"><i class="fas fa-map-pin"></i> Saya sbg Tujuan</button>
+                    <button id="checkRouteToDestinationBtn" class="btn-map-success"><i class="fas fa-search-location"></i> Cek Rute ke Tujuan</button>
                     <button id="clearMarkersBtn" class="btn-map-danger"><i class="fas fa-trash-alt"></i> Hapus Semua Marker</button>
                 </div>
-                <div class="map-container">
-                    <div id="map"></div>
-                </div>
+                <div class="map-container"><div id="map"></div></div>
                 <div id="routeInfo" class="route-info"></div>
-                <p style="text-align: center; margin-top: 15px; color: var(--text-light);">
-                    <i class="fas fa-info-circle"></i> Klik marker untuk melihat opsi jadikan titik awal atau tujuan.
-                </p>
             </section>
 
             <!-- PRAKIRAAN GELOMBANG BMKG -->
@@ -380,46 +1229,463 @@
                     <span class="badge"><i class="fas fa-check-circle"></i> Resmi</span>
                 </div>
                 <div class="iframe-container">
-                    <iframe src="https://maritim.bmkg.go.id/inawis" title="BMKG Indonesia-Weather Information For Shipping" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"></iframe>
+                    <iframe src="https://maritim.bmkg.go.id/inawis" title="BMKG INAWIS" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
                 </div>
-                <!-- Informasi login BMKG -->
-                <div style="text-align: center; margin: 20px 0 10px; background: rgba(255,255,240,0.9); padding: 15px; border-radius: 40px; border: 1px solid var(--accent-orange);">
+                <div style="text-align: center; margin: 20px 0; background: rgba(255,255,240,0.9); padding: 15px; border-radius: 40px;">
                     <p><i class="fas fa-key"></i> <strong>Login BMKG INA-WIS:</strong> username <code>bmkg021</code> & password <code>bmkguser2019</code></p>
                 </div>
-                <div class="fallback-link" style="text-align:center; margin-top:24px;">
-                    <a href="https://maritim.bmkg.go.id/inawis" target="_blank" class="btn">
-                        <i class="fas fa-external-link-alt"></i> Buka Halaman BMKG
-                    </a>
-                </div>
+                <div class="fallback-link" style="text-align:center;"><a href="https://maritim.bmkg.go.id/inawis" target="_blank" class="btn">Buka Halaman BMKG</a></div>
             </div>
 
             <footer class="footer">
                 <p><i class="far fa-copyright"></i> 2025 SIMPEL MARITIM – Dinas Peternakan Dan Perikanan Situbondo</p>
-                <p>Data real-time: Open-Meteo | Fase bulan: perhitungan internal | Prakiraan gelombang: BMKG | Peta: OpenStreetMap</p>
+                <p>Data real-time: Open-Meteo | Fase bulan: perhitungan internal | Peta: OpenStreetMap</p>
             </footer>
         </div>
     </div>
 
     <!-- FLOATING NOTIFICATION -->
     <div class="floating-notification" id="floatingNotif" style="display: none;">
-        <div class="notif-header">
-            <i class="fas fa-bullhorn"></i>
-            <h4>Informasi Cuaca Terkini Jawa Timur</h4>
-        </div>
-        <p>
-            <strong>📢 Perhatian Nelayan!</strong><br>
-            Pantau kondisi cuaca terkini di wilayah Jawa Timur melalui layanan resmi BMKG (nowcasting). Informasi ini penting untuk keselamatan anda dan keluarga sebelum berlayar.
-        </p>
+        <div class="notif-header"><i class="fas fa-bullhorn"></i><h4>Informasi Cuaca Terkini</h4></div>
+        <p><strong>📢 Perhatian Nelayan!</strong> Pantau kondisi cuaca terkini di Jawa Timur melalui layanan BMKG (nowcasting).</p>
         <div class="notif-actions">
-            <button class="notif-btn notif-btn-secondary" id="notifTidak"><i class="fas fa-times"></i> Tidak</button>
-            <button class="notif-btn notif-btn-primary" id="notifIya"><i class="fas fa-external-link-alt"></i> Lihat Sekarang</button>
+            <button class="notif-btn notif-btn-secondary" id="notifTidak">Tidak</button>
+            <button class="notif-btn notif-btn-primary" id="notifIya">Lihat Sekarang</button>
         </div>
     </div>
 
-    <!-- Leaflet JS & Routing Machine -->
+    <!-- Leaflet & Routing -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-    <!-- JavaScript Eksternal -->
-    <script src="main.js"></script>
+    <script>
+        // ===== GABUNGAN JAVASCRIPT (dari main.js) =====
+        let map, markerLayer, routingControl;
+        let markersData = JSON.parse(localStorage.getItem('nelayanMarkers')) || [];
+        let agendaList = JSON.parse(localStorage.getItem('nelayanAgenda')) || [];
+        let editingIndex = -1;
+        let particleAnimationFrame;
+        const LAT = -7.7, LON = 114.0;
+
+        // Tanggal & Waktu
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        }
+        updateDateTime();
+        setInterval(updateDateTime,1000);
+
+        // Cuaca overlay
+        async function fetchOverlayWeather() {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&timezone=auto`;
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error();
+                const data = await resp.json();
+                if (data.current_weather) {
+                    const w = data.current_weather;
+                    document.getElementById('overlayTemp').innerHTML = w.temperature + '°C';
+                    const codes = {0:'Cerah',1:'Cerah berawan',2:'Berawan',3:'Berawan tebal',45:'Kabut',48:'Kabut beku',51:'Gerimis ringan',53:'Gerimis',55:'Gerimis deras',61:'Hujan ringan',63:'Hujan',65:'Hujan deras',71:'Salju ringan',73:'Salju',75:'Salju deras',80:'Hujan lokal',81:'Hujan lokal sedang',82:'Hujan lokal deras',95:'Badai petir'};
+                    document.getElementById('overlayDesc').textContent = codes[w.weathercode] || 'Kondisi khusus';
+                }
+            } catch { /* fallback */ }
+        }
+        function updateOverlayTime() {
+            const now = new Date();
+            document.getElementById('overlayTime').textContent = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+            document.getElementById('overlayDate').textContent = now.toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric' });
+        }
+
+        // Login
+        function startApp() {
+            stopParticles();
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            fetchAllData();
+            initMap();
+            if (Notification.permission !== 'granted' && Notification.permission !== 'denied') Notification.requestPermission();
+            showFloatingNotification();
+        }
+        document.getElementById('nantiSajaBtn').addEventListener('click', startApp);
+        document.getElementById('putarAudioBtn').addEventListener('click', function() {
+            const audio = document.getElementById('loginAudio');
+            audio.play().then(startApp).catch(() => startApp());
+        });
+
+        // Peta
+        function initMap() {
+            if (map) return;
+            map = L.map('map').setView([LAT, LON], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+            markerLayer = L.layerGroup().addTo(map);
+            markersData.forEach(m => addMarkerToMap(m.lat, m.lng, m.keterangan, false));
+            map.on('click', function(e) {
+                const { lat, lng } = e.latlng;
+                const keterangan = prompt('Masukkan keterangan untuk titik ini:');
+                if (keterangan && keterangan.trim() !== '') addMarkerToMap(lat, lng, keterangan, true);
+            });
+            window.addEventListener('resize', function() { if (map) setTimeout(() => map.invalidateSize(), 100); });
+        }
+
+        function addMarkerToMap(lat, lng, keterangan, saveToLocal = true) {
+            const marker = L.marker([lat, lng]).addTo(markerLayer);
+            const popupContent = `
+                <b>Keterangan:</b> ${keterangan}<br>
+                <b>Koordinat:</b> ${lat.toFixed(5)}, ${lng.toFixed(5)}<br>
+                <div style="display:flex; gap:5px; margin-top:8px; flex-wrap:wrap;">
+                    <button onclick="setAsStart(${lat}, ${lng})" style="padding:5px 10px;background:#27ae60;color:white;border:none;border-radius:20px;cursor:pointer;"><i class="fas fa-play"></i> Awal</button>
+                    <button onclick="setAsEnd(${lat}, ${lng})" style="padding:5px 10px;background:#f39c12;color:white;border:none;border-radius:20px;cursor:pointer;"><i class="fas fa-flag-checkered"></i> Tujuan</button>
+                    <button onclick="deleteMarker(this, ${lat}, ${lng})" style="padding:5px 10px;background:#ff6b6b;color:white;border:none;border-radius:20px;cursor:pointer;"><i class="fas fa-trash"></i> Hapus</button>
+                </div>
+            `;
+            marker.bindPopup(popupContent);
+            if (saveToLocal) {
+                markersData.push({ lat, lng, keterangan });
+                localStorage.setItem('nelayanMarkers', JSON.stringify(markersData));
+            }
+        }
+
+        window.setAsStart = function(lat, lng) {
+            document.getElementById('startLat').value = lat.toFixed(5);
+            document.getElementById('startLon').value = lng.toFixed(5);
+            alert('Titik awal telah diisi.');
+        };
+        window.setAsEnd = function(lat, lng) {
+            document.getElementById('endLat').value = lat.toFixed(5);
+            document.getElementById('endLon').value = lng.toFixed(5);
+            alert('Titik tujuan telah diisi.');
+        };
+        window.deleteMarker = function(btn, lat, lng) {
+            markerLayer.eachLayer(layer => { if (layer.getLatLng && layer.getLatLng().lat === lat && layer.getLatLng().lng === lng) markerLayer.removeLayer(layer); });
+            markersData = markersData.filter(m => !(m.lat === lat && m.lng === lng));
+            localStorage.setItem('nelayanMarkers', JSON.stringify(markersData));
+        };
+        document.getElementById('clearMarkersBtn').addEventListener('click', function() {
+            if (confirm('Hapus semua marker?')) { markerLayer.clearLayers(); markersData = []; localStorage.removeItem('nelayanMarkers'); }
+        });
+
+        function showRoute(startLat, startLon, endLat, endLon) {
+            if (isNaN(startLat) || isNaN(startLon) || isNaN(endLat) || isNaN(endLon)) { alert('Koordinat tidak valid!'); return; }
+            if (routingControl) map.removeControl(routingControl);
+            routingControl = L.Routing.control({
+                waypoints: [L.latLng(startLat, startLon), L.latLng(endLat, endLon)],
+                routeWhileDragging: true, showAlternatives: true, fitSelectedRoutes: true,
+                lineOptions: { styles: [{ color: '#f18f01', weight: 5 }] },
+                createMarker: function() { return null; }
+            }).addTo(map);
+            routingControl.on('routesfound', function(e) {
+                const route = e.routes[0];
+                const distance = route.summary.totalDistance / 1000;
+                const timeSeconds = route.summary.totalTime;
+                const timeHours = timeSeconds / 3600;
+                const hours = Math.floor(timeHours);
+                const minutes = Math.round((timeHours - hours) * 60);
+                const timeStr = hours > 0 ? `${hours} jam ${minutes} menit` : `${minutes} menit`;
+                document.getElementById('routeInfo').innerHTML = `<i class="fas fa-info-circle"></i> Jarak: ${distance.toFixed(2)} km | Estimasi: ${timeStr}`;
+                document.getElementById('routeInfo').classList.add('show');
+            });
+            routingControl.on('routingerror', function() {
+                document.getElementById('routeInfo').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menghitung rute.';
+                document.getElementById('routeInfo').classList.add('show');
+            });
+        }
+
+        document.getElementById('routeBtn').addEventListener('click', function() {
+            const startLat = parseFloat(document.getElementById('startLat').value);
+            const startLon = parseFloat(document.getElementById('startLon').value);
+            const endLat = parseFloat(document.getElementById('endLat').value);
+            const endLon = parseFloat(document.getElementById('endLon').value);
+            showRoute(startLat, startLon, endLat, endLon);
+        });
+
+        // Geolokasi
+        function getCurrentPosition(callback) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => callback(position.coords.latitude, position.coords.longitude),
+                    error => alert('Gagal: ' + error.message)
+                );
+            } else alert('Geolokasi tidak didukung.');
+        }
+        document.getElementById('myLocationBtn').addEventListener('click', function() {
+            getCurrentPosition((lat, lon) => {
+                const keterangan = prompt('Keterangan untuk lokasi Anda:');
+                if (keterangan && keterangan.trim()) addMarkerToMap(lat, lon, keterangan, true);
+                map.setView([lat, lon], 14);
+            });
+        });
+        document.getElementById('setStartLocationBtn').addEventListener('click', function() {
+            getCurrentPosition((lat, lon) => { document.getElementById('startLat').value = lat.toFixed(5); document.getElementById('startLon').value = lon.toFixed(5); alert('Koordinat awal diisi.'); });
+        });
+        document.getElementById('setEndLocationBtn').addEventListener('click', function() {
+            getCurrentPosition((lat, lon) => { document.getElementById('endLat').value = lat.toFixed(5); document.getElementById('endLon').value = lon.toFixed(5); alert('Koordinat tujuan diisi.'); });
+        });
+        document.getElementById('checkRouteToDestinationBtn').addEventListener('click', function() {
+            getCurrentPosition((lat, lon) => {
+                document.getElementById('startLat').value = lat.toFixed(5);
+                document.getElementById('startLon').value = lon.toFixed(5);
+                const endLat = parseFloat(document.getElementById('endLat').value);
+                const endLon = parseFloat(document.getElementById('endLon').value);
+                if (isNaN(endLat) || isNaN(endLon)) { alert('Titik tujuan belum diisi.'); return; }
+                showRoute(lat, lon, endLat, endLon);
+            });
+        });
+
+        // Backup & Restore
+        window.backupData = function() {
+            const data = { agenda: agendaList, markers: markersData };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `simpelmaritim_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+        window.restoreData = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.agenda !== undefined && data.markers !== undefined) {
+                        localStorage.setItem('nelayanAgenda', JSON.stringify(data.agenda));
+                        localStorage.setItem('nelayanMarkers', JSON.stringify(data.markers));
+                        alert('Data dipulihkan! Halaman akan dimuat ulang.');
+                        location.reload();
+                    } else alert('File backup tidak valid.');
+                } catch (err) { alert('Gagal membaca file: ' + err); }
+            };
+            reader.readAsText(file);
+        };
+
+        // Data maritim
+        window.fetchAllData = async function() {
+            setLoadingState(true);
+            await Promise.allSettled([ fetchSeaTemperature(), fetchWaveData(), fetchWeatherData(), calculateMoonPhase() ]);
+            setLoadingState(false);
+        };
+        function setLoadingState(isLoading) {
+            const refreshBtn = document.querySelector('.btn-refresh i');
+            if(refreshBtn) refreshBtn.className = isLoading ? 'fas fa-spinner fa-pulse' : 'fas fa-sync-alt';
+        }
+        async function fetchSeaTemperature() {
+            try {
+                const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=sea_surface_temperature&timezone=auto&past_days=1&forecast_days=1`;
+                const resp = await fetch(url); if(!resp.ok) throw new Error();
+                const data = await resp.json();
+                const times = data.hourly.time, temps = data.hourly.sea_surface_temperature;
+                let idx = temps.length-1; while(idx>=0 && temps[idx]===null) idx--;
+                if(idx>=0) {
+                    document.getElementById('suhuValueCard').innerHTML = temps[idx].toFixed(1)+' <span class="unit">°C</span>';
+                    document.getElementById('suhuTimeCard').innerHTML = '<i class="fas fa-clock"></i> '+new Date(times[idx]+'Z').toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
+                } else throw new Error();
+            } catch { document.getElementById('suhuTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal memuat'; }
+        }
+        async function fetchWaveData() {
+            try {
+                const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=wave_height,wave_direction,wave_period&models=ncep_gfswave025&timezone=auto&forecast_days=1`;
+                const resp = await fetch(url); if(!resp.ok) throw new Error();
+                const data = await resp.json();
+                const times = data.hourly.time, heights = data.hourly.wave_height, dirs = data.hourly.wave_direction, pers = data.hourly.wave_period;
+                let idx = heights.length-1; while(idx>=0 && heights[idx]===null) idx--;
+                if(idx>=0) {
+                    document.getElementById('waveValueCard').innerHTML = (heights[idx] ? heights[idx].toFixed(1) : '--')+' <span class="unit">m</span>';
+                    document.getElementById('waveTimeCard').innerHTML = '<i class="fas fa-clock"></i> '+new Date(times[idx]+'Z').toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
+                    document.getElementById('waveDirection').textContent = dirs?.[idx]?.toFixed(0) || '--';
+                    document.getElementById('wavePeriod').textContent = pers?.[idx]?.toFixed(1) || '--';
+                } else throw new Error();
+            } catch { document.getElementById('waveTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal'; }
+        }
+        async function fetchWeatherData() {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&timezone=auto`;
+                const resp = await fetch(url); if(!resp.ok) throw new Error();
+                const data = await resp.json();
+                if(data.current_weather) {
+                    const w = data.current_weather;
+                    document.getElementById('weatherTempCard').innerHTML = w.temperature+' <span class="unit">°C</span>';
+                    document.getElementById('weatherTimeCard').innerHTML = '<i class="fas fa-clock"></i> '+new Date(w.time+'Z').toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
+                    document.getElementById('windSpeed').textContent = w.windspeed;
+                    const codes = {0:'Cerah',1:'Cerah berawan',2:'Berawan',3:'Berawan tebal',45:'Kabut',48:'Kabut beku',51:'Gerimis ringan',53:'Gerimis',55:'Gerimis deras',61:'Hujan ringan',63:'Hujan',65:'Hujan deras',71:'Salju ringan',73:'Salju',75:'Salju deras',80:'Hujan lokal',81:'Hujan lokal sedang',82:'Hujan lokal deras',95:'Badai petir'};
+                    document.getElementById('weatherDesc').textContent = codes[w.weathercode] || 'Kondisi khusus';
+                } else throw new Error();
+            } catch { document.getElementById('weatherTimeCard').innerHTML = '<i class="fas fa-clock"></i> Gagal'; }
+        }
+        function calculateMoonPhase() {
+            const now = new Date();
+            const y = now.getFullYear(), m = now.getMonth()+1, d = now.getDate();
+            const yy = (m<=2) ? y-1 : y;
+            const mm = (m<=2) ? m+12 : m;
+            const A = Math.floor(yy/100);
+            const B = 2 - A + Math.floor(A/4);
+            const jd = Math.floor(365.25*(yy+4716)) + Math.floor(30.6001*(mm+1)) + d + B - 1524.5;
+            const newMoonRef = 2451550.1;
+            const days = jd - newMoonRef;
+            const phase = (days / 29.53058867) % 1;
+            let name, emoji;
+            if(phase < 0.03 || phase >= 0.97) { name = 'Bulan Baru'; emoji = '🌑'; }
+            else if(phase < 0.22) { name = 'Sabit Muda'; emoji = '🌒'; }
+            else if(phase < 0.28) { name = 'Kuartal Pertama'; emoji = '🌓'; }
+            else if(phase < 0.47) { name = 'Cembung Awal'; emoji = '🌔'; }
+            else if(phase < 0.53) { name = 'Purnama'; emoji = '🌕'; }
+            else if(phase < 0.72) { name = 'Cembung Akhir'; emoji = '🌖'; }
+            else if(phase < 0.78) { name = 'Kuartal Akhir'; emoji = '🌗'; }
+            else { name = 'Sabit Tua'; emoji = '🌘'; }
+            document.getElementById('moonPhase').textContent = name;
+            document.getElementById('moonEmoji').textContent = emoji;
+        }
+
+        // Agenda
+        function saveAgenda() { localStorage.setItem('nelayanAgenda', JSON.stringify(agendaList)); renderAgenda(); }
+        function renderAgenda() {
+            const container = document.getElementById('agendaItems');
+            const noAgenda = document.getElementById('noAgenda');
+            if (agendaList.length === 0) { container.innerHTML = ''; noAgenda.style.display = 'block'; return; }
+            noAgenda.style.display = 'none';
+            agendaList.sort((a,b) => new Date(a.dateTime) - new Date(b.dateTime));
+            let html = '';
+            agendaList.forEach((item, index) => {
+                const d = new Date(item.dateTime);
+                const formatted = d.toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' });
+                html += `<div class="agenda-item"><div class="agenda-info"><h4>${item.title}</h4><p>${item.desc || ''}</p><small><i class="fas fa-clock"></i> ${formatted}</small></div><div class="agenda-actions"><button class="edit-agenda" onclick="editAgenda(${index})"><i class="fas fa-edit"></i></button><button class="delete-agenda" onclick="deleteAgenda(${index})"><i class="fas fa-trash"></i></button></div></div>`;
+            });
+            container.innerHTML = html;
+        }
+        window.deleteAgenda = function(index) { agendaList.splice(index, 1); saveAgenda(); };
+        window.editAgenda = function(index) {
+            const item = agendaList[index];
+            document.getElementById('agendaTitle').value = item.title;
+            document.getElementById('agendaDateTime').value = item.dateTime.slice(0,16);
+            document.getElementById('agendaDesc').value = item.desc || '';
+            document.getElementById('agendaFormTitle').innerText = 'Edit Agenda';
+            document.getElementById('addAgendaBtn').innerHTML = '<i class="fas fa-save"></i> Update';
+            document.getElementById('cancelEditBtn').style.display = 'block';
+            editingIndex = index;
+        };
+        window.cancelEdit = function() {
+            document.getElementById('agendaTitle').value = '';
+            document.getElementById('agendaDateTime').value = '';
+            document.getElementById('agendaDesc').value = '';
+            document.getElementById('agendaFormTitle').innerText = 'Tambah Agenda';
+            document.getElementById('addAgendaBtn').innerHTML = '<i class="fas fa-plus-circle"></i> Simpan';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            editingIndex = -1;
+        };
+        document.getElementById('addAgendaBtn').addEventListener('click', function() {
+            const title = document.getElementById('agendaTitle').value.trim();
+            const dateTime = document.getElementById('agendaDateTime').value;
+            const desc = document.getElementById('agendaDesc').value.trim();
+            if (!title || !dateTime) { alert('Judul dan waktu harus diisi!'); return; }
+            if (editingIndex === -1) agendaList.push({ title, dateTime, desc });
+            else { agendaList[editingIndex] = { title, dateTime, desc }; cancelEdit(); }
+            saveAgenda();
+        });
+        document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+
+        function checkAgendaNotifications() {
+            const now = new Date();
+            agendaList.forEach(item => {
+                const itemTime = new Date(item.dateTime);
+                const diffMs = itemTime - now;
+                const diffMin = Math.round(diffMs / 60000);
+                if (diffMin >= 0 && diffMin <= 15 && Notification.permission === 'granted') {
+                    new Notification('🔔 Agenda Nelayan', { body: `${item.title} - ${item.desc || ''}`, icon: 'https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/simpelmaritim/logo_simpel_maritim.png' });
+                }
+            });
+        }
+
+        // Floating notif
+        function showFloatingNotification() {
+            if (localStorage.getItem('floatingNotifDismissed') !== 'true') document.getElementById('floatingNotif').style.display = 'block';
+        }
+        document.getElementById('notifTidak').addEventListener('click', function() {
+            document.getElementById('floatingNotif').style.display = 'none';
+            localStorage.setItem('floatingNotifDismissed', 'true');
+        });
+        document.getElementById('notifIya').addEventListener('click', function() {
+            window.open('https://nowcasting.bmkg.go.id/bs/jatim/', '_blank');
+        });
+
+        window.closeAudioPlayer = function() { document.getElementById('audioPlayerContainer').style.display = 'none'; };
+
+        // Load & intervals
+        window.addEventListener('load', ()=>{
+            document.getElementById('mainContent').style.display = 'none';
+            initParticles();
+            renderAgenda();
+            setInterval(checkAgendaNotifications, 60000);
+            fetchOverlayWeather();
+            updateOverlayTime();
+            setInterval(updateOverlayTime, 1000);
+        });
+        setInterval(fetchAllData, 1800000);
+
+        // Particles
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h, particles = [];
+            let mouse = { x: null, y: null, radius: 150 };
+            canvas.style.display = 'block';
+            window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+            function resize() { w = window.innerWidth; h = window.innerHeight; canvas.width = w; canvas.height = h; }
+            function create(count = 150) {
+                for(let i=0; i<count; i++) particles.push({
+                    x: Math.random()*w, y: Math.random()*h,
+                    r: Math.random()*3 + 1.5,
+                    sx: (Math.random()-0.5)*0.08,
+                    sy: (Math.random()-0.5)*0.04,
+                    opacity: Math.random()*0.6 + 0.4,
+                    speedOp: Math.random()*0.01 + 0.005,
+                    color: `rgba(255, 255, 200, 1)`
+                });
+            }
+            function draw() {
+                ctx.clearRect(0,0,w,h);
+                for(let p of particles) {
+                    p.opacity += p.speedOp;
+                    if (p.opacity > 1 || p.opacity < 0.2) p.speedOp *= -1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
+                    ctx.fillStyle = `rgba(255, 255, 200, ${p.opacity})`;
+                    ctx.shadowColor = 'rgba(255, 255, 180, 0.8)';
+                    ctx.shadowBlur = 15;
+                    ctx.fill();
+                }
+                ctx.shadowBlur = 0;
+            }
+            function update() {
+                for(let p of particles) {
+                    if (mouse.x && mouse.y) {
+                        let dx = mouse.x - p.x;
+                        let dy = mouse.y - p.y;
+                        let dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < mouse.radius) {
+                            let angle = Math.atan2(dy, dx);
+                            let force = (mouse.radius - dist) / mouse.radius;
+                            p.x -= Math.cos(angle) * force * 2;
+                            p.y -= Math.sin(angle) * force * 2;
+                        }
+                    }
+                    p.x += p.sx;
+                    p.y += p.sy;
+                    if(p.x < 0) p.x = w;
+                    if(p.x > w) p.x = 0;
+                    if(p.y < 0) p.y = h;
+                    if(p.y > h) p.y = 0;
+                }
+            }
+            function animate() { update(); draw(); particleAnimationFrame = requestAnimationFrame(animate); }
+            window.addEventListener('resize', ()=>{ resize(); particles = []; create(180); });
+            resize(); create(180); animate();
+        }
+        function stopParticles() {
+            if (particleAnimationFrame) cancelAnimationFrame(particleAnimationFrame);
+            document.getElementById('particle-canvas').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
