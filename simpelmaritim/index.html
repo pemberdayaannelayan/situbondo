@@ -840,6 +840,84 @@
             padding: 28px 20px;
         }
 
+        /* ===== FLOATING NOTIFICATION (BARU) ===== */
+        .floating-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px 28px;
+            max-width: 380px;
+            width: calc(100% - 60px);
+            box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(241, 143, 1, 0.3);
+            border-left: 8px solid var(--accent-orange);
+            z-index: 10000;
+            animation: slideInRight 0.5s ease;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .floating-notification .notif-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .floating-notification .notif-header i {
+            font-size: 2rem;
+            color: var(--accent-orange);
+        }
+        .floating-notification .notif-header h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .floating-notification p {
+            color: var(--text-dark);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+        .floating-notification .notif-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .notif-btn {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .notif-btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 10px -3px var(--accent-orange);
+        }
+        .notif-btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 18px -5px var(--accent-orange);
+        }
+        .notif-btn-secondary {
+            background: #eef2f6;
+            color: var(--text-dark);
+            border: 1px solid var(--text-light);
+        }
+        .notif-btn-secondary:hover {
+            background: #e1e6ec;
+        }
+
         @media (max-width: 600px) {
             .logo-text h1 { font-size: 2rem; }
             .login-modal h2 { font-size: 2rem; }
@@ -848,6 +926,7 @@
             .agenda-container { grid-template-columns: 1fr; }
             .map-controls { flex-direction: column; }
             .map-controls input { width: 100%; }
+            .floating-notification { bottom: 20px; right: 20px; left: 20px; width: auto; max-width: none; }
         }
     </style>
 </head>
@@ -1177,6 +1256,22 @@
                 <p><i class="far fa-copyright"></i> 2025 SIMPEL MARITIM – Dinas Peternakan Dan Perikanan Situbondo</p>
                 <p>Data real-time: Open-Meteo | Fase bulan: perhitungan internal | Prakiraan gelombang: BMKG | Peta: OpenStreetMap</p>
             </footer>
+        </div>
+    </div>
+
+    <!-- FLOATING NOTIFICATION (BARU) -->
+    <div class="floating-notification" id="floatingNotif" style="display: none;">
+        <div class="notif-header">
+            <i class="fas fa-bullhorn"></i>
+            <h4>Informasi Terkini Jawa Timur</h4>
+        </div>
+        <p>
+            <strong>📢 Perhatian Nelayan!</strong><br>
+            Pantau kondisi cuaca dan gelombang terkini di wilayah Jawa Timur melalui layanan resmi BMKG. Dapatkan informasi nowcasting untuk keselamatan pelayaran.
+        </p>
+        <div class="notif-actions">
+            <button class="notif-btn notif-btn-secondary" id="notifTidak"><i class="fas fa-times"></i> Tidak</button>
+            <button class="notif-btn notif-btn-primary" id="notifIya"><i class="fas fa-external-link-alt"></i> Lihat Sekarang</button>
         </div>
     </div>
 
@@ -1638,6 +1733,29 @@
             });
         }
 
+        // ===== FLOATING NOTIFICATION =====
+        function showFloatingNotification() {
+            const notif = document.getElementById('floatingNotif');
+            // Cek apakah sudah pernah ditutup sebelumnya (menggunakan localStorage)
+            const isDismissed = localStorage.getItem('floatingNotifDismissed') === 'true';
+            if (!isDismissed) {
+                notif.style.display = 'block';
+            }
+        }
+
+        // Tombol "Tidak" pada floating notification
+        document.getElementById('notifTidak').addEventListener('click', function() {
+            document.getElementById('floatingNotif').style.display = 'none';
+            localStorage.setItem('floatingNotifDismissed', 'true');
+        });
+
+        // Tombol "Iya" pada floating notification
+        document.getElementById('notifIya').addEventListener('click', function() {
+            window.open('https://nowcasting.bmkg.go.id/bs/jatim/', '_blank');
+            // Notifikasi tetap bisa ditutup manual dengan tombol Tidak, atau kita biarkan saja
+            // Opsi: bisa juga otomatis ditutup setelah klik, tapi kita biarkan agar pengguna bisa menutup nanti
+        });
+
         // LOGIN
         document.getElementById('loginButton').addEventListener('click', ()=>{
             document.getElementById('loginOverlay').style.display = 'none';
@@ -1647,6 +1765,8 @@
             if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
                 Notification.requestPermission();
             }
+            // Tampilkan floating notification setelah login
+            showFloatingNotification();
         });
 
         // LOAD
