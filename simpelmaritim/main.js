@@ -3,6 +3,7 @@ let map, markerLayer, routingControl;
 let markersData = JSON.parse(localStorage.getItem('nelayanMarkers')) || [];
 let agendaList = JSON.parse(localStorage.getItem('nelayanAgenda')) || [];
 let editingIndex = -1; // Untuk agenda edit
+let particleAnimationFrame; // Untuk mengontrol animasi partikel
 
 const LAT = -7.7, LON = 114.0;
 
@@ -382,7 +383,7 @@ window.deleteAgenda = function(index) {
 window.editAgenda = function(index) {
     const item = agendaList[index];
     document.getElementById('agendaTitle').value = item.title;
-    document.getElementById('agendaDateTime').value = item.dateTime.slice(0,16); // format yyyy-mm-ddThh:mm
+    document.getElementById('agendaDateTime').value = item.dateTime.slice(0,16);
     document.getElementById('agendaDesc').value = item.desc || '';
     document.getElementById('agendaFormTitle').innerText = 'Edit Agenda';
     document.getElementById('addAgendaBtn').innerHTML = '<i class="fas fa-save"></i> Update Agenda';
@@ -456,6 +457,7 @@ document.getElementById('notifIya').addEventListener('click', function() {
 
 // ===== LOGIN =====
 document.getElementById('loginButton').addEventListener('click', ()=>{
+    stopParticles(); // Hentikan partikel bintang
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
     fetchAllData();
@@ -469,19 +471,22 @@ document.getElementById('loginButton').addEventListener('click', ()=>{
 // ===== LOAD & INTERVALS =====
 window.addEventListener('load', ()=>{
     document.getElementById('mainContent').style.display = 'none';
-    initParticles();
+    initParticles(); // Partikel hanya untuk halaman login
     renderAgenda();
     setInterval(checkAgendaNotifications, 60000);
 });
 
 setInterval(fetchAllData, 1800000);
 
-// ===== PARTICLE EFFECT (DITINGKATKAN) =====
+// ===== PARTICLE EFFECT (BINTANG BERKEDIP, HANYA DI LOGIN) =====
 function initParticles() {
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
     let w, h, particles = [];
     let mouse = { x: null, y: null, radius: 150 };
+
+    // Pastikan canvas terlihat
+    canvas.style.display = 'block';
 
     window.addEventListener('mousemove', (e) => {
         mouse.x = e.clientX;
@@ -490,24 +495,29 @@ function initParticles() {
 
     function resize() { w = window.innerWidth; h = window.innerHeight; canvas.width = w; canvas.height = h; }
 
-    function create(count = 120) {
+    function create(count = 150) {
         for(let i=0; i<count; i++) particles.push({
             x: Math.random()*w, y: Math.random()*h,
-            r: Math.random()*8 + 3,
-            sx: (Math.random()-0.5)*0.4,
-            sy: (Math.random()-0.5)*0.2,
-            color: `rgba(${255}, ${200 + Math.random()*55}, ${100}, ${Math.random()*0.5+0.2})` // warna orange/warni
+            r: Math.random()*3 + 1.5, // ukuran kecil seperti bintang
+            sx: (Math.random()-0.5)*0.08, // gerak sangat lambat
+            sy: (Math.random()-0.5)*0.04,
+            opacity: Math.random()*0.6 + 0.4,
+            speedOp: Math.random()*0.01 + 0.005, // kecepatan kedip
+            color: `rgba(255, 255, 200, 1)` // warna putih kekuningan
         });
     }
 
     function draw() {
         ctx.clearRect(0,0,w,h);
         for(let p of particles) {
+            // efek kedip: ubah opacity berdasarkan waktu
+            p.opacity += p.speedOp;
+            if (p.opacity > 1 || p.opacity < 0.2) p.speedOp *= -1;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
-            ctx.fillStyle = p.color;
-            ctx.shadowColor = 'rgba(241,143,1,0.6)';
-            ctx.shadowBlur = 20;
+            ctx.fillStyle = `rgba(255, 255, 200, ${p.opacity})`;
+            ctx.shadowColor = 'rgba(255, 255, 180, 0.8)';
+            ctx.shadowBlur = 15;
             ctx.fill();
         }
         ctx.shadowBlur = 0;
@@ -515,7 +525,7 @@ function initParticles() {
 
     function update() {
         for(let p of particles) {
-            // Interaksi mouse: tolak jika dekat
+            // Interaksi mouse (partikel menjauh)
             if (mouse.x && mouse.y) {
                 let dx = mouse.x - p.x;
                 let dy = mouse.y - p.y;
@@ -538,8 +548,22 @@ function initParticles() {
         }
     }
 
-    function animate() { update(); draw(); requestAnimationFrame(animate); }
+    function animate() {
+        update();
+        draw();
+        particleAnimationFrame = requestAnimationFrame(animate);
+    }
 
-    window.addEventListener('resize', ()=>{ resize(); particles = []; create(150); });
-    resize(); create(150); animate();
+    window.addEventListener('resize', ()=>{ resize(); particles = []; create(180); });
+    resize(); create(180); animate();
+}
+
+function stopParticles() {
+    if (particleAnimationFrame) {
+        cancelAnimationFrame(particleAnimationFrame);
+        particleAnimationFrame = null;
+    }
+    // Sembunyikan canvas
+    const canvas = document.getElementById('particle-canvas');
+    if (canvas) canvas.style.display = 'none';
 }
