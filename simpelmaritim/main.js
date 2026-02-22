@@ -2,8 +2,8 @@
 let map, markerLayer, routingControl;
 let markersData = JSON.parse(localStorage.getItem('nelayanMarkers')) || [];
 let agendaList = JSON.parse(localStorage.getItem('nelayanAgenda')) || [];
-let editingIndex = -1; // Untuk agenda edit
-let particleAnimationFrame; // Untuk mengontrol animasi partikel
+let editingIndex = -1;
+let particleAnimationFrame;
 
 const LAT = -7.7, LON = 114.0;
 
@@ -15,6 +15,63 @@ function updateDateTime() {
 }
 updateDateTime();
 setInterval(updateDateTime,1000);
+
+// ===== CUACA UNTUK OVERLAY =====
+async function fetchOverlayWeather() {
+    try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&timezone=auto`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error();
+        const data = await resp.json();
+        if (data.current_weather) {
+            const w = data.current_weather;
+            const temp = w.temperature;
+            const code = w.weathercode;
+            const codes = {0:'Cerah',1:'Cerah berawan',2:'Berawan',3:'Berawan tebal',45:'Kabut',48:'Kabut beku',51:'Gerimis ringan',53:'Gerimis',55:'Gerimis deras',61:'Hujan ringan',63:'Hujan',65:'Hujan deras',71:'Salju ringan',73:'Salju',75:'Salju deras',80:'Hujan lokal',81:'Hujan lokal sedang',82:'Hujan lokal deras',95:'Badai petir'};
+            const desc = codes[code] || 'Kondisi khusus';
+            document.getElementById('overlayTemp').innerHTML = temp + '°C';
+            document.getElementById('overlayDesc').textContent = desc;
+        }
+    } catch (e) {
+        document.getElementById('overlayTemp').innerHTML = '27°C';
+        document.getElementById('overlayDesc').textContent = 'Berawan';
+    }
+}
+
+function updateOverlayTime() {
+    const now = new Date();
+    document.getElementById('overlayTime').textContent = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('overlayDate').textContent = now.toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+// ===== FUNGSI LOGIN =====
+function startApp() {
+    stopParticles();
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    fetchAllData();
+    initMap();
+    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        Notification.requestPermission();
+    }
+    showFloatingNotification();
+}
+
+// Tombol Nanti Saja
+document.getElementById('nantiSajaBtn').addEventListener('click', function() {
+    startApp();
+});
+
+// Tombol Putar Audio
+document.getElementById('putarAudioBtn').addEventListener('click', function() {
+    const audio = document.getElementById('loginAudio');
+    audio.play().then(() => {
+        startApp();
+    }).catch(err => {
+        console.warn('Audio tidak dapat diputar:', err);
+        startApp();
+    });
+});
 
 // ===== INISIALISASI PETA =====
 function initMap() {
@@ -314,7 +371,7 @@ function calculateMoonPhase() {
     document.getElementById('moonEmoji').textContent = emoji;
 }
 
-// ===== AGENDA (DITINGKATKAN) =====
+// ===== AGENDA =====
 function saveAgenda() {
     localStorage.setItem('nelayanAgenda', JSON.stringify(agendaList));
     renderAgenda();
@@ -436,30 +493,20 @@ window.closeAudioPlayer = function() {
     document.getElementById('audioPlayerContainer').style.display = 'none';
 };
 
-// ===== LOGIN =====
-document.getElementById('loginButton').addEventListener('click', ()=>{
-    stopParticles(); // Hentikan partikel bintang
-    document.getElementById('loginOverlay').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    fetchAllData();
-    initMap();
-    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-        Notification.requestPermission();
-    }
-    showFloatingNotification();
-});
-
 // ===== LOAD & INTERVALS =====
 window.addEventListener('load', ()=>{
     document.getElementById('mainContent').style.display = 'none';
-    initParticles(); // Partikel hanya untuk halaman login
+    initParticles();
     renderAgenda();
     setInterval(checkAgendaNotifications, 60000);
+    fetchOverlayWeather();
+    updateOverlayTime();
+    setInterval(updateOverlayTime, 1000);
 });
 
 setInterval(fetchAllData, 1800000);
 
-// ===== PARTICLE EFFECT (BINTANG BERKEDIP, HANYA DI LOGIN) =====
+// ===== PARTICLE EFFECT =====
 function initParticles() {
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
