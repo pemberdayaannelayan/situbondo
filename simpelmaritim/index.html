@@ -735,6 +735,13 @@
         .btn-map-danger:hover {
             background: #c0392b !important;
         }
+        /* Tombol baru untuk lokasi */
+        .btn-map-success {
+            background: #27ae60 !important;
+        }
+        .btn-map-success:hover {
+            background: #2ecc71 !important;
+        }
 
         /* ===== CARD PETA BMKG ===== */
         .card {
@@ -1101,19 +1108,22 @@
                 </div>
             </section>
 
-            <!-- ===== FITUR BARU: PETA NELAYAN ===== -->
+            <!-- ===== FITUR BARU: PETA NELAYAN dengan Lokasi Otomatis ===== -->
             <section class="map-section">
                 <div class="section-header">
                     <h2><i class="fas fa-map-marked-alt"></i> Peta Nelayan & Titik Penting</h2>
-                    <p class="section-subtitle">Klik pada peta untuk menambah marker (titik koordinat) dengan keterangan. Gunakan form di bawah untuk mencari rute antar titik.</p>
+                    <p class="section-subtitle">Klik pada peta untuk menambah marker (titik koordinat) dengan keterangan. Gunakan fitur di bawah untuk mendapatkan posisi otomatis dan membuat rute.</p>
                 </div>
                 <div class="map-controls">
                     <input type="text" id="startLat" placeholder="Latitude Awal (contoh: -7.7)" value="-7.7">
                     <input type="text" id="startLon" placeholder="Longitude Awal (contoh: 114.0)" value="114.0">
                     <input type="text" id="endLat" placeholder="Latitude Tujuan" value="-7.8">
                     <input type="text" id="endLon" placeholder="Longitude Tujuan" value="114.1">
-                    <button id="routeBtn"><i class="fas fa-route"></i> Tampilkan Rute</button>
+                    <button id="routeBtn" class="btn-map-success"><i class="fas fa-route"></i> Tampilkan Rute</button>
                     <button id="clearMarkersBtn" class="btn-map-danger"><i class="fas fa-trash-alt"></i> Hapus Semua Marker</button>
+                    <button id="myLocationBtn" class="btn-map-success"><i class="fas fa-location-dot"></i> 📍 Lokasi Saya</button>
+                    <button id="setStartLocationBtn"><i class="fas fa-map-pin"></i> 📍 Lokasi Saya sbg Awal</button>
+                    <button id="setEndLocationBtn"><i class="fas fa-map-pin"></i> 📍 Lokasi Saya sbg Tujuan</button>
                 </div>
                 <div class="map-container">
                     <div id="map"></div>
@@ -1258,6 +1268,52 @@
                 fitSelectedRoutes: true,
                 lineOptions: { styles: [{ color: '#f18f01', weight: 5 }] }
             }).addTo(map);
+        });
+
+        // ===== FITUR GEOLOKASI =====
+        // Mendapatkan posisi saat ini
+        function getCurrentPosition(callback) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => callback(position.coords.latitude, position.coords.longitude),
+                    error => {
+                        alert('Gagal mendapatkan lokasi: ' + error.message);
+                    }
+                );
+            } else {
+                alert('Browser tidak mendukung geolokasi.');
+            }
+        }
+
+        // Tombol Lokasi Saya: dapatkan posisi, minta keterangan, tambah marker
+        document.getElementById('myLocationBtn').addEventListener('click', function() {
+            getCurrentPosition((lat, lon) => {
+                const keterangan = prompt('Masukkan keterangan untuk lokasi Anda:');
+                if (keterangan !== null && keterangan.trim() !== '') {
+                    addMarkerToMap(lat, lon, keterangan, true);
+                    map.setView([lat, lon], 14); // Perbesar ke lokasi
+                }
+            });
+        });
+
+        // Tombol Lokasi Saya sebagai Titik Awal
+        document.getElementById('setStartLocationBtn').addEventListener('click', function() {
+            getCurrentPosition((lat, lon) => {
+                document.getElementById('startLat').value = lat.toFixed(5);
+                document.getElementById('startLon').value = lon.toFixed(5);
+                // Tambahkan marker otomatis? Bisa opsional, tapi kita biarkan pengguna memutuskan
+                // Agar tidak terlalu banyak marker, kita hanya isi input.
+                alert('Koordinat awal telah diisi. Sekarang Anda bisa mengisi titik tujuan dan tekan Tampilkan Rute.');
+            });
+        });
+
+        // Tombol Lokasi Saya sebagai Tujuan
+        document.getElementById('setEndLocationBtn').addEventListener('click', function() {
+            getCurrentPosition((lat, lon) => {
+                document.getElementById('endLat').value = lat.toFixed(5);
+                document.getElementById('endLon').value = lon.toFixed(5);
+                alert('Koordinat tujuan telah diisi. Sekarang Anda bisa mengisi titik awal dan tekan Tampilkan Rute.');
+            });
         });
 
         // ===== BACKUP & RESTORE =====
