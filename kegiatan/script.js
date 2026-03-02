@@ -6,7 +6,7 @@ const kegiatanData = [
         "date": "2025-11-10",
         "description": "Pelatihan ini merupakan bentuk komitmen pemerintah daerah dalam meningkatkan kapasitas nelayan tradisional melalui transfer teknologi dan pengetahuan. Dengan pendekatan praktis dan interaktif, kegiatan berhasil memberikan keterampilan nyata yang langsung dapat diterapkan nelayan dalam operasional penangkapan ikan sehari-hari, sekaligus mendukung keberlanjutan sumber daya perikanan di wilayah Situbondo.",
         "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/gambar4.jpeg"
+            "https://dinasperikanansitubondo.com/dokumentasi/2025/november/gambar4.jpeg"
         ],
         "type": "multimedia",
         "category": "pelatihan",
@@ -32,7 +32,7 @@ const kegiatanData = [
         "date": "2025-11-26",
         "description": "Program pendampingan penenggelaman fish apartment merupakan inisiatif konservasi perairan yang mengedepankan pendekatan partisipatif masyarakat. Kegiatan ini menekankan transfer pengetahuan teknis kepada nelayan lokal dalam pemasangan artificial reef, dengan tujuan menciptakan habitat baru bagi biota laut dan mengurangi tekanan penangkapan di area tradisional.",
         "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2025/november/foto7.jpeg"
+            "https://dinasperikanansitubondo.com/dokumentasi/2025/november/foto7.jpeg"
         ],
         "type": "foto",
         "category": "konservasi",
@@ -58,11 +58,11 @@ const kegiatanData = [
         "date": "2026-01-19",
         "description": "Kerja bakti dalam rangka persiapan peresmian pasar higienes ikan segar mimbo yang dihadiri oleh camat banyuputih beserta staf, pemdes sumberanyar dan tim bidang pemberdayaan nelayan dari dinas peternakan dan perikanan kabupaten situbondo.",
         "images": [
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti1.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti2.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti3.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti4.jpeg",
-            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/foto/kerjabakti/kerjabakti5.jpeg"
+            "https://dinasperikanansitubondo.com/foto/kerjabakti/kerjabakti1.jpeg",
+            "https://dinasperikanansitubondo.com/foto/kerjabakti/kerjabakti2.jpeg",
+            "https://dinasperikanansitubondo.com/foto/kerjabakti/kerjabakti3.jpeg",
+            "https://dinasperikanansitubondo.com/foto/kerjabakti/kerjabakti4.jpeg",
+            "https://dinasperikanansitubondo.com/foto/kerjabakti/kerjabakti5.jpeg"
         ],
         "type": "multimedia",
         "category": "lainnya",
@@ -77,212 +77,264 @@ const kegiatanData = [
         "participants": 0,
         "duration": ""
     },
-
-          {
-    "id": 1769868733146,
-    "title": "Penyerahan Bantuan Dan Pelebelan Mesin Pompa Air",
-    "date": "2026-01-21",
-    "description": "Penyerahan dan pelebelan mesin pompa air kepada pengelola TPI. \nKegiatan terseebut dilaksanakan pada 21 dan 22 januari 2026.\nTgl 21 januari 2026 di serahkan ke pengelola TPI Besuki di Desa Pesisir Kecamatan Besuki\ndan tgl 22 januari 2026 di serahkan ke pengelola TPI Pandean di Desa wonorejo Kecamatan Banyuputih. \n",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20besuki.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%202%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%203%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%20diskusi%201.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto%20memberikan%20arahan.jpeg"
-    ],
-    "type": "foto",
-    "category": "bantuan",
-    "location": "Desa Pesisir Kecamatan Besuki dan Desa Wonorejo Kecamatan Banyuputih",
-    "tags": [
-        "Bantuan",
-        "Dinas Peternakan Dan Perikanan Situbondo",
-        "Pemerintah Kabupaten Situbondo",
-        "Pengelola TPI Pandean",
-        "Pengelola TPI Besuki"
-    ],
-    "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-mesin-pompa",
-    "participants": 0,
-    "duration": ""
-},
-
-        {
-    "id": 1769879835754,
-    "title": "Verifikasi dan Validasi Kelompok Nelayan Calon Penerima Bantuan Hibah",
-    "date": "2026-01-22",
-    "description": "Melakukan pendapingan Dinas Kelautan Dan Perikanan Provinsi Jawa Timur dalam verifikasi validasi kelompok nelayan calon penerima hibah bantuan  provinsi Tahun Anggaran 2026",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-dkp-kelompok-nelayan.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-dkp-beri-arahan.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-dkp-verifikasi-validasi-2.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-dkp-verifikasi-validasi.jpeg"
-    ],
-    "type": "foto",
-    "category": "bantuan",
-    "location": "Desa Lamongan Kecamatan Arjasa",
-    "tags": [
-        "Dinas Kelautan Dan Perikanan Provinsi Jawa Timur",
-        "Bidang Pemberdayaan Nelayan",
-        "Bantuan Hibah",
-        "Kelompok Nelayan",
-        "Penyuluh Perikanan Situbondo"
-    ],
-    "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/mendampingi-dkp-jatim-verval-kelompok-nelayan",
-    "participants": 0,
-    "duration": ""
-},
-        {
-    "id": 1769882359563,
-    "title": "Penyerahan Bantuan Sosial Kepada Masyarakat Korban Banjir",
-    "date": "2026-01-26",
-    "description": "Dinas Peternakan dan Perikanan Situbondo memberikan bantuan sosial kepada masyarakat korban banjir di wilayah Besuki",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-penyerahan-bantuan-sosial-korban-banjir-besuki.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-bpbd-situbondo-1.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-bersama-bpbd-situbondo.jpeg"
-    ],
-    "type": "foto",
-    "category": "bantuan",
-    "location": "Kecamatan Besuki",
-    "tags": [
-        "Dinas Peternakan Dan Perikanan Situbondo",
-        "Bidang Pemberdayaan Nelayan",
-        "Dinas Sosial",
-        "Bantuan Sosial",
-        "Korban Banjir"
-    ],
-    "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-sosial-kepada-masyarakat-korban-banjir-besuki",
-    "participants": 0,
-    "duration": ""
-},
-        {
-    "id": 1769874483619,
-    "title": "Rapat Koordinasi Inovasi Bidang Pemberdayaan Nelayan",
-    "date": "2026-01-29",
-    "description": "Rapat koordinasi inovasi aplikasi SIMPADAN TANGKAP oleh bidang pemberdayaan nelayan bersama Ketua BIPPD Situbondo",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-rapat.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat3.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat4.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat2.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-ketuabippd-rapat.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/rapat1.jpeg"
-    ],
-    "type": "foto",
-    "category": "lainnya",
-    "location": "Aula Dinas Peternakan Dan Perikanan Kabupaten Situbondo",
-    "tags": [
-        "Rapat Koordinasi",
-        "BIPPD Situbondo",
-        "Bidang Pemberdayaan Nelayan",
-        "Inovasi",
-        "Aplikasi",
-        "SIMPADAN TANGKAP"
-    ],
-    "youtubeUrls": [],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat-koordinasi-inovasi-bidang-pemberdayaan-nelayan",
-    "participants": 0,
-    "duration": ""
-},
-        {
-    "id": 1770129927157,
-    "title": "Acara Selametan Petik Laut Desa Ketah",
-    "date": "2026-02-02",
-    "description": "Menghadiri undangan acara selametan petik laut des ketah kecamatan suboh yang dimeriahkan oleh beberapa hiburan tradisional",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-bersama-para-pejabat-dipetiklaut.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kabid-dan-staf-diperahu-sesajen.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/petiklaut5.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/petiklaut3.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/petiklaut1.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-ludruk.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-1.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-2.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-3.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/januari/foto-kapal-perahu-4.jpeg"
-    ],
-    "type": "multimedia",
-    "category": "festival",
-    "location": "Desa Ketah Kecamatan Suboh",
-    "tags": [
-        "Petik Laut",
-        "Budaya",
-        "Ludruk",
-        "Lokal",
-        "Kesenian",
-        "Nelayan"
-    ],
-    "youtubeUrls": [
-        "https://www.youtube.com/embed/AHszqcgzn3M"
-    ],
-    "url": "https://www.dinasperikanansitubondo.com/dokumentasi/2026/februari/selametan-petik-laut-desa-ketah",
-    "participants": 0,
-    "duration": ""
-},
-            {
-    "id": 1770289166745,
-    "title": "Pemusnahan Aligator Ikan Invasif",
-    "date": "2026-02-05",
-    "description": "Pemusnahan aligator ikan invasif oleh Dinas Peternakan Dan Perikanan Kabupaten Situbondo bersama SDKP Benoa",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-tim-bersama-aligator-sebelum-dikubur.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-penandatanganan-berkas-penyerahan-aligator.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-penurunan-aligator-dari-kendaraan-dinas-1.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-penurunan-aligator-dari-kendaraan-dinas-2.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/proses-penguburan-aligator-1.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/proses-penguburan-aligator-2.jpeg"
-    ],
-    "type": "multimedia",
-    "category": "lainnya",
-    "location": "Kelurahan Patokan Kabupaten Situbondo",
-    "tags": [
-        "Aligator",
-        "Ikan Invasif",
-        "Kementerian Kelautan Dan Perikanan",
-        "Dinas Peternakan Dan Perikanan",
-        "Situbondo",
-        "SDKP Benoa"
-    ],
-    "youtubeUrls": [
-        "https://www.youtube.com/embed/MBvFf_bLcCk"
-    ],
-    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/pemusnahan-aligator-ikan-invasif",
-    "participants": 0,
-    "duration": ""
-},
-        {
-    "id": 1770872421034,
-    "title": "Kerja Bakti Bersih Pantai Desa Kilensari Kecamatan Panarukan",
-    "date": "2026-02-12",
-    "description": "Kerja bakti bersih pantai Desa Kilensari Kecamatan Panarukan sesuai Intruksi Presiden RI  Jenderal TNI (Purn) H. Prabowo Subianto ",
-    "images": [
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-sebelum-kegiatan.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-arahan-komandan-kodim.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-bersama-saat-upel-sebelum-kegiatan-dipimpin-kodim.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-1.jpeg",
-        "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/foto-saat-kerjabakti-2.jpeg"
-    ],
-    "type": "multimedia",
-    "category": "lainnya",
-    "location": "",
-    "tags": [
-        "Kerja Bakti",
-        "Bersih Pantai",
-        "Kodim",
-        "Dinas Peternakan dan Perikanan",
-        "Bidang Pemberdayaan Nelayan"
-    ],
-    "youtubeUrls": [
-        "https://www.youtube.com/embed/ltIf0lYdyxU"
-    ],
-    "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari",
-    "participants": 0,
-    "duration": ""
-},
+    {
+        "id": 1769868733146,
+        "title": "Penyerahan Bantuan Dan Pelebelan Mesin Pompa Air",
+        "date": "2026-01-21",
+        "description": "Penyerahan dan pelebelan mesin pompa air kepada pengelola TPI. \nKegiatan terseebut dilaksanakan pada 21 dan 22 januari 2026.\nTgl 21 januari 2026 di serahkan ke pengelola TPI Besuki di Desa Pesisir Kecamatan Besuki\ndan tgl 22 januari 2026 di serahkan ke pengelola TPI Pandean di Desa wonorejo Kecamatan Banyuputih. \n",
+        "images": [
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20besuki.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto%201%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto%202%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto%203%20penyerahan%20bantuan%20pompa%20di%20TPI%20pandean.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto%20diskusi%201.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto%20memberikan%20arahan.jpeg"
+        ],
+        "type": "foto",
+        "category": "bantuan",
+        "location": "Desa Pesisir Kecamatan Besuki dan Desa Wonorejo Kecamatan Banyuputih",
+        "tags": [
+            "Bantuan",
+            "Dinas Peternakan Dan Perikanan Situbondo",
+            "Pemerintah Kabupaten Situbondo",
+            "Pengelola TPI Pandean",
+            "Pengelola TPI Besuki"
+        ],
+        "youtubeUrls": [],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-mesin-pompa",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1769879835754,
+        "title": "Verifikasi dan Validasi Kelompok Nelayan Calon Penerima Bantuan Hibah",
+        "date": "2026-01-22",
+        "description": "Melakukan pendapingan Dinas Kelautan Dan Perikanan Provinsi Jawa Timur dalam verifikasi validasi kelompok nelayan calon penerima hibah bantuan  provinsi Tahun Anggaran 2026",
+        "images": [
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-bersama-dkp-kelompok-nelayan.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-dkp-beri-arahan.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-dkp-verifikasi-validasi-2.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-dkp-verifikasi-validasi.jpeg"
+        ],
+        "type": "foto",
+        "category": "bantuan",
+        "location": "Desa Lamongan Kecamatan Arjasa",
+        "tags": [
+            "Dinas Kelautan Dan Perikanan Provinsi Jawa Timur",
+            "Bidang Pemberdayaan Nelayan",
+            "Bantuan Hibah",
+            "Kelompok Nelayan",
+            "Penyuluh Perikanan Situbondo"
+        ],
+        "youtubeUrls": [],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/mendampingi-dkp-jatim-verval-kelompok-nelayan",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1769882359563,
+        "title": "Penyerahan Bantuan Sosial Kepada Masyarakat Korban Banjir",
+        "date": "2026-01-26",
+        "description": "Dinas Peternakan dan Perikanan Situbondo memberikan bantuan sosial kepada masyarakat korban banjir di wilayah Besuki",
+        "images": [
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-kabid-penyerahan-bantuan-sosial-korban-banjir-besuki.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-bersama-bpbd-situbondo-1.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-kabid-bersama-bpbd-situbondo.jpeg"
+        ],
+        "type": "foto",
+        "category": "bantuan",
+        "location": "Kecamatan Besuki",
+        "tags": [
+            "Dinas Peternakan Dan Perikanan Situbondo",
+            "Bidang Pemberdayaan Nelayan",
+            "Dinas Sosial",
+            "Bantuan Sosial",
+            "Korban Banjir"
+        ],
+        "youtubeUrls": [],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/penyerahan-bantuan-sosial-kepada-masyarakat-korban-banjir-besuki",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1769874483619,
+        "title": "Rapat Koordinasi Inovasi Bidang Pemberdayaan Nelayan",
+        "date": "2026-01-29",
+        "description": "Rapat koordinasi inovasi aplikasi SIMPADAN TANGKAP oleh bidang pemberdayaan nelayan bersama Ketua BIPPD Situbondo",
+        "images": [
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-kabid-rapat.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat3.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat4.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat2.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-ketuabippd-rapat.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat1.jpeg"
+        ],
+        "type": "foto",
+        "category": "lainnya",
+        "location": "Aula Dinas Peternakan Dan Perikanan Kabupaten Situbondo",
+        "tags": [
+            "Rapat Koordinasi",
+            "BIPPD Situbondo",
+            "Bidang Pemberdayaan Nelayan",
+            "Inovasi",
+            "Aplikasi",
+            "SIMPADAN TANGKAP"
+        ],
+        "youtubeUrls": [],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/rapat-koordinasi-inovasi-bidang-pemberdayaan-nelayan",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1770129927157,
+        "title": "Acara Selametan Petik Laut Desa Ketah",
+        "date": "2026-02-02",
+        "description": "Menghadiri undangan acara selametan petik laut des ketah kecamatan suboh yang dimeriahkan oleh beberapa hiburan tradisional",
+        "images": [
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-bersama-para-pejabat-dipetiklaut.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-kabid-dan-staf-diperahu-sesajen.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/petiklaut5.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/petiklaut3.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/petiklaut1.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-ludruk.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-kapal-perahu-1.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-kapal-perahu-2.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-kapal-perahu-3.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/januari/foto-kapal-perahu-4.jpeg"
+        ],
+        "type": "multimedia",
+        "category": "festival",
+        "location": "Desa Ketah Kecamatan Suboh",
+        "tags": [
+            "Petik Laut",
+            "Budaya",
+            "Ludruk",
+            "Lokal",
+            "Kesenian",
+            "Nelayan"
+        ],
+        "youtubeUrls": [
+            "https://www.youtube.com/embed/AHszqcgzn3M"
+        ],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/selametan-petik-laut-desa-ketah",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1770289166745,
+        "title": "Pemusnahan Aligator Ikan Invasif",
+        "date": "2026-02-05",
+        "description": "Pemusnahan aligator ikan invasif oleh Dinas Peternakan Dan Perikanan Kabupaten Situbondo bersama SDKP Benoa",
+        "images": [
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-tim-bersama-aligator-sebelum-dikubur.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-bersama-penandatanganan-berkas-penyerahan-aligator.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-penurunan-aligator-dari-kendaraan-dinas-1.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-penurunan-aligator-dari-kendaraan-dinas-2.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/proses-penguburan-aligator-1.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/proses-penguburan-aligator-2.jpeg"
+        ],
+        "type": "multimedia",
+        "category": "lainnya",
+        "location": "Kelurahan Patokan Kabupaten Situbondo",
+        "tags": [
+            "Aligator",
+            "Ikan Invasif",
+            "Kementerian Kelautan Dan Perikanan",
+            "Dinas Peternakan Dan Perikanan",
+            "Situbondo",
+            "SDKP Benoa"
+        ],
+        "youtubeUrls": [
+            "https://www.youtube.com/embed/MBvFf_bLcCk"
+        ],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/pemusnahan-aligator-ikan-invasif",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1770872421034,
+        "title": "Kerja Bakti Bersih Pantai Desa Kilensari Kecamatan Panarukan",
+        "date": "2026-02-12",
+        "description": "Kerja bakti bersih pantai Desa Kilensari Kecamatan Panarukan sesuai Intruksi Presiden RI  Jenderal TNI (Purn) H. Prabowo Subianto ",
+        "images": [
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-selesai-kegiatan.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-bersama-kabid-dan-staff-sebelum-kegiatan.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-bersama-saat-arahan-komandan-kodim.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-bersama-saat-upel-sebelum-kegiatan-dipimpin-kodim.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-saat-kerjabakti-1.jpeg",
+            "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/foto-saat-kerjabakti-2.jpeg"
+        ],
+        "type": "multimedia",
+        "category": "lainnya",
+        "location": "",
+        "tags": [
+            "Kerja Bakti",
+            "Bersih Pantai",
+            "Kodim",
+            "Dinas Peternakan dan Perikanan",
+            "Bidang Pemberdayaan Nelayan"
+        ],
+        "youtubeUrls": [
+            "https://www.youtube.com/embed/ltIf0lYdyxU"
+        ],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-kerja-bakti-bersih-pantai-desa-kilensari",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1771997795700,
+        "title": "Pembinaan Pengelolaan TPI Dan Lahan Milik Daerah",
+        "date": "2026-02-18",
+        "description": "Kegiatan ini dilaksanakan sebagai bagian dari pelaksanaan tugas dan fungsi Bidang Pemberdayaan Nelayan dalam rangka peningkatan tata kelola Tempat Pelelangan Ikan (TPI) serta optimalisasi pengelolaan lahan milik daerah guna mendukung peningkatan Pendapatan Asli Daerah (PAD) Kabupaten Situbondo.",
+        "images": [
+            "https://web.opendrive.com/api/v1/download/file.json/MzVfNjY1NjM0MDFf",
+            "https://web.opendrive.com/api/v1/download/file.json/MzVfNjY1NjM0MDJf",
+            "https://web.opendrive.com/api/v1/download/file.json/MzVfNjY1NjM0MDNf",
+            "https://web.opendrive.com/api/v1/download/file.json/MzVfNjY1NjM0MDRf",
+            "https://web.opendrive.com/api/v1/download/file.json/MzVfNjY1NjM0MDVf",
+            "https://web.opendrive.com/api/v1/download/file.json/MzVfNjY1NjM0MDZf"
+        ],
+        "type": "foto",
+        "category": "lainnya",
+        "location": "Dinas Peternakan Dan Perikanan",
+        "tags": [
+            "TPI Situbondo",
+            "Tambak Garam Panarukan",
+            "Tambak Garam Tanjung Kamal",
+            "Tambak Garam Tanjung Pecinan"
+        ],
+        "youtubeUrls": [],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/kegiatan-pembinaan-pengelolaan-tpi-dan-pengelolaan-lahan-milik-daerah",
+        "participants": 0,
+        "duration": ""
+    },
+    {
+        "id": 1772086240702,
+        "title": "Pendampingan Dan Penafsiran Bongkaran Rehab Wisata Kampung Kerapu",
+        "date": "2026-02-24",
+        "description": "Kegiatan ini merupakan bentuk sinergi lintas perangkat daerah dalam memastikan bahwa setiap proses rehabilitasi dan pembongkaran aset dilaksanakan sesuai ketentuan, baik dari aspek teknis maupun administratif. Penafsiran bongkaran dilakukan untuk menghitung dan mengidentifikasi nilai serta kondisi material hasil pembongkaran, sehingga dapat tercatat secara akurat dalam administrasi aset daerah.\n",
+        "images": [
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/rehab-kampung-kerapu/Kerusakan-Kampung-Kerapu-Situbondo-6.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/rehab-kampung-kerapu/Kerusakan-Kampung-Kerapu-Situbondo-5.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/rehab-kampung-kerapu/Kerusakan-Kampung-Kerapu-Situbondo-4.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/rehab-kampung-kerapu/Kerusakan-Kampung-Kerapu-Situbondo-3.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/rehab-kampung-kerapu/Kerusakan-Kampung-Kerapu-Situbondo-2.jpeg",
+            "https://raw.githubusercontent.com/pemberdayaannelayan/situbondo/refs/heads/main/dokumentasi/2026/februari/rehab-kampung-kerapu/Kerusakan-Kampung-Kerapu-Situbondo-1.jpeg"
+        ],
+        "type": "foto",
+        "category": "lainnya",
+        "location": "Desa Klatakan Kecamatan Kendit",
+        "tags": [
+            "Wisata",
+            "PUPP",
+            "BKAD",
+            "Kampung Kerapu"
+        ],
+        "youtubeUrls": [],
+        "url": "https://dinasperikanansitubondo.com/dokumentasi/2026/februari/pendampingan-dan-penafsiran-bongkaran-rehab-wisata-kampung-kerapu-situbondo",
+        "participants": 0,
+        "duration": ""
+    }
 ];
 
 // Inisialisasi AOS Animation
@@ -296,7 +348,7 @@ AOS.init({
 
 // Variabel Global
 let currentPage = 1;
-const itemsPerPage = 6;
+const itemsPerPage = 15; // Jumlah item per halaman
 let currentFilteredData = [...kegiatanData];
 let isAuthenticated = false;
 const ADMIN_PASSWORD = "19450817";
@@ -360,36 +412,73 @@ function calculateAndSetStatistics() {
     document.getElementById('totalKegiatan').textContent = kegiatanData.length;
     
     // Total tahun aktif (unik)
-    const tahunUnik = [...new Set(kegiatanData.map(k => new Date(k.date).getFullYear()))];
+    const tahunUnik = [...new Set(kegiatanData.map(k => {
+        try {
+            return new Date(k.date).getFullYear();
+        } catch {
+            return null;
+        }
+    }).filter(t => t !== null))];
     document.getElementById('totalTahun').textContent = tahunUnik.length;
     
     // Total lokasi (unik)
-    const lokasiUnik = [...new Set(kegiatanData.map(k => k.location))];
+    const lokasiUnik = [...new Set(kegiatanData.map(k => k.location || '').filter(l => l !== ''))];
     document.getElementById('totalLokasi').textContent = lokasiUnik.length;
     
     // Total tags (semua tag unik)
-    const semuaTags = kegiatanData.flatMap(k => k.tags);
+    const semuaTags = kegiatanData.flatMap(k => k.tags || []);
     const tagUnik = [...new Set(semuaTags)];
     document.getElementById('totalTags').textContent = tagUnik.length;
 }
 
-// Fungsi untuk menampilkan kegiatan (DIPERBAIKI)
+// Fungsi aman untuk format tanggal
+function safeFormatDate(dateString) {
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) throw new Error('Invalid date');
+        return date.toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    } catch {
+        return 'Tanggal tidak tersedia';
+    }
+}
+
+// Fungsi untuk escape HTML (mencegah karakter khusus merusak struktur)
+function escapeHtml(unsafe) {
+    if (unsafe === null || unsafe === undefined) return '';
+    return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// Fungsi untuk menampilkan kegiatan (DIPERBAIKI: validasi halaman)
 function displayKegiatan(data, page = 1) {
     const container = document.getElementById('kegiatanContainer');
     const loading = document.getElementById('loading');
     const emptyState = document.getElementById('emptyState');
     const paginationContainer = document.getElementById('paginationContainer');
     
-    // Simpan data yang difilter
+    if (!Array.isArray(data)) data = [];
     currentFilteredData = [...data];
     
-    // Tampilkan loading
+    // Hitung total halaman
+    const totalPages = Math.ceil(data.length / itemsPerPage);
+    
+    // Validasi halaman (pastikan page dalam rentang yang benar)
+    if (page < 1) page = 1;
+    if (page > totalPages && totalPages > 0) page = totalPages;
+    
     loading.style.display = 'block';
     container.innerHTML = '';
     paginationContainer.innerHTML = '';
     emptyState.style.display = 'none';
     
-    // Simulasi loading dengan setTimeout
     setTimeout(() => {
         loading.style.display = 'none';
         
@@ -398,126 +487,118 @@ function displayKegiatan(data, page = 1) {
             return;
         }
         
-        // Hitung pagination
-        const totalPages = Math.ceil(data.length / itemsPerPage);
         const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, data.length);
         const paginatedData = data.slice(startIndex, endIndex);
         
-        // Generate HTML untuk setiap kegiatan
         let html = '';
         
         paginatedData.forEach((kegiatan, index) => {
-            const date = new Date(kegiatan.date);
-            const formattedDate = date.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            
-            const bulan = String(date.getMonth() + 1).padStart(2, '0');
-            const tahun = date.getFullYear();
-            
-            // Delay untuk animasi bertahap
-            const animationDelay = (index % 3) * 100;
-
-            // Logic untuk menentukan gambar utama
-            let mainImage = kegiatan.images && kegiatan.images.length > 0 
-                ? kegiatan.images[0] 
-                : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop';
-
-            // Logic untuk peserta (Dinamis, tidak hardcode 50)
-            let participantHtml = '';
-            if (kegiatan.participants && kegiatan.participants > 0) {
-                participantHtml = `
-                    <span class="ms-2">
-                        <i class="fas fa-users me-1"></i>${kegiatan.participants} peserta
-                    </span>`;
-            } else {
-                participantHtml = `
-                    <span class="ms-2">
-                        <i class="fas fa-globe me-1"></i>Umum
-                    </span>`;
-            }
-            
-            // Tentukan jenis media dan teks tombol
-            let buttonIcon = 'fa-eye';
-            let buttonText = 'Lihat Detail';
-            
-            if (kegiatan.type === 'youtube' || (kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0)) {
-                buttonIcon = 'fa-play-circle';
-                buttonText = 'Tonton Video';
-            } else if (kegiatan.type === 'multimedia' || (kegiatan.images && kegiatan.images.length > 0 && kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0)) {
-                buttonIcon = 'fa-photo-video';
-                buttonText = 'Lihat Media';
-            }
-            
-            // Validasi URL untuk mencegah error
-            const detailUrl = validateUrl(kegiatan.url);
-            
-            // Generate Card dengan tombol baru
-            html += `
-            <div class="col-lg-4 col-md-6" 
-                 data-aos="fade-up" 
-                 data-aos-delay="${animationDelay}"
-                 data-bulan="${bulan}" 
-                 data-tahun="${tahun}"
-                 data-category="${kegiatan.category}">
-                <div class="kegiatan-card hover-lift">
-                    <div class="kegiatan-img-container">
-                        <img src="${mainImage}" 
-                             class="kegiatan-img" 
-                             alt="${kegiatan.title}"
-                             loading="lazy"
-                             onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
-                    </div>
-                    <div class="kegiatan-content">
-                        <div class="kegiatan-date">
-                            <i class="fas fa-calendar-alt"></i> ${formattedDate}
-                            ${participantHtml}
+            try {
+                const safeKegiatan = {
+                    id: kegiatan.id || Date.now() + index,
+                    title: kegiatan.title || 'Judul tidak tersedia',
+                    date: kegiatan.date || new Date().toISOString().split('T')[0],
+                    description: kegiatan.description || 'Deskripsi tidak tersedia',
+                    images: Array.isArray(kegiatan.images) ? kegiatan.images : [],
+                    type: kegiatan.type || 'foto',
+                    category: kegiatan.category || 'lainnya',
+                    location: kegiatan.location || 'Lokasi tidak disebutkan',
+                    tags: Array.isArray(kegiatan.tags) ? kegiatan.tags : [],
+                    youtubeUrls: Array.isArray(kegiatan.youtubeUrls) ? kegiatan.youtubeUrls : [],
+                    url: kegiatan.url || '#',
+                    participants: typeof kegiatan.participants === 'number' ? kegiatan.participants : 0,
+                    duration: kegiatan.duration || ''
+                };
+                
+                const escapedTitle = escapeHtml(safeKegiatan.title);
+                const escapedDescription = escapeHtml(safeKegiatan.description);
+                const escapedLocation = escapeHtml(safeKegiatan.location);
+                const escapedCategory = escapeHtml(safeKegiatan.category);
+                const escapedTags = safeKegiatan.tags.map(tag => escapeHtml(tag));
+                
+                const formattedDate = safeFormatDate(safeKegiatan.date);
+                
+                let bulan = '', tahun = '';
+                try {
+                    const dateObj = new Date(safeKegiatan.date);
+                    if (!isNaN(dateObj.getTime())) {
+                        bulan = String(dateObj.getMonth() + 1).padStart(2, '0');
+                        tahun = dateObj.getFullYear();
+                    }
+                } catch {}
+                
+                const animationDelay = (index % 3) * 100;
+                
+                let mainImage = safeKegiatan.images.length > 0 
+                    ? safeKegiatan.images[0] 
+                    : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop';
+                
+                let participantHtml = safeKegiatan.participants > 0 
+                    ? `<span class="ms-2"><i class="fas fa-users me-1"></i>${safeKegiatan.participants} peserta</span>`
+                    : `<span class="ms-2"><i class="fas fa-globe me-1"></i>Umum</span>`;
+                
+                let buttonIcon = 'fa-eye';
+                let buttonText = 'Lihat Detail';
+                if (safeKegiatan.type === 'youtube' || safeKegiatan.youtubeUrls.length > 0) {
+                    buttonIcon = 'fa-play-circle';
+                    buttonText = 'Tonton Video';
+                } else if (safeKegiatan.type === 'multimedia' || (safeKegiatan.images.length > 0 && safeKegiatan.youtubeUrls.length > 0)) {
+                    buttonIcon = 'fa-photo-video';
+                    buttonText = 'Lihat Media';
+                }
+                
+                const detailUrl = validateUrl(safeKegiatan.url);
+                
+                html += `
+                <div class="col-lg-4 col-md-6" 
+                     data-aos="fade-up" 
+                     data-aos-delay="${animationDelay}"
+                     data-bulan="${bulan}" 
+                     data-tahun="${tahun}"
+                     data-category="${escapedCategory}">
+                    <div class="kegiatan-card hover-lift">
+                        <div class="kegiatan-img-container">
+                            <img src="${mainImage}" 
+                                 class="kegiatan-img" 
+                                 alt="${escapedTitle}"
+                                 loading="lazy"
+                                 onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
                         </div>
-                        <h3 class="kegiatan-title">${kegiatan.title}</h3>
-                        <p class="kegiatan-desc">${kegiatan.description}</p>
-                        
-                        <div class="kegiatan-tags">
-                            ${kegiatan.tags.slice(0, 3).map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
-                            ${kegiatan.tags.length > 3 ? `<span class="kegiatan-tag">+${kegiatan.tags.length - 3}</span>` : ''}
-                        </div>
-                        
-                        <div class="card-buttons">
-                            <a href="${detailUrl}" class="btn-card-detail" target="_blank" onclick="event.stopPropagation();">
-                                <i class="fas ${buttonIcon} me-2"></i>
-                                ${buttonText}
-                            </a>
-                            <button class="btn-card-preview" onclick="event.stopPropagation(); showKegiatanDetail(${kegiatan.id})" title="Quick Preview">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                        <div class="kegiatan-content">
+                            <div class="kegiatan-date">
+                                <i class="fas fa-calendar-alt"></i> ${formattedDate}
+                                ${participantHtml}
+                            </div>
+                            <h3 class="kegiatan-title">${escapedTitle}</h3>
+                            <p class="kegiatan-desc">${escapedDescription}</p>
+                            
+                            <div class="kegiatan-tags">
+                                ${escapedTags.slice(0, 3).map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
+                                ${escapedTags.length > 3 ? `<span class="kegiatan-tag">+${escapedTags.length - 3}</span>` : ''}
+                            </div>
+                            
+                            <div class="card-buttons">
+                                <a href="${detailUrl}" class="btn-card-detail" target="_blank" onclick="event.stopPropagation();">
+                                    <i class="fas ${buttonIcon} me-2"></i>
+                                    ${buttonText}
+                                </a>
+                                <button class="btn-card-preview" onclick="event.stopPropagation(); showKegiatanDetail(${safeKegiatan.id})" title="Quick Preview">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            `;
+                `;
+            } catch (error) {
+                console.error('Error rendering kegiatan with id:', kegiatan?.id, error);
+            }
         });
         
         container.innerHTML = html;
         
-        // Tambahkan event listener untuk klik card (untuk membuka modal)
-        document.querySelectorAll('.kegiatan-card').forEach((card, index) => {
-            card.addEventListener('click', function(e) {
-                // Cegah jika yang diklik adalah link atau button
-                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || 
-                    e.target.closest('a') || e.target.closest('button')) {
-                    return;
-                }
-                
-                const kegiatan = paginatedData[index];
-                if (kegiatan) {
-                    showKegiatanDetail(kegiatan.id);
-                }
-            });
-        });
-        
-        // Generate pagination jika diperlukan
+        // Generate pagination hanya jika ada lebih dari 1 halaman
         if (totalPages > 1) {
             generatePagination(totalPages, page, data.length);
         } else {
@@ -533,43 +614,28 @@ function displayKegiatan(data, page = 1) {
     }, 500);
 }
 
-// Fungsi validasi URL (DIPERBAIKI)
+// Fungsi validasi URL
 function validateUrl(url) {
     if (!url) return '#';
-    
-    // Jika URL sudah lengkap
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-        return url;
-    }
-    
-    // Jika dimulai dengan www.
-    if (url.startsWith('www.')) {
-        return 'https://' + url;
-    }
-    
-    // Jika URL relatif
-    if (url.startsWith('/')) {
-        return 'https://dinasperikanansitubondo.com' + url;
-    }
-    
-    // Default
-    return 'https://dinasperikanansitubondo.com/' + url;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('www.')) return 'https://' + url;
+    if (url.startsWith('/')) return 'https://dinasperikanansitubondo.com' + url;
+    return 'https://perikanantangkap.situbondokab.go.id/' + url;
 }
 
-// Fungsi untuk generate pagination (DIPERBAIKI UNTUK MENANGANI BANYAK HALAMAN)
+// Fungsi untuk generate pagination (DIPERBAIKI: tampilan lebih responsif dan stabil)
 function generatePagination(totalPages, currentPage, totalItems) {
     const paginationContainer = document.getElementById('paginationContainer');
     
-    // Validasi input
     if (currentPage < 1) currentPage = 1;
     if (currentPage > totalPages) currentPage = totalPages;
     
     let paginationHtml = `
     <nav aria-label="Navigasi halaman kegiatan">
-        <ul class="pagination">
+        <ul class="pagination justify-content-center flex-wrap">
     `;
     
-    // Previous button
+    // Tombol Sebelumnya
     paginationHtml += `
     <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
         <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;" aria-label="Sebelumnya">
@@ -578,10 +644,8 @@ function generatePagination(totalPages, currentPage, totalItems) {
     </li>
     `;
     
-    // Logika untuk menentukan halaman yang ditampilkan
-    const maxVisiblePages = 5;
-    let startPage = 1;
-    let endPage = totalPages;
+    const maxVisiblePages = 5; // Jumlah halaman yang terlihat di tengah
+    let startPage = 1, endPage = totalPages;
     
     if (totalPages > maxVisiblePages) {
         const halfVisible = Math.floor(maxVisiblePages / 2);
@@ -597,7 +661,7 @@ function generatePagination(totalPages, currentPage, totalItems) {
         }
     }
     
-    // Tombol halaman pertama jika diperlukan
+    // Halaman pertama dan ellipsis
     if (startPage > 1) {
         paginationHtml += `
         <li class="page-item">
@@ -609,7 +673,7 @@ function generatePagination(totalPages, currentPage, totalItems) {
         }
     }
     
-    // Tombol halaman
+    // Halaman-halaman di rentang
     for (let i = startPage; i <= endPage; i++) {
         paginationHtml += `
         <li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -618,7 +682,7 @@ function generatePagination(totalPages, currentPage, totalItems) {
         `;
     }
     
-    // Tombol halaman terakhir jika diperlukan
+    // Halaman terakhir dan ellipsis
     if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
             paginationHtml += '<li class="page-item disabled"><span class="page-link">...</span></li>';
@@ -630,16 +694,13 @@ function generatePagination(totalPages, currentPage, totalItems) {
         `;
     }
     
-    // Next button
+    // Tombol Selanjutnya
     paginationHtml += `
     <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
         <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;" aria-label="Berikutnya">
             <i class="fas fa-chevron-right"></i>
         </a>
     </li>
-    `;
-    
-    paginationHtml += `
         </ul>
         <div class="page-info text-center mt-3">
             <small class="text-muted">Halaman ${currentPage} dari ${totalPages} • Menampilkan ${totalItems} kegiatan</small>
@@ -650,22 +711,14 @@ function generatePagination(totalPages, currentPage, totalItems) {
     paginationContainer.innerHTML = paginationHtml;
 }
 
-// Fungsi untuk mengubah halaman (DIPERBAIKI DENGAN VALIDASI)
+// Fungsi untuk mengubah halaman
 function changePage(page) {
     const totalPages = Math.ceil(currentFilteredData.length / itemsPerPage);
-    
-    // Validasi halaman
     if (page < 1) page = 1;
     if (page > totalPages) page = totalPages;
-    
     displayKegiatan(currentFilteredData, page);
-    
-    // Scroll ke atas dengan smooth
     const sectionTop = document.querySelector('.kegiatan-section').offsetTop - 120;
-    window.scrollTo({
-        top: sectionTop,
-        behavior: 'smooth'
-    });
+    window.scrollTo({ top: sectionTop, behavior: 'smooth' });
 }
 
 // Fungsi filter kegiatan
@@ -674,47 +727,43 @@ function filterKegiatan() {
     const tahun = document.getElementById('filterTahun').value;
     const keyword = document.getElementById('filterKeyword').value.toLowerCase().trim();
     
-    let filtered = kegiatanData;
+    let filtered = kegiatanData.filter(k => k != null);
     
-    // Filter berdasarkan bulan
     if (bulan) {
         filtered = filtered.filter(kegiatan => {
-            const date = new Date(kegiatan.date);
-            const kegiatanBulan = String(date.getMonth() + 1).padStart(2, '0');
-            return kegiatanBulan === bulan;
+            try {
+                const date = new Date(kegiatan.date);
+                if (isNaN(date.getTime())) return false;
+                return String(date.getMonth() + 1).padStart(2, '0') === bulan;
+            } catch { return false; }
         });
     }
     
-    // Filter berdasarkan tahun
     if (tahun) {
         filtered = filtered.filter(kegiatan => {
-            const date = new Date(kegiatan.date);
-            const kegiatanTahun = date.getFullYear();
-            return kegiatanTahun === parseInt(tahun);
+            try {
+                const date = new Date(kegiatan.date);
+                if (isNaN(date.getTime())) return false;
+                return date.getFullYear() === parseInt(tahun);
+            } catch { return false; }
         });
     }
     
-    // Filter berdasarkan keyword
     if (keyword) {
         filtered = filtered.filter(kegiatan => {
             const searchText = `
-                ${kegiatan.title.toLowerCase()}
-                ${kegiatan.description.toLowerCase()}
-                ${kegiatan.tags.join(' ').toLowerCase()}
-                ${kegiatan.location.toLowerCase()}
-                ${kegiatan.category ? kegiatan.category.toLowerCase() : ''}
+                ${(kegiatan.title || '').toLowerCase()}
+                ${(kegiatan.description || '').toLowerCase()}
+                ${(kegiatan.tags || []).join(' ').toLowerCase()}
+                ${(kegiatan.location || '').toLowerCase()}
+                ${(kegiatan.category || '').toLowerCase()}
             `;
             return searchText.includes(keyword);
         });
     }
     
-    // Reset ke halaman pertama
     currentPage = 1;
-    
-    // Tampilkan hasil filter
     displayKegiatan(filtered, currentPage);
-    
-    // Update URL hash dengan filter
     updateFilterHash(bulan, tahun, keyword);
 }
 
@@ -723,7 +772,6 @@ function resetFilter() {
     document.getElementById('filterBulan').value = '';
     document.getElementById('filterTahun').value = '';
     document.getElementById('filterKeyword').value = '';
-    
     currentPage = 1;
     displayKegiatan(kegiatanData, currentPage);
     window.location.hash = '';
@@ -735,9 +783,7 @@ function updateFilterHash(bulan, tahun, keyword) {
     if (bulan) params.set('bulan', bulan);
     if (tahun) params.set('tahun', tahun);
     if (keyword) params.set('q', keyword);
-    
-    const hash = params.toString() ? `filter?${params.toString()}` : '';
-    window.location.hash = hash;
+    window.location.hash = params.toString() ? `filter?${params.toString()}` : '';
 }
 
 // Setup event listeners
@@ -746,61 +792,39 @@ function setupEventListeners() {
     document.getElementById('btnReset').addEventListener('click', resetFilter);
     document.getElementById('btnResetEmpty').addEventListener('click', resetFilter);
     document.getElementById('btnSearch').addEventListener('click', filterKegiatan);
-    
-    // Enter key untuk search
     document.getElementById('filterKeyword').addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            filterKegiatan();
-        }
+        if (event.key === 'Enter') filterKegiatan();
     });
 }
 
 // Setup navbar scroll effect
 function setupNavbarScroll() {
     const nav = document.getElementById('mainNav');
-    
     window.addEventListener('scroll', function() {
-        if (window.scrollY > 50) {
-            nav.classList.add('scrolled');
-        } else {
-            nav.classList.remove('scrolled');
-        }
+        nav.classList.toggle('scrolled', window.scrollY > 50);
     });
 }
 
 // Setup scroll to top button
 function setupScrollToTop() {
     const scrollBtn = document.getElementById('scrollToTopBtn');
-    
     window.addEventListener('scroll', function() {
-        if (window.scrollY > 300) {
-            scrollBtn.classList.add('show');
-        } else {
-            scrollBtn.classList.remove('show');
-        }
+        scrollBtn.classList.toggle('show', window.scrollY > 300);
     });
-    
     scrollBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
-// Setup year filter options (dinamis 90 tahun ke depan)
+// Setup year filter options (dinamis)
 function setupYearFilter() {
     const tahunSelect = document.getElementById('filterTahun');
     const tahunSekarang = new Date().getFullYear();
     const tahunMulai = 2024;
     const tahunAkhir = tahunSekarang + 90;
     
-    // Clear existing options except first
-    while (tahunSelect.options.length > 1) {
-        tahunSelect.remove(1);
-    }
-
-    // Tambahkan opsi tahun dari 2024 hingga 90 tahun ke depan
+    while (tahunSelect.options.length > 1) tahunSelect.remove(1);
+    
     for (let tahun = tahunAkhir; tahun >= tahunMulai; tahun--) {
         const option = document.createElement('option');
         option.value = tahun;
@@ -819,11 +843,9 @@ function setupPasswordProtection() {
     
     btnGenerator.addEventListener('click', function() {
         if (isAuthenticated) {
-            const generatorModal = new bootstrap.Modal(document.getElementById('generatorModal'));
-            generatorModal.show();
+            new bootstrap.Modal(document.getElementById('generatorModal')).show();
         } else {
-            const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
-            passwordModal.show();
+            new bootstrap.Modal(document.getElementById('passwordModal')).show();
         }
     });
     
@@ -839,35 +861,24 @@ function setupPasswordProtection() {
         if (password === ADMIN_PASSWORD) {
             isAuthenticated = true;
             passwordError.classList.add('d-none');
-            
-            const passwordModal = bootstrap.Modal.getInstance(document.getElementById('passwordModal'));
-            passwordModal.hide();
-            
+            bootstrap.Modal.getInstance(document.getElementById('passwordModal')).hide();
             adminPasswordInput.value = '';
-            
             setTimeout(() => {
-                const generatorModal = new bootstrap.Modal(document.getElementById('generatorModal'));
-                generatorModal.show();
+                new bootstrap.Modal(document.getElementById('generatorModal')).show();
             }, 300);
-            
             showToast('Akses diberikan!', 'Anda sekarang dapat mengakses generator script.', 'success');
         } else {
             passwordError.classList.remove('d-none');
             document.getElementById('errorMessage').textContent = 'Kode keamanan salah. Coba lagi.';
             adminPasswordInput.value = '';
             adminPasswordInput.focus();
-            
             adminPasswordInput.classList.add('shake');
-            setTimeout(() => {
-                adminPasswordInput.classList.remove('shake');
-            }, 500);
+            setTimeout(() => adminPasswordInput.classList.remove('shake'), 500);
         }
     });
     
     adminPasswordInput.addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            btnVerifyPassword.click();
-        }
+        if (event.key === 'Enter') btnVerifyPassword.click();
     });
     
     document.getElementById('passwordModal').addEventListener('hidden.bs.modal', function() {
@@ -899,12 +910,10 @@ function showToast(title, message, type = 'info') {
     const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
     toast.show();
     
-    toastEl.addEventListener('hidden.bs.toast', function() {
-        toastEl.remove();
-    });
+    toastEl.addEventListener('hidden.bs.toast', function() { toastEl.remove(); });
 }
 
-// Fungsi untuk menampilkan detail kegiatan di modal (DIPERBAIKI)
+// Fungsi untuk menampilkan detail kegiatan di modal
 function showKegiatanDetail(id) {
     const kegiatan = kegiatanData.find(k => k.id === id);
     if (!kegiatan) {
@@ -912,80 +921,81 @@ function showKegiatanDetail(id) {
         return;
     }
     
-    const date = new Date(kegiatan.date);
-    const formattedDate = date.toLocaleDateString('id-ID', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
+    const safeKegiatan = {
+        title: kegiatan.title || 'Judul tidak tersedia',
+        date: kegiatan.date || new Date().toISOString().split('T')[0],
+        category: kegiatan.category || 'lainnya',
+        location: kegiatan.location || 'Lokasi tidak disebutkan',
+        description: kegiatan.description || 'Deskripsi tidak tersedia',
+        url: kegiatan.url || '#',
+        participants: typeof kegiatan.participants === 'number' ? kegiatan.participants : 0,
+        duration: kegiatan.duration || '',
+        tags: Array.isArray(kegiatan.tags) ? kegiatan.tags : [],
+        images: Array.isArray(kegiatan.images) ? kegiatan.images : [],
+        youtubeUrls: Array.isArray(kegiatan.youtubeUrls) ? kegiatan.youtubeUrls : []
+    };
     
-    // Update text content
-    document.getElementById('kegiatanModalTitle').textContent = kegiatan.title;
+    const date = new Date(safeKegiatan.date);
+    const formattedDate = !isNaN(date.getTime()) 
+        ? date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+        : 'Tanggal tidak valid';
+    
+    document.getElementById('kegiatanModalTitle').textContent = safeKegiatan.title;
     document.getElementById('modalDate').textContent = formattedDate;
-    document.getElementById('modalCategory').textContent = kegiatan.category.charAt(0).toUpperCase() + kegiatan.category.slice(1);
-    document.getElementById('modalLocation').textContent = kegiatan.location;
-    document.getElementById('modalDescription').textContent = kegiatan.description;
+    document.getElementById('modalCategory').textContent = safeKegiatan.category.charAt(0).toUpperCase() + safeKegiatan.category.slice(1);
+    document.getElementById('modalLocation').textContent = safeKegiatan.location;
+    document.getElementById('modalDescription').textContent = safeKegiatan.description;
     
-    // Validasi dan set URL
-    const validUrl = validateUrl(kegiatan.url);
+    const validUrl = validateUrl(safeKegiatan.url);
     const modalDetailLink = document.getElementById('modalDetailLink');
     modalDetailLink.href = validUrl;
-    
-    // Pastikan link terbuka di tab baru
     modalDetailLink.target = '_blank';
     
-    // Update participants and duration jika ada
-    if (kegiatan.participants && kegiatan.participants > 0) {
-        document.getElementById('modalParticipants').textContent = kegiatan.participants;
+    if (safeKegiatan.participants > 0) {
+        document.getElementById('modalParticipants').textContent = safeKegiatan.participants;
         document.getElementById('modalParticipants').parentElement.style.display = 'inline-block';
     } else {
         document.getElementById('modalParticipants').parentElement.style.display = 'none';
     }
     
-    if (kegiatan.duration) {
-        document.getElementById('modalDuration').textContent = kegiatan.duration;
+    if (safeKegiatan.duration) {
+        document.getElementById('modalDuration').textContent = safeKegiatan.duration;
         document.getElementById('modalDuration').parentElement.style.display = 'inline-block';
     } else {
         document.getElementById('modalDuration').parentElement.style.display = 'none';
     }
     
-    // Update tags
     const tagsContainer = document.getElementById('modalTags');
-    tagsContainer.innerHTML = kegiatan.tags.map(tag => 
-        `<span class="kegiatan-tag">${tag}</span>`
-    ).join('');
+    tagsContainer.innerHTML = safeKegiatan.tags.map(tag => `<span class="kegiatan-tag">${escapeHtml(tag)}</span>`).join('');
     
-    // Update media containers
     const carouselContainer = document.getElementById('carouselContainer');
     const videoContainer = document.getElementById('modalVideoContainer');
     const carouselInner = document.getElementById('modalCarouselInner');
     const videoList = document.getElementById('modalVideoList');
     
-    // Reset containers
     carouselContainer.style.display = 'none';
     videoContainer.style.display = 'none';
     carouselInner.innerHTML = '';
     videoList.innerHTML = '';
     
-    // Tampilkan gambar jika ada
-    if (kegiatan.images && kegiatan.images.length > 0) {
+    if (safeKegiatan.images.length > 0) {
         carouselContainer.style.display = 'block';
         
-        kegiatan.images.forEach((img, index) => {
-            const activeClass = index === 0 ? 'active' : '';
+        safeKegiatan.images.forEach((img, index) => {
             carouselInner.innerHTML += `
-                <div class="carousel-item ${activeClass}">
+                <div class="carousel-item ${index === 0 ? 'active' : ''}">
                     <img src="${img}" class="d-block w-100 modal-img" alt="Dokumentasi ${index + 1}" 
                          onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
                 </div>
             `;
         });
         
-        // Tambahkan indicators jika lebih dari 1 gambar
-        if (kegiatan.images.length > 1) {
+        const existingIndicators = carouselContainer.querySelector('.carousel-indicators');
+        if (existingIndicators) existingIndicators.remove();
+        
+        if (safeKegiatan.images.length > 1) {
             let indicatorsHtml = '<div class="carousel-indicators">';
-            kegiatan.images.forEach((_, index) => {
+            safeKegiatan.images.forEach((_, index) => {
                 indicatorsHtml += `<button type="button" data-bs-target="#modalCarousel" data-bs-slide-to="${index}" class="${index === 0 ? 'active' : ''}" aria-label="Slide ${index + 1}"></button>`;
             });
             indicatorsHtml += '</div>';
@@ -993,22 +1003,20 @@ function showKegiatanDetail(id) {
         }
     }
     
-    // Tampilkan video jika ada
-    if (kegiatan.youtubeUrls && kegiatan.youtubeUrls.length > 0) {
+    if (safeKegiatan.youtubeUrls.length > 0) {
         videoContainer.style.display = 'block';
         
-        kegiatan.youtubeUrls.forEach((url, index) => {
+        safeKegiatan.youtubeUrls.forEach((url, index) => {
             const videoId = extractYouTubeId(url);
-            
             if (videoId) {
                 const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                 const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
                 
                 videoList.innerHTML += `
-                    <div class="col-md-${kegiatan.youtubeUrls.length > 1 ? '6' : '12'} mb-3">
+                    <div class="col-md-${safeKegiatan.youtubeUrls.length > 1 ? '6' : '12'} mb-3">
                         <div class="ratio ratio-16x9 video-iframe-container">
                             <iframe src="${embedUrl}" 
-                                    title="Video ${index + 1} - ${kegiatan.title}"
+                                    title="Video ${index + 1} - ${escapeHtml(safeKegiatan.title)}"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                     allowfullscreen
                                     loading="lazy">
@@ -1025,52 +1033,30 @@ function showKegiatanDetail(id) {
         });
     }
     
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('kegiatanModal'));
-    modal.show();
+    new bootstrap.Modal(document.getElementById('kegiatanModal')).show();
 }
 
 // Helper function untuk extract YouTube ID
 function extractYouTubeId(url) {
     if (!url) return null;
-    
-    // Handle embed URL
-    if (url.includes('youtube.com/embed/')) {
-        return url.split('/embed/')[1].split('?')[0];
-    }
-    
-    // Handle youtu.be URL
-    if (url.includes('youtu.be/')) {
-        return url.split('youtu.be/')[1].split('?')[0];
-    }
-    
-    // Handle watch URL
-    if (url.includes('youtube.com/watch?v=')) {
-        return url.split('v=')[1].split('&')[0];
-    }
-    
-    // Handle youtu.be with parameters
-    if (url.includes('youtu.be/') && url.includes('?')) {
-        return url.split('youtu.be/')[1].split('?')[0];
-    }
-    
+    if (url.includes('youtube.com/embed/')) return url.split('/embed/')[1].split('?')[0];
+    if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0];
+    if (url.includes('youtube.com/watch?v=')) return url.split('v=')[1].split('&')[0];
     return null;
 }
 
 // ==========================================
-// GENERATOR SCRIPT FEATURES - DIPERBAIKI
+// GENERATOR SCRIPT FEATURES
 // ==========================================
 
 // Fungsi untuk Generate dan Preview
 function generatePreview() {
     if (!isAuthenticated) {
         showToast('Akses Ditolak', 'Silakan login terlebih dahulu untuk mengakses generator.', 'warning');
-        const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
-        passwordModal.show();
+        new bootstrap.Modal(document.getElementById('passwordModal')).show();
         return;
     }
     
-    // Ambil data dari form
     const title = document.getElementById('genTitle').value;
     const date = document.getElementById('genDate').value;
     const category = document.getElementById('genCategory').value;
@@ -1081,32 +1067,25 @@ function generatePreview() {
     const desc = document.getElementById('genDesc').value;
     const tagsRaw = document.getElementById('genTags').value;
 
-    // Validasi
     if(!title || !date || !desc || !detailUrl) {
         showToast('Data Tidak Lengkap', 'Mohon lengkapi Judul, Tanggal, Deskripsi, dan URL Detail.', 'warning');
         return;
     }
 
-    // Process Images
     const imagesList = imagesRaw.split('\n')
         .map(url => url.trim())
         .filter(url => url !== '' && (url.startsWith('http') || url.startsWith('https')))
         .map(url => url.includes('?') ? url.split('?')[0] : url);
 
-    // Process Videos dengan extract YouTube ID
     const videosList = videosRaw.split('\n')
         .map(url => url.trim())
         .filter(url => url !== '' && (url.includes('youtube') || url.includes('youtu.be')))
         .map(url => {
             const videoId = extractYouTubeId(url);
-            if (videoId) {
-                return `https://www.youtube.com/embed/${videoId}`;
-            }
-            return url;
+            return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
         })
-        .filter(url => url !== null && url.includes('youtube.com/embed/'));
+        .filter(url => url && url.includes('youtube.com/embed/'));
 
-    // Tentukan type berdasarkan konten
     let type = 'foto';
     if (videosList.length > 0 && imagesList.length > 0) {
         type = 'multimedia';
@@ -1114,7 +1093,6 @@ function generatePreview() {
         type = 'youtube';
     }
 
-    // Buat Object Data
     const newData = {
         id: Date.now(),
         title: title,
@@ -1131,43 +1109,33 @@ function generatePreview() {
         duration: ""
     };
 
-    // Render Preview Card
     renderPreviewCard(newData);
 
-    // Generate Code String
     const jsonString = JSON.stringify(newData, null, 4);
-    const cleanCode = `    ${jsonString},`;
+    document.getElementById('codeOutput').textContent = `    ${jsonString},`;
     
-    document.getElementById('codeOutput').textContent = cleanCode;
-    
-    // Tampilkan statistik media
-    const imageCount = imagesList.length;
-    const videoCount = videosList.length;
-    showToast('Preview Berhasil!', `${imageCount} gambar dan ${videoCount} video telah diproses. URL Detail: ${detailUrl}`, 'success');
+    showToast('Preview Berhasil!', `${imagesList.length} gambar dan ${videosList.length} video telah diproses.`, 'success');
 }
 
 // Fungsi Render Preview Card di dalam Modal Generator
 function renderPreviewCard(data) {
     const container = document.getElementById('previewCardContainer');
     
-    // Format Date
+    const escapedTitle = escapeHtml(data.title);
+    const escapedDesc = escapeHtml(data.description);
+    const escapedTags = data.tags.map(tag => escapeHtml(tag));
+    
     const date = new Date(data.date);
-    const formattedDate = date.toLocaleDateString('id-ID', {
-        day: 'numeric', month: 'long', year: 'numeric'
-    });
+    const formattedDate = !isNaN(date.getTime()) 
+        ? date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+        : 'Tanggal tidak valid';
 
-    // Participants Logic
-    let participantHtml = '';
-    if (data.participants && data.participants > 0) {
-        participantHtml = `<span class="ms-2"><i class="fas fa-users me-1"></i>${data.participants} peserta</span>`;
-    } else {
-        participantHtml = `<span class="ms-2"><i class="fas fa-globe me-1"></i>Umum</span>`;
-    }
+    let participantHtml = data.participants > 0 
+        ? `<span class="ms-2"><i class="fas fa-users me-1"></i>${data.participants} peserta</span>`
+        : `<span class="ms-2"><i class="fas fa-globe me-1"></i>Umum</span>`;
 
-    // Tentukan button icon dan text
     let buttonIcon = 'fa-eye';
     let buttonText = 'Lihat Detail';
-    
     if (data.type === 'youtube') {
         buttonIcon = 'fa-play-circle';
         buttonText = 'Tonton Video';
@@ -1183,7 +1151,7 @@ function renderPreviewCard(data) {
         <div class="kegiatan-card" style="max-width: 400px; margin: 0 auto;">
             <div class="kegiatan-img-container">
                 <img src="${data.images && data.images[0] ? data.images[0] : 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'}" 
-                     class="kegiatan-img" alt="${data.title}" 
+                     class="kegiatan-img" alt="${escapedTitle}" 
                      onerror="this.src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2070&auto=format&fit=crop'">
             </div>
             <div class="kegiatan-content">
@@ -1191,10 +1159,10 @@ function renderPreviewCard(data) {
                     <i class="fas fa-calendar-alt"></i> ${formattedDate}
                     ${participantHtml}
                 </div>
-                <h3 class="kegiatan-title" style="font-size: 1.2rem;">${data.title}</h3>
-                <p class="kegiatan-desc" style="font-size: 0.9rem;">${data.description}</p>
+                <h3 class="kegiatan-title" style="font-size: 1.2rem;">${escapedTitle}</h3>
+                <p class="kegiatan-desc" style="font-size: 0.9rem;">${escapedDesc}</p>
                 <div class="kegiatan-tags">
-                    ${data.tags.map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
+                    ${escapedTags.map(tag => `<span class="kegiatan-tag">${tag}</span>`).join('')}
                 </div>
                 <div class="card-buttons">
                     <a href="${validateUrl(data.url)}" class="btn-card-detail" target="_blank">
@@ -1225,7 +1193,7 @@ function copyToClipboard() {
     }
 
     navigator.clipboard.writeText(codeText).then(() => {
-        showToast('Kode Disalin!', 'Script berhasil disalin ke clipboard. Paste ke dalam file script.js.', 'success');
+        showToast('Kode Disalin!', 'Script berhasil disalin ke clipboard.', 'success');
     }).catch(err => {
         console.error('Gagal menyalin: ', err);
         showToast('Gagal Menyalin', 'Terjadi kesalahan saat menyalin kode.', 'danger');
